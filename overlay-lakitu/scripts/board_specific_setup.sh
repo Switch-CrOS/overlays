@@ -62,12 +62,11 @@ write_toolchain_env() {
   # Copy kernel compiler info to BUILD artifact
   if [[ -f "${toolchain_env_file}" ]]; then
     cp "${toolchain_env_file}" "${artifact}"
+    # Remove toolchain_env from image
+    sudo rm "${toolchain_env_file}"
   else
     touch "${artifact}"
   fi
-
-  # Remove toolchain_env from image
-  sudo rm "${toolchain_env_file}"
 }
 
 # board_finalize_base_image() gets invoked by the build scripts at the
