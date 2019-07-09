@@ -13,7 +13,7 @@ RDEPEND="!<chromeos-base/chromeos-bsp-moblab-0.0.1-r53"
 
 
 LXC_STORAGE_BASE_URI="https://storage.googleapis.com/abci-ssp/autotest-containers"
-LXC_BASE_IMAGE_FILE="moblab_base_08.tar.xz"
+LXC_BASE_IMAGE_FILE="moblab_base_09.tar.xz"
 SRC_URI="${LXC_STORAGE_BASE_URI}/${LXC_BASE_IMAGE_FILE}"
 
 S=${WORKDIR}
