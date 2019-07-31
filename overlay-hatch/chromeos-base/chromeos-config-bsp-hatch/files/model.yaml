@@ -23,11 +23,14 @@ base_config: &base_config
     suspend-to-idle: "1"
     touchpad-wakeup: "1"
     has-keyboard-backlight: "1"
-    has-ambient-light-sensor: "1"
+    $has-ambient-light-sensor: "1"
+    has-ambient-light-sensor: "{{$has-ambient-light-sensor}}"
     $internal-backlight-als-steps: |-
       80.0 55.0 -1 400
       100.0 80.0 100 -1
     internal-backlight-als-steps: "{{$internal-backlight-als-steps}}"
+    $internal-backlight-no-als-battery-brightness: "63.0"
+    internal-backlight-no-als-battery-brightness: "{{$internal-backlight-no-als-battery-brightness}}"
 
 chromeos:
   devices:
@@ -96,11 +99,21 @@ chromeos:
         - $sku-id: 255
           $fw-name: "Helios"
           $key-id: "HATCH"
-          config: *base_config
+          config:
+            <<: *base_config
+            power:
+              <<: *power_common
+              $has-ambient-light-sensor: "0"
+              $internal-backlight-no-als-battery-brightness: "56.25"
     - $device-name: "helios"
       $fw-name: "Helios"
       products:
         - $key-id: "HATCH"
       skus:
         - $sku-id: 1
-          config: *base_config
+          config:
+            <<: *base_config
+            power:
+              <<: *power_common
+              $has-ambient-light-sensor: "0"
+              $internal-backlight-no-als-battery-brightness: "56.25"
