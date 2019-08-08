@@ -30,14 +30,26 @@ S="${WORKDIR}"
 # Linux's linux-info.eclass cannot locate the kernel build output directory.
 KBUILD_OUTPUT=${KERNEL_DIR}/build
 
+# Prevent kernel module signature being stripped.
+STRIP_MASK+=" *.ko"
+
 BUILD_PARAMS="CONFIG_GVE=m"
 BUILD_PARAMS+=" CC=${CC} -C ${KBUILD_OUTPUT}"
 BUILD_PARAMS+=" M=${S}"
 BUILD_TARGETS="modules"
 MODULE_NAMES="
 	gve(extra_modules:${S})"
+MODULE_NAME="gve"
 
 src_install() {
+	# Sign gve module
+	cp "${MODULE_NAME}".ko "${MODULE_NAME}".ko.orig
+	"${KBUILD_OUTPUT}"/scripts/sign-file \
+		sha256 \
+		"${KBUILD_OUTPUT}"/certs/signing_key.pem \
+		"${KBUILD_OUTPUT}"/certs/signing_key.x509 \
+		"${MODULE_NAME}".ko
+
 	linux-mod_src_install
 	insinto /usr/lib/modules-load.d
 	doins "${FILESDIR}/gve.conf"
