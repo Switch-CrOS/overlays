@@ -9,12 +9,8 @@ inherit linux-mod
 DESCRIPTION="Google Virtual Ethernet (gve) driver"
 HOMEPAGE="https://github.com/GoogleCloudPlatform/compute-virtual-ethernet-linux"
 LICENSE="MIT GPL-2"
-# We use EGIT_COMMIT to pick up the special (backported) release for COS,
-# instead of the raw source tarball.
-EGIT_COMMIT="a71d3d14d7417e37aec33a55e96d4bfec617bddb"
 
-# Note: the tarball should be stored at gs://chromeos-localmirror-private/distfiles/
-SRC_URI="https://github.com/GoogleCloudPlatform/compute-virtual-ethernet-linux/releases/download/v0.0.1/gve-${EGIT_COMMIT}-cos.tar.gz -> gve-${EGIT_COMMIT}-cos.tar.gz"
+SRC_URI="https://github.com/GoogleCloudPlatform/compute-virtual-ethernet-linux/releases/download/v1.0.0/gve-${PV}-cos.tar.gz -> gve-${PV}-cos.tar.gz"
 
 SLOT="0"
 
