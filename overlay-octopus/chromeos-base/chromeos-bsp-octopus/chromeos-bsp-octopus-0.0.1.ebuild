@@ -41,6 +41,7 @@ src_install() {
 	doexe "${FILESDIR}"/get_board_specific_wacom_hwid.sh
 
 	dosbin "${FILESDIR}"/control_usb_charge_mode.sh
+	dosbin "${FILESDIR}"/control_usb_runtime_suspend.sh
 
 	unibuild_install_audio_files
 	unibuild_install_thermal_files
@@ -49,4 +50,6 @@ src_install() {
 	udev_dorules "${FILESDIR}/93-powerd-overrides.rules"
 	# Monitor udev event for USB A ports to control power of re-driver.
 	udev_dorules "${FILESDIR}/99-chromeos-octopus-usb-charge-mode.rules"
+
+	udev_dorules "${FILESDIR}/99-chromeos-octopus-usb-runtime-suspend.rules"
 }
