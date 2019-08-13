@@ -31,6 +31,7 @@ RDEPEND="
 		net-libs/grpc
 		app-admin/logrotate
 		dev-python/parallel-ssh
+		sys-apps/moblab-common
 "
 
 DEPEND="${RDEPEND}
@@ -40,4 +41,3 @@ src_unpack() {
 	cros-workon_src_unpack
 	default
 }
-
