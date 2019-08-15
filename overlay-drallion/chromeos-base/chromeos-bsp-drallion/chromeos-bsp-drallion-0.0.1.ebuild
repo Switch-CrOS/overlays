@@ -13,6 +13,14 @@ SLOT="0"
 KEYWORDS="* amd64 x86"
 S="${WORKDIR}"
 
+# Add dependencies on other ebuilds from within this board overlay
+RDEPEND=""
+DEPEND="
+        ${RDEPEND}
+        chromeos-base/chromeos-config
+"
+
 src_install() {
 	doappid "{ED3A4869-C380-4F79-A190-027C3E879357}" "CHROMEBOOK"
+	unibuild_install_audio_files 
 }
