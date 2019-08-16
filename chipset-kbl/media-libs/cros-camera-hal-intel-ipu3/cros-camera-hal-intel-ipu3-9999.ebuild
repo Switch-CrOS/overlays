@@ -9,8 +9,7 @@ CROS_WORKON_SUBTREE=".gn camera/build camera/common camera/hal/intel camera/incl
 CROS_WORKON_OUTOFTREE_BUILD="1"
 CROS_WORKON_INCREMENTAL_BUILD="1"
 
-PLATFORM_SUBDIR="camera"
-PLATFORM_GYP_FILE="hal/intel/libcamera_hal.gyp"
+PLATFORM_SUBDIR="camera/hal/intel"
 
 inherit cros-camera cros-workon platform
 
