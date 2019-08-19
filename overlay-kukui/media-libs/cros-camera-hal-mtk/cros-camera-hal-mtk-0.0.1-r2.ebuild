@@ -3,8 +3,8 @@
 
 EAPI=6
 
-CROS_WORKON_COMMIT="a41075df8b2723a25065b2af539d670ae0aed5cf"
-CROS_WORKON_TREE="d4f9648d1f9171d0e55bc8c8cfb6c29ff7ecc4ed"
+CROS_WORKON_COMMIT="e03024e521466da520b39943fb662db75d78b3bb"
+CROS_WORKON_TREE="9d7ac462665b4515877ac7179a854256b4f8bcdd"
 CROS_WORKON_PROJECT="chromiumos/platform2"
 CROS_WORKON_LOCALNAME="../platform2"
 CROS_WORKON_BLACKLIST="1"
@@ -42,7 +42,7 @@ DEPEND="${RDEPEND}
 "
 
 src_prepare() {
-	epatch "${FILESDIR}"/camera_hal_tot.patch
+	eapply -p2 "${FILESDIR}"/camera_hal_tot.patch
 	find "${S}" -type f -name "*.sh" -exec chmod +x {} +
 	cros-workon_src_prepare
 	eapply_user
