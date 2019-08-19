@@ -18,7 +18,10 @@ S="${WORKDIR}"
 # Add dependencies on other ebuilds from within this board overlay
 RDEPEND="
 "
-DEPEND="${RDEPEND}"
+DEPEND="
+	${RDEPEND}
+	chromeos-base/chromeos-config
+"
 
 src_install() {
 	doappid "{0BE68F68-A2F2-46B7-A7B4-B51B63F64FBA}" "REFERENCE"
