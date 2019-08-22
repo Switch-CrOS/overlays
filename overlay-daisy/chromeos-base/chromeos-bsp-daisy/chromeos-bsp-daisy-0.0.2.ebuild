@@ -1,7 +1,7 @@
 # Copyright (c) 2012 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=4
+EAPI="6"
 
 inherit appid udev
 
@@ -65,4 +65,10 @@ src_install() {
 	# Install platform specific triggers and udev rules for codecs.
 	doins "${FILESDIR}/udev-trigger-codec.conf"
 	udev_dorules "${FILESDIR}/50-media.rules"
+
+	# Install Bluetooth ID override.  Variants provide their own.
+	if ! use spring && ! use skate; then
+		insinto "/etc/bluetooth"
+		doins "${FILESDIR}/main.conf"
+	fi
 }
