@@ -46,6 +46,8 @@ src_prepare() {
 	find "${S}" -type f -name "*.sh" -exec chmod +x {} +
 	cros-workon_src_prepare
 	eapply_user
+	# TODO (crbug.com/995954): Remove after replacing deprecated functions.
+	append-flags "-Wno-error"
 }
 
 src_install() {
