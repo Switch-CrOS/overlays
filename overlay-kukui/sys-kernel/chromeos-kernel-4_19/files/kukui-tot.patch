@@ -1471,7 +1471,7 @@ index 4cf64da1c002d8977194aafc27d88d5c85dc85fb..82d9aa395c4d01ea02814705cc14c5db
  M:	Rui Miguel Silva <rmfrfs@gmail.com>
  L:	linux-media@vger.kernel.org
 diff --git a/Makefile b/Makefile
-index 5fb94caf6ad548534d0b512f1c03f564879743ce..9745453e71bb2d295b5ef59cf1e0a0de5b564744 100644
+index 0f96e60a3ac51501b4a2c90e7efd6945406c9b51..f9ea113299236707e35c205c7e57e029f37726de 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -1,3 +1,4 @@
@@ -1488,6 +1488,19 @@ index 2c927ccbd97055c71cda2fccc1eaa8b12b93374a..768caa3970ef916e3a328a5d0473f594
  Linux kernel
  ============
  
+diff --git a/arch/arm64/boot/dts/mediatek/Makefile b/arch/arm64/boot/dts/mediatek/Makefile
+index 19ca3e5501cfe1538affc5a7b82b31255d41dc6f..0db8f91d4ded7fd1dd09ee483e1580a78faf72b1 100644
+--- a/arch/arm64/boot/dts/mediatek/Makefile
++++ b/arch/arm64/boot/dts/mediatek/Makefile
+@@ -10,6 +10,7 @@ dtb-$(CONFIG_ARCH_MEDIATEK) += mt8173-evb.dtb
+ dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-evb.dtb
+ dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-kukui-rev1.dtb
+ dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-kukui-rev2.dtb
+-dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-kukui-kodama.dtb
++dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-kukui-kodama-sku16.dtb
++dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-kukui-kodama-sku32.dtb
+ dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-kukui-krane-sku0.dtb
+ dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-kukui-krane-sku176.dtb
 diff --git a/arch/arm64/boot/dts/mediatek/mt6358.dtsi b/arch/arm64/boot/dts/mediatek/mt6358.dtsi
 index a7e655c42a540a543aee16f505502dbc0babd51c..a21dedcfb7edad9f2fa6c1aacd8300edf4019e4c 100644
 --- a/arch/arm64/boot/dts/mediatek/mt6358.dtsi
@@ -1538,16 +1551,121 @@ index ef041d64459d161e64280c50faa6204a9f85f70b..94ebc8713a276d90d48ca939144d1ea8
  	};
  
  	usb_p0_vbus: regulator@0 {
-diff --git a/arch/arm64/boot/dts/mediatek/mt8183-kukui-krane.dtsi b/arch/arm64/boot/dts/mediatek/mt8183-kukui-krane.dtsi
-old mode 100644
-new mode 100755
-index 8ce922e6c95a71f21400252891cd95d64f23c6aa..34f6df671ee8ba1a9f4e60d1f66c1311ac10b857
---- a/arch/arm64/boot/dts/mediatek/mt8183-kukui-krane.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt8183-kukui-krane.dtsi
-@@ -57,6 +57,136 @@
+diff --git a/arch/arm64/boot/dts/mediatek/mt8183-kukui-kodama-sku16.dts b/arch/arm64/boot/dts/mediatek/mt8183-kukui-kodama-sku16.dts
+new file mode 100644
+index 0000000000000000000000000000000000000000..e1f4e72bfa4645fa37c23cb860f798466620910c
+--- /dev/null
++++ b/arch/arm64/boot/dts/mediatek/mt8183-kukui-kodama-sku16.dts
+@@ -0,0 +1,26 @@
++// SPDX-License-Identifier: (GPL-2.0 OR MIT)
++/*
++ * Copyright 2019 Bitland Information Technology Co.LTD
++ */
++
++/dts-v1/;
++#include "mt8183-kukui-kodama.dtsi"
++
++/ {
++	model = "MediaTek kodama sku16 board";
++	compatible = "google,kodama-sku16",
++		"google,kodama", "google,kukui", "mediatek,mt8183";
++
++};
++
++&panel {
++	status = "okay";
++	compatible = "auo,b101uan08.3";
++	reg = <0>;
++	enable-gpios = <&pio 45 0>;
++	pinctrl-names = "default";
++	pinctrl-0 = <&panel_pins_default>;
++	avdd-supply = <&ppvarn_lcd>;
++	avee-supply = <&ppvarp_lcd>;
++	pp1800-supply = <&pp1800_lcd>;
++};
+diff --git a/arch/arm64/boot/dts/mediatek/mt8183-kukui-kodama-sku32.dts b/arch/arm64/boot/dts/mediatek/mt8183-kukui-kodama-sku32.dts
+new file mode 100644
+index 0000000000000000000000000000000000000000..d5408eeaebd2af14718eff26a4e8d4063038bb91
+--- /dev/null
++++ b/arch/arm64/boot/dts/mediatek/mt8183-kukui-kodama-sku32.dts
+@@ -0,0 +1,26 @@
++// SPDX-License-Identifier: (GPL-2.0 OR MIT)
++/*
++ * Copyright 2019 Bitland Information Technology Co.LTD
++ */
++
++/dts-v1/;
++#include "mt8183-kukui-kodama.dtsi"
++
++/ {
++	model = "MediaTek kodama sku32 board";
++	compatible = "google,kodama-sku32",
++		"google,kodama", "google,kukui", "mediatek,mt8183";
++
++};
++
++&panel {
++	status = "okay";
++	compatible = "boe,tv101wum-n53";
++	reg = <0>;
++	enable-gpios = <&pio 45 0>;
++	pinctrl-names = "default";
++	pinctrl-0 = <&panel_pins_default>;
++	avdd-supply = <&ppvarn_lcd>;
++	avee-supply = <&ppvarp_lcd>;
++	pp1800-supply = <&pp1800_lcd>;
++};
+diff --git a/arch/arm64/boot/dts/mediatek/mt8183-kukui-kodama.dts b/arch/arm64/boot/dts/mediatek/mt8183-kukui-kodama.dtsi
+similarity index 91%
+rename from arch/arm64/boot/dts/mediatek/mt8183-kukui-kodama.dts
+rename to arch/arm64/boot/dts/mediatek/mt8183-kukui-kodama.dtsi
+index 7f9f9adfba5882eb21ec049bdf7f6746539ecbe1..4a9780ffc1e1063b3a9f222e4492254c824e5d2e 100644
+--- a/arch/arm64/boot/dts/mediatek/mt8183-kukui-kodama.dts
++++ b/arch/arm64/boot/dts/mediatek/mt8183-kukui-kodama.dtsi
+@@ -7,9 +7,6 @@
+ #include "mt8183-kukui.dtsi"
+ 
+ / {
+-	model = "MediaTek kodama board";
+-	compatible = "google,kodama", "google,kukui", "mediatek,mt8183";
+-
+ 	ppvarn_lcd: ppvarn-lcd {
+ 		compatible = "regulator-fixed";
+ 		regulator-name = "ppvarn_lcd";
+@@ -64,16 +61,8 @@
  	};
  };
  
+-&panel {
+-	status = "okay";
+-	compatible = "boe,tv101wum-nl6";
+-	reg = <0>;
+-	enable-gpios = <&pio 45 0>;
+-	pinctrl-names = "default";
+-	pinctrl-0 = <&panel_pins_default>;
+-	avdd-supply = <&ppvarn_lcd>;
+-	avee-supply = <&ppvarp_lcd>;
+-	pp1800-supply = <&pp1800_lcd>;
++&it6505dptx {
++	no-laneswap;
+ };
+ 
+ &pio {
+diff --git a/arch/arm64/boot/dts/mediatek/mt8183-kukui-krane.dtsi b/arch/arm64/boot/dts/mediatek/mt8183-kukui-krane.dtsi
+old mode 100644
+new mode 100755
+index 8ce922e6c95a71f21400252891cd95d64f23c6aa..bd331ddd09709f38f47ca35a19226792a2ef0424
+--- a/arch/arm64/boot/dts/mediatek/mt8183-kukui-krane.dtsi
++++ b/arch/arm64/boot/dts/mediatek/mt8183-kukui-krane.dtsi
+@@ -57,6 +57,142 @@
+ 	};
+ };
+ 
++&mt6358_vcama2_reg {
++	regulator-min-microvolt = <2800000>;
++	regulator-max-microvolt = <2800000>;
++};
++
 +&i2c2 {
 +	at24@58 {
 +		compatible = "atmel,24c32";
@@ -1595,7 +1713,8 @@ index 8ce922e6c95a71f21400252891cd95d64f23c6aa..34f6df671ee8ba1a9f4e60d1f66c1311
 +		compatible = "dongwoon,dw9768";
 +		reg = <0x0c>;
 +
-+		afvdd-supply = <&mt6358_vcama2_reg>;
++		vin-supply = <&mt6358_vcamio_reg>;
++		vdd-supply = <&mt6358_vcama2_reg>;
 +
 +		port@0 {
 +		   main_af_0: endpoint {
@@ -2264,7 +2383,7 @@ index c4ff474f548b3caca613817cfc948fefdfbc820c..d64de3e8ec9216d782af4c3dce304e32
  	status = "okay";
  };
 diff --git a/arch/arm64/boot/dts/mediatek/mt8183.dtsi b/arch/arm64/boot/dts/mediatek/mt8183.dtsi
-index f18b9fc97156e87eda909b1ab17435fb5759ba01..698bfad636b270107eb4a300b4340f3f5f8dead3 100644
+index f18b9fc97156e87eda909b1ab17435fb5759ba01..798494933e8a54952bf121e30932546d75697b21 100644
 --- a/arch/arm64/boot/dts/mediatek/mt8183.dtsi
 +++ b/arch/arm64/boot/dts/mediatek/mt8183.dtsi
 @@ -499,6 +499,89 @@
@@ -2371,6 +2490,15 @@ index f18b9fc97156e87eda909b1ab17435fb5759ba01..698bfad636b270107eb4a300b4340f3f
  		pio: pinctrl@10005000 {
  			compatible = "mediatek,mt8183-pinctrl";
  			reg = <0 0x10005000 0 0x1000>,
+@@ -660,7 +750,7 @@
+ 			compatible = "mediatek,mt8183-pwrap";
+ 			reg = <0 0x1000d000 0 0x1000>;
+ 			reg-names = "pwrap";
+-			interrupts = <GIC_SPI 209 IRQ_TYPE_LEVEL_HIGH>;
++			interrupts = <GIC_SPI 185 IRQ_TYPE_LEVEL_HIGH>;
+ 			clocks = <&topckgen CLK_TOP_MUX_PMICSPI>,
+ 				 <&infracfg CLK_INFRA_PMIC_AP>;
+ 			clock-names = "spi", "wrap";
 @@ -684,6 +774,11 @@
  			#iommu-cells = <1>;
  		};
@@ -2410,6 +2538,36 @@ index f18b9fc97156e87eda909b1ab17435fb5759ba01..698bfad636b270107eb4a300b4340f3f
  			status = "disabled";
  		};
  
+@@ -836,7 +944,7 @@
+ 					};
+ 
+ 					target: trip-point@1 {
+-						temperature = <85000>;
++						temperature = <80000>;
+ 						hysteresis = <2000>;
+ 						type = "passive";
+ 					};
+@@ -869,16 +977,16 @@
+ 						trip = <&target>;
+ 						cooling-device = <&cpu4
+ 							THERMAL_NO_LIMIT
+-							THERMAL_NO_LIMIT>,
++							14>,
+ 								 <&cpu5
+ 							THERMAL_NO_LIMIT
+-							THERMAL_NO_LIMIT>,
++							14>,
+ 								 <&cpu6
+ 							THERMAL_NO_LIMIT
+-							THERMAL_NO_LIMIT>,
++							14>,
+ 								 <&cpu7
+ 							THERMAL_NO_LIMIT
+-							THERMAL_NO_LIMIT>;
++							14>;
+ 						contribution = <1024>;
+ 					};
+ 				};
 @@ -940,6 +1048,18 @@
  				trips {};
  				cooling-maps {};
@@ -2452,7 +2610,7 @@ index f18b9fc97156e87eda909b1ab17435fb5759ba01..698bfad636b270107eb4a300b4340f3f
  				clocks = <&clk26m>;
  				clock-names = "ref";
  				#phy-cells = <1>;
-+				mediatek,eye-vrt = <1>;
++				mediatek,discth = <15>;
  				status = "okay";
  			};
  
@@ -2832,51 +2990,6 @@ index f4d5765940a3da22a8e0e5d82fede356983f49fb..aa86b84bdb86f70f0cca11aa2c623cdf
  	if (!coherent || (attrs & DMA_ATTR_WRITE_COMBINE))
  		return pgprot_writecombine(prot);
  	return prot;
-diff --git a/block/bfq-iosched.c b/block/bfq-iosched.c
-index f9161f35e4a9dd4f72dd91ed7dc059a241893dfd..b7515ac7ea0dab9be80139c6e0631e3cbd1d38f1 100644
---- a/block/bfq-iosched.c
-+++ b/block/bfq-iosched.c
-@@ -2097,9 +2097,14 @@ static void bfq_request_merged(struct request_queue *q, struct request *req,
- 	    blk_rq_pos(container_of(rb_prev(&req->rb_node),
- 				    struct request, rb_node))) {
- 		struct bfq_queue *bfqq = bfq_init_rq(req);
--		struct bfq_data *bfqd = bfqq->bfqd;
-+		struct bfq_data *bfqd;
- 		struct request *prev, *next_rq;
- 
-+		if (!bfqq)
-+			return;
-+
-+		bfqd = bfqq->bfqd;
-+
- 		/* Reposition request in its sort_list */
- 		elv_rb_del(&bfqq->sort_list, req);
- 		elv_rb_add(&bfqq->sort_list, req);
-@@ -2146,6 +2151,9 @@ static void bfq_requests_merged(struct request_queue *q, struct request *rq,
- 	struct bfq_queue *bfqq = bfq_init_rq(rq),
- 		*next_bfqq = bfq_init_rq(next);
- 
-+	if (!bfqq)
-+		return;
-+
- 	/*
- 	 * If next and rq belong to the same bfq_queue and next is older
- 	 * than rq, then reposition rq in the fifo (by substituting next
-@@ -5148,12 +5156,12 @@ static void bfq_insert_request(struct blk_mq_hw_ctx *hctx, struct request *rq,
- 
- 	spin_lock_irq(&bfqd->lock);
- 	bfqq = bfq_init_rq(rq);
--	if (at_head || blk_rq_is_passthrough(rq)) {
-+	if (!bfqq || at_head || blk_rq_is_passthrough(rq)) {
- 		if (at_head)
- 			list_add(&rq->queuelist, &bfqd->dispatch);
- 		else
- 			list_add_tail(&rq->queuelist, &bfqd->dispatch);
--	} else { /* bfqq is assumed to be non null here */
-+	} else {
- 		idle_timer_disabled = __bfq_insert_request(bfqd, rq);
- 		/*
- 		 * Update bfqq, because, if a queue merge has occurred
 diff --git a/chromeos/config/arm64/chromiumos-arm64.flavour.config b/chromeos/config/arm64/chromiumos-arm64.flavour.config
 index 9dc7695346bbbd1449cf31eef72d28d405b6d898..930ece0c3809c2481a5b6b2349c35e41b438ab58 100644
 --- a/chromeos/config/arm64/chromiumos-arm64.flavour.config
@@ -3071,6 +3184,22 @@ index bf96552e087b64e7c7f900bc1cbf0129be5f2b25..0985459444c75525553cac6b2fd67630
  CONFIG_INT340X_THERMAL=y
  CONFIG_INTEL_VBTN=m
  CONFIG_IO_DELAY_0XED=y
+diff --git a/drivers/bluetooth/hci_qca.c b/drivers/bluetooth/hci_qca.c
+index 1c986abdb0af7ffac830a0e6813031691eef5eb9..491c9f86027d656bad03770470c4aff1ef7c7549 100644
+--- a/drivers/bluetooth/hci_qca.c
++++ b/drivers/bluetooth/hci_qca.c
+@@ -1274,6 +1274,11 @@ static int qca_setup(struct hci_uart *hu)
+ 	/* Patch downloading has to be done without IBS mode */
+ 	clear_bit(QCA_IBS_ENABLED, &qca->flags);
+ 
++	/* Enable controller to do both LE scan and BR/EDR inquiry
++	 * simultaneously.
++	 */
++	set_bit(HCI_QUIRK_SIMULTANEOUS_DISCOVERY, &hdev->quirks);
++
+ 	if (qca_is_wcn399x(soc_type)) {
+ 		bt_dev_info(hdev, "setting up wcn3990");
+ 
 diff --git a/drivers/clk/mediatek/Makefile b/drivers/clk/mediatek/Makefile
 index 3dc1b9f15ea2f2f2e9db4a7bf55e5a0578097499..5df0e476e94d807cf9fc4836ed6aa41e4ff5dd8d 100644
 --- a/drivers/clk/mediatek/Makefile
@@ -6998,10 +7127,10 @@ index 06cbdcca6ae0a02b9542a15dcdbd36562cd89a65..77d60b3cde7eab11f7e0d76488e746a3
  obj-$(CONFIG_DRM_NXP_PTN3460) += nxp-ptn3460.o
 diff --git a/drivers/gpu/drm/bridge/ite-it6505.c b/drivers/gpu/drm/bridge/ite-it6505.c
 new file mode 100644
-index 0000000000000000000000000000000000000000..f36d19faee89e6ba627ded0f18edc7dd6fe74455
+index 0000000000000000000000000000000000000000..5a1054366ecb493aa932257120bee00fe479e15a
 --- /dev/null
 +++ b/drivers/gpu/drm/bridge/ite-it6505.c
-@@ -0,0 +1,2566 @@
+@@ -0,0 +1,2777 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
 + * Copyright (c) 2018, The Linux Foundation. All rights reserved.
@@ -7031,6 +7160,8 @@ index 0000000000000000000000000000000000000000..f36d19faee89e6ba627ded0f18edc7dd
 +#include <drm/drm_dp_helper.h>
 +#include <drm/drm_edid.h>
 +
++#include <sound/hdmi-codec.h>
++
 +#define AX 0
 +#define BX 1
 +#define AUDSEL I2S
@@ -7054,6 +7185,7 @@ index 0000000000000000000000000000000000000000..f36d19faee89e6ba627ded0f18edc7dd
 +#define ENHFRAME 1
 +#define ENSSC 1
 +#define FLAGTRAINDOWN 100
++#define POLLINGKSVLIST 400
 +#define TRAINFAILCNT 5
 +#define TRAINFAILHPD 3
 +#define AUX_WAIT_TIMEOUT_MS 15
@@ -7062,16 +7194,26 @@ index 0000000000000000000000000000000000000000..f36d19faee89e6ba627ded0f18edc7dd
 +#define EDIDRETRYTIME 5
 +#define SHOWVIDEOTIMING 2
 +#define PWROFFRETRYTIME 5
-+#define WAITBRIDGEENABLE 80
 +#define MAXPCLK 80000
 +#define DEFAULTHDCP 1
-+#define DEFAULTAUDIO 1
++#define DEFAULTAUDIO 0
 +#define DEFAULTPWRONOFF 1
 +#define DEFAULTDRVHOLD 0
 +#define DEFAULTPWRON 0
 +
 +/* AX or BX */
 +#define CHIP_VERSION BX
++
++/*
++ * 0: for bitland
++ * 1: for google kukui p2, huaqin
++ */
++#define AFE_SETTING 1
++
++u8 afe_setting_table[2][3] = {
++	{0, 0, 0},
++	{0x93, 0x2a, 0x85}
++};
 +
 +enum sys_status {
 +	SYS_UNPLUG = 0,
@@ -7080,7 +7222,6 @@ index 0000000000000000000000000000000000000000..f36d19faee89e6ba627ded0f18edc7dd
 +	SYS_WAIT,
 +	SYS_TRAINFAIL,
 +	SYS_ReHDCP,
-+	SYS_PWRDN,
 +	SYS_NOROP,
 +	SYS_Unknown,
 +};
@@ -7142,11 +7283,13 @@ index 0000000000000000000000000000000000000000..f36d19faee89e6ba627ded0f18edc7dd
 +	struct notifier_block event_nb;
 +	struct extcon_dev *extcon;
 +	struct work_struct extcon_wq;
++	struct delayed_work delayed_audio;
 +	enum sys_status status;
 +	bool hbr;
 +	u8 lane;
 +	u8 en_ssc;
 +	bool en_hframe;
++	bool laneswap_disabled;
 +	bool laneswap;
 +
 +	enum it6505_aud_sel aud_sel;
@@ -7172,7 +7315,6 @@ index 0000000000000000000000000000000000000000..f36d19faee89e6ba627ded0f18edc7dd
 +	u8 av[5][4];
 +	u8 bv[5][4];
 +	bool powered;
-+	u8 run_bridge_enable;
 +	/* it6505 driver hold option */
 +	unsigned int drv_hold;
 +};
@@ -7280,6 +7422,8 @@ index 0000000000000000000000000000000000000000..f36d19faee89e6ba627ded0f18edc7dd
 +	it6505->i2s_ws_channel = I2SWSCHANNEL;
 +	it6505->i2s_data_seq = I2SDATASEQ;
 +	it6505->audwordlength = AUDWORDLENGTH;
++	it6505->en_audio = DEFAULTAUDIO;
++	it6505->en_hdcp = DEFAULTHDCP;
 +
 +	it6505->hbr = _HBR;
 +	it6505->lane = LANE;
@@ -7287,7 +7431,6 @@ index 0000000000000000000000000000000000000000..f36d19faee89e6ba627ded0f18edc7dd
 +	it6505->en_hframe = ENHFRAME;
 +	it6505->laneswap = LANESWAP;
 +	it6505->vidstable_done = 0;
-+	it6505->run_bridge_enable = 0;
 +}
 +
 +static void it6505_termination_on(struct it6505 *it6505)
@@ -7503,6 +7646,53 @@ index 0000000000000000000000000000000000000000..f36d19faee89e6ba627ded0f18edc7dd
 +			     DRM_MODE_ARG(&it6505->vid_info));
 +}
 +
++static void show_aud_mcnt(struct it6505 *it6505)
++{
++	unsigned int audn, regde, regdf, rege0, vclk, aclk, audmcal, audmcnt;
++	struct device *dev = &it6505->client->dev;
++
++	dptxrd(it6505, 0xde, &regde);
++	dptxrd(it6505, 0xdf, &regdf);
++	dptxrd(it6505, 0xe0, &rege0);
++	audn = regde + (regdf << 8) + (rege0 << 16);
++	if (it6505->hbr)
++		vclk = 2700000;
++	else
++		vclk = 1620000;
++	switch (it6505->aud_fs) {
++	case AUD32K:
++		aclk = 320;
++		break;
++	case AUD48K:
++		aclk = 480;
++		break;
++	case AUD96K:
++		aclk = 960;
++		break;
++	case AUD192K:
++		aclk = 1920;
++		break;
++	case AUD44P1K:
++		aclk = 441;
++	case AUD88P2K:
++		aclk = 882;
++		break;
++	case AUD176P4K:
++		aclk = 1764;
++		break;
++	default:
++		break;
++	}
++	audmcal = audn * aclk / vclk * 512;
++	dptxrd(it6505, 0xe4, &regde);
++	dptxrd(it6505, 0xe5, &regdf);
++	dptxrd(it6505, 0xe6, &rege0);
++	audmcnt = (rege0 << 16) + (regdf << 8) + regde;
++	DRM_DEV_DEBUG_DRIVER(dev, "audio N:0x%06x", audn);
++	DRM_DEV_DEBUG_DRIVER(dev, "audio Mcal:0x%06x", audmcal);
++	DRM_DEV_DEBUG_DRIVER(dev, "audio Mcnt:0x%06x", audmcnt);
++}
++
 +static const char *const state_string[] = {
 +	[SYS_UNPLUG] = "SYS_UNPLUG",
 +	[SYS_HPD] = "SYS_HPD",
@@ -7510,7 +7700,6 @@ index 0000000000000000000000000000000000000000..f36d19faee89e6ba627ded0f18edc7dd
 +	[SYS_WAIT] = "SYS_WAIT",
 +	[SYS_TRAINFAIL] = "SYS_TRAINFAIL",
 +	[SYS_ReHDCP] = "SYS_ReHDCP",
-+	[SYS_PWRDN] = "SYS_PWRDN",
 +	[SYS_NOROP] = "SYS_NOROP",
 +	[SYS_Unknown] = "SYS_Unknown",
 +};
@@ -7543,7 +7732,6 @@ index 0000000000000000000000000000000000000000..f36d19faee89e6ba627ded0f18edc7dd
 +		break;
 +	case SYS_HPD:
 +		it6505_termination_on(it6505);
-+		it6505_init_fsm(it6505);
 +		break;
 +	case SYS_AUTOTRAIN:
 +		break;
@@ -7927,41 +8115,37 @@ index 0000000000000000000000000000000000000000..f36d19faee89e6ba627ded0f18edc7dd
 +	err = drm_connector_init(bridge->dev, &it6505->connector,
 +				 &it6505_connector_funcs,
 +				 DRM_MODE_CONNECTOR_DisplayPort);
-+	if (err) {
++	if (err < 0) {
 +		DRM_DEV_ERROR(dev, "Failed to initialize connector: %d", err);
-+		goto unregister_aux;
++		return err;
 +	}
 +
 +	drm_connector_helper_add(&it6505->connector,
 +				 &it6505_connector_helper_funcs);
 +
-+	err = drm_connector_register(&it6505->connector);
-+	if (err) {
-+		DRM_DEV_ERROR(dev, "Failed to register connector: %d", err);
-+		goto unregister_aux;
-+	}
-+
 +	it6505->connector.polled = DRM_CONNECTOR_POLL_HPD;
 +
 +	err = drm_connector_attach_encoder(&it6505->connector, bridge->encoder);
-+	if (err) {
++	if (err < 0) {
 +		DRM_DEV_ERROR(dev, "Failed to link up connector to encoder: %d",
 +			      err);
-+		goto unregister_connector;
++		return err;
++	}
++
++	err = drm_connector_register(&it6505->connector);
++	if (err < 0) {
++		DRM_DEV_ERROR(dev, "Failed to register connector: %d", err);
++		return err;
 +	}
 +
 +	err = it6505_use_notifier_module(it6505);
-+	if (err < 0)
-+		goto unregister_connector;
++	if (err < 0) {
++		drm_connector_unregister(&it6505->connector);
++		return err;
++	}
 +	schedule_work(&it6505->extcon_wq);
 +
 +	return 0;
-+
-+unregister_connector:
-+	drm_connector_unregister(&it6505->connector);
-+unregister_aux:
-+	drm_dp_aux_unregister(&it6505->aux);
-+	return err;
 +}
 +
 +static void it6505_bridge_detach(struct drm_bridge *bridge)
@@ -7973,7 +8157,6 @@ index 0000000000000000000000000000000000000000..f36d19faee89e6ba627ded0f18edc7dd
 +					EXTCON_DISP_DP, &it6505->event_nb);
 +	flush_work(&it6505->extcon_wq);
 +	drm_connector_unregister(&it6505->connector);
-+	drm_dp_aux_unregister(&it6505->aux);
 +}
 +
 +static enum drm_mode_status
@@ -8003,15 +8186,16 @@ index 0000000000000000000000000000000000000000..f36d19faee89e6ba627ded0f18edc7dd
 +		return err;
 +	}
 +
-+	err = dptxset(it6505, 0xe8, 1, 0);
++	err = dptxset(it6505, 0xe8, 0x01, 0x00);
 +	if (err)
 +		return err;
 +
-+	err = regmap_bulk_write(it6505->regmap, 0xe9, buffer, frame->length);
++	err = regmap_bulk_write(it6505->regmap, 0xe9,
++		buffer + HDMI_INFOFRAME_HEADER_SIZE, frame->length);
 +	if (err)
 +		return err;
 +
-+	err = dptxset(it6505, 0xe8, 1, 1);
++	err = dptxset(it6505, 0xe8, 0x01, 0x01);
 +	if (err)
 +		return err;
 +
@@ -8047,8 +8231,7 @@ index 0000000000000000000000000000000000000000..f36d19faee89e6ba627ded0f18edc7dd
 +	mutex_unlock(&it6505->lock);
 +}
 +
-+static void dptx_set_aud_fmt(struct it6505 *it6505, enum it6505_aud_sel audsel,
-+			     unsigned int audch)
++static void dptx_set_aud_fmt(struct it6505 *it6505)
 +{
 +	unsigned int audsrc;
 +	/* I2S MODE */
@@ -8057,7 +8240,7 @@ index 0000000000000000000000000000000000000000..f36d19faee89e6ba627ded0f18edc7dd
 +		       (it6505->i2s_ws_channel << 3) |
 +		       (it6505->i2s_data_delay << 2) |
 +		       (it6505->i2s_justified << 1) | it6505->i2s_input_fmt);
-+	if (audsel == SPDIF) {
++	if (it6505->aud_sel == SPDIF) {
 +		dptxwr(it6505, 0xBA, 0x00);
 +		/* 0x30 = 128*FS */
 +		dptxset(it6505, 0x11, 0xF0, 0x30);
@@ -8065,30 +8248,30 @@ index 0000000000000000000000000000000000000000..f36d19faee89e6ba627ded0f18edc7dd
 +		dptxwr(it6505, 0xBA, 0xe4);
 +	}
 +
-+	dptxwr(it6505, 0xBB, 0x00);
++	dptxwr(it6505, 0xBB, 0x20);
 +	dptxwr(it6505, 0xBC, 0x00);
 +	audsrc = 1;
 +
-+	if (audch > 2)
++	if (it6505->aud_ch > 2)
 +		audsrc |= 2;
 +
-+	if (audch > 4)
++	if (it6505->aud_ch > 4)
 +		audsrc |= 4;
 +
-+	if (audch == 8)
++	if (it6505->aud_ch > 6)
 +		audsrc |= 8;
 +
-+	audsrc |= audsel << 4;
++	audsrc |= it6505->aud_sel << 4;
 +
 +	dptxwr(it6505, 0xB8, audsrc);
 +}
 +
-+static void dptx_set_aud_chsts(struct it6505 *it6505,
-+			       enum it6505_aud_type audtype,
-+			       enum it6505_aud_fs audfs)
++static void dptx_set_aud_chsts(struct it6505 *it6505)
 +{
++	enum it6505_aud_fs audfs = it6505->aud_fs;
++
 +	/* Channel Status */
-+	dptxwr(it6505, 0xBF, audtype << 1);
++	dptxwr(it6505, 0xBF, it6505->aud_type << 1);
 +	dptxwr(it6505, 0xC0, 0x00);
 +	dptxwr(it6505, 0xC1, 0x00);
 +	dptxwr(it6505, 0xC2, audfs);
@@ -8111,13 +8294,13 @@ index 0000000000000000000000000000000000000000..f36d19faee89e6ba627ded0f18edc7dd
 +	}
 +}
 +
-+static void dptx_set_audio_infoframe(struct it6505 *it6505, unsigned int audch)
++static void dptx_set_audio_infoframe(struct it6505 *it6505)
 +{
 +	struct device *dev = &it6505->client->dev;
 +
-+	dptxwr(it6505, 0xf7, audch - 1);
++	dptxwr(it6505, 0xf7, it6505->aud_ch - 1);
 +
-+	switch (audch) {
++	switch (it6505->aud_ch) {
 +	case 2:
 +		dptxwr(it6505, 0xF9, 0x00);
 +		break;
@@ -8140,16 +8323,18 @@ index 0000000000000000000000000000000000000000..f36d19faee89e6ba627ded0f18edc7dd
 +		dptxwr(it6505, 0xF9, 0x1F);
 +		break;
 +	default:
-+		DRM_DEV_ERROR(dev, "audio channel number error: %u", audch);
++		DRM_DEV_ERROR(dev, "audio channel number error: %u",
++			      it6505->aud_ch);
 +	}
 +	/* Enable Audio InfoFrame */
 +	dptxset(it6505, 0xE8, 0x22, 0x22);
 +}
 +
-+static void it6505_set_audio(struct it6505 *it6505, enum it6505_aud_sel audsel,
-+			     enum it6505_aud_type audtype,
-+			     enum it6505_aud_fs audfs, unsigned int audch)
++static void it6505_set_audio(struct it6505 *it6505)
 +{
++	struct device *dev = &it6505->client->dev;
++	unsigned int regbe;
++
 +	/* Audio Clock Domain Reset */
 +	dptxset(it6505, 0x05, 0x02, 0x02);
 +	/* Audio mute */
@@ -8157,9 +8342,16 @@ index 0000000000000000000000000000000000000000..f36d19faee89e6ba627ded0f18edc7dd
 +	/* Release Audio Clock Domain Reset */
 +	dptxset(it6505, 0x05, 0x02, 0x00);
 +
-+	dptx_set_aud_chsts(it6505, audtype, audfs);
-+	dptx_set_audio_infoframe(it6505, audch);
-+	dptx_set_aud_fmt(it6505, audsel, audch);
++	dptxrd(it6505, 0xBE, &regbe);
++	if (regbe == 0xFF)
++		DRM_DEV_DEBUG_DRIVER(dev, "no audio input");
++	else
++		DRM_DEV_DEBUG_DRIVER(dev, "audio input fs: %d.%d kHz",
++				     6750 / regbe, 67500 % regbe);
++	dptx_set_aud_fmt(it6505);
++	dptx_set_aud_chsts(it6505);
++	dptx_set_audio_infoframe(it6505);
++
 +	/* Enable Enhanced Audio TimeStmp Mode */
 +	dptxset(it6505, 0xD4, 0x04, 0x04);
 +	/* Disable Full Audio Packet */
@@ -8168,12 +8360,148 @@ index 0000000000000000000000000000000000000000..f36d19faee89e6ba627ded0f18edc7dd
 +	dptxwr(it6505, 0xDE, 0x00);
 +	dptxwr(it6505, 0xDF, 0x80);
 +	dptxwr(it6505, 0xE0, 0x00);
++	dptxset(it6505, 0xB8, 0x80, 0x80);
++	dptxset(it6505, 0xB8, 0x80, 0x00);
 +	dptxset(it6505, 0xD3, 0x20, 0x00);
++}
 +
-+	/* Clear Video M Error Interrupt */
-+	dptxset(it6505, 0x08, 0x08, 0x08);
-+	/* Clear Audio FIFO OverFlow Interrupt */
-+	dptxset(it6505, 0x07, 0x04, 0x04);
++static void it6505_delayed_audio(struct work_struct *work)
++{
++	struct it6505 *it6505 = container_of(work, struct it6505,
++					     delayed_audio.work);
++
++	it6505_set_audio(it6505);
++	it6505->en_audio = 1;
++}
++
++static int it6505_audio_hw_params(struct device *dev, void *data,
++				  struct hdmi_codec_daifmt *daifmt,
++				  struct hdmi_codec_params *params)
++{
++	struct it6505 *it6505 = dev_get_drvdata(dev);
++	unsigned int channel_num = params->cea.channels;
++
++	DRM_DEV_DEBUG_DRIVER(dev, "setting %d Hz, %d bit, %d channels\n",
++		params->sample_rate, params->sample_width, channel_num);
++
++	if (!it6505->bridge.encoder)
++		return -ENODEV;
++
++	switch (params->sample_rate) {
++	case 24000:
++		it6505->aud_fs = AUD24K;
++		break;
++	case 32000:
++		it6505->aud_fs = AUD32K;
++		break;
++	case 44100:
++		it6505->aud_fs = AUD44P1K;
++		break;
++	case 48000:
++		it6505->aud_fs = AUD48K;
++		break;
++	case 88200:
++		it6505->aud_fs = AUD88P2K;
++		break;
++	case 96000:
++		it6505->aud_fs = AUD96K;
++		break;
++	case 176400:
++		it6505->aud_fs = AUD176P4K;
++		break;
++	case 192000:
++		it6505->aud_fs = AUD192K;
++		break;
++	default:
++		DRM_DEV_DEBUG_DRIVER(dev, "sample rate: %d Hz not support",
++				     params->sample_rate);
++		return -EINVAL;
++	}
++
++	switch (params->sample_width) {
++	case 16:
++		it6505->audwordlength = AUD16BIT;
++		break;
++	case 18:
++		it6505->audwordlength = AUD18BIT;
++		break;
++	case 20:
++		it6505->audwordlength = AUD20BIT;
++		break;
++	case 24:
++	case 32:
++		it6505->audwordlength = AUD24BIT;
++		break;
++	default:
++		DRM_DEV_DEBUG_DRIVER(dev, "wordlength: %d bit not support",
++				     params->sample_width);
++		return -EINVAL;
++	}
++
++	if (channel_num == 0 || (channel_num % 2)) {
++		DRM_DEV_DEBUG_DRIVER(dev, "channel number: %d not support",
++				     channel_num);
++		return -EINVAL;
++	}
++	it6505->aud_ch = channel_num;
++
++	return 0;
++}
++
++static int it6505_audio_trigger(struct device *dev, int event)
++{
++	struct it6505 *it6505 = dev_get_drvdata(dev);
++
++	DRM_DEV_DEBUG_DRIVER(dev, "event: %d", event);
++	switch (event) {
++	case HDMI_CODEC_TRIGGER_EVENT_START:
++	case HDMI_CODEC_TRIGGER_EVENT_RESUME:
++		queue_delayed_work(system_wq, &it6505->delayed_audio,
++				   msecs_to_jiffies(180));
++		break;
++	case HDMI_CODEC_TRIGGER_EVENT_STOP:
++	case HDMI_CODEC_TRIGGER_EVENT_SUSPEND:
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	return 0;
++}
++
++static void it6505_audio_shutdown(struct device *dev, void *data)
++{
++	struct it6505 *it6505 = dev_get_drvdata(dev);
++
++	dptxset(it6505, 0xE8, 0x22, 0x00);
++	dptxset(it6505, 0x05, 0x02, 0x02);
++	it6505->en_audio = 0;
++}
++
++static const struct hdmi_codec_ops it6505_audio_codec_ops = {
++	.hw_params = it6505_audio_hw_params,
++	.trigger = it6505_audio_trigger,
++	.audio_shutdown = it6505_audio_shutdown,
++};
++
++static int it6505_register_audio_driver(struct device *dev)
++{
++	struct hdmi_codec_pdata codec_data = {
++		.ops = &it6505_audio_codec_ops,
++		.max_i2s_channels = 8,
++		.i2s = 1,
++	};
++	struct platform_device *pdev;
++
++	pdev = platform_device_register_data(dev, HDMI_CODEC_DRV_NAME,
++					     PLATFORM_DEVID_NONE, &codec_data,
++					     sizeof(codec_data));
++	if (IS_ERR(pdev))
++		return PTR_ERR(pdev);
++
++	DRM_DEV_DEBUG_DRIVER(dev, "it6505 %s driver bound to HDMI",
++			     HDMI_CODEC_DRV_NAME);
++	return 0;
 +}
 +
 +/***************************************************************************
@@ -8312,8 +8640,8 @@ index 0000000000000000000000000000000000000000..f36d19faee89e6ba627ded0f18edc7dd
 +
 +	if (dpcd_rev >= 0x11 && dpcd[2] & BIT(7)) {
 +		DRM_DEV_DEBUG_DRIVER(dev,
-+				     "Support Enhanced Framing, en_hframe : %d"
-+				     , it6505->en_hframe);
++				     "Support Enhanced Framing, en_hframe: %d",
++				     it6505->en_hframe);
 +	} else {
 +		DRM_DEV_DEBUG_DRIVER(dev,
 +				     "Can not support Enhanced Framing Mode");
@@ -8411,13 +8739,16 @@ index 0000000000000000000000000000000000000000..f36d19faee89e6ba627ded0f18edc7dd
 +	union extcon_property_value property;
 +	struct device *dev = &it6505->client->dev;
 +
-+	err = extcon_get_property(it6505->extcon, EXTCON_DISP_DP,
-+				  EXTCON_PROP_USB_TYPEC_POLARITY, &property);
-+	if (err) {
-+		DRM_DEV_ERROR(dev, "get property fail!");
-+		return;
++	if (!it6505->laneswap_disabled) {
++		err = extcon_get_property(it6505->extcon, EXTCON_DISP_DP,
++					  EXTCON_PROP_USB_TYPEC_POLARITY,
++					  &property);
++		if (err) {
++			DRM_DEV_ERROR(dev, "get property fail!");
++			return;
++		}
++		it6505->laneswap = property.intval;
 +	}
-+	it6505->laneswap = property.intval;
 +
 +	dptxset(it6505, 0x16, 0x08, it6505->laneswap ? 0x08 : 0x00);
 +	dptxset(it6505, 0x16, 0x06, (it6505->lane - 1) << 1);
@@ -8488,16 +8819,25 @@ index 0000000000000000000000000000000000000000..f36d19faee89e6ba627ded0f18edc7dd
 +
 +static void afe_driving_setting(struct it6505 *it6505)
 +{
-+	dptx_chgbank(it6505, 1);
-+	dptxwr(it6505, 0x7E, 0x93);
-+	dptxwr(it6505, 0x7F, 0x2A);
-+	dptxwr(it6505, 0x81, 0x85);
-+	dptx_chgbank(it6505, 0);
++	struct device *dev = &it6505->client->dev;
++	unsigned int afe_setting;
++
++	afe_setting = AFE_SETTING;
++	if (afe_setting >= ARRAY_SIZE(afe_setting_table)) {
++		DRM_DEV_ERROR(dev,
++			"afe setting value error and use default");
++		afe_setting = 0;
++	}
++	if (afe_setting) {
++		dptx_chgbank(it6505, 1);
++		dptxwr(it6505, 0x7E, afe_setting_table[afe_setting][0]);
++		dptxwr(it6505, 0x7F, afe_setting_table[afe_setting][1]);
++		dptxwr(it6505, 0x81, afe_setting_table[afe_setting][2]);
++		dptx_chgbank(it6505, 0);
++	}
 +}
 +
-+static void dptx_output(struct it6505 *it6505, unsigned int hbr,
-+			unsigned int lane, unsigned int laneswap,
-+			unsigned int en_ssc, unsigned int en_hframe)
++static void dptx_output(struct it6505 *it6505)
 +{
 +	/* change bank 0 */
 +	dptx_chgbank(it6505, 0);
@@ -8546,7 +8886,7 @@ index 0000000000000000000000000000000000000000..f36d19faee89e6ba627ded0f18edc7dd
 +
 +	it6505_set_ssc(it6505);
 +
-+	if (en_hframe) {
++	if (it6505->en_hframe) {
 +		dptxwr(it6505, 0xD3, 0x33);
 +		dptx_dpcdwr(it6505, 0x101, 0x80);
 +	} else {
@@ -8582,25 +8922,12 @@ index 0000000000000000000000000000000000000000..f36d19faee89e6ba627ded0f18edc7dd
 +
 +static void dptx_process_sys_wait(struct it6505 *it6505)
 +{
-+	u8 dpcd1[0x09], dpcd2[0x18];
-+	int i, reg0e, reg0d, len1, len2;
++	int reg0e, reg0d;
 +	struct device *dev = &it6505->client->dev;
 +
 +	dptxrd(it6505, 0x0E, &reg0e);
-+	len1 = ARRAY_SIZE(dpcd1);
-+	len2 = ARRAY_SIZE(dpcd2);
-+	DRM_DEV_DEBUG_DRIVER(dev,
-+			     "SYS_WAIT state parse %d dpcd offset!",
-+			     len1 + len2);
++	DRM_DEV_DEBUG_DRIVER(dev, "SYS_WAIT state reg0e=0x%02x", reg0e);
 +
-+	for (i = 0; i < len1; i++)
-+		dpcd1[i] = dptx_dpcdrd(it6505, 0x100 + i);
-+
-+	DRM_DEV_DEBUG_DRIVER(dev, "dpcd[0x100] = %*ph", len1, dpcd1);
-+	for (i = 0; i < len2; i++)
-+		dpcd2[i] = dptx_dpcdrd(it6505, 0x200 + i);
-+
-+	DRM_DEV_DEBUG_DRIVER(dev, "dpcd[0x200] = %*ph", len2, dpcd2);
 +	if (reg0e & BIT(4)) {
 +		DRM_DEV_DEBUG_DRIVER(dev,
 +				     "Auto Link Training Success...");
@@ -8608,10 +8935,7 @@ index 0000000000000000000000000000000000000000..f36d19faee89e6ba627ded0f18edc7dd
 +				     reg0e & 0x1F);
 +		if (it6505->en_audio) {
 +			DRM_DEV_DEBUG_DRIVER(dev, "Enable audio!");
-+			it6505_set_audio(it6505, it6505->aud_sel,
-+					 it6505->aud_type,
-+					 it6505->aud_fs,
-+					 it6505->aud_ch);
++			it6505_set_audio(it6505);
 +		}
 +		DRM_DEV_DEBUG_DRIVER(dev,
 +				     "it6505->VidStable_Done = %02x",
@@ -8662,13 +8986,11 @@ index 0000000000000000000000000000000000000000..f36d19faee89e6ba627ded0f18edc7dd
 +static void dptx_sys_fsm(struct it6505 *it6505)
 +{
 +	unsigned int i;
-+	int reg0e, reg0d, reg9f;
++	int reg0e, reg9f;
 +	struct device *dev = &it6505->client->dev;
 +	unsigned int ar0_low, ar0_high, br0_low, br0_high;
 +
-+	dptxrd(it6505, 0x0D, &reg0d);
-+
-+	if (it6505->status != SYS_UNPLUG && !(reg0d & BIT(1)))
++	if (it6505->status != SYS_UNPLUG && !dptx_getsinkhpd(it6505))
 +		dptx_sys_chg(it6505, SYS_UNPLUG);
 +	DRM_DEV_DEBUG_DRIVER(dev, "state: %s", state_string[it6505->status]);
 +	switch (it6505->status) {
@@ -8681,13 +9003,7 @@ index 0000000000000000000000000000000000000000..f36d19faee89e6ba627ded0f18edc7dd
 +		DRM_DEV_DEBUG_DRIVER(dev, "Aux channel status reg9F=0x%02x",
 +				     reg9f);
 +		drm_helper_hpd_irq_event(it6505->connector.dev);
-+		for (i = 0; i <= WAITBRIDGEENABLE; i++) {
-+			msleep(50);
-+			if (it6505->run_bridge_enable) {
-+				it6505->run_bridge_enable = 0;
-+				break;
-+			}
-+		}
++		it6505_init_fsm(it6505);
 +		/* GETDPCD */
 +		it6505_parse_dpcd(it6505);
 +
@@ -8702,8 +9018,7 @@ index 0000000000000000000000000000000000000000..f36d19faee89e6ba627ded0f18edc7dd
 +		break;
 +
 +	case SYS_AUTOTRAIN:
-+		dptx_output(it6505, it6505->hbr, it6505->lane, it6505->laneswap,
-+			    it6505->en_ssc, it6505->en_hframe);
++		dptx_output(it6505);
 +
 +		/*
 +		 * waiting for training down flag
@@ -8726,7 +9041,7 @@ index 0000000000000000000000000000000000000000..f36d19faee89e6ba627ded0f18edc7dd
 +		break;
 +
 +	case SYS_ReHDCP:
-+		msleep(1200);
++		msleep(2400);
 +		dptxrd(it6505, 0x3B, &ar0_low);
 +		dptxrd(it6505, 0x3C, &ar0_high);
 +		dptxrd(it6505, 0x45, &br0_low);
@@ -8737,7 +9052,6 @@ index 0000000000000000000000000000000000000000..f36d19faee89e6ba627ded0f18edc7dd
 +		DRM_DEV_DEBUG_DRIVER(dev, "Br0_low:%x, Br0_high:%x", br0_low,
 +				     br0_high);
 +		it6505_enable_hdcp(it6505);
-+		msleep(200);
 +		DRM_DEV_DEBUG_DRIVER(dev, "SYS_ReHDCP end");
 +		break;
 +
@@ -8874,7 +9188,7 @@ index 0000000000000000000000000000000000000000..f36d19faee89e6ba627ded0f18edc7dd
 +
 +static void to_fsm_status(struct it6505 *it6505, enum sys_status status)
 +{
-+	while (it6505->status != status) {
++	while (it6505->status != status && it6505->status != SYS_TRAINFAIL) {
 +		dptx_sys_fsm(it6505);
 +		if (it6505->status == SYS_UNPLUG)
 +			return;
@@ -8887,7 +9201,7 @@ index 0000000000000000000000000000000000000000..f36d19faee89e6ba627ded0f18edc7dd
 +{
 +	unsigned int dpcd200, dpcd201, dpcd202, dpcd203, dpcd204, dpcd205;
 +	unsigned int value, reg55, bstatus;
-+	int ret, len;
++	int ret;
 +	struct device *dev = &it6505->client->dev;
 +
 +	dpcd200 = dptx_dpcdrd(it6505, 0x200);
@@ -8914,23 +9228,16 @@ index 0000000000000000000000000000000000000000..f36d19faee89e6ba627ded0f18edc7dd
 +				     reg55, bstatus);
 +		DRM_DEV_DEBUG_DRIVER(dev, "Receive CP_IRQ!");
 +
-+		if (bstatus & BIT(0)) {
++		if (bstatus & BIT(0))
 +			DRM_DEV_DEBUG_DRIVER(dev, "HDCP KSV list ready");
-+			len = it6505_makeup_sha1_input(it6505);
-+			sha1_digest(it6505, it6505->shainput, len,
-+				    (u8 *)it6505->av);
-+			it6505_check_sha1_result(it6505);
-+		}
++
 +		if (bstatus & BIT(2)) {
 +			DRM_DEV_DEBUG_DRIVER(
 +				dev, "Link Integrity Fail, restart HDCP");
-+			dptxset(it6505, 0x39, 0x02, 0x02);
 +			return;
 +		}
-+		if (bstatus & BIT(1)) {
++		if (bstatus & BIT(1))
 +			DRM_DEV_DEBUG_DRIVER(dev, "HDCP R0' ready");
-+			dptxset(it6505, 0x39, 0x02, 0x02);
-+		}
 +	}
 +
 +	if ((dpcd204 & BIT(7)) == 0x80) {
@@ -8977,28 +9284,23 @@ index 0000000000000000000000000000000000000000..f36d19faee89e6ba627ded0f18edc7dd
 +
 +static void it6505_check_reg06(struct it6505 *it6505, unsigned int reg06)
 +{
-+	unsigned int rddata, err;
-+	union extcon_property_value property;
++	unsigned int rddata;
 +	struct device *dev = &it6505->client->dev;
 +
 +	if (reg06 & BIT(0)) {
 +		/* hpd pin status change */
 +		DRM_DEV_DEBUG_DRIVER(dev, "HPD Change Interrupt");
-+		dptxrd(it6505, 0x0D, &rddata);
-+		if (rddata & BIT(1)) {
-+			err = extcon_get_property(
-+				it6505->extcon, EXTCON_DISP_DP,
-+				EXTCON_PROP_USB_TYPEC_POLARITY, &property);
-+			if (err)
-+				DRM_DEV_DEBUG_DRIVER(dev, "get property fail");
-+
-+			it6505->laneswap = property.intval;
-+			DRM_DEV_DEBUG_DRIVER(dev, "laneswap: %d",
-+					     it6505->laneswap);
++		if (dptx_getsinkhpd(it6505)) {
 +			dptx_sys_chg(it6505, SYS_HPD);
 +			dptx_sys_fsm(it6505);
-+			dptxwr(it6505, 0x05, 0x00);
-+
++			dptxrd(it6505, 0x0D, &rddata);
++			if (rddata & BIT(2)) {
++				go_on_fsm(it6505);
++			} else {
++				dptxwr(it6505, 0x05, 0x00);
++				dptxset(it6505, 0x61, 0x02, 0x02);
++				dptxset(it6505, 0x61, 0x02, 0x00);
++			}
 +		} else {
 +			dptx_sys_chg(it6505, SYS_UNPLUG);
 +			dptx_sys_fsm(it6505);
@@ -9032,7 +9334,7 @@ index 0000000000000000000000000000000000000000..f36d19faee89e6ba627ded0f18edc7dd
 +	if (reg06 & BIT(2)) {
 +		dptxrd(it6505, 0x0D, &rddata);
 +
-+		if ((rddata & BIT(2)) >> 2) {
++		if (rddata & BIT(2)) {
 +			DRM_DEV_DEBUG_DRIVER(dev, "Video Stable On Interrupt");
 +			it6505->vidstable_done = 1;
 +			dptx_sys_chg(it6505, SYS_AUTOTRAIN);
@@ -9047,6 +9349,7 @@ index 0000000000000000000000000000000000000000..f36d19faee89e6ba627ded0f18edc7dd
 +static void it6505_check_reg07(struct it6505 *it6505, unsigned int reg07)
 +{
 +	struct device *dev = &it6505->client->dev;
++	unsigned int len, i;
 +
 +	if (it6505->status == SYS_UNPLUG)
 +		return;
@@ -9057,7 +9360,13 @@ index 0000000000000000000000000000000000000000..f36d19faee89e6ba627ded0f18edc7dd
 +		unsigned int ar0_low, ar0_high, br0_low, br0_high, bstatus;
 +
 +		DRM_DEV_DEBUG_DRIVER(dev, "HDCP event Interrupt");
-+		bstatus = dptx_dpcdrd(it6505, 0x68029);
++		for (i = 0; i < POLLINGKSVLIST; i++) {
++			bstatus = dptx_dpcdrd(it6505, 0x68029);
++			usleep_range(2000, 3000);
++			if (bstatus == 0x01)
++				break;
++		}
++
 +		dptxrd(it6505, 0x3B, &ar0_low);
 +		dptxrd(it6505, 0x3C, &ar0_high);
 +		dptxrd(it6505, 0x45, &br0_low);
@@ -9065,33 +9374,58 @@ index 0000000000000000000000000000000000000000..f36d19faee89e6ba627ded0f18edc7dd
 +		/*
 +		 * Read Bstatus to determine what happened
 +		 */
-+		DRM_DEV_DEBUG_DRIVER(dev, "Bstatus reg0x68029: %02x", bstatus);
-+		if (!(bstatus & BIT(0))) {
-+			DRM_DEV_DEBUG_DRIVER(dev,
-+					     "Ar0_low: %02x Ar0_high: %02x",
-+					     ar0_low, ar0_high);
-+			DRM_DEV_DEBUG_DRIVER(dev,
-+					     "Br0_low: %02x Br0_high: %02x",
-+					     br0_low, br0_high);
++		DRM_DEV_DEBUG_DRIVER(dev, "Bstatus reg0x68029: 0x%02x",
++				     bstatus);
++
++		DRM_DEV_DEBUG_DRIVER(dev,
++				     "Ar0_low: %02x Ar0_high: %02x",
++				     ar0_low, ar0_high);
++		DRM_DEV_DEBUG_DRIVER(dev,
++				     "Br0_low: %02x Br0_high: %02x",
++				     br0_low, br0_high);
++		if (bstatus & BIT(0)) {
++			DRM_DEV_DEBUG_DRIVER(dev, "HDCP KSV list ready");
++			len = it6505_makeup_sha1_input(it6505);
++			sha1_digest(it6505, it6505->shainput, len,
++				    (u8 *)it6505->av);
++			it6505_check_sha1_result(it6505);
 +		}
 +	}
 +	if (it6505->en_audio && (reg07 & BIT(2))) {
++		unsigned int regbe;
++
 +		DRM_DEV_DEBUG_DRIVER(dev, "Audio FIFO OverFlow Interrupt");
++		dptxrd(it6505, 0xBE, &regbe);
++		DRM_DEV_DEBUG_DRIVER(dev, "regbe: 0x%02x", regbe);
 +		dptxset(it6505, 0xD3, 0x20, 0x20);
 +		dptxset(it6505, 0xE8, 0x22, 0x00);
 +		dptxset(it6505, 0xB8, 0x80, 0x80);
 +		dptxset(it6505, 0xB8, 0x80, 0x00);
-+		it6505_set_audio(it6505, it6505->aud_sel, it6505->aud_type,
-+				 it6505->aud_fs, it6505->aud_ch);
++		it6505_set_audio(it6505);
 +	}
++	if (it6505->en_audio && (reg07 & BIT(5)))
++		DRM_DEV_DEBUG_DRIVER(dev, "Audio infoframe packet done");
 +}
 +
 +static void it6505_check_reg08(struct it6505 *it6505, unsigned int reg08)
 +{
 +	struct device *dev = &it6505->client->dev;
++	unsigned int rddata, rege4, rege5, rege6;
 +
 +	if (it6505->status == SYS_UNPLUG)
 +		return;
++	if (it6505->en_audio && (reg08 & BIT(1)))
++		DRM_DEV_DEBUG_DRIVER(dev, "Audio TimeStamp Packet Done!");
++
++	if (it6505->en_audio && (reg08 & BIT(3))) {
++		dptxrd(it6505, 0xe4, &rege4);
++		dptxrd(it6505, 0xe5, &rege5);
++		dptxrd(it6505, 0xe6, &rege6);
++		rddata = rege4 + (rege5 << 8) + (rege6 << 16);
++		DRM_DEV_DEBUG_DRIVER(dev, "Audio M Error Interrupt ...");
++		DRM_DEV_DEBUG_DRIVER(dev, "Audtempcnt = 0x%06x", rddata);
++		show_aud_mcnt(it6505);
++	}
 +	if (reg08 & BIT(4)) {
 +		DRM_DEV_DEBUG_DRIVER(dev, "Link Training Fail Interrupt");
 +		/* restart training */
@@ -9140,7 +9474,6 @@ index 0000000000000000000000000000000000000000..f36d19faee89e6ba627ded0f18edc7dd
 +	struct it6505 *it6505 = bridge_to_it6505(bridge);
 +
 +	if (!it6505->drv_hold) {
-+		it6505->run_bridge_enable = 1;
 +		it6505_int_mask_on(it6505);
 +		dptx_sys_chg(it6505, SYS_HPD);
 +	}
@@ -9278,10 +9611,9 @@ index 0000000000000000000000000000000000000000..f36d19faee89e6ba627ded0f18edc7dd
 +	struct it6505 *it6505 = dev_get_drvdata(dev);
 +
 +	str += scnprintf(str, end - str, "sha input:\n");
-+	for (i = 0; i < ARRAY_SIZE(it6505->shainput); i += 16) {
++	for (i = 0; i < ARRAY_SIZE(it6505->shainput); i += 16)
 +		str += scnprintf(str, end - str, "%16ph\n",
 +				 it6505->shainput + i);
-+	}
 +
 +	str += scnprintf(str, end - str, "av:\n");
 +	for (i = 0; i < ARRAY_SIZE(it6505->av); i++)
@@ -9378,8 +9710,7 @@ index 0000000000000000000000000000000000000000..f36d19faee89e6ba627ded0f18edc7dd
 +	}
 +
 +	if (it6505->en_audio) {
-+		it6505_set_audio(it6505, it6505->aud_sel, it6505->aud_type,
-+				 it6505->aud_fs, it6505->aud_ch);
++		it6505_set_audio(it6505);
 +	} else {
 +		dptxset(it6505, 0x05, 0x02, 0x02);
 +		dptxset(it6505, 0x05, 0x02, 0x00);
@@ -9441,7 +9772,7 @@ index 0000000000000000000000000000000000000000..f36d19faee89e6ba627ded0f18edc7dd
 +	struct it6505_platform_data *pdata;
 +	struct device *dev = &client->dev;
 +	struct extcon_dev *extcon;
-+	int err = 0, intp_irq;
++	int err, intp_irq;
 +
 +	it6505 = devm_kzalloc(&client->dev, sizeof(*it6505), GFP_KERNEL);
 +	if (!it6505)
@@ -9465,6 +9796,9 @@ index 0000000000000000000000000000000000000000..f36d19faee89e6ba627ded0f18edc7dd
 +	}
 +
 +	it6505->extcon = extcon;
++
++	it6505->laneswap_disabled =
++		device_property_read_bool(dev, "no-laneswap");
 +
 +	err = it6505_init_pdata(it6505);
 +	if (err) {
@@ -9495,7 +9829,13 @@ index 0000000000000000000000000000000000000000..f36d19faee89e6ba627ded0f18edc7dd
 +			      err);
 +		return err;
 +	}
-+
++	err = it6505_register_audio_driver(dev);
++	if (err < 0) {
++		DRM_DEV_ERROR(dev, "Failed to register audio driver: %d",
++			      err);
++		return err;
++	}
++	INIT_DELAYED_WORK(&it6505->delayed_audio, it6505_delayed_audio);
 +	/* Register aux channel */
 +	it6505->aux.name = "DP-AUX";
 +	it6505->aux.dev = dev;
@@ -11609,10 +11949,10 @@ index 6a20b49e0f2fec768f4e40381809488655d4bd06..37725d402ae29e0df2ce480d1b6f797c
  		   unsigned long possible_crtcs, enum drm_plane_type type);
  
 diff --git a/drivers/gpu/drm/mediatek/mtk_dsi.c b/drivers/gpu/drm/mediatek/mtk_dsi.c
-index 590fc06b6ed18519c8a52e6e0aa49f096deba7f0..1a157853507760985f9fe8d9f4003e1f7fb52202 100644
+index 0ad207cc25c84604243ecc31224030c7d9e9ad5b..aea51641d75ffb482a2961733766b17742a88ebb 100644
 --- a/drivers/gpu/drm/mediatek/mtk_dsi.c
 +++ b/drivers/gpu/drm/mediatek/mtk_dsi.c
-@@ -946,14 +946,14 @@ static void mtk_dsi_destroy_conn_enc(struct mtk_dsi *dsi)
+@@ -947,14 +947,14 @@ static void mtk_dsi_destroy_conn_enc(struct mtk_dsi *dsi)
  		drm_panel_detach(dsi->panel);
  }
  
@@ -11629,6 +11969,187 @@ index 590fc06b6ed18519c8a52e6e0aa49f096deba7f0..1a157853507760985f9fe8d9f4003e1f
  {
  	struct mtk_dsi *dsi = container_of(comp, struct mtk_dsi, ddp_comp);
  
+diff --git a/drivers/gpu/drm/panel/panel-boe-tv101wum-nl6.c b/drivers/gpu/drm/panel/panel-boe-tv101wum-nl6.c
+index ad1d314c8eece6d3e4d263c061dc40314d315aa9..9a7fd5c257f0bd46b899e0fe60f9b76275f05241 100644
+--- a/drivers/gpu/drm/panel/panel-boe-tv101wum-nl6.c
++++ b/drivers/gpu/drm/panel/panel-boe-tv101wum-nl6.c
+@@ -372,7 +372,7 @@ static const struct panel_init_cmd boe_init_cmd[] = {
+ 	{},
+ };
+ 
+-static const struct panel_init_cmd auo_init_cmd[] = {
++static const struct panel_init_cmd auo_kd101n80_45na_init_cmd[] = {
+ 	_INIT_DELAY_CMD(24),
+ 	_INIT_DCS_CMD(0x11),
+ 	_INIT_DELAY_CMD(120),
+@@ -381,6 +381,53 @@ static const struct panel_init_cmd auo_init_cmd[] = {
+ 	{},
+ };
+ 
++static const struct panel_init_cmd auo_b101uan08_3_init_cmd[] = {
++	_INIT_DELAY_CMD(24),
++	_INIT_DCS_CMD(0xB0, 0x01),
++	_INIT_DCS_CMD(0xC0, 0x48),
++	_INIT_DCS_CMD(0xC1, 0x48),
++	_INIT_DCS_CMD(0xC2, 0x47),
++	_INIT_DCS_CMD(0xC3, 0x47),
++	_INIT_DCS_CMD(0xC4, 0x46),
++	_INIT_DCS_CMD(0xC5, 0x46),
++	_INIT_DCS_CMD(0xC6, 0x45),
++	_INIT_DCS_CMD(0xC7, 0x45),
++	_INIT_DCS_CMD(0xC8, 0x64),
++	_INIT_DCS_CMD(0xC9, 0x64),
++	_INIT_DCS_CMD(0xCA, 0x4F),
++	_INIT_DCS_CMD(0xCB, 0x4F),
++	_INIT_DCS_CMD(0xCC, 0x40),
++	_INIT_DCS_CMD(0xCD, 0x40),
++	_INIT_DCS_CMD(0xCE, 0x66),
++	_INIT_DCS_CMD(0xCF, 0x66),
++	_INIT_DCS_CMD(0xD0, 0x4F),
++	_INIT_DCS_CMD(0xD1, 0x4F),
++	_INIT_DCS_CMD(0xD2, 0x41),
++	_INIT_DCS_CMD(0xD3, 0x41),
++	_INIT_DCS_CMD(0xD4, 0x48),
++	_INIT_DCS_CMD(0xD5, 0x48),
++	_INIT_DCS_CMD(0xD6, 0x47),
++	_INIT_DCS_CMD(0xD7, 0x47),
++	_INIT_DCS_CMD(0xD8, 0x46),
++	_INIT_DCS_CMD(0xD9, 0x46),
++	_INIT_DCS_CMD(0xDA, 0x45),
++	_INIT_DCS_CMD(0xDB, 0x45),
++	_INIT_DCS_CMD(0xDC, 0x64),
++	_INIT_DCS_CMD(0xDD, 0x64),
++	_INIT_DCS_CMD(0xDE, 0x4F),
++	_INIT_DCS_CMD(0xDF, 0x4F),
++	_INIT_DCS_CMD(0xE0, 0x40),
++	_INIT_DCS_CMD(0xE1, 0x40),
++	_INIT_DCS_CMD(0xE2, 0x66),
++	_INIT_DCS_CMD(0xE3, 0x66),
++	_INIT_DCS_CMD(0xE4, 0x4F),
++	_INIT_DCS_CMD(0xE5, 0x4F),
++	_INIT_DCS_CMD(0xE6, 0x41),
++	_INIT_DCS_CMD(0xE7, 0x41),
++	_INIT_DELAY_CMD(150),
++	{},
++};
++
+ static inline struct boe_panel *to_boe_panel(struct drm_panel *panel)
+ {
+ 	return container_of(panel, struct boe_panel, base);
+@@ -553,7 +600,7 @@ static int boe_panel_enable(struct drm_panel *panel)
+ 	return 0;
+ }
+ 
+-static const struct drm_display_mode boe_default_mode = {
++static const struct drm_display_mode boe_tv101wum_nl6_default_mode = {
+ 	.clock = 159425,
+ 	.hdisplay = 1200,
+ 	.hsync_start = 1200 + 100,
+@@ -568,7 +615,7 @@ static const struct drm_display_mode boe_default_mode = {
+ };
+ 
+ static const struct panel_desc boe_tv101wum_nl6_desc = {
+-	.modes = &boe_default_mode,
++	.modes = &boe_tv101wum_nl6_default_mode,
+ 	.bpc = 8,
+ 	.size = {
+ 		.width = 135,
+@@ -581,7 +628,7 @@ static const struct panel_desc boe_tv101wum_nl6_desc = {
+ 	.init_cmds = boe_init_cmd,
+ };
+ 
+-static const struct drm_display_mode auo_default_mode = {
++static const struct drm_display_mode auo_kd101n80_45na_default_mode = {
+ 	.clock = 157000,
+ 	.hdisplay = 1200,
+ 	.hsync_start = 1200 + 80,
+@@ -596,7 +643,7 @@ static const struct drm_display_mode auo_default_mode = {
+ };
+ 
+ static const struct panel_desc auo_kd101n80_45na_desc = {
+-	.modes = &auo_default_mode,
++	.modes = &auo_kd101n80_45na_default_mode,
+ 	.bpc = 8,
+ 	.size = {
+ 		.width = 135,
+@@ -606,7 +653,63 @@ static const struct panel_desc auo_kd101n80_45na_desc = {
+ 	.format = MIPI_DSI_FMT_RGB888,
+ 	.mode_flags = MIPI_DSI_MODE_VIDEO | MIPI_DSI_MODE_VIDEO_SYNC_PULSE |
+ 		      MIPI_DSI_MODE_LPM,
+-	.init_cmds = auo_init_cmd,
++	.init_cmds = auo_kd101n80_45na_init_cmd,
++};
++
++static const struct drm_display_mode boe_tv101wum_n53_default_mode = {
++	.clock = 159260,
++	.hdisplay = 1200,
++	.hsync_start = 1200 + 60,
++	.hsync_end = 1200 + 60 + 24,
++	.htotal = 1200 + 60 + 24 + 80,
++	.vdisplay = 1920,
++	.vsync_start = 1920 + 14,
++	.vsync_end = 1920 + 14 + 2,
++	.vtotal = 1920 + 14 + 2 + 10,
++	.vrefresh = 60,
++	.type = DRM_MODE_TYPE_DRIVER | DRM_MODE_TYPE_PREFERRED,
++};
++
++static const struct panel_desc boe_tv101wum_n53_desc = {
++	.modes = &boe_tv101wum_n53_default_mode,
++	.bpc = 8,
++	.size = {
++		.width = 135,
++		.height = 216,
++	},
++	.lanes = 4,
++	.format = MIPI_DSI_FMT_RGB888,
++	.mode_flags = MIPI_DSI_MODE_VIDEO | MIPI_DSI_MODE_VIDEO_SYNC_PULSE |
++		      MIPI_DSI_MODE_LPM,
++	.init_cmds = boe_init_cmd,
++};
++
++static const struct drm_display_mode auo_b101uan08_3_default_mode = {
++	.clock = 159667,
++	.hdisplay = 1200,
++	.hsync_start = 1200 + 60,
++	.hsync_end = 1200 + 60 + 4,
++	.htotal = 1200 + 60 + 4 + 80,
++	.vdisplay = 1920,
++	.vsync_start = 1920 + 34,
++	.vsync_end = 1920 + 34 + 2,
++	.vtotal = 1920 + 34 + 2 + 24,
++	.vrefresh = 60,
++	.type = DRM_MODE_TYPE_DRIVER | DRM_MODE_TYPE_PREFERRED,
++};
++
++static const struct panel_desc auo_b101uan08_3_desc = {
++	.modes = &auo_b101uan08_3_default_mode,
++	.bpc = 8,
++	.size = {
++		.width = 135,
++		.height = 216,
++	},
++	.lanes = 4,
++	.format = MIPI_DSI_FMT_RGB888,
++	.mode_flags = MIPI_DSI_MODE_VIDEO | MIPI_DSI_MODE_VIDEO_SYNC_PULSE |
++		      MIPI_DSI_MODE_LPM,
++	.init_cmds = auo_b101uan08_3_init_cmd,
+ };
+ 
+ static int boe_panel_get_modes(struct drm_panel *panel)
+@@ -741,6 +844,12 @@ static const struct of_device_id boe_of_match[] = {
+ 	{ .compatible = "auo,kd101n80-45na",
+ 	  .data = &auo_kd101n80_45na_desc
+ 	},
++	{ .compatible = "boe,tv101wum-n53",
++	  .data = &boe_tv101wum_n53_desc
++	},
++	{ .compatible = "auo,b101uan08.3",
++	  .data = &auo_b101uan08_3_desc
++	},
+ 	{ /* sentinel */ }
+ };
+ MODULE_DEVICE_TABLE(of, boe_of_match);
 diff --git a/drivers/gpu/drm/panel/panel-innolux-p079zca.c b/drivers/gpu/drm/panel/panel-innolux-p079zca.c
 index 88c7d035ace66c592b32d330be5b1a33e44a30e4..f52c892323c306c5d1b01f04f8266cff7aa75133 100644
 --- a/drivers/gpu/drm/panel/panel-innolux-p079zca.c
@@ -13179,10 +13700,10 @@ index 0161e65c7c13f84eed42f3cfbf00950fbd6ff32b..6bd15e23e2aad79bfcfecf90dd77590e
  obj-$(CONFIG_VIDEO_OV7640) += ov7640.o
 diff --git a/drivers/media/i2c/dw9768.c b/drivers/media/i2c/dw9768.c
 new file mode 100644
-index 0000000000000000000000000000000000000000..f5b5591eb140afe5f265ca81394b30e1c94f8763
+index 0000000000000000000000000000000000000000..748ac13c684554617ecdccc4479325ee1ce0bbdc
 --- /dev/null
 +++ b/drivers/media/i2c/dw9768.c
-@@ -0,0 +1,458 @@
+@@ -0,0 +1,418 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
 + * Copyright (c) 2018 MediaTek Inc.
@@ -13197,7 +13718,6 @@ index 0000000000000000000000000000000000000000..f5b5591eb140afe5f265ca81394b30e1
 +#include <media/v4l2-device.h>
 +#include <media/v4l2-subdev.h>
 +
-+#define DW9768_VOLTAGE_ANALOG			2800000
 +#define DW9768_NAME				"dw9768"
 +#define DW9768_MAX_FOCUS_POS			1023
 +/*
@@ -13216,19 +13736,13 @@ index 0000000000000000000000000000000000000000..f5b5591eb140afe5f265ca81394b30e1
 +
 +#define DW9768_REG_VALUE_16BIT			2
 +
++static const char *dw9768_supplies[] = { "vdd", "vin" };
++
 +/* dw9768 device structure */
 +struct dw9768_device {
 +	struct v4l2_ctrl_handler ctrls;
 +	struct v4l2_subdev sd;
-+	struct regulator *analog_regulator;
-+	/*
-+	 * Serialize control access, get/set format, get selection
-+	 * and start streaming.
-+	 */
-+	struct mutex power_lock;
-+
-+	int power_count;
-+	bool standby;
++	struct regulator_bulk_data supplies[ARRAY_SIZE(dw9768_supplies)];
 +};
 +
 +static inline struct dw9768_device *to_dw9768_vcm(struct v4l2_ctrl *ctrl)
@@ -13279,7 +13793,7 @@ index 0000000000000000000000000000000000000000..f5b5591eb140afe5f265ca81394b30e1
 +		retry_cnt--;
 +	} while (retry_cnt != 0);
 +
-+	if (retry_cnt == 0)	{
++	if (WARN_ON(retry_cnt == 0)) {
 +		dev_err(&client->dev, "i2c write fail(%d)\n", ret);
 +		return -EIO;
 +	}
@@ -13344,49 +13858,50 @@ index 0000000000000000000000000000000000000000..f5b5591eb140afe5f265ca81394b30e1
 +/*
 + * Power handling
 + */
-+static int dw9768_power_off(struct dw9768_device *dw9768_dev, bool standby)
++static int dw9768_vcm_runtime_suspend(struct device *dev)
 +{
-+	struct i2c_client *client = v4l2_get_subdevdata(&dw9768_dev->sd);
++	struct v4l2_subdev *sd = dev_get_drvdata(dev);
++	struct dw9768_device *dw9768_dev = sd_to_dw9768_vcm(sd);
 +	int ret;
 +
-+	/*
-+	 * Go to standby first as real power off my be denied by the hardware
-+	 * (single power line control for both dw9768_dev and sensor).
-+	 */
-+	if (standby) {
-+		dw9768_dev->standby = true;
-+		ret = dw9768_release(dw9768_dev);
-+		if (ret)
-+			dev_err(&client->dev, "dw9768_release failed!\n");
-+	}
-+	ret = regulator_disable(dw9768_dev->analog_regulator);
++	ret = dw9768_release(dw9768_dev);
++	if (ret)
++		return ret;
++
++	ret = regulator_bulk_disable(ARRAY_SIZE(dw9768_dev->supplies),
++				     dw9768_dev->supplies);
 +	if (ret)
 +		return ret;
 +
 +	return 0;
 +}
 +
-+static int dw9768_power_on(struct dw9768_device *dw9768_dev, bool restore)
++static int dw9768_vcm_runtime_resume(struct device *dev)
 +{
++	struct v4l2_subdev *sd = dev_get_drvdata(dev);
++	struct dw9768_device *dw9768_dev = sd_to_dw9768_vcm(sd);
 +	int ret;
 +
-+	ret = regulator_enable(dw9768_dev->analog_regulator);
++	ret = regulator_bulk_enable(ARRAY_SIZE(dw9768_dev->supplies),
++				    dw9768_dev->supplies);
 +	if (ret < 0)
 +		return ret;
 +
-+	if (restore) {
-+		/* Restore the hardware settings. */
-+		dw9768_dev->standby = false;
-+		ret = dw9768_init(dw9768_dev);
-+		if (ret < 0)
-+			goto fail;
-+	}
++	/*
++	 * TODO(b/139784289): The datasheet mentions t_OPR, but does not give
++	 * any specific value. Do we need to wait here?
++	 */
++
++	/* Restore the hardware settings. */
++	ret = dw9768_init(dw9768_dev);
++	if (ret < 0)
++		goto fail;
 +
 +	return 0;
 +
 +fail:
-+	dw9768_dev->standby = true;
-+	regulator_disable(dw9768_dev->analog_regulator);
++	regulator_bulk_disable(ARRAY_SIZE(dw9768_dev->supplies),
++			       dw9768_dev->supplies);
 +
 +	return ret;
 +}
@@ -13431,42 +13946,24 @@ index 0000000000000000000000000000000000000000..f5b5591eb140afe5f265ca81394b30e1
 +	.s_ctrl = dw9768_set_ctrl,
 +};
 +
-+static int
-+dw9768_set_power(struct v4l2_subdev *subdev, int on)
-+{
-+	struct dw9768_device *dw9768_dev = sd_to_dw9768_vcm(subdev);
-+	int ret = 0;
-+
-+	mutex_lock(&dw9768_dev->power_lock);
-+
-+	/*
-+	 * If the power count is modified from 0 to != 0 or from != 0 to 0,
-+	 * update the power state.
-+	 */
-+	if (dw9768_dev->power_count == !on) {
-+		ret = on ? dw9768_power_on(dw9768_dev, true) :
-+			dw9768_power_off(dw9768_dev, true);
-+		if (ret < 0)
-+			goto done;
-+	}
-+
-+	/* Update the power count. */
-+	dw9768_dev->power_count += on ? 1 : -1;
-+	WARN_ON(dw9768_dev->power_count < 0);
-+
-+done:
-+	mutex_unlock(&dw9768_dev->power_lock);
-+	return ret;
-+}
-+
 +static int dw9768_open(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh)
 +{
-+	return dw9768_set_power(sd, 1);
++	int ret;
++
++	ret = pm_runtime_get_sync(sd->dev);
++	if (ret < 0) {
++		pm_runtime_put_noidle(sd->dev);
++		return ret;
++	}
++
++	return 0;
 +}
 +
 +static int dw9768_close(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh)
 +{
-+	return dw9768_set_power(sd, 0);
++	pm_runtime_put(sd->dev);
++
++	return 0;
 +}
 +
 +static const struct v4l2_subdev_internal_ops dw9768_int_ops = {
@@ -13509,27 +14006,22 @@ index 0000000000000000000000000000000000000000..f5b5591eb140afe5f265ca81394b30e1
 +	struct device *dev = &client->dev;
 +	struct dw9768_device *dw9768_dev;
 +	int rval;
++	int i;
 +
 +	dw9768_dev = devm_kzalloc(&client->dev, sizeof(*dw9768_dev),
 +				  GFP_KERNEL);
 +	if (!dw9768_dev)
 +		return -ENOMEM;
 +
-+	dw9768_dev->analog_regulator = devm_regulator_get(dev, "afvdd");
-+	if (IS_ERR(dw9768_dev->analog_regulator)) {
-+		dev_err(dev, "cannot get analog regulator\n");
-+		return PTR_ERR(dw9768_dev->analog_regulator);
-+	}
-+
-+	rval = regulator_set_voltage(dw9768_dev->analog_regulator,
-+				     DW9768_VOLTAGE_ANALOG,
-+				     DW9768_VOLTAGE_ANALOG);
++	for (i = 0; i < ARRAY_SIZE(dw9768_dev->supplies); ++i)
++		dw9768_dev->supplies[i].supply = dw9768_supplies[i];
++	rval = devm_regulator_bulk_get(&client->dev,
++				       ARRAY_SIZE(dw9768_dev->supplies),
++				       dw9768_dev->supplies);
 +	if (rval < 0) {
-+		dev_err(dev, "cannot set analog voltage\n");
++		dev_err(dev, "Failed to get regulators\n");
 +		return rval;
 +	}
-+
-+	mutex_init(&dw9768_dev->power_lock);
 +
 +	v4l2_i2c_subdev_init(&dw9768_dev->sd, client, &dw9768_ops);
 +	dw9768_dev->sd.flags |= V4L2_SUBDEV_FL_HAS_DEVNODE;
@@ -13549,14 +14041,11 @@ index 0000000000000000000000000000000000000000..f5b5591eb140afe5f265ca81394b30e1
 +	if (rval < 0)
 +		goto err_cleanup;
 +
-+	pm_runtime_set_active(dev);
 +	pm_runtime_enable(dev);
-+	pm_runtime_idle(dev);
 +
 +	return 0;
 +
 +err_cleanup:
-+	mutex_destroy(&dw9768_dev->power_lock);
 +	dw9768_subdev_cleanup(dw9768_dev);
 +	dev_err(dev, "Probe failed: %d\n", rval);
 +	return rval;
@@ -13580,14 +14069,10 @@ index 0000000000000000000000000000000000000000..f5b5591eb140afe5f265ca81394b30e1
 + */
 +static int __maybe_unused dw9768_vcm_suspend(struct device *dev)
 +{
-+	struct i2c_client *client = to_i2c_client(dev);
-+	struct v4l2_subdev *sd = i2c_get_clientdata(client);
-+	struct dw9768_device *dw9768_dev = sd_to_dw9768_vcm(sd);
-+
-+	if (!dw9768_dev->power_count)
++	if (pm_runtime_suspended(dev))
 +		return 0;
 +
-+	return dw9768_power_off(dw9768_dev, false);
++	return pm_runtime_force_suspend(dev);
 +}
 +
 +/*
@@ -13598,14 +14083,10 @@ index 0000000000000000000000000000000000000000..f5b5591eb140afe5f265ca81394b30e1
 + */
 +static int __maybe_unused dw9768_vcm_resume(struct device *dev)
 +{
-+	struct i2c_client *client = to_i2c_client(dev);
-+	struct v4l2_subdev *sd = i2c_get_clientdata(client);
-+	struct dw9768_device *dw9768_dev = sd_to_dw9768_vcm(sd);
-+
-+	if (!dw9768_dev->power_count)
++	if (pm_runtime_suspended(dev))
 +		return 0;
 +
-+	return dw9768_power_on(dw9768_dev, true);
++	return pm_runtime_force_resume(dev);
 +}
 +
 +static const struct i2c_device_id dw9768_id_table[] = {
@@ -13622,7 +14103,7 @@ index 0000000000000000000000000000000000000000..f5b5591eb140afe5f265ca81394b30e1
 +
 +static const struct dev_pm_ops dw9768_pm_ops = {
 +	SET_SYSTEM_SLEEP_PM_OPS(dw9768_vcm_suspend, dw9768_vcm_resume)
-+	SET_RUNTIME_PM_OPS(dw9768_vcm_suspend, dw9768_vcm_resume, NULL)
++	SET_RUNTIME_PM_OPS(dw9768_vcm_runtime_suspend, dw9768_vcm_runtime_resume, NULL)
 +};
 +
 +static struct i2c_driver dw9768_i2c_driver = {
@@ -15192,7 +15673,7 @@ index 9a80decd93d3c0ed5e011734dc8ea5c4211085a2..ee4cbc36db0cb8ddf22f24bead51b1ce
  #if defined(CONFIG_MEDIA_CONTROLLER)
  	ov5695->pad.flags = MEDIA_PAD_FL_SOURCE;
 diff --git a/drivers/media/i2c/ov8856.c b/drivers/media/i2c/ov8856.c
-index dbf1095b9440288ce8ab92c99c593b8f5f96333c..49a62a9dac135fc421300dc9a009a637b5dd3a61 100644
+index dbf1095b9440288ce8ab92c99c593b8f5f96333c..8e146b5064a1741564759c01d754c3743607ae4d 100644
 --- a/drivers/media/i2c/ov8856.c
 +++ b/drivers/media/i2c/ov8856.c
 @@ -1,12 +1,15 @@
@@ -15796,40 +16277,21 @@ index dbf1095b9440288ce8ab92c99c593b8f5f96333c..49a62a9dac135fc421300dc9a009a637
  	ret = __v4l2_ctrl_handler_setup(ov8856->sd.ctrl_handler);
  	if (ret)
  		return ret;
-@@ -878,10 +1373,22 @@ static int ov8856_set_stream(struct v4l2_subdev *sd, int enable)
- 	struct ov8856 *ov8856 = to_ov8856(sd);
+@@ -879,9 +1374,13 @@ static int ov8856_set_stream(struct v4l2_subdev *sd, int enable)
  	struct i2c_client *client = v4l2_get_subdevdata(sd);
  	int ret = 0;
-+	u32 val;
-+
-+	dev_info(&client->dev, "ov8856 s_stream (%d)\n", enable);
  
++	dev_info(&client->dev, "ov8856 s_stream (%d)\n", enable);
++
  	if (ov8856->streaming == enable)
  		return 0;
  
-+	ret = ov8856_read_reg(ov8856, OV8856_OTP_REG,
-+			      OV8856_REG_VALUE_08BIT, &val);
-+	if (ret)
-+		return ret;
-+
-+	dev_info(&client->dev, "R700f val: 0x%02X\n", val);
-+
 +	dev_info(&client->dev, "ov8856->is_1B_module = %d\n", ov8856->is_1B_module);
 +
  	mutex_lock(&ov8856->mutex);
  	if (enable) {
  		ret = pm_runtime_get_sync(&client->dev);
-@@ -905,9 +1412,64 @@ static int ov8856_set_stream(struct v4l2_subdev *sd, int enable)
- 	ov8856->streaming = enable;
- 	mutex_unlock(&ov8856->mutex);
- 
-+	ret = ov8856_read_reg(ov8856, OV8856_CLK_REG,
-+			      OV8856_REG_VALUE_08BIT, &val);
-+	if (ret)
-+		return ret;
-+
-+	dev_info(&client->dev, "R3614 val: 0x%02X\n", val);
-+
+@@ -908,6 +1407,54 @@ static int ov8856_set_stream(struct v4l2_subdev *sd, int enable)
  	return ret;
  }
  
@@ -15884,18 +16346,15 @@ index dbf1095b9440288ce8ab92c99c593b8f5f96333c..49a62a9dac135fc421300dc9a009a637
  static int __maybe_unused ov8856_suspend(struct device *dev)
  {
  	struct i2c_client *client = to_i2c_client(dev);
-@@ -915,8 +1477,8 @@ static int __maybe_unused ov8856_suspend(struct device *dev)
+@@ -915,6 +1462,7 @@ static int __maybe_unused ov8856_suspend(struct device *dev)
  	struct ov8856 *ov8856 = to_ov8856(sd);
  
  	mutex_lock(&ov8856->mutex);
--	if (ov8856->streaming)
--		ov8856_stop_streaming(ov8856);
 +
-+	__ov8856_power_off(ov8856);
+ 	if (ov8856->streaming)
+ 		ov8856_stop_streaming(ov8856);
  
- 	mutex_unlock(&ov8856->mutex);
- 
-@@ -1089,6 +1651,26 @@ static int ov8856_identify_module(struct ov8856 *ov8856)
+@@ -1089,6 +1637,26 @@ static int ov8856_identify_module(struct ov8856 *ov8856)
  		return -ENXIO;
  	}
  
@@ -15922,7 +16381,7 @@ index dbf1095b9440288ce8ab92c99c593b8f5f96333c..49a62a9dac135fc421300dc9a009a637
  	return 0;
  }
  
-@@ -1164,16 +1746,34 @@ static int ov8856_remove(struct i2c_client *client)
+@@ -1164,16 +1732,34 @@ static int ov8856_remove(struct i2c_client *client)
  	media_entity_cleanup(&sd->entity);
  	v4l2_ctrl_handler_free(sd->ctrl_handler);
  	pm_runtime_disable(&client->dev);
@@ -15957,7 +16416,7 @@ index dbf1095b9440288ce8ab92c99c593b8f5f96333c..49a62a9dac135fc421300dc9a009a637
  	ret = ov8856_check_hwcfg(&client->dev);
  	if (ret) {
  		dev_err(&client->dev, "failed to check HW configuration: %d",
-@@ -1186,6 +1786,37 @@ static int ov8856_probe(struct i2c_client *client)
+@@ -1186,6 +1772,37 @@ static int ov8856_probe(struct i2c_client *client)
  		return -ENOMEM;
  
  	v4l2_i2c_subdev_init(&ov8856->sd, client, &ov8856_subdev_ops);
@@ -15995,7 +16454,7 @@ index dbf1095b9440288ce8ab92c99c593b8f5f96333c..49a62a9dac135fc421300dc9a009a637
  	ret = ov8856_identify_module(ov8856);
  	if (ret) {
  		dev_err(&client->dev, "failed to find sensor: %d", ret);
-@@ -1226,6 +1857,8 @@ static int ov8856_probe(struct i2c_client *client)
+@@ -1226,6 +1843,8 @@ static int ov8856_probe(struct i2c_client *client)
  	pm_runtime_enable(&client->dev);
  	pm_runtime_idle(&client->dev);
  
@@ -16004,7 +16463,37 @@ index dbf1095b9440288ce8ab92c99c593b8f5f96333c..49a62a9dac135fc421300dc9a009a637
  	return 0;
  
  probe_error_media_entity_cleanup:
-@@ -1251,11 +1884,21 @@ static const struct acpi_device_id ov8856_acpi_ids[] = {
+@@ -1238,8 +1857,29 @@ static int ov8856_probe(struct i2c_client *client)
+ 	return ret;
+ }
+ 
++static int __maybe_unused ov8856_runtime_resume(struct device *dev)
++{
++	struct i2c_client *client = to_i2c_client(dev);
++	struct v4l2_subdev *sd = i2c_get_clientdata(client);
++	struct ov8856 *ov8856 = to_ov8856(sd);
++
++	return __ov8856_power_on(ov8856);
++}
++
++static int __maybe_unused ov8856_runtime_suspend(struct device *dev)
++{
++	struct i2c_client *client = to_i2c_client(dev);
++	struct v4l2_subdev *sd = i2c_get_clientdata(client);
++	struct ov8856 *ov8856 = to_ov8856(sd);
++
++	__ov8856_power_off(ov8856);
++
++	return 0;
++}
++
+ static const struct dev_pm_ops ov8856_pm_ops = {
+ 	SET_SYSTEM_SLEEP_PM_OPS(ov8856_suspend, ov8856_resume)
++	SET_RUNTIME_PM_OPS(ov8856_runtime_suspend, ov8856_runtime_resume, NULL)
+ };
+ 
+ #ifdef CONFIG_ACPI
+@@ -1251,11 +1891,21 @@ static const struct acpi_device_id ov8856_acpi_ids[] = {
  MODULE_DEVICE_TABLE(acpi, ov8856_acpi_ids);
  #endif
  
@@ -26973,10 +27462,10 @@ index 0000000000000000000000000000000000000000..4d236cad652936f04e34965a8e2a7b7f
 +
 diff --git a/drivers/media/platform/mtk-isp/isp_50/dip/mtk_dip-sys.c b/drivers/media/platform/mtk-isp/isp_50/dip/mtk_dip-sys.c
 new file mode 100644
-index 0000000000000000000000000000000000000000..b48431cca5dbc8702f84989738f223537017b3d0
+index 0000000000000000000000000000000000000000..0965cb8e9b9086538f4ab5dc1a35b3d287805b02
 --- /dev/null
 +++ b/drivers/media/platform/mtk-isp/isp_50/dip/mtk_dip-sys.c
-@@ -0,0 +1,1425 @@
+@@ -0,0 +1,1384 @@
 +// SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note
 +/*
 + * Copyright (c) 2018 MediaTek Inc.
@@ -27204,7 +27693,6 @@ index 0000000000000000000000000000000000000000..b48431cca5dbc8702f84989738f22353
 +		"%s: frame_no(%d) is finished\n",
 +		__func__, framejob->frameparam.frame_no);
 +	dip_free_framejob(framejob);
-+	clk_bulk_disable_unprepare(MTK_DIP_CLK_NUM, dip_hw->clks);
 +
 +	num = atomic_dec_return(&dip_hw->num_running);
 +	dev_dbg(&dip_dev->pdev->dev, "%s: running cnt(%d)\n", __func__, num);
@@ -27459,11 +27947,6 @@ index 0000000000000000000000000000000000000000..b48431cca5dbc8702f84989738f22353
 +			 * Pass the framejob to MDP driver
 +			 */
 +			framejob->frameparam.state = FRAME_STATE_COMPOSING;
-+
-+			ret = clk_bulk_prepare_enable(MTK_DIP_CLK_NUM,
-+						      dip_hw->clks);
-+			if (ret)
-+				dev_err(&dip_dev->pdev->dev, "failed to enable dip clks\n");
 +
 +			mdp_cmdq_sendtask
 +				(dip_hw->mdp_pdev,
@@ -27977,24 +28460,11 @@ index 0000000000000000000000000000000000000000..b48431cca5dbc8702f84989738f22353
 +	return  -EINVAL;
 +}
 +
-+static void mtk_dip_hw_pm_clk_off_work(struct work_struct *work)
-+{
-+	struct mtk_dip_hw_pm_work *pm_work = container_of(to_delayed_work(work),
-+		struct mtk_dip_hw_pm_work, work);
-+	struct mtk_dip_dev *dip_dev = mtk_dip_hw_to_dev(pm_work->dip_hw);
-+
-+	dev_dbg(&dip_dev->pdev->dev, "%s: try to disable clks", __func__);
-+	pm_runtime_put_autosuspend(&dip_dev->pdev->dev);
-+
-+	kfree(work);
-+}
-+
 +int mtk_dip_hw_disconnect(struct mtk_dip_hw *dip_hw)
 +{
 +	struct mtk_dip_dev *dip_dev = mtk_dip_hw_to_dev(dip_hw);
 +	s32 usercount;
 +	int ret;
-+	struct mtk_dip_hw_pm_work *pm_delay_work;
 +
 +	dev_dbg(&dip_dev->pdev->dev,
 +		"%s: dip_hw disconnecting, usercount(%d)\n",
@@ -28003,36 +28473,13 @@ index 0000000000000000000000000000000000000000..b48431cca5dbc8702f84989738f22353
 +	mutex_lock(&dip_hw->hw_op_lock);
 +	usercount = atomic_read(&dip_hw->dip_user_cnt);
 +	if (usercount > 0 && atomic_dec_and_test(&dip_hw->dip_user_cnt)) {
-+		int delay_ms = 1000 * 5;
-+
 +		ret = mtk_dip_hw_res_release(dip_hw);
 +		if (ret)
 +			dev_err(&dip_dev->pdev->dev,
 +				"%s: Got some error(%d) when releasing hw resource\n",
 +				__func__, ret);
 +
-+		pm_delay_work = kzalloc(sizeof(*pm_delay_work), GFP_KERNEL);
-+		if (!pm_delay_work) {
-+			pm_runtime_put_autosuspend(&dip_dev->pdev->dev);
-+		} else {
-+			pm_delay_work->dip_hw = dip_hw;
-+			INIT_DELAYED_WORK(&pm_delay_work->work,
-+					  mtk_dip_hw_pm_clk_off_work);
-+
-+			if (dip_hw->abnormal_stop) {
-+				delay_ms = 1000 * 10;
-+				dip_hw->abnormal_stop = false;
-+				dev_err(&dip_dev->pdev->dev,
-+					"%s: hold power %dms for abonorml stopping HW\n",
-+					__func__, delay_ms);
-+			}
-+
-+			schedule_delayed_work(&pm_delay_work->work,
-+					      delay_ms * 1000 / HZ);
-+			dev_dbg(&dip_dev->pdev->dev,
-+				"%s: delay %dms for power off\n",
-+				__func__, delay_ms);
-+		}
++		pm_runtime_put(&dip_dev->pdev->dev);
 +	}
 +
 +	dev_dbg(&dip_dev->pdev->dev,
@@ -28311,6 +28758,10 @@ index 0000000000000000000000000000000000000000..b48431cca5dbc8702f84989738f22353
 +
 +static int __maybe_unused mtk_dip_pm_suspend(struct device *dev)
 +{
++	struct mtk_dip_dev *dip_dev = dev_get_drvdata(dev);
++
++	clk_bulk_disable_unprepare(MTK_DIP_CLK_NUM,
++				   dip_dev->dip_hw.clks);
 +	return 0;
 +}
 +
@@ -28349,9 +28800,6 @@ index 0000000000000000000000000000000000000000..b48431cca5dbc8702f84989738f22353
 +			"%s: send SCP_IPI_DIP_FRAME failed %d\n",
 +			__func__, ret);
 +
-+	clk_bulk_disable_unprepare(MTK_DIP_CLK_NUM,
-+				   dip_dev->dip_hw.clks);
-+
 +	return 0;
 +}
 +
@@ -28379,7 +28827,7 @@ index 0000000000000000000000000000000000000000..b48431cca5dbc8702f84989738f22353
 +
 +static const struct dev_pm_ops mtk_dip_pm_ops = {
 +	SET_SYSTEM_SLEEP_PM_OPS(mtk_dip_suspend, mtk_dip_resume)
-+	SET_RUNTIME_PM_OPS(mtk_dip_suspend, mtk_dip_resume, NULL)
++	SET_RUNTIME_PM_OPS(mtk_dip_pm_suspend, mtk_dip_pm_resume, NULL)
 +};
 +
 +static const struct of_device_id mtk_dip_of_match[] = {
@@ -42461,7 +42909,7 @@ index ce8398e6f2c0e49395c4a818c95ecb1e69d6b87e..c8f3fe701ea7bbfc97ebd9f383c7fd13
  obj-$(CONFIG_MMC_OMAP_HS)	+= omap_hsmmc.o
  obj-$(CONFIG_MMC_ATMELMCI)	+= atmel-mci.o
 diff --git a/drivers/mmc/host/mtk-sd.c b/drivers/mmc/host/mtk-sd.c
-index 0de3749c9311c4de1b0d3f146e86e9cb86ed42b5..8aaa5d405987155acf7c31619c6ef207844b2d75 100644
+index 0de3749c9311c4de1b0d3f146e86e9cb86ed42b5..b80a5ebdd70d99372c5a02e9ef306a5ad2de3b2c 100644
 --- a/drivers/mmc/host/mtk-sd.c
 +++ b/drivers/mmc/host/mtk-sd.c
 @@ -39,6 +39,8 @@
@@ -42473,7 +42921,117 @@ index 0de3749c9311c4de1b0d3f146e86e9cb86ed42b5..8aaa5d405987155acf7c31619c6ef207
  #define MAX_BD_NUM          1024
  
  /*--------------------------------------------------------------------------*/
-@@ -2234,6 +2236,9 @@ static int msdc_drv_probe(struct platform_device *pdev)
+@@ -201,6 +203,7 @@
+ #define SDC_STS_SWR_COMPL       (0x1 << 31)	/* RW */
+ 
+ /* SDC_ADV_CFG0 mask */
++#define SDC_DAT1_IRQ_TRIGGER	(0x1 << 19)	/* RW */
+ #define SDC_RX_ENHANCE_EN	(0x1 << 20)	/* RW */
+ 
+ /* DMA_SA_H4BIT mask */
+@@ -981,6 +984,7 @@ static void msdc_track_cmd_data(struct msdc_host *host,
+ 	if (host->error)
+ 		dev_dbg(host->dev, "%s: cmd=%d arg=%08X; host->error=0x%08X\n",
+ 			__func__, cmd->opcode, cmd->arg, host->error);
++
+ }
+ 
+ static void msdc_request_done(struct msdc_host *host, struct mmc_request *mrq)
+@@ -1000,6 +1004,8 @@ static void msdc_request_done(struct msdc_host *host, struct mmc_request *mrq)
+ 	msdc_track_cmd_data(host, mrq->cmd, mrq->data);
+ 	if (mrq->data)
+ 		msdc_unprepare_data(host, mrq);
++	if (host->error)
++		msdc_reset_hw(host);
+ 	mmc_request_done(host->mmc, mrq);
+ }
+ 
+@@ -1352,24 +1358,25 @@ static void msdc_request_timeout(struct work_struct *work)
+ 	}
+ }
+ 
+-static void __msdc_enable_sdio_irq(struct mmc_host *mmc, int enb)
++static void __msdc_enable_sdio_irq(struct msdc_host *host, int enb)
+ {
+-	unsigned long flags;
+-	struct msdc_host *host = mmc_priv(mmc);
+-
+-	spin_lock_irqsave(&host->lock, flags);
+-	if (enb)
++	if (enb) {
+ 		sdr_set_bits(host->base + MSDC_INTEN, MSDC_INTEN_SDIOIRQ);
+-	else
++		sdr_set_bits(host->base + SDC_CFG, SDC_CFG_SDIOIDE);
++	} else {
+ 		sdr_clr_bits(host->base + MSDC_INTEN, MSDC_INTEN_SDIOIRQ);
+-	spin_unlock_irqrestore(&host->lock, flags);
++		sdr_clr_bits(host->base + SDC_CFG, SDC_CFG_SDIOIDE);
++	}
+ }
+ 
+ static void msdc_enable_sdio_irq(struct mmc_host *mmc, int enb)
+ {
++	unsigned long flags;
+ 	struct msdc_host *host = mmc_priv(mmc);
+ 
+-	__msdc_enable_sdio_irq(mmc, enb);
++	spin_lock_irqsave(&host->lock, flags);
++	__msdc_enable_sdio_irq(host, enb);
++	spin_unlock_irqrestore(&host->lock, flags);
+ 
+ 	if (enb)
+ 		pm_runtime_get_noresume(host->dev);
+@@ -1391,6 +1398,8 @@ static irqreturn_t msdc_irq(int irq, void *dev_id)
+ 		spin_lock_irqsave(&host->lock, flags);
+ 		events = readl(host->base + MSDC_INT);
+ 		event_mask = readl(host->base + MSDC_INTEN);
++		if ((events & event_mask) & MSDC_INT_SDIOIRQ)
++			__msdc_enable_sdio_irq(host, 0);
+ 		/* clear interrupts */
+ 		writel(events & event_mask, host->base + MSDC_INT);
+ 
+@@ -1399,10 +1408,8 @@ static irqreturn_t msdc_irq(int irq, void *dev_id)
+ 		data = host->data;
+ 		spin_unlock_irqrestore(&host->lock, flags);
+ 
+-		if ((events & event_mask) & MSDC_INT_SDIOIRQ) {
+-			__msdc_enable_sdio_irq(host->mmc, 0);
++		if ((events & event_mask) & MSDC_INT_SDIOIRQ)
+ 			sdio_signal_irq(host->mmc);
+-		}
+ 
+ 		if (!(events & (event_mask & ~MSDC_INT_SDIOIRQ)))
+ 			break;
+@@ -1523,12 +1530,10 @@ static void msdc_init_hw(struct msdc_host *host)
+ 	 * it's must otherwise sdio cmd5 failed
+ 	 */
+ 	sdr_set_bits(host->base + SDC_CFG, SDC_CFG_SDIO);
++	sdr_set_bits(host->base + SDC_ADV_CFG0, SDC_DAT1_IRQ_TRIGGER);
+ 
+ 	/* Config SDIO device detect interrupt function */
+-	if (host->mmc->caps & MMC_CAP_SDIO_IRQ)
+-		sdr_set_bits(host->base + SDC_CFG, SDC_CFG_SDIOIDE);
+-	else
+-		sdr_clr_bits(host->base + SDC_CFG, SDC_CFG_SDIOIDE);
++	sdr_clr_bits(host->base + SDC_CFG, SDC_CFG_SDIOIDE);
+ 
+ 	/* Configure to default data timeout */
+ 	sdr_set_field(host->base + SDC_CFG, SDC_CFG_DTOC, 3);
+@@ -2049,7 +2054,12 @@ static void msdc_hw_reset(struct mmc_host *mmc)
+ 
+ static void msdc_ack_sdio_irq(struct mmc_host *mmc)
+ {
+-	__msdc_enable_sdio_irq(mmc, 1);
++	unsigned long flags;
++	struct msdc_host *host = mmc_priv(mmc);
++
++	spin_lock_irqsave(&host->lock, flags);
++	__msdc_enable_sdio_irq(host, 1);
++	spin_unlock_irqrestore(&host->lock, flags);
+ }
+ 
+ static const struct mmc_host_ops mt_msdc_ops = {
+@@ -2234,6 +2244,9 @@ static int msdc_drv_probe(struct platform_device *pdev)
  	if (ret)
  		goto end;
  
@@ -42885,2491 +43443,58 @@ index 0000000000000000000000000000000000000000..33659ba69be321a0ba3cdfdf20e3980a
 +	hqa_write,
 +	burn
 +};
-diff --git a/drivers/net/wireless/ath/ath10k/bmi.c b/drivers/net/wireless/ath/ath10k/bmi.c
-index 95dc4be82e5ccbda598fbdc9a382b02ea1f7a543..990fa4d415911b0a1d46155fa6859b1914f1b0d9 100644
---- a/drivers/net/wireless/ath/ath10k/bmi.c
-+++ b/drivers/net/wireless/ath/ath10k/bmi.c
-@@ -197,6 +197,7 @@ int ath10k_bmi_read_memory(struct ath10k *ar,
+diff --git a/drivers/phy/mediatek/phy-mtk-tphy.c b/drivers/phy/mediatek/phy-mtk-tphy.c
+old mode 100644
+new mode 100755
+index 5b6a470ca145738186b976bb0e10c41d4273d40a..2c41813b1b7efbc1280c0ab7747a6ea4cbb1b47c
+--- a/drivers/phy/mediatek/phy-mtk-tphy.c
++++ b/drivers/phy/mediatek/phy-mtk-tphy.c
+@@ -60,6 +60,8 @@
+ #define U3P_USBPHYACR6		0x018
+ #define PA6_RG_U2_BC11_SW_EN		BIT(23)
+ #define PA6_RG_U2_OTG_VBUSCMP_EN	BIT(20)
++#define PA6_RG_U2_DISCTH		GENMASK(7, 4)
++#define PA6_RG_U2_DISCTH_VAL(x)	((0xf & (x)) << 4)
+ #define PA6_RG_U2_SQTH		GENMASK(3, 0)
+ #define PA6_RG_U2_SQTH_VAL(x)	(0xf & (x))
  
- 	return 0;
- }
-+EXPORT_SYMBOL(ath10k_bmi_read_memory);
- 
- int ath10k_bmi_write_soc_reg(struct ath10k *ar, u32 address, u32 reg_val)
- {
-diff --git a/drivers/net/wireless/ath/ath10k/core.c b/drivers/net/wireless/ath/ath10k/core.c
-index a3e7747fd7771e0b0c66c9d5732c91b00610f368..e8c2cb1412771c5387c8618e47ac481d74fa420f 100644
---- a/drivers/net/wireless/ath/ath10k/core.c
-+++ b/drivers/net/wireless/ath/ath10k/core.c
-@@ -32,6 +32,9 @@ static unsigned int ath10k_cryptmode_param;
- static bool uart_print;
- static bool skip_otp;
- static bool rawmode;
-+static bool disable_tx_comp = true;
-+static bool alt_data = true;
-+static bool fast_dump = true;
- 
- unsigned long ath10k_coredump_mask = BIT(ATH10K_FW_CRASH_DUMP_REGISTERS) |
- 				     BIT(ATH10K_FW_CRASH_DUMP_CE_DATA);
-@@ -40,6 +43,9 @@ unsigned long ath10k_coredump_mask = BIT(ATH10K_FW_CRASH_DUMP_REGISTERS) |
- module_param_named(debug_mask, ath10k_debug_mask, uint, 0644);
- module_param_named(cryptmode, ath10k_cryptmode_param, uint, 0644);
- module_param(uart_print, bool, 0644);
-+module_param(disable_tx_comp, bool, 0644);
-+module_param(alt_data, bool, 0644);
-+module_param(fast_dump, bool, 0644);
- module_param(skip_otp, bool, 0644);
- module_param(rawmode, bool, 0644);
- module_param_named(coredump_mask, ath10k_coredump_mask, ulong, 0444);
-@@ -696,12 +702,20 @@ static void ath10k_init_sdio(struct ath10k *ar, enum ath10k_firmware_mode mode)
- 	 * is used for SDIO. disable it until fixed
- 	 */
- 	param &= ~HI_ACS_FLAGS_SDIO_REDUCE_TX_COMPL_SET;
-+	if (disable_tx_comp)
-+		param |= HI_ACS_FLAGS_SDIO_REDUCE_TX_COMPL_SET;
- 
- 	/* Alternate credit size of 1544 as used by SDIO firmware is
- 	 * not big enough for mac80211 / native wifi frames. disable it
- 	 */
- 	param &= ~HI_ACS_FLAGS_ALT_DATA_CREDIT_SIZE;
- 
-+	/* If alternate credit size of 1556 as used by SDIO firmware is
-+	 * big enough for mac80211 / native wifi frames. enable it
-+	 */
-+	if (alt_data && mode == ATH10K_FIRMWARE_MODE_NORMAL)
-+		param |= HI_ACS_FLAGS_ALT_DATA_CREDIT_SIZE;
-+
- 	if (mode == ATH10K_FIRMWARE_MODE_UTF)
- 		param &= ~HI_ACS_FLAGS_SDIO_SWAP_MAILBOX_SET;
- 	else
-@@ -715,6 +729,13 @@ static void ath10k_init_sdio(struct ath10k *ar, enum ath10k_firmware_mode mode)
- 	ath10k_bmi_read32(ar, hi_option_flag, &param);
- 	param |= HI_OPTION_DISABLE_DBGLOG;
- 	ath10k_bmi_write32(ar, hi_option_flag, param);
-+
-+	if (fast_dump) {
-+		ath10k_bmi_read32(ar, hi_option_flag2, &param);
-+		param |= HI_OPTION_SDIO_CRASH_DUMP_ENHANCEMENT_HOST;
-+		ar->fast_dump = true;
-+		ath10k_bmi_write32(ar, hi_option_flag2, param);
-+	}
- }
- 
- static int ath10k_init_configure_target(struct ath10k *ar)
-@@ -1798,6 +1819,8 @@ static void ath10k_core_get_fw_name(struct ath10k *ar, char *fw_name,
- 		scnprintf(fw_name, fw_name_len, "%s-%d.bin",
- 			  ATH10K_FW_FILE_BASE, fw_api);
- 		break;
-+	default:
-+		break;
- 	}
- }
- 
-@@ -3010,6 +3033,15 @@ struct ath10k *ath10k_core_create(size_t priv_size, struct device *dev,
- 	if (!ar->workqueue_aux)
- 		goto err_free_wq;
- 
-+	ar->workqueue_tx = create_singlethread_workqueue("ath10k_tx_wq");
-+	if (!ar->workqueue_tx)
-+		goto err_free_aux_wq;
-+
-+	ar->workqueue_tx_complete =
-+		create_singlethread_workqueue("ath10k_tx_complete_wq");
-+	if (!ar->workqueue_tx_complete)
-+		goto err_free_tx;
-+
- 	mutex_init(&ar->conf_mutex);
- 	mutex_init(&ar->dump_mutex);
- 	spin_lock_init(&ar->data_lock);
-@@ -3037,7 +3069,7 @@ struct ath10k *ath10k_core_create(size_t priv_size, struct device *dev,
- 
- 	ret = ath10k_coredump_create(ar);
- 	if (ret)
--		goto err_free_aux_wq;
-+		goto err_free_tx_complete;
- 
- 	ret = ath10k_debug_create(ar);
- 	if (ret)
-@@ -3047,12 +3079,14 @@ struct ath10k *ath10k_core_create(size_t priv_size, struct device *dev,
- 
- err_free_coredump:
- 	ath10k_coredump_destroy(ar);
--
-+err_free_tx_complete:
-+	destroy_workqueue(ar->workqueue_tx_complete);
-+err_free_tx:
-+	destroy_workqueue(ar->workqueue_tx);
- err_free_aux_wq:
- 	destroy_workqueue(ar->workqueue_aux);
- err_free_wq:
- 	destroy_workqueue(ar->workqueue);
--
- err_free_mac:
- 	ath10k_mac_destroy(ar);
- 
-@@ -3068,6 +3102,12 @@ void ath10k_core_destroy(struct ath10k *ar)
- 	flush_workqueue(ar->workqueue_aux);
- 	destroy_workqueue(ar->workqueue_aux);
- 
-+	flush_workqueue(ar->workqueue_tx);
-+	destroy_workqueue(ar->workqueue_tx);
-+
-+	flush_workqueue(ar->workqueue_tx_complete);
-+	destroy_workqueue(ar->workqueue_tx_complete);
-+
- 	ath10k_debug_destroy(ar);
- 	ath10k_coredump_destroy(ar);
- 	ath10k_htt_tx_destroy(&ar->htt);
-diff --git a/drivers/net/wireless/ath/ath10k/core.h b/drivers/net/wireless/ath/ath10k/core.h
-index 8f66e4c937a9b798cabb0d56f195d08ca4fcf65b..f855720217d27093cec62c1545b83605f3846e57 100644
---- a/drivers/net/wireless/ath/ath10k/core.h
-+++ b/drivers/net/wireless/ath/ath10k/core.h
-@@ -94,7 +94,9 @@ static inline const char *ath10k_bus_str(enum ath10k_bus bus)
- 		return "usb";
- 	case ATH10K_BUS_SNOC:
- 		return "snoc";
--	}
-+	default:
-+		return "unknown";
-+}
- 
- 	return "unknown";
- }
-@@ -931,6 +933,7 @@ struct ath10k {
- 	enum ath10k_hw_rev hw_rev;
- 	u16 dev_id;
- 	u32 chip_id;
-+	bool fast_dump;
- 	enum ath10k_dev_type dev_type;
- 	u32 target_version;
- 	u8 fw_version_major;
-@@ -1055,7 +1058,8 @@ struct ath10k {
- 	struct workqueue_struct *workqueue;
- 	/* Auxiliary workqueue */
- 	struct workqueue_struct *workqueue_aux;
--
-+	struct workqueue_struct *workqueue_tx;
-+	struct workqueue_struct *workqueue_tx_complete;
- 	/* prevents concurrent FW reconfiguration */
- 	struct mutex conf_mutex;
- 
-@@ -1099,6 +1103,8 @@ struct ath10k {
- 
- 	struct work_struct register_work;
- 	struct work_struct restart_work;
-+	struct work_struct bundle_tx_work;
-+	struct work_struct tx_complete_work;
- 
- 	/* cycle count is reported twice for each visited channel during scan.
- 	 * access protected by data_lock
-diff --git a/drivers/net/wireless/ath/ath10k/coredump.c b/drivers/net/wireless/ath/ath10k/coredump.c
-index ac740dc54fd51990ea1794915ee932e7f2aeca40..86d5d45b84f3f001fea84378bef80de23809b0b6 100644
---- a/drivers/net/wireless/ath/ath10k/coredump.c
-+++ b/drivers/net/wireless/ath/ath10k/coredump.c
-@@ -270,6 +270,277 @@ static const struct ath10k_mem_section qca6174_hw21_register_sections[] = {
- 	{0x80010, 0x80020},
+@@ -300,6 +302,7 @@ struct mtk_phy_instance {
+ 	int eye_src;
+ 	int eye_vrt;
+ 	int eye_term;
++	int discth;
+ 	bool bc12_en;
  };
  
-+static const struct ath10k_mem_section qca6174_hw30_sdio_register_sections[] = {
-+	{0x800, 0x810},
-+	{0x820, 0x82C},
-+	{0x830, 0x8F4},
-+	{0x90C, 0x91C},
-+	{0xA14, 0xA18},
-+	{0xA84, 0xA94},
-+	{0xAA8, 0xAD4},
-+	{0xADC, 0xB40},
-+	{0x1000, 0x10A4},
-+	{0x10BC, 0x111C},
-+	{0x1134, 0x1138},
-+	{0x1144, 0x114C},
-+	{0x1150, 0x115C},
-+	{0x1160, 0x1178},
-+	{0x1240, 0x1260},
-+	{0x2000, 0x207C},
-+	{0x3000, 0x3014},
-+	{0x4000, 0x4014},
-+	{0x5000, 0x5124},
-+	{0x6000, 0x6040},
-+	{0x6080, 0x60CC},
-+	{0x6100, 0x611C},
-+	{0x6140, 0x61D8},
-+	{0x6200, 0x6238},
-+	{0x6240, 0x628C},
-+	{0x62C0, 0x62EC},
-+	{0x6380, 0x63E8},
-+	{0x6400, 0x6440},
-+	{0x6480, 0x64CC},
-+	{0x6500, 0x651C},
-+	{0x6540, 0x6580},
-+	{0x6600, 0x6638},
-+	{0x6640, 0x668C},
-+	{0x66C0, 0x66EC},
-+	{0x6780, 0x67E8},
-+	{0x7080, 0x708C},
-+	{0x70C0, 0x70C8},
-+	{0x7400, 0x741C},
-+	{0x7440, 0x7454},
-+	{0x7800, 0x7818},
-+	{0x8010, 0x8060},
-+	{0x8080, 0x8084},
-+	{0x80A0, 0x80A4},
-+	{0x80C0, 0x80C4},
-+	{0x80E0, 0x80ec},
-+	{0x8110, 0x8128},
-+	{0x9000, 0x9004},
-+	{0xF000, 0xF0E0},
-+	{0xF140, 0xF190},
-+	{0xF250, 0xF25C},
-+	{0xF260, 0xF268},
-+	{0xF26C, 0xF2A8},
-+	{0x10008, 0x1000C},
-+	{0x10014, 0x10018},
-+	{0x1001C, 0x10020},
-+	{0x10024, 0x10028},
-+	{0x10030, 0x10034},
-+	{0x10040, 0x10054},
-+	{0x10058, 0x1007C},
-+	{0x10080, 0x100C4},
-+	{0x100C8, 0x10114},
-+	{0x1012C, 0x10130},
-+	{0x10138, 0x10144},
-+	{0x10200, 0x10220},
-+	{0x10230, 0x10250},
-+	{0x10260, 0x10280},
-+	{0x10290, 0x102B0},
-+	{0x102C0, 0x102DC},
-+	{0x102E0, 0x102F4},
-+	{0x102FC, 0x1037C},
-+	{0x10380, 0x10390},
-+	{0x10800, 0x10828},
-+	{0x10840, 0x10844},
-+	{0x10880, 0x10884},
-+	{0x108C0, 0x108E8},
-+	{0x10900, 0x10928},
-+	{0x10940, 0x10944},
-+	{0x10980, 0x10984},
-+	{0x109C0, 0x109E8},
-+	{0x10A00, 0x10A28},
-+	{0x10A40, 0x10A50},
-+	{0x11000, 0x11028},
-+	{0x11030, 0x11034},
-+	{0x11038, 0x11068},
-+	{0x11070, 0x11074},
-+	{0x11078, 0x110A8},
-+	{0x110B0, 0x110B4},
-+	{0x110B8, 0x110E8},
-+	{0x110F0, 0x110F4},
-+	{0x110F8, 0x11128},
-+	{0x11138, 0x11144},
-+	{0x11178, 0x11180},
-+	{0x111B8, 0x111C0},
-+	{0x111F8, 0x11200},
-+	{0x11238, 0x1123C},
-+	{0x11270, 0x11274},
-+	{0x11278, 0x1127C},
-+	{0x112B0, 0x112B4},
-+	{0x112B8, 0x112BC},
-+	{0x112F0, 0x112F4},
-+	{0x112F8, 0x112FC},
-+	{0x11338, 0x1133C},
-+	{0x11378, 0x1137C},
-+	{0x113B8, 0x113BC},
-+	{0x113F8, 0x113FC},
-+	{0x11438, 0x11440},
-+	{0x11478, 0x11480},
-+	{0x114B8, 0x114BC},
-+	{0x114F8, 0x114FC},
-+	{0x11538, 0x1153C},
-+	{0x11578, 0x1157C},
-+	{0x115B8, 0x115BC},
-+	{0x115F8, 0x115FC},
-+	{0x11638, 0x1163C},
-+	{0x11678, 0x1167C},
-+	{0x116B8, 0x116BC},
-+	{0x116F8, 0x116FC},
-+	{0x11738, 0x1173C},
-+	{0x11778, 0x1177C},
-+	{0x117B8, 0x117BC},
-+	{0x117F8, 0x117FC},
-+	{0x17000, 0x1701C},
-+	{0x17020, 0x170AC},
-+	{0x18000, 0x18050},
-+	{0x18054, 0x18074},
-+	{0x18080, 0x180D4},
-+	{0x180DC, 0x18104},
-+	{0x18108, 0x1813C},
-+	{0x18144, 0x18148},
-+	{0x18168, 0x18174},
-+	{0x18178, 0x18180},
-+	{0x181C8, 0x181E0},
-+	{0x181E4, 0x181E8},
-+	{0x181EC, 0x1820C},
-+	{0x1825C, 0x18280},
-+	{0x18284, 0x18290},
-+	{0x18294, 0x182A0},
-+	{0x18300, 0x18304},
-+	{0x18314, 0x18320},
-+	{0x18328, 0x18350},
-+	{0x1835C, 0x1836C},
-+	{0x18370, 0x18390},
-+	{0x18398, 0x183AC},
-+	{0x183BC, 0x183D8},
-+	{0x183DC, 0x183F4},
-+	{0x18400, 0x186F4},
-+	{0x186F8, 0x1871C},
-+	{0x18720, 0x18790},
-+	{0x19800, 0x19830},
-+	{0x19834, 0x19840},
-+	{0x19880, 0x1989C},
-+	{0x198A4, 0x198B0},
-+	{0x198BC, 0x19900},
-+	{0x19C00, 0x19C88},
-+	{0x19D00, 0x19D20},
-+	{0x19E00, 0x19E7C},
-+	{0x19E80, 0x19E94},
-+	{0x19E98, 0x19EAC},
-+	{0x19EB0, 0x19EBC},
-+	{0x19F70, 0x19F74},
-+	{0x19F80, 0x19F8C},
-+	{0x19FA0, 0x19FB4},
-+	{0x19FC0, 0x19FD8},
-+	{0x1A000, 0x1A200},
-+	{0x1A204, 0x1A210},
-+	{0x1A228, 0x1A22C},
-+	{0x1A230, 0x1A248},
-+	{0x1A250, 0x1A270},
-+	{0x1A280, 0x1A290},
-+	{0x1A2A0, 0x1A2A4},
-+	{0x1A2C0, 0x1A2EC},
-+	{0x1A300, 0x1A3BC},
-+	{0x1A3F0, 0x1A3F4},
-+	{0x1A3F8, 0x1A434},
-+	{0x1A438, 0x1A444},
-+	{0x1A448, 0x1A468},
-+	{0x1A580, 0x1A58C},
-+	{0x1A644, 0x1A654},
-+	{0x1A670, 0x1A698},
-+	{0x1A6AC, 0x1A6B0},
-+	{0x1A6D0, 0x1A6D4},
-+	{0x1A6EC, 0x1A70C},
-+	{0x1A710, 0x1A738},
-+	{0x1A7C0, 0x1A7D0},
-+	{0x1A7D4, 0x1A7D8},
-+	{0x1A7DC, 0x1A7E4},
-+	{0x1A7F0, 0x1A7F8},
-+	{0x1A888, 0x1A89C},
-+	{0x1A8A8, 0x1A8AC},
-+	{0x1A8C0, 0x1A8DC},
-+	{0x1A8F0, 0x1A8FC},
-+	{0x1AE04, 0x1AE08},
-+	{0x1AE18, 0x1AE24},
-+	{0x1AF80, 0x1AF8C},
-+	{0x1AFA0, 0x1AFB4},
-+	{0x1B000, 0x1B200},
-+	{0x1B284, 0x1B288},
-+	{0x1B2D0, 0x1B2D8},
-+	{0x1B2DC, 0x1B2EC},
-+	{0x1B300, 0x1B340},
-+	{0x1B374, 0x1B378},
-+	{0x1B380, 0x1B384},
-+	{0x1B388, 0x1B38C},
-+	{0x1B404, 0x1B408},
-+	{0x1B420, 0x1B428},
-+	{0x1B440, 0x1B444},
-+	{0x1B448, 0x1B44C},
-+	{0x1B450, 0x1B458},
-+	{0x1B45C, 0x1B468},
-+	{0x1B584, 0x1B58C},
-+	{0x1B68C, 0x1B690},
-+	{0x1B6AC, 0x1B6B0},
-+	{0x1B7F0, 0x1B7F8},
-+	{0x1C800, 0x1CC00},
-+	{0x1CE00, 0x1CE04},
-+	{0x1CF80, 0x1CF84},
-+	{0x1D200, 0x1D800},
-+	{0x1E000, 0x20014},
-+	{0x20100, 0x20124},
-+	{0x21400, 0x217A8},
-+	{0x21800, 0x21BA8},
-+	{0x21C00, 0x21FA8},
-+	{0x22000, 0x223A8},
-+	{0x22400, 0x227A8},
-+	{0x22800, 0x22BA8},
-+	{0x22C00, 0x22FA8},
-+	{0x23000, 0x233A8},
-+	{0x24000, 0x24034},
-+
-+	/* EFUSE0,1,2 is disabled here
-+	 * because it's state may be reset
-+	 *
-+	 * {0x24800, 0x24804},
-+	 * {0x25000, 0x25004},
-+	 * {0x25800, 0x25804},
-+	 */
-+
-+	{0x26000, 0x26064},
-+	{0x27000, 0x27024},
-+	{0x34000, 0x3400C},
-+	{0x34400, 0x3445C},
-+	{0x34800, 0x3485C},
-+	{0x34C00, 0x34C5C},
-+	{0x35000, 0x3505C},
-+	{0x35400, 0x3545C},
-+	{0x35800, 0x3585C},
-+	{0x35C00, 0x35C5C},
-+	{0x36000, 0x3605C},
-+	{0x38000, 0x38064},
-+	{0x38070, 0x380E0},
-+	{0x3A000, 0x3A074},
-+
-+	/* DBI windows is skipped here, it can be only accessed when pcie
-+	 * is active (not in reset) and CORE_CTRL_PCIE_LTSSM_EN = 0 &&
-+	 * PCIE_CTRL_APP_LTSSM_ENALBE=0.
-+	 * {0x3C000 , 0x3C004},
-+	 */
-+
-+	{0x40000, 0x400A4},
-+
-+	/* SI register is skiped here.
-+	 * Because it will cause bus hang
-+	 *
-+	 * {0x50000, 0x50018},
-+	 */
-+
-+	{0x80000, 0x8000C},
-+	{0x80010, 0x80020},
-+};
-+
- static const struct ath10k_mem_section qca6174_hw30_register_sections[] = {
- 	{0x800, 0x810},
- 	{0x820, 0x82C},
-@@ -602,6 +873,59 @@ static const struct ath10k_mem_region qca6174_hw21_mem_regions[] = {
- 	},
- };
+@@ -850,9 +853,12 @@ static void phy_parse_property(struct mtk_tphy *tphy,
+ 				 &instance->eye_vrt);
+ 	device_property_read_u32(dev, "mediatek,eye-term",
+ 				 &instance->eye_term);
+-	dev_dbg(dev, "bc12:%d, src:%d, vrt:%d, term:%d\n",
++	device_property_read_u32(dev, "mediatek,discth",
++				 &instance->discth);
++	dev_dbg(dev, "bc12:%d, src:%d, vrt:%d, term:%d, disc:%d\n",
+ 		instance->bc12_en, instance->eye_src,
+-		instance->eye_vrt, instance->eye_term);
++		instance->eye_vrt, instance->eye_term,
++		instance->discth);
+ }
  
-+static const struct ath10k_mem_region qca6174_hw30_sdio_mem_regions[] = {
-+	{
-+		.type = ATH10K_MEM_REGION_TYPE_DRAM,
-+		.start = 0x400000,
-+		.len = 0xa8000,
-+		.name = "DRAM",
-+		.section_table = {
-+		.sections = NULL,
-+		.size = 0,
-+		},
-+	},
-+	{
-+		.type = ATH10K_MEM_REGION_TYPE_AXI,
-+		.start = 0xa0000,
-+		.len = 0x18000,
-+		.name = "AXI",
-+		.section_table = {
-+			.sections = NULL,
-+			.size = 0,
-+		},
-+	},
-+	{
-+		.type = ATH10K_MEM_REGION_TYPE_IRAM1,
-+		.start = 0x00980000,
-+		.len = 0x00080000,
-+		.name = "IRAM1",
-+		.section_table = {
-+		.sections = NULL,
-+		.size = 0,
-+		},
-+	},
-+	{
-+		.type = ATH10K_MEM_REGION_TYPE_IRAM2,
-+		.start = 0x00a00000,
-+		.len = 0x00040000,
-+		.name = "IRAM2",
-+		.section_table = {
-+		.sections = NULL,
-+		.size = 0,
-+		},
-+	},
-+	{
-+		.type = ATH10K_MEM_REGION_TYPE_REG,
-+		.start = 0x800,
-+		.len = 0x80020 - 0x800,
-+		.name = "REG_TOTAL",
-+		.section_table = {
-+			.sections = qca6174_hw30_sdio_register_sections,
-+			.size = ARRAY_SIZE(qca6174_hw30_sdio_register_sections),
-+		},
-+	},
-+};
-+
- static const struct ath10k_mem_region qca6174_hw30_mem_regions[] = {
- 	{
- 		.type = ATH10K_MEM_REGION_TYPE_DRAM,
-@@ -894,11 +1218,20 @@ static const struct ath10k_hw_mem_layout hw_mem_layouts[] = {
- 	},
- 	{
- 		.hw_id = QCA6174_HW_3_2_VERSION,
-+		.bus = ATH10K_BUS_PCI,
- 		.region_table = {
- 			.regions = qca6174_hw30_mem_regions,
- 			.size = ARRAY_SIZE(qca6174_hw30_mem_regions),
- 		},
- 	},
-+	{
-+		.hw_id = QCA6174_HW_3_2_VERSION,
-+		.bus = ATH10K_BUS_SDIO,
-+		.region_table = {
-+		.regions = qca6174_hw30_sdio_mem_regions,
-+		.size = ARRAY_SIZE(qca6174_hw30_sdio_mem_regions),
-+		},
-+	},
- 	{
- 		.hw_id = QCA9377_HW_1_1_DEV_VERSION,
- 		.region_table = {
-@@ -976,7 +1309,9 @@ const struct ath10k_hw_mem_layout *ath10k_coredump_get_mem_layout(struct ath10k
- 		return NULL;
- 
- 	for (i = 0; i < ARRAY_SIZE(hw_mem_layouts); i++) {
--		if (ar->target_version == hw_mem_layouts[i].hw_id)
-+		if (ar->target_version == hw_mem_layouts[i].hw_id &&
-+		    (hw_mem_layouts[i].bus == ATH10K_BUS_UNDEF ||
-+		     hw_mem_layouts[i].bus == ar->hif.bus))
- 			return &hw_mem_layouts[i];
+ static void u2_phy_props_set(struct mtk_tphy *tphy,
+@@ -888,6 +894,13 @@ static void u2_phy_props_set(struct mtk_tphy *tphy,
+ 		tmp |= PA1_RG_TERM_SEL_VAL(instance->eye_term);
+ 		writel(tmp, com + U3P_USBPHYACR1);
  	}
- 
-diff --git a/drivers/net/wireless/ath/ath10k/coredump.h b/drivers/net/wireless/ath/ath10k/coredump.h
-index 708c00559a56cfc60cc365052dd1695b6908feb8..22f29e356f372624d9b8666c60f7a9447f7651da 100644
---- a/drivers/net/wireless/ath/ath10k/coredump.h
-+++ b/drivers/net/wireless/ath/ath10k/coredump.h
-@@ -154,6 +154,7 @@ struct ath10k_mem_region {
-  */
- struct ath10k_hw_mem_layout {
- 	u32 hw_id;
-+	enum ath10k_bus bus;
- 
- 	struct {
- 		const struct ath10k_mem_region *regions;
-diff --git a/drivers/net/wireless/ath/ath10k/hif.h b/drivers/net/wireless/ath/ath10k/hif.h
-index c31b7a428ae1f328f81cbf91ec0b3f6de35ab974..cefaf0cfd87d7735bd678451b9a05a9097522e7b 100644
---- a/drivers/net/wireless/ath/ath10k/hif.h
-+++ b/drivers/net/wireless/ath/ath10k/hif.h
-@@ -50,6 +50,8 @@ struct ath10k_hif_ops {
- 
- 	int (*swap_mailbox)(struct ath10k *ar);
- 
-+	int (*get_htt_tx_complete)(struct ath10k *ar);
 +
- 	int (*map_service_to_pipe)(struct ath10k *ar, u16 service_id,
- 				   u8 *ul_pipe, u8 *dl_pipe);
- 
-@@ -137,6 +139,13 @@ static inline int ath10k_hif_swap_mailbox(struct ath10k *ar)
- 	return 0;
- }
- 
-+static inline int ath10k_hif_get_htt_tx_complete(struct ath10k *ar)
-+{
-+	if (ar->hif.ops->get_htt_tx_complete)
-+		return ar->hif.ops->get_htt_tx_complete(ar);
-+	return 0;
-+}
-+
- static inline int ath10k_hif_map_service_to_pipe(struct ath10k *ar,
- 						 u16 service_id,
- 						 u8 *ul_pipe, u8 *dl_pipe)
-diff --git a/drivers/net/wireless/ath/ath10k/htc.c b/drivers/net/wireless/ath/ath10k/htc.c
-index f199876b32f1e65e856a9780b0c6778be8503f74..80f34cb7eef1be935eaccfd0024b096850bb3391 100644
---- a/drivers/net/wireless/ath/ath10k/htc.c
-+++ b/drivers/net/wireless/ath/ath10k/htc.c
-@@ -51,10 +51,12 @@ void ath10k_htc_notify_tx_completion(struct ath10k_htc_ep *ep,
- 				     struct sk_buff *skb)
- {
- 	struct ath10k *ar = ep->htc->ar;
-+	struct ath10k_htc_hdr *hdr;
- 
- 	ath10k_dbg(ar, ATH10K_DBG_HTC, "%s: ep %d skb %pK\n", __func__,
- 		   ep->eid, skb);
- 
-+	hdr = (struct ath10k_htc_hdr *)skb->data;
- 	ath10k_htc_restore_tx_skb(ep->htc, skb);
- 
- 	if (!ep->ep_ops.ep_tx_complete) {
-@@ -63,6 +65,11 @@ void ath10k_htc_notify_tx_completion(struct ath10k_htc_ep *ep,
- 		return;
- 	}
- 
-+	if (hdr->flags & ATH10K_HTC_FLAG_SEND_BUNDLE) {
-+		dev_kfree_skb_any(skb);
-+		return;
-+	}
-+
- 	ep->ep_ops.ep_tx_complete(ep->htc->ar, skb);
- }
- EXPORT_SYMBOL(ath10k_htc_notify_tx_completion);
-@@ -78,7 +85,7 @@ static void ath10k_htc_prepare_tx_skb(struct ath10k_htc_ep *ep,
- 	hdr->eid = ep->eid;
- 	hdr->len = __cpu_to_le16(skb->len - sizeof(*hdr));
- 	hdr->flags = 0;
--	if (ep->tx_credit_flow_enabled)
-+	if (ep->tx_credit_flow_enabled && !ep->bundle_tx)
- 		hdr->flags |= ATH10K_HTC_FLAG_NEED_CREDIT_UPDATE;
- 
- 	spin_lock_bh(&ep->htc->tx_lock);
-@@ -86,6 +93,59 @@ static void ath10k_htc_prepare_tx_skb(struct ath10k_htc_ep *ep,
- 	spin_unlock_bh(&ep->htc->tx_lock);
- }
- 
-+static int ath10k_htc_consume_credit(struct ath10k_htc_ep *ep,
-+				     unsigned int len,
-+				     bool consume)
-+{
-+	int credits;
-+	struct ath10k_htc *htc = ep->htc;
-+	struct ath10k *ar = htc->ar;
-+	enum ath10k_htc_ep_id eid = ep->eid;
-+
-+	if (ep->tx_credit_flow_enabled) {
-+		credits = DIV_ROUND_UP(len, ep->tx_credit_size);
-+		spin_lock_bh(&htc->tx_lock);
-+
-+		if (ep->tx_credits < credits) {
-+			ath10k_dbg(ar, ATH10K_DBG_HTC,
-+				   "htc insufficient credits ep %d required %d available %d consume %d\n",
-+				   eid, credits, ep->tx_credits, consume);
-+			spin_unlock_bh(&htc->tx_lock);
-+			return -EAGAIN;
-+		}
-+		if (consume) {
-+			ep->tx_credits -= credits;
-+			ath10k_dbg(ar, ATH10K_DBG_HTC,
-+				   "htc ep %d consumed %d credits (total %d)\n",
-+				   eid, credits, ep->tx_credits);
-+		}
-+		spin_unlock_bh(&htc->tx_lock);
-+	}
-+
-+	return 0;
-+}
-+
-+static void ath10k_htc_release_credit(struct ath10k_htc_ep *ep, unsigned int len)
-+{
-+	int credits;
-+	struct ath10k_htc *htc = ep->htc;
-+	struct ath10k *ar = htc->ar;
-+	enum ath10k_htc_ep_id eid = ep->eid;
-+
-+	if (ep->tx_credit_flow_enabled) {
-+		credits = DIV_ROUND_UP(len, ep->tx_credit_size);
-+		spin_lock_bh(&htc->tx_lock);
-+		ep->tx_credits += credits;
-+		ath10k_dbg(ar, ATH10K_DBG_HTC,
-+			   "htc ep %d reverted %d credits back (total %d)\n",
-+			   eid, credits, ep->tx_credits);
-+		spin_unlock_bh(&htc->tx_lock);
-+
-+		if (ep->ep_ops.ep_tx_credits)
-+			ep->ep_ops.ep_tx_credits(htc->ar);
-+	}
-+}
-+
- int ath10k_htc_send(struct ath10k_htc *htc,
- 		    enum ath10k_htc_ep_id eid,
- 		    struct sk_buff *skb)
-@@ -95,8 +155,8 @@ int ath10k_htc_send(struct ath10k_htc *htc,
- 	struct ath10k_skb_cb *skb_cb = ATH10K_SKB_CB(skb);
- 	struct ath10k_hif_sg_item sg_item;
- 	struct device *dev = htc->ar->dev;
--	int credits = 0;
- 	int ret;
-+	unsigned int skb_len;
- 
- 	if (htc->ar->state == ATH10K_STATE_WEDGED)
- 		return -ECOMM;
-@@ -108,23 +168,10 @@ int ath10k_htc_send(struct ath10k_htc *htc,
- 
- 	skb_push(skb, sizeof(struct ath10k_htc_hdr));
- 
--	if (ep->tx_credit_flow_enabled) {
--		credits = DIV_ROUND_UP(skb->len, htc->target_credit_size);
--		spin_lock_bh(&htc->tx_lock);
--		if (ep->tx_credits < credits) {
--			ath10k_dbg(ar, ATH10K_DBG_HTC,
--				   "htc insufficient credits ep %d required %d available %d\n",
--				   eid, credits, ep->tx_credits);
--			spin_unlock_bh(&htc->tx_lock);
--			ret = -EAGAIN;
--			goto err_pull;
--		}
--		ep->tx_credits -= credits;
--		ath10k_dbg(ar, ATH10K_DBG_HTC,
--			   "htc ep %d consumed %d credits (total %d)\n",
--			   eid, credits, ep->tx_credits);
--		spin_unlock_bh(&htc->tx_lock);
--	}
-+	skb_len = skb->len;
-+	ret = ath10k_htc_consume_credit(ep, skb_len, true);
-+	if (ret)
-+		goto err_pull;
- 
- 	ath10k_htc_prepare_tx_skb(ep, skb);
- 
-@@ -155,17 +202,7 @@ int ath10k_htc_send(struct ath10k_htc *htc,
- 	if (ar->bus_param.dev_type != ATH10K_DEV_TYPE_HL)
- 		dma_unmap_single(dev, skb_cb->paddr, skb->len, DMA_TO_DEVICE);
- err_credits:
--	if (ep->tx_credit_flow_enabled) {
--		spin_lock_bh(&htc->tx_lock);
--		ep->tx_credits += credits;
--		ath10k_dbg(ar, ATH10K_DBG_HTC,
--			   "htc ep %d reverted %d credits back (total %d)\n",
--			   eid, credits, ep->tx_credits);
--		spin_unlock_bh(&htc->tx_lock);
--
--		if (ep->ep_ops.ep_tx_credits)
--			ep->ep_ops.ep_tx_credits(htc->ar);
--	}
-+	ath10k_htc_release_credit(ep, skb_len);
- err_pull:
- 	skb_pull(skb, sizeof(struct ath10k_htc_hdr));
- 	return ret;
-@@ -581,6 +618,258 @@ static u8 ath10k_htc_get_credit_allocation(struct ath10k_htc *htc,
- 	return allocation;
- }
- 
-+static int ath10k_htc_send_bundle(struct ath10k_htc_ep *ep,
-+				  struct sk_buff *bundle_skb,
-+				  struct sk_buff_head *tx_save_head)
-+{
-+	struct ath10k_hif_sg_item sg_item;
-+	struct ath10k_htc *htc = ep->htc;
-+	struct ath10k *ar = htc->ar;
-+	struct sk_buff *skb;
-+	int ret = 0;
-+	int cn = 0;
-+	unsigned int skb_len;
-+
-+	ath10k_dbg(ar, ATH10K_DBG_HTC, "bundle skb: len:%d\n", bundle_skb->len);
-+	skb_len = bundle_skb->len;
-+	ret = ath10k_htc_consume_credit(ep, skb_len, true);
-+
-+	if (!ret) {
-+		sg_item.transfer_id = ep->eid;
-+		sg_item.transfer_context = bundle_skb;
-+		sg_item.vaddr = bundle_skb->data;
-+		sg_item.len = bundle_skb->len;
-+
-+		ret = ath10k_hif_tx_sg(htc->ar, ep->ul_pipe_id, &sg_item, 1);
-+		if (ret)
-+			ath10k_htc_release_credit(ep, skb_len);
-+	}
-+
-+	if (ret)
-+		dev_kfree_skb_any(bundle_skb);
-+
-+	while (true) {
-+		skb = skb_dequeue_tail(tx_save_head);
-+		if (!skb)
-+			break;
-+
-+		cn++;
-+		if (ret) {
-+			skb_pull(skb, sizeof(struct ath10k_htc_hdr));
-+			skb_queue_head(&ep->tx_req_head, skb);
-+		} else {
-+			skb_queue_tail(&ep->tx_complete_head, skb);
-+		}
-+	}
-+
-+	if (!ret)
-+		queue_work(ar->workqueue_tx_complete, &ar->tx_complete_work);
-+
-+	ath10k_dbg(ar, ATH10K_DBG_HTC,
-+		   "bundle tx status:%d, eid:%d, req count:%d, count:%d, len:%d\n",
-+		   ret, ep->eid, skb_queue_len(&ep->tx_req_head), cn, bundle_skb->len);
-+	return ret;
-+}
-+
-+static void ath10k_htc_send_one_skb(struct ath10k_htc_ep *ep, struct sk_buff *skb)
-+{
-+	struct ath10k_htc *htc = ep->htc;
-+	struct ath10k *ar = htc->ar;
-+	int ret;
-+
-+	ret = ath10k_htc_send(htc, ep->eid, skb);
-+
-+	if (ret)
-+		skb_queue_head(&ep->tx_req_head, skb);
-+
-+	ath10k_dbg(ar, ATH10K_DBG_HTC, "tx one status:%d, eid:%d, len:%d, pending count:%d\n",
-+		   ret, ep->eid, skb->len, skb_queue_len(&ep->tx_req_head));
-+}
-+
-+static int ath10k_htc_send_bundle_skbs(struct ath10k_htc_ep *ep)
-+{
-+	int ret = 0;
-+	struct ath10k_htc *htc = ep->htc;
-+	struct sk_buff *bundle_skb, *skb;
-+	struct sk_buff_head tx_save_head;
-+	struct ath10k_htc_hdr *hdr;
-+	u8 *bundle_buf;
-+	int credit_pad, credit_remainder, trans_len, bundles_left = 0;
-+
-+	if (htc->ar->state == ATH10K_STATE_WEDGED)
-+		return -ECOMM;
-+
-+	if (ep->tx_credit_flow_enabled &&
-+	    ep->tx_credits < HTC_HOST_MIN_CREDIT_PER_TX_BUNDLE)
-+		return 0;
-+
-+	bundles_left = HTC_HOST_MAX_MSG_PER_TX_BUNDLE * ep->tx_credit_size;
-+	bundle_skb = dev_alloc_skb(bundles_left);
-+
-+	if (!bundle_skb)
-+		return -ENOMEM;
-+
-+	bundle_buf = bundle_skb->data;
-+	skb_queue_head_init(&tx_save_head);
-+
-+	while (true) {
-+		skb = skb_dequeue(&ep->tx_req_head);
-+		if (!skb)
-+			break;
-+
-+		credit_pad = 0;
-+		trans_len = skb->len + sizeof(*hdr);
-+		credit_remainder = trans_len % ep->tx_credit_size;
-+
-+		if (credit_remainder != 0) {
-+			credit_pad = ep->tx_credit_size - credit_remainder;
-+			trans_len += credit_pad;
-+		}
-+
-+		ret = ath10k_htc_consume_credit(ep,
-+						bundle_buf + trans_len - bundle_skb->data,
-+						false);
-+		if (ret) {
-+			skb_queue_head(&ep->tx_req_head, skb);
-+			break;
-+		}
-+
-+		if (bundles_left < trans_len) {
-+			bundle_skb->len = bundle_buf - bundle_skb->data;
-+			ret = ath10k_htc_send_bundle(ep, bundle_skb, &tx_save_head);
-+
-+			if (ret) {
-+				skb_queue_head(&ep->tx_req_head, skb);
-+				return ret;
-+			}
-+
-+			if (skb_queue_len(&ep->tx_req_head) == 0) {
-+				ath10k_htc_send_one_skb(ep, skb);
-+				return ret;
-+			}
-+
-+			if (ep->tx_credit_flow_enabled &&
-+			    ep->tx_credits < HTC_HOST_MIN_CREDIT_PER_TX_BUNDLE) {
-+				skb_queue_head(&ep->tx_req_head, skb);
-+				return 0;
-+			}
-+
-+			bundles_left =
-+				HTC_HOST_MAX_MSG_PER_TX_BUNDLE * ep->tx_credit_size;
-+			bundle_skb = dev_alloc_skb(bundles_left);
-+
-+			if (!bundle_skb) {
-+				skb_queue_head(&ep->tx_req_head, skb);
-+				return -ENOMEM;
-+			}
-+			bundle_buf = bundle_skb->data;
-+			skb_queue_head_init(&tx_save_head);
-+		}
-+
-+		skb_push(skb, sizeof(struct ath10k_htc_hdr));
-+		ath10k_htc_prepare_tx_skb(ep, skb);
-+
-+		memcpy(bundle_buf, skb->data, skb->len);
-+		hdr = (struct ath10k_htc_hdr *)bundle_buf;
-+		hdr->flags |= ATH10K_HTC_FLAG_SEND_BUNDLE;
-+		hdr->pad_len = __cpu_to_le16(credit_pad);
-+		bundle_buf += trans_len;
-+		bundles_left -= trans_len;
-+		skb_queue_tail(&tx_save_head, skb);
-+	}
-+
-+	if (bundle_buf != bundle_skb->data) {
-+		bundle_skb->len = bundle_buf - bundle_skb->data;
-+		ret = ath10k_htc_send_bundle(ep, bundle_skb, &tx_save_head);
-+	} else {
-+		dev_kfree_skb_any(bundle_skb);
-+	}
-+
-+	return ret;
-+}
-+
-+static void ath10k_htc_bundle_tx_work(struct work_struct *work)
-+{
-+	struct ath10k *ar = container_of(work, struct ath10k, bundle_tx_work);
-+	int i;
-+	struct ath10k_htc_ep *ep;
-+	enum ath10k_htc_ep_id eid;
-+	struct sk_buff *skb;
-+
-+	for (i = 0; i < ARRAY_SIZE(ar->htc.endpoint); i++) {
-+		ep = &ar->htc.endpoint[i];
-+		eid = ep->eid;
-+		if (ep->bundle_tx) {
-+			ath10k_dbg(ar, ATH10K_DBG_HTC, "bundle tx work, eid:%d, count:%d\n",
-+				   ep->eid, skb_queue_len(&ep->tx_req_head));
-+
-+			if (skb_queue_len(&ep->tx_req_head) >=
-+			    HTC_HOST_MIN_MSG_PER_TX_BUNDLE) {
-+				ath10k_htc_send_bundle_skbs(ep);
-+			} else {
-+				skb = skb_dequeue(&ep->tx_req_head);
-+
-+				if (!skb)
-+					continue;
-+				ath10k_htc_send_one_skb(ep, skb);
-+			}
-+		}
-+	}
-+}
-+
-+static void ath10k_htc_tx_complete_work(struct work_struct *work)
-+{
-+	struct ath10k *ar = container_of(work, struct ath10k, tx_complete_work);
-+	int i;
-+	struct ath10k_htc_ep *ep;
-+	enum ath10k_htc_ep_id eid;
-+	struct sk_buff *skb;
-+
-+	for (i = 0; i < ARRAY_SIZE(ar->htc.endpoint); i++) {
-+		ep = &ar->htc.endpoint[i];
-+		eid = ep->eid;
-+		if (ep->bundle_tx && eid == ar->htt.eid) {
-+			ath10k_dbg(ar, ATH10K_DBG_HTC, "bundle tx complete, eid:%d, pending complete count:%d\n",
-+				   ep->eid, skb_queue_len(&ep->tx_complete_head));
-+
-+			while (true) {
-+				skb = skb_dequeue(&ep->tx_complete_head);
-+				if (!skb)
-+					break;
-+				ath10k_htc_notify_tx_completion(ep, skb);
-+			}
-+		}
-+	}
-+}
-+
-+int ath10k_htc_send_hl(struct ath10k_htc *htc,
-+		       enum ath10k_htc_ep_id eid,
-+		       struct sk_buff *skb)
-+{
-+	struct ath10k_htc_ep *ep = &htc->endpoint[eid];
-+	struct ath10k *ar = htc->ar;
-+
-+	ath10k_dbg(ar, ATH10K_DBG_HTC, "htc send hl: eid:%d, bundle:%d, tx count:%d, len:%d\n",
-+		   eid, ep->bundle_tx, skb_queue_len(&ep->tx_req_head), skb->len);
-+
-+	if (ep->bundle_tx) {
-+		skb_queue_tail(&ep->tx_req_head, skb);
-+		queue_work(ar->workqueue_tx, &ar->bundle_tx_work);
-+		return 0;
-+	} else {
-+		return ath10k_htc_send(htc, eid, skb);
-+	}
-+}
-+
-+void ath10k_htc_setup_tx_req(struct ath10k_htc_ep *ep)
-+{
-+	if (ep->htc->max_msgs_per_htc_bundle >= HTC_HOST_MIN_MSG_PER_TX_BUNDLE) {
-+		ep->bundle_tx = true;
-+		skb_queue_head_init(&ep->tx_req_head);
-+		skb_queue_head_init(&ep->tx_complete_head);
-+	}
-+}
-+
- int ath10k_htc_wait_target(struct ath10k_htc *htc)
- {
- 	struct ath10k *ar = htc->ar;
-@@ -649,17 +938,34 @@ int ath10k_htc_wait_target(struct ath10k_htc *htc)
- 	 */
- 	if (htc->control_resp_len >=
- 	    sizeof(msg->hdr) + sizeof(msg->ready_ext)) {
-+		htc->alt_data_credit_size =
-+			__le16_to_cpu(msg->ready_ext.reserved) & 0x0fff;
- 		htc->max_msgs_per_htc_bundle =
- 			min_t(u8, msg->ready_ext.max_msgs_per_htc_bundle,
- 			      HTC_HOST_MAX_MSG_PER_RX_BUNDLE);
- 		ath10k_dbg(ar, ATH10K_DBG_HTC,
--			   "Extended ready message. RX bundle size: %d\n",
--			   htc->max_msgs_per_htc_bundle);
-+			   "Extended ready message. RX bundle size: %d, alt size:%d\n",
-+			   htc->max_msgs_per_htc_bundle,
-+			   htc->alt_data_credit_size);
- 	}
- 
-+	INIT_WORK(&ar->bundle_tx_work, ath10k_htc_bundle_tx_work);
-+	INIT_WORK(&ar->tx_complete_work, ath10k_htc_tx_complete_work);
-+
- 	return 0;
- }
- 
-+void ath10k_htc_change_tx_credit_flow(struct ath10k_htc *htc,
-+				      enum ath10k_htc_ep_id eid,
-+				      bool enable)
-+{
-+	struct ath10k *ar = htc->ar;
-+	struct ath10k_htc_ep *ep;
-+
-+	ep = &ar->htc.endpoint[eid];
-+	ep->tx_credit_flow_enabled = enable;
-+}
-+
- int ath10k_htc_connect_service(struct ath10k_htc *htc,
- 			       struct ath10k_htc_svc_conn_req *conn_req,
- 			       struct ath10k_htc_svc_conn_resp *conn_resp)
-@@ -791,6 +1097,11 @@ int ath10k_htc_connect_service(struct ath10k_htc *htc,
- 	ep->max_tx_queue_depth = conn_req->max_send_queue_depth;
- 	ep->max_ep_message_len = __le16_to_cpu(resp_msg->max_msg_size);
- 	ep->tx_credits = tx_alloc;
-+	ep->tx_credit_size = htc->target_credit_size;
-+
-+	if (conn_req->service_id == ATH10K_HTC_SVC_ID_HTT_DATA_MSG &&
-+	    htc->alt_data_credit_size != 0)
-+		ep->tx_credit_size = htc->alt_data_credit_size;
- 
- 	/* copy all the callbacks */
- 	ep->ep_ops = conn_req->ep_ops;
-diff --git a/drivers/net/wireless/ath/ath10k/htc.h b/drivers/net/wireless/ath/ath10k/htc.h
-index 54bc0323e776d6a81a23285ed0ca8409ee26c3bd..f965b5b50dc4481ae703ed6559c0d4d697ebbf10 100644
---- a/drivers/net/wireless/ath/ath10k/htc.h
-+++ b/drivers/net/wireless/ath/ath10k/htc.h
-@@ -39,8 +39,10 @@ struct ath10k;
-  * 4-byte aligned.
-  */
- 
--#define HTC_HOST_MAX_MSG_PER_RX_BUNDLE        8
--#define HTC_HOST_MAX_MSG_PER_TX_BUNDLE        16
-+#define HTC_HOST_MAX_MSG_PER_RX_BUNDLE        32
-+#define HTC_HOST_MAX_MSG_PER_TX_BUNDLE        32
-+#define HTC_HOST_MIN_MSG_PER_TX_BUNDLE        2
-+#define HTC_HOST_MIN_CREDIT_PER_TX_BUNDLE     2
- 
- enum ath10k_htc_tx_flags {
- 	ATH10K_HTC_FLAG_NEED_CREDIT_UPDATE = 0x01,
-@@ -65,8 +67,14 @@ struct ath10k_htc_hdr {
- 		u8 seq_no; /* for tx */
- 		u8 control_byte1;
- 	} __packed;
--	u8 pad0;
--	u8 pad1;
-+	union {
-+		__le16 pad_len;
-+		struct {
-+			u8 pad0;
-+			u8 pad1;
-+		} __packed;
-+	} __packed;
-+
- } __packed __aligned(4);
- 
- enum ath10k_ath10k_htc_msg_id {
-@@ -127,8 +135,14 @@ struct ath10k_htc_ready_extended {
- 	struct ath10k_htc_ready base;
- 	u8 htc_version; /* @enum ath10k_htc_version */
- 	u8 max_msgs_per_htc_bundle;
--	u8 pad0;
--	u8 pad1;
-+	union {
-+		__le16 reserved;
-+		struct {
-+			u8 pad0;
-+			u8 pad1;
-+		} __packed;
-+	} __packed;
-+
- } __packed;
- 
- struct ath10k_htc_conn_svc {
-@@ -335,7 +349,12 @@ struct ath10k_htc_ep {
- 
- 	u8 seq_no; /* for debugging */
- 	int tx_credits;
-+	int tx_credit_size;
- 	bool tx_credit_flow_enabled;
-+	bool bundle_tx;
-+	struct sk_buff_head tx_req_head;
-+	struct sk_buff_head tx_complete_head;
-+
- };
- 
- struct ath10k_htc_svc_tx_credits {
-@@ -360,16 +379,23 @@ struct ath10k_htc {
- 	int total_transmit_credits;
- 	int target_credit_size;
- 	u8 max_msgs_per_htc_bundle;
-+	int alt_data_credit_size;
- };
- 
- int ath10k_htc_init(struct ath10k *ar);
- int ath10k_htc_wait_target(struct ath10k_htc *htc);
-+void ath10k_htc_setup_tx_req(struct ath10k_htc_ep *ep);
- int ath10k_htc_start(struct ath10k_htc *htc);
- int ath10k_htc_connect_service(struct ath10k_htc *htc,
- 			       struct ath10k_htc_svc_conn_req  *conn_req,
- 			       struct ath10k_htc_svc_conn_resp *conn_resp);
-+void ath10k_htc_change_tx_credit_flow(struct ath10k_htc *htc,
-+				      enum ath10k_htc_ep_id eid,
-+				      bool enable);
- int ath10k_htc_send(struct ath10k_htc *htc, enum ath10k_htc_ep_id eid,
- 		    struct sk_buff *packet);
-+int ath10k_htc_send_hl(struct ath10k_htc *htc, enum ath10k_htc_ep_id eid,
-+		       struct sk_buff *packet);
- struct sk_buff *ath10k_htc_alloc_skb(struct ath10k *ar, int size);
- void ath10k_htc_tx_completion_handler(struct ath10k *ar, struct sk_buff *skb);
- void ath10k_htc_rx_completion_handler(struct ath10k *ar, struct sk_buff *skb);
-diff --git a/drivers/net/wireless/ath/ath10k/htt.c b/drivers/net/wireless/ath/ath10k/htt.c
-index 7b75200ceae54a34fbf7bd56f12457c7cedee2ff..04ca13cb0144c184ed150ad26705ef8cd0d1458e 100644
---- a/drivers/net/wireless/ath/ath10k/htt.c
-+++ b/drivers/net/wireless/ath/ath10k/htt.c
-@@ -10,6 +10,7 @@
- #include "htt.h"
- #include "core.h"
- #include "debug.h"
-+#include "hif.h"
- 
- static const enum htt_t2h_msg_type htt_main_t2h_msg_types[] = {
- 	[HTT_MAIN_T2H_MSG_TYPE_VERSION_CONF] = HTT_T2H_MSG_TYPE_VERSION_CONF,
-@@ -134,6 +135,8 @@ int ath10k_htt_connect(struct ath10k_htt *htt)
- {
- 	struct ath10k_htc_svc_conn_req conn_req;
- 	struct ath10k_htc_svc_conn_resp conn_resp;
-+	struct ath10k *ar = htt->ar;
-+	struct ath10k_htc_ep *ep;
- 	int status;
- 
- 	memset(&conn_req, 0, sizeof(conn_req));
-@@ -141,6 +144,7 @@ int ath10k_htt_connect(struct ath10k_htt *htt)
- 
- 	conn_req.ep_ops.ep_tx_complete = ath10k_htt_htc_tx_complete;
- 	conn_req.ep_ops.ep_rx_complete = ath10k_htt_htc_t2h_msg_handler;
-+	conn_req.ep_ops.ep_tx_credits = ath10k_htt_op_ep_tx_credits;
- 
- 	/* connect to control service */
- 	conn_req.service_id = ATH10K_HTC_SVC_ID_HTT_DATA_MSG;
-@@ -153,6 +157,17 @@ int ath10k_htt_connect(struct ath10k_htt *htt)
- 
- 	htt->eid = conn_resp.eid;
- 
-+	skb_queue_head_init(&htt->rx_indication_head);
-+
-+	if (ar->bus_param.dev_type == ATH10K_DEV_TYPE_HL) {
-+		ep = &ar->htc.endpoint[htt->eid];
-+		ath10k_htc_setup_tx_req(ep);
-+	}
-+
-+	htt->disable_tx_comple = ath10k_hif_get_htt_tx_complete(htt->ar);
-+	if (htt->disable_tx_comple)
-+		ath10k_htc_change_tx_credit_flow(&htt->ar->htc, htt->eid, true);
-+
- 	return 0;
- }
- 
-diff --git a/drivers/net/wireless/ath/ath10k/htt.h b/drivers/net/wireless/ath/ath10k/htt.h
-index 1bfbcf09c73c2558ff86ab6421c1172d03f29d94..b2330a344a35afad7839ffe7ca03e3dc2cc354ce 100644
---- a/drivers/net/wireless/ath/ath10k/htt.h
-+++ b/drivers/net/wireless/ath/ath10k/htt.h
-@@ -151,9 +151,19 @@ enum htt_data_tx_desc_flags1 {
- 	HTT_DATA_TX_DESC_FLAGS1_MORE_IN_BATCH    = 1 << 12,
- 	HTT_DATA_TX_DESC_FLAGS1_CKSUM_L3_OFFLOAD = 1 << 13,
- 	HTT_DATA_TX_DESC_FLAGS1_CKSUM_L4_OFFLOAD = 1 << 14,
--	HTT_DATA_TX_DESC_FLAGS1_RSVD1            = 1 << 15
-+	HTT_DATA_TX_DESC_FLAGS1_TX_COMPLETE      = 1 << 15
- };
- 
-+#define HTT_TX_CREDIT_DELTA_ABS_M      0xffff0000
-+#define HTT_TX_CREDIT_DELTA_ABS_S      16
-+#define HTT_TX_CREDIT_DELTA_ABS_GET(word) \
-+	    (((word) & HTT_TX_CREDIT_DELTA_ABS_M) >> HTT_TX_CREDIT_DELTA_ABS_S)
-+
-+#define HTT_TX_CREDIT_SIGN_BIT_M       0x00000100
-+#define HTT_TX_CREDIT_SIGN_BIT_S       8
-+#define HTT_TX_CREDIT_SIGN_BIT_GET(word) \
-+	    (((word) & HTT_TX_CREDIT_SIGN_BIT_M) >> HTT_TX_CREDIT_SIGN_BIT_S)
-+
- enum htt_data_tx_ext_tid {
- 	HTT_DATA_TX_EXT_TID_NON_QOS_MCAST_BCAST = 16,
- 	HTT_DATA_TX_EXT_TID_MGMT                = 17,
-@@ -1763,6 +1773,8 @@ struct ath10k_htt {
- 	struct ath10k *ar;
- 	enum ath10k_htc_ep_id eid;
- 
-+	struct sk_buff_head rx_indication_head;
-+
- 	u8 target_version_major;
- 	u8 target_version_minor;
- 	struct completion target_version_received;
-@@ -1913,6 +1925,11 @@ struct ath10k_htt {
- 	bool tx_mem_allocated;
- 	const struct ath10k_htt_tx_ops *tx_ops;
- 	const struct ath10k_htt_rx_ops *rx_ops;
-+	bool disable_tx_comple;
-+	bool bundle_tx;
-+	struct sk_buff_head tx_req_head;
-+	struct sk_buff_head tx_complete_head;
-+
- };
- 
- struct ath10k_htt_tx_ops {
-@@ -2159,6 +2176,7 @@ int ath10k_htt_tx_fetch_resp(struct ath10k *ar,
- 			     __le16 fetch_seq_num,
- 			     struct htt_tx_fetch_record *records,
- 			     size_t num_records);
-+void ath10k_htt_op_ep_tx_credits(struct ath10k *ar);
- 
- void ath10k_htt_tx_txq_update(struct ieee80211_hw *hw,
- 			      struct ieee80211_txq *txq);
-@@ -2177,6 +2195,7 @@ int ath10k_htt_mgmt_tx(struct ath10k_htt *htt, struct sk_buff *msdu);
- void ath10k_htt_rx_pktlog_completion_handler(struct ath10k *ar,
- 					     struct sk_buff *skb);
- int ath10k_htt_txrx_compl_task(struct ath10k *ar, int budget);
-+int ath10k_htt_rx_hl_indication(struct ath10k *ar, int budget);
- void ath10k_htt_set_tx_ops(struct ath10k_htt *htt);
- void ath10k_htt_set_rx_ops(struct ath10k_htt *htt);
- #endif
-diff --git a/drivers/net/wireless/ath/ath10k/htt_rx.c b/drivers/net/wireless/ath/ath10k/htt_rx.c
-index 00e26c0f4ade596d21e243eee7c874230211b50d..5207d6665e050e8a19db862e29e2f8329e524786 100644
---- a/drivers/net/wireless/ath/ath10k/htt_rx.c
-+++ b/drivers/net/wireless/ath/ath10k/htt_rx.c
-@@ -1969,7 +1969,8 @@ static bool ath10k_htt_rx_proc_rx_ind_hl(struct ath10k_htt *htt,
- 	if (mpdu_ranges->mpdu_range_status !=
- 	    HTT_RX_IND_MPDU_STATUS_OK &&
- 	    mpdu_ranges->mpdu_range_status !=
--	    HTT_RX_IND_MPDU_STATUS_TKIP_MIC_ERR) {
-+	    HTT_RX_IND_MPDU_STATUS_TKIP_MIC_ERR &&
-+            printk_ratelimit()) {
- 		ath10k_warn(ar, "MPDU range status: %d\n",
- 			    mpdu_ranges->mpdu_range_status);
- 		goto err;
-@@ -2046,7 +2047,7 @@ static bool ath10k_htt_rx_proc_rx_ind_hl(struct ath10k_htt *htt,
- 	if (mpdu_ranges->mpdu_range_status == HTT_RX_IND_MPDU_STATUS_TKIP_MIC_ERR)
- 		rx_status->flag |= RX_FLAG_MMIC_ERROR;
- 
--	ieee80211_rx_ni(ar->hw, skb);
-+	ieee80211_rx_napi(ar->hw, NULL, skb, &ar->napi);
- 
- 	/* We have delivered the skb to the upper layers (mac80211) so we
- 	 * must not free it.
-@@ -3313,14 +3314,12 @@ bool ath10k_htt_t2h_msg_handler(struct ath10k *ar, struct sk_buff *skb)
- 		break;
- 	}
- 	case HTT_T2H_MSG_TYPE_RX_IND:
--		if (ar->bus_param.dev_type == ATH10K_DEV_TYPE_HL)
--			return ath10k_htt_rx_proc_rx_ind_hl(htt,
--							    &resp->rx_ind_hl,
--							    skb,
--							    HTT_RX_PN_CHECK,
--							    HTT_RX_NON_TKIP_MIC);
--		else
-+		if (ar->bus_param.dev_type != ATH10K_DEV_TYPE_HL) {
- 			ath10k_htt_rx_proc_rx_ind_ll(htt, &resp->rx_ind);
-+		} else {
-+			skb_queue_tail(&htt->rx_indication_head, skb);
-+			return false;
-+		}
- 		break;
- 	case HTT_T2H_MSG_TYPE_PEER_MAP: {
- 		struct htt_peer_map_event ev = {
-@@ -3340,6 +3339,9 @@ bool ath10k_htt_t2h_msg_handler(struct ath10k *ar, struct sk_buff *skb)
- 	}
- 	case HTT_T2H_MSG_TYPE_MGMT_TX_COMPLETION: {
- 		struct htt_tx_done tx_done = {};
-+		struct ath10k_htt *htt = &ar->htt;
-+		struct ath10k_htc *htc = &ar->htc;
-+		struct ath10k_htc_ep *ep = &ar->htc.endpoint[htt->eid];
- 		int status = __le32_to_cpu(resp->mgmt_tx_completion.status);
- 		int info = __le32_to_cpu(resp->mgmt_tx_completion.info);
- 
-@@ -3365,6 +3367,12 @@ bool ath10k_htt_t2h_msg_handler(struct ath10k *ar, struct sk_buff *skb)
- 			break;
- 		}
- 
-+		if (htt->disable_tx_comple) {
-+			spin_lock_bh(&htc->tx_lock);
-+			ep->tx_credits++;
-+			spin_unlock_bh(&htc->tx_lock);
-+		}
-+
- 		status = ath10k_txrx_tx_unref(htt, &tx_done);
- 		if (!status) {
- 			spin_lock_bh(&htt->tx_lock);
-@@ -3439,7 +3447,35 @@ bool ath10k_htt_t2h_msg_handler(struct ath10k *ar, struct sk_buff *skb)
- 		skb_queue_tail(&htt->rx_in_ord_compl_q, skb);
- 		return false;
- 	}
--	case HTT_T2H_MSG_TYPE_TX_CREDIT_UPDATE_IND:
-+	case HTT_T2H_MSG_TYPE_TX_CREDIT_UPDATE_IND:{
-+		struct ath10k_htt *htt = &ar->htt;
-+		struct ath10k_htc *htc = &ar->htc;
-+		struct ath10k_htc_ep *ep = &ar->htc.endpoint[htt->eid];
-+		u32 *msg_word;
-+		u32 htt_credit_delta_abs;
-+		int htt_credit_delta;
-+		int sign;
-+
-+		msg_word = (u32 *)resp;
-+		htt_credit_delta_abs = HTT_TX_CREDIT_DELTA_ABS_GET(*msg_word);
-+		sign = HTT_TX_CREDIT_SIGN_BIT_GET(*msg_word) ? -1 : 1;
-+		htt_credit_delta = sign * htt_credit_delta_abs;
-+
-+		ath10k_dbg(ar, ATH10K_DBG_HTT,
-+			   "credit update: abs:%d, sign:%d, delta:%d\n",
-+			   htt_credit_delta_abs, sign, htt_credit_delta);
-+
-+		if (htt->disable_tx_comple) {
-+			spin_lock_bh(&htc->tx_lock);
-+			ep->tx_credits += htt_credit_delta;
-+			spin_unlock_bh(&htc->tx_lock);
-+			ath10k_dbg(ar, ATH10K_DBG_HTT,
-+				   "credit total:%d\n",
-+				   ep->tx_credits);
-+			ep->ep_ops.ep_tx_credits(htc->ar);
-+		}
-+		break;
-+	}
- 		break;
- 	case HTT_T2H_MSG_TYPE_CHAN_CHANGE: {
- 		u32 phymode = __le32_to_cpu(resp->chan_change.phymode);
-@@ -3510,6 +3546,38 @@ static int ath10k_htt_rx_deliver_msdu(struct ath10k *ar, int quota, int budget)
- 	return quota;
- }
- 
-+int ath10k_htt_rx_hl_indication(struct ath10k *ar, int budget)
-+{
-+	struct htt_resp *resp;
-+	struct ath10k_htt *htt = &ar->htt;
-+	struct sk_buff *skb;
-+	bool release;
-+	int quota = 0;
-+
-+	while (quota < budget) {
-+		skb = skb_dequeue(&htt->rx_indication_head);
-+		if (!skb)
-+			break;
-+
-+		resp = (struct htt_resp *)skb->data;
-+
-+		release = ath10k_htt_rx_proc_rx_ind_hl(htt,
-+						       &resp->rx_ind_hl,
-+						       skb,
-+						       HTT_RX_PN_CHECK,
-+						       HTT_RX_NON_TKIP_MIC);
-+
-+		if (release)
-+			dev_kfree_skb_any(skb);
-+
-+		ath10k_dbg(ar, ATH10K_DBG_HTT, "rx indication poll pending count:%d\n",
-+			   skb_queue_len(&htt->rx_indication_head));
-+		quota++;
-+	}
-+	return quota;
-+}
-+EXPORT_SYMBOL(ath10k_htt_rx_hl_indication);
-+
- int ath10k_htt_txrx_compl_task(struct ath10k *ar, int budget)
- {
- 	struct ath10k_htt *htt = &ar->htt;
-diff --git a/drivers/net/wireless/ath/ath10k/htt_tx.c b/drivers/net/wireless/ath/ath10k/htt_tx.c
-index 2ef717f18795068a9f398b6189dc020f05d42b33..038eaee3845a6ce599508d8c30028227b07d4ea8 100644
---- a/drivers/net/wireless/ath/ath10k/htt_tx.c
-+++ b/drivers/net/wireless/ath/ath10k/htt_tx.c
-@@ -541,9 +541,40 @@ void ath10k_htt_tx_free(struct ath10k_htt *htt)
- 	ath10k_htt_tx_destroy(htt);
- }
- 
-+void ath10k_htt_op_ep_tx_credits(struct ath10k *ar)
-+{
-+	queue_work(ar->workqueue_tx, &ar->bundle_tx_work);
-+}
-+
- void ath10k_htt_htc_tx_complete(struct ath10k *ar, struct sk_buff *skb)
- {
-+	struct ath10k_htt *htt = &ar->htt;
-+	struct htt_tx_done tx_done = {0};
-+	struct htt_cmd_hdr *htt_hdr;
-+	struct htt_data_tx_desc *desc_hdr;
-+	u16 flags1;
-+
- 	dev_kfree_skb_any(skb);
-+
-+	if (htt->disable_tx_comple) {
-+		htt_hdr = (struct htt_cmd_hdr *)skb->data;
-+		if (htt_hdr->msg_type == HTT_H2T_MSG_TYPE_TX_FRM) {
-+			desc_hdr = (struct htt_data_tx_desc *)
-+				(skb->data + sizeof(*htt_hdr));
-+			flags1 = __le16_to_cpu(desc_hdr->flags1);
-+
-+			ath10k_dbg(ar, ATH10K_DBG_HTT,
-+				   "htt htc tx complete msdu id:%u ,flags1:%x\n",
-+				   __le16_to_cpu(desc_hdr->id), flags1);
-+
-+			if (flags1 & HTT_DATA_TX_DESC_FLAGS1_TX_COMPLETE)
-+				return;
-+
-+			tx_done.status = HTT_TX_COMPL_STATE_ACK;
-+			tx_done.msdu_id = __le16_to_cpu(desc_hdr->id);
-+			ath10k_txrx_tx_unref(&ar->htt, &tx_done);
-+		}
++	if (instance->discth) {
++		tmp = readl(com + U3P_USBPHYACR6);
++		tmp &= ~PA6_RG_U2_DISCTH;
++		tmp |= PA6_RG_U2_DISCTH_VAL(instance->discth);
++		writel(tmp, com + U3P_USBPHYACR6);
 +	}
  }
  
- void ath10k_htt_hif_tx_complete(struct ath10k *ar, struct sk_buff *skb)
-@@ -1237,6 +1268,7 @@ static int ath10k_htt_tx_hl(struct ath10k_htt *htt, enum ath10k_hw_txrx_mode txm
- 	struct ath10k *ar = htt->ar;
- 	int res, data_len;
- 	struct htt_cmd_hdr *cmd_hdr;
-+	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *)msdu->data;
- 	struct htt_data_tx_desc *tx_desc;
- 	struct ath10k_skb_cb *skb_cb = ATH10K_SKB_CB(msdu);
- 	struct sk_buff *tmp_skb;
-@@ -1247,6 +1279,13 @@ static int ath10k_htt_tx_hl(struct ath10k_htt *htt, enum ath10k_hw_txrx_mode txm
- 	u16 flags1 = 0;
- 	u16 msdu_id = 0;
- 
-+	if ((ieee80211_is_action(hdr->frame_control) ||
-+	     ieee80211_is_deauth(hdr->frame_control) ||
-+	     ieee80211_is_disassoc(hdr->frame_control)) &&
-+	     ieee80211_has_protected(hdr->frame_control)) {
-+		skb_put(msdu, IEEE80211_CCMP_MIC_LEN);
-+	}
-+
- 	data_len = msdu->len;
- 
- 	switch (txmode) {
-@@ -1260,6 +1299,10 @@ static int ath10k_htt_tx_hl(struct ath10k_htt *htt, enum ath10k_hw_txrx_mode txm
- 	case ATH10K_HW_TXRX_MGMT:
- 		flags0 |= SM(ATH10K_HW_TXRX_MGMT,
- 			     HTT_DATA_TX_DESC_FLAGS0_PKT_TYPE);
-+
-+		if (htt->disable_tx_comple)
-+			flags1 |= HTT_DATA_TX_DESC_FLAGS1_TX_COMPLETE;
-+
- 		flags0 |= HTT_DATA_TX_DESC_FLAGS0_MAC_HDR_PRESENT;
- 		break;
- 	}
-@@ -1326,7 +1369,7 @@ static int ath10k_htt_tx_hl(struct ath10k_htt *htt, enum ath10k_hw_txrx_mode txm
- 	 */
- 	tx_desc->peerid = __cpu_to_le32(HTT_INVALID_PEERID);
- 
--	res = ath10k_htc_send(&htt->ar->htc, htt->eid, msdu);
-+	res = ath10k_htc_send_hl(&htt->ar->htc, htt->eid, msdu);
- 
- out:
- 	return res;
-diff --git a/drivers/net/wireless/ath/ath10k/hw.h b/drivers/net/wireless/ath/ath10k/hw.h
-index 80f6c1090182fb61fefdc10be99d90548ca4c74b..cc82d8dfcf7231203373d895e906096d4ae36094 100644
---- a/drivers/net/wireless/ath/ath10k/hw.h
-+++ b/drivers/net/wireless/ath/ath10k/hw.h
-@@ -11,6 +11,7 @@
- #include "targaddrs.h"
- 
- enum ath10k_bus {
-+	ATH10K_BUS_UNDEF,
- 	ATH10K_BUS_PCI,
- 	ATH10K_BUS_AHB,
- 	ATH10K_BUS_SDIO,
-@@ -723,7 +724,7 @@ ath10k_rx_desc_get_l3_pad_bytes(struct ath10k_hw_params *hw,
- #define TARGET_TLV_NUM_TDLS_VDEVS		1
- #define TARGET_TLV_NUM_TIDS			((TARGET_TLV_NUM_PEERS) * 2)
- #define TARGET_TLV_NUM_MSDU_DESC		(1024 + 32)
--#define TARGET_TLV_NUM_MSDU_DESC_HL		64
-+#define TARGET_TLV_NUM_MSDU_DESC_HL		1024
- #define TARGET_TLV_NUM_WOW_PATTERNS		22
- #define TARGET_TLV_MGMT_NUM_MSDU_DESC		(50)
- 
-diff --git a/drivers/net/wireless/ath/ath10k/sdio.c b/drivers/net/wireless/ath/ath10k/sdio.c
-index b3e9656fe73d50e4f9974e0c8c24e970078ca40c..dd8a5afd3c75207cb5134b10cf1d2db91b107034 100644
---- a/drivers/net/wireless/ath/ath10k/sdio.c
-+++ b/drivers/net/wireless/ath/ath10k/sdio.c
-@@ -23,6 +23,12 @@
- #include "targaddrs.h"
- #include "trace.h"
- #include "sdio.h"
-+#include "coredump.h"
-+
-+void ath10k_sdio_fw_crashed_dump(struct ath10k *ar);
-+
-+#define ATH10K_SDIO_DMA_BUF_SIZE	(64 * 1024)
-+#define ATH10K_SDIO_VSG_BUF_SIZE	(64 * 1024)
- 
- /* inlined helper functions */
- 
-@@ -414,6 +420,67 @@ static int ath10k_sdio_mbox_rx_process_packet(struct ath10k *ar,
- 	return 0;
- }
- 
-+static struct ath10k_sdio_rx_request
-+*ath10k_sdio_alloc_rx_req(struct ath10k *ar)
-+{
-+	struct ath10k_sdio *ar_sdio = ath10k_sdio_priv(ar);
-+	struct ath10k_sdio_rx_request *rx_req;
-+
-+	spin_lock_bh(&ar_sdio->rx_lock);
-+
-+	if (list_empty(&ar_sdio->rx_req_freeq)) {
-+		rx_req = NULL;
-+		ath10k_dbg(ar, ATH10K_DBG_SDIO, "rx_req alloc fail\n");
-+		goto out;
-+	}
-+
-+	rx_req = list_first_entry(&ar_sdio->rx_req_freeq,
-+				  struct ath10k_sdio_rx_request, list);
-+	list_del(&rx_req->list);
-+
-+out:
-+	spin_unlock_bh(&ar_sdio->rx_lock);
-+	return rx_req;
-+}
-+
-+static void ath10k_sdio_free_rx_req(struct ath10k *ar,
-+				    struct ath10k_sdio_rx_request *rx_req)
-+{
-+	struct ath10k_sdio *ar_sdio = ath10k_sdio_priv(ar);
-+
-+	memset(rx_req, 0, sizeof(*rx_req));
-+
-+	spin_lock_bh(&ar_sdio->rx_lock);
-+	list_add_tail(&rx_req->list, &ar_sdio->rx_req_freeq);
-+	spin_unlock_bh(&ar_sdio->rx_lock);
-+}
-+
-+static int ath10k_sdio_prep_async_rx_req(struct ath10k *ar,
-+					 struct sk_buff *skb,
-+					 struct ath10k_htc_ep *ep)
-+{
-+	struct ath10k_sdio *ar_sdio = ath10k_sdio_priv(ar);
-+	struct ath10k_sdio_rx_request *rx_req;
-+
-+	/* Allocate a rx request for the message and queue it on the
-+	 * SDIO rx workqueue.
-+	 */
-+	rx_req = ath10k_sdio_alloc_rx_req(ar);
-+	if (!rx_req) {
-+		ath10k_warn(ar, "unable to allocate rx request for async request\n");
-+		return -ENOMEM;
-+	}
-+
-+	rx_req->skb = skb;
-+	rx_req->ep = ep;
-+
-+	spin_lock_bh(&ar_sdio->wr_async_lock_rx);
-+	list_add_tail(&rx_req->list, &ar_sdio->wr_asyncq_rx);
-+	spin_unlock_bh(&ar_sdio->wr_async_lock_rx);
-+
-+	return 0;
-+}
-+
- static int ath10k_sdio_mbox_rx_process_packets(struct ath10k *ar,
- 					       u32 lookaheads[],
- 					       int *n_lookahead)
-@@ -467,10 +534,16 @@ static int ath10k_sdio_mbox_rx_process_packets(struct ath10k *ar,
- 		if (ret)
- 			goto out;
- 
--		if (!pkt->trailer_only)
--			ep->ep_ops.ep_rx_complete(ar_sdio->ar, pkt->skb);
--		else
-+		if (!pkt->trailer_only) {
-+			ret = ath10k_sdio_prep_async_rx_req(ar, pkt->skb, ep);
-+			if (ret)
-+				kfree_skb(pkt->skb);
-+			else
-+				queue_work(ar_sdio->workqueue_rx,
-+					   &ar_sdio->wr_async_work_rx);
-+		} else {
- 			kfree_skb(pkt->skb);
-+		}
- 
- 		/* The RX complete handler now owns the skb...*/
- 		pkt->skb = NULL;
-@@ -489,15 +562,16 @@ static int ath10k_sdio_mbox_rx_process_packets(struct ath10k *ar,
- 	return ret;
- }
- 
--static int ath10k_sdio_mbox_alloc_pkt_bundle(struct ath10k *ar,
--					     struct ath10k_sdio_rx_data *rx_pkts,
--					     struct ath10k_htc_hdr *htc_hdr,
--					     size_t full_len, size_t act_len,
--					     size_t *bndl_cnt)
-+static int ath10k_sdio_mbox_alloc_bundle(struct ath10k *ar,
-+					 struct ath10k_sdio_rx_data *rx_pkts,
-+					 struct ath10k_htc_hdr *htc_hdr,
-+					 size_t full_len, size_t act_len,
-+					 size_t *bndl_cnt)
- {
- 	int ret, i;
- 
- 	*bndl_cnt = FIELD_GET(ATH10K_HTC_FLAG_BUNDLE_MASK, htc_hdr->flags);
-+	*bndl_cnt += BUNDLE_COUNT_HIGH(htc_hdr->flags);
- 
- 	if (*bndl_cnt > HTC_HOST_MAX_MSG_PER_RX_BUNDLE) {
- 		ath10k_warn(ar,
-@@ -534,6 +608,7 @@ static int ath10k_sdio_mbox_rx_alloc(struct ath10k *ar,
- 	size_t full_len, act_len;
- 	bool last_in_bundle;
- 	int ret, i;
-+	int pkt_cnt = 0;
- 
- 	if (n_lookaheads > ATH10K_SDIO_MAX_RX_MSGS) {
- 		ath10k_warn(ar,
-@@ -576,21 +651,22 @@ static int ath10k_sdio_mbox_rx_alloc(struct ath10k *ar,
- 			 * optimally fetched as a full bundle.
- 			 */
- 			size_t bndl_cnt;
-+			struct ath10k_sdio_rx_data *rx_pkts =
-+				&ar_sdio->rx_pkts[pkt_cnt];
- 
--			ret = ath10k_sdio_mbox_alloc_pkt_bundle(ar,
--								&ar_sdio->rx_pkts[i],
--								htc_hdr,
--								full_len,
--								act_len,
--								&bndl_cnt);
-+			ret = ath10k_sdio_mbox_alloc_bundle(ar,
-+							    rx_pkts,
-+							    htc_hdr,
-+							    full_len,
-+							    act_len,
-+							    &bndl_cnt);
- 
- 			if (ret) {
- 				ath10k_warn(ar, "alloc_bundle error %d\n", ret);
- 				goto err;
- 			}
- 
--			n_lookaheads += bndl_cnt;
--			i += bndl_cnt;
-+			pkt_cnt += bndl_cnt;
- 			/*Next buffer will be the last in the bundle */
- 			last_in_bundle = true;
- 		}
-@@ -602,7 +678,7 @@ static int ath10k_sdio_mbox_rx_alloc(struct ath10k *ar,
- 		if (htc_hdr->flags & ATH10K_HTC_FLAGS_RECV_1MORE_BLOCK)
- 			full_len += ATH10K_HIF_MBOX_BLOCK_SIZE;
- 
--		ret = ath10k_sdio_mbox_alloc_rx_pkt(&ar_sdio->rx_pkts[i],
-+		ret = ath10k_sdio_mbox_alloc_rx_pkt(&ar_sdio->rx_pkts[pkt_cnt],
- 						    act_len,
- 						    full_len,
- 						    last_in_bundle,
-@@ -611,9 +687,10 @@ static int ath10k_sdio_mbox_rx_alloc(struct ath10k *ar,
- 			ath10k_warn(ar, "alloc_rx_pkt error %d\n", ret);
- 			goto err;
- 		}
-+		pkt_cnt++;
- 	}
- 
--	ar_sdio->n_rx_pkts = i;
-+	ar_sdio->n_rx_pkts = pkt_cnt;
- 
- 	return 0;
- 
-@@ -627,41 +704,72 @@ static int ath10k_sdio_mbox_rx_alloc(struct ath10k *ar,
- 	return ret;
- }
- 
--static int ath10k_sdio_mbox_rx_packet(struct ath10k *ar,
--				      struct ath10k_sdio_rx_data *pkt)
-+static int ath10k_sdio_mbox_rx_fetch(struct ath10k *ar)
- {
- 	struct ath10k_sdio *ar_sdio = ath10k_sdio_priv(ar);
--	struct sk_buff *skb = pkt->skb;
-+	struct ath10k_sdio_rx_data *pkt = &ar_sdio->rx_pkts[0];
-+	struct sk_buff *skb;
- 	int ret;
- 
-+	skb = pkt->skb;
- 	ret = ath10k_sdio_readsb(ar, ar_sdio->mbox_info.htc_addr,
- 				 skb->data, pkt->alloc_len);
--	pkt->status = ret;
--	if (!ret)
-+
-+	if (ret) {
-+		ar_sdio->n_rx_pkts = 0;
-+		ath10k_sdio_mbox_free_rx_pkt(pkt);
-+	} else {
-+		pkt->status = ret;
- 		skb_put(skb, pkt->act_len);
-+	}
- 
- 	return ret;
- }
- 
--static int ath10k_sdio_mbox_rx_fetch(struct ath10k *ar)
-+static int ath10k_sdio_mbox_rx_fetch_bundle(struct ath10k *ar)
- {
- 	struct ath10k_sdio *ar_sdio = ath10k_sdio_priv(ar);
-+	struct ath10k_sdio_rx_data *pkt;
- 	int ret, i;
-+	u32 pkt_offset, virt_pkt_len;
- 
-+	virt_pkt_len = 0;
- 	for (i = 0; i < ar_sdio->n_rx_pkts; i++) {
--		ret = ath10k_sdio_mbox_rx_packet(ar,
--						 &ar_sdio->rx_pkts[i]);
--		if (ret)
-+		virt_pkt_len += ar_sdio->rx_pkts[i].alloc_len;
-+	}
-+
-+	if (virt_pkt_len < ATH10K_SDIO_DMA_BUF_SIZE) {
-+		ret = ath10k_sdio_readsb(ar, ar_sdio->mbox_info.htc_addr,
-+					 ar_sdio->vsg_buffer, virt_pkt_len);
-+		if (ret) {
-+			i = 0;
- 			goto err;
-+		}
-+	} else {
-+		ath10k_err(ar, "size exceeding limit %d\n", virt_pkt_len);
-+	}
-+
-+	pkt_offset = 0;
-+	for (i = 0; i < ar_sdio->n_rx_pkts; i++) {
-+		struct sk_buff *skb = ar_sdio->rx_pkts[i].skb;
-+
-+		pkt = &ar_sdio->rx_pkts[i];
-+		memcpy(skb->data, ar_sdio->vsg_buffer + pkt_offset,
-+		       pkt->alloc_len);
-+		pkt->status = 0;
-+		skb_put(skb, pkt->act_len);
-+		pkt_offset += pkt->alloc_len;
- 	}
- 
- 	return 0;
- 
- err:
- 	/* Free all packets that was not successfully fetched. */
--	for (; i < ar_sdio->n_rx_pkts; i++)
-+	for (i = 0; i < ar_sdio->n_rx_pkts; i++)
- 		ath10k_sdio_mbox_free_rx_pkt(&ar_sdio->rx_pkts[i]);
- 
-+	ar_sdio->n_rx_pkts = 0;
-+
- 	return ret;
- }
- 
-@@ -704,7 +812,10 @@ static int ath10k_sdio_mbox_rxmsg_pending_handler(struct ath10k *ar,
- 			 */
- 			*done = false;
- 
--		ret = ath10k_sdio_mbox_rx_fetch(ar);
-+		if (ar_sdio->n_rx_pkts > 1)
-+			ret = ath10k_sdio_mbox_rx_fetch_bundle(ar);
-+		else
-+			ret = ath10k_sdio_mbox_rx_fetch(ar);
- 
- 		/* Process fetched packets. This will potentially update
- 		 * n_lookaheads depending on if the packets contain lookahead
-@@ -860,8 +971,7 @@ static int ath10k_sdio_mbox_proc_cpu_intr(struct ath10k *ar)
- out:
- 	mutex_unlock(&irq_data->mtx);
- 	if (cpu_int_status & MBOX_CPU_STATUS_ENABLE_ASSERT_MASK) {
--		ath10k_err(ar, "firmware crashed!\n");
--		queue_work(ar->workqueue, &ar->restart_work);
-+		ath10k_sdio_fw_crashed_dump(ar);
- 	}
- 	return ret;
- }
-@@ -1112,7 +1222,7 @@ static int ath10k_sdio_bmi_get_rx_lookahead(struct ath10k *ar)
- 					 MBOX_HOST_INT_STATUS_ADDRESS,
- 					 &rx_word);
- 		if (ret) {
--			ath10k_warn(ar, "unable to read RX_LOOKAHEAD_VALID: %d\n", ret);
-+			ath10k_warn(ar, "unable to read rx_lookahd: %d\n", ret);
- 			return ret;
- 		}
- 
-@@ -1280,6 +1390,29 @@ static void __ath10k_sdio_write_async(struct ath10k *ar,
- 	ath10k_sdio_free_bus_req(ar, req);
- }
- 
-+static void ath10k_rx_indication_async_work(struct work_struct *work)
-+{
-+	struct ath10k_sdio *ar_sdio = container_of(work, struct ath10k_sdio,
-+						   wr_async_work_rx);
-+	struct ath10k *ar = ar_sdio->ar;
-+	struct ath10k_sdio_rx_request *req, *tmp_req;
-+
-+	spin_lock_bh(&ar_sdio->wr_async_lock_rx);
-+
-+	list_for_each_entry_safe(req, tmp_req, &ar_sdio->wr_asyncq_rx, list) {
-+		list_del(&req->list);
-+		spin_unlock_bh(&ar_sdio->wr_async_lock_rx);
-+		req->ep->ep_ops.ep_rx_complete(ar, req->skb);
-+		ath10k_sdio_free_rx_req(ar, req);
-+		spin_lock_bh(&ar_sdio->wr_async_lock_rx);
-+	}
-+
-+	if (test_bit(ATH10K_FLAG_CORE_REGISTERED, &ar->dev_flags))
-+		napi_schedule(&ar->napi);
-+
-+	spin_unlock_bh(&ar_sdio->wr_async_lock_rx);
-+}
-+
- static void ath10k_sdio_write_async_work(struct work_struct *work)
- {
- 	struct ath10k_sdio *ar_sdio = container_of(work, struct ath10k_sdio,
-@@ -1471,11 +1604,12 @@ static int ath10k_sdio_hif_tx_sg(struct ath10k *ar, u8 pipe_id,
- 		skb = items[i].transfer_context;
- 		padded_len = ath10k_sdio_calc_txrx_padded_len(ar_sdio,
- 							      skb->len);
--		skb_trim(skb, padded_len);
- 
- 		/* Write TX data to the end of the mbox address space */
- 		address = ar_sdio->mbox_addr[eid] + ar_sdio->mbox_size[eid] -
- 			  skb->len;
-+		skb->len = padded_len;
-+
- 		ret = ath10k_sdio_prep_async_req(ar, address, skb,
- 						 NULL, true, eid);
- 		if (ret)
-@@ -1499,7 +1633,8 @@ static int ath10k_sdio_hif_enable_intrs(struct ath10k *ar)
- 	/* Enable all but CPU interrupts */
- 	regs->int_status_en = FIELD_PREP(MBOX_INT_STATUS_ENABLE_ERROR_MASK, 1) |
- 			      FIELD_PREP(MBOX_INT_STATUS_ENABLE_CPU_MASK, 1) |
--			      FIELD_PREP(MBOX_INT_STATUS_ENABLE_COUNTER_MASK, 1);
-+			      FIELD_PREP(MBOX_INT_STATUS_ENABLE_COUNTER_MASK,
-+					 1);
- 
- 	/* NOTE: There are some cases where HIF can do detection of
- 	 * pending mbox messages which is disabled now.
-@@ -1660,6 +1795,33 @@ static int ath10k_sdio_hif_swap_mailbox(struct ath10k *ar)
- 	return 0;
- }
- 
-+static int ath10k_sdio_get_htt_tx_complete(struct ath10k *ar)
-+{
-+	u32 addr, val;
-+	int ret = 0;
-+
-+	addr = host_interest_item_address(HI_ITEM(hi_acs_flags));
-+
-+	ret = ath10k_sdio_hif_diag_read32(ar, addr, &val);
-+	if (ret) {
-+		ath10k_warn(ar,
-+			    "unable to read hi_acs_flags for htt tx comple : %d\n", ret);
-+		return ret;
-+	}
-+
-+	if (val & HI_ACS_FLAGS_SDIO_REDUCE_TX_COMPL_FW_ACK) {
-+		ath10k_dbg(ar, ATH10K_DBG_SDIO,
-+			   "sdio reduce tx comple fw ack\n");
-+		ret = 1;
-+	} else {
-+		ath10k_dbg(ar, ATH10K_DBG_SDIO,
-+			   "sdio reduce tx comple fw not ack\n");
-+		ret = 0;
-+	}
-+
-+	return ret;
-+}
-+
- /* HIF start/stop */
- 
- static int ath10k_sdio_hif_start(struct ath10k *ar)
-@@ -1667,6 +1829,8 @@ static int ath10k_sdio_hif_start(struct ath10k *ar)
- 	struct ath10k_sdio *ar_sdio = ath10k_sdio_priv(ar);
- 	int ret;
- 
-+	napi_enable(&ar->napi);
-+
- 	/* Sleep 20 ms before HIF interrupts are disabled.
- 	 * This will give target plenty of time to process the BMI done
- 	 * request before interrupts are disabled.
-@@ -1767,10 +1931,24 @@ static void ath10k_sdio_irq_disable(struct ath10k *ar)
- static void ath10k_sdio_hif_stop(struct ath10k *ar)
- {
- 	struct ath10k_sdio_bus_request *req, *tmp_req;
-+	struct ath10k_sdio_rx_request *rx_req, *tmp_rx_req;
- 	struct ath10k_sdio *ar_sdio = ath10k_sdio_priv(ar);
- 
- 	ath10k_sdio_irq_disable(ar);
- 
-+	cancel_work_sync(&ar_sdio->wr_async_work_rx);
-+
-+	spin_lock_bh(&ar_sdio->wr_async_lock_rx);
-+
-+	/* Free all RX requests that have not been handled */
-+	list_for_each_entry_safe(rx_req, tmp_rx_req, &ar_sdio->wr_asyncq_rx, list) {
-+		list_del(&rx_req->list);
-+		rx_req->ep->ep_ops.ep_rx_complete(ar, rx_req->skb);
-+		ath10k_sdio_free_rx_req(ar, rx_req);
-+	}
-+
-+	spin_unlock_bh(&ar_sdio->wr_async_lock_rx);
-+
- 	cancel_work_sync(&ar_sdio->wr_async_work);
- 
- 	spin_lock_bh(&ar_sdio->wr_async_lock);
-@@ -1791,6 +1969,9 @@ static void ath10k_sdio_hif_stop(struct ath10k *ar)
- 	}
- 
- 	spin_unlock_bh(&ar_sdio->wr_async_lock);
-+
-+	napi_synchronize(&ar->napi);
-+	napi_disable(&ar->napi);
- }
- 
- #ifdef CONFIG_PM
-@@ -1929,6 +2110,7 @@ static const struct ath10k_hif_ops ath10k_sdio_hif_ops = {
- 	.start			= ath10k_sdio_hif_start,
- 	.stop			= ath10k_sdio_hif_stop,
- 	.swap_mailbox		= ath10k_sdio_hif_swap_mailbox,
-+	.get_htt_tx_complete	= ath10k_sdio_get_htt_tx_complete,
- 	.map_service_to_pipe	= ath10k_sdio_hif_map_service_to_pipe,
- 	.get_default_pipe	= ath10k_sdio_hif_get_default_pipe,
- 	.send_complete_check	= ath10k_sdio_hif_send_complete_check,
-@@ -1966,6 +2148,357 @@ static SIMPLE_DEV_PM_OPS(ath10k_sdio_pm_ops, ath10k_sdio_pm_suspend,
- 
- #endif /* CONFIG_PM_SLEEP */
- 
-+static int ath10k_sdio_napi_poll(struct napi_struct *ctx, int budget)
-+{
-+	struct ath10k *ar = container_of(ctx, struct ath10k, napi);
-+	int done = 0;
-+
-+	done = ath10k_htt_rx_hl_indication(ar, budget);
-+	ath10k_dbg(ar, ATH10K_DBG_SDIO, "napi poll: done: %d,budget:%d\n", done, budget);
-+
-+	if (done < budget)
-+		napi_complete_done(ctx, done);
-+
-+	return done;
-+}
-+
-+void ath10k_sdio_init_napi(struct ath10k *ar)
-+{
-+	netif_napi_add(&ar->napi_dev, &ar->napi, ath10k_sdio_napi_poll,
-+		       ATH10K_NAPI_BUDGET);
-+
-+}
-+
-+static int ath10k_sdio_read_host_interest_value(struct ath10k *ar,
-+						u32 item_offset,
-+						u32 *val)
-+{
-+	u32 addr;
-+	int ret;
-+
-+	addr = host_interest_item_address(item_offset);
-+
-+	ret = ath10k_sdio_hif_diag_read32(ar, addr, val);
-+
-+	if (ret)
-+		ath10k_warn(ar, "unable to read host interest offset %d value\n",
-+			    item_offset);
-+
-+	return ret;
-+}
-+
-+static int ath10k_sdio_read_mem(struct ath10k *ar, u32 address, void *buf,
-+				u32 buf_len)
-+{
-+	u32 val;
-+	int i, ret;
-+
-+	for (i = 0; i < buf_len; i += 4) {
-+		ret = ath10k_sdio_hif_diag_read32(ar, address + i, &val);
-+		if (ret) {
-+			ath10k_warn(ar, "unable to read mem %d value\n", address + i);
-+			break;
-+		}
-+		memcpy(buf + i, &val, 4);
-+	}
-+
-+	return ret;
-+}
-+
-+void ath10k_sdio_check_fw_reg(struct ath10k *ar, u32 *fast_dump)
-+{
-+	int ret = 0;
-+	u32 param;
-+
-+	ret = ath10k_sdio_read_host_interest_value(ar, HI_ITEM(hi_option_flag2), &param);
-+
-+	*fast_dump = ((param & HI_OPTION_SDIO_CRASH_DUMP_ENHANCEMENT_FW)
-+			     == HI_OPTION_SDIO_CRASH_DUMP_ENHANCEMENT_FW);
-+
-+	ath10k_err(ar, "check fw reg : %x\n", param);
-+}
-+
-+static void ath10k_sdio_dump_registers(struct ath10k *ar,
-+				       struct ath10k_fw_crash_data *crash_data,
-+				       u32 fast_dump)
-+{
-+	u32 reg_dump_values[REG_DUMP_COUNT_QCA988X] = {};
-+	int i, ret;
-+	u32 reg_dump_area;
-+
-+	ret = ath10k_sdio_read_host_interest_value(ar, HI_ITEM(hi_failure_state),
-+						   &reg_dump_area);
-+	if (ret) {
-+		ath10k_err(ar, "failed to read firmware dump area: %d\n", ret);
-+		return;
-+	}
-+
-+	if (fast_dump)
-+		ret = ath10k_bmi_read_memory(ar, reg_dump_area, reg_dump_values,
-+					     sizeof(reg_dump_values));
-+	else
-+		ret = ath10k_sdio_read_mem(ar, reg_dump_area, reg_dump_values,
-+					   sizeof(reg_dump_values));
-+
-+	if (ret) {
-+		ath10k_err(ar, "failed to read firmware dump value: %d\n", ret);
-+		return;
-+	}
-+
-+	ath10k_err(ar, "firmware register dump:\n");
-+	for (i = 0; i < ARRAY_SIZE(reg_dump_values); i += 4)
-+		ath10k_err(ar, "[%02d]: 0x%08X 0x%08X 0x%08X 0x%08X\n",
-+			   i,
-+			   reg_dump_values[i],
-+			   reg_dump_values[i + 1],
-+			   reg_dump_values[i + 2],
-+			   reg_dump_values[i + 3]);
-+
-+	if (!crash_data)
-+		return;
-+
-+	for (i = 0; i < ARRAY_SIZE(reg_dump_values); i++)
-+		crash_data->registers[i] = __cpu_to_le32(reg_dump_values[i]);
-+}
-+
-+static int ath10k_sdio_dump_memory_section(struct ath10k *ar,
-+					   const struct ath10k_mem_region *mem_region,
-+					   u8 *buf, size_t buf_len)
-+{
-+	const struct ath10k_mem_section *cur_section, *next_section;
-+	unsigned int count, section_size, skip_size;
-+	int ret, i, j;
-+
-+	if (!mem_region || !buf)
-+		return 0;
-+
-+	cur_section = &mem_region->section_table.sections[0];
-+
-+	if (mem_region->start > cur_section->start) {
-+		ath10k_warn(ar, "incorrect memdump region 0x%x with section start address 0x%x.\n",
-+			    mem_region->start, cur_section->start);
-+		return 0;
-+	}
-+
-+	skip_size = cur_section->start - mem_region->start;
-+
-+	/* fill the gap between the first register section and register
-+	 * start address
-+	 */
-+	for (i = 0; i < skip_size; i++) {
-+		*buf = ATH10K_MAGIC_NOT_COPIED;
-+		buf++;
-+	}
-+
-+	count = 0;
-+
-+	for (i = 0; cur_section; i++) {
-+		section_size = cur_section->end - cur_section->start;
-+
-+		if (section_size <= 0) {
-+			ath10k_warn(ar, "incorrect ramdump format with start address 0x%x and stop address 0x%x\n",
-+				    cur_section->start,
-+				    cur_section->end);
-+			break;
-+		}
-+
-+		if ((i + 1) == mem_region->section_table.size) {
-+			/* last section */
-+			next_section = NULL;
-+			skip_size = 0;
-+		} else {
-+			next_section = cur_section + 1;
-+
-+			if (cur_section->end > next_section->start) {
-+				ath10k_warn(ar, "next ramdump section 0x%x is smaller than current end address 0x%x\n",
-+					    next_section->start,
-+					    cur_section->end);
-+				break;
-+			}
-+
-+			skip_size = next_section->start - cur_section->end;
-+		}
-+
-+		if (buf_len < (skip_size + section_size)) {
-+			ath10k_warn(ar, "ramdump buffer is too small: %zu\n", buf_len);
-+			break;
-+		}
-+
-+		buf_len -= skip_size + section_size;
-+
-+		/* read section to dest memory */
-+		ret = ath10k_sdio_read_mem(ar, cur_section->start,
-+					   buf, section_size);
-+		if (ret) {
-+			ath10k_warn(ar, "failed to read ramdump from section 0x%x: %d\n",
-+				    cur_section->start, ret);
-+			break;
-+		}
-+
-+		buf += section_size;
-+		count += section_size;
-+
-+		/* fill in the gap between this section and the next */
-+		for (j = 0; j < skip_size; j++) {
-+			*buf = ATH10K_MAGIC_NOT_COPIED;
-+			buf++;
-+		}
-+
-+		count += skip_size;
-+
-+		if (!next_section)
-+			/* this was the last section */
-+			break;
-+
-+		cur_section = next_section;
-+	}
-+
-+	return count;
-+}
-+
-+/* if an error happened returns < 0, otherwise the length */
-+static int ath10k_sdio_dump_memory_generic(struct ath10k *ar,
-+					   const struct ath10k_mem_region *current_region,
-+					   u8 *buf,
-+					   u32 fast_dump)
-+{
-+	int ret;
-+
-+	if (current_region->section_table.size > 0)
-+		/* Copy each section individually. */
-+		return ath10k_sdio_dump_memory_section(ar,
-+						      current_region,
-+						      buf,
-+						      current_region->len);
-+
-+	/* No individiual memory sections defined so we can
-+	 * copy the entire memory region.
-+	 */
-+	if (fast_dump)
-+		ret = ath10k_bmi_read_memory(ar,
-+					     current_region->start,
-+					     buf,
-+					     current_region->len);
-+	else
-+		ret = ath10k_sdio_read_mem(ar,
-+					   current_region->start,
-+					   buf,
-+					   current_region->len);
-+
-+	if (ret) {
-+		ath10k_warn(ar, "failed to copy ramdump region %s: %d\n",
-+			    current_region->name, ret);
-+		return ret;
-+	}
-+
-+	return current_region->len;
-+}
-+
-+static void ath10k_sdio_dump_memory(struct ath10k *ar,
-+				    struct ath10k_fw_crash_data *crash_data,
-+				    u32 fast_dump)
-+{
-+	const struct ath10k_hw_mem_layout *mem_layout;
-+	const struct ath10k_mem_region *current_region;
-+	struct ath10k_dump_ram_data_hdr *hdr;
-+	u32 count;
-+	size_t buf_len;
-+	int ret, i;
-+	u8 *buf;
-+
-+	if (!crash_data)
-+		return;
-+
-+	mem_layout = ath10k_coredump_get_mem_layout(ar);
-+	if (!mem_layout)
-+		return;
-+
-+	current_region = &mem_layout->region_table.regions[0];
-+
-+	buf = crash_data->ramdump_buf;
-+	buf_len = crash_data->ramdump_buf_len;
-+
-+	memset(buf, 0, buf_len);
-+
-+	for (i = 0; i < mem_layout->region_table.size; i++) {
-+		count = 0;
-+
-+		if (current_region->len > buf_len) {
-+			ath10k_warn(ar, "memory region %s size %d is larger that remaining ramdump buffer size %zu\n",
-+				    current_region->name,
-+				    current_region->len,
-+				    buf_len);
-+			break;
-+		}
-+
-+		/* Reserve space for the header. */
-+		hdr = (void *)buf;
-+		buf += sizeof(*hdr);
-+		buf_len -= sizeof(*hdr);
-+
-+		ret = ath10k_sdio_dump_memory_generic(ar, current_region, buf, fast_dump);
-+
-+		ath10k_err(ar, "dump mem, name:%s, type:%d, start:0x%x, len:0x%x, size:%d, ret:0x%x\n",
-+			   current_region->name,
-+			   current_region->type,
-+			   current_region->start,
-+			   current_region->len,
-+			   current_region->section_table.size,
-+			   ret);
-+
-+		if (ret >= 0)
-+			count = ret;
-+
-+		hdr->region_type = cpu_to_le32(current_region->type);
-+		hdr->start = cpu_to_le32(current_region->start);
-+		hdr->length = cpu_to_le32(count);
-+
-+		if (count == 0)
-+			/* Note: the header remains, just with zero length. */
-+			break;
-+
-+		buf += count;
-+		buf_len -= count;
-+
-+		current_region++;
-+	}
-+}
-+
-+void ath10k_sdio_fw_crashed_dump(struct ath10k *ar)
-+{
-+	struct ath10k_fw_crash_data *crash_data;
-+	char guid[UUID_STRING_LEN + 1];
-+	u32 fast_dump = 0;
-+
-+	ath10k_err(ar, "begin fw dump\n", guid);
-+
-+	if (ar->fast_dump)
-+		ath10k_sdio_check_fw_reg(ar, &fast_dump);
-+
-+	if (fast_dump)
-+		ar->bmi.done_sent = false;
-+
-+	ar->stats.fw_crash_counter++;
-+
-+	ath10k_sdio_hif_disable_intrs(ar);
-+
-+	crash_data = ath10k_coredump_new(ar);
-+
-+	if (crash_data)
-+		scnprintf(guid, sizeof(guid), "%pUl", &crash_data->guid);
-+	else
-+		scnprintf(guid, sizeof(guid), "n/a");
-+
-+	ath10k_err(ar, "firmware crashed! (guid %s)\n", guid);
-+	ath10k_print_driver_info(ar);
-+	ath10k_sdio_dump_registers(ar, crash_data, fast_dump);
-+	ath10k_sdio_dump_memory(ar, crash_data, fast_dump);
-+
-+	ath10k_sdio_hif_enable_intrs(ar);
-+
-+	queue_work(ar->workqueue, &ar->restart_work);
-+}
-+
- static int ath10k_sdio_probe(struct sdio_func *func,
- 			     const struct sdio_device_id *id)
- {
-@@ -1991,6 +2524,8 @@ static int ath10k_sdio_probe(struct sdio_func *func,
- 		return -ENOMEM;
- 	}
- 
-+	ath10k_sdio_init_napi(ar);
-+
- 	ath10k_dbg(ar, ATH10K_DBG_BOOT,
- 		   "sdio new func %d vendor 0x%x device 0x%x block 0x%x/0x%x\n",
- 		   func->num, func->vendor, func->device,
-@@ -2006,6 +2541,12 @@ static int ath10k_sdio_probe(struct sdio_func *func,
- 		goto err_core_destroy;
- 	}
- 
-+	ar_sdio->vsg_buffer = devm_kzalloc(ar->dev, ATH10K_SDIO_VSG_BUF_SIZE, GFP_KERNEL);
-+	if (!ar_sdio->vsg_buffer) {
-+		ret = -ENOMEM;
-+		goto err_core_destroy;
-+	}
-+
- 	ar_sdio->irq_data.irq_en_reg =
- 		devm_kzalloc(ar->dev, sizeof(struct ath10k_sdio_irq_enable_regs),
- 			     GFP_KERNEL);
-@@ -2043,6 +2584,21 @@ static int ath10k_sdio_probe(struct sdio_func *func,
- 	for (i = 0; i < ATH10K_SDIO_BUS_REQUEST_MAX_NUM; i++)
- 		ath10k_sdio_free_bus_req(ar, &ar_sdio->bus_req[i]);
- 
-+	spin_lock_init(&ar_sdio->rx_lock);
-+	spin_lock_init(&ar_sdio->wr_async_lock_rx);
-+	INIT_LIST_HEAD(&ar_sdio->rx_req_freeq);
-+	INIT_LIST_HEAD(&ar_sdio->wr_asyncq_rx);
-+
-+	INIT_WORK(&ar_sdio->wr_async_work_rx, ath10k_rx_indication_async_work);
-+	ar_sdio->workqueue_rx = create_singlethread_workqueue("ath10k_sdio_wq_rx");
-+	if (!ar_sdio->workqueue_rx) {
-+		ret = -ENOMEM;
-+		goto err_free_wq;
-+	}
-+
-+	for (i = 0; i < ARRAY_SIZE(ar_sdio->rx_req); i++)
-+		ath10k_sdio_free_rx_req(ar, &ar_sdio->rx_req[i]);
-+
- 	dev_id_base = FIELD_GET(QCA_MANUFACTURER_ID_BASE, id->device);
- 	switch (dev_id_base) {
- 	case QCA_MANUFACTURER_ID_AR6005_BASE:
-@@ -2053,7 +2609,7 @@ static int ath10k_sdio_probe(struct sdio_func *func,
- 		ret = -ENODEV;
- 		ath10k_err(ar, "unsupported device id %u (0x%x)\n",
- 			   dev_id_base, id->device);
--		goto err_free_wq;
-+		goto err_free_wq_rx;
- 	}
- 
- 	ar->id.vendor = id->vendor;
-@@ -2077,6 +2633,8 @@ static int ath10k_sdio_probe(struct sdio_func *func,
- 
- 	return 0;
- 
-+err_free_wq_rx:
-+	destroy_workqueue(ar_sdio->workqueue_rx);
- err_free_wq:
- 	destroy_workqueue(ar_sdio->workqueue);
- err_core_destroy:
-@@ -2095,10 +2653,16 @@ static void ath10k_sdio_remove(struct sdio_func *func)
- 		   func->num, func->vendor, func->device);
- 
- 	ath10k_core_unregister(ar);
-+
-+	netif_napi_del(&ar->napi);
-+
- 	ath10k_core_destroy(ar);
- 
- 	flush_workqueue(ar_sdio->workqueue);
- 	destroy_workqueue(ar_sdio->workqueue);
-+
-+	flush_workqueue(ar_sdio->workqueue_rx);
-+	destroy_workqueue(ar_sdio->workqueue_rx);
- }
- 
- static const struct sdio_device_id ath10k_sdio_devices[] = {
-diff --git a/drivers/net/wireless/ath/ath10k/sdio.h b/drivers/net/wireless/ath/ath10k/sdio.h
-index b8c7ac0330bd48e63b806b785c136379bdd663d8..290f611d128900f382b4ef6cfa71a85d09990a45 100644
---- a/drivers/net/wireless/ath/ath10k/sdio.h
-+++ b/drivers/net/wireless/ath/ath10k/sdio.h
-@@ -38,6 +38,7 @@
- 
- #define ATH10K_HIF_MBOX_NUM_MAX                 4
- #define ATH10K_SDIO_BUS_REQUEST_MAX_NUM         64
-+#define ATH10K_SDIO_RX_REQUEST_MAX_NUM          1024
- 
- #define ATH10K_SDIO_HIF_COMMUNICATION_TIMEOUT_HZ (100 * HZ)
- 
-@@ -89,15 +90,23 @@
-  * to the maximum value (HTC_HOST_MAX_MSG_PER_RX_BUNDLE).
-  *
-  * in this case the driver must allocate
-- * (HTC_HOST_MAX_MSG_PER_RX_BUNDLE * HTC_HOST_MAX_MSG_PER_RX_BUNDLE) skb's.
-+ * (HTC_HOST_MAX_MSG_PER_RX_BUNDLE * 2) skb's.
-  */
- #define ATH10K_SDIO_MAX_RX_MSGS \
--	(HTC_HOST_MAX_MSG_PER_RX_BUNDLE * HTC_HOST_MAX_MSG_PER_RX_BUNDLE)
-+	(HTC_HOST_MAX_MSG_PER_RX_BUNDLE * 2)
-+
-+#define BUNDLE_COUNT_HIGH(f) (((f) & 0x0C) << 2)
- 
- #define ATH10K_FIFO_TIMEOUT_AND_CHIP_CONTROL   0x00000868u
- #define ATH10K_FIFO_TIMEOUT_AND_CHIP_CONTROL_DISABLE_SLEEP_OFF 0xFFFEFFFF
- #define ATH10K_FIFO_TIMEOUT_AND_CHIP_CONTROL_DISABLE_SLEEP_ON 0x10000
- 
-+struct ath10k_sdio_rx_request {
-+	struct list_head list;
-+	struct sk_buff *skb;
-+	struct ath10k_htc_ep *ep;
-+};
-+
- struct ath10k_sdio_bus_request {
- 	struct list_head list;
- 
-@@ -138,8 +147,8 @@ struct ath10k_sdio_irq_proc_regs {
- 	u8 rx_lookahead_valid;
- 	u8 host_int_status2;
- 	u8 gmbox_rx_avail;
--	__le32 rx_lookahead[2];
--	__le32 rx_gmbox_lookahead_alias[2];
-+	__le32 rx_lookahead[2 * ATH10K_HIF_MBOX_NUM_MAX];
-+	__le32 int_status_enable;
- };
- 
- struct ath10k_sdio_irq_enable_regs {
-@@ -187,15 +196,24 @@ struct ath10k_sdio {
- 	struct ath10k_sdio_bus_request bus_req[ATH10K_SDIO_BUS_REQUEST_MAX_NUM];
- 	/* free list of bus requests */
- 	struct list_head bus_req_freeq;
-+
- 	/* protects access to bus_req_freeq */
- 	spinlock_t lock;
- 
-+	/* available rx requests */
-+	struct ath10k_sdio_rx_request rx_req[ATH10K_SDIO_RX_REQUEST_MAX_NUM];
-+	/* free list of rx requests */
-+	struct list_head rx_req_freeq;
-+	/* protects access to rx_req_freeq */
-+	spinlock_t rx_lock;
-+
- 	struct ath10k_sdio_rx_data rx_pkts[ATH10K_SDIO_MAX_RX_MSGS];
- 	size_t n_rx_pkts;
- 
- 	struct ath10k *ar;
- 	struct ath10k_sdio_irq_data irq_data;
- 
-+	u8 *vsg_buffer;
- 	/* temporary buffer for BMI requests */
- 	u8 *bmi_buf;
- 
-@@ -206,6 +224,12 @@ struct ath10k_sdio {
- 	struct list_head wr_asyncq;
- 	/* protects access to wr_asyncq */
- 	spinlock_t wr_async_lock;
-+
-+	struct workqueue_struct *workqueue_rx;
-+	struct work_struct wr_async_work_rx;
-+	struct list_head wr_asyncq_rx;
-+	/* protects access to wr_asyncq_rx */
-+	spinlock_t wr_async_lock_rx;
- };
- 
- static inline struct ath10k_sdio *ath10k_sdio_priv(struct ath10k *ar)
-diff --git a/drivers/net/wireless/ath/ath10k/targaddrs.h b/drivers/net/wireless/ath/ath10k/targaddrs.h
-index 011da98c32b1291434fa73b3faaaba4def8903f6..69c360797a76b898e44063c13413d6441f7da768 100644
---- a/drivers/net/wireless/ath/ath10k/targaddrs.h
-+++ b/drivers/net/wireless/ath/ath10k/targaddrs.h
-@@ -333,6 +333,15 @@ struct host_interest {
- #define HI_ACS_FLAGS_SDIO_SWAP_MAILBOX_FW_ACK    (1 << 16)
- #define HI_ACS_FLAGS_SDIO_REDUCE_TX_COMPL_FW_ACK (1 << 17)
- 
-+/* If both SDIO_CRASH_DUMP_ENHANCEMENT_HOST and SDIO_CRASH_DUMP_ENHANCEMENT_FW
-+ * flags are set, then crashdump upload will be done using the BMI host/target
-+ * communication channel.
-+ */
-+/* HOST to support using BMI dump FW memory when hit assert */
-+#define HI_OPTION_SDIO_CRASH_DUMP_ENHANCEMENT_HOST 0x400
-+/* FW to support using BMI dump FW memory when hit assert */
-+#define HI_OPTION_SDIO_CRASH_DUMP_ENHANCEMENT_FW   0x800
-+
- /*
-  * CONSOLE FLAGS
-  *
+ static int mtk_phy_init(struct phy *phy)
 diff --git a/drivers/remoteproc/mtk_scp.c b/drivers/remoteproc/mtk_scp.c
 index 33d98903c195635579d9591e8ff28f405893db6f..45395f668b8dfaf4828dad708d06ac1b9c7796d3 100644
 --- a/drivers/remoteproc/mtk_scp.c
@@ -45387,23 +43512,6 @@ index 33d98903c195635579d9591e8ff28f405893db6f..45395f668b8dfaf4828dad708d06ac1b
  };
  
  static int scp_reserve_mem_init(struct mtk_scp *scp)
-diff --git a/drivers/remoteproc/mtk_scp_ipi.c b/drivers/remoteproc/mtk_scp_ipi.c
-index a39458a0b788c7e30f51889ca185cc002d1dfeab..7d59491bec9c032193d5b56b211717253d4f82a4 100644
---- a/drivers/remoteproc/mtk_scp_ipi.c
-+++ b/drivers/remoteproc/mtk_scp_ipi.c
-@@ -142,8 +142,10 @@ int scp_ipi_send(struct platform_device *pdev,
- 					 scp->ipi_id_ack[id],
- 					 timeout);
- 		scp->ipi_id_ack[id] = false;
--		if (ret < 0)
--			dev_warn(scp->dev, "scp ipi %d ack time out !", id);
-+		if (WARN(!ret, "scp ipi %d ack time out !", id))
-+			ret = -EIO;
-+		else
-+			ret = 0;
- 	}
- 
- clock_disable:
 diff --git a/drivers/soc/mediatek/mtk-cmdq-helper.c b/drivers/soc/mediatek/mtk-cmdq-helper.c
 index fac4d33fd5207d4fe16103c31b75fdc5f1271a53..72d8485e8c18ab7e47d77fe3ee66016af8e64393 100644
 --- a/drivers/soc/mediatek/mtk-cmdq-helper.c
@@ -45715,40 +43823,37 @@ index 7a8d87051ee8b85e2112f3649e2125568cc19f83..609397d69602907f31571f397889fcce
  #endif
  
  #endif
-diff --git a/include/sound/soc.h b/include/sound/soc.h
-index fd58d401f9cfbe3fa8cc33fd56fd6f74f4d9f8bd..909e0d0db66e7293f18f1e74089c547570625b26 100644
---- a/include/sound/soc.h
-+++ b/include/sound/soc.h
-@@ -968,7 +968,7 @@ struct snd_soc_dai_link {
- 	/*
- 	 * You MAY specify the link's platform/PCM/DMA driver, either by
- 	 * device name, or by DT/OF node, but not both. Some forms of link
--	 * do not need a platform.
-+	 * do not need a platform. In such case, platforms are not mandatory.
- 	 */
- 	const char *platform_name;
- 	struct device_node *platform_of_node;
-@@ -1131,6 +1131,7 @@ struct snd_soc_dai_link {
- #define COMP_CPU(_dai)			{ .dai_name = _dai, }
- #define COMP_CODEC(_name, _dai)		{ .name = _name, .dai_name = _dai, }
- #define COMP_PLATFORM(_name)		{ .name = _name }
-+#define COMP_AUX(_name)			{ .name = _name }
- #define COMP_DUMMY()			{ .name = "snd-soc-dummy", .dai_name = "snd-soc-dummy-dai", }
+diff --git a/include/sound/hdmi-codec.h b/include/sound/hdmi-codec.h
+index 1e3f2d0fe5473c5de5e3a1b48c1004208bdbda08..6dfe87bfac20d7233bf3345a412237c8213473bb 100644
+--- a/include/sound/hdmi-codec.h
++++ b/include/sound/hdmi-codec.h
+@@ -58,6 +58,13 @@ struct hdmi_codec_params {
+ typedef void (*hdmi_codec_plugged_cb)(struct device *dev,
+ 				      bool plugged);
  
- extern struct snd_soc_dai_link_component null_dailink_component[0];
-@@ -1161,6 +1162,12 @@ struct snd_soc_aux_dev {
- 	const char *codec_name;
- 	struct device_node *codec_of_node;
++enum {
++	HDMI_CODEC_TRIGGER_EVENT_STOP,
++	HDMI_CODEC_TRIGGER_EVENT_START,
++	HDMI_CODEC_TRIGGER_EVENT_SUSPEND,
++	HDMI_CODEC_TRIGGER_EVENT_RESUME,
++};
++
+ struct hdmi_codec_pdata;
+ struct hdmi_codec_ops {
+ 	/*
+@@ -74,6 +81,12 @@ struct hdmi_codec_ops {
+ 			 struct hdmi_codec_daifmt *fmt,
+ 			 struct hdmi_codec_params *hparms);
  
 +	/*
-+	 * name, codec_name, codec_of_node will be replaced
-+	 * into dlc. don't use both in the same time
++	 * Trigger events.
++	 * Optional
 +	 */
-+	struct snd_soc_dai_link_component dlc;
++	int (*trigger)(struct device *dev, int event);
 +
- 	/* codec/machine specific init - e.g. add machine controls */
- 	int (*init)(struct snd_soc_component *component);
- };
+ 	/*
+ 	 * Shuts down the audio stream.
+ 	 * Mandatory
 diff --git a/include/uapi/linux/v4l2-controls.h b/include/uapi/linux/v4l2-controls.h
 index 2fb36d37f898ff756b2247e4f8f78bb1a4a012b0..7279a4d78f972f3f49f7b558efde908d8ae7410d 100644
 --- a/include/uapi/linux/v4l2-controls.h
@@ -45765,7 +43870,7 @@ index 2fb36d37f898ff756b2247e4f8f78bb1a4a012b0..7279a4d78f972f3f49f7b558efde908d
  /* The MPEG controls are applicable to all codec controls
   * and the 'MPEG' part of the define is historical */
 diff --git a/include/uapi/linux/videodev2.h b/include/uapi/linux/videodev2.h
-index b08f3dba87af30b16d0457b00b227491156d8250..75ca327166eb8d1580262cdcbc9c8526855d2edf 100644
+index eab31a8d246f1d60344b55b959bf14f1c534af01..cd5245b8d37868985023c5ef292be03605296699 100644
 --- a/include/uapi/linux/videodev2.h
 +++ b/include/uapi/linux/videodev2.h
 @@ -698,6 +698,40 @@ struct v4l2_pix_format {
@@ -45823,267 +43928,79 @@ index b08f3dba87af30b16d0457b00b227491156d8250..75ca327166eb8d1580262cdcbc9c8526
  /* priv field value to indicates that subsequent fields are valid. */
  #define V4L2_PIX_FMT_PRIV_MAGIC		0xfeedcafe
  
-diff --git a/sound/soc/codecs/mt6358.c b/sound/soc/codecs/mt6358.c
-index 50b3fc5457ea717a390879a7ac7edc9268128522..cab208aa22a773a37ef9e02259675d874c928643 100644
---- a/sound/soc/codecs/mt6358.c
-+++ b/sound/soc/codecs/mt6358.c
-@@ -1730,6 +1730,10 @@ static int mt6358_dmic_enable(struct mt6358_priv *priv)
- 
- 	/* UL turn on */
- 	regmap_write(priv->regmap, MT6358_AFE_UL_SRC_CON0_L, 0x0003);
-+
-+	/* Prevent pop noise form dmic hw */
-+	msleep(100);
-+
+diff --git a/sound/soc/codecs/hdmi-codec.c b/sound/soc/codecs/hdmi-codec.c
+index 9ba23c1391635968256692feb716f5d9db515793..afdcac811a1cef31123bfd2b04883269f347f094 100644
+--- a/sound/soc/codecs/hdmi-codec.c
++++ b/sound/soc/codecs/hdmi-codec.c
+@@ -573,12 +573,42 @@ static int hdmi_codec_digital_mute(struct snd_soc_dai *dai, int mute)
  	return 0;
  }
  
-diff --git a/sound/soc/mediatek/mt8183/mt8183-mt6358-ts3a227-max98357.c b/sound/soc/mediatek/mt8183/mt8183-mt6358-ts3a227-max98357.c
-index 86555fa0fd6e8bd4eb5106bd1c9e5f0cb49bacc8..ae840437fec169f3d63d9b63a0a695177c33bca2 100644
---- a/sound/soc/mediatek/mt8183/mt8183-mt6358-ts3a227-max98357.c
-+++ b/sound/soc/mediatek/mt8183/mt8183-mt6358-ts3a227-max98357.c
-@@ -343,7 +343,7 @@ static int
- mt8183_mt6358_ts3a227_max98357_headset_init(struct snd_soc_component *cpnt);
- 
- static struct snd_soc_aux_dev mt8183_mt6358_ts3a227_max98357_headset_dev = {
--	.name = "Headset Chip",
-+	.dlc = COMP_EMPTY(),
- 	.init = mt8183_mt6358_ts3a227_max98357_headset_init,
- };
- 
-@@ -399,10 +399,10 @@ mt8183_mt6358_ts3a227_max98357_dev_probe(struct platform_device *pdev)
- 		dai_link->platforms->of_node = platform_node;
- 	}
- 
--	mt8183_mt6358_ts3a227_max98357_headset_dev.codec_of_node =
-+	mt8183_mt6358_ts3a227_max98357_headset_dev.dlc.of_node =
- 		of_parse_phandle(pdev->dev.of_node,
- 				 "mediatek,headset-codec", 0);
--	if (mt8183_mt6358_ts3a227_max98357_headset_dev.codec_of_node) {
-+	if (mt8183_mt6358_ts3a227_max98357_headset_dev.dlc.of_node) {
- 		card->aux_dev = &mt8183_mt6358_ts3a227_max98357_headset_dev;
- 		card->num_aux_devs = 1;
- 	}
-diff --git a/sound/soc/soc-core.c b/sound/soc/soc-core.c
-index 8b0227d28512206bb4204052e43bfb9f4486a779..a29ac3fb1f3467c4bffb6013cd04674588c52283 100644
---- a/sound/soc/soc-core.c
-+++ b/sound/soc/soc-core.c
-@@ -760,34 +760,15 @@ static struct device_node
- 	return of_node;
- }
- 
--static struct snd_soc_component *soc_find_component(
--	const struct device_node *of_node, const char *name)
--{
--	struct snd_soc_component *component;
--	struct device_node *component_of_node;
--
--	lockdep_assert_held(&client_mutex);
--
--	for_each_component(component) {
--		if (of_node) {
--			component_of_node = soc_component_to_node(component);
--
--			if (component_of_node == of_node)
--				return component;
--		} else if (name && strcmp(component->name, name) == 0) {
--			return component;
--		}
--	}
--
--	return NULL;
--}
--
- static int snd_soc_is_matching_component(
- 	const struct snd_soc_dai_link_component *dlc,
- 	struct snd_soc_component *component)
- {
- 	struct device_node *component_of_node;
- 
-+	if (!dlc)
++static int hdmi_codec_trigger(struct snd_pcm_substream *substream, int cmd,
++			      struct snd_soc_dai *dai)
++{
++	struct hdmi_codec_priv *hcp = snd_soc_dai_get_drvdata(dai);
++	int event;
++
++	if (!hcp->hcd.ops->trigger)
 +		return 0;
 +
- 	component_of_node = soc_component_to_node(component);
- 
- 	if (dlc->of_node && component_of_node != dlc->of_node)
-@@ -798,6 +779,28 @@ static int snd_soc_is_matching_component(
- 	return 1;
- }
- 
-+static struct snd_soc_component *soc_find_component(
-+	const struct snd_soc_dai_link_component *dlc)
-+{
-+	struct snd_soc_component *component;
++	switch (cmd) {
++	case SNDRV_PCM_TRIGGER_STOP:
++		event = HDMI_CODEC_TRIGGER_EVENT_STOP;
++		break;
++	case SNDRV_PCM_TRIGGER_START:
++		event = HDMI_CODEC_TRIGGER_EVENT_START;
++		break;
++	case SNDRV_PCM_TRIGGER_SUSPEND:
++		event = HDMI_CODEC_TRIGGER_EVENT_SUSPEND;
++		break;
++	case SNDRV_PCM_TRIGGER_RESUME:
++		event = HDMI_CODEC_TRIGGER_EVENT_RESUME;
++		break;
++	default:
++		return -EINVAL;
++	}
 +
-+	lockdep_assert_held(&client_mutex);
-+
-+	/*
-+	 * NOTE
-+	 *
-+	 * It returns *1st* found component, but some driver
-+	 * has few components by same of_node/name
-+	 * ex)
-+	 *	CPU component and generic DMAEngine component
-+	 */
-+	for_each_component(component)
-+		if (snd_soc_is_matching_component(dlc, component))
-+			return component;
-+
-+	return NULL;
++	return hcp->hcd.ops->trigger(dai->dev->parent, event);
 +}
 +
- /**
-  * snd_soc_find_dai - Find a registered DAI
-  *
-@@ -1232,32 +1235,38 @@ static int soc_init_dai_link(struct snd_soc_card *card,
- 		}
- 	}
+ static const struct snd_soc_dai_ops hdmi_codec_i2s_dai_ops = {
+ 	.startup	= hdmi_codec_startup,
+ 	.shutdown	= hdmi_codec_shutdown,
+ 	.hw_params	= hdmi_codec_hw_params,
+ 	.set_fmt	= hdmi_codec_i2s_set_fmt,
+ 	.digital_mute	= hdmi_codec_digital_mute,
++	.trigger	= hdmi_codec_trigger,
+ };
  
--	/* FIXME */
--	if (link->num_platforms > 1) {
--		dev_err(card->dev,
--			"ASoC: multi platform is not yet supported %s\n",
--			link->name);
--		return -EINVAL;
--	}
--
- 	/*
--	 * Platform may be specified by either name or OF node, but
--	 * can be left unspecified, and a dummy platform will be used.
-+	 * Platform may be specified by either name or OF node,
-+	 * or no Platform.
-+	 *
-+	 * FIXME
-+	 *
-+	 * We need multi-platform support
- 	 */
--	if (link->platforms->name && link->platforms->of_node) {
--		dev_err(card->dev,
--			"ASoC: Both platform name/of_node are set for %s\n",
--			link->name);
--		return -EINVAL;
--	}
-+	if (link->num_platforms > 0) {
+ static const struct snd_soc_dai_ops hdmi_codec_spdif_dai_ops = {
+@@ -586,6 +616,7 @@ static const struct snd_soc_dai_ops hdmi_codec_spdif_dai_ops = {
+ 	.shutdown	= hdmi_codec_shutdown,
+ 	.hw_params	= hdmi_codec_hw_params,
+ 	.digital_mute	= hdmi_codec_digital_mute,
++	.trigger	= hdmi_codec_trigger,
+ };
  
--	/*
--	 * Defer card registartion if platform dai component is not added to
--	 * component list.
--	 */
--	if ((link->platforms->of_node || link->platforms->name) &&
--	    !soc_find_component(link->platforms->of_node, link->platforms->name))
--		return -EPROBE_DEFER;
-+		if (link->num_platforms > 1) {
-+			dev_err(card->dev,
-+				"ASoC: multi platform is not yet supported %s\n",
-+				link->name);
-+			return -EINVAL;
-+		}
-+
-+		if (link->platforms->name && link->platforms->of_node) {
-+			dev_err(card->dev,
-+				"ASoC: Both platform name/of_node are set for %s\n",
-+				link->name);
-+			return -EINVAL;
-+		}
-+
-+		/*
-+		 * Defer card registartion if platform dai component is not
-+		 * added to component list.
-+		 */
-+		if ((link->platforms->of_node || link->platforms->name) &&
-+		    !soc_find_component(link->platforms))
-+			return -EPROBE_DEFER;
-+	}
+ #define HDMI_RATES	(SNDRV_PCM_RATE_32000 | SNDRV_PCM_RATE_44100 |\
+diff --git a/sound/soc/mediatek/mt8183/mt8183-mt6358-ts3a227-max98357.c b/sound/soc/mediatek/mt8183/mt8183-mt6358-ts3a227-max98357.c
+index ae840437fec169f3d63d9b63a0a695177c33bca2..fec9a26ddc309cbf6ac6e65b2abd84d8b2d7c53a 100644
+--- a/sound/soc/mediatek/mt8183/mt8183-mt6358-ts3a227-max98357.c
++++ b/sound/soc/mediatek/mt8183/mt8183-mt6358-ts3a227-max98357.c
+@@ -11,6 +11,7 @@
+ #include <sound/soc.h>
+ #include <sound/jack.h>
+ #include <linux/pinctrl/consumer.h>
++#include <sound/hdmi-codec.h>
  
- 	/* FIXME */
- 	if (link->num_cpus > 1) {
-@@ -1284,7 +1293,7 @@ static int soc_init_dai_link(struct snd_soc_card *card,
- 	 * component list.
- 	 */
- 	if ((link->cpus->of_node || link->cpus->name) &&
--	    !soc_find_component(link->cpus->of_node, link->cpus->name))
-+	    !soc_find_component(link->cpus))
- 		return -EPROBE_DEFER;
+ #include "mt8183-afe-common.h"
+ #include "../../codecs/ts3a227e.h"
+@@ -180,7 +181,7 @@ SND_SOC_DAILINK_DEFS(i2s5,
  
- 	/*
-@@ -1729,38 +1738,22 @@ static int soc_bind_aux_dev(struct snd_soc_card *card, int num)
- {
- 	struct snd_soc_aux_dev *aux_dev = &card->aux_dev[num];
- 	struct snd_soc_component *component;
--	const char *name;
--	struct device_node *codec_of_node;
--
--	if (aux_dev->codec_of_node || aux_dev->codec_name) {
--		/* codecs, usually analog devices */
--		name = aux_dev->codec_name;
--		codec_of_node = aux_dev->codec_of_node;
--		component = soc_find_component(codec_of_node, name);
--		if (!component) {
--			if (codec_of_node)
--				name = of_node_full_name(codec_of_node);
--			goto err_defer;
--		}
--	} else if (aux_dev->name) {
--		/* generic components */
--		name = aux_dev->name;
--		component = soc_find_component(NULL, name);
--		if (!component)
--			goto err_defer;
--	} else {
--		dev_err(card->dev, "ASoC: Invalid auxiliary device\n");
--		return -EINVAL;
--	}
-+
-+	/* remove me */
-+	if (aux_dev->codec_name)
-+		aux_dev->dlc.name = aux_dev->codec_name;
-+	if (aux_dev->codec_of_node)
-+		aux_dev->dlc.of_node = aux_dev->codec_of_node;
-+
-+	/* codecs, usually analog devices */
-+	component = soc_find_component(&aux_dev->dlc);
-+	if (!component)
-+		return -EPROBE_DEFER;
+ SND_SOC_DAILINK_DEFS(tdm,
+ 	DAILINK_COMP_ARRAY(COMP_CPU("TDM")),
+-	DAILINK_COMP_ARRAY(COMP_DUMMY()),
++	DAILINK_COMP_ARRAY(COMP_CODEC(HDMI_CODEC_DRV_NAME, "i2s-hifi")),
+ 	DAILINK_COMP_ARRAY(COMP_EMPTY()));
  
- 	component->init = aux_dev->init;
- 	list_add(&component->card_aux_list, &card->aux_comp_list);
- 
- 	return 0;
--
--err_defer:
--	dev_err(card->dev, "ASoC: %s not registered\n", name);
--	return -EPROBE_DEFER;
- }
- 
- static int soc_probe_aux_devices(struct snd_soc_card *card)
-@@ -3801,11 +3794,11 @@ EXPORT_SYMBOL_GPL(snd_soc_of_parse_daifmt);
- int snd_soc_get_dai_id(struct device_node *ep)
- {
- 	struct snd_soc_component *component;
--	struct device_node *node;
-+	struct snd_soc_dai_link_component dlc;
- 	int ret;
- 
--	node = of_graph_get_port_parent(ep);
--
-+	dlc.of_node	= of_graph_get_port_parent(ep);
-+	dlc.name	= NULL;
- 	/*
- 	 * For example HDMI case, HDMI has video/sound port,
- 	 * but ALSA SoC needs sound port number only.
-@@ -3814,13 +3807,13 @@ int snd_soc_get_dai_id(struct device_node *ep)
- 	 */
- 	ret = -ENOTSUPP;
- 	mutex_lock(&client_mutex);
--	component = soc_find_component(node, NULL);
-+	component = soc_find_component(&dlc);
- 	if (component &&
- 	    component->driver->of_xlate_dai_id)
- 		ret = component->driver->of_xlate_dai_id(component, ep);
- 	mutex_unlock(&client_mutex);
- 
--	of_node_put(node);
-+	of_node_put(dlc.of_node);
- 
- 	return ret;
- }
+ static struct snd_soc_dai_link
