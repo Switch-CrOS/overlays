@@ -16,6 +16,7 @@ DEPEND="!chromeos-base/light-sensor"
 # modemmanager provides Y3300 support.
 RDEPEND="${DEPEND}
 	!<chromeos-base/chromeos-bsp-lumpy-private-0.0.6
+	chromeos-base/chromeos-touch-firmware-lumpy
 	sys-apps/iotools
 	virtual/modemmanager
 "

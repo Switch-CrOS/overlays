@@ -1,0 +1,1 @@
+chromeos-touch-firmware-lumpy-11.29.ebuild
