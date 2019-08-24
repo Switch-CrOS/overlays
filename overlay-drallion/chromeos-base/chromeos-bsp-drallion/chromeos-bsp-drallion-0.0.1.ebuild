@@ -22,5 +22,9 @@ DEPEND="
 
 src_install() {
 	doappid "{ED3A4869-C380-4F79-A190-027C3E879357}" "CHROMEBOOK"
+
+	# Intall a rule tagging keyboard as having updated layout
+	udev_dorules "${FILESDIR}/81-drallion-keyboard.rules"
+
 	unibuild_install_audio_files 
 }
