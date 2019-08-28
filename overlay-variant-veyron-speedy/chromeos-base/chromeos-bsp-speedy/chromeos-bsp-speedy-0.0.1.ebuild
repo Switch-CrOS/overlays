@@ -1,0 +1,35 @@
+# Copyright 2019 The Chromium OS Authors. All rights reserved.
+# Distributed under the terms of the GNU General Public License v2
+
+EAPI=5
+
+inherit appid udev
+
+DESCRIPTION="Speedy bsp (meta package to pull in driver/tool deps)"
+
+LICENSE="BSD-Google"
+SLOT="0"
+KEYWORDS="-* arm"
+IUSE="bluetooth"
+
+DEPEND="!<chromeos-base/chromeos-bsp-speedy-private-0.0.2"
+RDEPEND="
+	${DEPEND}
+	bluetooth? ( net-wireless/broadcom )
+"
+
+S=${WORKDIR}
+
+src_install() {
+	doappid "{81C04B02-A863-BFBB-F77C-7707347DC958}" "CHROMEBOOK" # veyron-speedy
+
+	# Install Bluetooth ID override.
+	insinto "/etc/bluetooth"
+	doins "${FILESDIR}/main.conf"
+
+	# Install Speedy specific Broadcom BT init file.
+	if use bluetooth ; then
+		insinto "/etc/init"
+		doins "${FILESDIR}/brcm_patchram_plus.conf"
+	fi
+}
