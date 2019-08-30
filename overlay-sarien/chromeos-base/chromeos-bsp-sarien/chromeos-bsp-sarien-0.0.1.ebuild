@@ -11,6 +11,7 @@ or portage actions."
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="-* amd64 x86"
+IUSE="sarien-kvm"
 S="${WORKDIR}"
 
 # Add dependencies on other ebuilds from within this board overlay
@@ -21,7 +22,12 @@ DEPEND="
 "
 
 src_install() {
-	doappid "{E3B85B97-1771-4440-9691-D1983FEF60EB}" "CHROMEBOOK"
+
+	if use sarien-kvm; then
+		doappid "{3774C742-22BD-4BC5-A052-554CB624433C}" "CHROMEBOOK"
+	else
+		doappid "{E3B85B97-1771-4440-9691-D1983FEF60EB}" "CHROMEBOOK"
+	fi
 
 	# Intall a rule tagging keyboard as having updated layout
 	udev_dorules "${FILESDIR}/81-sarien-keyboard.rules"
