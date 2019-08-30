@@ -21,7 +21,7 @@ IUSE="docker"
 SRC_URI="${BASE_SRC_URI}/mobmonitor-ui-node_modules-0.0.2.tar.gz"
 
 RDEPEND="
-		docker? ( app-emulation/docker )
+		app-emulation/docker
 		dev-python/futures
 		dev-python/google-cloud-storage
 		dev-python/grpcio
