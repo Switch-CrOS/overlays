@@ -22,7 +22,7 @@ STATIC_METADATA2_BEGIN(DEVICE, SCALER, SENSOR_DRVNAME_OV8856_MIPI_RAW)
 //------------------------------------------------------------------------------
 //==========================================================================
 CONFIG_METADATA_BEGIN(MTK_SCALER_AVAILABLE_MAX_DIGITAL_ZOOM)//
-CONFIG_ENTRY_VALUE(1, MFLOAT)
+CONFIG_ENTRY_VALUE(4, MFLOAT)
 CONFIG_METADATA_END()
 //==========================================================================
 // support if enable reprocessing
@@ -373,8 +373,8 @@ CONFIG_METADATA_END()
 //------------------------------------------------------------------------------
 CONFIG_METADATA_BEGIN(MTK_JPEG_AVAILABLE_THUMBNAIL_SIZES)
 CONFIG_ENTRY_VALUE(MSize(0,   0), MSize)
-CONFIG_ENTRY_VALUE(MSize(192, 108), MSize)
-CONFIG_ENTRY_VALUE(MSize(176, 132), MSize)
+CONFIG_ENTRY_VALUE(MSize(256, 144), MSize)
+CONFIG_ENTRY_VALUE(MSize(256, 192), MSize)
 CONFIG_METADATA_END()
 //==========================================================================
 //------------------------------------------------------------------------------

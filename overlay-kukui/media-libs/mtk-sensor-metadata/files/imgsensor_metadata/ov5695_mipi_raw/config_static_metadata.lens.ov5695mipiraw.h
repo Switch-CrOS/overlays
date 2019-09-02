@@ -39,11 +39,11 @@ CONFIG_ENTRY_VALUE(MTK_LENS_OPTICAL_STABILIZATION_MODE_OFF, MUINT8)
 CONFIG_METADATA_END()
 //==========================================================================
 CONFIG_METADATA_BEGIN(MTK_LENS_INFO_HYPERFOCAL_DISTANCE)
-        CONFIG_ENTRY_VALUE(0, MFLOAT)     // fixed focus
+        CONFIG_ENTRY_VALUE((1.0 / 3.0), MFLOAT)     // fixed focus
 CONFIG_METADATA_END()
 //==========================================================================
 CONFIG_METADATA_BEGIN(MTK_LENS_INFO_MINIMUM_FOCUS_DISTANCE)
-        CONFIG_ENTRY_VALUE(0, MFLOAT)    // fixed focus
+        CONFIG_ENTRY_VALUE((1.0 / 0.05), MFLOAT)    // fixed focus
 CONFIG_METADATA_END()
 //==========================================================================
 CONFIG_METADATA_BEGIN(MTK_LENS_INFO_FOCUS_DISTANCE_CALIBRATION)

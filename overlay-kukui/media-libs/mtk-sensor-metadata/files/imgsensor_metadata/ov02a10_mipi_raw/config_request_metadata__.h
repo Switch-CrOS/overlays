@@ -281,15 +281,15 @@ CONFIG_METADATA_BEGIN(MTK_SENSOR_SENSITIVITY)
 CONFIG_ENTRY_VALUE(100, MINT32)//not null
 CONFIG_METADATA_END()
 //==========================================================================//new none
+CONFIG_METADATA_BEGIN(MTK_SENSOR_TEST_PATTERN_MODE)
+CONFIG_ENTRY_VALUE(MTK_SENSOR_TEST_PATTERN_MODE_OFF , MINT32)
+CONFIG_METADATA_END()
+//==========================================================================//new none
 CONFIG_METADATA_BEGIN(MTK_SENSOR_TEST_PATTERN_DATA)
 CONFIG_ENTRY_VALUE(0 , MINT32)
 CONFIG_ENTRY_VALUE(0 , MINT32)
 CONFIG_ENTRY_VALUE(0 , MINT32)
 CONFIG_ENTRY_VALUE(0 , MINT32)
-CONFIG_METADATA_END()
-//==========================================================================//new none
-CONFIG_METADATA_BEGIN(MTK_SENSOR_TEST_PATTERN_MODE)
-CONFIG_ENTRY_VALUE(MTK_SENSOR_TEST_PATTERN_MODE_OFF , MINT32)
 CONFIG_METADATA_END()
 //==========================================================================
 
