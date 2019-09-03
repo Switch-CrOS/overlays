@@ -1356,10 +1356,10 @@ index 0000000000000000000000000000000000000000..bde62c9a43bc939c817283c4e53fa46c
 +	rotation = <270>;
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8183-kukui-kodama.dts b/arch/arm64/boot/dts/mediatek/mt8183-kukui-kodama.dtsi
-similarity index 77%
+similarity index 69%
 rename from arch/arm64/boot/dts/mediatek/mt8183-kukui-kodama.dts
 rename to arch/arm64/boot/dts/mediatek/mt8183-kukui-kodama.dtsi
-index 82433d26b18e30f5de5ec0a9e5c27403385981ad..dfb59fcc3c01f4397ee6e59e59c7ea6dbde2f837 100644
+index 82433d26b18e30f5de5ec0a9e5c27403385981ad..39722a5d459c405344a70179dafc17f028f3dc89 100644
 --- a/arch/arm64/boot/dts/mediatek/mt8183-kukui-kodama.dts
 +++ b/arch/arm64/boot/dts/mediatek/mt8183-kukui-kodama.dtsi
 @@ -7,9 +7,6 @@
@@ -1372,18 +1372,33 @@ index 82433d26b18e30f5de5ec0a9e5c27403385981ad..dfb59fcc3c01f4397ee6e59e59c7ea6d
  	ppvarn_lcd: ppvarn-lcd {
  		compatible = "regulator-fixed";
  		regulator-name = "ppvarn_lcd";
-@@ -64,16 +61,69 @@
- 	};
- };
+@@ -52,28 +49,81 @@
+ 	status = "okay";
  
--&panel {
+ 	touchscreen: touchscreen@10 {
+-		compatible = "elan,ekth3500";
++		compatible = "hid-over-i2c";
+ 		reg = <0x10>;
+ 		interrupt-parent = <&pio>;
+ 		interrupts = <155 IRQ_TYPE_LEVEL_LOW>;
+-		int-gpio = <&pio 155 0>;
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <&touch_default>;
+ 
+-		reset-gpios = <&pio 156 1>;
++		post-power-on-delay-ms = <10>;
++		hid-descr-addr = <0x0001>;
++	};
++};
++
 +&i2c2 {
 +	sensor_main: sensor_main {
 +		status = "okay";
 +		reset-gpios = <&pio 111 1>;
-+	};
-+};
-+
+ 	};
+ };
+ 
+-&panel {
 +&i2c4 {
 +	sensor_sub: sensor_sub {
 +		status = "okay";
@@ -1451,6 +1466,26 @@ index 82433d26b18e30f5de5ec0a9e5c27403385981ad..dfb59fcc3c01f4397ee6e59e59c7ea6d
  };
  
  &pio {
+@@ -306,7 +356,18 @@
+ 
+ 		touch_pin_reset: pin_reset {
+ 			pinmux = <PINMUX_GPIO156__FUNC_GPIO156>;
+-			output-low;
++
++			/*
++			 * The touchscreen driver doesn't currently support driving
++			 * this reset line.  By specifying output-high here
++			 * we're relying on the fact that this pin has a default
++			 * pulldown at boot (which makes sure the controller was in
++			 * reset if it was powered) and then we set it high here
++			 * to take it out of reset.  Better would be if the touchscreen
++			 * driver could control this and we could remove
++			 * "output-high" here.
++			 */
++			output-high;
+ 		};
+ 	};
+ };
 diff --git a/arch/arm64/boot/dts/mediatek/mt8183-kukui-krane.dtsi b/arch/arm64/boot/dts/mediatek/mt8183-kukui-krane.dtsi
 old mode 100644
 new mode 100755
