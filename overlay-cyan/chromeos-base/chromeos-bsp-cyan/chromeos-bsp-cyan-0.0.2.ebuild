@@ -1,7 +1,7 @@
 # Copyright 2015 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=4
+EAPI=5
 
 inherit appid
 
@@ -11,7 +11,7 @@ or portage actions."
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="-* amd64 x86"
-IUSE="cyan-cheets"
+IUSE="cyan-cheets cyan-kernelnext"
 S="${WORKDIR}"
 
 # Add dependencies on other ebuilds from within this board overlay
@@ -23,6 +23,8 @@ DEPEND="${RDEPEND}"
 src_install() {
 	if use cyan-cheets; then
 		doappid "{EB589AF1-65F1-8B8B-8BBB-80450CA30620}" "CHROMEBOOK"
+	elif use cyan-kernelnext; then
+		doappid "{687C05C2-CF93-11E9-B871-CF217F7B16BF}" "CHROMEBOOK"
 	else
 		doappid "{11130F0B-738A-C024-7A78-CF72D93B77AF}" "CHROMEBOOK"
 	fi
