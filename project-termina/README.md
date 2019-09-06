@@ -37,7 +37,8 @@ example invocation of the repacking script is below.
 export BOARD=tatl
 ./build_packages --board=${BOARD} --nowithautotest
 ./build_image --board=${BOARD} --noenable_rootfs_verification test
-./termina_build_image --image=../build/images/${BOARD}/latest/chromiumos_test_image.bin --output=${BOARD}
+sudo ../platform/container-guest-tools/termina/termina_build_image.py \
+  ../build/images/${BOARD}/latest/chromiumos_test_image.bin ${BOARD}
 ```
 
 At this point, the output directory will have (among others), the
