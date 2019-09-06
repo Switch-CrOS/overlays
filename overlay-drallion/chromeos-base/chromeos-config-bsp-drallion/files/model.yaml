@@ -10,6 +10,7 @@ common_config: &common_config
     suspend-to-idle: "1"
   audio:
     main:
+      $cras_root: "/etc/cras"
       $ucm_src_root: "common"
       $ucm_root: "/usr/share/alsa/ucm"
       $card: "HDA\ Intel\ PCH"
@@ -30,6 +31,13 @@ common_config: &common_config
         # ALSA module patch file
         - source: "{{$alsa_module_src_root}}/audio/alsa-module-config/drallion_alsa.fw"
           destination: "{{$fw_patch_root}}/drallion_alsa.fw"
+        # Volume Curve configuration file
+        - source: "{{$ucm_src_root}}/audio/cras-config/{{$card}}"
+          destination: "{{$cras_root}}/{{$card}}"
+        # EQ/DRC DSP configuration file
+        - source: "{{$ucm_src_root}}/audio/cras-config/dsp.ini"
+          destination: "{{$cras_root}}/dsp.ini"
+
 chromeos:
   devices:
     - $device-name: "drallion"
