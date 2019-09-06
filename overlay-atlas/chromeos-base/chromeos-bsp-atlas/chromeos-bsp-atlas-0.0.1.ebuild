@@ -14,7 +14,7 @@ dependencies or portage actions."
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="-* amd64 x86"
-IUSE=""
+IUSE="atlas-kvm"
 S="${WORKDIR}"
 
 # Add dependencies on other ebuilds from within this board overlay
@@ -25,7 +25,11 @@ DEPEND="
 RDEPEND="${DEPEND}"
 
 src_install() {
-	doappid "{DB5199C7-358B-4E1F-B4F6-AF6D2DD01A38}" "CHROMEBOOK"
+	if use atlas-kvm; then
+		doappid "{ED3D806C-3D7A-46E2-9604-13382FC1D55B}" "CHROMEBOOK"
+	else
+		doappid "{DB5199C7-358B-4E1F-B4F6-AF6D2DD01A38}" "CHROMEBOOK"
+	fi
 
 	# Install platform specific config files for power_manager.
 	insinto "/usr/share/power_manager/board_specific"
