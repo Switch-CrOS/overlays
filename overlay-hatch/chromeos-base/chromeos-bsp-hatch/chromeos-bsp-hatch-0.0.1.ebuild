@@ -26,4 +26,8 @@ src_install() {
 	# Install audio config files
 	local audio_config_dir="${FILESDIR}/audio-config"
 	install_audio_configs hatch "${audio_config_dir}"
+
+        # Install EQ/DRC tunning
+        insinto "/etc/cras/helios"
+        doins "${FILESDIR}/helios/cras-config/dsp.ini"
 }
