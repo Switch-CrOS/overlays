@@ -34,4 +34,11 @@ src_install() {
 
 	# Install audio config
 	unibuild_install_audio_files
+
+	# In the krane device, we separate the 0E30 to two different PIDs
+	# after the board_rev>=5. To backward compatible with the old devices,
+	# we query the sensor id and use it as the indicator to override the
+	# active_product_id to force the touch updater use the new PID.
+	exeinto "/opt/google/touch/scripts"
+	doexe "${FILESDIR}"/get_board_goodix_pid.sh
 }
