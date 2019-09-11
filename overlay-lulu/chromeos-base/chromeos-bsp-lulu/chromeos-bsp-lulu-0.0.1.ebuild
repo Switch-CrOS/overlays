@@ -11,7 +11,7 @@ or portage actions."
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="-* amd64 x86"
-IUSE="lulu-cheets"
+IUSE="kernelnext lulu-cheets"
 S="${WORKDIR}"
 
 # Add dependencies on other ebuilds from within this board overlay
@@ -37,6 +37,10 @@ src_install() {
 	doins "${FILESDIR}/main.conf"
 
 	# Install audio config files
-	local audio_config_dir="${FILESDIR}/audio-config"
+	if use kernelnext; then
+		local audio_config_dir="${FILESDIR}/kernelnext-audio-config"
+	else
+		local audio_config_dir="${FILESDIR}/audio-config"
+	fi
 	install_audio_configs lulu "${audio_config_dir}"
 }
