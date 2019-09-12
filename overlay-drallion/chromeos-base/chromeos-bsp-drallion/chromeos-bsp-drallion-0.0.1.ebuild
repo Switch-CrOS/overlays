@@ -3,7 +3,7 @@
 
 EAPI=6
 
-inherit appid cros-unibuild
+inherit appid cros-unibuild udev
 
 DESCRIPTION="Drallion board-specific ebuild that pulls in necessary ebuilds as
 dependencies or portage actions."
