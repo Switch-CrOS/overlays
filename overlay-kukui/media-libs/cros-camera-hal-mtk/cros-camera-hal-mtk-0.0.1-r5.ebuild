@@ -3,15 +3,14 @@
 
 EAPI=6
 
-CROS_WORKON_COMMIT="e03024e521466da520b39943fb662db75d78b3bb"
-CROS_WORKON_TREE="9d7ac462665b4515877ac7179a854256b4f8bcdd"
+CROS_WORKON_COMMIT="2107ed72bc0367fb9cad669d03cfd042ddaac08e"
+CROS_WORKON_TREE="f2fce0c5feb88585f26fd24642163b4019345cc8"
 CROS_WORKON_PROJECT="chromiumos/platform2"
 CROS_WORKON_LOCALNAME="../platform2"
 CROS_WORKON_BLACKLIST="1"
 CROS_WORKON_OUTOFTREE_BUILD="1"
 
-PLATFORM_SUBDIR="camera"
-PLATFORM_GYP_FILE="hal/mediatek/libcamera_hal.gyp"
+PLATFORM_SUBDIR="camera/hal/mediatek"
 
 inherit cros-camera cros-workon platform
 
@@ -41,9 +40,15 @@ DEPEND="${RDEPEND}
 	virtual/pkgconfig
 "
 
-src_prepare() {
-	eapply -p2 "${FILESDIR}"/camera_hal_tot.patch
+src_unpack() {
+	platform_src_unpack
+	cd cros-camera-hal-mtk-0.0.1
+	eapply -p1 "${FILESDIR}"/camera_hal_tot.patch
 	find "${S}" -type f -name "*.sh" -exec chmod +x {} +
+	find "${S}" -type f -name "*.py" -exec chmod +x {} +
+}
+
+src_prepare() {
 	cros-workon_src_prepare
 	eapply_user
 	# TODO (crbug.com/995954): Remove after replacing deprecated functions.
