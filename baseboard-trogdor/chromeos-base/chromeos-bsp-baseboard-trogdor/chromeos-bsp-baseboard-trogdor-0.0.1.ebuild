@@ -13,5 +13,6 @@ IUSE="cheets"
 S="${WORKDIR}"
 
 RDEPEND="
+	net-misc/rmtfs
 "
 DEPEND="${RDEPEND}"
