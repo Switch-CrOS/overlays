@@ -35,7 +35,11 @@ src_install() {
 	doins "${FILESDIR}"/powerd_prefs/*
 
 	# Install audio configs.
-	local audio_config_dir="${FILESDIR}/audio-config"
+	if use cyan-kernelnext; then
+		local audio_config_dir="${FILESDIR}/kernelnext-audio-config"
+	else
+		local audio_config_dir="${FILESDIR}/audio-config"
+	fi
 	install_audio_configs cyan "${audio_config_dir}"
 
 	# Install Bluetooth ID override.
