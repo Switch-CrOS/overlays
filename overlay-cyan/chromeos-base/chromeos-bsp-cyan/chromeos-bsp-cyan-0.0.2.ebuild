@@ -3,7 +3,7 @@
 
 EAPI=5
 
-inherit appid
+inherit appid cros-audio-configs
 
 DESCRIPTION="Ebuild which pulls in any necessary ebuilds as dependencies
 or portage actions."
@@ -17,6 +17,7 @@ S="${WORKDIR}"
 # Add dependencies on other ebuilds from within this board overlay
 RDEPEND="
 	chromeos-base/chromeos-bsp-baseboard-strago
+	!<media-sound/adhd-0.0.5
 "
 DEPEND="${RDEPEND}"
 
@@ -32,6 +33,10 @@ src_install() {
 	# Install platform specific config files for power_manager.
 	insinto "/usr/share/power_manager/board_specific"
 	doins "${FILESDIR}"/powerd_prefs/*
+
+	# Install audio configs.
+	local audio_config_dir="${FILESDIR}/audio-config"
+	install_audio_configs cyan "${audio_config_dir}"
 
 	# Install Bluetooth ID override.
 	insinto "/etc/bluetooth"
