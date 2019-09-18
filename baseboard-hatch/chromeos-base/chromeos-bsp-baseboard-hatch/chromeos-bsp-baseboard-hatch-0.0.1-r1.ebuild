@@ -1,0 +1,1 @@
+chromeos-bsp-baseboard-hatch-0.0.1.ebuild
