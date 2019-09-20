@@ -22,6 +22,7 @@ KEYWORDS="-* arm arm64"
 
 RDEPEND="
 	media-libs/cros-camera-libcab
+	media-libs/cros-camera-libcamera_client
 	media-libs/cros-camera-libcamera_common
 	media-libs/cros-camera-libcamera_metadata
 	media-libs/cros-camera-libcamera_v4l2_device
@@ -36,6 +37,7 @@ RDEPEND="
 DEPEND="${RDEPEND}
 	chromeos-base/metrics
 	media-libs/cros-camera-android-headers
+	media-libs/libyuv
 	sys-kernel/linux-headers
 	virtual/pkgconfig
 "
