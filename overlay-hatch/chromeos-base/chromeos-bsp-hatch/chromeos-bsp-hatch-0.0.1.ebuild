@@ -28,7 +28,11 @@ src_install() {
 	local audio_config_dir="${FILESDIR}/audio-config"
 	install_audio_configs hatch "${audio_config_dir}"
 
-        # Install EQ/DRC tunning
-        insinto "/etc/cras/helios"
-        doins "${FILESDIR}/helios/cras-config/dsp.ini"
+	# Install EQ/DRC tunning
+	insinto "/etc/cras/helios"
+	doins "${FILESDIR}/helios/cras-config/dsp.ini"
+
+	# Install Bluetooth ID override
+	insinto /etc/bluetooth
+	doins "${FILESDIR}"/main.conf
 }
