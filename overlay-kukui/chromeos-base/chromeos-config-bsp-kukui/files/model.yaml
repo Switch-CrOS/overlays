@@ -4,7 +4,45 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+audio_config: &audio_config
+  main:
+    cras-config-dir: "{{$device-name}}"
+    ucm-suffix: "{{$device-name}}"
+    files:
+      - source: "{{$cras-source}}/{{$card}}"
+        destination: "{{$cras-dest}}/{{$card}}"
+      - source: "{{$cras-source}}/dsp.ini"
+        destination: "{{$cras-dest}}/dsp.ini"
+      - source: "{{$ucm-source}}/HiFi.conf"
+        destination: "{{$ucm-dest}}/HiFi.conf"
+      - source: "{{$ucm-source}}/{{$card}}.conf"
+        destination: "{{$ucm-dest}}/{{$card}}.{{ucm-suffix}}.conf"
+
+krane_audio_config: &krane_audio_config
+  main:
+    cras-config-dir: "{{$device-name}}"
+    ucm-suffix: "{{$device-name}}"
+    files:
+      - source: "{{$cras-source}}/{{$card}}"
+        destination: "{{$cras-dest}}/{{$card}}"
+      - source: "{{$cras-source}}/dsp.ini"
+        destination: "{{$cras-dest}}/dsp.ini"
+      - source: "{{$ucm-source}}/HiFi.conf"
+        destination: "{{$ucm-dest}}/HiFi.conf"
+      - source: "{{$ucm-source}}/{{$card}}.conf"
+        destination: "{{$ucm-dest}}/{{$card}}.{{ucm-suffix}}.conf"
+      - source: "{{$cras-source}}/Realtek USB2.0 Audio"
+        destination: "{{$cras-dest}}/Realtek USB2.0 Audio"
+
 common_config: &common_config
+  $cras_root: "/etc/cras"
+  $ucm_root: "/usr/share/alsa/ucm"
+  $card: "mt8183_mt6358_ts3a227_max98357"
+  $ucm-source-suffix: ""
+  $cras-source: "{{cras-config-dir}}/audio/cras-config"
+  $cras-dest: "{{$cras_root}}/{{cras-config-dir}}"
+  $ucm-source: "{{cras-config-dir}}/audio/ucm-config{{$ucm-source-suffix}}"
+  $ucm-dest: "{{$ucm_root}}/{{$card}}.{{ucm-suffix}}"
   name: "{{$device-name}}"
   identity: &identity
     platform-name: "Kukui"
@@ -21,27 +59,6 @@ common_config: &common_config
     key-id: "{{$key-id}}"
     signature-id: "{{$device-name}}"
   test-label: "{{$device-name}}"
-  audio:
-    main:
-      $cras_root: "/etc/cras"
-      $ucm_root: "/usr/share/alsa/ucm"
-      $card: "mt8183_mt6358_ts3a227_max98357"
-      cras-config-dir: "{{$device-name}}"
-      $ucm-source-suffix: ""
-      ucm-suffix: "{{$device-name}}"
-      $cras-source: "{{cras-config-dir}}/audio/cras-config"
-      $cras-dest: "{{$cras_root}}/{{cras-config-dir}}"
-      $ucm-source: "{{cras-config-dir}}/audio/ucm-config{{$ucm-source-suffix}}"
-      $ucm-dest: "{{$ucm_root}}/{{$card}}.{{ucm-suffix}}"
-      files:
-        - source: "{{$cras-source}}/{{$card}}"
-          destination: "{{$cras-dest}}/{{$card}}"
-        - source: "{{$cras-source}}/dsp.ini"
-          destination: "{{$cras-dest}}/dsp.ini"
-        - source: "{{$ucm-source}}/HiFi.conf"
-          destination: "{{$ucm-dest}}/HiFi.conf"
-        - source: "{{$ucm-source}}/{{$card}}.conf"
-          destination: "{{$ucm-dest}}/{{$card}}.{{ucm-suffix}}.conf"
   power: &power_common
     low-battery-shutdown-percent: "4.0"
     usb-min-ac-watts: 10
@@ -61,6 +78,7 @@ kukui-config: &kukui_config
     <<: *power_common
     charging-ports: |
       CROS_USBPD_CHARGER0 LEFT
+  audio: *audio_config
 
 krane-config: &krane_config
   <<: *common_config
@@ -72,6 +90,7 @@ krane-config: &krane_config
     <<: *power_common
     charging-ports: |
       CROS_USBPD_CHARGER0 RIGHT
+  audio: *krane_audio_config
 
 kodama-config: &kodama_config
   <<: *common_config
@@ -79,6 +98,7 @@ kodama-config: &kodama_config
   $fw-build-name: "kodama"
   $key-id: "KODAMA"
   $fw-base-build-name: "magnemite"
+  audio: *audio_config
 
 chromeos:
   devices:
