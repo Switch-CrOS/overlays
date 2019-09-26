@@ -18,9 +18,13 @@ S="${WORKDIR}"
 # Add dependencies on other ebuilds from within this board overlay
 RDEPEND="
 	chromeos-base/chromeos-bsp-baseboard-kukui
+	chromeos-base/chromeos-config
 "
 DEPEND="${RDEPEND}"
 
 src_install() {
 	doappid "{BA7092E6-2B09-4620-BBB0-FAA34397F3F8}" "CHROMEBOOK"
+
+	# Install audio config
+	unibuild_install_audio_files
 }
