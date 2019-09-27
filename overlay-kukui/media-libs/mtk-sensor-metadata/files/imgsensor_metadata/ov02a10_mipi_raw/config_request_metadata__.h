@@ -166,11 +166,11 @@ CONFIG_ENTRY_VALUE(0 , MINT32)
 CONFIG_METADATA_END()
 //==========================================================================//none
 CONFIG_METADATA_BEGIN(MTK_JPEG_QUALITY)
-CONFIG_ENTRY_VALUE(100, MUINT8)
+CONFIG_ENTRY_VALUE(95, MUINT8)
 CONFIG_METADATA_END()
 //==========================================================================//none
 CONFIG_METADATA_BEGIN(MTK_JPEG_THUMBNAIL_QUALITY)
-CONFIG_ENTRY_VALUE(100, MUINT8)
+CONFIG_ENTRY_VALUE(95, MUINT8)
 CONFIG_METADATA_END()
 //==========================================================================//none
 CONFIG_METADATA_BEGIN(MTK_JPEG_THUMBNAIL_SIZE)
