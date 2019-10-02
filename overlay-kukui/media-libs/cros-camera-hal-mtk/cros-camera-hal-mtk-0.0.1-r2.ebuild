@@ -3,8 +3,8 @@
 
 EAPI=6
 
-CROS_WORKON_COMMIT="b64c356ee60d04eb0e3c949b949193feae3aee6c"
-CROS_WORKON_TREE=("e7dba8c91c1f3257c34d4a7ffff0ea2537aeb6bb" "d58be6324ba2a1d0452d23bafb39c869c5ed2cd6" "f92690c880b82b72adcece5fa364301e6e70ba89" "7c38db0073c8114d0ce2a0f5434a6923617f536f" "a0510739343d9e7e5940ba1c1ad6bf74e4e34d15" "a2ee099ac3dc0b670ea7bfeaa083a1dba859ebc6" "bf84a23a00350764b97d4ceb2bee5c17164d7855" "7ce3690fd23cb166ae63fdb47082534bd91db3e4" "c6980f0bfed3af0bcbd97e8543a5b5ca77ae3eae")
+CROS_WORKON_COMMIT="910d65310598c27a48ff7a438d685b6f571e7950"
+CROS_WORKON_TREE=("e7dba8c91c1f3257c34d4a7ffff0ea2537aeb6bb" "d58be6324ba2a1d0452d23bafb39c869c5ed2cd6" "f92690c880b82b72adcece5fa364301e6e70ba89" "7c38db0073c8114d0ce2a0f5434a6923617f536f" "a0510739343d9e7e5940ba1c1ad6bf74e4e34d15" "a2ee099ac3dc0b670ea7bfeaa083a1dba859ebc6" "bf84a23a00350764b97d4ceb2bee5c17164d7855" "7ce3690fd23cb166ae63fdb47082534bd91db3e4" "3396571b1ab757fea9bc36cecb44b3d9c82cfa2f")
 CROS_WORKON_PROJECT="chromiumos/platform2"
 CROS_WORKON_LOCALNAME="../platform2"
 CROS_WORKON_SUBTREE=".gn camera/build camera/common camera/hal/mediatek camera/include camera/mojo common-mk metrics chromeos-config"
