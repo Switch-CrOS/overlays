@@ -4,7 +4,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-audio_common: &audio_common
+audio-common: &audio_common
   $cras-root: "/etc/cras"
   $ucm-root: "/usr/share/alsa/ucm"
   $card: "bxtda7219max"
@@ -15,15 +15,12 @@ audio_common: &audio_common
   $ucm-device: "common"
   $ucm-target-suffix: ""
   $ucm-suffix-path: "/{{$ucm}}"
-
   cras-config-dir: "{{$cras}}"
   ucm-suffix: "{{$ucm}}{{$ucm-target-suffix}}"
-
   $cras-source: "{{cras-config-dir}}/audio/cras-config"
   $cras-dest: "{{$cras-root}}/{{cras-config-dir}}"
   $ucm-source: "{{$ucm-device}}/audio/ucm-config{{$ucm-suffix-path}}"
   $ucm-dest: "{{$ucm-root}}/{{$card}}.{{ucm-suffix}}"
-
   files:
     - source: "{{$cras-source}}/{{$card}}"
       destination: "{{$cras-dest}}/{{$card}}"
@@ -34,7 +31,7 @@ audio_common: &audio_common
     - source: "{{$ucm-source}}/{{$card}}.conf"
       destination: "{{$ucm-dest}}/{{$card}}.{{ucm-suffix}}.conf"
 
-base_config: &base_config
+device-config: &device_config
   $bluetooth-device: "common"
   $dptf-device: "{{$device-name}}"
   $touchpad-wakeup: "1"
@@ -46,7 +43,6 @@ base_config: &base_config
     config:
       build-path: "{{$bluetooth-device}}/bluetooth/main.conf"
       system-path: "/etc/bluetooth/{{$bluetooth-device}}/main.conf"
-  brand-code: "{{$brand-code}}"
   firmware:
     no-firmware: True
   test-label: "{{$test-label}}"
@@ -63,48 +59,31 @@ base_config: &base_config
     files:
       - source: "{{$dptf-device}}/thermal/dptf.dv"
         destination: "/etc/dptf/{{$dptf-device}}/dptf.dv"
+  identity: &base_ident
+    platform-name: "Coral"
+    smbios-name-match: "Coral"
+    sku-id: "{{$sku-id}}"
 
-convertible_base_config: &convertible_base_config
+convertible-base-config: &convertible_base_config
   hardware-properties:
     is-lid-convertible: True
     has-lid-accelerometer: True
     has-base-accelerometer: True
     has-base-gyroscope: True
 
-device_config: &device_config
-  <<: *base_config
-  identity:
-    platform-name: "Coral"
-    smbios-name-match: "Coral"
-    sku-id: "{{$sku-id}}"
-  firmware-signing:
-    key-id: "{{$key-id}}"
-    signature-id: "{{$device-name}}"
-
-convertible_config: &convertible_config
+convertible-config: &convertible_config
   <<: [ *device_config, *convertible_base_config ]
 
-wl_device_config: &wl_device_config
-  <<: *base_config
-  $signature-id: "{{$device-name}}-{{$whitelabel-tag}}"
+wl-device-config: &wl_device_config
+  <<: *device_config
   identity:
-    platform-name: "Coral"
-    smbios-name-match: "Coral"
-    sku-id: "{{$sku-id}}"
+    <<: *base_ident
     whitelabel-tag: "{{$whitelabel-tag}}"
-  firmware-signing:
-    key-id: "{{$key-id}}"
-    signature-id: "{{$signature-id}}"
-    sig-id-in-customization-id: true
 
-wl_convertible_config: &wl_convertible_config
+wl-convertible-config: &wl_convertible_config
   <<: [ *wl_device_config, *convertible_base_config ]
 
-preallocated_wl_product: &preallocated_wl_product
-  $whitelabel-tag: "TBD-{{$brand-code}}"
-  $key-id: "CORALC"
-
-astronaut_config: &astronaut_config
+astronaut-config: &astronaut_config
   <<: *device_config
   modem:
     firmware-variant: "{{$device-name}}"
@@ -112,9 +91,6 @@ astronaut_config: &astronaut_config
 chromeos:
   devices:
     - $device-name: "astronaut"
-      products:
-        - $brand-code: "CTIE"
-          $key-id: "CORALA"
       skus:
         - $sku-id: 0
           config: *astronaut_config
@@ -127,9 +103,6 @@ chromeos:
     - $device-name: "babymega"
       $ucm-device: "babymega"
       $ucm-target-suffix: "Babymega"
-      products:
-        - $brand-code: "GOKU"
-          $key-id: "CORALG"
       skus:
         - $sku-id: 52
           config: *device_config
@@ -139,9 +112,6 @@ chromeos:
       $ucm-device: "babytiger"
       $ucm-target-suffix: "Babytiger"
       $ucm: "2mic"
-      products:
-        - $brand-code: "YXED"
-          $key-id: "CORALG"
       skus:
         - $sku-id: 30
           config: *device_config
@@ -152,32 +122,12 @@ chromeos:
       $dptf-device: "astronaut"
       products:
         - $whitelabel-tag: "" # default
-          $signature-id: "{{$device-name}}-default"
-          $brand-code: "TEST"
-          $key-id: "CORALC"
         - $whitelabel-tag: "ctl"
-          $brand-code: "WXZG"
-          $key-id: "CORALF"
         - $whitelabel-tag: "gsa"
-          $brand-code: "RIKG"
-          $key-id: "CORALK"
         - $whitelabel-tag: "positivo"
-          $brand-code: "EDHM"
-          $key-id: "CORALO"
         - $whitelabel-tag: "lanix"
-          $brand-code: "PWFL"
-          $key-id: "CORALQ"
         # Workaround to make it compatible with "ctl"
         - $whitelabel-tag: "to-be-determined-bt-loem1"
-          $brand-code: "WXZG"
-          $key-id: "CORALF"
-        # Allocated, but unused brand codes
-        # $brand-code: "XBWL"
-        # $brand-code: "WNNA"
-        # $brand-code: "PCBV"
-        # $brand-code: "VXVH"
-        # $brand-code: "QPMP"
-        # $brand-code: "BMTG"
       skus:
         - $sku-id: 36
           config: *wl_device_config
@@ -188,28 +138,13 @@ chromeos:
       $dptf-device: "astronaut"
       products:
         - $whitelabel-tag: "" # default
-          $signature-id: "{{$device-name}}-default"
-          $brand-code: "TEST"
-          $key-id: "CORALC"
         - $whitelabel-tag: "ctl"
-          $brand-code: "FBTP"
-          $key-id: "CORALF"
         - $whitelabel-tag: "gsa"
-          $brand-code: "TVRZ"
-          $key-id: "CORALK"
         - $whitelabel-tag: "xma"
-          $brand-code: "HKGT"
-          $key-id: "CORALP"
         - $whitelabel-tag: "positivo"
-          $brand-code: "HTPV"
-          $key-id: "CORALO"
         - $whitelabel-tag: "lanix"
-          $brand-code: "MDPZ"
-          $key-id: "CORALQ"
         # Workaround to make it compatible with "ctl"
         - $whitelabel-tag: "to-be-determined-bt-loem1"
-          $brand-code: "FBTP"
-          $key-id: "CORALF"
       skus:
         - $sku-id: 37
           config: *wl_convertible_config
@@ -220,16 +155,8 @@ chromeos:
       $dptf-device: "astronaut"
       products:
         - $whitelabel-tag: "default" # default
-          $signature-id: "{{$device-name}}-default"
-          $brand-code: "TEST"
-          $key-id: "CORALC"
         - $whitelabel-tag: "ctl"
-          $brand-code: "ZZTB"
-          $key-id: "CORALF"
         - $whitelabel-tag: "gsa"
-          # TODO to be changed
-          $brand-code: "ZZCR"
-          $key-id: "CORALK"
       skus:
         - $sku-id: 65
           config:
@@ -238,9 +165,6 @@ chromeos:
               firmware-variant: "{{$device-name}}"
     - $device-name: "blue"
       $dptf-device: "astronaut"
-      products:
-        - $brand-code: "VVUC"
-          $key-id: "CORALA"
       skus:
         - $sku-id: 6
           config: *device_config
@@ -251,9 +175,6 @@ chromeos:
     - $device-name: "bruce"
       $touchpad-wakeup: "0"
       $dptf-device: "common"
-      products:
-        - $brand-code: "ACBF"
-          $key-id: "CORALA"
       skus:
         - $sku-id: 8
           config: *convertible_config
@@ -271,9 +192,6 @@ chromeos:
       $ucm-target-suffix: "Epaulette"
       # TODO(epaulette-odm): Add validated dptf.dv file into
       # BSP, it's currently using inherited version from the parent.
-      products:
-        - $brand-code: "WMVU"
-          $key-id: "CORALA"
       skus:
         - $sku-id: 13
           config: *device_config
@@ -286,9 +204,6 @@ chromeos:
     - $device-name: "lava"
       $touchpad-wakeup: "0"
       $dptf-device: "astronaut"
-      products:
-        - $brand-code: "SHAN"
-          $key-id: "CORALA"
       skus:
         - $sku-id: 4
           config: *convertible_config
@@ -303,9 +218,6 @@ chromeos:
       $ucm-suffix-path: ""
       $ucm-device: "nasher"
       $ucm-target-suffix: "nasher"
-      products:
-        - $brand-code: "CPPT"
-          $key-id: "CORALB"
       skus:
         - $sku-id: 160
           config: *device_config
@@ -320,9 +232,6 @@ chromeos:
       $ucm-target-suffix: "Nasher360"
       $touchpad-wakeup: "0"
       $dptf-device: "nasher"
-      products:
-        - $brand-code: "INUT"
-          $key-id: "CORALB"
       skus:
         - $sku-id: 163
           $ucm: "nasher"
@@ -339,18 +248,12 @@ chromeos:
     - $device-name: "porbeagle"
       $dptf-device: "astronaut"
       $cras: "astronaut"
-      products:
-        - $brand-code: ""
-          $key-id: "CORALC"
       skus:
         - $sku-id: 26
           config: *device_config
         - $sku-id: 27
           config: *device_config
     - $device-name: "rabbid"
-      products:
-        - $brand-code: "YPCE"
-          $key-id: "CORALG"
       skus:
         - $sku-id: 28
           config:
@@ -372,9 +275,6 @@ chromeos:
             $ucm: "2mic"
             $ucm-target-suffix: "Rabbid"
     - $device-name: "robo"
-      products:
-        - $brand-code: "QZUX"
-          $key-id: "CORALD"
       skus:
         - $sku-id: 70
           config: *device_config
@@ -386,18 +286,12 @@ chromeos:
       $ucm-target-suffix: "robo360"
       $dptf-device: "robo"
       $touchpad-wakeup: "0"
-      products:
-        - $brand-code: "KABJ"
-          $key-id: "CORALD"
       skus:
         - $sku-id: 71
           config: *convertible_config
     - $device-name: "santa"
       $cras: "astronaut"
       $dptf-device: "astronaut"
-      products:
-        - $brand-code: "ACBE"
-          $key-id: "CORALA"
       skus:
         - $sku-id: 2
           config: *device_config
@@ -407,33 +301,13 @@ chromeos:
       $test-label: "robo"
       products:
         - $whitelabel-tag: "" # default
-          $signature-id: "{{$device-name}}-default"
-          $brand-code: "TEST"
-          $key-id: "CORALC"
         - $whitelabel-tag: "ctl"
-          $brand-code: "HRIZ"
-          $key-id: "CORALE"
         - $whitelabel-tag: "prowise"
-          $brand-code: "LOGH"
-          $key-id: "CORALJ"
         - $whitelabel-tag: "ytl"
-          $brand-code: "LOGI"
-          $key-id: "CORALH"
         - $whitelabel-tag: "sector5"
-          $brand-code: "IULQ"
-          $key-id: "CORALI"
         - $whitelabel-tag: "pcmerge"
-          $brand-code: "TPHN"
-          $key-id: "CORALL"
         - $whitelabel-tag: "xma"
-          $brand-code: "URZD"
-          $key-id: "CORALM"
         - $whitelabel-tag: "multilaser"
-          $brand-code: "QTMI"
-          $key-id: "CORALN"
-        # Allocated, but not used
-        # $brand-code: "QHTT"
-        # $brand-code: "FGNZ"
       skus:
         - $sku-id: 78
           config: *wl_device_config
