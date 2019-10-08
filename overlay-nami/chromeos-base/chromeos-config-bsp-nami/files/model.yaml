@@ -4,20 +4,17 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-audio_common: &audio_common
+audio-common: &audio_common
   main:
     $cras_root: "/etc/cras"
     $ucm_root: "/usr/share/alsa/ucm"
     $card: "kblda7219max"
-
     cras-config-dir: "{{$cras}}"
     ucm-suffix: "{{$ucm}}"
-
     $cras-source: "{{cras-config-dir}}/audio/cras-config"
     $cras-dest: "{{$cras_root}}/{{cras-config-dir}}"
     $ucm-source: "{{cras-config-dir}}/audio/ucm-config{{$ucm-source-suffix}}"
     $ucm-dest: "{{$ucm_root}}/{{$card}}.{{ucm-suffix}}"
-
     files:
       - source: "{{$cras-source}}/{{$card}}"
         destination: "{{$cras-dest}}/{{$card}}"
@@ -28,9 +25,8 @@ audio_common: &audio_common
       - source: "{{$ucm-source}}/{{$card}}.conf"
         destination: "{{$ucm-dest}}/{{$card}}.{{ucm-suffix}}.conf"
 
-common_config: &common_config
+common-config: &common_config
   name: "{{$device-name}}"
-  brand-code: "{{$brand-code}}"
   $bluetooth-device: "common"
   bluetooth:
     config:
@@ -42,9 +38,6 @@ common_config: &common_config
     sku-id: "{{$sku-id}}"
   firmware:
     no-firmware: True
-  firmware-signing:
-    key-id: "{{$key-id}}"
-    signature-id: "{{$device-name}}"
   power: &power_common
     charging-ports: |
       CROS_USB_PD_CHARGER0 RIGHT
@@ -75,7 +68,7 @@ common_config: &common_config
         destination: "/etc/dptf/{{dptf-dv}}"
   test-label: "{{$device-name}}"
 
-device_config: &device_config
+device-config: &device_config
   <<: *common_config
   audio:
     <<: *audio_common
@@ -83,7 +76,7 @@ device_config: &device_config
     $ucm: "1mic" # Default
     $ucm-source-suffix: "/{{$ucm}}"
 
-device_specific_audio_device_config: &device_specific_audio_device_config
+device-specific-audio-device-config: &device_specific_audio_device_config
   <<: *common_config
   audio:
     <<: *audio_common
@@ -91,7 +84,7 @@ device_specific_audio_device_config: &device_specific_audio_device_config
     $ucm: "{{$device-name}}"
     $ucm-source-suffix: ""
 
-convertible_device_config: &convertible_device_config
+convertible-device-config: &convertible_device_config
   <<: *device_specific_audio_device_config
   hardware-properties:
     is-lid-convertible: True
@@ -104,10 +97,6 @@ chromeos:
     - $device-name: "akali"
       $bluetooth-device: "{{$device-name}}"
       $touchpad-wakeup: "1"
-      products:
-        - $marketing-name: "TBD"
-          $brand-code: "KXUH"
-          $key-id: "AKALI"
       skus:
         - $sku-id: 0x29e1
           config: *device_specific_audio_device_config
@@ -116,10 +105,6 @@ chromeos:
           config: *device_specific_audio_device_config
     - $device-name: "akali360"
       $bluetooth-device: "{{$device-name}}"
-      products:
-        - $marketing-name: "TBD"
-          $brand-code: "SOCA"
-          $key-id: "AKALI"
       skus:
         - $sku-id: 0x2be7
           config: *convertible_device_config
@@ -128,20 +113,12 @@ chromeos:
           config: *convertible_device_config
     - $device-name: "nami"
       $has-ambient-light-sensor: "1"
-      products:
-        - $marketing-name: "TBD"
-          $brand-code: "ZZCR"
-          $key-id: "DEFAULT"
       skus:
         - $sku-id: 0x3a7b
           config: *device_specific_audio_device_config
     - $device-name: "pantheon"
       $bluetooth-device: "{{$device-name}}"
       $internal-backlight-no-als-battery-brightness: "51.0"
-      products:
-        - $marketing-name: "TBD"
-          $brand-code: "CBUY"
-          $key-id: "PANTHEON"
       skus:
         - $sku-id: 0x3f62
           config:
@@ -173,10 +150,6 @@ chromeos:
     - $device-name: "sona"
       $bluetooth-device: "{{$device-name}}"
       $internal-backlight-no-als-battery-brightness: "63.0"
-      products:
-        - $marketing-name: "TBD"
-          $brand-code: "HFRG"
-          $key-id: "SONA"
       skus:
         - $sku-id: 0x3ae2
           config:
@@ -189,10 +162,6 @@ chromeos:
     - $device-name: "syndra"
       $touchpad-wakeup: "1"
       $internal-backlight-no-als-battery-brightness: "63.0"
-      products:
-        - $marketing-name: "TBD"
-          $brand-code: "GJZV"
-          $key-id: "SONA"
       skus:
         - $sku-id: 0x2bc63
           config: *device_specific_audio_device_config
@@ -228,10 +197,6 @@ chromeos:
               $has-keyboard-backlight: "0"
     - $device-name: "vayne"
       $bluetooth-device: "{{$device-name}}"
-      products:
-        - $marketing-name: "TBD"
-          $brand-code: "NPEC"
-          $key-id: "VAYNE"
       skus:
         - $sku-id: 0x3a67
           config: *convertible_device_config
@@ -243,10 +208,6 @@ chromeos:
           config: *convertible_device_config
     - $device-name: "ekko"
       $touchpad-wakeup: "1"
-      products:
-        - $marketing-name: "TBD"
-          $brand-code: "MNZG"
-          $key-id: "AKALI"
       skus:
         - $sku-id: 0x10118e3
           config: *device_specific_audio_device_config
@@ -266,10 +227,6 @@ chromeos:
           config: *device_specific_audio_device_config
     - $device-name: "bard"
       $touchpad-wakeup: "1"
-      products:
-        - $marketing-name: "TBD"
-          $brand-code: "CYQR"
-          $key-id: "AKALI"
       skus:
         - $sku-id: 0x1019ce3
           config: *device_specific_audio_device_config
