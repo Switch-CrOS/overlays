@@ -16,5 +16,6 @@ S="${WORKDIR}"
 
 # Add dependencies on other ebuilds from within this board overlay
 RDEPEND="
+	chromeos-base/chromeos-disk-firmware-baseboard-fizz
 "
 DEPEND="${RDEPEND}"
