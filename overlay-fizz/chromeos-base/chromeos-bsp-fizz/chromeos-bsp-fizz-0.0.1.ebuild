@@ -3,7 +3,7 @@
 
 EAPI=5
 
-inherit appid cros-audio-configs
+inherit appid cros-unibuild cros-audio-configs
 
 DESCRIPTION="Ebuild which pulls in any necessary ebuilds as dependencies
 or portage actions."
@@ -16,7 +16,10 @@ S="${WORKDIR}"
 
 # Add dependencies on other ebuilds from within this board overlay
 RDEPEND="chromeos-base/chromeos-bsp-baseboard-fizz"
-DEPEND="${RDEPEND}"
+DEPEND="
+	${RDEPEND}
+	chromeos-base/chromeos-config
+"
 
 src_install() {
 	if use fizz-cfm; then
@@ -32,4 +35,11 @@ src_install() {
 	# Install Bluetooth ID override.
 	insinto "/etc/bluetooth"
 	doins "${FILESDIR}/main.conf"
+
+	# Install board-specific config files for power_manager.
+	insinto "/usr/share/power_manager/board_specific"
+	doins "${FILESDIR}"/powerd/*
+
+	# Install board-specific dptf.
+	unibuild_install_thermal_files
 }

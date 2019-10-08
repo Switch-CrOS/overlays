@@ -1,0 +1,59 @@
+#
+# Copyright 2019 The Chromium OS Authors. All rights reserved.
+#
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+dev-config: &dev_config
+  name: "{{$device-name}}"
+  test-label: "{{$device-name}}"
+  powerd-prefs: "{{$device-name}}"
+  identity: &base_ident
+    platform-name: "Fizz"
+    smbios-name-match: "Fizz"
+    sku-id: "{{$sku-id}}"
+  firmware:
+    no-firmware: True
+
+wl-dev-config: &wl_dev_config
+  <<: *dev_config
+  identity:
+    <<: *base_ident
+    whitelabel-tag: "{{$whitelabel-tag}}"
+
+chromeos:
+  devices:
+    - $device-name: "kench"
+      skus:
+        - $sku-id: 0
+          config: *dev_config
+    - $device-name: "teemo"
+      skus:
+        - $sku-id: 1
+          config: *dev_config
+        - $sku-id: 6
+          config: *dev_config
+    - $device-name: "sion"
+      skus:
+        - $sku-id: 2
+          config: *dev_config
+    - $device-name: "jax"
+      skus:
+        - $sku-id: 8
+          config:
+            <<: *dev_config
+            thermal:
+              dptf-dv: "{{$device-name}}/dptf.dv"
+              files:
+                - source: "{{dptf-dv}}"
+                  destination: "/etc/dptf/{{dptf-dv}}"
+    - $device-name: "wukong"
+      products:
+        - $whitelabel-tag: "" # default
+      skus:
+        - $sku-id: 3
+          config: *wl_dev_config
+        - $sku-id: 4
+          config: *wl_dev_config
+        - $sku-id: 5
+          config: *wl_dev_config
