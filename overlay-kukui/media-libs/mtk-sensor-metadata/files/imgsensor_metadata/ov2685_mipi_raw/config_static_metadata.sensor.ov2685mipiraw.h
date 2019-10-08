@@ -86,6 +86,7 @@ CONFIG_METADATA_END()
 //==========================================================================
 CONFIG_METADATA_BEGIN(MTK_SENSOR_AVAILABLE_TEST_PATTERN_MODES)
 CONFIG_ENTRY_VALUE(0, MINT32)
+CONFIG_ENTRY_VALUE(2, MINT32)
 CONFIG_METADATA_END()
 //------------------------------------------------------------------------------
 STATIC_METADATA_END()
