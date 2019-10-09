@@ -4,7 +4,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-base_config: &base_config
+base-config: &base_config
   name: "{{$device-name}}"
   identity: &identity_common
     platform-name: "Hatch"
@@ -12,9 +12,7 @@ base_config: &base_config
     sku-id: "{{$sku-id}}"
   firmware:
     no-firmware: True
-  firmware-signing: &firmware_signing_common
-    key-id: "{{$key-id}}"
-    signature-id: "{{$device-name}}"
+  test-label: "{{$device-name}}"
   power: &power_common
     charging-ports: |
       CROS_USBPD_CHARGER0 LEFT
@@ -44,36 +42,24 @@ base_config: &base_config
 
 chromeos:
   devices:
+    - $device-name: "unprovisioned_hatch"
+      skus:
+        - $sku-id: 255
+          $fw-name: "Hatch"
+          config: *base_config
     - $device-name: "hatch"
       $fw-name: "Hatch"
-      products:
-        - $key-id: "HATCH"
       skus:
-        - $sku-id: 255 # Unprovisioned
-          config: *base_config
         - $sku-id: 1
           config: *base_config
+
     - $device-name: "unprovisioned_kohaku"
-      $internal-backlight-als-steps: |-
-        80.0 47.62 -1 400
-        100.0 80.0 100 -1
-      $has-ambient-light-sensor: "2"
-      $keyboard-backlight-user-steps: |-
-        0.0
-        30.0
-        31.0
-        33.0
-        35.0
-        38.0
       skus:
         - $sku-id: 255
           $fw-name: "Kohaku"
-          $key-id: "HATCH"
           config: *base_config
     - $device-name: "kohaku"
       $fw-name: "Kohaku"
-      products:
-        - $key-id: "HATCH"
       $internal-backlight-als-steps: |-
         80.0 47.62 -1 400
         100.0 80.0 100 -1
@@ -92,13 +78,10 @@ chromeos:
       skus:
         - $sku-id: 255
           $fw-name: "Kindred"
-          $key-id: "HATCH"
           config: *base_config
     - $device-name: "kled"
       $fw-name: "Kindred"
       $has-ambient-light-sensor: "0"
-      products:
-        - $key-id: "HATCH"
       skus:
         - $sku-id: 1
           config: *base_config
@@ -112,8 +95,6 @@ chromeos:
       $fw-name: "Kindred"
       $has-ambient-light-sensor: "0"
       $has-keyboard-backlight: "0"
-      products:
-        - $key-id: "HATCH"
       skus:
         - $sku-id: 21
           config: *base_config
@@ -127,17 +108,10 @@ chromeos:
       skus:
         - $sku-id: 255
           $fw-name: "Helios"
-          $key-id: "HATCH"
           config:
             <<: *base_config
-            power:
-              <<: *power_common
-              $has-ambient-light-sensor: "0"
-              $internal-backlight-no-als-battery-brightness: "56.25"
     - $device-name: "helios"
       $fw-name: "Helios"
-      products:
-        - $key-id: "HATCH"
       skus:
         - $sku-id: 1
           config:
@@ -150,12 +124,9 @@ chromeos:
       skus:
         - $sku-id: 255
           $fw-name: "Akemi"
-          $key-id: "HATCH"
           config: *base_config
     - $device-name: "akemi"
       $fw-name: "Akemi"
-      products:
-        - $key-id: "HATCH"
       skus:
         - $sku-id: 1
           config: *base_config
@@ -165,13 +136,10 @@ chromeos:
       skus:
         - $sku-id: 255
           $fw-name: "Dratini"
-          $key-id: "HATCH"
           config: *base_config
     - $device-name: "dratini"
       $fw-name: "Dratini"
       $has-ambient-light-sensor: "0"
-      products:
-        - $key-id: "HATCH"
       skus:
         - $sku-id: 1
           $has-keyboard-backlight: 0
@@ -186,8 +154,6 @@ chromeos:
     - $device-name: "dragonair"
       $fw-name: "Dratini"
       $has-ambient-light-sensor: "0"
-      products:
-        - $key-id: "HATCH"
       skus:
         - $sku-id: 21
           $has-keyboard-backlight: 0
