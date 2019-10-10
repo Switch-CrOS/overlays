@@ -6,4 +6,5 @@
 
 modify_kernel_command_line() {
   sed -i -E -e 's/^console=$/console=uart,mmio32,0xfedc9000 /' "$1"
+  echo "amdgpu.abmlevel=4" >> "$1"
 }
