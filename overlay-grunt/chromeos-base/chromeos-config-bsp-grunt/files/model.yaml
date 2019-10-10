@@ -4,7 +4,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-audio_common: &audio_common
+audio-common: &audio_common
   $cras_root: "/etc/cras"
   $ucm_root: "/usr/share/alsa/ucm"
   $card: "acpd7219m98357"
@@ -22,13 +22,13 @@ audio_common: &audio_common
     - source: "ucm-config/{{$card}}/{{$card}}.conf"
       destination: "{{$ucm_root}}/{{$card}}/{{$card}}.conf"
 
-touch_common: &touch_common
+touch-common: &touch_common
   $touch_present: "no"
   present: "{{$touch_present}}"
   $fw_root: "/lib/firmware"
   $fw_dest: "/opt/google/touch/firmware"
 
-power_common: &power_common
+power-common: &power_common
   instant-transitions-below-min-level: "1"
   low-battery-shutdown-percent: "4.0"
   min-visible-backlight-level: "6"
@@ -36,7 +36,7 @@ power_common: &power_common
   $has-keyboard-backlight: "0"
   has-keyboard-backlight: "{{$has-keyboard-backlight}}"
 
-base_config: &base_config
+base-config: &base_config
   $firmware-target: "{{$device-name}}"
   $audio-config: "{{$device-name}}"
   arc:
@@ -79,19 +79,19 @@ firmware: &firmware_common
     u-boot: "coreboot"
   image-name: "{{$device-name}}"
 
-convertible_base_config: &convertible_base_config
+convertible-base-config: &convertible_base_config
   hardware-properties:
     is-lid-convertible: True
     has-lid-accelerometer: True
     has-base-accelerometer: True
     has-base-gyroscope: True
 
-grunt-config: &grunt-config
+grunt-config: &grunt_config
   <<: *base_config
   firmware:
     <<: *firmware_common
 
-careena-config: &careena-config
+careena-config: &careena_config
   <<: *base_config
   firmware:
     <<: *firmware_common
@@ -133,18 +133,18 @@ careena-config: &careena-config
         symlink: "{{$fw_root}}/elants_i2c_2fe5.bin"
   $wallpaper: "hp_default"
 
-barla-config: &barla-config
-  <<: *careena-config
+barla-config: &barla_config
+  <<: *careena_config
   $brand-code: "PXDO"
   $firmware-target: "careena"
   $sub_cras_config: ""
 
-mordin-config: &mordin-config
-  <<: *barla-config
+mordin-config: &mordin_config
+  <<: *barla_config
   $brand-code: "ZKJH"
   $sub_cras_config: ".refresh"
 
-aleena-config: &aleena-config
+aleena-config: &aleena_config
   <<: *base_config
   firmware:
     <<: *firmware_common
@@ -159,8 +159,8 @@ aleena-config: &aleena-config
         destination: "{{$fw_dest}}/176.0_4.0.bin"
         symlink: "{{$fw_root}}/elan_i2c_176.0.bin"
 
-kasumi-config: &kasumi-config
-  <<: *aleena-config
+kasumi-config: &kasumi_config
+  <<: *aleena_config
   firmware:
     <<: *firmware_common
   $firmware-target: "aleena"
@@ -178,8 +178,8 @@ kasumi-config: &kasumi-config
         destination: "{{$fw_dest}}/CDB5_1.4.2939319.bin"
         symlink: "{{$fw_root}}/hid-06CB_CDB5"
 
-kasumi360-config: &kasumi360-config
-  <<: [ *kasumi-config, *convertible_base_config ]
+kasumi360-config: &kasumi360_config
+  <<: [ *kasumi_config, *convertible_base_config ]
   $audio-config: "kasumi"
   touch:
     <<: *touch_common
@@ -189,7 +189,7 @@ kasumi360-config: &kasumi360-config
         destination: "{{$fw_dest}}/1d8e_5612.bin"
         symlink: "{{$fw_root}}/elants_i2c_1d8e.bin"
 
-liara-config: &liara-config
+liara-config: &liara_config
   <<: *base_config
   firmware:
     <<: *firmware_common
@@ -210,15 +210,15 @@ liara-config: &liara-config
         destination: "{{$fw_dest}}/raydium_0xa2221840_1.3.bin"
         symlink: "{{$fw_root}}/raydium_0xa2221840.fw"
 
-treeya-config: &treeya-config
+treeya-config: &treeya_config
   <<: *base_config
   firmware:
     <<: *firmware_common
   touch:
     <<: *touch_common
 
-treeya360-config: &treeya360-config
-  <<: [ *treeya-config, *convertible_base_config ]
+treeya360-config: &treeya360_config
+  <<: [ *treeya_config, *convertible_base_config ]
   $audio-config: "treeya"
   $firmware-target: "treeya"
 
@@ -231,22 +231,22 @@ chromeos:
       $has-keyboard-backlight: "1"
       skus:
         - $sku-id: 1
-          config: *grunt-config
+          config: *grunt_config
 
         - $sku-id: 2
-          config: *grunt-config
+          config: *grunt_config
 
         - $sku-id: 3
-          config: *grunt-config
+          config: *grunt_config
 
         - $sku-id: 4
-          config: *grunt-config
+          config: *grunt_config
 
         - $sku-id: 5
-          config: *grunt-config
+          config: *grunt_config
 
         - $sku-id: 6
-          config: *grunt-config
+          config: *grunt_config
 
     - $device-name: "careena"
       products:
@@ -255,32 +255,32 @@ chromeos:
           $key-id: "CAREENA"
       skus:
         - $sku-id: 16
-          config: *careena-config
+          config: *careena_config
 
         - $sku-id: 17
-          config: *careena-config
+          config: *careena_config
 
         - $sku-id: 18
           $has-keyboard-backlight: "1"
-          config: *careena-config
+          config: *careena_config
 
         - $sku-id: 19
           $has-keyboard-backlight: "1"
-          config: *careena-config
+          config: *careena_config
 
         - $sku-id: 20
-          config: *careena-config
+          config: *careena_config
 
         - $sku-id: 21
-          config: *careena-config
+          config: *careena_config
 
         - $sku-id: 22
           $has-keyboard-backlight: "1"
-          config: *careena-config
+          config: *careena_config
 
         - $sku-id: 23
           $has-keyboard-backlight: "1"
-          config: *careena-config
+          config: *careena_config
 
     - $device-name: "barla"
       products:
@@ -288,22 +288,22 @@ chromeos:
           $key-id: "CAREENA"
       skus:
         - $sku-id: 32
-          config: *barla-config
+          config: *barla_config
 
         - $sku-id: 33
-          config: *barla-config
+          config: *barla_config
 
         - $sku-id: 40
-          config: *mordin-config
+          config: *mordin_config
 
         - $sku-id: 41
-          config: *mordin-config
+          config: *mordin_config
 
         - $sku-id: 42
-          config: *mordin-config
+          config: *mordin_config
 
         - $sku-id: 43
-          config: *mordin-config
+          config: *mordin_config
 
     - $device-name: "aleena"
       products:
@@ -312,30 +312,30 @@ chromeos:
           $key-id: "ALEENA"
       skus:
         - $sku-id: 64
-          config: *aleena-config
+          config: *aleena_config
 
         - $sku-id: 65
           $has-keyboard-backlight: "1"
-          config: *aleena-config
+          config: *aleena_config
 
         - $sku-id: 66
-          config: *aleena-config
+          config: *aleena_config
 
         - $sku-id: 67
           $has-keyboard-backlight: "1"
-          config: *aleena-config
+          config: *aleena_config
 
         - $sku-id: 68
-          config: *aleena-config
+          config: *aleena_config
 
         - $sku-id: 69
-          config: *aleena-config
+          config: *aleena_config
 
         - $sku-id: 70
-          config: *aleena-config
+          config: *aleena_config
 
         - $sku-id: 71
-          config: *aleena-config
+          config: *aleena_config
 
     - $device-name: "kasumi"
       products:
@@ -344,10 +344,10 @@ chromeos:
           $key-id: "ALEENA"
       skus:
         - $sku-id: 80
-          config: *kasumi-config
+          config: *kasumi_config
 
         - $sku-id: 81
-          config: *kasumi-config
+          config: *kasumi_config
 
     - $device-name: "kasumi360"
       products:
@@ -356,7 +356,7 @@ chromeos:
           $key-id: "ALEENA"
       skus:
         - $sku-id: 82
-          config: *kasumi360-config
+          config: *kasumi360_config
 
     - $device-name: "liara"
       products:
@@ -365,32 +365,32 @@ chromeos:
           $key-id: "LIARA"
       skus:
         - $sku-id: 128
-          config: *liara-config
+          config: *liara_config
 
         - $sku-id: 129
-          config: *liara-config
+          config: *liara_config
 
         - $sku-id: 130
           $has-keyboard-backlight: "1"
-          config: *liara-config
+          config: *liara_config
 
         - $sku-id: 131
           $has-keyboard-backlight: "1"
-          config: *liara-config
+          config: *liara_config
 
         - $sku-id: 132
-          config: *liara-config
+          config: *liara_config
 
         - $sku-id: 133
-          config: *liara-config
+          config: *liara_config
 
         - $sku-id: 134
           $has-keyboard-backlight: "1"
-          config: *liara-config
+          config: *liara_config
 
         - $sku-id: 135
           $has-keyboard-backlight: "1"
-          config: *liara-config
+          config: *liara_config
 
     - $device-name: "treeya"
       products:
@@ -399,7 +399,7 @@ chromeos:
           $key-id: "DEFAULT"
       skus:
         - $sku-id: 160
-          config: *treeya-config
+          config: *treeya_config
 
     - $device-name: "treeya360"
       products:
@@ -408,15 +408,15 @@ chromeos:
           $key-id: "DEFAULT"
       skus:
         - $sku-id: 168
-          config: *treeya360-config
+          config: *treeya360_config
 
         - $sku-id: 169
           $camera-count: 2
-          config: *treeya360-config
+          config: *treeya360_config
 
         - $sku-id: 174
-          config: *treeya360-config
+          config: *treeya360_config
 
         - $sku-id: 175
           $camera-count: 2
-          config: *treeya360-config
+          config: *treeya360_config
