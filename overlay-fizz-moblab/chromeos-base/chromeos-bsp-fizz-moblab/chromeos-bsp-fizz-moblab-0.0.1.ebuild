@@ -13,6 +13,10 @@ SLOT="0"
 KEYWORDS="-* amd64 x86"
 S="${WORKDIR}"
 
+# Add dependencies on other ebuilds from within this board overlay
+RDEPEND="chromeos-base/chromeos-bsp-baseboard-fizz"
+DEPEND="${RDEPEND}"
+
 src_install() {
 	doappid "{237EA087-1476-DF1E-CF8A-2A6B572380FE}" "CHROMEBOX"
 }
