@@ -34,6 +34,14 @@ krane_audio_config: &krane_audio_config
       - source: "{{$cras-source}}/Realtek USB2.0 Audio"
         destination: "{{$cras-dest}}/Realtek USB2.0 Audio"
 
+bluetooth-config: &bluetooth_config
+  build-path: "bluetooth/main.conf"
+  system-path: "/etc/bluetooth/main.conf"
+
+bluetooth-flags: &bluetooth_flags
+  enable-suspend-management: true
+  stop-on-suspend: true
+
 common_config: &common_config
   $cras_root: "/etc/cras"
   $ucm_root: "/usr/share/alsa/ucm"
@@ -62,6 +70,9 @@ common_config: &common_config
   power: &power_common
     low-battery-shutdown-percent: "4.0"
     usb-min-ac-watts: 10
+  bluetooth:
+    config: *bluetooth_config
+    flags: *bluetooth_flags
   camera:
     config-path: "/etc/camera/camera_config_{{$device-name}}.json"
 
