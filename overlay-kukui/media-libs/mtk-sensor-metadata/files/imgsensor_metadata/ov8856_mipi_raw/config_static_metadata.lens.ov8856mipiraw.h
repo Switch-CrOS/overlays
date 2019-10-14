@@ -22,7 +22,7 @@ STATIC_METADATA2_BEGIN(DEVICE, LENS, SENSOR_DRVNAME_OV8856_MIPI_RAW)
 //------------------------------------------------------------------------------
 //==========================================================================
 CONFIG_METADATA_BEGIN(MTK_LENS_INFO_AVAILABLE_APERTURES)
-CONFIG_ENTRY_VALUE(2.8f, MFLOAT)
+CONFIG_ENTRY_VALUE(2.0f, MFLOAT)
 CONFIG_METADATA_END()
 
 //==========================================================================
@@ -31,7 +31,7 @@ CONFIG_ENTRY_VALUE(0.0f, MFLOAT)
 CONFIG_METADATA_END()
 //==========================================================================
 CONFIG_METADATA_BEGIN(MTK_LENS_INFO_AVAILABLE_FOCAL_LENGTHS)
-CONFIG_ENTRY_VALUE(4.52f, MFLOAT)
+CONFIG_ENTRY_VALUE(2.48f, MFLOAT)
 CONFIG_METADATA_END()
 //==========================================================================
 CONFIG_METADATA_BEGIN(MTK_LENS_INFO_AVAILABLE_OPTICAL_STABILIZATION)
