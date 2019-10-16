@@ -5,11 +5,11 @@ EAPI=5
 
 CROS_WORKON_PROJECT="chromiumos/platform2"
 CROS_WORKON_LOCALNAME="../platform2"
-CROS_WORKON_SUBTREE=".gn camera/build camera/common camera/hal/intel camera/include camera/mojo common-mk metrics"
+CROS_WORKON_SUBTREE=".gn camera/build camera/common camera/hal/intel/ipu3 camera/include camera/mojo common-mk metrics"
 CROS_WORKON_OUTOFTREE_BUILD="1"
 CROS_WORKON_INCREMENTAL_BUILD="1"
 
-PLATFORM_SUBDIR="camera/hal/intel"
+PLATFORM_SUBDIR="camera/hal/intel/ipu3"
 
 inherit cros-camera cros-workon platform
 
@@ -39,8 +39,6 @@ DEPEND="${RDEPEND}
 	sys-kernel/linux-headers
 	virtual/jpeg:0
 	virtual/pkgconfig"
-
-HAL_DIR="hal/intel"
 
 src_install() {
 	dolib.so "${OUT}/lib/libcam_algo.so"
