@@ -10,5 +10,5 @@ LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="-* arm"
 
-RDEPEND="chromeos-base/chromeos-bsp-fievel"
-	"chromeos-base/chromeos-bsp-veyron"
+RDEPEND="chromeos-base/chromeos-bsp-fievel
+	chromeos-base/chromeos-bsp-veyron"
