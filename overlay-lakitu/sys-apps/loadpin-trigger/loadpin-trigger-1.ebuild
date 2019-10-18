@@ -16,12 +16,9 @@ DESCRIPTION="Kernel module to trigger loadpin on boot"
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="*"
-IUSE="clang kernel-4_14 kernel-4_19"
+IUSE="clang"
 
-DEPEND="
-	kernel-4_14? ( sys-kernel/lakitu-kernel-4_14[kernel_sources] )
-	kernel-4_19? ( sys-kernel/lakitu-kernel-4_19[kernel_sources] )
-"
+DEPEND="virtual/linux-sources"
 
 RDEPEND="
 	${DEPEND}
