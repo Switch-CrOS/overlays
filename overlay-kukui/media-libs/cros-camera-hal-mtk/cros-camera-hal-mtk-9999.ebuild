@@ -39,9 +39,61 @@ DEPEND="${RDEPEND}
 	sys-kernel/linux-headers
 	virtual/pkgconfig"
 
+MTK_HAL_LIBRARIES=(
+	"libcam.device3.so"
+	"libcam.feature_utils.so"
+	"libcam3_app.so"
+	"libcam_algo.so"
+	"libcam_algo_client.so"
+	"libcam_iopie_common.so"
+	"libcam_iopie_utils.so"
+	"libcam_normalpipe.so"
+	"libcam_normalstream.so"
+	"libcamera.mt8183.so"
+	"libcameracustom.so"
+	"libfeature.face.so"
+	"libfeature_3dnr.so"
+	"libfeature_lmv.so"
+	"libmtk_halsensor.so"
+	"libmtk_mc_libv4l2.so"
+	"libmtk_platform_log.so"
+	"libmtk_property.so"
+	"libmtkcam.featurepipe.capture.so"
+	"libmtkcam.featurepipe.core.so"
+	"libmtkcam.featurepipe.streaming.so"
+	"libmtkcam.featurepipe.util.so"
+	"libmtkcam.logicalmodule.so"
+	"libmtkcam_3rdparty.so"
+	"libmtkcam_debugutils.so"
+	"libmtkcam_exif.so"
+	"libmtkcam_fdvt.so"
+	"libmtkcam_grallocutils.so"
+	"libmtkcam_hwnode.so"
+	"libmtkcam_hwutils.so"
+	"libmtkcam_imgbuf.so"
+	"libmtkcam_metadata.so"
+	"libmtkcam_metastore.so"
+	"libmtkcam_modulefactory_aaa.so"
+	"libmtkcam_modulefactory_custom.so"
+	"libmtkcam_modulefactory_drv.so"
+	"libmtkcam_modulefactory_utils.so"
+	"libmtkcam_modulehelper.so"
+	"libmtkcam_pipeline.so"
+	"libmtkcam_pipelinemodel.so"
+	"libmtkcam_pipelinemodel_utils.so"
+	"libmtkcam_pipelinepolicy.so"
+	"libmtkcam_stdutils.so"
+	"libmtkcam_streamutils.so"
+	"libmtkcam_sysutils.so"
+	"libmtkcam_tuning_utils.so"
+	"libmtkcam_v4l2drvmgr.so"
+)
+
 src_install() {
 	# install hal libs to dev
-	dolib.so "${OUT}/lib/"*.so
+	for lib in "${MTK_HAL_LIBRARIES[@]}"; do
+		dolib.so "${OUT}/lib/${lib}"
+	done
 	dobin "${OUT}"/setprop
 	dobin "${OUT}"/getprop
 	dobin "${OUT}"/eeprom_updater
