@@ -31,6 +31,7 @@ RDEPEND="
 		dev-python/protobuf-python
 		net-libs/grpc
 		sys-apps/moblab-common
+		net-dialup/minicom
 "
 
 DEPEND="${RDEPEND}
