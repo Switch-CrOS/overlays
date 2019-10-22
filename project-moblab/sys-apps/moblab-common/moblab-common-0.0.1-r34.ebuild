@@ -1,7 +1,7 @@
 # Copyright 2019 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2.
 
-EAPI=6
+EAPI=7
 
 CROS_WORKON_COMMIT="dde02cf6896fcbc18148d4785029d7ef916d5dcf"
 CROS_WORKON_TREE="21a89a94314248b1b7ba139229d119e0b6b9b066"
@@ -20,7 +20,7 @@ LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
 
-RDEPEND="virtual/python-futures"
+RDEPEND="dev-python/future[${PYTHON_USEDEP}]"
 
 DEPEND="dev-python/setuptools[${PYTHON_USEDEP}]
 		${RDEPEND}"
