@@ -20,7 +20,7 @@ LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
 
-RDEPEND=""
+RDEPEND="virtual/python-futures"
 
 DEPEND="dev-python/setuptools[${PYTHON_USEDEP}]
 		${RDEPEND}"
