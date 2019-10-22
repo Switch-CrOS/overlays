@@ -94,9 +94,9 @@ python_install_all() {
 
 	distutils-r1_python_install_all
 
-	# Overwrite the default cloud.cfg with our customized version.
-	insinto /etc/cloud
-	doins "${FILESDIR}"/cloud.cfg
+	# Remove the default cloud.cfg.  A customized version will be installed
+	# by virtual/cloud-init-config.
+	rm "${ED%/}/etc/cloud/cloud.cfg" || die
 
 	exeinto /usr/share/cloud
 	doexe "${FILESDIR}"/rerun-cloudinit.sh

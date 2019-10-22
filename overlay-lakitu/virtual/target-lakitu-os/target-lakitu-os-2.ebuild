@@ -78,6 +78,7 @@ LAKITU_RDEPEND="
 	criu? ( sys-process/criu )
 	virtual/chromeos-bsp
 	virtual/chromeos-firewall
+	virtual/cloud-init-config
 	virtual/implicit-system
 	virtual/lakitu-network-init
 	virtual/linux-sources
