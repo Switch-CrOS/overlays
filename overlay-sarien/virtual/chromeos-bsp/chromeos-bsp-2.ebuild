@@ -10,5 +10,8 @@ LICENSE="BSD"
 SLOT="0"
 KEYWORDS="-* amd64"
 
-RDEPEND="chromeos-base/chromeos-bsp-sarien"
+RDEPEND="
+	chromeos-base/chromeos-bsp-sarien
+	chromeos-base/chromeos-bsp-wilco
+"
 

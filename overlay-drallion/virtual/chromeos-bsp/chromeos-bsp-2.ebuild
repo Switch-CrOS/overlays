@@ -9,4 +9,7 @@ LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="-* amd64 x86"
 
-RDEPEND="chromeos-base/chromeos-bsp-drallion"
+RDEPEND="
+	chromeos-base/chromeos-bsp-drallion
+	chromeos-base/chromeos-bsp-wilco
+"
