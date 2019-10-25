@@ -13,6 +13,9 @@ IUSE=""
 S=${WORKDIR}
 
 src_install() {
+	insinto /etc
+	doins "${FILESDIR}"/arc_host.conf
+
 	insinto /etc/profile.d
 	doins "${FILESDIR}"/PS1-termina.sh
 }
