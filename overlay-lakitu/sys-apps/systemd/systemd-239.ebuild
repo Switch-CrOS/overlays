@@ -382,11 +382,6 @@ lakitu_src_install() {
 	# upgrade side-effects.
 	# https://www.freedesktop.org/wiki/Software/systemd/PredictableNetworkInterfaceNames/
 	dosym /dev/null /etc/systemd/network/99-default.link
-
-	# Don't boot into graphical.target
-	local unitdir=$(systemd_get_systemunitdir)
-	rm "${D}"/"${unitdir}"/default.target || die
-	dosym multi-user.target "${unitdir}"/default.target
 }
 
 multilib_src_install_all() {
@@ -495,6 +490,15 @@ migrate_locale() {
 
 # lakitu specific post installation
 lakitu_postinst() {
+	# Don't boot into graphical.target.
+	# NOTE: This can't be done in src_install because
+	# `systemd_get_systemunitdir` relies on systemd.pc (used by pkg-config) to
+	# resolve the system units path, which itself is installed at the
+	# src_install phase.
+	local unitdir=$(systemd_get_systemunitdir)
+	rm "${ROOT}"/"${unitdir}"/default.target || die
+	dosym multi-user.target "${unitdir}"/default.target
+
 	# Enable accounting for all supported controllers (CPU, Memory and Block)
 	sed -i 's/#DefaultCPUAccounting=no/DefaultCPUAccounting=yes/' "${ROOT}"/etc/systemd/system.conf
 	sed -i 's/#DefaultBlockIOAccounting=no/DefaultBlockIOAccounting=yes/' "${ROOT}"/etc/systemd/system.conf
