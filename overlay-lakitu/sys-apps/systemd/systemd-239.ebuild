@@ -500,7 +500,7 @@ lakitu_postinst() {
 	# src_install phase.
 	local unitdir=$(systemd_get_systemunitdir)
 	rm "${ROOT}"/"${unitdir}"/default.target || die
-	dosym multi-user.target "${unitdir}"/default.target
+	ln -s multi-user.target "${ROOT}"/"${unitdir}"/default.target
 
 	# Enable accounting for all supported controllers (CPU, Memory and Block)
 	sed -i 's/#DefaultCPUAccounting=no/DefaultCPUAccounting=yes/' "${ROOT}"/etc/systemd/system.conf
