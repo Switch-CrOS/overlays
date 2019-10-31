@@ -29,7 +29,6 @@ DEPEND="
 	"
 RDEPEND="${DEPEND}
 	x11-drivers/mali-rules
-	bluetooth? ( net-wireless/broadcom )
 	net-wireless/marvell_sd8787
 "
 
@@ -60,9 +59,6 @@ src_install() {
 	if use bluetooth ; then
 		insinto "/etc/modprobe.d"
 		doins "${FILESDIR}"/blacklist-btsdio.conf
-
-		# Install platform specific files to start Broadcom patchram
-		udev_dorules "${FILESDIR}/99-veyron-brcm.rules"
 	fi
 
 	# Install platform specific files to enable persist on ehci-platform

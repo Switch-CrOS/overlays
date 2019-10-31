@@ -15,7 +15,6 @@ IUSE="bluetooth"
 DEPEND="!<chromeos-base/chromeos-bsp-speedy-private-0.0.2"
 RDEPEND="
 	${DEPEND}
-	bluetooth? ( net-wireless/broadcom )
 	!<media-sound/adhd-0.0.6
 "
 
@@ -27,12 +26,6 @@ src_install() {
 	# Install Bluetooth ID override.
 	insinto "/etc/bluetooth"
 	doins "${FILESDIR}/main.conf"
-
-	# Install Speedy specific Broadcom BT init file.
-	if use bluetooth ; then
-		insinto "/etc/init"
-		doins "${FILESDIR}/brcm_patchram_plus.conf"
-	fi
 
 	# Install audio-config files
 	local audio_config_dir="${FILESDIR}/audio-config"
