@@ -106,11 +106,6 @@ src_install() {
 
 	dosym bash /bin/sh
 
-	# Ensure /etc/shadow exists in the target with correct perms.
-	# http://bugs.gentoo.org/260993
-	touch "${D}/etc/shadow" || die
-	chmod 0600 "${D}/etc/shadow" || die
-
 	# Avoid the wrapper and just link to the only editor we have.
 	dodir /usr/libexec
 	dosym /usr/bin/vim /usr/libexec/editor
