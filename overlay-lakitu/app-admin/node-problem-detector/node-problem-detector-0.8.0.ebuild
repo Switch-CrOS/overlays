@@ -45,6 +45,7 @@ src_install() {
 	doins "${FILESDIR}"/system-stats-monitor.json
 	doins "${FILESDIR}"/docker-monitor.json
 	doins "${FILESDIR}"/kernel-monitor.json
+	doins "${FILESDIR}"/stackdriver-exporter.json
 
 	dosbin bin/node-problem-detector
 

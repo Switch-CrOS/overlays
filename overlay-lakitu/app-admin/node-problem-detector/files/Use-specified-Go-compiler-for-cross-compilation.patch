@@ -1,17 +1,17 @@
-From 7935b8e0ad452e63c03f3757874240934cb9b49f Mon Sep 17 00:00:00 2001
+From b7985b344fc59118dce9c07b829189aeb103b1b2 Mon Sep 17 00:00:00 2001
 From: Xuewei Zhang <xueweiz@google.com>
 Date: Mon, 17 Jun 2019 15:21:58 -0700
 Subject: [PATCH] lakitu: Use specified Go compiler for cross compilation
 
 ---
- Makefile | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ Makefile | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index ca3f65e..a7d9823 100644
+index c4951a1..d4230c0 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -71,9 +71,9 @@ ifeq ($(ENABLE_JOURNALD), 1)
+@@ -76,9 +76,9 @@ ifneq ($(BUILD_TAGS), "")
  endif
  
  vet:
@@ -23,7 +23,7 @@ index ca3f65e..a7d9823 100644
  
  fmt:
  	find . -type f -name "*.go" | grep -v "./vendor/*" | xargs gofmt -s -w -l
-@@ -82,7 +82,7 @@ version:
+@@ -87,7 +87,7 @@ version:
  	@echo $(VERSION)
  
  ./bin/log-counter: $(PKG_SOURCES)
@@ -32,7 +32,7 @@ index ca3f65e..a7d9823 100644
  		-mod vendor \
  		-o bin/log-counter \
  		-ldflags '-X $(PKG)/pkg/version.version=$(VERSION)' \
-@@ -90,7 +90,7 @@ version:
+@@ -95,7 +95,7 @@ version:
  		cmd/logcounter/log_counter.go
  
  ./bin/node-problem-detector: $(PKG_SOURCES)
@@ -41,15 +41,19 @@ index ca3f65e..a7d9823 100644
  		-mod vendor \
  		-o bin/node-problem-detector \
  		-ldflags '-X $(PKG)/pkg/version.version=$(VERSION)' \
-@@ -101,7 +101,7 @@ Dockerfile: Dockerfile.in
+@@ -106,10 +106,10 @@ Dockerfile: Dockerfile.in
  	sed -e 's|@BASEIMAGE@|$(BASEIMAGE)|g' $< >$@
  
  test: vet fmt
--	GO111MODULE=on go test -mod vendor -timeout=1m -v -race $(BUILD_TAGS) ./...
-+	GO111MODULE=on ${GO} test -mod vendor -timeout=1m -v -race $(BUILD_TAGS) ./...
+-	GO111MODULE=on go test -mod vendor -timeout=1m -v -race -short $(BUILD_TAGS) ./...
++	GO111MODULE=on ${GO} test -mod vendor -timeout=1m -v -race -short $(BUILD_TAGS) ./...
  
- build-binaries: ./bin/node-problem-detector ./bin/log-counter
- 
+ e2e-test: vet fmt build-tar
+-	GO111MODULE=on go test -mod vendor -timeout=10m -v $(BUILD_TAGS) \
++	GO111MODULE=on ${GO} test -mod vendor -timeout=10m -v $(BUILD_TAGS) \
+ 	./test/e2e/metriconly/... \
+ 	-project=$(PROJECT) -zone=$(ZONE) \
+ 	-image=$(VM_IMAGE) -image-family=$(IMAGE_FAMILY) -image-project=$(IMAGE_PROJECT) \
 -- 
-2.22.0.410.gd8fdbe21b5-goog
+2.24.0.rc0.303.g954a862665-goog
 
