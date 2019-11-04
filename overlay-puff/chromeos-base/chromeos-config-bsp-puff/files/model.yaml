@@ -4,5 +4,25 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+base-config: &base_config
+  name: "{{$device-name}}"
+  identity: &identity_common
+    platform-name: "Puff"
+    smbios-name-match: "{{$fw-name}}"
+    sku-id: "{{$sku-id}}"
+  firmware:
+    no-firmware: True
+  test-label: "{{$device-name}}"
+
 chromeos:
-  devices: []
+  devices:
+    - $device-name: "unprovisioned_puff"
+      skus:
+        - $sku-id: 255
+          $fw-name: "Puff"
+          config: *base_config
+    - $device-name: "puff"
+      $fw-name: "Puff"
+      skus:
+        - $sku-id: 0
+          config: *base_config
