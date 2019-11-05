@@ -2,27 +2,30 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-EAPI=5
+EAPI=7
+
+# This ebuild only cares about its own FILESDIR and ebuild file, so it tracks
+# the canonical empty project.
+CROS_WORKON_PROJECT="chromiumos/infra/build/empty-project"
+CROS_WORKON_LOCALNAME="empty-project"
 
 inherit appid
-inherit cros-unibuild udev
+inherit cros-unibuild udev cros-workon
 
 DESCRIPTION="Octopus board-specific ebuild that pulls in necessary ebuilds as
 dependencies or portage actions."
 
 LICENSE="BSD-Google"
-SLOT="0"
-KEYWORDS="-* amd64 x86"
+KEYWORDS="-* ~amd64 ~x86"
 IUSE=""
-S="${WORKDIR}"
 
 # Add dependencies on other ebuilds from within this board overlay
 RDEPEND="
-	chromeos-base/chromeos-bsp-baseboard-octopus
+	chromeos-base/chromeos-bsp-baseboard-octopus:=
 "
 DEPEND="
 	${RDEPEND}
-	chromeos-base/chromeos-config
+	chromeos-base/chromeos-config:=
 "
 
 src_install() {
