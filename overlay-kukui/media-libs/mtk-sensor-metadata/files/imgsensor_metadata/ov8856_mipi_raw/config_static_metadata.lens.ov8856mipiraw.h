@@ -55,7 +55,7 @@ CONFIG_METADATA_END()
 //    )
 //==========================================================================
 CONFIG_METADATA_BEGIN(MTK_LENS_INFO_SHADING_MAP_SIZE)
-CONFIG_ENTRY_VALUE(MSize(1, 1), MSize)
+CONFIG_ENTRY_VALUE(MSize(17, 17), MSize)
 CONFIG_METADATA_END()
 //==========================================================================
 //------------------------------------------------------------------------------
