@@ -16,6 +16,6 @@ IUSE=""
 # don't) or (b) the client itself implements the loader interface.
 RDEPEND="
 	media-libs/vulkan-loader
-	media-libs/mesa-radeonsi[vulkan]
+	media-libs/mesa-amd[vulkan]
 "
 DEPEND=""

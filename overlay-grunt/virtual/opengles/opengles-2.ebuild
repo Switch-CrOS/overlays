@@ -9,5 +9,5 @@ SLOT="0"
 KEYWORDS="*"
 IUSE=""
 
-DEPEND="media-libs/mesa-radeonsi[egl,gles2]"
+DEPEND="media-libs/mesa-amd[egl,gles2]"
 RDEPEND="${DEPEND}"
