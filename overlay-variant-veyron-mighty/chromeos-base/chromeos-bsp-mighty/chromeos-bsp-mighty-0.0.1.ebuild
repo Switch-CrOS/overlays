@@ -3,7 +3,7 @@
 
 EAPI=5
 
-inherit appid udev
+inherit appid udev cros-audio-configs
 
 DESCRIPTION="Mighty bsp (meta package to pull in driver/tool deps)"
 
@@ -12,7 +12,8 @@ SLOT="0"
 KEYWORDS="-* arm"
 
 DEPEND="!<chromeos-base/chromeos-bsp-mighty-private-0.0.2"
-RDEPEND="${DEPEND}"
+RDEPEND="${DEPEND}
+	!<media-sound/adhd-0.0.6"
 
 S=${WORKDIR}
 
@@ -22,4 +23,8 @@ src_install() {
 	# Install Bluetooth ID override.
 	insinto "/etc/bluetooth"
 	doins "${FILESDIR}/main.conf"
+
+	# Install audio-config files
+	local audio_config_dir="${FILESDIR}/audio-config"
+	install_audio_configs veyron_mighty "${audio_config_dir}"
 }

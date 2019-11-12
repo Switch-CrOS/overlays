@@ -3,7 +3,7 @@
 
 EAPI=5
 
-inherit appid udev
+inherit appid udev cros-audio-configs
 
 DESCRIPTION="Speedy bsp (meta package to pull in driver/tool deps)"
 
@@ -16,6 +16,7 @@ DEPEND="!<chromeos-base/chromeos-bsp-speedy-private-0.0.2"
 RDEPEND="
 	${DEPEND}
 	bluetooth? ( net-wireless/broadcom )
+	!<media-sound/adhd-0.0.6
 "
 
 S=${WORKDIR}
@@ -32,4 +33,8 @@ src_install() {
 		insinto "/etc/init"
 		doins "${FILESDIR}/brcm_patchram_plus.conf"
 	fi
+
+	# Install audio-config files
+	local audio_config_dir="${FILESDIR}/audio-config"
+	install_audio_configs veyron_speedy "${audio_config_dir}"
 }

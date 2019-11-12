@@ -3,7 +3,7 @@
 
 EAPI=4
 
-inherit appid
+inherit appid cros-audio-configs
 
 DESCRIPTION="Jaq bsp (meta package to pull in driver/tool deps)"
 
@@ -12,10 +12,14 @@ SLOT="0"
 KEYWORDS="-* arm"
 
 DEPEND="!<chromeos-base/chromeos-bsp-jaq-private-0.0.1"
-RDEPEND=""
+RDEPEND="!<media-sound/adhd-0.0.6"
 
 S=${WORKDIR}
 
 src_install() {
 	doappid "{6D2E4D56-A22C-2F8F-7127-DA90A65F85E1}" "CHROMEBOOK" # veyron-jaq
+
+	# Install audio-config files
+	local audio_config_dir="${FILESDIR}/audio-config"
+	install_audio_configs veyron_jaq "${audio_config_dir}"
 }

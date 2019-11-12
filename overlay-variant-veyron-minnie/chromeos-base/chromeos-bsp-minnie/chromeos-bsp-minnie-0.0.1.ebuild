@@ -3,7 +3,7 @@
 
 EAPI=4
 
-inherit appid udev
+inherit appid udev cros-audio-configs
 
 DESCRIPTION="Minnie bsp (meta package to pull in driver/tool deps)"
 
@@ -12,7 +12,7 @@ SLOT="0"
 KEYWORDS="-* arm"
 IUSE="minnie-cheets minnie-kernelnext"
 
-RDEPEND=""
+RDEPEND="!<media-sound/adhd-0.0.6"
 DEPEND=""
 
 
@@ -26,4 +26,8 @@ src_install() {
 	else
 		doappid "{432FF9F1-4D2E-7E74-6F98-32E56E904BFB}" "CHROMEBOOK" # veyron-minnie
 	fi
+
+	# Install audio-config files
+	local audio_config_dir="${FILESDIR}/audio-config"
+	install_audio_configs veyron_minnie "${audio_config_dir}"
 }

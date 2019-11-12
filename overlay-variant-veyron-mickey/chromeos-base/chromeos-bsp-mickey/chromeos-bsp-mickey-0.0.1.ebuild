@@ -3,7 +3,7 @@
 
 EAPI=4
 
-inherit appid udev
+inherit appid udev cros-audio-configs
 
 DESCRIPTION="Mickey bsp (meta package to pull in driver/tool deps)"
 
@@ -15,7 +15,7 @@ IUSE="bluetooth"
 DEPEND=""
 RDEPEND="
 	media-libs/vpd-hdcpkey-install
-"
+	!<media-sound/adhd-0.0.6"
 
 S=${WORKDIR}
 
@@ -25,4 +25,8 @@ src_install() {
 	# Install Bluetooth ID override.
 	insinto "/etc/bluetooth"
 	doins "${FILESDIR}/main.conf"
+
+	# Install audio-config files
+	local audio_config_dir="${FILESDIR}/audio-config"
+	install_audio_configs veyron_mickey "${audio_config_dir}"
 }

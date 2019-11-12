@@ -3,7 +3,7 @@
 
 EAPI=4
 
-inherit appid
+inherit appid cros-audio-configs
 
 DESCRIPTION="Jerry bsp (meta package to pull in driver/tool deps)"
 
@@ -13,7 +13,7 @@ KEYWORDS="-* arm"
 IUSE="jerry-kernelnext"
 
 DEPEND="!<chromeos-base/chromeos-bsp-jerry-private-0.0.1"
-RDEPEND=""
+RDEPEND="!<media-sound/adhd-0.0.6"
 
 S=${WORKDIR}
 
@@ -23,4 +23,8 @@ src_install() {
 	else
 		doappid "{87C6D674-9385-6143-BE67-8B5E3064E89D}" "CHROMEBOOK" # veyron-jerry
 	fi
+
+	# Install audio-config files
+	local audio_config_dir="${FILESDIR}/audio-config"
+	install_audio_configs veyron_jerry "${audio_config_dir}"
 }

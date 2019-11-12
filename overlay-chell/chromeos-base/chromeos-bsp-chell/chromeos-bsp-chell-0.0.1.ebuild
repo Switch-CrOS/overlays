@@ -15,6 +15,7 @@ IUSE="chell-cheets"
 
 RDEPEND="
 	chromeos-base/chromeos-bsp-baseboard-glados
+	!<media-sound/adhd-0.0.6
 "
 DEPEND="${RDEPEND}"
 

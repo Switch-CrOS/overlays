@@ -3,7 +3,7 @@
 
 EAPI=5
 
-inherit appid udev
+inherit appid udev cros-audio-configs
 
 DESCRIPTION="Fievel bsp (meta package to pull in driver/tool deps)"
 
@@ -11,7 +11,7 @@ LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="-* arm"
 
-RDEPEND=""
+RDEPEND="!<media-sound/adhd-0.0.6"
 DEPEND=""
 
 S=${WORKDIR}
@@ -22,4 +22,8 @@ src_install() {
 	# Install Bluetooth ID override.
 	insinto "/etc/bluetooth/"
 	doins "${FILESDIR}/main.conf"
+
+	# Install audio configs.
+	local audio_config_dir="${FILESDIR}/audio-config"
+	install_audio_configs veyron_fievel "${audio_config_dir}"
 }

@@ -3,7 +3,7 @@
 
 EAPI=4
 
-inherit appid
+inherit appid cros-audio-configs
 
 DESCRIPTION="Ebuild which pulls in any necessary ebuilds as dependencies
 or portage actions."
@@ -16,9 +16,14 @@ S="${WORKDIR}"
 # Add dependencies on other ebuilds from within this board overlay
 RDEPEND="
 	chromeos-base/chromeos-bsp-baseboard-jecht
+	!<media-sound/adhd-0.0.6
 "
 DEPEND="${RDEPEND}"
 
 src_install() {
 	doappid "{4A52D805-8FA6-43A1-9F71-C1A59FD918E8}" "CHROMEBOX"
+
+	# Install audio-config files
+	local audio_config_dir="${FILESDIR}/audio-config"
+	install_audio_configs tidus "${audio_config_dir}"
 }
