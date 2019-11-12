@@ -26,6 +26,7 @@ RDEPEND="
 		dev-python/cherrypy
 		dev-python/futures
 		dev-python/google-cloud-storage
+		dev-python/google-cloud-pubsub
 		dev-python/grpcio
 		dev-python/parallel-ssh
 		dev-python/protobuf-python
