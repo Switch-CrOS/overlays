@@ -4,22 +4,18 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-common_config: &common_config
+base-config: &base_config
   name: "{{$device-name}}"
   identity:
     platform-name: "Trogdor"
     device-tree-compatible-match: "google,trogdor"
+    sku-id: "{{$sku-id}}"
   firmware:
-    build-targets:
-      coreboot: "trogdor"
-      depthcharge: "trogdor"
-      libpayload: "trogdor"
     no-firmware: True
   test-label: "{{$device-name}}"
 chromeos:
   devices:
     - $device-name: "trogdor"
-      products:
-        - $key-id: "TROGDOR"
       skus:
-        - config: *common_config
+        - $sku-id: 0
+          config: *base_config
