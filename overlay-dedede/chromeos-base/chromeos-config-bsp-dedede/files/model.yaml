@@ -1,0 +1,26 @@
+# Copyright 2019 The Chromium OS Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+unprovisioned-config: &unprovisioned_config
+  name: "{{$device-name}}"
+  identity: &unprovisioned_identity
+    platform-name: "dedede"
+    smbios-name-match: "{{$fw-name}}"
+    sku-id: "{{$sku-id-val}}"
+  firmware:
+    no-firmware: True
+
+device-config: &device_config
+  <<: *unprovisioned_config
+
+chromeos:
+  devices:
+    - $device-name: "waddledoo"
+      $fw-name: "Waddledoo"
+      skus:
+        - $sku-id-val: 255
+          config: *unprovisioned_config
+    # This is a temporary model with SKU ID - 255 which is expected to be
+    # provisioned with correct SKU ID in the factory flow. And HWID verification
+    # will also catch the DUT still with 255 and report error.
