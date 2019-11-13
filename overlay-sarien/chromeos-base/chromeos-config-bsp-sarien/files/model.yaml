@@ -1,4 +1,4 @@
-common_config: &common_config
+base_config: &base_config
   name: "{{$device-name}}"
   identity:
     platform-name: "Sarien"
@@ -59,33 +59,49 @@ common_config: &common_config
     config:
       build-path: "{{$bluetooth-device}}/bluetooth/main.conf"
       system-path: "/etc/bluetooth/{{$bluetooth-device}}/main.conf"
+
+sarien-config: &sarien-config
+  <<: *base_config
+  $fw-name: "Sarien"
+  $is-lid-convertible-val: False
+  $has-lid-accelerometer-val: False
+  $has-base-accelerometer-val: False
+  $has-lid-gyroscope-val: False
+  $has-lid-magnetometer-val: False
+  $has-touchscreen-val: True
+  # Set default panel brightness to ~80nits on battery for 220 nits panel.
+  $internal-backlight-no-als-battery-brightness: "60"
+
+sarien-signed-config: &sarien-signed-config
+  <<: *sarien-config
+
+arcada-config: &arcada-config
+  <<: *base_config
+  $fw-name: "Arcada"
+  $is-lid-convertible-val: True
+  $has-lid-accelerometer-val: True
+  $has-base-accelerometer-val: True
+  $has-lid-gyroscope-val: True
+  $has-lid-magnetometer-val: True
+  $has-touchscreen-val: True
+
+arcada-signed-config: &arcada-signed-config
+  <<: *arcada-config
+
+
 chromeos:
   devices:
     - $device-name: "sarien"
-      $fw-name: "Sarien"
-      $is-lid-convertible-val: False
-      $has-lid-accelerometer-val: False
-      $has-base-accelerometer-val: False
-      $has-lid-gyroscope-val: False
-      $has-lid-magnetometer-val: False
-      $has-touchscreen-val: True
-      # Set default panel brightness to ~80nits on battery for 220 nits panel.
-      $internal-backlight-no-als-battery-brightness: "60"
       skus:
         - $sku-id: 1
-          config: *common_config
+          config: *sarien-config
+        # Same model as Sarien but with signed EC image
         - $sku-id: 3
-          config: *common_config
+          config: *sarien-signed-config
     - $device-name: "arcada"
-      $fw-name: "Arcada"
-      $is-lid-convertible-val: True
-      $has-lid-accelerometer-val: True
-      $has-base-accelerometer-val: True
-      $has-lid-gyroscope-val: True
-      $has-lid-magnetometer-val: True
-      $has-touchscreen-val: True
       skus:
         - $sku-id: 2
-          config: *common_config
+          config: *arcada-config
+        # Same model as Arcada but with signed EC image
         - $sku-id: 4
-          config: *common_config
+          config: *arcada-signed-config
