@@ -8,7 +8,19 @@ USE=""
 USE="${USE} include_vmlinuz"
 
 # This device has no audio.
-USE="${USE} -alsa -cras"
+USE="${USE} -alsa -cras -midi"
+
+# This device has no browser or GUI.  Disable higher level features that require that.
+USE="${USE} -cros_disks -dlm -easy_unlock -oobe_config -pepper_flash"
+
+# We have no attached firmware we care about updating.
+USE="${USE} -fwupd"
+
+# We don't do p2p updates.
+USE="${USE} -cros_p2p"
+
+# We don't connect to secure networks.
+USE="${USE} -wired_8021x"
 
 # Disable unibuild on this legacy board. This is only for existing (as of Jan 2019)
 # boards as all new boards must be unibuild enabled moving forward. Do not copy this
