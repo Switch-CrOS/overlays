@@ -1,1 +1,1 @@
-chromeos-bsp-mickey-private-0.0.1.ebuild
+chromeos-bsp-mickey-0.0.1.ebuild
