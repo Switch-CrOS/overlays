@@ -4,7 +4,7 @@
 # Any changes submitted in the current ebuild needs to be duplicated in
 # `non-9999` ebuild as well.
 
-EAPI=6
+EAPI=7
 
 CROS_WORKON_REPO="https://cos.googlesource.com"
 CROS_WORKON_PROJECT="third_party/kernel"

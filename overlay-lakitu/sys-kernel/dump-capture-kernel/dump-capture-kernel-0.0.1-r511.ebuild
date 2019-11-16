@@ -4,7 +4,7 @@
 # Any changes submitted in the current ebuild needs to be duplicated in
 # `9999` ebuild as well.
 
-EAPI=5
+EAPI=7
 CROS_WORKON_REPO="https://cos.googlesource.com"
 CROS_WORKON_EGIT_BRANCH="cos-4.19"
 CROS_WORKON_PROJECT="third_party/kernel"

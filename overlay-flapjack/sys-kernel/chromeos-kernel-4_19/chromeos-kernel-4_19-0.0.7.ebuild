@@ -1,7 +1,7 @@
 # Copyright 2019 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=5
+EAPI=7
 
 CROS_WORKON_COMMIT="c07f0885937887b78784d060dfe35f60f3ad470a"
 CROS_WORKON_TREE="132d443fcbb60bb9b6dabf1b16a96cf3c48e306a"

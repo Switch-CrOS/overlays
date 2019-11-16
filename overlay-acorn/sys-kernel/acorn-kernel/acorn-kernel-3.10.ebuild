@@ -1,7 +1,7 @@
 # Copyright 2015 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=4
+EAPI=7
 EGIT_BRANCH="linux-3.10.39-14t3_acorn"
 EGIT_REPO_URI="https://github.com/Kinoma/acorn_kernel.git"
 EGIT_COMMIT="1de3c494e2c1c46aa504133257b349b71e3e44fe"
