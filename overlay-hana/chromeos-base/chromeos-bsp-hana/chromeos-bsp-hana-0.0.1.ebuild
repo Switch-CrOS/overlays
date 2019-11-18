@@ -12,6 +12,7 @@ or portage actions."
 LICENSE="BSD-Google"
 SLOT="0" # TODO(b/144948221): convert this to cros-workon
 KEYWORDS="-* arm64 arm"
+IUSE="hana-kernelnext"
 S="${WORKDIR}"
 
 # Add dependencies on other ebuilds from within this board overlay
@@ -23,7 +24,11 @@ RDEPEND="${DEPEND}
 "
 
 src_install() {
-	doappid "{AAE972E1-A913-C860-B7AB-BF7F267F199B}" "CHROMEBOOK"
+	if use hana-kernelnext; then
+		doappid "{3C72E98C-09C7-11EA-801F-3B16A88ADBE8}" "CHROMEBOOK"
+	else
+		doappid "{AAE972E1-A913-C860-B7AB-BF7F267F199B}" "CHROMEBOOK"
+	fi
 
 	# Install audio config files.
 	local audio_config_dir="${FILESDIR}/audio-config"
