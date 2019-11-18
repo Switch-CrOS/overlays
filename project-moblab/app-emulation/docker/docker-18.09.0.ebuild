@@ -184,14 +184,6 @@ pkg_setup() {
 	enewgroup docker
 }
 
-src_prepare() {
-	default
-	eautoreconf
-}
-
-
-
-
 src_compile() {
 	export GOPATH="${WORKDIR}/${P}"
 
