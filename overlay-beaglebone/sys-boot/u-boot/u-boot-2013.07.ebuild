@@ -1,7 +1,7 @@
 # Copyright (c) 2013 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=4
+EAPI=6
 
 inherit toolchain-funcs flag-o-matic
 
@@ -35,9 +35,13 @@ umake() {
 
 src_prepare() {
 	epatch "${FILESDIR}"/*.patch
+	eapply_user
 }
 
 src_configure() {
+	# This fails to build with --gc-sections. crbug.com/1026145
+	filter-ldflags -Wl,--gc-sections
+
 	export LDFLAGS=$(raw-ldflags)
 	tc-export BUILD_CC
 	umake am335x_evm_config
