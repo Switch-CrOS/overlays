@@ -1,0 +1,1 @@
+chromeos-config-bsp-mushu-0.0.1.ebuild
