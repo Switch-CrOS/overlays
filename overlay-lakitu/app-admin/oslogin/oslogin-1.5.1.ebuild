@@ -10,7 +10,7 @@ DESCRIPTION="Google Compute Engine OS Login libraries, applications and configur
 HOMEPAGE="https://github.com/GoogleCloudPlatform/compute-image-packages/tree/master/packages/google-compute-engine-oslogin"
 
 # Release tag of compute-image-packages.
-CIP_PV="20190304"
+CIP_PV="20190315"
 SRC_URI="https://github.com/GoogleCloudPlatform/compute-image-packages/archive/${CIP_PV}.tar.gz -> compute-image-packages-${CIP_PV}.tar.gz"
 
 LICENSE="Apache-2.0"
