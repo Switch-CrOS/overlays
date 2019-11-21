@@ -1,18 +1,20 @@
 # Copyright 2018 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=5
+EAPI=7
+
+# This ebuild only cares about its own FILESDIR and ebuild file, so it tracks
+# the canonical empty project.
+CROS_WORKON_PROJECT="chromiumos/infra/build/empty-project"
+CROS_WORKON_LOCALNAME="empty-project"
 
 DESCRIPTION="Chrome OS Model configuration package for coral"
 HOMEPAGE="http://src.chromium.org"
 
 LICENSE="BSD-Google"
-SLOT="0/${PF}"
-KEYWORDS="-* amd64 x86"
+KEYWORDS="-* ~amd64 ~x86"
 
-inherit cros-unibuild
-
-S=${WORKDIR}
+inherit cros-unibuild cros-workon
 
 RDEPEND="
 	!<chromeos-base/chromeos-config-bsp-coral-private-0.0.1-r1102
