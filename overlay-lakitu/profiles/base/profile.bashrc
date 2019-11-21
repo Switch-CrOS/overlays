@@ -1,4 +1,11 @@
 
+# Override some CFLAGS that are set in make.conf.generic-target. We can't
+# override these flags in our make.defaults because our make.defaults is
+# evaluated before make.conf.generic-target is evaluated.
+CFLAGS_OVERRIDE="-fno-function-sections -fno-data-sections"
+export CFLAGS="${CFLAGS} ${CFLAGS_OVERRIDE}"
+export CXXFLAGS="${CXXFLAGS} ${CFLAGS_OVERRIDE}"
+
 # Load all additional bashrc files we have for this package.
 lakitu_stack_bashrc() {
         local cfg cfgd
