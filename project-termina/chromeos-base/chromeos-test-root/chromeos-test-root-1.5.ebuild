@@ -12,6 +12,7 @@ KEYWORDS="*"
 IUSE=""
 
 RDEPEND="
+	app-benchmarks/pjdfstest
 	chromeos-base/chromeos-test-testauthkeys
 	virtual/chromeos-bsp-test-root
 "
