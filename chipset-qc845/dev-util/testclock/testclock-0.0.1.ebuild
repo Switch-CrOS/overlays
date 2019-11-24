@@ -2,8 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-EAPI=5
-PYTHON_COMPAT=( python2_7 )
+EAPI=7
+PYTHON_COMPAT=( python3_{6,7} )
 
 inherit distutils-r1
 
@@ -15,7 +15,7 @@ SLOT="0"
 KEYWORDS="-* arm64 arm"
 IUSE=""
 
-DEPEND="dev-python/setuptools"
+BDEPEND="dev-python/setuptools[${PYTHON_USEDEP}]"
 RDEPEND="dev-util/mem"
 
 src_unpack() {
