@@ -304,6 +304,7 @@ multilib_src_configure() {
 		-Dldconfig=true
 		-Dnetworkd=true
 		-Dtimesyncd=true
+		-Dtimedated=true
 		-Dtmpfiles=true
 	)
 
@@ -323,7 +324,6 @@ multilib_src_configure() {
 		-Drandomseed=false
 		-Drfkill=false
 		-Dsysusers=false
-		-Dtimedated=false
 		-Dutmp=false
 		-Dvconsole=false
 	)
