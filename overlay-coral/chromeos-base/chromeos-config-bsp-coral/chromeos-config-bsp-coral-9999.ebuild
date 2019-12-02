@@ -16,6 +16,8 @@ KEYWORDS="-* ~amd64 ~x86"
 
 inherit cros-unibuild cros-workon
 
+IUSE="generated_cros_config"
+
 RDEPEND="
 	!<chromeos-base/chromeos-config-bsp-coral-private-0.0.1-r1102
 "
@@ -28,7 +30,11 @@ src_install(){
 	insinto "${CROS_MODELS_DIR}"
 	doins -r "${FILESDIR}"/*
 
-	install_model_files
+	if use generated_cros_config ; then
+		install_generated_config_files
+	else
+		install_model_files
+	fi
 
 	insinto "${CROS_CONFIG_TEST_DIR}"
 	doins "${FILESDIR}/config_dump.json"
