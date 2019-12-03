@@ -11,7 +11,7 @@ or portage actions."
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="-* amd64 x86"
-IUSE="caroline-userdebug caroline-arc64 caroline-ndktranslation caroline-arcnext"
+IUSE="caroline-userdebug caroline-arc64 caroline-ndktranslation caroline-arcnext caroline-kernelnext"
 REQUIRED_USE="caroline-userdebug? ( !caroline-arc64 )"
 S="${WORKDIR}"
 
@@ -28,6 +28,8 @@ src_install() {
 		doappid "{D5CF3BCD-7093-49E6-8E31-0990E21730F8}" "CHROMEBOOK"
 	elif use caroline-arc64; then
 		doappid "{AAB07052-010F-1A82-D471-6159D122A397}" "CHROMEBOOK"
+	elif use caroline-kernelnext; then
+		doappid "{F6BDA2AE-158A-11EA-91D9-BF5AB41949D9}" "CHROMEBOOK"
 	elif use caroline-ndktranslation; then
 		doappid "{B99F1576-FDAD-6E9B-B4A2-B7195749BC74}" "CHROMEBOOK"
 	elif use caroline-arcnext; then
