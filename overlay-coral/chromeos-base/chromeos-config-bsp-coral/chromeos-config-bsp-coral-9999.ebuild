@@ -20,6 +20,7 @@ IUSE="generated_cros_config"
 
 RDEPEND="
 	!<chromeos-base/chromeos-config-bsp-coral-private-0.0.1-r1102
+	generated_cros_config? ( !!chromeos-base/chromeos-config-bsp-coral-private )
 "
 
 # From an ideological purity perspective, this DEPEND should be there, but
