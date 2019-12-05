@@ -12,7 +12,7 @@ LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="-* arm64 arm"
 S="${WORKDIR}"
-IUSE="cheets kernel-4_4 mt8176"
+IUSE="cheets kernel-4_4 kernel-4_19 mt8176"
 
 # Add dependencies on other ebuilds from within this board overlay
 DEPEND="
@@ -24,6 +24,7 @@ RDEPEND="${DEPEND}"
 src_install() {
 	local soc=$(usex mt8176 mt817{6,3})
 	local kernel=$(usex kernel-4_4 4_4 3_18)
+	kernel=$(usex kernel-4_19 4_19 "${kernel}")
 
 	# Install cpuset adjustments.
 	insinto "/etc/init"
@@ -35,9 +36,9 @@ src_install() {
 
 	# chromeos-4.4 boots using performance governor.
 	# After boot switch to sched governor
-	if use kernel-4_4; then
+	if [[ ${kernel} != "3_18" ]]; then
 		insinto "/etc"
-		doins "${FILESDIR}/cpufreq.conf"
+		doins "${FILESDIR}/cpufreq-${kernel}/cpufreq.conf"
 	fi
 
 	if use cheets; then
