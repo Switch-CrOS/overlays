@@ -41,11 +41,11 @@ switch (rInfo.getDeviceId()) {
 case 0:
     //======================================================================
     CONFIG_METADATA_BEGIN(MTK_SENSOR_INFO_ORIENTATION)
-    CONFIG_ENTRY_VALUE(90, MINT32)
+    CONFIG_ENTRY_VALUE(270, MINT32)
     CONFIG_METADATA_END()
     //======================================================================
     CONFIG_METADATA_BEGIN(MTK_SENSOR_INFO_WANTED_ORIENTATION)
-    CONFIG_ENTRY_VALUE(90, MINT32)
+    CONFIG_ENTRY_VALUE(270, MINT32)
     CONFIG_METADATA_END()
     //======================================================================
     CONFIG_METADATA_BEGIN(MTK_SENSOR_INFO_FACING)

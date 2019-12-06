@@ -20,7 +20,7 @@ STATIC_METADATA2_BEGIN(DEVICE, SCALER, SENSOR_DRVNAME_OV5695_MIPI_RAW)
 //------------------------------------------------------------------------------
 //==========================================================================
 CONFIG_METADATA_BEGIN(MTK_SCALER_AVAILABLE_MAX_DIGITAL_ZOOM)//
-CONFIG_ENTRY_VALUE(1, MFLOAT)
+CONFIG_ENTRY_VALUE(4, MFLOAT)
 CONFIG_METADATA_END()
 //==========================================================================
 // support if enable reprocessing
