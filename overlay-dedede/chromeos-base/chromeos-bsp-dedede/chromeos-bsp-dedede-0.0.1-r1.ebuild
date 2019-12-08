@@ -1,0 +1,1 @@
+chromeos-bsp-dedede-0.0.1.ebuild

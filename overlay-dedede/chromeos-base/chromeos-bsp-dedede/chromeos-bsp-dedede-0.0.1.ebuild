@@ -14,3 +14,7 @@ SLOT="0"
 KEYWORDS="-* amd64 x86"
 IUSE=""
 S="${WORKDIR}"
+
+src_install() {
+	doappid "{E0DD1258-E890-493E-ADA3-0C755240B89C}" "CHROMEBOOK"
+}
