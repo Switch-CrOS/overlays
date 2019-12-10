@@ -199,8 +199,9 @@ src_prepare() {
 			# TODO(vaibhavrustagi): Need to check to use default paths provided
 			# by systemd or not
 			"${FILESDIR}"/239-change-paths-for-udev-rules-init-reboot.patch
+			# Disable LMNR and MDNS since COS does not support multicast.
+			"${FILESDIR}"/239-resolved-conf-in.patch
 	)
-
 	default
 }
 
