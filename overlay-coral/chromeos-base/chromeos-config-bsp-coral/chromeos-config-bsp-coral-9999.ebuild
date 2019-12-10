@@ -39,7 +39,4 @@ src_install(){
 
 	insinto "${CROS_CONFIG_TEST_DIR}"
 	doins "${FILESDIR}/config_dump.json"
-	doins "${FILESDIR}/file_dump.txt"
-	doins "${FILESDIR}/file_dump.sh"
-	chmod 755 "${D}${CROS_CONFIG_TEST_DIR}/file_dump.sh"
 }
