@@ -1,7 +1,7 @@
 # Copyright 2016 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=4
+EAPI=7
 
 inherit appid cros-audio-configs udev
 
@@ -10,7 +10,7 @@ DESCRIPTION="Ebuild which pulls in any necessary ebuilds as dependencies
 or portage actions."
 
 LICENSE="BSD-Google"
-SLOT="0"
+SLOT="0" # TODO(b/144948221): convert this to cros-workon
 KEYWORDS="-* arm64 arm"
 IUSE="elm-cheets"
 S="${WORKDIR}"
