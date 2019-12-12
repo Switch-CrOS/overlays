@@ -53,6 +53,7 @@ LAKITU_RDEPEND="
 	net-firewall/ebtables
 	net-fs/autofs
 	net-misc/bridge-utils
+	net-misc/chrony
 	net-misc/wget
 	apparmor? (
 		sys-apps/apparmor

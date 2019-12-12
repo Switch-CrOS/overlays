@@ -41,6 +41,7 @@ src_prepare() {
 		-e 's:/var/run:/run:g' \
 		conf.c doc/*.man.in examples/* || die
 
+	eapply "${FILESDIR}/chrony-3.4.1-default-ntp-server.patch"
 	default
 }
 
