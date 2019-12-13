@@ -37,7 +37,7 @@ SLOT="0"
 KEYWORDS="~*"
 IUSE="em100-mode fsp memmaps mocktpm quiet-cb rmt vmx mtc mma"
 IUSE="${IUSE} +bmpblk +intel_mrc qca-framework quiet unibuild verbose"
-IUSE="${IUSE} amd_cpu +coreboot-sdk chipset_stoneyridge seabios u-boot"
+IUSE="${IUSE} amd_cpu +coreboot-sdk chipset_stoneyridge +seabios u-boot"
 # coreboot's build system handles stripping the binaries and producing a
 # separate .debug file with the symbols. This flag prevents portage from
 # stripping the .debug symbols
@@ -250,7 +250,7 @@ do_cbfstool() {
 #  $1: Filename of image to add to
 zork_add_seabios() {
 	local rom="$1"
-	local froot="${SYSROOT}/firmware"
+	local froot="${SYSROOT}/firmware/seabios/"
 
 	einfo "- Adding special zork seabios to ${rom}"
 	do_cbfstool "${rom}" add-payload -n fallback/payload -c lzma \
