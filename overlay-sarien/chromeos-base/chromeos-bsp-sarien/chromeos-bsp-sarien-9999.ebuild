@@ -1,24 +1,27 @@
 # Copyright 2018 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=7
 
-inherit appid cros-unibuild udev
+# This ebuild only cares about its own FILESDIR and ebuild file, so it tracks
+# the canonical empty project.
+CROS_WORKON_PROJECT="chromiumos/infra/build/empty-project"
+CROS_WORKON_LOCALNAME="empty-project"
+
+inherit appid cros-unibuild udev cros-workon
 
 DESCRIPTION="Ebuild which pulls in any necessary ebuilds as dependencies
 or portage actions."
 
 LICENSE="BSD-Google"
-SLOT="0"
-KEYWORDS="-* amd64 x86"
+KEYWORDS="-* ~amd64 ~x86"
 IUSE="sarien-kvm"
-S="${WORKDIR}"
 
 # Add dependencies on other ebuilds from within this board overlay
 RDEPEND=""
 DEPEND="
 	${RDEPEND}
-	chromeos-base/chromeos-config
+	chromeos-base/chromeos-config:=
 "
 
 src_install() {

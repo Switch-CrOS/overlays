@@ -1,1 +1,0 @@
-chromeos-config-bsp-sarien-0.0.1.ebuild
