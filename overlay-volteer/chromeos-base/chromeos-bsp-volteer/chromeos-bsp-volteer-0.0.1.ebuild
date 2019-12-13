@@ -18,6 +18,7 @@ RDEPEND="
 	chromeos-base/chromeos-bsp-baseboard-volteer
 	chromeos-base/sof-binary
 	chromeos-base/sof-topology
+	!<chromeos-base/chromeos-bsp-volteer-private-0.0.2
 "
 DEPEND="
 	${RDEPEND}
@@ -26,4 +27,6 @@ DEPEND="
 
 src_install() {
 	doappid "{77BE25D7-AFB8-4E3C-A7D2-1FACE1B186E3}" "REFERENCE"
+
+	unibuild_install_audio_files
 }
