@@ -6,4 +6,6 @@
 
 modify_kernel_command_line() {
   echo "iTCO_vendor_support.vendorsupport=3" >> "$1"
+  echo "tpm_tis.force=1" >> "$1"
+  echo "tpm_tis.interrupts=0" >> "$1"
 }

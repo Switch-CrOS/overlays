@@ -7,4 +7,7 @@
 modify_kernel_command_line() {
   # Disable USB 3.0 LPM for Huddly Go
   echo "usbcore.quirks=2bd9:0011:k" >> "$1"
+  # Force tpm_tis
+  echo "tpm_tis.force=1" >> "$1"
+  echo "tpm_tis.interrupts=0" >> "$1"
 }

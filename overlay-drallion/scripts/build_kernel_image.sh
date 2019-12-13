@@ -5,13 +5,9 @@
 # found in the LICENSE file.
 
 modify_kernel_command_line() {
- sed -i -e '/tpm_tis.force/d' "$1"
  {
   # Might be helpful to preserve ramoops in extreme circumstances
   echo "ramoops.ecc=1"
-
-  # Avoid a cosmetic TPM error (Work around for b/113527055)
-  echo "tpm_tis.force=0"
 
   # Enable S0ix logging using GSMI
   echo "gsmi.s0ix_logging_enable=1"
