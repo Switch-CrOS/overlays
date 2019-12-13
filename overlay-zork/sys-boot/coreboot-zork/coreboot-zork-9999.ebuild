@@ -37,11 +37,12 @@ SLOT="0"
 KEYWORDS="~*"
 IUSE="em100-mode fsp memmaps mocktpm quiet-cb rmt vmx mtc mma"
 IUSE="${IUSE} +bmpblk +intel_mrc qca-framework quiet unibuild verbose"
-IUSE="${IUSE} amd_cpu +coreboot-sdk chipset_stoneyridge"
+IUSE="${IUSE} amd_cpu +coreboot-sdk chipset_stoneyridge seabios u-boot"
 # coreboot's build system handles stripping the binaries and producing a
 # separate .debug file with the symbols. This flag prevents portage from
 # stripping the .debug symbols
 RESTRICT="strip"
+REQUIRED_USE="?? ( seabios u-boot )"
 
 RDEPEND=""
 DEPEND="
@@ -52,6 +53,8 @@ DEPEND="
 		amd64? ( sys-boot/chromeos-mrc ) )
 	chipset_stoneyridge? ( sys-boot/amd-firmware )
 	qca-framework? ( sys-boot/qca-framework )
+	seabios? ( sys-boot/chromeos-seabios )
+	u-boot? ( sys-boot/u-boot )
 	unibuild? ( chromeos-base/chromeos-config )
 	"
 
@@ -233,6 +236,55 @@ add_fw_blob() {
 		-f "${hash}" -n "${cbhash}" || die
 }
 
+do_cbfstool() {
+	local output
+
+	if ! output="$(cbfstool "$@" 2>&1)"; then
+		die "Failed cbfstool invocation: cbfstool $*\n${output}"
+	fi
+	echo "${output}"
+}
+
+# Add seabios to the zork image
+# Args:
+#  $1: Filename of image to add to
+zork_add_seabios() {
+	local rom="$1"
+	local froot="${SYSROOT}/firmware"
+
+	einfo "- Adding special zork seabios to ${rom}"
+	do_cbfstool "${rom}" add-payload -n fallback/payload -c lzma \
+		-f "${froot}/seabios.elf"
+	for f in "${froot}oprom/"*; do
+		if [[ -f "${f}" ]]; then
+			do_cbfstool "${rom}" add -f "${f}" \
+				-n "${f#${froot}oprom/}" -t optionrom
+		fi
+	done
+	for f in "${froot}cbfs/"*; do
+		if [[ -f "${f}" ]]; then
+			do_cbfstool "${rom}" add -f "${f}" \
+				-n "${f#${froot}cbfs/}" -t raw
+		fi
+	done
+	for f in "${froot}"etc/*; do
+		do_cbfstool "${rom}" add -f "${f}" -n "${f#${root}}" -t raw
+	done
+}
+
+# Add U-Boot to the zork image
+# Args:
+#  $1: Filename of image to add to
+zork_add_u_boot() {
+	local rom="$1"
+	local froot="${SYSROOT}/firmware"
+
+	einfo "- Adding special zork U-Boot to ${rom}"
+	do_cbfstool "${rom}" add-flat-binary -n fallback/payload \
+		-c lzma -l 0x1110000 -e 0x1110000 \
+		-f "${froot}/u-boot.bin"
+}
+
 # Build coreboot with a supplied configuration and output directory.
 #   $1: Build directory to use (e.g. "build_serial")
 #   $2: Config file to use (e.g. ".config_serial")
@@ -294,6 +346,14 @@ make_coreboot() {
 		add_fw_blob "${builddir}/coreboot.rom" "${cbname}" \
 			"${blobfile}" || die
 	done
+
+	if use seabios; then
+		# Add a seabios payload for Zork
+		zork_add_seabios "${builddir}/coreboot.rom"
+	elif use u-boot; then
+		# Add a U-Boot payload for Zork
+		zork_add_u_boot "${builddir}/coreboot.rom"
+	fi
 
 	if [ -d ${froot}/cbfs ]; then
 		die "something is still using ${froot}/cbfs, which is deprecated."
