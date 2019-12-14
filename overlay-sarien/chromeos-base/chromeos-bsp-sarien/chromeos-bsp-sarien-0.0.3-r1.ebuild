@@ -1,0 +1,55 @@
+# Copyright 2018 The Chromium OS Authors. All rights reserved.
+# Distributed under the terms of the GNU General Public License v2
+
+EAPI=7
+
+# This ebuild only cares about its own FILESDIR and ebuild file, so it tracks
+# the canonical empty project.
+CROS_WORKON_COMMIT="3a01873e59ec25ecb10d1b07ff9816e69f3bbfee"
+CROS_WORKON_TREE="8ce164efd78fcb4a68e898d8c92c7579657a49b1"
+CROS_WORKON_PROJECT="chromiumos/infra/build/empty-project"
+CROS_WORKON_LOCALNAME="empty-project"
+
+inherit appid cros-unibuild udev cros-workon
+
+DESCRIPTION="Ebuild which pulls in any necessary ebuilds as dependencies
+or portage actions."
+
+LICENSE="BSD-Google"
+KEYWORDS="-* amd64 x86"
+IUSE="sarien-kvm"
+
+# Add dependencies on other ebuilds from within this board overlay
+RDEPEND=""
+DEPEND="
+	${RDEPEND}
+	chromeos-base/chromeos-config:=
+"
+
+src_install() {
+
+	if use sarien-kvm; then
+		doappid "{3774C742-22BD-4BC5-A052-554CB624433C}" "CHROMEBOOK"
+	else
+		doappid "{E3B85B97-1771-4440-9691-D1983FEF60EB}" "CHROMEBOOK"
+	fi
+
+	# Intall a rule tagging keyboard as having updated layout
+	udev_dorules "${FILESDIR}/81-sarien-keyboard.rules"
+
+	# Install per-board hardware features for Arc++.
+	insinto /etc
+	doins "${FILESDIR}/hardware_features.xml"
+	dosbin "${FILESDIR}/board_hardware_features"
+
+	unibuild_install_audio_files
+	unibuild_install_bluetooth_files
+
+	# Arcada use Wacom touch screen with different firmware to support
+	# different panels. As a result, we need a way to identify the correct
+	# firmware to update. The solution is to probe VID_PID from
+	# eDP panel's EDID as a identifier then transfer to Wacom HWID which
+	# used to search file names of firmware blobs.
+	exeinto "/opt/google/touch/scripts"
+	doexe "${FILESDIR}"/arcada/get_board_specific_wacom_hwid.sh
+}
