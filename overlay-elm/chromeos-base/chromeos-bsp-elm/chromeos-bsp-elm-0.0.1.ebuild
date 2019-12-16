@@ -12,7 +12,7 @@ or portage actions."
 LICENSE="BSD-Google"
 SLOT="0" # TODO(b/144948221): convert this to cros-workon
 KEYWORDS="-* arm64 arm"
-IUSE="elm-cheets"
+IUSE="elm-cheets elm-kernelnext"
 S="${WORKDIR}"
 
 # Add dependencies on other ebuilds from within this board overlay
@@ -26,6 +26,8 @@ RDEPEND="${DEPEND}
 src_install() {
 	if use elm-cheets; then
 		doappid "{3DFF3394-F97E-4971-83C6-2C5C06A9953D}" "CHROMEBOOK"
+	elif use elm-kernelnext; then
+		doappid "{5C030156-1D45-11EA-871D-230545999E89}" "CHROMEBOOK"
 	else
 		doappid "{5BF597B2-ADE3-52C9-1DDA-95719C914AFF}" "CHROMEBOOK"
 	fi
