@@ -16,6 +16,12 @@ KEYWORDS="-* ~amd64 ~x86"
 
 inherit cros-unibuild cros-workon
 
+IUSE="generated_cros_config"
+
 src_install(){
-	install_model_files
+	if use generated_cros_config ; then
+		install_generated_config_files
+	else
+		install_model_files
+	fi
 }
