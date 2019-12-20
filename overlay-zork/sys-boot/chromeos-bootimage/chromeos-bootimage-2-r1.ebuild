@@ -1,0 +1,1 @@
+chromeos-bootimage-2.ebuild
