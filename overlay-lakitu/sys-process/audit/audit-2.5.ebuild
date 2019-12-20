@@ -5,7 +5,7 @@ EAPI="5"
 
 PYTHON_COMPAT=( python{2_7,3_3,3_4} )
 
-inherit autotools multilib multilib-minimal toolchain-funcs python-r1 linux-info eutils systemd
+inherit autotools multilib multilib-minimal toolchain-funcs python-r1 linux-info eutils systemd flag-o-matic
 
 DESCRIPTION="Userspace utilities for storing and processing auditing records"
 HOMEPAGE="https://people.redhat.com/sgrubb/audit/"
@@ -65,6 +65,9 @@ src_prepare() {
 }
 
 multilib_src_configure() {
+	# Need to filter out --icf=all in this package temporarily because it's using BFD
+	# https://crbug.com/1022226
+	filter-ldflags "-Wl,--icf=all"
 	local ECONF_SOURCE=${S}
 	econf \
 		--sbindir=/sbin \
