@@ -3,6 +3,8 @@
 
 EAPI=6
 
+inherit udev
+
 DESCRIPTION="Ebuild which pulls in any necessary ebuilds as dependencies
 or portage actions."
 
@@ -29,4 +31,9 @@ src_install() {
 		insinto "/opt/google/containers/android/vendor/etc/init/"
 		doins "${FILESDIR}/init.cpusets.rc"
 	fi
+
+	# udev rules for codecs
+	insinto /etc/init
+	doins "${FILESDIR}/udev-trigger-codec.conf"
+	udev_dorules "${FILESDIR}/50-media.rules"
 }
