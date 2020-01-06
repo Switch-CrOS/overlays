@@ -41,6 +41,8 @@ src_prepare() {
 src_configure() {
 	# This fails to build with --gc-sections. crbug.com/1026145
 	filter-ldflags -Wl,--gc-sections
+	# This fails to build with ICF, because it's using BFD. crbug.com/1039206
+	filter-ldflags -Wl,--icf=all
 
 	export LDFLAGS=$(raw-ldflags)
 	tc-export BUILD_CC
