@@ -83,6 +83,8 @@ device-config: &device_config
     suspend-to-idle: "1"
     $touchpad-wakeup: "1"
     touchpad-wakeup: "{{$touchpad-wakeup}}"
+    $disable-dark-resume: "1"
+    disable-dark-resume: "{{$disable-dark-resume}}"
     # At least one panel requires 5% PWM for correct function.
     # Max brightness is 19200, as reported by
     # /sys/devices/pci0000:00/0000:00:02.0/drm/card0/card0-eDP-1/intel_backlight/max_brightness
@@ -114,6 +116,8 @@ clamshell-config: &clamshell_config
     has-touchscreen: False
     $stylus-category: "none"
     stylus-category: "{{$stylus-category}}"
+  power:
+    <<: *power_default
 
 clamshell-touchscreen-config: &clamshell_touchscreen_config
   <<: *device_config
@@ -614,6 +618,7 @@ chromeos:
     - $device-name: "garg"
       $fw-name: "Garg"
       $num-mic-locations: 1
+      $disable-dark-resume: "0"
       products:
         - $whitelabel-tag: ""
         - $whitelabel-tag: "ctl"
@@ -632,6 +637,7 @@ chromeos:
           config: *clamshell_wl_config
     - $device-name: "garg360"
       $fw-name: "Garg"
+      $disable-dark-resume: "0"
       products:
         - $whitelabel-tag: ""
         - $whitelabel-tag: "ctl"
