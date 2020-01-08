@@ -10,7 +10,7 @@ DESCRIPTION="Google Virtual Ethernet (gve) driver"
 HOMEPAGE="https://github.com/GoogleCloudPlatform/compute-virtual-ethernet-linux"
 LICENSE="MIT GPL-2"
 
-SRC_URI="https://github.com/GoogleCloudPlatform/compute-virtual-ethernet-linux/releases/download/v1.0.0/gve-${PV}-cos.tar.gz -> gve-${PV}-cos.tar.gz"
+SRC_URI="https://github.com/GoogleCloudPlatform/compute-virtual-ethernet-linux/releases/download/v${PV}/gve-${PV}-cos.tar.gz -> gve-${PV}-cos.tar.gz"
 
 SLOT="0"
 
