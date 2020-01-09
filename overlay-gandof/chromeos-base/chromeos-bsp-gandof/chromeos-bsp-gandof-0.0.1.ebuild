@@ -11,7 +11,7 @@ or portage actions."
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="-* amd64 x86"
-IUSE="kernelnext"
+IUSE=""
 S="${WORKDIR}"
 
 # Add dependencies on other ebuilds from within this board overlay
@@ -29,14 +29,10 @@ src_install() {
 	doins "${FILESDIR}"/powerd_prefs/*
 
 	# Install Bluetooth ID override.
-        insinto "/etc/bluetooth"
-        doins "${FILESDIR}/main.conf"
+	insinto "/etc/bluetooth"
+	doins "${FILESDIR}/main.conf"
 
 	#Install audio config files
-	if use kernelnext; then
-		local audio_config_dir="${FILESDIR}/kernelnext-audio-config"
-	else
-		local audio_config_dir="${FILESDIR}/audio-config"
-	fi
+	local audio_config_dir="${FILESDIR}/audio-config"
 	install_audio_configs gandof "${audio_config_dir}"
 }
