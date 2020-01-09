@@ -1,7 +1,7 @@
 # Copyright 2017 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2.
 
-EAPI=5
+EAPI=7
 
 MY_PN="github.com/GoogleCloudPlatform/${PN}"
 
@@ -24,9 +24,9 @@ IUSE=""
 # Note that docker-credential-gcr depends on the head of dev-go/go-subcommands.
 # Please update dev-go/go-subcommands when upgrading docker-credential-gcr.
 DEPEND="app-emulation/docker
-	~app-emulation/docker-credential-helpers-0.5.0
-	>=dev-lang/go-1.7:=
-	>=dev-go/errors-0.8.0
+	~app-emulation/docker-credential-helpers-0.6.3
+	>=dev-lang/go-1.13:=
+	>=dev-go/errors-0.8.1
 	dev-go/subcommands
 	dev-go/net
 	dev-go/oauth2
