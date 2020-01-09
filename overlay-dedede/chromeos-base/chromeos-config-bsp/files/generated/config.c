@@ -9,10 +9,20 @@ static struct config_map all_configs[] = {
      .info = {.brand = "",
               .model = "waddledoo",
               .customization = "waddledoo",
-              .signature_id = "waddledoo"}}
+              .signature_id = "waddledoo"}},
+
+    {.platform_name = "dedede",
+     .firmware_name_match = "Jslrvp",
+     .sku_id = 2147483647,
+     .customization_id = "",
+     .whitelabel_tag = "",
+     .info = {.brand = "",
+              .model = "jslrvp",
+              .customization = "jslrvp",
+              .signature_id = "jslrvp"}}
 };
 
 const struct config_map *cros_config_get_config_map(int *num_entries) {
-  *num_entries = 1;
+  *num_entries = 2;
   return &all_configs[0];
 }
