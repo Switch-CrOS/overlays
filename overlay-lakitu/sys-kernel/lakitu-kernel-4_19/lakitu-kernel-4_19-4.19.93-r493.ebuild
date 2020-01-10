@@ -2,8 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=6
-CROS_WORKON_COMMIT="eb7147ca93ca87c54ced2c35cd3a5a9b2562c818"
-CROS_WORKON_TREE="fa6276b03af46b55997a460e51887a1d566ecb35"
+CROS_WORKON_COMMIT="ed419ab73913a7e0b17c367499ccc971e77ebcf0"
+CROS_WORKON_TREE="a9537cdb55bb550a2faf5a82df188987ccdca80d"
 CROS_WORKON_PROJECT="chromiumos/third_party/kernel"
 CROS_WORKON_LOCALNAME="kernel/v4.19-lakitu"
 
