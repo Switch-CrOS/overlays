@@ -59,10 +59,6 @@ python_install_all() {
 		systemd_enable_service multi-user.target "${service##*/}"
 	done
 
-	systemd_dounit "${FILESDIR}/var-lib-google.mount"
-	systemd_dounit "${FILESDIR}/var-lib-google-remount.service"
-	systemd_enable_service local-fs.target var-lib-google.mount
-
 	# Backports the get-metadata-value script from older version of this
 	# package (1.3.3).
 	exeinto /usr/share/google/

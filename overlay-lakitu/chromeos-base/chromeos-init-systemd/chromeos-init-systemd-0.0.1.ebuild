@@ -38,6 +38,9 @@ src_install() {
 	systemd_enable_service local-fs.target home.mount
 	systemd_dounit "${FILESDIR}"/var.mount
 	systemd_enable_service local-fs.target var.mount
+	systemd_dounit "${FILESDIR}"/var-lib-google.mount
+	systemd_enable_service local-fs.target var-lib-google.mount
+	systemd_dounit "${FILESDIR}"/var-lib-google-remount.service
 	systemd_dounit "${FILESDIR}"/mnt-stateful_partition-make-private.service
 	systemd_dounit "${FILESDIR}"/dev-shm-remount.service
 	systemd_enable_service local-fs.target dev-shm-remount.service
