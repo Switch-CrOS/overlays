@@ -4,7 +4,7 @@
 
 EAPI=7
 
-inherit appid
+inherit appid cros-audio-configs
 
 DESCRIPTION="dedede board-specific ebuild that pulls in necessary ebuilds as
 dependencies or portage actions."
@@ -17,4 +17,8 @@ S="${WORKDIR}"
 
 src_install() {
 	doappid "{E0DD1258-E890-493E-ADA3-0C755240B89C}" "CHROMEBOOK"
+
+	# Install audio config files
+	local audio_config_dir="${FILESDIR}/audio-config"
+	install_audio_configs dedede "${audio_config_dir}"
 }
