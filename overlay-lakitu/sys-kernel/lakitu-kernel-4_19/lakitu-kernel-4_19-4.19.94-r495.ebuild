@@ -43,8 +43,8 @@ src_configure() {
 
 # Change for EAPI=6
 src_prepare() {
-        default
-        cros-kernel2_src_prepare
+	default
+	cros-kernel2_src_prepare
 }
 
 tar_kernel_source() {
@@ -59,7 +59,7 @@ tar_kernel_source() {
 
 write_toolchain_env() {
 	# Write the compiler info used for kernel compilation
-	# in toolchain_env
+	# in toolchain_env.
 	local toolchain_env_dir=etc
 	# Example for toolchain_env content:
 	# CC=x86_64-cros-linux-gnu-clang
@@ -67,6 +67,22 @@ write_toolchain_env() {
 	# The file will be deleted after copying data to BUILD_DIR artifact
 	echo "CC=${CC}" > "${D}/${toolchain_env_dir}/toolchain_env"
 	echo "CXX=${CXX}" >> "${D}/${toolchain_env_dir}/toolchain_env"
+}
+
+write_kernel_info() {
+	# Write kernel information used for building kernel.
+	local kernel_info_dir=etc
+	# Example for kernel_info content:
+	# URL=https://chromium.googlesource.com/chromiumos/third_party/kernel
+	echo "URL=${CROS_GIT_HOST_URL}/${CROS_WORKON_PROJECT}" > "${D}/${kernel_info_dir}/kernel_info"
+}
+
+write_kernel_commit() {
+	# Write kernel commit information used for building kernel.
+	local kernel_commit_dir=etc
+	# Example for kernel_commit content:
+	# COMMIT=c7ad6ff415b5a1e87f8333e2a63c7209e6efc1b2
+	echo "COMMIT=${VCSID##*-}" > "${D}/${kernel_commit_dir}/kernel_commit"
 }
 
 src_install() {
@@ -81,6 +97,10 @@ src_install() {
 	tar_kernel_source
 	# Install kernel compiler information
 	write_toolchain_env
+	# Install kernel source information
+	write_kernel_info
+	# Install kernel commit information
+	write_kernel_commit
 }
 
 # Change the following (commented out) number to the next prime number
