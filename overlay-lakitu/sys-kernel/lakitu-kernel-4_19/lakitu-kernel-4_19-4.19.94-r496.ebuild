@@ -77,20 +77,25 @@ write_kernel_info() {
 	echo "URL=${CROS_GIT_HOST_URL}/${CROS_WORKON_PROJECT}" > "${D}/${kernel_info_dir}/kernel_info"
 }
 
+get_kernel_commit_id() {
+	# Provide kernel commit id
+	# VCSID variable is unconditionally set by the cros-workon eclass, and
+	# is in the form of "<ebuild_revision>-<sha1>".
+	echo "${VCSID##*-}"
+}
+
 write_kernel_commit() {
 	# Write kernel commit information used for building kernel.
 	local kernel_commit_dir=etc
 	# Example for kernel_commit content:
-	# COMMIT=c7ad6ff415b5a1e87f8333e2a63c7209e6efc1b2
-	echo "COMMIT=${VCSID##*-}" > "${D}/${kernel_commit_dir}/kernel_commit"
+	# c7ad6ff415b5a1e87f8333e2a63c7209e6efc1b2
+	get_kernel_commit_id > "${D}/${kernel_commit_dir}/kernel_commit"
 }
 
 src_install() {
 	cros-kernel2_src_install
 
-	# VCSID variable is unconditionally set by the cros-workon eclass, and
-	# is in the form of "<ebuild_revision>-<sha1>".
-	do_osrelease_field "KERNEL_COMMIT_ID" "${VCSID##*-}"
+	do_osrelease_field "KERNEL_COMMIT_ID" "$(get_kernel_commit_id)"
 
 	# Install kernel source tarball so it can be exported as an
 	# artifact later.
