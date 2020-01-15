@@ -13,7 +13,7 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
-IUSE=""
+IUSE="+serial-getty"
 
 RDEPEND="${DEPEND}
 	sys-apps/systemd
@@ -28,5 +28,5 @@ src_install() {
 
 	systemd_newtmpfilesd "${FILESDIR}"/dev-image.tmpfiles dev-image.conf
 
-	systemd_enable_service getty.target serial-getty@ttyS1.service
+	use serial-getty && systemd_enable_service getty.target serial-getty@ttyS1.service
 }
