@@ -300,8 +300,8 @@ CONFIG_METADATA_END()
 //------------------------------------------------------------------------------
 CONFIG_METADATA_BEGIN(MTK_JPEG_AVAILABLE_THUMBNAIL_SIZES)
 CONFIG_ENTRY_VALUE(MSize(0,   0), MSize)
-CONFIG_ENTRY_VALUE(MSize(192, 108), MSize)
-CONFIG_ENTRY_VALUE(MSize(176, 132), MSize)
+CONFIG_ENTRY_VALUE(MSize(256, 144), MSize)
+CONFIG_ENTRY_VALUE(MSize(256, 192), MSize)
 CONFIG_METADATA_END()
 //==========================================================================
 //------------------------------------------------------------------------------
