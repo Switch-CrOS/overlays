@@ -5,7 +5,7 @@
 # coreboot and an auto-revbump is required.
 # VERSION=REVBUMP-0.0.59
 
-EAPI=5
+EAPI=7
 CROS_WORKON_COMMIT=("5c34f9371d0d77e1a15bdda4f4415006a079fb2a" "d537ee795c1390601428d6b5b3499d05b62ad271" "f5367d598a985520a8c935f68ac90d295c7b8d8e" "d511e69bdbb868d73e824584905dfe0b7b175039" "b7d5b2d6a6dd05874d86ee900ff441d261f9034c")
 CROS_WORKON_TREE=("5fca925a6c001e27d1e7b2211666e2eccff04c02" "9c19da5c9b5dea08b157645fa0b4b2e21dc898c5" "c32c50ae6994e39f3976ea13f929784776c2dc5a" "e97a0aedb7302f9b86568084dc88d412f75aef2f" "c0433b88f972fa26dded401be022c1c026cd644e")
 CROS_WORKON_PROJECT=(
@@ -35,7 +35,6 @@ inherit cros-board cros-workon toolchain-funcs cros-unibuild coreboot-sdk
 DESCRIPTION="coreboot firmware"
 HOMEPAGE="http://www.coreboot.org"
 LICENSE="GPL-2"
-SLOT="0"
 KEYWORDS="*"
 IUSE="em100-mode fsp memmaps mocktpm quiet-cb rmt vmx mtc mma"
 IUSE="${IUSE} +bmpblk +intel_mrc qca-framework quiet unibuild verbose"
@@ -48,15 +47,15 @@ REQUIRED_USE="?? ( seabios u-boot )"
 
 RDEPEND=""
 DEPEND="
-	mtc? ( sys-boot/mtc )
+	mtc? ( sys-boot/mtc:= )
 	virtual/coreboot-private-files
-	bmpblk? ( sys-boot/chromeos-bmpblk )
-	intel_mrc? ( x86? ( sys-boot/chromeos-mrc )
-		amd64? ( sys-boot/chromeos-mrc ) )
-	chipset_stoneyridge? ( sys-boot/amd-firmware )
-	qca-framework? ( sys-boot/qca-framework )
-	seabios? ( sys-boot/chromeos-seabios )
-	u-boot? ( sys-boot/u-boot )
+	bmpblk? ( sys-boot/chromeos-bmpblk:= )
+	intel_mrc? ( x86? ( sys-boot/chromeos-mrc:= )
+		amd64? ( sys-boot/chromeos-mrc:= ) )
+	chipset_stoneyridge? ( sys-boot/amd-firmware:= )
+	qca-framework? ( sys-boot/qca-framework:= )
+	seabios? ( sys-boot/chromeos-seabios:= )
+	u-boot? ( sys-boot/u-boot:= )
 	unibuild? ( chromeos-base/chromeos-config )
 	"
 
@@ -191,6 +190,8 @@ src_prepare() {
 	local froot="${SYSROOT}/firmware"
 	local privdir="${SYSROOT}/firmware/coreboot-private"
 	local file
+
+	default
 
 	if [[ -d "${privdir}" ]]; then
 		while read -d $'\0' -r file; do
