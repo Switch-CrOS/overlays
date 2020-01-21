@@ -36,7 +36,8 @@ LICENSE="GPL-2"
 KEYWORDS="~*"
 IUSE="em100-mode fsp memmaps mocktpm quiet-cb rmt vmx mtc mma"
 IUSE="${IUSE} +bmpblk +intel_mrc qca-framework quiet unibuild verbose"
-IUSE="${IUSE} amd_cpu +coreboot-sdk chipset_stoneyridge +seabios u-boot"
+IUSE="${IUSE} amd_cpu +coreboot-sdk chipset_stoneyridge chipset_picasso"
+IUSE="${IUSE} +seabios u-boot"
 # coreboot's build system handles stripping the binaries and producing a
 # separate .debug file with the symbols. This flag prevents portage from
 # stripping the .debug symbols
@@ -51,6 +52,7 @@ DEPEND="
 	intel_mrc? ( x86? ( sys-boot/chromeos-mrc:= )
 		amd64? ( sys-boot/chromeos-mrc:= ) )
 	chipset_stoneyridge? ( sys-boot/amd-firmware:= )
+	chipset_picasso? ( sys-boot/amd-picasso-fsp:= )
 	qca-framework? ( sys-boot/qca-framework:= )
 	seabios? ( sys-boot/chromeos-seabios:= )
 	u-boot? ( sys-boot/u-boot:= )
