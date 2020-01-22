@@ -32,4 +32,5 @@ src_install() {
 	# at the correct time. This upstart script will do that.
 	insinto /etc/init
 	doins "${FILESDIR}/wilco_sync_ec_rtc.conf"
+	doins "${FILESDIR}/wilco_ec_mute.conf"
 }
