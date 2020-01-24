@@ -11,7 +11,7 @@ or portage actions."
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="-* amd64 x86"
-IUSE="hatch-diskswap palkia"
+IUSE="hatch-diskswap hatch-kvm palkia"
 S="${WORKDIR}"
 
 # Add dependencies on other ebuilds from within this board overlay
@@ -30,6 +30,8 @@ src_install() {
 		doappid "{6FBDA804-5618-89BA-5D6E-F3804BDE0EF3}" "CHROMEBOOK"
 	elif use palkia; then
 		doappid "{107171EC-2166-414E-9F54-56515C0BE944}" "CHROMEBOOK"
+	elif use hatch-kvm; then
+		doappid "{4D5CCCEE-A214-4CFD-9A9F-85DFCF7A0CD4}" "CHROMEBOOK"
 	else
 		doappid "{95EE134E-B47F-43FB-9835-32C276865F9A}" "CHROMEBOOK"
 	fi
