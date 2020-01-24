@@ -4,6 +4,7 @@
 EAPI=6
 CROS_WORKON_PROJECT="chromiumos/third_party/kernel"
 CROS_WORKON_LOCALNAME="kernel/v4.19-lakitu"
+CROS_WORKON_BLACKLIST="1"
 
 CHROMEOS_KERNEL_CONFIG="${FILESDIR}/base.config"
 
