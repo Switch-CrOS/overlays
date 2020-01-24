@@ -2,9 +2,9 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=6
-PYTHON_COMPAT=( python2_7 python3_6 )
+PYTHON_COMPAT=( python3_6 )
 
-inherit distutils-r1
+inherit distutils-r1 eutils systemd
 
 DESCRIPTION="Cloud instance initialisation magic"
 HOMEPAGE="https://launchpad.net/cloud-init"
@@ -13,7 +13,7 @@ SRC_URI="https://launchpad.net/${PN}/trunk/${PV}/+download/${P}.tar.gz"
 LICENSE="GPL-3"
 SLOT="0"
 KEYWORDS="*"
-IUSE="test"
+IUSE="test +gcpnet"
 RESTRICT="!test? ( test )"
 
 CDEPEND="
@@ -55,12 +55,19 @@ PATCHES=(
 	"${FILESDIR}"/18.4-add-support-for-package_upgrade.patch
 	# From master
 	"${FILESDIR}"/${PV}-fix-invalid-string-format.patch
+	"${FILESDIR}"/${PV}-add-ovf-com-vmware-guestinfo.patch
+	# For lakitu
+	"${FILESDIR}"/${PV}-remove-sshd-dependency.patch
+	"${FILESDIR}"/${PV}-add-retries-gce-metadata-server.patch
+	"${FILESDIR}"/${PV}-stable-uid.patch
+	"${FILESDIR}"/${PV}-fix-cross-compile.patch
 )
 
 src_prepare() {
 	# Fix location of documentation installation
 	sed -i "s:USR + '/share/doc/cloud-init:USR + '/share/doc/${PF}:" setup.py || die
 	distutils-r1_src_prepare
+	use gcpnet && epatch "${FILESDIR}/${PV}-wait-for-user-data.patch"
 }
 
 python_test() {
@@ -69,7 +76,24 @@ python_test() {
 }
 
 python_install() {
-	distutils-r1_python_install --init-system=sysvinit_openrc,systemd --distro gentoo
+	distutils-r1_python_install --init-system=systemd
+}
+
+lakitu_python_install_all() {
+	# Remove the default cloud.cfg.  A customized version will be installed
+	# by virtual/cloud-init-config.
+	rm "${ED%/}/etc/cloud/cloud.cfg" || die
+
+	exeinto /usr/share/cloud
+	doexe "${FILESDIR}"/rerun-cloudinit.sh
+
+	systemd_dounit "${FILESDIR}"/var-lib-cloud.mount
+
+	systemd_enable_service local-fs.target var-lib-cloud.mount
+	systemd_enable_service multi-user.target cloud-config.service
+	systemd_enable_service multi-user.target cloud-final.service
+	systemd_enable_service multi-user.target cloud-init-local.service
+	systemd_enable_service multi-user.target cloud-init.service
 }
 
 python_install_all() {
@@ -77,11 +101,15 @@ python_install_all() {
 
 	distutils-r1_python_install_all
 
-	# installs as non-executable
-	chmod +x "${D}"/etc/init.d/*
+	# lakitu: Comment out this because sysvinit scripts are not installed.
+	## installs as non-executable
+	#chmod +x "${D}"/etc/init.d/*
+
+	lakitu_python_install_all
 }
 
 pkg_postinst() {
+	sed -i -r 's/^(UID_MIN\s+)1000/\15000/' "${ROOT}"/etc/login.defs
 	elog "cloud-init-local needs to be run in the boot runlevel because it"
 	elog "modifies services in the default runlevel.  When a runlevel is started"
 	elog "it is cached, so modifications that happen to the current runlevel"

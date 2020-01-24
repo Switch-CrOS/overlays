@@ -1,0 +1,272 @@
+From f55bb17ddb2fd64e039057bf7ee50951a0dc93e8 Mon Sep 17 00:00:00 2001
+From: Scott Moser <smoser@ubuntu.com>
+Date: Thu, 20 Dec 2018 17:22:45 +0000
+Subject: [PATCH] Vmware: Add support for the com.vmware.guestInfo OVF
+ transport.
+
+This adds support for reading OVF information over the
+'com.vmware.guestInfo' tranport.  The current implementation requires
+vmware-rpctool be installed in the system.
+
+LP: #1807466
+---
+ cloudinit/sources/DataSourceOVF.py          | 34 +++++-----
+ tests/unittests/test_datasource/test_ovf.py | 72 +++++++++++++++++++--
+ tests/unittests/test_ds_identify.py         | 15 +++++
+ tools/ds-identify                           | 21 ++++++
+ 4 files changed, 121 insertions(+), 21 deletions(-)
+
+diff --git a/cloudinit/sources/DataSourceOVF.py b/cloudinit/sources/DataSourceOVF.py
+index 045291e7..891d6547 100644
+--- a/cloudinit/sources/DataSourceOVF.py
++++ b/cloudinit/sources/DataSourceOVF.py
+@@ -232,10 +232,10 @@ class DataSourceOVF(sources.DataSource):
+                 GuestCustErrorEnum.GUESTCUST_ERROR_SUCCESS)
+ 
+         else:
+-            np = {'iso': transport_iso9660,
+-                  'vmware-guestd': transport_vmware_guestd, }
++            np = [('com.vmware.guestInfo', transport_vmware_guestinfo),
++                  ('iso', transport_iso9660)]
+             name = None
+-            for (name, transfunc) in np.items():
++            for name, transfunc in np:
+                 (contents, _dev, _fname) = transfunc()
+                 if contents:
+                     break
+@@ -503,18 +503,22 @@ def transport_iso9660(require_iso=True):
+     return (False, None, None)
+ 
+ 
+-def transport_vmware_guestd():
+-    # http://blogs.vmware.com/vapp/2009/07/ \
+-    #    selfconfiguration-and-the-ovf-environment.html
+-    # try:
+-    #     cmd = ['vmware-guestd', '--cmd', 'info-get guestinfo.ovfEnv']
+-    #     (out, err) = subp(cmd)
+-    #     return(out, 'guestinfo.ovfEnv', 'vmware-guestd')
+-    # except:
+-    #     # would need to error check here and see why this failed
+-    #     # to know if log/error should be raised
+-    #     return(False, None, None)
+-    return (False, None, None)
++def transport_vmware_guestinfo():
++    rpctool = "vmware-rpctool"
++    not_found = (False, None, None)
++    if not util.which(rpctool):
++        return not_found
++    cmd = [rpctool, "info-get guestinfo.ovfEnv"]
++    try:
++        out, _err = util.subp(cmd)
++        if out:
++            return (out, rpctool, "guestinfo.ovfEnv")
++        LOG.debug("cmd %s exited 0 with empty stdout: %s", cmd, out)
++    except util.ProcessExecutionError as e:
++        if e.exit_code != 1:
++            LOG.warning("%s exited with code %d", rpctool, e.exit_code)
++            LOG.debug(e)
++    return not_found
+ 
+ 
+ def find_child(node, filter_func):
+diff --git a/tests/unittests/test_datasource/test_ovf.py b/tests/unittests/test_datasource/test_ovf.py
+index a226c032..e4af0fa3 100644
+--- a/tests/unittests/test_datasource/test_ovf.py
++++ b/tests/unittests/test_datasource/test_ovf.py
+@@ -17,6 +17,8 @@ from cloudinit.sources import DataSourceOVF as dsovf
+ from cloudinit.sources.helpers.vmware.imc.config_custom_script import (
+     CustomScriptNotFound)
+ 
++MPATH = 'cloudinit.sources.DataSourceOVF.'
++
+ OVF_ENV_CONTENT = """<?xml version="1.0" encoding="UTF-8"?>
+ <Environment xmlns="http://schemas.dmtf.org/ovf/environment/1"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+@@ -126,7 +128,7 @@ class TestDatasourceOVF(CiTestCase):
+             'cloudinit.sources.DataSourceOVF',
+             {'util.read_dmi_data': None,
+              'transport_iso9660': (False, None, None),
+-             'transport_vmware_guestd': (False, None, None)},
++             'transport_vmware_guestinfo': (False, None, None)},
+             ds.get_data)
+         self.assertFalse(retcode, 'Expected False return from ds.get_data')
+         self.assertIn(
+@@ -142,7 +144,7 @@ class TestDatasourceOVF(CiTestCase):
+             'cloudinit.sources.DataSourceOVF',
+             {'util.read_dmi_data': 'vmware',
+              'transport_iso9660': (False, None, None),
+-             'transport_vmware_guestd': (False, None, None)},
++             'transport_vmware_guestinfo': (False, None, None)},
+             ds.get_data)
+         self.assertFalse(retcode, 'Expected False return from ds.get_data')
+         self.assertIn(
+@@ -189,9 +191,8 @@ class TestDatasourceOVF(CiTestCase):
+ 
+         self.assertEqual('ovf', ds.cloud_name)
+         self.assertEqual('ovf', ds.platform_type)
+-        MPATH = 'cloudinit.sources.DataSourceOVF.'
+         with mock.patch(MPATH + 'util.read_dmi_data', return_value='!VMware'):
+-            with mock.patch(MPATH + 'transport_vmware_guestd') as m_guestd:
++            with mock.patch(MPATH + 'transport_vmware_guestinfo') as m_guestd:
+                 with mock.patch(MPATH + 'transport_iso9660') as m_iso9660:
+                     m_iso9660.return_value = (None, 'ignored', 'ignored')
+                     m_guestd.return_value = (None, 'ignored', 'ignored')
+@@ -211,9 +212,8 @@ class TestDatasourceOVF(CiTestCase):
+ 
+         self.assertEqual('ovf', ds.cloud_name)
+         self.assertEqual('ovf', ds.platform_type)
+-        MPATH = 'cloudinit.sources.DataSourceOVF.'
+         with mock.patch(MPATH + 'util.read_dmi_data', return_value='VMWare'):
+-            with mock.patch(MPATH + 'transport_vmware_guestd') as m_guestd:
++            with mock.patch(MPATH + 'transport_vmware_guestinfo') as m_guestd:
+                 with mock.patch(MPATH + 'transport_iso9660') as m_iso9660:
+                     m_iso9660.return_value = (None, 'ignored', 'ignored')
+                     m_guestd.return_value = (None, 'ignored', 'ignored')
+@@ -384,5 +384,65 @@ class TestTransportIso9660(CiTestCase):
+         self.assertTrue(dsovf.maybe_cdrom_device('/dev/xvda1'))
+         self.assertTrue(dsovf.maybe_cdrom_device('xvdza1'))
+ 
++
++@mock.patch(MPATH + "util.which")
++@mock.patch(MPATH + "util.subp")
++class TestTransportVmwareGuestinfo(CiTestCase):
++    """Test the com.vmware.guestInfo transport implemented in
++       transport_vmware_guestinfo."""
++
++    rpctool = 'vmware-rpctool'
++    with_logs = True
++    not_found = (False, None, None)
++    rpctool_path = '/not/important/vmware-rpctool'
++
++    def test_without_vmware_rpctool_returns_notfound(self, m_subp, m_which):
++        m_which.return_value = None
++        self.assertEqual(self.not_found, dsovf.transport_vmware_guestinfo())
++        self.assertEqual(0, m_subp.call_count,
++                         "subp should not be called if no rpctool in path.")
++
++    def test_notfound_on_exit_code_1(self, m_subp, m_which):
++        """If vmware-rpctool exits 1, then must return not found."""
++        m_which.return_value = self.rpctool_path
++        m_subp.side_effect = util.ProcessExecutionError(
++            stdout="", stderr="No value found", exit_code=1, cmd=["unused"])
++        self.assertEqual(self.not_found, dsovf.transport_vmware_guestinfo())
++        self.assertEqual(1, m_subp.call_count)
++        self.assertNotIn("WARNING", self.logs.getvalue(),
++                         "exit code of 1 by rpctool should not cause warning.")
++
++    def test_notfound_if_no_content_but_exit_zero(self, m_subp, m_which):
++        """If vmware-rpctool exited 0 with no stdout is normal not-found.
++
++        This isn't actually a case I've seen. normally on "not found",
++        rpctool would exit 1 with 'No value found' on stderr.  But cover
++        the case where it exited 0 and just wrote nothing to stdout.
++        """
++        m_which.return_value = self.rpctool_path
++        m_subp.return_value = ('', '')
++        self.assertEqual(self.not_found, dsovf.transport_vmware_guestinfo())
++        self.assertEqual(1, m_subp.call_count)
++
++    def test_notfound_and_warns_on_unexpected_exit_code(self, m_subp, m_which):
++        """If vmware-rpctool exits non zero or 1, warnings should be logged."""
++        m_which.return_value = self.rpctool_path
++        m_subp.side_effect = util.ProcessExecutionError(
++            stdout=None, stderr="No value found", exit_code=2, cmd=["unused"])
++        self.assertEqual(self.not_found, dsovf.transport_vmware_guestinfo())
++        self.assertEqual(1, m_subp.call_count)
++        self.assertIn("WARNING", self.logs.getvalue(),
++                      "exit code of 2 by rpctool should log WARNING.")
++
++    def test_found_when_guestinfo_present(self, m_subp, m_which):
++        """When there is a ovf info, transport should return it."""
++        m_which.return_value = self.rpctool_path
++        content = fill_properties({})
++        m_subp.return_value = (content, '')
++        self.assertEqual(
++            (content, self.rpctool, "guestinfo.ovfEnv"),
++            dsovf.transport_vmware_guestinfo())
++        self.assertEqual(1, m_subp.call_count)
++
+ #
+ # vi: ts=4 expandtab
+diff --git a/tests/unittests/test_ds_identify.py b/tests/unittests/test_ds_identify.py
+index 80640f19..756b4fb4 100644
+--- a/tests/unittests/test_ds_identify.py
++++ b/tests/unittests/test_ds_identify.py
+@@ -138,6 +138,9 @@ class DsIdentifyBase(CiTestCase):
+             {'name': 'detect_virt', 'RET': 'none', 'ret': 1},
+             {'name': 'uname', 'out': UNAME_MYSYS},
+             {'name': 'blkid', 'out': BLKID_EFI_ROOT},
++            {'name': 'ovf_vmware_transport_guestinfo',
++             'out': 'No value found', 'ret': 1},
++
+         ]
+ 
+         written = [d['name'] for d in mocks]
+@@ -475,6 +478,10 @@ class TestDsIdentify(DsIdentifyBase):
+         """OVF is identified when iso9660 cdrom path contains ovf schema."""
+         self._test_ds_found('OVF')
+ 
++    def test_ovf_on_vmware_guestinfo_found(self):
++        """OVF guest info is found on vmware."""
++        self._test_ds_found('OVF-guestinfo')
++
+     def test_ovf_on_vmware_iso_found_when_vmware_customization(self):
+         """OVF is identified when vmware customization is enabled."""
+         self._test_ds_found('OVF-vmware-customization')
+@@ -773,6 +780,14 @@ VALID_CFG = {
+             'dev/sr0': 'pretend ovf iso has ' + OVF_MATCH_STRING + '\n',
+         }
+     },
++    'OVF-guestinfo': {
++        'ds': 'OVF',
++        'mocks': [
++            {'name': 'ovf_vmware_transport_guestinfo', 'ret': 0,
++             'out': '<?xml version="1.0" encoding="UTF-8"?>\n<Environment'},
++            MOCK_VIRT_IS_VMWARE,
++        ],
++    },
+     'ConfigDrive': {
+         'ds': 'ConfigDrive',
+         'mocks': [
+diff --git a/tools/ds-identify b/tools/ds-identify
+index 1acfeeb9..c61f18ae 100755
+--- a/tools/ds-identify
++++ b/tools/ds-identify
+@@ -726,6 +726,25 @@ ovf_vmware_guest_customization() {
+     return 1
+ }
+ 
++ovf_vmware_transport_guestinfo() {
++    [ "${DI_VIRT}" = "vmware" ] || return 1
++    command -v vmware-rpctool >/dev/null 2>&1 || return 1
++    local out="" ret=""
++    out=$(vmware-rpctool "info-get guestinfo.ovfEnv" 2>&1)
++    ret=$?
++    if [ $ret -ne 0 ]; then
++        debug 1 "Running on vmware but rpctool query returned $ret: $out"
++        return 1
++    fi
++    case "$1" in
++        "<?xml"*|"<?XML"*) :;;
++        *) debug 1 "guestinfo.ovfEnv had non-xml content: $out";
++           return 1;;
++    esac
++    debug 1 "Found guestinfo transport."
++    return 0
++}
++
+ is_cdrom_ovf() {
+     local dev="$1" label="$2"
+     # skip devices that don't look like cdrom paths.
+@@ -758,6 +777,8 @@ dscheck_OVF() {
+     # Azure provides ovf. Skip false positive by dis-allowing.
+     is_azure_chassis && return $DS_NOT_FOUND
+ 
++    ovf_vmware_transport_guestinfo && return "${DS_FOUND}"
++
+     # DI_ISO9660_DEVS is <device>=label,<device>=label2
+     # like /dev/sr0=OVF-TRANSPORT,/dev/other=with spaces
+     if [ "${DI_ISO9660_DEVS#${UNAVAILABLE}:}" = "${DI_ISO9660_DEVS}" ]; then
+-- 
+2.24.0.432.g9d3f5f5b63-goog
+
