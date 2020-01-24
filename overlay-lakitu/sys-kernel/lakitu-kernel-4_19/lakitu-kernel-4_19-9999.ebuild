@@ -1,9 +1,13 @@
 # Copyright 2019 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
+# Any changes submitted in the current ebuild needs to be duplicated in
+# `non-9999` ebuild as well.
+
 EAPI=6
-CROS_WORKON_PROJECT="chromiumos/third_party/kernel"
-CROS_WORKON_LOCALNAME="kernel/v4.19-lakitu"
+
+CROS_WORKON_PROJECT="chromiumos/third_party/lakitu-kernel"
+CROS_WORKON_LOCALNAME="lakitu-kernel"
 CROS_WORKON_BLACKLIST="1"
 
 CHROMEOS_KERNEL_CONFIG="${FILESDIR}/base.config"

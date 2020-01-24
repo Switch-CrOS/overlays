@@ -1,11 +1,15 @@
 # Copyright 2019 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
+# Any changes submitted in the current ebuild needs to be duplicated in
+# `9999` ebuild as well.
+
 EAPI=6
-CROS_WORKON_COMMIT="10ff2a7f44835c3e68ff7de148d91ccc744c102e"
-CROS_WORKON_TREE="e17abbd2d6394aabf91faf47a34aa6c6e48125e2"
-CROS_WORKON_PROJECT="chromiumos/third_party/kernel"
-CROS_WORKON_LOCALNAME="kernel/v4.19-lakitu"
+
+CROS_WORKON_REPO="${CROS_GIT_HOST_URL}"
+CROS_WORKON_PROJECT="chromiumos/third_party/lakitu-kernel"
+CROS_WORKON_EGIT_BRANCH="lakitu-4.19"
+CROS_WORKON_COMMIT="00bb4a8e3d5021a7faaab6aa82f8e7a4d114b27d"
 CROS_WORKON_BLACKLIST="1"
 
 CHROMEOS_KERNEL_CONFIG="${FILESDIR}/base.config"
@@ -108,14 +112,3 @@ src_install() {
 	# Install kernel commit information
 	write_kernel_commit
 }
-
-# Change the following (commented out) number to the next prime number
-# when you change base.config.  This workaround will force the
-# ChromeOS CQ to uprev sys-kernel/lakitu-kernel-4_19 ebuild and pick up the
-# configuration changes.  In absence of this workaround the config changes
-# would not be picked up unless there was a code change in kernel source tree.
-#
-# NOTE: There's nothing magic keeping this number prime but you just need to
-# make _any_ change to this file.  ...so why not keep it prime?
-#
-# The coolest prime number is: 43
