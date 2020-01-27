@@ -67,7 +67,6 @@ src_prepare() {
 	# Fix location of documentation installation
 	sed -i "s:USR + '/share/doc/cloud-init:USR + '/share/doc/${PF}:" setup.py || die
 	distutils-r1_src_prepare
-	use gcpnet && epatch "${FILESDIR}/${PV}-wait-for-user-data.patch"
 }
 
 python_test() {
