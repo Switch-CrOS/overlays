@@ -79,9 +79,9 @@ python_install() {
 }
 
 lakitu_python_install_all() {
-	# Remove the default cloud.cfg.  A customized version will be installed
-	# by virtual/cloud-init-config.
-	rm "${ED%/}/etc/cloud/cloud.cfg" || die
+	# Overwrite the default cloud.cfg with our customized version.
+	insinto /etc/cloud
+	doins "${FILESDIR}"/cloud.cfg
 
 	exeinto /usr/share/cloud
 	doexe "${FILESDIR}"/rerun-cloudinit.sh

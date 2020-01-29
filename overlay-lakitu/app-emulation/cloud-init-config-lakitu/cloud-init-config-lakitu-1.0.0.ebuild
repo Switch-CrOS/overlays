@@ -15,13 +15,13 @@ IUSE=""
 DEPEND="app-emulation/cloud-init"
 RDEPEND="
 	${DEPEND}
-	!<app-emulation/cloud-init-0.7.6-r27
+	!<app-emulation/cloud-init-18.5-r4
 "
 
 S=${WORKDIR}
 
 src_install() {
-	insinto /etc/cloud
-	doins "${FILESDIR}"/cloud.cfg
+	insinto /etc/cloud/cloud.cfg.d
+	doins "${FILESDIR}"/91-datasource-gce.cfg
 }
 
