@@ -20,13 +20,7 @@ RDEPEND="
 	dev-util/hdctools
 	net-misc/ser2net
 	sys-apps/flashrom
-"
-
-# These packages are for the test station support:
-RDEPEND="${RDEPEND}
 	app-arch/unzip
-	app-emulation/lxc
-	chromeos-base/chromeos-adb-env
 "
 
 # These packages are meant to setup the basic environment to enable
