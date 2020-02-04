@@ -4,7 +4,7 @@
 EAPI=6
 PYTHON_COMPAT=( python3_6 )
 
-inherit distutils-r1 eutils systemd
+inherit distutils-r1 systemd
 
 DESCRIPTION="Cloud instance initialisation magic"
 HOMEPAGE="https://launchpad.net/cloud-init"
@@ -13,7 +13,7 @@ SRC_URI="https://launchpad.net/${PN}/trunk/${PV}/+download/${P}.tar.gz"
 LICENSE="GPL-3"
 SLOT="0"
 KEYWORDS="*"
-IUSE="test +gcpnet"
+IUSE="test"
 RESTRICT="!test? ( test )"
 
 CDEPEND="
@@ -55,6 +55,7 @@ PATCHES=(
 	"${FILESDIR}"/18.4-add-support-for-package_upgrade.patch
 	# From master
 	"${FILESDIR}"/${PV}-fix-invalid-string-format.patch
+	# From master, for lakitu derivative
 	"${FILESDIR}"/${PV}-add-ovf-com-vmware-guestinfo.patch
 	# For lakitu
 	"${FILESDIR}"/${PV}-remove-sshd-dependency.patch
