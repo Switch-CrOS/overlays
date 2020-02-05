@@ -142,7 +142,7 @@ convertible-config: &convertible_config
     has-touchscreen: True
     $stylus-category: "none"
     stylus-category: "{{$stylus-category}}"
-  power:
+  power: &power_convertible
     <<: *power_default
     set-wifi-transmit-power-for-tablet-mode: "1"
 
@@ -581,6 +581,20 @@ chromeos:
         - $sku-id-val: 52
           $stylus-category: "external"
           config: *convertible_config
+        - $sku-id-val: 53
+          config:
+            <<: *convertible_config
+            power:
+              <<: *power_convertible
+              internal-backlight-no-als-battery-brightness: 63
+        - $sku-id-val: 54
+          $has-keyboard-backlight: 1
+          $keyboard-backlight-no-als-brightness: 20
+          config:
+            <<: *convertible_config
+            power:
+              <<: *power_convertible
+              internal-backlight-no-als-battery-brightness: 63
     - $device-name: "blooglet"
       $fw-name: "Bloog"
       $num-mic-locations: 1
