@@ -250,29 +250,40 @@ do_cbfstool() {
 
 # Add seabios to the zork image
 # Args:
-#  $1: Filename of image to add to
+#  $1: Destination FMAP region
+#  $2: Filename of image to add to
 zork_add_seabios() {
-	local rom="$1"
+	local region="$1"
+	local rom="$2"
 	local froot="${SYSROOT}/firmware/seabios/"
+
+	if ! cbfstool "${rom}" layout | grep -q "$region"; then
+		einfo "- Not Adding special zork seabios to ${rom}"
+		return 1
+	fi
 
 	einfo "- Adding special zork seabios to ${rom}"
 	do_cbfstool "${rom}" add-payload -n fallback/payload -c lzma \
-		-f "${froot}/seabios.elf"
+		-f "${froot}/seabios.elf" -r "${region}"
 	for f in "${froot}oprom/"*; do
 		if [[ -f "${f}" ]]; then
 			do_cbfstool "${rom}" add -f "${f}" \
-				-n "${f#${froot}oprom/}" -t optionrom
+				-n "${f#${froot}oprom/}" -t optionrom \
+				-r "${region}"
 		fi
 	done
 	for f in "${froot}cbfs/"*; do
 		if [[ -f "${f}" ]]; then
 			do_cbfstool "${rom}" add -f "${f}" \
-				-n "${f#${froot}cbfs/}" -t raw
+				-n "${f#${froot}cbfs/}" -t raw -r "${region}"
 		fi
 	done
 	for f in "${froot}"etc/*; do
-		do_cbfstool "${rom}" add -f "${f}" -n "${f#${root}}" -t raw
+		do_cbfstool "${rom}" add -f "${f}" -n "${f#${froot}}" -t raw \
+			-r "${region}"
 	done
+
+	return 0
 }
 
 # Add U-Boot to the zork image
@@ -352,7 +363,9 @@ make_coreboot() {
 
 	if use seabios; then
 		# Add a seabios payload for Zork
-		zork_add_seabios "${builddir}/coreboot.rom"
+		zork_add_seabios "COREBOOT" "${builddir}/coreboot.rom" || die
+		zork_add_seabios "FW_MAIN_A" "${builddir}/coreboot.rom"
+		zork_add_seabios "FW_MAIN_B" "${builddir}/coreboot.rom"
 	elif use u-boot; then
 		# Add a U-Boot payload for Zork
 		zork_add_u_boot "${builddir}/coreboot.rom"
