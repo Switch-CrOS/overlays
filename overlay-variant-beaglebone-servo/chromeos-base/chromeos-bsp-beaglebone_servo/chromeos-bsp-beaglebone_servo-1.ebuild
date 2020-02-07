@@ -1,7 +1,7 @@
 # Copyright (c) 2013 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=4
+EAPI=5
 
 inherit appid
 
@@ -33,6 +33,7 @@ RDEPEND="
 	chromeos-base/ec-devutils
 	chromeos-base/ec-utils
 	chromeos-base/openssh-server-init
+	chromeos-base/update-utils
 	chromeos-base/vboot_reference
 	dev-embedded/openocd
 	dev-util/hdctools
