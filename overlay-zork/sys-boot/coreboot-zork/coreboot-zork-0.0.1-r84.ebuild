@@ -6,8 +6,8 @@
 # VERSION=REVBUMP-0.0.59
 
 EAPI=7
-CROS_WORKON_COMMIT=("b5017f49c5e25ab2c024751f7efb15447f9bcad9" "d537ee795c1390601428d6b5b3499d05b62ad271" "7b8829fea8526a2efb0e32566fde21fd92696a41" "d511e69bdbb868d73e824584905dfe0b7b175039" "b7d5b2d6a6dd05874d86ee900ff441d261f9034c")
-CROS_WORKON_TREE=("b11b21946fd17e8982c5e905825e96d988d9ca8f" "9c19da5c9b5dea08b157645fa0b4b2e21dc898c5" "39f5e7926b877da086a7c9d7665bfa5c13fec326" "e97a0aedb7302f9b86568084dc88d412f75aef2f" "c0433b88f972fa26dded401be022c1c026cd644e")
+CROS_WORKON_COMMIT=("d47212e405e459db3582eb1877a4467835aa6a83" "d537ee795c1390601428d6b5b3499d05b62ad271" "7b8829fea8526a2efb0e32566fde21fd92696a41" "d511e69bdbb868d73e824584905dfe0b7b175039" "b7d5b2d6a6dd05874d86ee900ff441d261f9034c")
+CROS_WORKON_TREE=("35799a284c3d389abcc583a7bc8e718bb527f3f6" "9c19da5c9b5dea08b157645fa0b4b2e21dc898c5" "39f5e7926b877da086a7c9d7665bfa5c13fec326" "e97a0aedb7302f9b86568084dc88d412f75aef2f" "c0433b88f972fa26dded401be022c1c026cd644e")
 CROS_WORKON_PROJECT=(
 	"chromiumos/third_party/coreboot"
 	"chromiumos/third_party/arm-trusted-firmware"
@@ -252,29 +252,40 @@ do_cbfstool() {
 
 # Add seabios to the zork image
 # Args:
-#  $1: Filename of image to add to
+#  $1: Destination FMAP region
+#  $2: Filename of image to add to
 zork_add_seabios() {
-	local rom="$1"
+	local region="$1"
+	local rom="$2"
 	local froot="${SYSROOT}/firmware/seabios/"
+
+	if ! cbfstool "${rom}" layout | grep -q "$region"; then
+		einfo "- Not Adding special zork seabios to ${rom}"
+		return 1
+	fi
 
 	einfo "- Adding special zork seabios to ${rom}"
 	do_cbfstool "${rom}" add-payload -n fallback/payload -c lzma \
-		-f "${froot}/seabios.elf"
+		-f "${froot}/seabios.elf" -r "${region}"
 	for f in "${froot}oprom/"*; do
 		if [[ -f "${f}" ]]; then
 			do_cbfstool "${rom}" add -f "${f}" \
-				-n "${f#${froot}oprom/}" -t optionrom
+				-n "${f#${froot}oprom/}" -t optionrom \
+				-r "${region}"
 		fi
 	done
 	for f in "${froot}cbfs/"*; do
 		if [[ -f "${f}" ]]; then
 			do_cbfstool "${rom}" add -f "${f}" \
-				-n "${f#${froot}cbfs/}" -t raw
+				-n "${f#${froot}cbfs/}" -t raw -r "${region}"
 		fi
 	done
 	for f in "${froot}"etc/*; do
-		do_cbfstool "${rom}" add -f "${f}" -n "${f#${root}}" -t raw
+		do_cbfstool "${rom}" add -f "${f}" -n "${f#${froot}}" -t raw \
+			-r "${region}"
 	done
+
+	return 0
 }
 
 # Add U-Boot to the zork image
@@ -354,7 +365,9 @@ make_coreboot() {
 
 	if use seabios; then
 		# Add a seabios payload for Zork
-		zork_add_seabios "${builddir}/coreboot.rom"
+		zork_add_seabios "COREBOOT" "${builddir}/coreboot.rom" || die
+		zork_add_seabios "FW_MAIN_A" "${builddir}/coreboot.rom"
+		zork_add_seabios "FW_MAIN_B" "${builddir}/coreboot.rom"
 	elif use u-boot; then
 		# Add a U-Boot payload for Zork
 		zork_add_u_boot "${builddir}/coreboot.rom"
