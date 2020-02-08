@@ -23,7 +23,6 @@ DEPEND="
 "
 
 RDEPEND="${DEPEND}
-	chromeos-base/chromeos-psr-init-atlas
 	chromeos-base/chromeos-tcon-updater-atlas
 "
 
