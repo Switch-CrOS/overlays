@@ -13,7 +13,7 @@ KEYWORDS="*"
 S=${WORKDIR}/${P}-tgl
 
 src_install() {
-	insinto /lib/firmware/intel/sof
+	insinto /lib/firmware/intel/sof/community
 	doins sof-tgl.ri
 	dodoc README
 }
