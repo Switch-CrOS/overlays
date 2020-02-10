@@ -75,5 +75,8 @@ RDEPEND="${RDEPEND}
 S="${WORKDIR}"
 
 src_install() {
+	insinto /etc/init
+	doins "${FILESDIR}"/init/*.conf
+
 	doappid "{1BB651DD-C762-3FCF-2A66-CEB4C1096BB1}" "OTHER"
 }
