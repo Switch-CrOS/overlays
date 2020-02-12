@@ -41,7 +41,13 @@ src_prepare() {
 		-e 's:/var/run:/run:g' \
 		conf.c doc/*.man.in examples/* || die
 
-	eapply "${FILESDIR}/chrony-3.4.1-default-ntp-server.patch"
+	# shellcheck disable=SC2154
+	if [[ -n "${COS_NTP_SERVERS}" ]]; then
+		sed -i \
+			-e "1s:# Use public NTP servers .*:# Use custom NTP servers:" \
+			-e "2s:pool pool.ntp.org iburst:server ${COS_NTP_SERVERS} prefer iburst ${COS_NTP_SERVERS_OPTIONS}:" \
+			examples/chrony.conf.example1 || die
+	fi
 	default
 }
 

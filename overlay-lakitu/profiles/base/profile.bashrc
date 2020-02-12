@@ -6,6 +6,10 @@ CFLAGS_OVERRIDE="-fno-function-sections -fno-data-sections"
 export CFLAGS="${CFLAGS} ${CFLAGS_OVERRIDE}"
 export CXXFLAGS="${CXXFLAGS} ${CFLAGS_OVERRIDE}"
 
+# Set the platform-specific NTP servers and options
+export COS_NTP_SERVERS="metadata.google.internal"
+export COS_NTP_SERVERS_OPTIONS=""
+
 # Load all additional bashrc files we have for this package.
 lakitu_stack_bashrc() {
         local cfg cfgd

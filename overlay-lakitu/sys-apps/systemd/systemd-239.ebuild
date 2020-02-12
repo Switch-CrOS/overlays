@@ -239,6 +239,15 @@ meson_multilib_native_use() {
 	fi
 }
 
+lakitu_get_ntp_servers() {
+	# shellcheck disable=SC2154
+	if [[ -n "${COS_NTP_SERVERS}" ]]; then
+		echo "${COS_NTP_SERVERS}"
+	else
+		echo "0.pool.ntp.org 1.pool.ntp.org 2.pool.ntp.org 3.pool.ntp.org"
+	fi
+}
+
 multilib_src_configure() {
 	local myconf=(
 		--localstatedir="${EPREFIX}/var"
@@ -293,8 +302,8 @@ multilib_src_configure() {
 		-Dkill-path=/bin/kill
 		# lakitu: specifying dbus policy dir path
 		-Ddbuspolicydir="${EPREFIX}/etc/dbus-1/system.d"
-		# lakitu: Use metadata servers for NTP
-		-Dntp-servers="metadata.google.internal"
+		# lakitu: Use metadata servers for NTP on cloud
+		-Dntp-servers="$(lakitu_get_ntp_servers)"
 		# -Dntp-servers="0.gentoo.pool.ntp.org 1.gentoo.pool.ntp.org 2.gentoo.pool.ntp.org 3.gentoo.pool.ntp.org"
 		# Breaks screen, tmux, etc.
 		-Ddefault-kill-user-processes=false

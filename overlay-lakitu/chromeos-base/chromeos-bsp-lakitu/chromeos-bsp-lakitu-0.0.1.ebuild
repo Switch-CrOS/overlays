@@ -12,7 +12,7 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="-* amd64"
-IUSE="crash_reporting"
+IUSE="crash_reporting platform_gcp"
 
 RDEPEND="
 	sys-apps/baselayout
@@ -49,10 +49,12 @@ src_install() {
 }
 
 pkg_postinst() {
-	# Ensure /etc/hosts file has entry for metadata server.
-	local entry="169.254.169.254 metadata.google.internal metadata"
-	local hosts="${ROOT}"/etc/hosts
-	if ! grep -qs "${entry}" "${hosts}"; then
-		echo "${entry}" >> "${hosts}"
+	if use platform_gcp; then
+		# Ensure /etc/hosts file has entry for metadata server.
+		local entry="169.254.169.254 metadata.google.internal metadata"
+		local hosts="${ROOT}"/etc/hosts
+		if ! grep -qs "${entry}" "${hosts}"; then
+			echo "${entry}" >> "${hosts}"
+		fi
 	fi
 }

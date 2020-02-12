@@ -13,6 +13,7 @@ SRC_URI="https://storage.googleapis.com/kubernetes-release/release/v${PV}/kubern
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
+IUSE="platform_gcp"
 
 S=${WORKDIR}
 
@@ -28,5 +29,9 @@ src_install() {
 
 	systemd_dounit "${FILESDIR}"/kubelet.service
 	insinto /etc/default
-	newins "${FILESDIR}"/default kubelet
+	if use platform_gcp; then
+		newins "${FILESDIR}"/default-gcp kubelet
+	else
+		newins "${FILESDIR}"/default kubelet
+	fi
 }
