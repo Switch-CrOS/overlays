@@ -26,5 +26,9 @@ DEPEND="
 src_install() {
 	doappid "{2514829E-8550-4E24-91F2-331AB7A12B03}" "CHROMEBOX"
 
+	# Install Bluetooth ID override
+	insinto "/etc/bluetooth"
+	doins "${FILESDIR}/main.conf"
+
 	unibuild_install_audio_files
 }
