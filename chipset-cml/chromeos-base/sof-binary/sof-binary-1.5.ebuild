@@ -4,13 +4,13 @@
 EAPI=5
 
 DESCRIPTION="Comet Lake SOF firmware binary"
-SRC_URI="gs://chromeos-localmirror/distfiles/${P}-cml.tar.xz"
+SRC_URI="gs://chromeos-localmirror/distfiles/${PN}-cml-${PV}.tar.xz"
 
 LICENSE="SOF"
 SLOT="0"
 KEYWORDS="*"
 
-S=${WORKDIR}/${P}-cml
+S=${WORKDIR}/${PN}-cml-${PV}
 
 src_install() {
 	insinto /lib/firmware/intel/sof
