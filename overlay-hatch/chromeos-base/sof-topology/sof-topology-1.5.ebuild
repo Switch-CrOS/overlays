@@ -5,13 +5,13 @@
 EAPI=5
 
 DESCRIPTION="SOF topology file for Hatch board"
-SRC_URI="gs://chromeos-localmirror/distfiles/${P}-hatch.tar.xz"
+SRC_URI="gs://chromeos-localmirror/distfiles/${PN}-hatch-${PV}.tar.xz"
 
 LICENSE="SOF"
 SLOT="0"
 KEYWORDS="*"
 
-S=${WORKDIR}/${P}-hatch
+S=${WORKDIR}/${PN}-hatch-${PV}
 
 src_install() {
 	insinto /lib/firmware/intel/sof-tplg
