@@ -177,30 +177,33 @@ src_prepare() {
 			"${FILESDIR}/gentoo-uucp-group-r1.patch"
 			"${FILESDIR}/gentoo-systemd-user-pam.patch"
 			"${FILESDIR}/228-noclean-tmp.patch"
-			# lakitu: CL:*250967
+			# Lakitu patches
+			# CL:*250967
 			"${FILESDIR}"/232-tmpfiles-no-srv.patch
-			# lakitu: CL:*256679
+			# CL:*256679
 			"${FILESDIR}"/225-Force-re-creation-of-etc-localtime-symlink.patch
-			# lakitu: This prevents the kernel from logging all audit messages to
+			# This prevents the kernel from logging all audit messages to
 			# both dmesg and audit log. b/29581598.
 			"${FILESDIR}"/225-audit-set-pid.patch
-			# lakitu: allow networkd => hostnamed communication w/o polkit.
+			# Allow networkd => hostnamed communication w/o polkit.
 			"${FILESDIR}"/225-allow-networkd-to-hostnamed.patch
-			# lakitu: work around the 64 bit restriction of hostname length from
+			# Work around the 64 bit restriction of hostname length from
 			# kernel. b/27702816.
 			"${FILESDIR}"/232-single-label-hostname.patch
-			# lakitu: make networkd default to not touch IP forwarding setting.
+			# Make networkd default to not touch IP forwarding setting.
 			# b/33257712
 			"${FILESDIR}"/225-networkd-default-ip-forwarding-to-kernel.patch
-			# lakitu: Avoid render and kvm group
+			# Avoid render and kvm group
 			"${FILESDIR}"/239-avoid-render-and-kvm-group.patch
-			# lakitu: change paths for udev rules, init, halt, poweroff
+			# Change paths for udev rules, init, halt, poweroff
 			# shutdown and reboot to minimize the effect of systemd upgrade
 			# TODO(vaibhavrustagi): Need to check to use default paths provided
 			# by systemd or not
 			"${FILESDIR}"/239-change-paths-for-udev-rules-init-reboot.patch
 			# Disable LMNR and MDNS since COS does not support multicast.
 			"${FILESDIR}"/239-resolved-conf-in.patch
+			# Boot into multi-user.target instead of graphical.target.
+			"${FILESDIR}"/239-default-target.patch
 	)
 	default
 }
@@ -357,7 +360,7 @@ multilib_src_install() {
 	DESTDIR="${D}" eninja install
 }
 
-# lakitu specific installation
+# lakitu specific src_install customizations.
 lakitu_src_install() {
 	dosym /usr/bin/udevadm sbin/udevadm
 	dosym /usr/lib/systemd/systemd-udevd sbin/udevd
@@ -385,6 +388,18 @@ lakitu_src_install() {
 	# upgrade side-effects.
 	# https://www.freedesktop.org/wiki/Software/systemd/PredictableNetworkInterfaceNames/
 	dosym /dev/null /etc/systemd/network/99-default.link
+
+	# Enable accounting for all supported controllers (CPU, Memory and Block)
+	sed -i 's/#DefaultCPUAccounting=no/DefaultCPUAccounting=yes/' "${ED}"/etc/systemd/system.conf
+	sed -i 's/#DefaultBlockIOAccounting=no/DefaultBlockIOAccounting=yes/' "${ED}"/etc/systemd/system.conf
+	sed -i 's/#DefaultMemoryAccounting=no/DefaultMemoryAccounting=yes/' "${ED}"/etc/systemd/system.conf
+
+	# Set default log rotation policy: 100M for each journal; 1G total.
+	sed -i 's/#SystemMaxUse=/SystemMaxUse=1G/' "${ED}"/etc/systemd/journald.conf
+	sed -i 's/#SystemMaxFileSize=/SystemMaxFileSize=100M/' "${ED}"/etc/systemd/journald.conf
+
+	# Enable persistent storage for the journal
+	sed -i 's/#Storage=auto/Storage=persistent/' "${ED}"/etc/systemd/journald.conf
 }
 
 multilib_src_install_all() {
@@ -491,30 +506,6 @@ migrate_locale() {
 	fi
 }
 
-# lakitu specific post installation
-lakitu_postinst() {
-	# Don't boot into graphical.target.
-	# NOTE: This can't be done in src_install because
-	# `systemd_get_systemunitdir` relies on systemd.pc (used by pkg-config) to
-	# resolve the system units path, which itself is installed at the
-	# src_install phase.
-	local unitdir=$(systemd_get_systemunitdir)
-	rm "${ROOT}"/"${unitdir}"/default.target || die
-	ln -s multi-user.target "${ROOT}"/"${unitdir}"/default.target
-
-	# Enable accounting for all supported controllers (CPU, Memory and Block)
-	sed -i 's/#DefaultCPUAccounting=no/DefaultCPUAccounting=yes/' "${ROOT}"/etc/systemd/system.conf
-	sed -i 's/#DefaultBlockIOAccounting=no/DefaultBlockIOAccounting=yes/' "${ROOT}"/etc/systemd/system.conf
-	sed -i 's/#DefaultMemoryAccounting=no/DefaultMemoryAccounting=yes/' "${ROOT}"/etc/systemd/system.conf
-
-	# Set default log rotation policy: 100M for each journal; 1G total.
-	sed -i 's/#SystemMaxUse=/SystemMaxUse=1G/' "${ROOT}"/etc/systemd/journald.conf
-	sed -i 's/#SystemMaxFileSize=/SystemMaxFileSize=100M/' "${ROOT}"/etc/systemd/journald.conf
-
-	# Enable persistent storage for the journal
-	sed -i 's/#Storage=auto/Storage=persistent/' "${ROOT}"/etc/systemd/journald.conf
-}
-
 pkg_postinst() {
 	newusergroup() {
 		enewgroup "$1"
@@ -552,7 +543,6 @@ pkg_postinst() {
 
 	# lakitu: No need to reenable as the symlinks were not disabled above
 	# systemd_reenable systemd-networkd.service systemd-resolved.service
-	lakitu_postinst
 
 	if [[ ${FAIL} ]]; then
 		eerror "One of the postinst commands failed. Please check the postinst output"
