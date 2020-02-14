@@ -11,13 +11,8 @@ LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
 
-# These packages are meant to set up the Chromium OS Basic environment to
-# properly handle the services required by the lab infrastructure.
-# TODO(pprabhu, crbug.com/775373) Move virt-what to common VM overlay once that
-# is ready.
 RDEPEND="
 	app-emulation/docker
-	chromeos-base/chromeos-init
 	net-firewall/iptables
 "
 
@@ -33,6 +28,7 @@ S=${WORKDIR}
 pkg_preinst() {
 	enewgroup moblab
 	enewuser moblab
+	usermod -a -G docker moblab
 }
 
 src_install() {
