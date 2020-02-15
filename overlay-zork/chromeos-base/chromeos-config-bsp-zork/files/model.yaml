@@ -1,2 +1,93 @@
+#
+# Copyright 2020 The Chromium OS Authors. All rights reserved.
+#
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+common-config: &common_config
+  name: "{{$device-name}}"
+  test-label: "{{$device-name}}"
+  identity:
+    platform-name: "Zork"
+    smbios-name-match: "{{$fw-name}}"
+    sku-id: "{{$sku-id}}"
+  firmware-signing:
+    key-id: "{{$key-id}}"
+    signature-id: "{{$device-name}}"
+  firmware: &firmware_common
+    bcs-overlay: "overlay-zork-private"
+    build-targets:
+      coreboot: "{{$fw-build-name}}"
+      ec: "{{$fw-build-name}}"
+      depthcharge: "zork"
+      libpayload: "zork"
+    image-name: "{{$fw-build-name}}"
+  audio:
+    main:
+      $audio-config: "{{$device-name}}"
+      $cras_root: "/etc/cras"
+      $ucm_root: "/usr/share/alsa/ucm"
+      $card: "acp3xalc5682m98357"
+      $sub_cras_config: ""
+      cras-config-dir: "{{$audio-config}}{{$sub_cras_config}}"
+      files:
+        - source: "cras-config/{{cras-config-dir}}/{{$card}}"
+          destination: "{{$cras_root}}/{{cras-config-dir}}/{{$card}}"
+        - source: "cras-config/{{cras-config-dir}}/dsp.ini"
+          destination: "{{$cras_root}}/{{cras-config-dir}}/dsp.ini"
+        - source: "ucm-config/{{$card}}/HiFi.conf"
+          destination: "{{$ucm_root}}/{{$card}}/HiFi.conf"
+        - source: "ucm-config/{{$card}}/{{$card}}.conf"
+          destination: "{{$ucm_root}}/{{$card}}/{{$card}}.conf"
+
+trembyle-config: &trembyle_config
+  <<: *common_config
+  $fw-name: "{{$device-name}}"
+  $fw-build-name: "{{$device-name}}"
+  $key-id: "TREMBYLE"
+
+morphius-config: &morphius_config
+  <<: *common_config
+  $fw-name: "{{$device-name}}"
+  $fw-build-name: "{{$device-name}}"
+  $key-id: "MORPHIUS"
+
+ezkinil-config: &ezkinil_config
+  <<: *common_config
+  $fw-name: "{{$device-name}}"
+  $fw-build-name: "{{$device-name}}"
+  $key-id: "EZKINIL"
+
+dalboz-config: &dalboz_config
+  <<: *common_config
+  $fw-name: "{{$device-name}}"
+  $fw-build-name: "{{$device-name}}"
+  $key-id: "DALBOZ"
+
 chromeos:
-  devices: []
+  devices:
+    - $device-name: "trembyle"
+      skus:
+        - $sku-id: 0x7fffffff
+          config: *trembyle_config
+        # proto1 sku1
+        - $sku-id: 0x0002a063
+          config: *trembyle_config
+        # proto1 sku1.1
+        - $sku-id: 0x0003a1fb
+          config: *trembyle_config
+        # proto1 sku2
+        - $sku-id: 0x0006a061
+          config: *trembyle_config
+    - $device-name: "morphius"
+      skus:
+        - $sku-id: 0x7fffffff
+          config: *morphius_config
+    - $device-name: "ezkinil"
+      skus:
+        - $sku-id: 0x7fffffff
+          config: *ezkinil_config
+    - $device-name: "dalboz"
+      skus:
+        - $sku-id: 0x7fffffff
+          config: *dalboz_config
