@@ -1,7 +1,7 @@
 # Copyright 2016 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="4"
+EAPI="7"
 
 DESCRIPTION="Ebuild which pulls in any necessary ebuilds as dependencies or portage actions"
 
@@ -12,9 +12,10 @@ IUSE=""
 
 # These packages are for servo support:
 RDEPEND="
+	chromeos-base/chromeos-cr50-dev
 	chromeos-base/chromeos-ec
 	chromeos-base/ec-devutils
-	chromeos-base/ec-utils
+	>=chromeos-base/ec-utils-0.0.2
 	chromeos-base/vboot_reference
 	dev-embedded/openocd
 	dev-util/hdctools
