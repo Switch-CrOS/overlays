@@ -55,9 +55,9 @@ tar_kernel_source() {
 	# masked by INSTALL_MASK.
 	local source_dir=opt/google/src
 	dodir "${source_dir}"
-	pushd "${D}/usr/src/${P}"
+	pushd "${D}/usr/src/${P}" || die
 	tar --exclude="./build" -czf "${D}/${source_dir}/kernel-src.tar.gz" .
-	popd
+	popd || die
 }
 
 write_toolchain_env() {
