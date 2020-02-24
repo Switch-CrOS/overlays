@@ -4,6 +4,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+bluetooth-config: &bluetooth_config
+  build-path: "bluetooth/main.conf"
+  system-path: "/etc/bluetooth/main.conf"
+
+bluetooth-flags: &bluetooth_flags
+  enable-suspend-management: true
+  stop-on-suspend: true
+
 common_config: &common_config
   name: "{{$device-name}}"
   identity: &identity
@@ -44,6 +52,9 @@ common_config: &common_config
           destination: "{{$ucm-dest}}/HiFi.conf"
         - source: "{{$ucm-source}}/{{$card}}.conf"
           destination: "{{$ucm-dest}}/{{$card}}.{{ucm-suffix}}.conf"
+  bluetooth:
+    config: *bluetooth_config
+    flags: *bluetooth_flags
 
 jacuzzi-config: &jacuzzi_config
   <<: *common_config
