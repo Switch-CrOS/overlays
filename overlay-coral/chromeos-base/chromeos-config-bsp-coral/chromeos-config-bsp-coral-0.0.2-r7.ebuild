@@ -30,9 +30,6 @@ RDEPEND="
 # DEPEND="virtual/chromeos-bsp"
 
 src_install(){
-	insinto "${CROS_MODELS_DIR}"
-	doins -r "${FILESDIR}"/*
-
 	if use generated_cros_config ; then
 		install_generated_config_files
 	else
