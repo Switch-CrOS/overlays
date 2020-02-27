@@ -83,6 +83,7 @@ lakitu_python_install_all() {
 	# Overwrite the default cloud.cfg with our customized version.
 	insinto /etc/cloud
 	doins "${FILESDIR}"/cloud.cfg
+	doins "${FILESDIR}"/ds-identify.cfg
 
 	exeinto /usr/share/cloud
 	doexe "${FILESDIR}"/rerun-cloudinit.sh
