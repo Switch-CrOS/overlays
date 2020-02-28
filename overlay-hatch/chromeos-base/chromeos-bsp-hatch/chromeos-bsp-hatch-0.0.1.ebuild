@@ -41,4 +41,11 @@ src_install() {
 	# Install Bluetooth ID override
 	insinto /etc/bluetooth
 	doins "${FILESDIR}"/main.conf
+
+	# Install platform-specific internal keyboard keymap.
+	# It should probbaly go into /lib/udev/hwdb.d but
+	# unfortunately udevadm on 64 bit boxes does not check
+	# that directory (it wants to look in /lib64/udev).
+	insinto "${EPREFIX}/etc/udev/hwdb.d"
+	doins "${FILESDIR}/jinlon/81-jinlon-keyboard.hwdb"
 }
