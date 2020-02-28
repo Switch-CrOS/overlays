@@ -28,6 +28,8 @@ GCC_DEBUG_CTL = GCC_BASE + 0x62024
 GCC_DEBUG_STATUS = GCC_BASE + 0x62028
 GCC_XO_DIV4_CBCR = GCC_BASE + 0x43008
 
+MCC_BASE = 0x090b0000
+MCC_PERIOD_OFFSET = MCC_BASE + 0x50
 
 class MuxSetting(object):
   """Measurement mux settings used to measure a clock.
@@ -78,6 +80,12 @@ class MuxSetting(object):
     val &= 0xffffff
     # Stop the counters
     mem.w(GCC_DEBUG_CTL, ticks)
+
+    return val
+
+  def _clk_debug_mux_mcc_measure_rate(self):
+    val = mem.r(MCC_PERIOD_OFFSET)
+    val = (1000000000000 // val)
 
     return val
 
@@ -150,10 +158,13 @@ class MuxSetting(object):
     val |= 1
     mem.w(GCC_DEBUG_CBCR, val)
 
-    val = self._clk_debug_mux_measure_rate()
-    if self.non_gcc_base:
-      val *= self.post_div_val
-    val *= self.prim_mux_div_val
+    if self.name == 'mcc_clk':
+      val = self._clk_debug_mux_mcc_measure_rate()
+    else:
+      val = self._clk_debug_mux_measure_rate()
+      if self.non_gcc_base:
+        val *= self.post_div_val
+      val *= self.prim_mux_div_val
 
     # Accommodate for any pre-set dividers
     if self.misc_div_val:
@@ -455,6 +466,8 @@ clocks = [
                0xf, 11, 1, 0x182A0018, 0x182A0018, None, 16),
     MuxSetting('perfcl_clk', 0xD6, 4, True, 0x45, 0x7F, 4,
                0xf, 11, 1, 0x182A0018, 0x182A0018, None, 16),
+    MuxSetting('mcc_clk', 0xc2, 1, True, 0xc2, 0x3FF, 0, 0xF, 0, 1,
+               0x162008, 0x162000, 0x162004),
 ]
 
 
