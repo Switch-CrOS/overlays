@@ -62,6 +62,7 @@ PATCHES=(
 	"${FILESDIR}"/${PV}-add-retries-gce-metadata-server.patch
 	"${FILESDIR}"/${PV}-stable-uid.patch
 	"${FILESDIR}"/${PV}-fix-cross-compile.patch
+	"${FILESDIR}"/${PV}-datasource-gce-platform-google.patch
 )
 
 src_prepare() {
