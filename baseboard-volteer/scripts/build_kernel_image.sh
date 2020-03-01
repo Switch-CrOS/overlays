@@ -17,4 +17,7 @@ modify_kernel_command_line() {
 
   # Check for S0ix failures and show warnings on failures
   echo "intel_pmc_core.warn_on_s0ix_failures=1" >> "$1"
+
+  # Load GuC and HuC firmware
+  echo "i915.enable_guc=2" >> "$1"
 }
