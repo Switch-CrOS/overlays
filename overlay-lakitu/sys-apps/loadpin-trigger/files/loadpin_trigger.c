@@ -22,7 +22,7 @@ MODULE_AUTHOR("Ke Wu");
 MODULE_DESCRIPTION("A Linux module to trigger loadpin.");
 MODULE_VERSION("1");
 
-static const char *root_fs_dummy_path = "/.loadpin_trigger";
+static const char *root_fs_dummy_path = "/etc/loadpin_trigger";
 
 static int __init loadpin_trigger_init(void) {
   void *data;

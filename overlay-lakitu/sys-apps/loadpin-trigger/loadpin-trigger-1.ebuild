@@ -69,8 +69,8 @@ src_install() {
 
 	linux-mod_src_install
 
-	# Install a dummy file to rootfs. The file will be read by
+	# Install a dummy file to /etc. The file will be read by
 	# loadpin-trigger so that rootfs will be pinned.
-	insinto /
-	newins "${FILESDIR}"/loadpin_trigger_dummy .loadpin_trigger
+	insinto /etc
+	newins "${FILESDIR}"/loadpin_trigger_dummy loadpin_trigger
 }
