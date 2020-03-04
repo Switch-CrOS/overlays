@@ -63,6 +63,7 @@ PATCHES=(
 	"${FILESDIR}"/${PV}-stable-uid.patch
 	"${FILESDIR}"/${PV}-fix-cross-compile.patch
 	"${FILESDIR}"/${PV}-datasource-gce-platform-google.patch
+	"${FILESDIR}"/${PV}-skip-root-ssh-keys.patch
 )
 
 src_prepare() {
