@@ -28,17 +28,20 @@ common-config: &common_config
       $cras_root: "/etc/cras"
       $ucm_root: "/usr/share/alsa/ucm"
       $card: "acp3xalc5682m98357"
+
+      $ucm_extra_suffix: ""
       $sub_cras_config: ""
       cras-config-dir: "{{$audio-config}}{{$sub_cras_config}}"
+      ucm-suffix: "{{$num-mic-locations}}mic{{$ucm_extra_suffix}}"
       files:
         - source: "cras-config/{{cras-config-dir}}/{{$card}}"
           destination: "{{$cras_root}}/{{cras-config-dir}}/{{$card}}"
         - source: "cras-config/{{cras-config-dir}}/dsp.ini"
           destination: "{{$cras_root}}/{{cras-config-dir}}/dsp.ini"
-        - source: "ucm-config/{{$card}}/HiFi.conf"
-          destination: "{{$ucm_root}}/{{$card}}/HiFi.conf"
-        - source: "ucm-config/{{$card}}/{{$card}}.conf"
-          destination: "{{$ucm_root}}/{{$card}}/{{$card}}.conf"
+        - source: "ucm-config/{{$card}}.{{$num-mic-locations}}mic/HiFi.conf"
+          destination: "{{$ucm_root}}/{{$card}}.{{ucm-suffix}}/HiFi.conf"
+        - source: "ucm-config/{{$card}}.{{$num-mic-locations}}mic/{{$card}}.{{$num-mic-locations}}mic.conf"
+          destination: "{{$ucm_root}}/{{$card}}.{{ucm-suffix}}/{{$card}}.{{$num-mic-locations}}mic.conf"
 
 trembyle-config: &trembyle_config
   <<: *common_config
@@ -67,6 +70,7 @@ dalboz-config: &dalboz_config
 chromeos:
   devices:
     - $device-name: "trembyle"
+      $num-mic-locations: 1
       skus:
         - $sku-id: 0x7fffffff
           config: *trembyle_config
@@ -80,14 +84,17 @@ chromeos:
         - $sku-id: 0x0006a061
           config: *trembyle_config
     - $device-name: "morphius"
+      $num-mic-locations: 2
       skus:
         - $sku-id: 0x7fffffff
           config: *morphius_config
     - $device-name: "ezkinil"
+      $num-mic-locations: 2
       skus:
         - $sku-id: 0x7fffffff
           config: *ezkinil_config
     - $device-name: "dalboz"
+      $num-mic-locations: 2
       skus:
         - $sku-id: 0x7fffffff
           config: *dalboz_config
