@@ -2,7 +2,11 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=6
-inherit eutils systemd toolchain-funcs
+
+# lakitu: Because we use COS_NTP_SERVERS and COS_NTP_SERVERS_OPTIONS here, it
+# is not safe to reuse the prebuilt of this package across different boards.
+# Inherit the cros-board eclass to make sure that the reuse doesn't happen.
+inherit cros-board eutils systemd toolchain-funcs
 
 DESCRIPTION="NTP client and server programs"
 HOMEPAGE="http://chrony.tuxfamily.org/"

@@ -13,7 +13,10 @@ fi
 
 PYTHON_COMPAT=( python{3_4,3_5,3_6,3_7} )
 
-inherit bash-completion-r1 linux-info meson multilib-minimal ninja-utils pam python-any-r1 systemd toolchain-funcs udev user
+# lakitu: Because we use COS_NTP_SERVERS here, it is not safe to reuse the
+# prebuilt of this package across different boards. Inherit the cros-board
+# eclass to make sure that the reuse doesn't happen.
+inherit bash-completion-r1 cros-board linux-info meson multilib-minimal ninja-utils pam python-any-r1 systemd toolchain-funcs udev user
 
 DESCRIPTION="System and service manager for Linux"
 HOMEPAGE="https://www.freedesktop.org/wiki/Software/systemd"
