@@ -269,6 +269,17 @@ treeya360-config: &treeya360_config
         destination: "{{$fw_dest}}/1A23_0.0.3046708.bin"
         symlink: "{{$fw_root}}/hid-06CB_1A23"
 
+nuwani-config: &nuwani_config
+  <<: *base_config
+  firmware:
+    <<: *firmware_common
+
+nuwani360-config: &nuwani360_config
+  <<: [ *nuwani_config, *convertible_base_config ]
+  $audio-config: "nuwani"
+  firmware:
+    $firmware-target: "nuwani"
+
 chromeos:
   devices:
     - $device-name: "grunt"
@@ -479,3 +490,24 @@ chromeos:
           $camera-count: 2
           $num-mic-locations: 2
           config: *treeya360_config
+
+    - $device-name: "nuwani"
+      $num-mic-locations: 1
+      products:
+        - $brand-code: "TBD"
+          $marketing-name: "TBD"
+          $key-id: "DEFAULT"
+      skus:
+        - $sku-id: 160
+          config: *nuwani_config
+
+    - $device-name: "nuwani360"
+      products:
+        - $brand-code: "TBD"
+          $marketing-name: "TBD"
+          $key-id: "DEFAULT"
+      skus:
+        - $sku-id: 169
+          $camera-count: 2
+          $num-mic-locations: 2
+          config: *nuwani360_config
