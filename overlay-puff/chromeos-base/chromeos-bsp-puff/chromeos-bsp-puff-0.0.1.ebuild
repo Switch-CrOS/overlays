@@ -17,6 +17,7 @@ S="${WORKDIR}"
 RDEPEND="
 	chromeos-base/sof-binary
 	chromeos-base/sof-topology
+	chromeos-base/chromeos-bsp-baseboard-puff
 "
 DEPEND="
 	${RDEPEND}
