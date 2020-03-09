@@ -1,0 +1,38 @@
+# Copyright 2020 The Chromium OS Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+CHROMEOS_KERNEL_SPLITCONFIG="chromiumos-mediatek"
+CHROMEOS_KERNEL_ARCH="arm64"
+
+# TODO(b/150746591): upstream compiler should be able to support
+# cortex-a76.cortex-a55, we may need to switch to it if we upgrade
+# the compiler later.
+BOARD_COMPILER_FLAGS="-march=armv8-a+crc -mtune=cortex-a57.cortex-a53 -mfpu=crypto-neon-fp-armv8 -mfloat-abi=hard"
+
+# Initial value just for style purposes.
+USE=""
+
+# Use hardware FPU instead of software
+USE="${USE} hardfp"
+# Support for neon-vfpv3
+USE="${USE} neon"
+
+# For the device tree installation
+USE="${USE} device_tree"
+
+# use kernel 5.4
+USE="${USE} kernel-5_4"
+
+# TODO(b/150746591): build error, need to be fixed
+# needed by drm-tests
+#USE="${USE} vulkan"
+
+# Enables WebGL rendering
+USE="${USE} drm_atomic"
+
+# Set raster thread number=2
+USE="${USE} big_little"
+
+# Turn on the video cards this board uses.
+VIDEO_CARDS="mediatek"

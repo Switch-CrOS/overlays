@@ -1,0 +1,31 @@
+# Copyright 2020 The Chromium OS Authors. All rights reserved.
+#
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+common_config: &common_config
+  name: "{{$device-name}}"
+  identity:
+    sku-id: "{{$sku-id}}"
+    platform-name: "Asurada"
+    device-tree-compatible-match: "google,asurada"
+  firmware:
+    build-targets:
+      coreboot: "asurada"
+      ec: "asurada"
+      depthcharge: "asurada"
+      libpayload: "asurada"
+    no-firmware: true
+  firmware-signing:
+    key-id: "{{$key-id}}"
+    signature-id: "{{$device-name}}"
+  test-label: "{{$device-name}}"
+
+chromeos:
+  devices:
+    - $device-name: "asurada"
+      products:
+        - $key-id: "ASURADA"
+      skus:
+        - $sku-id: 0
+          config: *common_config
