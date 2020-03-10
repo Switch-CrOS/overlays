@@ -13,8 +13,7 @@ SLOT="0"
 KEYWORDS="*"
 
 IUSE_KERNEL_VERS=(
-	kernel-4_14
-        kernel-4_19
+	kernel-4_19
 )
 IUSE="kernel_sources ${IUSE_KERNEL_VERS[*]}"
 REQUIRED_USE="?? ( ${IUSE_KERNEL_VERS[*]} )"
@@ -25,7 +24,6 @@ RDEPEND="
 	!sys-kernel/lakitu-kernel
 	!sys-kernel/upstream-kernel-mainline
 	!sys-kernel/upstream-kernel-next
-	kernel-4_14? ( sys-kernel/lakitu-kernel-4_14[kernel_sources=] )
 	kernel-4_19? ( sys-kernel/lakitu-kernel-4_19[kernel_sources=] )
 "
 
@@ -35,7 +33,7 @@ RDEPEND+="
 	$(for v in "${IUSE_KERNEL_VERS[@]}"; do echo "!${v}? ( !sys-kernel/lakitu-${v} )"; done)
 "
 
-# Default to the 4.14 kernel if none has been selected.
+# Default to the 4.19 kernel if none has been selected.
 RDEPEND_DEFAULT="sys-kernel/lakitu-kernel-4_19"
 # Here be dragons!
 RDEPEND+="
