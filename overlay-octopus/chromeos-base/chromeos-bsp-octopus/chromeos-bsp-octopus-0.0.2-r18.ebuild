@@ -58,5 +58,4 @@ src_install() {
 	udev_dorules "${FILESDIR}/99-chromeos-octopus-usb-charge-mode.rules"
 
 	udev_dorules "${FILESDIR}/99-chromeos-octopus-usb-runtime-suspend.rules"
-	udev_dorules "${FILESDIR}/99-chromeos-octopus-realtek-bt-wake.rules"
 }
