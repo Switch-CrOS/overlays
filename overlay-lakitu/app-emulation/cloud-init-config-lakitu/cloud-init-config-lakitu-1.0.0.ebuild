@@ -22,6 +22,7 @@ S=${WORKDIR}
 
 src_install() {
 	insinto /etc/cloud/cloud.cfg.d
-	doins "${FILESDIR}"/91-datasource-gce.cfg
+	doins "${FILESDIR}/10-disable_ssh_publish_hostkeys.cfg"
+	doins "${FILESDIR}/91-datasource-gce.cfg"
 }
 
