@@ -18,5 +18,6 @@ S="${WORKDIR}"
 RDEPEND="
 	chromeos-base/sof-binary
 	chromeos-base/sof-topology
+	chromeos-base/chromeos-disk-firmware-baseboard-octopus
 "
 DEPEND="${RDEPEND}"

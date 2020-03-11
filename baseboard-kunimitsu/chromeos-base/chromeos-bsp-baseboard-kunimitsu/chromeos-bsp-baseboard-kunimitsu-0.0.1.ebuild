@@ -13,4 +13,8 @@ SLOT="0"
 KEYWORDS="-* amd64 x86"
 S="${WORKDIR}"
 
+RDEPEND="
+	chromeos-base/chromeos-disk-firmware-baseboard-kunimitsu
+"
+
 DEPEND="${RDEPEND}"
