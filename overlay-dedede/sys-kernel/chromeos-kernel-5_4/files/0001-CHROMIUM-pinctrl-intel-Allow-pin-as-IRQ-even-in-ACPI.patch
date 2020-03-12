@@ -1,0 +1,35 @@
+From 930c43d4b61eb5caf7413ea6a9c3ab41cafcbea4 Mon Sep 17 00:00:00 2001
+From: Ben Zhang <benzh@chromium.org>
+Date: Sat, 7 Mar 2020 19:32:40 -0500
+Subject: [PATCH] CHROMIUM: pinctrl: intel: Allow pin as IRQ even in ACPI mode
+
+This is a workaround for b/151015807 to make da7219
+IRQ working. Still need to figure out what's wrong
+with JSL pin configuration.
+
+BUG=b:151015807
+TEST=Headset plug/unplug and buttons work
+
+Signed-off-by: Ben Zhang <benzh@chromium.org>
+Change-Id: Ic2cbfda7a53bc2c82214e230e7f0a26c2f03367d
+---
+ drivers/pinctrl/intel/pinctrl-intel.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/drivers/pinctrl/intel/pinctrl-intel.c b/drivers/pinctrl/intel/pinctrl-intel.c
+index 83981ad66a71..cbd02898880a 100644
+--- a/drivers/pinctrl/intel/pinctrl-intel.c
++++ b/drivers/pinctrl/intel/pinctrl-intel.c
+@@ -1058,8 +1058,7 @@ static int intel_gpio_irq_type(struct irq_data *d, unsigned int type)
+	 * updated by the host controller hardware.
+	 */
+	if (intel_pad_acpi_mode(pctrl, pin)) {
+-		dev_warn(pctrl->dev, "pin %u cannot be used as IRQ\n", pin);
+-		return -EPERM;
++		dev_warn(pctrl->dev, "pin %u cannot be used as IRQ. HACK: continue anyway for b/151015807\n", pin);
+	}
+
+	raw_spin_lock_irqsave(&pctrl->lock, flags);
+--
+2.25.1.481.gfbce0eb801-goog
+
