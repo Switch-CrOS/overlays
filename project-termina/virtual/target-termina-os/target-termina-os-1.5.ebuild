@@ -22,6 +22,7 @@ RDEPEND="
 		chromeos-base/tremplin
 		chromeos-base/termina-lxd-scripts
 	)
+	chromeos-base/arc-networkd-mcastd
 	chromeos-base/arc-networkd-ndproxyd
 	chromeos-base/chromeos-bsp-termina
 	chromeos-base/minijail
