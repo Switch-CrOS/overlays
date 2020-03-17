@@ -4,7 +4,7 @@
 
 EAPI=5
 
-inherit cros-audio-configs
+inherit appid cros-audio-configs
 
 DESCRIPTION="Ebuild which pulls in any necessary ebuilds as dependencies
 or portage actions."
@@ -23,6 +23,8 @@ RDEPEND="
 DEPEND="${RDEPEND}"
 
 src_install() {
+	doappid "{08F65CC8-BCFB-414F-9B49-DAB2996D2E71}" "CHROMEBOOK"
+
 	local ucm_config="${FILESDIR}/ucm-config"
 	if [[ -d "${ucm_config}" ]] ; then
 		# install ucm config files
