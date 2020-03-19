@@ -18,6 +18,7 @@ S="${WORKDIR}"
 RDEPEND="
 	chromeos-base/sof-binary
 	chromeos-base/sof-topology
+	media-libs/ipu6se-firmware
 "
 DEPEND="${RDEPEND}"
 
