@@ -25,10 +25,6 @@ src_install() {
 	insinto "/usr/share/power_manager/board_specific"
 	doins "${FILESDIR}"/powerd_prefs/board_specific/*
 
-	# Install model-specific config files for power_manager.
-	insinto "/usr/share/power_manager/model_specific"
-	doins -r "${FILESDIR}"/powerd_prefs/model_specific/*
-
 	# Install model-specific bluetooth config files
 	insinto "/etc/bluetooth"
 	doins -r "${FILESDIR}"/bluetooth/*
