@@ -1,13 +1,14 @@
 # Copyright 2019 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="6"
+EAPI="7"
 
 inherit cros-constants
 
-CROS_WORKON_PROJECT="chromiumos/overlays/board-overlays"
-CROS_WORKON_LOCALNAME="../overlays/"
-CROS_WORKON_SUBTREE="overlay-zork/chromeos-base/chromeos-config-bsp-zork/files"
+# This ebuild only cares about its own FILESDIR and ebuild file, so it tracks
+# the canonical empty project.
+CROS_WORKON_PROJECT="chromiumos/infra/build/empty-project"
+CROS_WORKON_LOCALNAME="empty-project"
 
 inherit cros-unibuild cros-workon
 
