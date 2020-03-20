@@ -17,7 +17,11 @@ LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
 
-RDEPEND=" "
+RDEPEND="
+	dev-lang/python:3.6
+	dev-python/grpcio
+	dev-python/protobuf-python
+"
 
 DEPEND="${RDEPEND}
 "
