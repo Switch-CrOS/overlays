@@ -17,7 +17,6 @@ S="${WORKDIR}"
 
 # Add dependencies on other ebuilds from within this board overlay
 RDEPEND="
-	chromeos-base/chromeos-bsp-baseboard-nami
 	chromeos-base/rmi4utils
 "
 DEPEND="
