@@ -97,6 +97,11 @@ base-config: &base_config
         - source: "{{$cras_dsp_config}}/audio/{{$cras-source-config-dir}}/board.ini"
           destination: "{{$cras_root}}/{{cras-config-dir}}/board.ini"
 
+autobrightness: &autobrightness
+  files:
+   - build-path: "{{$device-name}}/autobrightness/model_params.json"
+     system-path: "/usr/share/chromeos-assets/autobrightness/{{$device-name}}/model_params.json"
+
 chromeos:
   devices:
     - $device-name: "unprovisioned_hatch"
@@ -146,7 +151,12 @@ chromeos:
       $allow-ambient-eq: "1"
       skus:
         - $sku-id: 1
-          config: *base_config
+          config:
+            <<: *base_config
+            power:
+              <<: *power_common
+              autobrightness:
+                <<: *autobrightness
     - $device-name: "unprovisioned_kindred"
       skus:
         - $sku-id: 255
