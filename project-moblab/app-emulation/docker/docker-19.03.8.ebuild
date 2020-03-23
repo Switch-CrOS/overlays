@@ -1,7 +1,7 @@
 # Copyright 1999-2020 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=7
 
 EGO_PN="github.com/docker/docker-ce"
 
@@ -11,7 +11,7 @@ if [[ ${PV} = *9999* ]]; then
 	EGIT_CHECKOUT_DIR="${WORKDIR}/${P}/src/${EGO_PN}"
 	inherit git-r3
 else
-	DOCKER_GITCOMMIT="633a0ea"
+	DOCKER_GITCOMMIT=afacb8b7f0
 	MY_PV=${PV/_/-}
 	SRC_URI="https://${EGO_PN}/archive/v${MY_PV}.tar.gz -> ${P}.tar.gz"
 	KEYWORDS="*"
@@ -54,8 +54,8 @@ RDEPEND="
 	>=dev-vcs/git-1.7
 	>=app-arch/xz-utils-4.9
 	dev-libs/libltdl
-	~app-emulation/containerd-1.2.10
-	~app-emulation/runc-1.0.0_rc9[apparmor?,seccomp?]
+	~app-emulation/containerd-1.2.13
+	~app-emulation/runc-1.0.0_rc10[apparmor?,seccomp?]
 	~app-emulation/docker-proxy-0.8.0_p20191011
 	container-init? ( >=sys-process/tini-0.18.0[static] )
 "
@@ -284,8 +284,8 @@ src_install() {
 	udev_dorules contrib/udev/*.rules
 
 	dodoc AUTHORS CONTRIBUTING.md CHANGELOG.md NOTICE README.md
-        # On moblab there will be no editing / building of docker files so no need to 
-        # install the vim syntax files or documentation.
+	# On moblab there will be no editing / building of docker files so no need to
+	# install the vim syntax files or documentation.
 	# dodoc -r docs/*
 
 	# insinto /usr/share/vim/vimfiles
@@ -301,8 +301,8 @@ src_install() {
 
 	newbin build/docker-* docker
 
-        # Man pages are not required and they avoid having to depend on dev-go/go-md2man
-        # package in the build.
+	# Man pages are not required and they avoid having to depend on dev-go/go-md2man
+	# package in the build.
 	# doman man/man*/*
 
 	# dobashcomp contrib/completion/bash/*
