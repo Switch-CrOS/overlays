@@ -4,6 +4,8 @@
 
 EAPI=7
 
+CROS_WORKON_COMMIT=("3c1a1c1ae009aac90e1234c2d73675aae39fe86d" "1e2e9d7183f545eefd1a86a07b0ab6f91d837a6c")
+CROS_WORKON_TREE=("f090636098b404fa31ade3300ee419f6e5b36676" "fdbc51bbd5a7ee9d532ea1aa30cf21e57ca199db")
 CROS_WORKON_PROJECT=(
 	"chromiumos/platform/ec"
 	"chromiumos/third_party/cryptoc"
@@ -28,4 +30,4 @@ DESCRIPTION="ECOS ISH image"
 HOMEPAGE="https://www.chromium.org/chromium-os/ec-development"
 
 LICENSE="BSD-Google"
-KEYWORDS="~*"
+KEYWORDS="*"
