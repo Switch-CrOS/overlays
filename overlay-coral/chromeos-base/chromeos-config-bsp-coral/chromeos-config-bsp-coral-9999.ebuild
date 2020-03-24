@@ -33,7 +33,4 @@ src_install(){
 	else
 		install_model_files
 	fi
-
-	insinto "${CROS_CONFIG_TEST_DIR}"
-	doins "${FILESDIR}/config_dump.json"
 }
