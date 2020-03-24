@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # Copyright 2020 The Chromium OS Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
@@ -8,14 +8,22 @@
 # the package, and it prints a string on stdout with the numerical version
 # number for said repo.
 
-# Matching regexp for all known kernel release tags to date.
-PATTERN="v[2345].*"
+# If the script runs from a board overlay, add "_p1" to returned kernel version.
+SCRIPT=$(realpath "$0")
+OVERLAY_ROOT="$(dirname "${SCRIPT}")/../../.."
+OVERLAY_NAME=$(sed -n '/^repo-name *=/s:[^=]*= *::p' "${OVERLAY_ROOT}"/metadata/layout.conf)
 
-if [ ! -d "$1" ] ; then
-    exit
-fi
-
+# Only after we've parsed $0 change directory in case $0 is relative.
 cd "$1" || exit
 
-git describe --match "${PATTERN}" --abbrev=0 HEAD | egrep "${PATTERN}" |
-  sed s/v\\.*//g | sed s/-/_/g
+suffix=""
+if [[ "${OVERLAY_NAME}" != "chromiumos" ]]; then
+    suffix="_p1"
+fi
+
+# Strip any .0 fix level from the version string.
+version=$(make kernelversion | sed -Ee 's/([0-9]*\.[0-9]*)\.0/\1/' -e s/-/_/g)
+
+if [[ -n "${version}" ]]; then
+    echo "${version}${suffix}"
+fi
