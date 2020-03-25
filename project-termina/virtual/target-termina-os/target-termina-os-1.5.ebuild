@@ -22,10 +22,10 @@ RDEPEND="
 		chromeos-base/tremplin
 		chromeos-base/termina-lxd-scripts
 	)
-	chromeos-base/arc-networkd-mcastd
-	chromeos-base/arc-networkd-ndproxyd
 	chromeos-base/chromeos-bsp-termina
+	chromeos-base/mcastd
 	chromeos-base/minijail
+	chromeos-base/ndproxyd
 	chromeos-base/vm_guest_tools
 	sys-apps/iproute2
 	sys-auth/pambase
