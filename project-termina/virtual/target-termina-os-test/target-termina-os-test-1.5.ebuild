@@ -13,6 +13,7 @@ IUSE=""
 
 RDEPEND="
 	chromeos-base/chromeos-test-root
+	dev-python/protobuf-python
 	sys-apps/net-tools
 	sys-apps/pciutils
 	sys-apps/usbutils
