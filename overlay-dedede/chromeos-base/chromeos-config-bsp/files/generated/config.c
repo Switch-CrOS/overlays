@@ -22,7 +22,7 @@ static struct config_map all_configs[] = {
               .signature_id = "waddledee"}},
 
     {.platform_name = "dedede",
-     .firmware_name_match = "Jslrvp",
+     .firmware_name_match = "jslrvp",
      .sku_id = 2147483647,
      .customization_id = "",
      .whitelabel_tag = "",
