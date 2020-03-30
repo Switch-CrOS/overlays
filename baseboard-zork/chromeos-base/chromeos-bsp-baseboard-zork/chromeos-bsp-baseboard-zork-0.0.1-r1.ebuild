@@ -1,1 +1,0 @@
-chromeos-bsp-baseboard-zork-0.0.1.ebuild

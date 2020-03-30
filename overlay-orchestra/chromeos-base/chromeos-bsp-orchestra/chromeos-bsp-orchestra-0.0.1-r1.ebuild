@@ -1,1 +1,0 @@
-chromeos-bsp-orchestra-0.0.1.ebuild
