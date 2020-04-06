@@ -5,13 +5,13 @@
 EAPI=7
 
 DESCRIPTION="SOF topology file for Puff board"
-SRC_URI="gs://chromeos-localmirror/distfiles/${P}-puff.tar.xz"
+SRC_URI="gs://chromeos-localmirror/distfiles/${PN}-puff-${PV}.tar.xz"
 
 LICENSE="SOF"
 SLOT="0"
 KEYWORDS="*"
 
-S=${WORKDIR}/${P}-puff
+S=${WORKDIR}/${PN}-puff-${PV}
 
 src_install() {
 	insinto /lib/firmware/intel/sof-tplg
