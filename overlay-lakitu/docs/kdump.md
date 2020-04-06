@@ -36,7 +36,7 @@ Before you begin, there are some limitations:
 
       ```
       $ gcloud compute instances stop [INSTANCE_NAME]
-      $ gcloud beta compute instances update [INSTANCE_NAME] --no-shielded-vm-secure-boot
+      $ gcloud compute instances update [INSTANCE_NAME] --no-shielded-secure-boot
       $ gcloud compute instances start [INSTANCE_NAME]
       ```
 
