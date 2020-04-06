@@ -37,7 +37,7 @@ KEYWORDS="~*"
 IUSE="em100-mode fsp memmaps mocktpm quiet-cb rmt vmx mtc mma"
 IUSE="${IUSE} +bmpblk +intel_mrc qca-framework quiet unibuild verbose"
 IUSE="${IUSE} amd_cpu +coreboot-sdk chipset_stoneyridge chipset_picasso"
-IUSE="${IUSE} +seabios u-boot"
+IUSE="${IUSE} +seabios u-boot psp_vboot"
 # coreboot's build system handles stripping the binaries and producing a
 # separate .debug file with the symbols. This flag prevents portage from
 # stripping the .debug symbols
@@ -182,6 +182,12 @@ EOF
 		file="${FILESDIR}/configs/fwserial.default"
 	fi
 	cat "${file}" >> "${CONFIG_SERIAL}" || die
+
+	# TODO: Remove when no longer needed.
+	if use psp_vboot; then
+		echo "VBOOT_STARTS_BEFORE_BOOTBLOCK=y" >> "${CONFIG}"
+		echo 'CONFIG_PSP_BOOTLOADER_NAME="PspBootLoader_verstage.sbin "' >> "${CONFIG}"
+	fi
 
 	einfo "Configured ${CONFIG} for board ${BOARD} in ${BUILD_DIR}"
 }
