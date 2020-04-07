@@ -29,10 +29,20 @@ static struct config_map all_configs[] = {
      .info = {.brand = "",
               .model = "jslrvp",
               .customization = "jslrvp",
-              .signature_id = "jslrvp"}}
+              .signature_id = "jslrvp"}},
+
+    {.platform_name = "dedede",
+     .firmware_name_match = "jslrvp_extec",
+     .sku_id = 2147483647,
+     .customization_id = "",
+     .whitelabel_tag = "",
+     .info = {.brand = "",
+              .model = "jslrvp_extec",
+              .customization = "jslrvp_extec",
+              .signature_id = "jslrvp_extec"}}
 };
 
 const struct config_map *cros_config_get_config_map(int *num_entries) {
-  *num_entries = 3;
+  *num_entries = 4;
   return &all_configs[0];
 }
