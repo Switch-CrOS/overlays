@@ -37,7 +37,7 @@ KEYWORDS="~*"
 IUSE="em100-mode fsp memmaps mocktpm quiet-cb rmt vmx mtc mma"
 IUSE="${IUSE} +bmpblk +intel_mrc qca-framework quiet unibuild verbose"
 IUSE="${IUSE} amd_cpu +coreboot-sdk chipset_stoneyridge chipset_picasso"
-IUSE="${IUSE} +seabios u-boot psp_vboot psp_vboot_debug"
+IUSE="${IUSE} +seabios u-boot psp_vboot"
 # coreboot's build system handles stripping the binaries and producing a
 # separate .debug file with the symbols. This flag prevents portage from
 # stripping the .debug symbols
@@ -187,14 +187,9 @@ EOF
 	if use psp_vboot; then
 		echo "Building for verstage on PSP"
 		echo "CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK=y" >> "${CONFIG}"
+		echo 'CONFIG_PSP_BOOTLOADER_NAME="test_PspBootLoader_prod_RV.sbin"' >> "${CONFIG}"
 		echo "CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK=y" >> "${CONFIG_SERIAL}"
-	fi
-	if use psp_vboot_debug; then
-		echo "Building for verstage on PSP"
-		echo "CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK=y" >> "${CONFIG}"
-		echo 'CONFIG_PSP_BOOTLOADER_NAME="PspBootLoader_verstage.sbin "' >> "${CONFIG}"
-		echo "CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK=y" >> "${CONFIG_SERIAL}"
-		echo 'CONFIG_PSP_BOOTLOADER_NAME="PspBootLoader_verstage.sbin "' >> "${CONFIG_SERIAL}"
+		echo 'CONFIG_PSP_BOOTLOADER_NAME="test_PspBootLoader_prod_RV_dbg.sbin"' >> "${CONFIG_SERIAL}"
 	fi
 
 	einfo "Configured ${CONFIG} for board ${BOARD} in ${BUILD_DIR}"
