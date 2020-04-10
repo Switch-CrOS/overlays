@@ -6,8 +6,8 @@
 # VERSION=REVBUMP-0.0.59
 
 EAPI=7
-CROS_WORKON_COMMIT=("9ae66605ff052883b5604ce832dd2edcd2b0911a" "d537ee795c1390601428d6b5b3499d05b62ad271" "896864c9a3225aabf64b4ac669bab725be9e305f" "f3612cbdb49b209f1457aca987b431442d050c60" "b7d5b2d6a6dd05874d86ee900ff441d261f9034c")
-CROS_WORKON_TREE=("ecd1d159153d7294bec28be3f46342d13e58bbdf" "9c19da5c9b5dea08b157645fa0b4b2e21dc898c5" "ff496180b4be0f108d7b983dfe101af59cdca072" "1d11cfd092862e6d4e94617351829e605e7e798f" "c0433b88f972fa26dded401be022c1c026cd644e")
+CROS_WORKON_COMMIT=("7fcbb4d4816ffb09ac1b83559f841e8b6cb52820" "d537ee795c1390601428d6b5b3499d05b62ad271" "896864c9a3225aabf64b4ac669bab725be9e305f" "3c5d9bf36a6606e5fb0e8273fa964bc33a14a358" "b7d5b2d6a6dd05874d86ee900ff441d261f9034c")
+CROS_WORKON_TREE=("9c55b2c42fc1d024c6bf1fe59b0518b8e415de04" "9c19da5c9b5dea08b157645fa0b4b2e21dc898c5" "ff496180b4be0f108d7b983dfe101af59cdca072" "6ac665ddeae90923d54d042faf90213eb26097a7" "c0433b88f972fa26dded401be022c1c026cd644e")
 CROS_WORKON_PROJECT=(
 	"chromiumos/third_party/coreboot"
 	"chromiumos/third_party/arm-trusted-firmware"
@@ -39,7 +39,7 @@ KEYWORDS="*"
 IUSE="em100-mode fsp memmaps mocktpm quiet-cb rmt vmx mtc mma"
 IUSE="${IUSE} +bmpblk +intel_mrc qca-framework quiet unibuild verbose"
 IUSE="${IUSE} amd_cpu +coreboot-sdk chipset_stoneyridge chipset_picasso"
-IUSE="${IUSE} +seabios u-boot psp_vboot psp_vboot_debug"
+IUSE="${IUSE} +seabios u-boot psp_vboot"
 # coreboot's build system handles stripping the binaries and producing a
 # separate .debug file with the symbols. This flag prevents portage from
 # stripping the .debug symbols
@@ -189,14 +189,9 @@ EOF
 	if use psp_vboot; then
 		echo "Building for verstage on PSP"
 		echo "CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK=y" >> "${CONFIG}"
+		echo 'CONFIG_PSP_BOOTLOADER_NAME="test_PspBootLoader_prod_RV.sbin"' >> "${CONFIG}"
 		echo "CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK=y" >> "${CONFIG_SERIAL}"
-	fi
-	if use psp_vboot_debug; then
-		echo "Building for verstage on PSP"
-		echo "CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK=y" >> "${CONFIG}"
-		echo 'CONFIG_PSP_BOOTLOADER_NAME="PspBootLoader_verstage.sbin "' >> "${CONFIG}"
-		echo "CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK=y" >> "${CONFIG_SERIAL}"
-		echo 'CONFIG_PSP_BOOTLOADER_NAME="PspBootLoader_verstage.sbin "' >> "${CONFIG_SERIAL}"
+		echo 'CONFIG_PSP_BOOTLOADER_NAME="test_PspBootLoader_prod_RV_dbg.sbin"' >> "${CONFIG_SERIAL}"
 	fi
 
 	einfo "Configured ${CONFIG} for board ${BOARD} in ${BUILD_DIR}"

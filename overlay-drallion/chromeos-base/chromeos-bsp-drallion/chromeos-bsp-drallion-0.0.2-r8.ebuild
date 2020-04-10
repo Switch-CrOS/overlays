@@ -34,6 +34,5 @@ src_install() {
 	udev_dorules "${FILESDIR}/81-drallion-keyboard.rules"
 
 	unibuild_install_audio_files
-	unibuild_install_thermal_files
 	unibuild_install_bluetooth_files
 }
