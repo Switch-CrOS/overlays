@@ -9,6 +9,7 @@ KEYWORDS="*"
 LICENSE="BSD-Google"
 
 DEPEND="
+	sys-firmware/parade-ps8751a3-firmware
 	sys-firmware/parade-ps8805a2-firmware
 	"
 RDEPEND="${DEPEND}"
