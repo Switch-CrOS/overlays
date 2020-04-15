@@ -189,9 +189,9 @@ EOF
 	if use psp_vboot; then
 		echo "Building for verstage on PSP"
 		echo "CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK=y" >> "${CONFIG}"
-		echo 'CONFIG_PSP_BOOTLOADER_NAME="test_PspBootLoader_prod_RV.sbin"' >> "${CONFIG}"
+		echo 'CONFIG_PSP_BOOTLOADER_NAME="PspBootLoader_test_RV.sbin"' >> "${CONFIG}"
 		echo "CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK=y" >> "${CONFIG_SERIAL}"
-		echo 'CONFIG_PSP_BOOTLOADER_NAME="test_PspBootLoader_prod_RV_dbg.sbin"' >> "${CONFIG_SERIAL}"
+		echo 'CONFIG_PSP_BOOTLOADER_NAME="PspBootLoader_test_RV.sbin"' >> "${CONFIG_SERIAL}"
 	fi
 
 	einfo "Configured ${CONFIG} for board ${BOARD} in ${BUILD_DIR}"
