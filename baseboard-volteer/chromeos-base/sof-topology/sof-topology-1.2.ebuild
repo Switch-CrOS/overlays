@@ -9,14 +9,14 @@ EAPI=5
 TARBALL_NAME="${P}-volteer"
 
 DESCRIPTION="Topology file needed to run SOF."
-SRC_URI="gs://chromeos-localmirror/distfiles/${TARBALL_NAME}.tar.bz2"
+SRC_URI="gs://chromeos-localmirror/distfiles/${PN}-volteer-${PV}.tar.bz2"
 
 LICENSE="SOF"
 SLOT="0"
 KEYWORDS="*"
 IUSE=""
 
-S="${WORKDIR}"/"${TARBALL_NAME}"
+S="${WORKDIR}"/"${PN}-volteer-${PV}"
 
 src_install() {
 	insinto /lib/firmware/intel/sof-tplg
