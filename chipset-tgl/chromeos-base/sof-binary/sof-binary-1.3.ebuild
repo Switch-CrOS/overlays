@@ -4,13 +4,13 @@
 EAPI=5
 
 DESCRIPTION="Tiger Lake SOF firmware binary"
-SRC_URI="gs://chromeos-localmirror/distfiles/${P}-tgl.tar.bz2"
+SRC_URI="gs://chromeos-localmirror/distfiles/${PN}-tgl-${PV}.tar.bz2"
 
 LICENSE="SOF"
 SLOT="0"
 KEYWORDS="*"
 
-S=${WORKDIR}/${P}-tgl
+S=${WORKDIR}/${PN}-tgl-${PV}
 
 src_install() {
 	insinto /lib/firmware/intel/sof/community
