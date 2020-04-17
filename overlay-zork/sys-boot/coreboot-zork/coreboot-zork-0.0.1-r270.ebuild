@@ -6,8 +6,8 @@
 # VERSION=REVBUMP-0.0.59
 
 EAPI=7
-CROS_WORKON_COMMIT=("4865ee254e3f6ab782bc2a6546ba4f3cca4a66cb" "cc52800db495d0638d217984c8f28b4f1f487301" "785cc5e9a84142fe84d0410e2f56f4aee65fbe65" "775beda3cceba7e39b70832155ad79205097523c" "b7d5b2d6a6dd05874d86ee900ff441d261f9034c")
-CROS_WORKON_TREE=("98832f03b913fdd37b417a15d335ec775d75a899" "edc38485ad4fae9fb3fd2a1cdb1662f66cdec66d" "442cee07db8c31820ae90a25c689d90a19f331a7" "1da24347659700cd98c5f4a3985abfa4aa17d2af" "c0433b88f972fa26dded401be022c1c026cd644e")
+CROS_WORKON_COMMIT=("4865ee254e3f6ab782bc2a6546ba4f3cca4a66cb" "cc52800db495d0638d217984c8f28b4f1f487301" "fdd5d7a00496eff6c413fab5cd538f71e1470af1" "775beda3cceba7e39b70832155ad79205097523c" "b7d5b2d6a6dd05874d86ee900ff441d261f9034c")
+CROS_WORKON_TREE=("98832f03b913fdd37b417a15d335ec775d75a899" "edc38485ad4fae9fb3fd2a1cdb1662f66cdec66d" "5ab450411a964d4597d018cd68d52afbc89c9a87" "1da24347659700cd98c5f4a3985abfa4aa17d2af" "c0433b88f972fa26dded401be022c1c026cd644e")
 CROS_WORKON_PROJECT=(
 	"chromiumos/third_party/coreboot"
 	"chromiumos/third_party/arm-trusted-firmware"
@@ -39,7 +39,7 @@ KEYWORDS="*"
 IUSE="em100-mode fsp memmaps mocktpm quiet-cb rmt vmx mtc mma"
 IUSE="${IUSE} +bmpblk +intel_mrc qca-framework quiet unibuild verbose"
 IUSE="${IUSE} amd_cpu +coreboot-sdk chipset_stoneyridge chipset_picasso"
-IUSE="${IUSE} +seabios u-boot psp_vboot"
+IUSE="${IUSE} +seabios u-boot psp_vboot psp_vboot_debug"
 # coreboot's build system handles stripping the binaries and producing a
 # separate .debug file with the symbols. This flag prevents portage from
 # stripping the .debug symbols
@@ -187,11 +187,29 @@ EOF
 
 	# TODO: Remove when no longer needed.
 	if use psp_vboot; then
-		echo "Building for verstage on PSP"
+		einfo "Building for verstage on PSP"
 		echo "CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK=y" >> "${CONFIG}"
 		echo 'CONFIG_PSP_BOOTLOADER_NAME="PspBootLoader_test_RV.sbin"' >> "${CONFIG}"
 		echo "CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK=y" >> "${CONFIG_SERIAL}"
 		echo 'CONFIG_PSP_BOOTLOADER_NAME="PspBootLoader_test_RV.sbin"' >> "${CONFIG_SERIAL}"
+	fi
+
+	# This files to run the build with this use flag are not in the chroot by default.
+	# They are google-only files, and are for limited distribution.  See the zork
+	# care and feeding doc for more information.
+	if use psp_vboot_debug; then
+		if [[ ! -f "3rdparty/blobs/soc/amd/picasso/PSP/PspBootLoader_test_RV_dbg.sbin" ]]; then
+			eerror "Error: Debug PSP not found."
+			eerror "       Please add the local_manifest_google_private.xml to your"
+			eerror "       .repo/local_manifests directory and repo sync."
+			eerror "       Then emerge coreboot-private-files-chipset-picasso"
+			die
+		fi
+		einfo "Building for verstage on PSP with PSP debug in serial rom"
+		echo "CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK=y" >> "${CONFIG}"
+		echo 'CONFIG_PSP_BOOTLOADER_NAME="PspBootLoader_test_RV.sbin"' >> "${CONFIG}"
+		echo "CONFIG_VBOOT_STARTS_BEFORE_BOOTBLOCK=y" >> "${CONFIG_SERIAL}"
+		echo 'CONFIG_PSP_BOOTLOADER_NAME="PspBootLoader_test_RV_dbg.sbin"' >> "${CONFIG_SERIAL}"
 	fi
 
 	einfo "Configured ${CONFIG} for board ${BOARD} in ${BUILD_DIR}"
