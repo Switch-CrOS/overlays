@@ -3,24 +3,27 @@
 
 EAPI=7
 
-inherit appid cros-unibuild
+# This ebuild only cares about its own FILESDIR and ebuild file, so it tracks
+# the canonical empty project.
+CROS_WORKON_PROJECT="chromiumos/infra/build/empty-project"
+CROS_WORKON_LOCALNAME="empty-project"
+
+inherit appid cros-unibuild cros-workon
 
 DESCRIPTION="Ebuild which pulls in any necessary ebuilds as dependencies
 or portage actions."
 
 LICENSE="BSD-Google"
-SLOT="0"
-KEYWORDS="-* amd64 x86"
-S="${WORKDIR}"
+KEYWORDS="-* ~amd64 ~x86"
 
 # Add dependencies on other ebuilds from within this board overlay
 RDEPEND="
-	chromeos-base/sof-binary
-	chromeos-base/sof-topology
+	chromeos-base/sof-binary:=
+	chromeos-base/sof-topology:=
 "
 DEPEND="
 	${RDEPEND}
-	chromeos-base/chromeos-config
+	chromeos-base/chromeos-config:=
 "
 
 src_install() {
