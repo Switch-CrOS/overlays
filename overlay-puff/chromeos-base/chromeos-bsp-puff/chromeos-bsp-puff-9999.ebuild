@@ -20,6 +20,7 @@ KEYWORDS="-* ~amd64 ~x86"
 RDEPEND="
 	chromeos-base/sof-binary:=
 	chromeos-base/sof-topology:=
+	chromeos-base/mst_hub_updater:=
 "
 DEPEND="
 	${RDEPEND}
