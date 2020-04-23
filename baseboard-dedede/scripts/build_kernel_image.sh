@@ -8,4 +8,7 @@ modify_kernel_command_line() {
 
   # Enable GuC loading
   echo "i915.enable_guc=2" >> "$1"
+
+  # TODO(b/154773379): Workaround for frequency scaling issues
+  echo "intel_idle.max_cstate=1" >> "$1"
 }
