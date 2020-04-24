@@ -44,10 +44,6 @@ case 0:
     CONFIG_ENTRY_VALUE(270, MINT32)
     CONFIG_METADATA_END()
     //======================================================================
-    CONFIG_METADATA_BEGIN(MTK_SENSOR_INFO_WANTED_ORIENTATION)
-    CONFIG_ENTRY_VALUE(270, MINT32)
-    CONFIG_METADATA_END()
-    //======================================================================
     CONFIG_METADATA_BEGIN(MTK_SENSOR_INFO_FACING)
     CONFIG_ENTRY_VALUE(MTK_LENS_FACING_BACK, MUINT8)
     CONFIG_METADATA_END()
@@ -58,10 +54,6 @@ case 0:
 case 1:
     //======================================================================
     CONFIG_METADATA_BEGIN(MTK_SENSOR_INFO_ORIENTATION)
-    CONFIG_ENTRY_VALUE(270, MINT32)
-    CONFIG_METADATA_END()
-    //======================================================================
-    CONFIG_METADATA_BEGIN(MTK_SENSOR_INFO_WANTED_ORIENTATION)
     CONFIG_ENTRY_VALUE(270, MINT32)
     CONFIG_METADATA_END()
     //======================================================================
