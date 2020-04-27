@@ -1,1 +1,0 @@
-intel-ipu6-libs-bin-2020.03.10.ebuild
