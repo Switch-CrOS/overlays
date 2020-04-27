@@ -12,7 +12,7 @@ KEYWORDS="-* amd64"
 
 S="${WORKDIR}"
 
-FW_FILE_NAME="ipu6_fw_20191210.bin"
+FW_FILE_NAME="ipu6_fw_20200330.bin"
 FW_FILE_PATH="/lib/firmware/intel"
 
 src_install() {
