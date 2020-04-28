@@ -1,7 +1,7 @@
 # Copyright 2016 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=4
+EAPI=5
 
 inherit appid cros-audio-configs
 
@@ -11,7 +11,7 @@ or portage actions."
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="-* amd64 x86"
-IUSE=""
+IUSE="cave-kernelnext"
 S="${WORKDIR}"
 
 # Add dependencies on other ebuilds from within this board overlay
@@ -23,8 +23,12 @@ DEPEND="${RDEPEND}"
 src_install() {
 	doappid "{B00DD0BC-D2C9-BAB4-E66C-81AE3F5A7CED}" "CHROMEBOOK"
 
-	# Install audio config files
-	local audio_config_dir="${FILESDIR}/audio-config"
+	# Install audio configs.
+	if use cave-kernelnext; then
+		local audio_config_dir="${FILESDIR}/kernelnext-audio-config"
+	else
+		local audio_config_dir="${FILESDIR}/audio-config"
+	fi
 	install_audio_configs cave "${audio_config_dir}"
 
 	# Install platform specific config files for power_manager.
