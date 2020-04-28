@@ -1,7 +1,7 @@
 # Copyright 2015 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=4
+EAPI=5
 
 inherit appid cros-audio-configs
 
@@ -11,7 +11,7 @@ or portage actions."
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="-* amd64 x86"
-IUSE="chell-cheets"
+IUSE="chell-cheets chell-kernelnext"
 
 RDEPEND="
 	chromeos-base/chromeos-bsp-baseboard-glados
@@ -37,6 +37,10 @@ src_install() {
 	doins "${FILESDIR}/main.conf"
 
 	# Install audio configs.
-	local audio_config_dir="${FILESDIR}/audio-config"
+	if use chell-kernelnext; then
+		local audio_config_dir="${FILESDIR}/kernelnext-audio-config"
+	else
+		local audio_config_dir="${FILESDIR}/audio-config"
+	fi
 	install_audio_configs chell "${audio_config_dir}"
 }
