@@ -10,6 +10,7 @@ CROS_WORKON_PROJECT=(
 	"chromiumos/third_party/coreboot"
 	"chromiumos/third_party/arm-trusted-firmware"
 	"chromiumos/platform/vboot_reference"
+	"chromiumos/third_party/coreboot/amd_blobs"
 	"chromiumos/third_party/coreboot/blobs"
 	"chromiumos/third_party/cbootimage"
 )
@@ -17,6 +18,7 @@ CROS_WORKON_LOCALNAME=(
 	"coreboot-zork"
 	"arm-trusted-firmware"
 	"../platform/vboot_reference"
+	"coreboot-zork/3rdparty/amd_blobs"
 	"coreboot-zork/3rdparty/blobs"
 	"cbootimage"
 )
@@ -24,6 +26,7 @@ CROS_WORKON_DESTDIR=(
 	"${S}"
 	"${S}/3rdparty/arm-trusted-firmware"
 	"${S}/3rdparty/vboot"
+	"${S}/3rdparty/amd_blobs"
 	"${S}/3rdparty/blobs"
 	"${S}/util/nvidia/cbootimage"
 )
