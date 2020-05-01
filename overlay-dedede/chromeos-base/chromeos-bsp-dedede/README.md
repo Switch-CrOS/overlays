@@ -3,8 +3,8 @@ with the goal of enabling autonomous and flexible partner contributions and
 clearer API boundaries.**
 
 Starlark -- a Python-like configuration-management language -- will be used to
-generate Protocol Buffer configuration payloads in [chromeos/program/dedede](https://chrome-internal.googlesource.com/chromeos/program/dedede)
-and model.yaml will be deleted from [overlay-dedede](https://chromium.googlesource.com/chromiumos/overlays/board-overlays/+/refs/heads/master/overlay-dedede)
+generate Protocol Buffer configuration payloads in [chromeos/project/dedede](https://chrome-internal.googlesource.com/chromeos/project/dedede)
+repos and model.yaml will be deleted from [overlay-dedede](https://chromium.googlesource.com/chromiumos/overlays/board-overlays/+/refs/heads/master/overlay-dedede)
 and [overlay-dedede-private](https://chrome-internal.googlesource.com/chromeos/overlays/overlay-dedede-private).
 A few resources to get started:
 
@@ -20,12 +20,12 @@ A few resources to get started:
 
 Changes will be made in the following repos:
 
-*   [chromeos/program/dedede](https://chrome-internal.googlesource.com/chromeos/program/dedede):
+*   [chromeos/project/dedede](https://chrome-internal.googlesource.com/chromeos/project/dedede) repos:
     Contains Starlark files, generated protobuf payloads, and backwards-compatible
     JSON payloads.
 *   [overlay-dedede-private](https://chrome-internal.googlesource.com/chromeos/overlays/overlay-dedede-private):
     `chromeos-config-bsp-dedede-private` sets `CROS_WORKON_PROJECT`
-    to [chromeos/program/dedede](https://chrome-internal.googlesource.com/chromeos/program/dedede).
+    to [chromeos/project/dedede](https://chrome-internal.googlesource.com/chromeos/project/dedede) repos.
     model.yaml is deleted.
 
 We understand that getting used to the new configuration management ecosystem
