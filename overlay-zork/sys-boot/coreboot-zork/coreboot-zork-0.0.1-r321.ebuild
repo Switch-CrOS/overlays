@@ -6,12 +6,13 @@
 # VERSION=REVBUMP-0.0.59
 
 EAPI=7
-CROS_WORKON_COMMIT=("8d9fb81653a8dfc7da7cab2f8f08ac4e36c75557" "cc52800db495d0638d217984c8f28b4f1f487301" "173ac74263e1979e4b05911ba8b04ddc3bd27029" "401aa2d1245e35c0c5707042b8acc1d57871a9c9" "b7d5b2d6a6dd05874d86ee900ff441d261f9034c")
-CROS_WORKON_TREE=("f98114a6e7422f9881de93684460c0ec9a955e37" "edc38485ad4fae9fb3fd2a1cdb1662f66cdec66d" "03f6c6ee463147b8cab3b3781ea69e82d82f862a" "2ef9270213598e83d83b91825e7598c12e6d0892" "c0433b88f972fa26dded401be022c1c026cd644e")
+CROS_WORKON_COMMIT=("8d9fb81653a8dfc7da7cab2f8f08ac4e36c75557" "cc52800db495d0638d217984c8f28b4f1f487301" "173ac74263e1979e4b05911ba8b04ddc3bd27029" "17d028869899e1ea0f6f385501088f7623121fcb" "401aa2d1245e35c0c5707042b8acc1d57871a9c9" "b7d5b2d6a6dd05874d86ee900ff441d261f9034c")
+CROS_WORKON_TREE=("f98114a6e7422f9881de93684460c0ec9a955e37" "edc38485ad4fae9fb3fd2a1cdb1662f66cdec66d" "03f6c6ee463147b8cab3b3781ea69e82d82f862a" "af925ae8c2ea12c11eb1fb4fb336b02d519144cc" "2ef9270213598e83d83b91825e7598c12e6d0892" "c0433b88f972fa26dded401be022c1c026cd644e")
 CROS_WORKON_PROJECT=(
 	"chromiumos/third_party/coreboot"
 	"chromiumos/third_party/arm-trusted-firmware"
 	"chromiumos/platform/vboot_reference"
+	"chromiumos/third_party/coreboot/amd_blobs"
 	"chromiumos/third_party/coreboot/blobs"
 	"chromiumos/third_party/cbootimage"
 )
@@ -19,6 +20,7 @@ CROS_WORKON_LOCALNAME=(
 	"coreboot-zork"
 	"arm-trusted-firmware"
 	"../platform/vboot_reference"
+	"coreboot-zork/3rdparty/amd_blobs"
 	"coreboot-zork/3rdparty/blobs"
 	"cbootimage"
 )
@@ -26,6 +28,7 @@ CROS_WORKON_DESTDIR=(
 	"${S}"
 	"${S}/3rdparty/arm-trusted-firmware"
 	"${S}/3rdparty/vboot"
+	"${S}/3rdparty/amd_blobs"
 	"${S}/3rdparty/blobs"
 	"${S}/util/nvidia/cbootimage"
 )
