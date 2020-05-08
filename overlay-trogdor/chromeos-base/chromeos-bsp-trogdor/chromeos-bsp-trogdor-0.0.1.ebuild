@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 EAPI=6
 
-inherit appid
+inherit appid cros-unibuild
 
 DESCRIPTION="Ebuild which pulls in any necessary ebuilds as dependencies
 or portage actions."
@@ -20,4 +20,7 @@ DEPEND="${RDEPEND}"
 
 src_install() {
 	doappid "{9023C063-08D6-4A4F-908C-BCF97DE8BA69}" "REFERENCE"
+
+	# Install audio config
+	unibuild_install_audio_files
 }
