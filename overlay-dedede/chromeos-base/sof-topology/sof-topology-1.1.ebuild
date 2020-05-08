@@ -5,13 +5,13 @@
 EAPI=6
 
 DESCRIPTION="SOF topology file for Dedede board"
-SRC_URI="gs://chromeos-localmirror/distfiles/${P}-dedede.tar.xz"
+SRC_URI="gs://chromeos-localmirror/distfiles/${PN}-dedede-${PV}.tar.xz"
 
 LICENSE="SOF"
 SLOT="0"
 KEYWORDS="*"
 
-S=${WORKDIR}/${P}-dedede
+S=${WORKDIR}/${PN}-dedede-${PV}
 
 src_install() {
 	insinto /lib/firmware/intel/sof-tplg
