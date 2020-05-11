@@ -122,6 +122,7 @@ src_install() {
 	newins etc/login.defs login.defs
 
 	set_login_opt CREATE_HOME yes
+	set_login_opt UMASK 027
 	if ! use pam ; then
 		set_login_opt MAIL_CHECK_ENAB no
 		set_login_opt SU_WHEEL_ONLY yes
@@ -137,7 +138,7 @@ src_install() {
 		done
 
 		for x in chage chsh chfn \
-				 user{add,del,mod} group{add,del,mod} ; do
+				user{add,del,mod} group{add,del,mod} ; do
 			newpamd "${FILESDIR}"/pam.d-include/shadow ${x}
 		done
 
