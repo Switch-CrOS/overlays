@@ -201,7 +201,7 @@ EOF
 	# They are google-only files, and are for limited distribution.  See the zork
 	# care and feeding doc for more information.
 	if use psp_vboot_debug; then
-		if [[ ! -f "3rdparty/blobs/soc/amd/picasso/PSP/PspBootLoader_test_RV_dbg.sbin" ]]; then
+		if [[ ! -f "3rdparty/amd_blobs/picasso/PSP/PspBootLoader_test_RV_dbg.sbin" ]]; then
 			eerror "Error: Debug PSP not found."
 			eerror "       Please add the local_manifest_google_private.xml to your"
 			eerror "       .repo/local_manifests directory and repo sync."
