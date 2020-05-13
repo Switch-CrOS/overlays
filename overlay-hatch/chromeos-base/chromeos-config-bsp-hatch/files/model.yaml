@@ -60,8 +60,8 @@ base-config: &base_config
     allow-ambient-eq: "{{$allow-ambient-eq}}"
     $wake-on-dp: "1"
     wake-on-dp: "{{$wake-on-dp}}"
-  audio:
-    main:
+  audio: &audio
+    main: &audio_main
       # Variables to be overridden by chromeos/devices/... For example:
       # To add a volume curve specific for Kohaku:
       # 1. Add chromeos-base/chromeos-bsp-hatch/files/kohaku/audio/cras-config/card_settings
@@ -86,6 +86,7 @@ base-config: &base_config
       #                  $ucm_config_suffix: "akemi2"
       #                  config: *base_config
       $alsa_card: "sof-sof_rt5682"
+      $alsa_card_id: "sof-sof_rt5682"
       $cras_card_config: "common"
       $cras_dsp_config: "common"
       $ucm_src_root: "common"
@@ -93,13 +94,15 @@ base-config: &base_config
       $sub_cras_config: ""
       # Variables used to generate file paths. Do not override.
       $cras_root: "/etc/cras"
+      $sound_card_init_root: "/etc/sound_card_init"
       $ucm_root: "/usr/share/alsa/ucm"
       $ucm_name: "{{$alsa_card}}.{{$ucm_config_suffix}}"
       $cras-source-config-dir: "cras-config{{$sub_cras_config}}"
+      $sound-card-init-config: "sound-card-init-config"
       # Variables passed to adhd/init/cras.sh for starting CRAS. Do not override.
       cras-config-dir: "{{$device-name}}{{$sub_cras_config}}"
       ucm-suffix: "{{$ucm_config_suffix}}"
-      files:
+      files: &audio_files
         # ALSA module config
         - source: "common/audio/alsa-module-config/alsa-hatch.conf"
           destination: "/etc/modprobe.d/alsa-hatch.conf"
@@ -117,6 +120,28 @@ base-config: &base_config
         # Board specific settings
         - source: "{{$cras_dsp_config}}/audio/{{$cras-source-config-dir}}/board.ini"
           destination: "{{$cras_root}}/{{cras-config-dir}}/board.ini"
+
+audio_files: &audio_files_with_sound_card_init
+  # ALSA module config
+  - source: "common/audio/alsa-module-config/alsa-hatch.conf"
+    destination: "/etc/modprobe.d/alsa-hatch.conf"
+  # ALSA UCM config
+  - source: "{{$ucm_src_root}}/audio/ucm-config/{{$ucm_name}}/{{$ucm_name}}.conf"
+    destination: "{{$ucm_root}}/{{$ucm_name}}/{{$ucm_name}}.conf"
+  - source: "{{$ucm_src_root}}/audio/ucm-config/{{$ucm_name}}/HiFi.conf"
+    destination: "{{$ucm_root}}/{{$ucm_name}}/HiFi.conf"
+  # CRAS card config (Volume Curve)
+  - source: "{{$cras_card_config}}/audio/{{$cras-source-config-dir}}/card_settings"
+    destination: "{{$cras_root}}/{{cras-config-dir}}/{{$alsa_card}}"
+  # EQ/DRC DSP config
+  - source: "{{$cras_dsp_config}}/audio/{{$cras-source-config-dir}}/dsp.ini"
+    destination: "{{$cras_root}}/{{cras-config-dir}}/dsp.ini"
+  # Board specific settings
+  - source: "{{$cras_dsp_config}}/audio/{{$cras-source-config-dir}}/board.ini"
+    destination: "{{$cras_root}}/{{cras-config-dir}}/board.ini"
+   # sound_card_init config
+  - source: "{{$cras_dsp_config}}/audio/{{$sound-card-init-config}}/{{$alsa_card_id}}.yaml"
+    destination: "{{$sound_card_init_root}}/{{$alsa_card_id}}.yaml"
 
 autobrightness: &autobrightness
   config-file:
@@ -370,6 +395,7 @@ chromeos:
     - $device-name: "nightfury"
       $fw-name: "Nightfury"
       $alsa_card: "sof-cml_max98390_da7219"
+      $alsa_card_id: "sofcmlmax98390d"
       $cras_dsp_config: "nightfury"
       $cras_card_config: "nightfury"
       $set-wifi-transmit-power-for-tablet-mode: "1"
@@ -380,7 +406,13 @@ chromeos:
         0.0 15 -1
       skus:
         - $sku-id: 1
-          config: *base_config
+          config:
+            <<: *base_config
+            audio:
+              <<: *audio
+              main:
+                <<: *audio_main
+                files: *audio_files_with_sound_card_init
     - $device-name: "unprovisioned_sushi"
       $fw-name: "Sushi"
       products:
