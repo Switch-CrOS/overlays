@@ -1,7 +1,7 @@
-From 3228a1c7b5405fc78bb6b58301e65eadd01e9c29 Mon Sep 17 00:00:00 2001
+From 2c6f56bf5051f26eef72c071004cb5f17d2c82ca Mon Sep 17 00:00:00 2001
 From: Tianshu Qiu <tian.shu.qiu@intel.com>
 Date: Wed, 15 Apr 2020 19:03:03 +0800
-Subject: [PATCH 1/4] CHROMIUM: media: intel-ipu6: Add IPU6 and IPU6SE drivers
+Subject: [PATCH] CHROMIUM: media: intel-ipu6: Add IPU6 and IPU6SE drivers
 
 This patch adds Intel IPU6 and IPU6SE drivers.
 
@@ -15,7 +15,7 @@ Signed-off-by: Bingbu Cao <bingbu.cao@intel.com>
  drivers/media/pci/Kconfig                     |    2 +-
  drivers/media/pci/intel/Kconfig               |   41 +
  drivers/media/pci/intel/Makefile              |    1 +
- drivers/media/pci/intel/ipu-bus.c             |  250 +++
+ drivers/media/pci/intel/ipu-bus.c             |  255 +++
  drivers/media/pci/intel/ipu-bus.h             |   67 +
  drivers/media/pci/intel/ipu-buttress.c        | 1569 +++++++++++++++
  drivers/media/pci/intel/ipu-buttress.h        |  131 ++
@@ -35,21 +35,21 @@ Signed-off-by: Bingbu Cao <bingbu.cao@intel.com>
  drivers/media/pci/intel/ipu-isys-csi2.c       |  663 +++++++
  drivers/media/pci/intel/ipu-isys-csi2.h       |  164 ++
  drivers/media/pci/intel/ipu-isys-media.h      |   77 +
- drivers/media/pci/intel/ipu-isys-queue.c      | 1258 ++++++++++++
- drivers/media/pci/intel/ipu-isys-queue.h      |  152 ++
+ drivers/media/pci/intel/ipu-isys-queue.c      | 1056 ++++++++++
+ drivers/media/pci/intel/ipu-isys-queue.h      |  142 ++
  drivers/media/pci/intel/ipu-isys-subdev.c     |  656 +++++++
  drivers/media/pci/intel/ipu-isys-subdev.h     |  153 ++
- drivers/media/pci/intel/ipu-isys-tpg.c        |  307 +++
+ drivers/media/pci/intel/ipu-isys-tpg.c        |  311 +++
  drivers/media/pci/intel/ipu-isys-tpg.h        |   99 +
- drivers/media/pci/intel/ipu-isys-video.c      | 1702 +++++++++++++++++
- drivers/media/pci/intel/ipu-isys-video.h      |  174 ++
- drivers/media/pci/intel/ipu-isys.c            | 1397 ++++++++++++++
+ drivers/media/pci/intel/ipu-isys-video.c      | 1703 +++++++++++++++++
+ drivers/media/pci/intel/ipu-isys-video.h      |  175 ++
+ drivers/media/pci/intel/ipu-isys.c            | 1399 ++++++++++++++
  drivers/media/pci/intel/ipu-isys.h            |  217 +++
  drivers/media/pci/intel/ipu-mmu.c             |  790 ++++++++
  drivers/media/pci/intel/ipu-mmu.h             |   69 +
  drivers/media/pci/intel/ipu-pdata.h           |  275 +++
  drivers/media/pci/intel/ipu-psys-compat32.c   |  227 +++
- drivers/media/pci/intel/ipu-psys.c            | 1610 ++++++++++++++++
+ drivers/media/pci/intel/ipu-psys.c            | 1603 ++++++++++++++++
  drivers/media/pci/intel/ipu-psys.h            |  217 +++
  drivers/media/pci/intel/ipu-trace.c           |  880 +++++++++
  drivers/media/pci/intel/ipu-trace.h           |  312 +++
@@ -67,8 +67,8 @@ Signed-off-by: Bingbu Cao <bingbu.cao@intel.com>
  drivers/media/pci/intel/ipu6/ipu6-isys-csi2.c |  505 +++++
  drivers/media/pci/intel/ipu6/ipu6-isys-csi2.h |   14 +
  drivers/media/pci/intel/ipu6/ipu6-isys-gpc.c  |  211 ++
- drivers/media/pci/intel/ipu6/ipu6-isys-phy.c  |  638 ++++++
- drivers/media/pci/intel/ipu6/ipu6-isys-phy.h  |  163 ++
+ drivers/media/pci/intel/ipu6/ipu6-isys-phy.c  |  650 +++++++
+ drivers/media/pci/intel/ipu6/ipu6-isys-phy.h  |  161 ++
  drivers/media/pci/intel/ipu6/ipu6-isys.c      |  311 +++
  .../media/pci/intel/ipu6/ipu6-l-scheduler.c   |  591 ++++++
  drivers/media/pci/intel/ipu6/ipu6-ppg.c       |  559 ++++++
@@ -77,10 +77,10 @@ Signed-off-by: Bingbu Cao <bingbu.cao@intel.com>
  drivers/media/pci/intel/ipu6/ipu6-psys.c      |  992 ++++++++++
  drivers/media/pci/intel/ipu6/ipu6-resources.c |  778 ++++++++
  drivers/media/pci/intel/ipu6/ipu6.c           |  390 ++++
- include/media/ipu-isys.h                      |   38 +
+ include/media/ipu-isys.h                      |   44 +
  include/uapi/linux/ipu-isys.h                 |   14 +
  include/uapi/linux/ipu-psys.h                 |  121 ++
- 68 files changed, 26502 insertions(+), 1 deletion(-)
+ 68 files changed, 26312 insertions(+), 1 deletion(-)
  create mode 100644 drivers/media/pci/intel/Kconfig
  create mode 100644 drivers/media/pci/intel/ipu-bus.c
  create mode 100644 drivers/media/pci/intel/ipu-bus.h
@@ -219,10 +219,10 @@ index 0b4236c4db49..356363dfe8e4 100644
 +obj-y	+= ipu6/
 diff --git a/drivers/media/pci/intel/ipu-bus.c b/drivers/media/pci/intel/ipu-bus.c
 new file mode 100644
-index 000000000000..b25afb688906
+index 000000000000..e4524898b586
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu-bus.c
-@@ -0,0 +1,250 @@
+@@ -0,0 +1,255 @@
 +// SPDX-License-Identifier: GPL-2.0
 +// Copyright (C) 2013 - 2020 Intel Corporation
 +
@@ -320,9 +320,14 @@ index 000000000000..b25afb688906
 +
 +	adev->adrv = adrv;
 +	if (adrv->probe) {
-+		ipu_buttress_power(&adev->dev, adev->ctrl, true);
-+		rval = adrv->probe(adev);
-+		ipu_buttress_power(&adev->dev, adev->ctrl, false);
++		pm_runtime_allow(&adev->dev);
++		pm_runtime_enable(&adev->dev);
++
++		rval = pm_runtime_get_sync(&adev->dev);
++		if (!rval) {
++			rval = adrv->probe(adev);
++			pm_runtime_put(&adev->dev);
++		}
 +	} else {
 +		rval = -ENODEV;
 +	}
@@ -7570,10 +7575,10 @@ index 000000000000..e00fe4e47f95
 +#endif /* IPU_ISYS_MEDIA_H */
 diff --git a/drivers/media/pci/intel/ipu-isys-queue.c b/drivers/media/pci/intel/ipu-isys-queue.c
 new file mode 100644
-index 000000000000..8ff92b43dd18
+index 000000000000..3855d91e1711
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu-isys-queue.c
-@@ -0,0 +1,1258 @@
+@@ -0,0 +1,1056 @@
 +// SPDX-License-Identifier: GPL-2.0
 +// Copyright (C) 2013 - 2019 Intel Corporation
 +
@@ -7681,23 +7686,10 @@ index 000000000000..8ff92b43dd18
 +{
 +	struct ipu_isys_queue *aq = vb2_queue_to_ipu_isys_queue(vb->vb2_queue);
 +	struct ipu_isys_video *av = ipu_isys_queue_to_video(aq);
-+	struct ipu_isys_buffer *ib = vb2_buffer_to_ipu_isys_buffer(vb);
-+	u32 request =
-+	    0;
 +	int rval;
 +
 +	if (av->isys->adev->isp->flr_done)
 +		return -EIO;
-+
-+	if (request) {
-+		ib->req = media_device_request_find(&av->isys->media_dev,
-+						    request);
-+		if (!ib->req) {
-+			dev_dbg(&av->isys->adev->dev,
-+				"can't find request %u\n", request);
-+			return -ENOENT;
-+		}
-+	}
 +
 +	rval = aq->buf_prepare(vb);
 +	return rval;
@@ -7707,32 +7699,10 @@ index 000000000000..8ff92b43dd18
 +{
 +	struct ipu_isys_queue *aq = vb2_queue_to_ipu_isys_queue(vb->vb2_queue);
 +	struct ipu_isys_video *av = ipu_isys_queue_to_video(aq);
-+	struct ipu_isys_buffer *ib = vb2_buffer_to_ipu_isys_buffer(vb);
 +
 +	dev_dbg(&av->isys->adev->dev, "buffer: %s: %s\n", av->vdev.name,
 +		__func__);
 +
-+	if (ib->req) {
-+		struct ipu_isys_request *ireq = to_ipu_isys_request(ib->req);
-+		unsigned long flags;
-+		bool done;
-+
-+		spin_lock_irqsave(&ireq->lock, flags);
-+		list_del(&ib->req_head);
-+		done = list_empty(&ireq->buffers);
-+		spin_unlock_irqrestore(&ireq->lock, flags);
-+		dev_dbg(&av->isys->adev->dev, "request %u complete %s\n",
-+			ib->req->id, done ? "true" : "false");
-+		if (done) {
-+			media_device_request_complete(&av->isys->media_dev,
-+						      ib->req);
-+			mutex_lock(&av->isys->stream_mutex);
-+			list_del(&ireq->head);
-+			mutex_unlock(&av->isys->stream_mutex);
-+		}
-+		media_device_request_put(ib->req);
-+		ib->req = NULL;
-+	}
 +}
 +
 +static void buf_cleanup(struct vb2_buffer *vb)
@@ -7928,7 +7898,6 @@ index 000000000000..8ff92b43dd18
 +			WARN_ON(1);
 +			goto error;
 +		}
-+		spin_unlock_irqrestore(&ip->short_packet_queue_lock, flags);
 +		bl->nbufs++;
 +	}
 +
@@ -8007,79 +7976,13 @@ index 000000000000..8ff92b43dd18
 +	}
 +}
 +
-+static void
-+ipu_isys_req_dispatch(struct media_device *mdev,
-+		      struct ipu_isys_request *ireq,
-+		      struct ipu_isys_pipeline *ip,
-+		      struct ipu_fw_isys_frame_buff_set_abi *set,
-+		      dma_addr_t dma_addr);
-+
-+struct ipu_isys_request *ipu_isys_next_queued_request(struct ipu_isys_pipeline
-+						      *ip)
-+{
-+	struct ipu_isys *isys =
-+	    container_of(ip, struct ipu_isys_video, ip)->isys;
-+	struct ipu_isys_request *ireq;
-+	struct ipu_isys_buffer *ib;
-+	unsigned long flags;
-+
-+	lockdep_assert_held(&isys->stream_mutex);
-+
-+	if (list_empty(&isys->requests)) {
-+		dev_dbg(&isys->adev->dev, "%s: no requests found\n", __func__);
-+		return NULL;
-+	}
-+
-+	list_for_each_entry_reverse(ireq, &isys->requests, head) {
-+		/* Does the request belong to this pipeline? */
-+		bool is_ours = false;
-+		bool is_others = false;
-+
-+		dev_dbg(&isys->adev->dev, "%s: checking request %u\n",
-+			__func__, ireq->req.id);
-+
-+		spin_lock_irqsave(&ireq->lock, flags);
-+		list_for_each_entry(ib, &ireq->buffers, req_head) {
-+			struct vb2_buffer *vb =
-+			    ipu_isys_buffer_to_vb2_buffer(ib);
-+			struct ipu_isys_queue *aq =
-+			    vb2_queue_to_ipu_isys_queue(vb->vb2_queue);
-+			struct ipu_isys_video *av = ipu_isys_queue_to_video(aq);
-+
-+			dev_dbg(&isys->adev->dev, "%s: buffer in vdev %s\n",
-+				__func__, av->vdev.name);
-+
-+			if (media_entity_enum_test(&ip->entity_enum,
-+						   &av->vdev.entity))
-+				is_ours = true;
-+			else
-+				is_others = true;
-+		}
-+		spin_unlock_irqrestore(&ireq->lock, flags);
-+
-+		dev_dbg(&isys->adev->dev, "%s: is%s ours, is%s others'\n",
-+			__func__, is_ours ? "" : "n't", is_others ? "" : "n't");
-+
-+		if (!is_ours || WARN_ON(is_others))
-+			continue;
-+
-+		list_del_init(&ireq->head);
-+
-+		return ireq;
-+	}
-+
-+	return NULL;
-+}
-+
 +/* Start streaming for real. The buffer list must be available. */
 +static int ipu_isys_stream_start(struct ipu_isys_pipeline *ip,
 +				 struct ipu_isys_buffer_list *bl, bool error)
 +{
 +	struct ipu_isys_video *pipe_av =
 +	    container_of(ip, struct ipu_isys_video, ip);
-+	struct media_device *mdev = &pipe_av->isys->media_dev;
 +	struct ipu_isys_buffer_list __bl;
-+	struct ipu_isys_request *ireq;
 +	int rval;
 +
 +	mutex_lock(&pipe_av->isys->stream_mutex);
@@ -8091,34 +7994,6 @@ index 000000000000..8ff92b43dd18
 +	}
 +
 +	ip->streaming = 1;
-+
-+	dev_dbg(&pipe_av->isys->adev->dev, "dispatching queued requests\n");
-+
-+	while ((ireq = ipu_isys_next_queued_request(ip))) {
-+		struct ipu_fw_isys_frame_buff_set_abi *set;
-+		struct isys_fw_msgs *msg;
-+
-+		msg = ipu_get_fw_msg_buf(ip);
-+		if (!msg) {
-+			mutex_unlock(&pipe_av->isys->stream_mutex);
-+			return -ENOMEM;
-+		}
-+
-+		set = to_frame_msg_buf(msg);
-+
-+		rval = ipu_isys_req_prepare(mdev, ireq, ip, set);
-+		if (rval) {
-+			mutex_unlock(&pipe_av->isys->stream_mutex);
-+			goto out_requeue;
-+		}
-+
-+		ipu_fw_isys_dump_frame_buff_set(&pipe_av->isys->adev->dev, set,
-+						ip->nr_output_pins);
-+		ipu_isys_req_dispatch(mdev, ireq, ip, set, to_dma_addr(msg));
-+	}
-+
-+	dev_dbg(&pipe_av->isys->adev->dev,
-+		"done dispatching queued requests\n");
 +
 +	mutex_unlock(&pipe_av->isys->stream_mutex);
 +
@@ -8717,78 +8592,6 @@ index 000000000000..8ff92b43dd18
 +	spin_unlock_irqrestore(&ip->short_packet_queue_lock, flags);
 +}
 +
-+int ipu_isys_req_prepare(struct media_device *mdev,
-+			 struct ipu_isys_request *ireq,
-+			 struct ipu_isys_pipeline *ip,
-+			 struct ipu_fw_isys_frame_buff_set_abi *set)
-+{
-+	struct ipu_isys *isys =
-+	    container_of(ip, struct ipu_isys_video, ip)->isys;
-+	struct media_device_request *req = &ireq->req;
-+	struct ipu_isys_buffer *ib;
-+	unsigned long flags;
-+
-+	dev_dbg(&isys->adev->dev, "preparing request %u\n", req->id);
-+
-+	set->send_irq_sof = 1;
-+	set->send_resp_sof = 1;
-+
-+	set->send_irq_eof = 0;
-+	set->send_resp_eof = 0;
-+	/*
-+	 * In tpg case, the stream start timeout if the capture ack irq
-+	 * disabled. So keep it active while starting the stream, then close
-+	 * it after the stream start succeed.
-+	 */
-+	if (ip->streaming)
-+		set->send_irq_capture_ack = 0;
-+	else
-+		set->send_irq_capture_ack = 1;
-+	set->send_irq_capture_done = 0;
-+
-+	spin_lock_irqsave(&ireq->lock, flags);
-+
-+	list_for_each_entry(ib, &ireq->buffers, req_head) {
-+		struct vb2_buffer *vb = ipu_isys_buffer_to_vb2_buffer(ib);
-+		struct ipu_isys_queue *aq =
-+		    vb2_queue_to_ipu_isys_queue(vb->vb2_queue);
-+
-+		if (aq->prepare_frame_buff_set)
-+			aq->prepare_frame_buff_set(vb);
-+
-+		if (aq->fill_frame_buff_set_pin)
-+			aq->fill_frame_buff_set_pin(vb, set);
-+
-+		spin_lock(&aq->lock);
-+		list_move(&ib->head, &aq->active);
-+		spin_unlock(&aq->lock);
-+	}
-+
-+	spin_unlock_irqrestore(&ireq->lock, flags);
-+
-+	return 0;
-+}
-+
-+static void
-+ipu_isys_req_dispatch(struct media_device *mdev,
-+		      struct ipu_isys_request *ireq,
-+		      struct ipu_isys_pipeline *ip,
-+		      struct ipu_fw_isys_frame_buff_set_abi *set,
-+		      dma_addr_t dma_addr)
-+{
-+	struct ipu_isys_video *pipe_av =
-+	    container_of(ip, struct ipu_isys_video, ip);
-+	int rval;
-+
-+	rval = ipu_fw_isys_complex_cmd(pipe_av->isys,
-+				       ip->stream_handle,
-+				       set, dma_addr, sizeof(*set),
-+				       IPU_FW_ISYS_SEND_TYPE_STREAM_CAPTURE);
-+	ipu_put_fw_mgs_buf(pipe_av->isys, (uintptr_t)set);
-+
-+	WARN_ON(rval);
-+}
-+
 +struct vb2_ops ipu_isys_queue_ops = {
 +	.queue_setup = queue_setup,
 +	.wait_prepare = ipu_isys_queue_unlock,
@@ -8834,10 +8637,10 @@ index 000000000000..8ff92b43dd18
 +}
 diff --git a/drivers/media/pci/intel/ipu-isys-queue.h b/drivers/media/pci/intel/ipu-isys-queue.h
 new file mode 100644
-index 000000000000..ce61fc0887aa
+index 000000000000..b3f796cca3f7
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu-isys-queue.h
-@@ -0,0 +1,152 @@
+@@ -0,0 +1,142 @@
 +/* SPDX-License-Identifier: GPL-2.0 */
 +/* Copyright (C) 2013 - 2018 Intel Corporation */
 +
@@ -8975,16 +8778,6 @@ index 000000000000..ce61fc0887aa
 +void
 +ipu_isys_queue_short_packet_ready(struct ipu_isys_pipeline *ip,
 +				  struct ipu_fw_isys_resp_info_abi *inf);
-+
-+void ipu_isys_req_free(struct media_device *mdev,
-+		       struct media_device_request *req);
-+struct media_device_request *ipu_isys_req_alloc(struct media_device *mdev);
-+int ipu_isys_req_prepare(struct media_device *mdev,
-+			 struct ipu_isys_request *ireq,
-+			 struct ipu_isys_pipeline *ip,
-+			 struct ipu_fw_isys_frame_buff_set_abi *set);
-+int ipu_isys_req_queue(struct media_device *mdev,
-+		       struct media_device_request *req);
 +
 +int ipu_isys_queue_init(struct ipu_isys_queue *aq);
 +void ipu_isys_queue_cleanup(struct ipu_isys_queue *aq);
@@ -9813,10 +9606,10 @@ index 000000000000..5cdc84b97096
 +#endif /* IPU_ISYS_SUBDEV_H */
 diff --git a/drivers/media/pci/intel/ipu-isys-tpg.c b/drivers/media/pci/intel/ipu-isys-tpg.c
 new file mode 100644
-index 000000000000..6fa9d21ade1a
+index 000000000000..49cbea4680ec
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu-isys-tpg.c
-@@ -0,0 +1,307 @@
+@@ -0,0 +1,311 @@
 +// SPDX-License-Identifier: GPL-2.0
 +// Copyright (C) 2013 - 2018 Intel Corporation
 +
@@ -9889,7 +9682,7 @@ index 000000000000..6fa9d21ade1a
 +
 +static s64 ipu_isys_tpg_rate(struct ipu_isys_tpg *tpg, unsigned int bpp)
 +{
-+	return MIPI_GEN_PPC * IPU_ISYS_FREQ;
++	return MIPI_GEN_PPC * IPU_ISYS_FREQ / bpp;
 +}
 +
 +static const char *const tpg_mode_items[] = {
@@ -9924,6 +9717,7 @@ index 000000000000..6fa9d21ade1a
 +{
 +	struct ipu_isys_tpg *tpg = to_ipu_isys_tpg(sd);
 +	int hblank;
++	u64 default_pixel_rate;
 +
 +	hblank = 1024;
 +
@@ -9935,12 +9729,15 @@ index 000000000000..6fa9d21ade1a
 +					&ipu_isys_tpg_ctrl_ops,
 +					V4L2_CID_VBLANK, 8, 65535, 1, 1024);
 +
++	default_pixel_rate = ipu_isys_tpg_rate(tpg, 8);
 +	tpg->pixel_rate = v4l2_ctrl_new_std(&tpg->asd.ctrl_handler,
 +					    &ipu_isys_tpg_ctrl_ops,
-+					    V4L2_CID_PIXEL_RATE, 0, 0, 1, 0);
-+
++					    V4L2_CID_PIXEL_RATE,
++					    default_pixel_rate,
++					    default_pixel_rate,
++					    1, default_pixel_rate);
 +	if (tpg->pixel_rate) {
-+		tpg->pixel_rate->cur.val = ipu_isys_tpg_rate(tpg, 8);
++		tpg->pixel_rate->cur.val = default_pixel_rate;
 +		tpg->pixel_rate->flags |= V4L2_CTRL_FLAG_READ_ONLY;
 +	}
 +
@@ -10231,12 +10028,12 @@ index 000000000000..90bed77182fd
 +#endif /* IPU_ISYS_TPG_H */
 diff --git a/drivers/media/pci/intel/ipu-isys-video.c b/drivers/media/pci/intel/ipu-isys-video.c
 new file mode 100644
-index 000000000000..2e3c259e2a47
+index 000000000000..cfeeba414e41
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu-isys-video.c
-@@ -0,0 +1,1702 @@
+@@ -0,0 +1,1703 @@
 +// SPDX-License-Identifier: GPL-2.0
-+// Copyright (C) 2013 - 2019 Intel Corporation
++// Copyright (C) 2013 - 2020 Intel Corporation
 +
 +#include <linux/delay.h>
 +#include <linux/firmware.h>
@@ -11137,7 +10934,6 @@ index 000000000000..2e3c259e2a47
 +	struct ipu_fw_isys_frame_buff_set_abi *buf = NULL;
 +	struct ipu_isys_queue *aq;
 +	struct ipu_isys_video *isl_av = NULL;
-+	struct ipu_isys_request *ireq = NULL;
 +	struct v4l2_subdev_format source_fmt = { 0 };
 +	struct v4l2_subdev *be_sd = NULL;
 +	struct media_pad *source_pad = media_entity_remote_pad(&av->pad);
@@ -11274,9 +11070,7 @@ index 000000000000..2e3c259e2a47
 +	}
 +	dev_dbg(dev, "start stream: open complete\n");
 +
-+	ireq = ipu_isys_next_queued_request(ip);
-+
-+	if (bl || ireq) {
++	if (bl) {
 +		msg = ipu_get_fw_msg_buf(ip);
 +		if (!msg) {
 +			rval = -ENOMEM;
@@ -11289,16 +11083,11 @@ index 000000000000..2e3c259e2a47
 +		ipu_isys_buffer_to_fw_frame_buff(buf, ip, bl);
 +		ipu_isys_buffer_list_queue(bl,
 +					   IPU_ISYS_BUFFER_LIST_FL_ACTIVE, 0);
-+	} else if (ireq) {
-+		rval = ipu_isys_req_prepare(&av->isys->media_dev,
-+					    ireq, ip, buf);
-+		if (rval)
-+			goto out_put_stream_opened;
 +	}
 +
 +	reinit_completion(&ip->stream_start_completion);
 +
-+	if (bl || ireq) {
++	if (bl) {
 +		send_type = IPU_FW_ISYS_SEND_TYPE_STREAM_START_AND_CAPTURE;
 +		ipu_fw_isys_dump_frame_buff_set(dev, buf,
 +						stream_cfg->nof_output_pins);
@@ -11559,6 +11348,7 @@ index 000000000000..2e3c259e2a47
 +	struct v4l2_subdev *esd;
 +	struct v4l2_ctrl *ctrl;
 +	struct ipu_isys_pipeline *ip;
++	struct isys_iwake_watermark *iwake_watermark;
 +	struct v4l2_control vb = { .id = V4L2_CID_VBLANK, .value = 0 };
 +	struct v4l2_control hb = { .id = V4L2_CID_HBLANK, .value = 0 };
 +
@@ -11594,6 +11384,14 @@ index 000000000000..2e3c259e2a47
 +	av->watermark->vblank = vblank;
 +	av->watermark->hblank = hblank;
 +	av->watermark->pixel_rate = pixel_rate;
++	if (!pixel_rate) {
++		iwake_watermark = av->isys->iwake_watermark;
++		mutex_lock(&iwake_watermark->mutex);
++		iwake_watermark->force_iwake_disable = true;
++		mutex_unlock(&iwake_watermark->mutex);
++		WARN(1, "%s Invalid pixel_rate, disable iwake.\n", __func__);
++		return;
++	}
 +}
 +
 +static void calculate_stream_datarate(struct video_stream_watermark *watermark)
@@ -11603,7 +11401,7 @@ index 000000000000..2e3c259e2a47
 +
 +	pixels_per_line = watermark->width + watermark->hblank;
 +	line_time_ns =
-+		pixels_per_line * 1000 * (watermark->pixel_rate / 1000000);
++		pixels_per_line * 1000 / (watermark->pixel_rate / 1000000);
 +	/* 2 bytes per Bayer pixel */
 +	bytes_per_line = watermark->width << 1;
 +	/* bytes to IS pixel buffer pages */
@@ -11939,10 +11737,10 @@ index 000000000000..2e3c259e2a47
 +}
 diff --git a/drivers/media/pci/intel/ipu-isys-video.h b/drivers/media/pci/intel/ipu-isys-video.h
 new file mode 100644
-index 000000000000..3a8e71fbf436
+index 000000000000..93c5583517af
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu-isys-video.h
-@@ -0,0 +1,174 @@
+@@ -0,0 +1,175 @@
 +/* SPDX-License-Identifier: GPL-2.0 */
 +/* Copyright (C) 2013 - 2019 Intel Corporation */
 +
@@ -12068,6 +11866,7 @@ index 000000000000..3a8e71fbf436
 +	unsigned int line_footer_length;	/* bits */
 +
 +	struct video_stream_watermark *watermark;
++
 +	const struct ipu_isys_pixelformat *
 +		(*try_fmt_vid_mplane)(struct ipu_isys_video *av,
 +				      struct v4l2_pix_format_mplane *mpix);
@@ -12119,10 +11918,10 @@ index 000000000000..3a8e71fbf436
 +#endif /* IPU_ISYS_VIDEO_H */
 diff --git a/drivers/media/pci/intel/ipu-isys.c b/drivers/media/pci/intel/ipu-isys.c
 new file mode 100644
-index 000000000000..df6d905722ed
+index 000000000000..4e73f9393129
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu-isys.c
-@@ -0,0 +1,1397 @@
+@@ -0,0 +1,1399 @@
 +// SPDX-License-Identifier: GPL-2.0
 +// Copyright (C) 2013 - 2020 Intel Corporation
 +
@@ -12467,6 +12266,7 @@ index 000000000000..df6d905722ed
 +		return;
 +	}
 +
++	fc.value = readl(isp->base + IPU_BUTTRESS_FABIC_CONTROL);
 +	fc.bits.ltr_val = ltr_val;
 +	fc.bits.ltr_scale = ltr_scale;
 +	fc.bits.did_val = did_val;
@@ -12506,14 +12306,15 @@ index 000000000000..df6d905722ed
 +	u64 threshold_bytes;
 +	u64 isys_pb_datarate_mbs = 0;
 +
-+	if (!iwake_watermark->debugfs_enable_iwake) {
++	mutex_lock(&iwake_watermark->mutex);
++	if (iwake_watermark->force_iwake_disable) {
 +		set_iwake_ltrdid(isys, 0, 0, LTR_IWAKE_OFF);
 +		set_iwake_register(isys, GDA_IRQ_CRITICAL_THRESHOLD_INDEX,
 +				   CRITICAL_THRESHOLD_IWAKE_DISABLE);
++		mutex_unlock(&iwake_watermark->mutex);
 +		return;
 +	}
 +
-+	mutex_lock(&iwake_watermark->mutex);
 +	if (list_empty(&iwake_watermark->video_list)) {
 +		isys_pb_datarate_mbs = 0;
 +	} else {
@@ -12529,8 +12330,10 @@ index 000000000000..df6d905722ed
 +
 +	if (!isys_pb_datarate_mbs) {
 +		set_iwake_ltrdid(isys, 0, 0, LTR_IWAKE_OFF);
++		mutex_lock(&iwake_watermark->mutex);
 +		set_iwake_register(isys, GDA_IRQ_CRITICAL_THRESHOLD_INDEX,
 +				   CRITICAL_THRESHOLD_IWAKE_DISABLE);
++		mutex_unlock(&iwake_watermark->mutex);
 +	} else {
 +		/* should enable iwake by default according to FW */
 +		enable_iwake(isys, true);
@@ -12564,12 +12367,14 @@ index 000000000000..df6d905722ed
 +			(IS_PIXEL_BUFFER_PAGES - iwake_threshold) / 2;
 +
 +		set_iwake_ltrdid(isys, ltr, did, LTR_IWAKE_ON);
++		mutex_lock(&iwake_watermark->mutex);
 +		set_iwake_register(isys,
 +				   GDA_IWAKE_THRESHOLD_INDEX, iwake_threshold);
 +
 +		set_iwake_register(isys,
 +				   GDA_IRQ_CRITICAL_THRESHOLD_INDEX,
 +				   iwake_critical_threshold);
++		mutex_unlock(&iwake_watermark->mutex);
 +
 +		writel(VAL_PKGC_PMON_CFG_RESET,
 +		       isys->adev->isp->base + REG_PKGC_PMON_CFG);
@@ -12592,11 +12397,11 @@ index 000000000000..df6d905722ed
 +	INIT_LIST_HEAD(&iwake_watermark->video_list);
 +	mutex_init(&iwake_watermark->mutex);
 +
-+	iwake_watermark->debugfs_enable_iwake = true;
 +	iwake_watermark->ltrdid.lut_ltr.value = 0;
 +	isys->iwake_watermark = iwake_watermark;
 +	iwake_watermark->isys = isys;
 +	iwake_watermark->iwake_enabled = false;
++	iwake_watermark->force_iwake_disable = false;
 +	return 0;
 +}
 +
@@ -12613,11 +12418,6 @@ index 000000000000..df6d905722ed
 +	isys->iwake_watermark = NULL;
 +	return 0;
 +}
-+
-+struct sensor_async_subdev {
-+	struct v4l2_async_subdev asd;
-+	struct ipu_isys_csi2_config csi2;
-+};
 +
 +/* The .bound() notifier callback when a match is found */
 +static int isys_notifier_bound(struct v4l2_async_notifier *notifier,
@@ -12779,10 +12579,8 @@ index 000000000000..df6d905722ed
 +	unsigned long flags;
 +	int ret;
 +
-+	if (!isys) {
-+		WARN(1, "%s called before probing. skipping.\n", __func__);
++	if (!isys)
 +		return 0;
-+	}
 +
 +	ret = ipu_mmu_hw_init(adev->mmu);
 +	if (ret)
@@ -12817,10 +12615,8 @@ index 000000000000..df6d905722ed
 +	struct ipu_isys *isys = ipu_bus_get_drvdata(adev);
 +	unsigned long flags;
 +
-+	if (!isys) {
-+		WARN(1, "%s called before probing. skipping.\n", __func__);
++	if (!isys)
 +		return 0;
-+	}
 +
 +	spin_lock_irqsave(&isys->power_lock, flags);
 +	isys->power = 0;
@@ -12946,19 +12742,29 @@ index 000000000000..df6d905722ed
 +static int isys_iwake_control_get(void *data, u64 *val)
 +{
 +	struct ipu_isys *isys = data;
++	struct isys_iwake_watermark *iwake_watermark = isys->iwake_watermark;
 +
-+	*val = isys->iwake_watermark->debugfs_enable_iwake;
++	mutex_lock(&iwake_watermark->mutex);
++	*val = isys->iwake_watermark->force_iwake_disable;
++	mutex_unlock(&iwake_watermark->mutex);
 +	return 0;
 +}
 +
 +static int isys_iwake_control_set(void *data, u64 val)
 +{
 +	struct ipu_isys *isys = data;
++	struct isys_iwake_watermark *iwake_watermark;
 +
 +	if (val != !!val)
 +		return -EINVAL;
++	/* If stream is open, refuse to set iwake */
++	if (isys->stream_opened)
++		return -EBUSY;
 +
-+	isys->iwake_watermark->debugfs_enable_iwake = !!val;
++	iwake_watermark = isys->iwake_watermark;
++	mutex_lock(&iwake_watermark->mutex);
++	isys->iwake_watermark->force_iwake_disable = !!val;
++	mutex_unlock(&iwake_watermark->mutex);
 +	return 0;
 +}
 +
@@ -12987,7 +12793,7 @@ index 000000000000..df6d905722ed
 +	if (IS_ERR(file))
 +		goto err;
 +
-+	file = debugfs_create_file("iwake_control", 0600,
++	file = debugfs_create_file("iwake_disable", 0600,
 +				   dir, isys, &isys_iwake_control_fops);
 +	if (IS_ERR(file))
 +		goto err;
@@ -13188,9 +12994,6 @@ index 000000000000..df6d905722ed
 +	pm_qos_add_request(&isys->pm_qos, PM_QOS_CPU_DMA_LATENCY,
 +			   PM_QOS_DEFAULT_VALUE);
 +	alloc_fw_msg_bufs(isys, 20);
-+
-+	pm_runtime_allow(&adev->dev);
-+	pm_runtime_enable(&adev->dev);
 +
 +	rval = isys_register_devices(isys);
 +	if (rval)
@@ -13406,11 +13209,9 @@ index 000000000000..df6d905722ed
 +
 +		break;
 +	case IPU_FW_ISYS_RESP_TYPE_FRAME_SOF:
-+#if defined(CONFIG_VIDEO_INTEL_IPU6) || defined(CONFIG_VIDEO_INTEL_IPU6SE)
 +		if (pipe->csi2)
 +			ipu_isys_csi2_sof_event(pipe->csi2);
 +
-+#endif /* CONFIG_VIDEO_INTEL_IPU_MOCK || CONFIG_VIDEO_INTEL_IPU6 */
 +#ifdef IPU_TPG_FRAME_SYNC
 +		if (pipe->tpg)
 +			ipu_isys_tpg_sof_event(pipe->tpg);
@@ -13522,7 +13323,7 @@ index 000000000000..df6d905722ed
 +MODULE_DESCRIPTION("Intel ipu input system driver");
 diff --git a/drivers/media/pci/intel/ipu-isys.h b/drivers/media/pci/intel/ipu-isys.h
 new file mode 100644
-index 000000000000..16a7115318b8
+index 000000000000..c0aa1ecd2dd6
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu-isys.h
 @@ -0,0 +1,217 @@
@@ -13615,7 +13416,7 @@ index 000000000000..16a7115318b8
 +
 +struct isys_iwake_watermark {
 +	bool iwake_enabled;
-+	bool debugfs_enable_iwake;
++	bool force_iwake_disable;
 +	u32 iwake_threshold;
 +	u64 isys_pixelbuffer_datarate;
 +	struct ltr_did ltrdid;
@@ -15130,10 +14931,10 @@ index 000000000000..cc73827abbe8
 +EXPORT_SYMBOL_GPL(ipu_psys_compat_ioctl32);
 diff --git a/drivers/media/pci/intel/ipu-psys.c b/drivers/media/pci/intel/ipu-psys.c
 new file mode 100644
-index 000000000000..7727fdc93433
+index 000000000000..c87e09faa71e
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu-psys.c
-@@ -0,0 +1,1610 @@
+@@ -0,0 +1,1603 @@
 +// SPDX-License-Identifier: GPL-2.0
 +// Copyright (C) 2013 - 2020 Intel Corporation
 +
@@ -16005,10 +15806,8 @@ index 000000000000..7727fdc93433
 +	unsigned long flags;
 +	int retval;
 +
-+	if (!psys) {
-+		WARN(1, "%s called before probing. skipping.\n", __func__);
++	if (!psys)
 +		return 0;
-+	}
 +
 +	retval = ipu_mmu_hw_init(adev->mmu);
 +	if (retval)
@@ -16068,10 +15867,8 @@ index 000000000000..7727fdc93433
 +	unsigned long flags;
 +	int rval;
 +
-+	if (!psys) {
-+		WARN(1, "%s called before probing. skipping.\n", __func__);
++	if (!psys)
 +		return 0;
-+	}
 +
 +	if (!psys->power)
 +		return 0;
@@ -16528,9 +16325,6 @@ index 000000000000..7727fdc93433
 +	/* Add the hw stepping information to caps */
 +	strlcpy(psys->caps.dev_model, IPU_MEDIA_DEV_MODEL_NAME,
 +		sizeof(psys->caps.dev_model));
-+
-+	pm_runtime_allow(&adev->dev);
-+	pm_runtime_enable(&adev->dev);
 +
 +	pm_runtime_set_autosuspend_delay(&psys->adev->dev,
 +					 IPU_PSYS_AUTOSUSPEND_DELAY);
@@ -21404,7 +21198,7 @@ index 000000000000..7fcbbde2632e
 +}
 diff --git a/drivers/media/pci/intel/ipu6/ipu6-isys-csi2.c b/drivers/media/pci/intel/ipu6/ipu6-isys-csi2.c
 new file mode 100644
-index 000000000000..ab31dccd8f3f
+index 000000000000..ff65c7645e67
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu6/ipu6-isys-csi2.c
 @@ -0,0 +1,505 @@
@@ -21502,10 +21296,10 @@ index 000000000000..ab31dccd8f3f
 +		dev_dbg(&isys->adev->dev, "phy reset assert\n");
 +		ipu6_isys_phy_reset(isys, phy_id, 0);
 +		dev_dbg(&isys->adev->dev, "phy common init\n");
-+		ipu6_isys_phy_common_init(isys, cfg);
++		ipu6_isys_phy_common_init(isys);
 +
 +		dev_dbg(&isys->adev->dev, "phy config\n");
-+		ret = ipu6_isys_phy_config(isys, cfg);
++		ret = ipu6_isys_phy_config(isys);
 +		if (ret)
 +			return ret;
 +
@@ -22152,10 +21946,10 @@ index 000000000000..30e7a474f0f4
 +#endif
 diff --git a/drivers/media/pci/intel/ipu6/ipu6-isys-phy.c b/drivers/media/pci/intel/ipu6/ipu6-isys-phy.c
 new file mode 100644
-index 000000000000..c70e0a25161d
+index 000000000000..389d2986bbda
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu6/ipu6-isys-phy.c
-@@ -0,0 +1,638 @@
+@@ -0,0 +1,650 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
 + * Copyright (C) 2013 - 2019 Intel Corporation
@@ -22163,6 +21957,7 @@ index 000000000000..c70e0a25161d
 +
 +#include <linux/delay.h>
 +#include <media/ipu-isys.h>
++#include <media/v4l2-device.h>
 +#include "ipu.h"
 +#include "ipu-buttress.h"
 +#include "ipu-isys.h"
@@ -22593,6 +22388,7 @@ index 000000000000..c70e0a25161d
 +	}
 +
 +	dev_warn(&isys->adev->dev, "PHY%d powerup ack timeout", phy_id);
++
 +	return -ETIMEDOUT;
 +}
 +
@@ -22611,6 +22407,7 @@ index 000000000000..c70e0a25161d
 +	}
 +
 +	dev_warn(&isys->adev->dev, "PHY %d poweroff ack timeout.\n", phy_id);
++
 +	return -ETIMEDOUT;
 +}
 +
@@ -22688,23 +22485,26 @@ index 000000000000..c70e0a25161d
 +	return -ETIMEDOUT;
 +}
 +
-+int ipu6_isys_phy_common_init(struct ipu_isys *isys,
-+			      struct ipu_isys_csi2_config *cfg)
++int ipu6_isys_phy_common_init(struct ipu_isys *isys)
 +{
-+	unsigned int port, phy_id;
++	unsigned int phy_id;
 +	void __iomem *phy_base;
 +	struct ipu_bus_device *adev = to_ipu_bus_device(&isys->adev->dev);
 +	struct ipu_device *isp = adev->isp;
 +	void __iomem *isp_base = isp->base;
++	struct v4l2_async_subdev *asd;
++	struct sensor_async_subdev *s_asd;
 +	unsigned int i;
 +
-+	port = cfg->port;
-+	phy_id = port / 4;
-+	phy_base = isp_base + IPU6_ISYS_PHY_BASE(phy_id);
++	list_for_each_entry(asd, &isys->notifier.asd_list, asd_list) {
++		s_asd = container_of(asd, struct sensor_async_subdev, asd);
++		phy_id = s_asd->csi2.port / 4;
++		phy_base = isp_base + IPU6_ISYS_PHY_BASE(phy_id);
 +
-+	for (i = 0 ; i < ARRAY_SIZE(common_init_regs); i++) {
-+		writel(common_init_regs[i].val,
-+		       phy_base + common_init_regs[i].reg);
++		for (i = 0 ; i < ARRAY_SIZE(common_init_regs); i++) {
++			writel(common_init_regs[i].val,
++				phy_base + common_init_regs[i].reg);
++		}
 +	}
 +
 +	return 0;
@@ -22712,7 +22512,7 @@ index 000000000000..c70e0a25161d
 +
 +static int ipu6_isys_driver_port_to_phy_port(struct ipu_isys_csi2_config *cfg)
 +{
-+	int port;
++	int phy_port;
 +	int ret;
 +
 +	if (!(cfg->nlanes == 4 || cfg->nlanes == 2 || cfg->nlanes == 1))
@@ -22720,56 +22520,62 @@ index 000000000000..c70e0a25161d
 +
 +	/* B,F -> C0 A,E -> C1 C,G -> C2 D,H -> C4 */
 +	/* normalize driver port number */
-+	port = cfg->port % 4;
++	phy_port = cfg->port % 4;
 +
 +	/* swap port number only for A and B */
-+	if (port == 0)
-+		port = 1;
-+	else if (port == 1)
-+		port = 0;
++	if (phy_port == 0)
++		phy_port = 1;
++	else if (phy_port == 1)
++		phy_port = 0;
 +
-+	ret = port;
++	ret = phy_port;
 +
 +	/* check validity per lane configuration */
 +	if ((cfg->nlanes == 4) &&
-+		 !(port == 0 || port == 2))
++		 !(phy_port == 0 || phy_port == 2))
 +		ret = -EINVAL;
 +	else if ((cfg->nlanes == 2 || cfg->nlanes == 1) &&
-+		 !(port >= 0 && port <= 3))
++		 !(phy_port >= 0 && phy_port <= 3))
 +		ret = -EINVAL;
 +
 +	return ret;
 +}
 +
-+int ipu6_isys_phy_config(struct ipu_isys *isys,
-+			 struct ipu_isys_csi2_config *cfg)
++int ipu6_isys_phy_config(struct ipu_isys *isys)
 +{
-+	int port;
-+	unsigned int phy_id;
++	unsigned int phy_port, phy_id;
 +	void __iomem *phy_base;
 +	struct ipu_bus_device *adev = to_ipu_bus_device(&isys->adev->dev);
 +	struct ipu_device *isp = adev->isp;
 +	void __iomem *isp_base = isp->base;
 +	struct phy_reg **phy_config_regs;
++	struct v4l2_async_subdev *asd;
++	struct sensor_async_subdev *s_asd;
++	struct ipu_isys_csi2_config cfg;
 +	int i;
 +
-+	port = ipu6_isys_driver_port_to_phy_port(cfg);
-+	if (port < 0) {
-+		dev_err(&isys->adev->dev, "invalid port %d for lane %d",
-+			cfg->port, cfg->nlanes);
-+		return -ENXIO;
-+	}
++	list_for_each_entry(asd, &isys->notifier.asd_list, asd_list) {
++		s_asd = container_of(asd, struct sensor_async_subdev, asd);
++		cfg.port = s_asd->csi2.port;
++		cfg.nlanes = s_asd->csi2.nlanes;
++		phy_port = ipu6_isys_driver_port_to_phy_port(&cfg);
++		if (phy_port < 0) {
++			dev_err(&isys->adev->dev, "invalid port %d for lane %d",
++				cfg.port, cfg.nlanes);
++			return -ENXIO;
++		}
 +
-+	phy_id = cfg->port / 4;
-+	phy_base = isp_base + IPU6_ISYS_PHY_BASE(phy_id);
-+	dev_dbg(&isys->adev->dev, "port%d PHY%u lanes %u\n",
-+		port, phy_id, cfg->nlanes);
++		phy_id = cfg.port / 4;
++		phy_base = isp_base + IPU6_ISYS_PHY_BASE(phy_id);
++		dev_dbg(&isys->adev->dev, "port%d PHY%u lanes %u\n",
++			cfg.port, phy_id, cfg.nlanes);
 +
-+	phy_config_regs = config_regs[cfg->nlanes/2];
-+
-+	for (i = 0; phy_config_regs[port][i].reg; i++) {
-+		writel(phy_config_regs[port][i].val,
-+		       phy_base + phy_config_regs[port][i].reg);
++		phy_config_regs = config_regs[cfg.nlanes/2];
++		cfg.port = phy_port;
++		for (i = 0; phy_config_regs[cfg.port][i].reg; i++) {
++			writel(phy_config_regs[cfg.port][i].val,
++				phy_base + phy_config_regs[cfg.port][i].reg);
++		}
 +	}
 +
 +	return 0;
@@ -22796,10 +22602,10 @@ index 000000000000..c70e0a25161d
 +}
 diff --git a/drivers/media/pci/intel/ipu6/ipu6-isys-phy.h b/drivers/media/pci/intel/ipu6/ipu6-isys-phy.h
 new file mode 100644
-index 000000000000..b98096753f73
+index 000000000000..cdded695daa2
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu6/ipu6-isys-phy.h
-@@ -0,0 +1,163 @@
+@@ -0,0 +1,161 @@
 +/* SPDX-License-Identifier: GPL-2.0 */
 +/*
 + * Copyright (C) 2013 - 2019 Intel Corporation
@@ -22956,12 +22762,10 @@ index 000000000000..b98096753f73
 +int ipu6_isys_phy_reset(struct ipu_isys *isys, unsigned int phy_id,
 +			bool assert);
 +int ipu6_isys_phy_ready(struct ipu_isys *isys, unsigned int phy_id);
-+int ipu6_isys_phy_common_init(struct ipu_isys *isys,
-+			      struct ipu_isys_csi2_config *cfg);
++int ipu6_isys_phy_common_init(struct ipu_isys *isys);
 +int ipu6_isys_phy_ppi_tinit_done(struct ipu_isys *isys,
 +				 struct ipu_isys_csi2_config *cfg);
-+int ipu6_isys_phy_config(struct ipu_isys *isys,
-+			 struct ipu_isys_csi2_config *cfg);
++int ipu6_isys_phy_config(struct ipu_isys *isys);
 +#endif
 diff --git a/drivers/media/pci/intel/ipu6/ipu6-isys.c b/drivers/media/pci/intel/ipu6/ipu6-isys.c
 new file mode 100644
@@ -26877,10 +26681,10 @@ index 000000000000..2b141b933d1d
 +}
 diff --git a/include/media/ipu-isys.h b/include/media/ipu-isys.h
 new file mode 100644
-index 000000000000..4d081a35757f
+index 000000000000..47006b435e0a
 --- /dev/null
 +++ b/include/media/ipu-isys.h
-@@ -0,0 +1,38 @@
+@@ -0,0 +1,44 @@
 +/* SPDX-License-Identifier: GPL-2.0 */
 +/* Copyright (C) 2014 - 2018 Intel Corporation */
 +
@@ -26889,6 +26693,7 @@ index 000000000000..4d081a35757f
 +
 +#include <linux/i2c.h>
 +#include <linux/clkdev.h>
++#include <media/v4l2-async.h>
 +
 +#define IPU_ISYS_MAX_CSI2_LANES		4
 +
@@ -26916,6 +26721,11 @@ index 000000000000..4d081a35757f
 +struct ipu_isys_subdev_pdata {
 +	struct ipu_isys_subdev_info **subdevs;
 +	struct ipu_isys_clk_mapping *clk_map;
++};
++
++struct sensor_async_subdev {
++	struct v4l2_async_subdev asd;
++	struct ipu_isys_csi2_config csi2;
 +};
 +
 +#endif /* MEDIA_IPU_H */
