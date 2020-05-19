@@ -37,6 +37,15 @@ src_install() {
 	# Install platform specific config files for power_manager.
 	insinto "/usr/share/power_manager/board_specific"
 	doins "${FILESDIR}"/powerd_prefs/*
+	# The 4.19 kernel uses a new non linear backlight scale.
+	# To match the battery default backlight level we change the
+	# target % using file internal_backlight_no_als_battery_brightness.
+	# Note the intention is to have the same resulting real world brightness.
+	# b/149870759
+	# This should be moved to the main value after kernelnext is merged back.
+	if use hana-kernelnext; then
+		doins "${FILESDIR}"/powerd_prefs_kernelnext/*
+	fi
 
 	# Install rules to enable WoWLAN on startup.
 	udev_dorules "${FILESDIR}/99-mwifiex-wowlan.rules"
