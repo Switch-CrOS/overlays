@@ -32,6 +32,12 @@ src_install() {
 		doappid "{E3B85B97-1771-4440-9691-D1983FEF60EB}" "CHROMEBOOK"
 	fi
 
+	# Install platform-specific internal keyboard keymap. It should probaly
+	# go into /lib/udev/hwdb.d but unfortunately udevadm on 64 bit boxes
+	# does not check that directory (it wants to look in /lib64/udev).
+	insinto "${EPREFIX}/etc/udev/hwdb.d"
+	doins "${FILESDIR}/81-sarien-keyboard.hwdb"
+
 	# Intall a rule tagging keyboard as having updated layout
 	udev_dorules "${FILESDIR}/81-sarien-keyboard.rules"
 
