@@ -4,27 +4,32 @@
 #
 
 on early-boot
-    # Mount SchedTune controller and create tuning groups.
-    mkdir /dev/stune
-    mount cgroup none /dev/stune schedtune
-    mkdir /dev/stune/foreground
-    chown system system /dev/stune
-    chown system system /dev/stune/foreground
-    chown system system /dev/stune/tasks
-    chown system system /dev/stune/foreground/tasks
-    chmod 0664 /dev/stune/tasks
-    chmod 0664 /dev/stune/foreground/tasks
+    # TODO: the below doesnt' do anything because trogdor is running
+    # on kernel 5.4 and we don't have schedtune.  It's comment out until
+    # we know what to do.  See https://crbug.com/1041117#c45
 
-    # Foreground tasks get schedule boost
-    write /dev/stune/foreground/schedtune.boost 20
-    write /dev/stune/foreground/schedtune.prefer_idle 1
+    # # Mount SchedTune controller and create tuning groups.
+    # mkdir /dev/stune
+    # mount cgroup none /dev/stune schedtune
+    # mkdir /dev/stune/foreground
+    # chown system system /dev/stune
+    # chown system system /dev/stune/foreground
+    # chown system system /dev/stune/tasks
+    # chown system system /dev/stune/foreground/tasks
+    # chmod 0664 /dev/stune/tasks
+    # chmod 0664 /dev/stune/foreground/tasks
+
+    # # Foreground tasks get schedule boost
+    # write /dev/stune/foreground/schedtune.boost 20
+    # write /dev/stune/foreground/schedtune.prefer_idle 1
 
 on property:sys.boot_completed=1
-    # Adjust cpusets in container to better split work between
-    # little and big cores.
+    # Allow foreground apps to have all CPUs.  Restrict background apps to
+    # little cores to keep them more power efficient.  NOTE: this is a bit of
+    # a stopgap solution for now.  It would be better if we told the kernel
+    # a high-level goal for tasks and it could figure out the rest.
     write /dev/cpuset/foreground/cpus 0-7
-    write /dev/cpuset/foreground/boost/cpus 6-7
-    write /dev/cpuset/background/cpus 0
+    write /dev/cpuset/background/cpus 0-5
     write /dev/cpuset/system-background/cpus 0-5
-    write /dev/cpuset/restricted/cpus 0
+    write /dev/cpuset/restricted/cpus 0-5
     write /dev/cpuset/top-app/cpus 0-7
