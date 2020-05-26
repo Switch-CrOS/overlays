@@ -36,4 +36,10 @@ src_install() {
 	insinto /etc/init
 	doins "${FILESDIR}/udev-trigger-codec.conf"
 	udev_dorules "${FILESDIR}/50-media.rules"
+
+	# Install modem FSG verification init script
+	insinto "/etc/init"
+	doins "${FILESDIR}/verify_fsg.conf"
+	exeinto /usr/share/cros/init
+	doexe "${FILESDIR}/verify_fsg.sh"
 }
