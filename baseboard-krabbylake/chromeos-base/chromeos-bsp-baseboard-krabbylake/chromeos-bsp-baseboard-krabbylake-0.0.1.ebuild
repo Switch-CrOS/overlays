@@ -14,9 +14,10 @@ IUSE=""
 S="${WORKDIR}"
 
 # Add dependencies on other ebuilds from within this board overlay
-DEPEND=""
-
-RDEPEND="${DEPEND}"
+RDEPEND="
+	chromeos-base/chromeos-disk-firmware-baseboard-krabbylake
+"
+DEPEND="${RDEPEND}"
 
 src_install() {
 	# Install platform specific config files for power_manager.
