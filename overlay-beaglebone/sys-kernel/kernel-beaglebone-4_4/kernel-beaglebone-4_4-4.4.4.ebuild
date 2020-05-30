@@ -1,7 +1,7 @@
 # Copyright (c) 2016 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=4
+EAPI=7
 
 CROS_WORKON_BLACKLIST="1"
 CROS_WORKON_INCREMENTAL_BUILD="0"
@@ -24,10 +24,7 @@ LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="-* arm"
 
-DEPEND="!sys-kernel/chromeos-kernel-next
-		!sys-kernel/chromeos-kernel
-		!sys-kernel/kernel-beaglebone
-"
+DEPEND=""
 RDEPEND="${DEPEND}"
 
 CHROMEOS_KERNEL_CONFIG="${FILESDIR}/config-${PV}"
