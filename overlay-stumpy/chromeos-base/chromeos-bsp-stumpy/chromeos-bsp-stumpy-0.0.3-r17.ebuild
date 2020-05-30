@@ -1,1 +1,0 @@
-chromeos-bsp-stumpy-0.0.3.ebuild

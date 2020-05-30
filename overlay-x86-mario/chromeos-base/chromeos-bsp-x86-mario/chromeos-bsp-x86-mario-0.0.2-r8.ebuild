@@ -1,1 +1,0 @@
-chromeos-bsp-x86-mario-0.0.2.ebuild

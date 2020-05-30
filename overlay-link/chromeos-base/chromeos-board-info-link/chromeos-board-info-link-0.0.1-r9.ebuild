@@ -1,1 +1,0 @@
-chromeos-board-info-link-0.0.1.ebuild

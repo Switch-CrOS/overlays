@@ -1,1 +1,0 @@
-chromeos-touch-config-clapper-0.0.1.ebuild

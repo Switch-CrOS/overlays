@@ -1,1 +1,0 @@
-chromeos-bsp-puppy-0.0.1.ebuild

@@ -1,1 +1,0 @@
-chromeos-bsp-leon-0.0.2.ebuild

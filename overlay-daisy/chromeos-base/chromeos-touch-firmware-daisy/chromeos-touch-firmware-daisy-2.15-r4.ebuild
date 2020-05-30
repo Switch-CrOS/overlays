@@ -1,1 +1,0 @@
-chromeos-touch-firmware-daisy-2.15.ebuild
