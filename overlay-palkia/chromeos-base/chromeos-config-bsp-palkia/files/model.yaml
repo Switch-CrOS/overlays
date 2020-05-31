@@ -59,33 +59,57 @@ base-config: &base_config
     allow-ambient-eq: "{{$allow-ambient-eq}}"
     $wake-on-dp: "1"
     wake-on-dp: "{{$wake-on-dp}}"
-  audio:
-    main:
-      $cras_root: "/etc/cras"
-      $ucm_root: "/usr/share/alsa/ucm"
-      # Variables to be overridden by chromeos/devices/... For example,
-      # to add a volume curve specific for Kohaku:
-      # 1. Add chromeos-base/chromeos-bsp-hatch/files/kohaku/cras-config/card_settings
+  audio: &audio
+    main: &audio_main
+      # Variables to be overridden by chromeos/devices/... For example:
+      # To add a volume curve specific for Kohaku:
+      # 1. Add chromeos-base/chromeos-bsp-hatch/files/kohaku/audio/cras-config/card_settings
       # 2. Add chromeos:
       #          devices:
       #            - $device-name: "kohaku"
       #              $cras_card_config: "{{$device-name}}"
+      # To add two ucm config files for two specific Akemi skus:
+      # 1. Add .../files/akemi/audio/ucm-config/sof-sof_rt5682.akemi1/sof-sof_rt5682.akemi1.conf
+      #        .../files/akemi/audio/ucm-config/sof-sof_rt5682.akemi1/HiFi.conf
+      #        .../files/akemi/audio/ucm-config/sof-sof_rt5682.akemi2/sof-sof_rt5682.akemi2.conf
+      #        .../files/akemi/audio/ucm-config/sof-sof_rt5682.akemi2/HiFi.conf
+      # 2. Add chromeos:
+      #          devices:
+      #            - $device-name: "akemi"
+      #              $ucm_src_root: "{{$device-name}}"
+      #              skus:
+      #                - $sku-id: 1
+      #                  $ucm_config_suffix: "akemi1"
+      #                  config: *base_config
+      #                - $sku-id: 2
+      #                  $ucm_config_suffix: "akemi2"
+      #                  config: *base_config
       $alsa_card: "sof-sof_rt5682"
+      $alsa_card_id: "sof-sof_rt5682"
       $cras_card_config: "common"
       $cras_dsp_config: "common"
+      $ucm_src_root: "common"
+      $ucm_config_suffix: "base"
       $sub_cras_config: ""
+      # Variables used to generate file paths. Do not override.
+      $cras_root: "/etc/cras"
+      $sound_card_init_root: "/etc/sound_card_init"
+      $ucm_root: "/usr/share/alsa/ucm"
+      $ucm_name: "{{$alsa_card}}.{{$ucm_config_suffix}}"
       $cras-source-config-dir: "cras-config{{$sub_cras_config}}"
-      # Variables passed to adhd/init/cras.sh for starting CRAS
+      $sound-card-init-config: "sound-card-init-config"
+      # Variables passed to adhd/init/cras.sh for starting CRAS. Do not override.
       cras-config-dir: "{{$device-name}}{{$sub_cras_config}}"
-      files:
+      ucm-suffix: "{{$ucm_config_suffix}}"
+      files: &audio_files
         # ALSA module config
         - source: "common/audio/alsa-module-config/alsa-hatch.conf"
           destination: "/etc/modprobe.d/alsa-hatch.conf"
         # ALSA UCM config
-        - source: "common/audio/ucm-config/{{$alsa_card}}/{{$alsa_card}}.conf"
-          destination: "{{$ucm_root}}/{{$alsa_card}}/{{$alsa_card}}.conf"
-        - source: "common/audio/ucm-config/{{$alsa_card}}/HiFi.conf"
-          destination: "{{$ucm_root}}/{{$alsa_card}}/HiFi.conf"
+        - source: "{{$ucm_src_root}}/audio/ucm-config/{{$ucm_name}}/{{$ucm_name}}.conf"
+          destination: "{{$ucm_root}}/{{$ucm_name}}/{{$ucm_name}}.conf"
+        - source: "{{$ucm_src_root}}/audio/ucm-config/{{$ucm_name}}/HiFi.conf"
+          destination: "{{$ucm_root}}/{{$ucm_name}}/HiFi.conf"
         # CRAS card config (Volume Curve)
         - source: "{{$cras_card_config}}/audio/{{$cras-source-config-dir}}/card_settings"
           destination: "{{$cras_root}}/{{cras-config-dir}}/{{$alsa_card}}"
