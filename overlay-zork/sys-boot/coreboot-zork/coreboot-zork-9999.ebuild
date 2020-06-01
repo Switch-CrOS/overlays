@@ -49,13 +49,14 @@ REQUIRED_USE="?? ( seabios u-boot )"
 
 RDEPEND=""
 DEPEND="
+	!!sys-boot/coreboot
 	mtc? ( sys-boot/mtc:= )
 	virtual/coreboot-private-files
 	bmpblk? ( sys-boot/chromeos-bmpblk:= )
 	intel_mrc? ( x86? ( sys-boot/chromeos-mrc:= )
 		amd64? ( sys-boot/chromeos-mrc:= ) )
 	chipset_stoneyridge? ( sys-boot/amd-firmware:= )
-	chipset_picasso? ( sys-boot/amd-picasso-fsp:= )
+	chipset_picasso? ( >=sys-boot/amd-picasso-fsp-0.0.2:= )
 	qca-framework? ( sys-boot/qca-framework:= )
 	seabios? ( sys-boot/chromeos-seabios:= )
 	u-boot? ( sys-boot/u-boot:= )
