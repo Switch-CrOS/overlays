@@ -1,1 +1,0 @@
-chromeos-bsp-3.5.ebuild

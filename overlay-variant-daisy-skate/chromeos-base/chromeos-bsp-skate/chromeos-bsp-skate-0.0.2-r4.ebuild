@@ -1,1 +1,0 @@
-chromeos-bsp-skate-0.0.2.ebuild
