@@ -8,15 +8,12 @@ repos and model.yaml will be deleted from [overlay-dedede](https://chromium.goog
 and [overlay-dedede-private](https://chrome-internal.googlesource.com/chromeos/overlays/overlay-dedede-private).
 A few resources to get started:
 
-*   [Starlark language guide](https://docs.bazel.build/versions/master/skylark/language.html)
+*   [Starlark language guide](https://docs.bazel.build/versions/master/skylark/language.html): A quick introduction guide to Starlark.
 *   [chromiumos/config README](https://chromium.googlesource.com/chromiumos/config/+/refs/heads/master/README.md):
     Steps for partners and Googlers to check out their repos and contribute
     changes.
 *   [fake test data project](https://chromium.googlesource.com/chromiumos/config/+/refs/heads/master/test/project/fake/fake):
     Working example of the new config ecosystem.
-*   [go/cros-boxster-site](https://goto.google.com/cros-boxster-site) (internal only): Project goals, timelines, and documentation.
-*   [go/cros-boxster](https://goto.google.com/cros-boxster) (internal only): Design document with project overview and motivation.
-*   [go/cros-boxster-](https://goto.google.com/cros-boxster-) (internal only): Dashboards and query examples over project data.
 
 Changes will be made in the following repos:
 

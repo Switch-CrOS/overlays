@@ -42,11 +42,6 @@ A few benefits:
     and diffing.
 *   Improved analytics on hardware and software characteristics.
 
-Please read the [project site (internal only)](http://go/cros-boxster-site) and
-[design document (internal only)](http://go/cros-boxster) for more background.
-See the [dashboard (internal only)](http://go/cros-boxster-) for analytics and
-query examples.
-
 **Will I need to change my ChromeOS platform code?**
 
 No. For the time being, the protobuf payloads will be translated backwards into
