@@ -6,8 +6,8 @@
 # VERSION=REVBUMP-0.0.59
 
 EAPI=7
-CROS_WORKON_COMMIT=("b09d9a0f4e006f0b14b01ffb1367bedb56b93608" "cc52800db495d0638d217984c8f28b4f1f487301" "948c09b66690d4c04e3910d1a0afcef617119c75" "dcfc2275a7b7c195a7afb657e9829b6bd1b86538" "e096a83255073a996e26d878433a190d7fa36931" "b7d5b2d6a6dd05874d86ee900ff441d261f9034c")
-CROS_WORKON_TREE=("361ba5f397c20a0247759dc1794232803f53861a" "edc38485ad4fae9fb3fd2a1cdb1662f66cdec66d" "4afd80d199029457b5986995d0c31941af7d4a33" "fbbfb9f9e007e3a61924efc4ddbd8be6b245ef21" "3acb0f0d3598785d79eab58993e05236139d30ab" "c0433b88f972fa26dded401be022c1c026cd644e")
+CROS_WORKON_COMMIT=("a30203a7665666f59cad132cc3ee38efab597a0b" "cc52800db495d0638d217984c8f28b4f1f487301" "948c09b66690d4c04e3910d1a0afcef617119c75" "dcfc2275a7b7c195a7afb657e9829b6bd1b86538" "e096a83255073a996e26d878433a190d7fa36931" "b7d5b2d6a6dd05874d86ee900ff441d261f9034c")
+CROS_WORKON_TREE=("6ba4e5ec4c73934061d2c1f524b9a3e5e0f49043" "edc38485ad4fae9fb3fd2a1cdb1662f66cdec66d" "4afd80d199029457b5986995d0c31941af7d4a33" "fbbfb9f9e007e3a61924efc4ddbd8be6b245ef21" "3acb0f0d3598785d79eab58993e05236139d30ab" "c0433b88f972fa26dded401be022c1c026cd644e")
 CROS_WORKON_PROJECT=(
 	"chromiumos/third_party/coreboot"
 	"chromiumos/third_party/arm-trusted-firmware"
@@ -51,13 +51,14 @@ REQUIRED_USE="?? ( seabios u-boot )"
 
 RDEPEND=""
 DEPEND="
+	!!sys-boot/coreboot
 	mtc? ( sys-boot/mtc:= )
 	virtual/coreboot-private-files
 	bmpblk? ( sys-boot/chromeos-bmpblk:= )
 	intel_mrc? ( x86? ( sys-boot/chromeos-mrc:= )
 		amd64? ( sys-boot/chromeos-mrc:= ) )
 	chipset_stoneyridge? ( sys-boot/amd-firmware:= )
-	chipset_picasso? ( sys-boot/amd-picasso-fsp:= )
+	chipset_picasso? ( >=sys-boot/amd-picasso-fsp-0.0.2:= )
 	qca-framework? ( sys-boot/qca-framework:= )
 	seabios? ( sys-boot/chromeos-seabios:= )
 	u-boot? ( sys-boot/u-boot:= )
