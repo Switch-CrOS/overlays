@@ -12,6 +12,7 @@ LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="-* amd64 x86"
 S="${WORKDIR}"
+IUSE="volteer-kernelnext"
 
 # Add dependencies on other ebuilds from within this board overlay
 RDEPEND="
@@ -27,7 +28,11 @@ DEPEND="
 "
 
 src_install() {
-	doappid "{77BE25D7-AFB8-4E3C-A7D2-1FACE1B186E3}" "REFERENCE"
+	if use volteer-kernelnext; then
+		doappid "{716105F8-A2C3-11EA-A044-33E3EAAD1A23}" "REFERENCE"
+	else
+		doappid "{77BE25D7-AFB8-4E3C-A7D2-1FACE1B186E3}" "REFERENCE"
+	fi
 
 	unibuild_install_audio_files
 }
