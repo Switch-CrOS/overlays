@@ -25,10 +25,6 @@ DEPEND="${RDEPEND}"
 src_install() {
 	doappid "{50F3C95B-CA5B-4AF8-87A2-8CD19588BD12}" "CHROMEBOOK"
 
-	# Install Bluetooth ID override
-	insinto "/etc/bluetooth"
-	doins "${FILESDIR}/main.conf"
-
 	# Install a rule tagging keyboard as internal
 	udev_dorules "${FILESDIR}/91-hammer-keyboard.rules"
 

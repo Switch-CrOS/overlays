@@ -27,9 +27,6 @@ DEPEND="
 src_install() {
 	doappid "{B02960B4-54E0-42B7-92DC-F430A3DBDEFB}" "CHROMEBOOK"
 
-	# Install Bluetooth ID override.
-	unibuild_install_bluetooth_files
-
 	# Install audio config files
 	# unibuild_install_audio_files (TODO: add this to config later).
 	local audio_config_dir="${FILESDIR}/audio-config"

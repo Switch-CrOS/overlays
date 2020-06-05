@@ -27,8 +27,4 @@ src_install() {
 
 	# Install audio config
 	unibuild_install_audio_files
-
-	# Install Bluetooth ID override
-	insinto "/etc/bluetooth"
-	doins "${FILESDIR}/main.conf"
 }
