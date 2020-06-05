@@ -49,8 +49,4 @@ src_install() {
 		local audio_config_dir="${FILESDIR}/audio-config"
 	fi
 	install_audio_configs caroline "${audio_config_dir}"
-
-	# Install Bluetooth ID override.
-	insinto "/etc/bluetooth"
-	doins "${FILESDIR}/main.conf"
 }

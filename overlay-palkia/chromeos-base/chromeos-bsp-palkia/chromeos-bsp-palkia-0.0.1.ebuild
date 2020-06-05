@@ -29,9 +29,5 @@ src_install() {
 
 	unibuild_install_audio_files
 
-	# Install Bluetooth ID override
-	insinto /etc/bluetooth
-	doins "${FILESDIR}"/main.conf
-
 	unibuild_install_autobrightness_files
 }

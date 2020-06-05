@@ -19,10 +19,6 @@ S=${WORKDIR}
 src_install() {
 	doappid "{8DE953B3-4BBC-455D-9626-62A55CC9727C}" "CHROMEBOX" # veyron-fievel
 
-	# Install Bluetooth ID override.
-	insinto "/etc/bluetooth/"
-	doins "${FILESDIR}/main.conf"
-
 	# Install audio configs.
 	local audio_config_dir="${FILESDIR}/audio-config"
 	install_audio_configs veyron_fievel "${audio_config_dir}"

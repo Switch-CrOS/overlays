@@ -41,10 +41,6 @@ src_install() {
 	insinto "/lib/firmware"
 	doins "${FILESDIR}"/rt5677_elf_vad
 
-	# Install Bluetooth ID Override
-	insinto "/etc/bluetooth"
-	doins "${FILESDIR}"/main.conf
-
 	# Install audio config files
 	local audio_config_dir="${FILESDIR}/audio-config"
 	install_audio_configs samus "${audio_config_dir}"

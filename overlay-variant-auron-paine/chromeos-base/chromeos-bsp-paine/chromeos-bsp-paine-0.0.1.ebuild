@@ -24,10 +24,6 @@ DEPEND="${RDEPEND}"
 src_install() {
 	doappid "{0AA3F9E1-A088-9252-50B8-5A1345D09AEB}" "CHROMEBOOK"
 
-	# Install Bluetooth ID override.
-	insinto "/etc/bluetooth"
-	doins "${FILESDIR}/main.conf"
-
 	# Install audio config files
 	local audio_config_dir="${FILESDIR}/audio-config"
 	install_audio_configs auron_paine "${audio_config_dir}"

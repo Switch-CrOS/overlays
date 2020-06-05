@@ -39,10 +39,6 @@ src_install() {
 	exeinto "/opt/google/touch/scripts"
 	doexe "${FILESDIR}"/get_board_specific_wacom_hwid.sh
 
-	# Install Bluetooth ID override.
-	insinto "/etc/bluetooth"
-	doins "${FILESDIR}/main.conf"
-
 	# Install udev rules.
 	udev_dorules "${FILESDIR}"/udev-rules/*.rules
 }

@@ -28,9 +28,6 @@ src_install() {
 
 	unibuild_install_audio_files
 
-	insinto "/etc/bluetooth"
-	doins "${FILESDIR}/common/bluetooth/main.conf"
-
 	# Install udev rules
 	udev_dorules "${FILESDIR}"/udev/*.rules
 }

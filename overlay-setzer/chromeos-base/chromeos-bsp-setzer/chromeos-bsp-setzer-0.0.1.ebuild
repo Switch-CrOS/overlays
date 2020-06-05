@@ -36,10 +36,6 @@ src_install() {
 	fi
 	install_audio_configs setzer "${audio_config_dir}"
 
-	# Install Bluetooth ID override.
-	insinto "/etc/bluetooth"
-	doins "${FILESDIR}/main.conf"
-
         exeinto /usr/share/cros
 	doexe "${FILESDIR}"/oemdata.sh
 }

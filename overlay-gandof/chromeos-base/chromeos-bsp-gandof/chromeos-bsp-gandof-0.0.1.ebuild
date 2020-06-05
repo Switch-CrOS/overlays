@@ -28,10 +28,6 @@ src_install() {
 	insinto "/usr/share/power_manager/board_specific"
 	doins "${FILESDIR}"/powerd_prefs/*
 
-	# Install Bluetooth ID override.
-	insinto "/etc/bluetooth"
-	doins "${FILESDIR}/main.conf"
-
 	#Install audio config files
 	local audio_config_dir="${FILESDIR}/audio-config"
 	install_audio_configs gandof "${audio_config_dir}"

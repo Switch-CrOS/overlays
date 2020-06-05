@@ -28,10 +28,6 @@ src_install() {
 	insinto "/usr/share/power_manager/board_specific"
 	doins "${FILESDIR}"/powerd_prefs/*
 
-	# Install Bluetooth ID override.
-	insinto "/etc/bluetooth"
-	doins "${FILESDIR}/main.conf"
-
 	# Install udev rules for proximity sensor.
 	udev_dorules "${FILESDIR}"/udev/*.rules
 }

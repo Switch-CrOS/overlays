@@ -28,8 +28,5 @@ src_install() {
 	unibuild_install_audio_files
 	unibuild_install_thermal_files
 
-	insinto "/etc/bluetooth"
-	doins "${FILESDIR}/common/bluetooth/main.conf"
-
 	udev_dorules "${FILESDIR}/99-chromeos-rammus-usb-charge-mode.rules"
 }

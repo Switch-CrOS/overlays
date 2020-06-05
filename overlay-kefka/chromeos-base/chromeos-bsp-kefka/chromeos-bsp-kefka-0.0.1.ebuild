@@ -35,10 +35,6 @@ src_install() {
 	local audio_config_dir="${FILESDIR}/audio-config"
 	install_audio_configs kefka "${audio_config_dir}"
 
-	# Install Bluetooth ID override.
-	insinto "/etc/bluetooth"
-	doins "${FILESDIR}/main.conf"
-
 	# Install udev rules.
 	udev_dorules "${FILESDIR}"/udev-rules/*.rules
 }

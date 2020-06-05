@@ -19,10 +19,6 @@ S=${WORKDIR}
 src_install() {
 	doappid "{D35424B0-18B3-8134-D22F-840F039499BE}" "CHROMEBOOK" # nyan-blaze
 
-	# Install Bluetooth ID override.
-	insinto "/etc/bluetooth"
-	doins "${FILESDIR}/main.conf"
-
 	# Install platform-specific config files for power manager
 	insinto "/usr/share/power_manager/board_specific"
 	doins "${FILESDIR}"/powerd_prefs/*

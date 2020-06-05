@@ -19,10 +19,6 @@ S=${WORKDIR}
 src_install() {
 	doappid "{2A52A861-EDBF-5268-5DD4-9C85E5BE2419}" "CHROMEBASE" # nyan-kitty
 
-	# Install Bluetooth ID override.
-	insinto "/etc/bluetooth"
-	doins "${FILESDIR}/main.conf"
-
 	# Install audio configs
 	local audio_config_dir="${FILESDIR}/audio-config"
 	install_audio_configs nyan_kitty "${audio_config_dir}"

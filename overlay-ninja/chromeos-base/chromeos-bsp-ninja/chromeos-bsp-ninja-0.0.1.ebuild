@@ -21,10 +21,6 @@ S="${WORKDIR}"
 src_install() {
 	doappid "{555B868F-306A-3E26-6687-FC081968D43A}" "CHROMEBOX"
 
-	# Install Bluetooth ID override.
-	insinto "/etc/bluetooth"
-	doins "${FILESDIR}/main.conf"
-
 	# Install platform-specific internal keyboard keymap.
 	# It should probably go into /lib/udev/hwdb.d but
 	# unfortunately udevadm on 64 dev boxes does not check

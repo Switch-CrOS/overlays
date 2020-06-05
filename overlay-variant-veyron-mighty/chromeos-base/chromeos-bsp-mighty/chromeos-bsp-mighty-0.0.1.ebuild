@@ -20,10 +20,6 @@ S=${WORKDIR}
 src_install() {
 	doappid "{53EF63C4-236D-75A0-D9AE-A6BBB686AC98}" "CHROMEBOOK" # veyron-mighty
 
-	# Install Bluetooth ID override.
-	insinto "/etc/bluetooth"
-	doins "${FILESDIR}/main.conf"
-
 	# Install audio-config files
 	local audio_config_dir="${FILESDIR}/audio-config"
 	install_audio_configs veyron_mighty "${audio_config_dir}"

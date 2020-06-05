@@ -19,10 +19,6 @@ S=${WORKDIR}
 src_install() {
 	doappid "{549D848C-2674-F41D-AE75-E163F8612099}" "CHROMEBASE" # veyron-tiger
 
-	# Install Bluetooth ID override.
-	insinto "/etc/bluetooth/"
-	doins "${FILESDIR}/main.conf"
-
 	# Install audio-config files
 	local audio_config_dir="${FILESDIR}/audio-config"
 	install_audio_configs veyron_tiger "${audio_config_dir}"
