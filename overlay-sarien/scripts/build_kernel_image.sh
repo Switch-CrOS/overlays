@@ -7,14 +7,18 @@
 modify_kernel_command_line() {
  { # Might be helpful to preserve ramoops in extreme circumstances
   echo "ramoops.ecc=1"
-  
+
   # Enable S0ix logging using GSMI
   echo "gsmi.s0ix_logging_enable=1"
-  quirks="2cb7:0007:k"
 
   # Check for S0ix failures and show warnings on failures
   echo "intel_pmc_core.warn_on_s0ix_failures=1"
+
+  quirks="2cb7:0007:k"
   # Aggregate and export
   echo "usbcore.quirks=${quirks}"
+
+  # Disable ucsi_acpi driver
+  echo "modprobe.blacklist=ucsi_acpi"
  } >> "$1"
 }
