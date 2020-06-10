@@ -215,6 +215,9 @@ src_prepare() {
 			# Invalid mount units shouldn't result in leaked units.
 			# Fixes b/152632012, from https://github.com/systemd/systemd/pull/10980.
 			"${FILESDIR}"/239-mount-don-t-propagate-errors-from-mount_setup_unit-f.patch
+			# Cherry-pick of upstream commit:
+			# https://github.com/systemd/systemd/commit/700805f6c546f2adb79059614f3747f7b5474325
+			"${FILESDIR}"/242-meson-drop-misplaced-Wl-undefined-argument.patch
 	)
 	default
 }
