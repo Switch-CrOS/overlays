@@ -75,6 +75,7 @@ LAKITU_RDEPEND="
 		sys-boot/shim
 	)
 	sys-fs/e2fsprogs
+	sys-fs/fuse
 	sys-fs/lvm2
 	sys-fs/xfsprogs
 	criu? ( sys-process/criu )
