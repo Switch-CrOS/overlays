@@ -19,16 +19,15 @@ index ce59a505f5a4c21ea288688b4d967e061274bc83..c1ccd8582eb2227155b34751b7002a51
  	dt-binding/memory/mt8183-larb-port.h for mt8183.
  
 diff --git a/README b/README
-index 669ac7c32292798644b21dbb5a0dc657125f444d..c213ba8cdc96ef76bf66c29e631b3f97fb73551c 100644
+index 669ac7c32292798644b21dbb5a0dc657125f444d..2b54c7b7ac4a105594a4f99bb85d0d83a09e37a8 100644
 --- a/README
 +++ b/README
-@@ -16,3 +16,7 @@ several of them using the Restructured Text markup notation.
+@@ -16,3 +16,6 @@ several of them using the Restructured Text markup notation.
  Please read the Documentation/process/changes.rst file, as it contains the
  requirements for building and running the kernel, and information about
  the problems which may result by upgrading your kernel.
 +
 +
-+drinkcat TOT
 +drinkcat TOT for coreboot
 diff --git a/arch/arm64/boot/dts/mediatek/Makefile b/arch/arm64/boot/dts/mediatek/Makefile
 index b45a45a565a1791f9508d6c936008c193507fc4d..cbcb4a36f316dcc04ec537102675a775a6a68071 100644
@@ -40,12 +39,359 @@ index b45a45a565a1791f9508d6c936008c193507fc4d..cbcb4a36f316dcc04ec537102675a775
  dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-evb.dtb
 +dtb-$(CONFIG_ARCH_MEDIATEK) += mt8192-asurada.dtb
 +dtb-$(CONFIG_ARCH_MEDIATEK) += mt8192-evb.dtb
+diff --git a/arch/arm64/boot/dts/mediatek/mt6359p.dtsi b/arch/arm64/boot/dts/mediatek/mt6359p.dtsi
+new file mode 100644
+index 0000000000000000000000000000000000000000..570bd21776418b774bfc083d23a1dcf3296ac53b
+--- /dev/null
++++ b/arch/arm64/boot/dts/mediatek/mt6359p.dtsi
+@@ -0,0 +1,341 @@
++// SPDX-License-Identifier: (GPL-2.0 OR MIT)
++/*
++ * Copyright (c) 2020 MediaTek Inc.
++ */
++
++&pwrap {
++	pmic: mt6359p {
++		compatible = "mediatek,mt6359p";
++		interrupt-controller;
++		#interrupt-cells = <2>;
++
++		mt6359pregulator: mt6359pregulator {
++			compatible = "mediatek,mt6359p-regulator";
++
++			mt6359p_vs1_reg: buck_vs1 {
++				regulator-name = "vs1";
++				regulator-min-microvolt = <800000>;
++				regulator-max-microvolt = <2200000>;
++				regulator-enable-ramp-delay = <0>;
++				regulator-always-on;
++			};
++
++			mt6359p_vgpu11_reg: buck_vgpu11 {
++				regulator-name = "vgpu11";
++				regulator-min-microvolt = <400000>;
++				regulator-max-microvolt = <1193750>;
++				regulator-ramp-delay = <5000>;
++				regulator-enable-ramp-delay = <200>;
++				regulator-allowed-modes = <0 1 2>;
++			};
++
++			mt6359p_vmodem_reg: buck_vmodem {
++				regulator-name = "vmodem";
++				regulator-min-microvolt = <400000>;
++				regulator-max-microvolt = <1100000>;
++				regulator-ramp-delay = <10760>;
++				regulator-enable-ramp-delay = <200>;
++			};
++
++			mt6359p_vpu_reg: buck_vpu {
++				regulator-name = "vpu";
++				regulator-min-microvolt = <400000>;
++				regulator-max-microvolt = <1193750>;
++				regulator-ramp-delay = <5000>;
++				regulator-enable-ramp-delay = <200>;
++				regulator-allowed-modes = <0 1 2>;
++			};
++
++			mt6359p_vcore_reg: buck_vcore {
++				regulator-name = "vcore";
++				regulator-min-microvolt = <506250>;
++				regulator-max-microvolt = <1300000>;
++				regulator-ramp-delay = <5000>;
++				regulator-enable-ramp-delay = <200>;
++				regulator-allowed-modes = <0 1 2>;
++			};
++
++			mt6359p_vs2_reg: buck_vs2 {
++				regulator-name = "vs2";
++				regulator-min-microvolt = <800000>;
++				regulator-max-microvolt = <1600000>;
++				regulator-enable-ramp-delay = <0>;
++				regulator-always-on;
++			};
++
++			mt6359p_vpa_reg: buck_vpa {
++				regulator-name = "vpa";
++				regulator-min-microvolt = <500000>;
++				regulator-max-microvolt = <3650000>;
++				regulator-enable-ramp-delay = <300>;
++			};
++
++			mt6359p_vproc2_reg: buck_vproc2 {
++				regulator-name = "vproc2";
++				regulator-min-microvolt = <400000>;
++				regulator-max-microvolt = <1193750>;
++				regulator-ramp-delay = <7500>;
++				regulator-enable-ramp-delay = <200>;
++				regulator-allowed-modes = <0 1 2>;
++			};
++
++			mt6359p_vproc1_reg: buck_vproc1 {
++				regulator-name = "vproc1";
++				regulator-min-microvolt = <400000>;
++				regulator-max-microvolt = <1193750>;
++				regulator-ramp-delay = <7500>;
++				regulator-enable-ramp-delay = <200>;
++				regulator-allowed-modes = <0 1 2>;
++			};
++
++			mt6359p_vcore_sshub_reg: buck_vcore_sshub {
++				regulator-name = "vcore_sshub";
++				regulator-min-microvolt = <400000>;
++				regulator-max-microvolt = <1193750>;
++			};
++
++			mt6359p_vaud18_reg: ldo_vaud18 {
++				regulator-name = "vaud18";
++				regulator-min-microvolt = <1800000>;
++				regulator-max-microvolt = <1800000>;
++				regulator-enable-ramp-delay = <240>;
++			};
++
++			mt6359p_vsim1_reg: ldo_vsim1 {
++				regulator-name = "vsim1";
++				regulator-min-microvolt = <1700000>;
++				regulator-max-microvolt = <3100000>;
++				regulator-enable-ramp-delay = <480>;
++			};
++
++			mt6359p_vibr_reg: ldo_vibr {
++				regulator-name = "vibr";
++				regulator-min-microvolt = <1200000>;
++				regulator-max-microvolt = <3300000>;
++				regulator-enable-ramp-delay = <240>;
++			};
++
++			mt6359p_vrf12_reg: ldo_vrf12 {
++				regulator-name = "vrf12";
++				regulator-min-microvolt = <1100000>;
++				regulator-max-microvolt = <1300000>;
++				regulator-enable-ramp-delay = <480>;
++			};
++
++			mt6359p_vusb_reg: ldo_vusb {
++				regulator-name = "vusb";
++				regulator-min-microvolt = <3000000>;
++				regulator-max-microvolt = <3000000>;
++				regulator-enable-ramp-delay = <960>;
++				regulator-always-on;
++			};
++
++			mt6359p_vsram_proc2_reg: ldo_vsram_proc2 {
++				regulator-name = "vsram_proc2";
++				regulator-min-microvolt = <500000>;
++				regulator-max-microvolt = <1293750>;
++				regulator-ramp-delay = <7500>;
++				regulator-enable-ramp-delay = <240>;
++				regulator-always-on;
++			};
++
++			mt6359p_vio18_reg: ldo_vio18 {
++				regulator-name = "vio18";
++				regulator-min-microvolt = <1700000>;
++				regulator-max-microvolt = <1900000>;
++				regulator-enable-ramp-delay = <960>;
++				regulator-always-on;
++			};
++
++			mt6359p_vcamio_reg: ldo_vcamio {
++				regulator-name = "vcamio";
++				regulator-min-microvolt = <1700000>;
++				regulator-max-microvolt = <1900000>;
++				regulator-enable-ramp-delay = <1920>;
++			};
++
++			mt6359p_vcn18_reg: ldo_vcn18 {
++				regulator-name = "vcn18";
++				regulator-min-microvolt = <1800000>;
++				regulator-max-microvolt = <1800000>;
++				regulator-enable-ramp-delay = <240>;
++			};
++
++			mt6359p_vfe28_reg: ldo_vfe28 {
++				regulator-name = "vfe28";
++				regulator-min-microvolt = <2800000>;
++				regulator-max-microvolt = <2800000>;
++				regulator-enable-ramp-delay = <120>;
++			};
++
++			mt6359p_vcn13_reg: ldo_vcn13 {
++				regulator-name = "vcn13";
++				regulator-min-microvolt = <900000>;
++				regulator-max-microvolt = <1300000>;
++				regulator-enable-ramp-delay = <240>;
++			};
++
++			mt6359p_vcn33_1_bt_reg: ldo_vcn33_1_bt {
++				regulator-name = "vcn33_1_bt";
++				regulator-min-microvolt = <2800000>;
++				regulator-max-microvolt = <3500000>;
++				regulator-enable-ramp-delay = <240>;
++			};
++
++			mt6359p_vcn33_1_wifi_reg: ldo_vcn33_1_wifi {
++				regulator-name = "vcn33_1_wifi";
++				regulator-min-microvolt = <2800000>;
++				regulator-max-microvolt = <3500000>;
++				regulator-enable-ramp-delay = <240>;
++			};
++
++			mt6359p_vaux18_reg: ldo_vaux18 {
++				regulator-name = "vaux18";
++				regulator-min-microvolt = <1800000>;
++				regulator-max-microvolt = <1800000>;
++				regulator-enable-ramp-delay = <240>;
++				regulator-always-on;
++			};
++
++			mt6359p_vsram_others_reg: ldo_vsram_others {
++				regulator-name = "vsram_others";
++				regulator-min-microvolt = <500000>;
++				regulator-max-microvolt = <1293750>;
++				regulator-ramp-delay = <5000>;
++				regulator-enable-ramp-delay = <240>;
++			};
++
++			mt6359p_vefuse_reg: ldo_vefuse {
++				regulator-name = "vefuse";
++				regulator-min-microvolt = <1700000>;
++				regulator-max-microvolt = <2000000>;
++				regulator-enable-ramp-delay = <240>;
++			};
++
++			mt6359p_vxo22_reg: ldo_vxo22 {
++				regulator-name = "vxo22";
++				regulator-min-microvolt = <1800000>;
++				regulator-max-microvolt = <2200000>;
++				regulator-enable-ramp-delay = <480>;
++				regulator-always-on;
++			};
++
++			mt6359p_vrfck_reg: ldo_vrfck {
++				regulator-name = "vrfck";
++				regulator-min-microvolt = <1240000>;
++				regulator-max-microvolt = <1600000>;
++				regulator-enable-ramp-delay = <480>;
++			};
++
++			mt6359p_vbif28_reg: ldo_vbif28 {
++				regulator-name = "vbif28";
++				regulator-min-microvolt = <2800000>;
++				regulator-max-microvolt = <2800000>;
++				regulator-enable-ramp-delay = <240>;
++			};
++
++			mt6359p_vio28_reg: ldo_vio28 {
++				regulator-name = "vio28";
++				regulator-min-microvolt = <2800000>;
++				regulator-max-microvolt = <3300000>;
++				regulator-enable-ramp-delay = <1920>;
++				regulator-always-on;
++			};
++
++			mt6359p_vemc_reg: ldo_vemc {
++				regulator-name = "vemc";
++				regulator-min-microvolt = <2500000>;
++				regulator-max-microvolt = <3300000>;
++				regulator-enable-ramp-delay = <240>;
++			};
++
++			mt6359p_vcn33_2_bt_reg: ldo_vcn33_2_bt {
++				regulator-name = "vcn33_2_bt";
++				regulator-min-microvolt = <2800000>;
++				regulator-max-microvolt = <3500000>;
++				regulator-enable-ramp-delay = <240>;
++			};
++
++			mt6359p_vcn33_2_wifi_reg: ldo_vcn33_2_wifi {
++				regulator-name = "vcn33_2_wifi";
++				regulator-min-microvolt = <2800000>;
++				regulator-max-microvolt = <3500000>;
++				regulator-enable-ramp-delay = <240>;
++			};
++
++			mt6359p_va12_reg: ldo_va12 {
++				regulator-name = "va12";
++				regulator-min-microvolt = <1200000>;
++				regulator-max-microvolt = <1300000>;
++				regulator-enable-ramp-delay = <960>;
++				regulator-always-on;
++			};
++
++			mt6359p_va09_reg: ldo_va09 {
++				regulator-name = "va09";
++				regulator-min-microvolt = <800000>;
++				regulator-max-microvolt = <1200000>;
++				regulator-enable-ramp-delay = <960>;
++			};
++
++			mt6359p_vrf18_reg: ldo_vrf18 {
++				regulator-name = "vrf18";
++				regulator-min-microvolt = <1700000>;
++				regulator-max-microvolt = <1810000>;
++				regulator-enable-ramp-delay = <240>;
++			};
++
++			mt6359p_vsram_md_reg: ldo_vsram_md {
++				regulator-name = "vsram_md";
++				regulator-min-microvolt = <500000>;
++				regulator-max-microvolt = <1293750>;
++				regulator-ramp-delay = <10760>;
++				regulator-enable-ramp-delay = <240>;
++			};
++
++			mt6359p_vufs_reg: ldo_vufs {
++				regulator-name = "vufs";
++				regulator-min-microvolt = <1700000>;
++				regulator-max-microvolt = <1900000>;
++				regulator-enable-ramp-delay = <1920>;
++			};
++
++			mt6359p_vm18_reg: ldo_vm18 {
++				regulator-name = "vm18";
++				regulator-min-microvolt = <1700000>;
++				regulator-max-microvolt = <1900000>;
++				regulator-enable-ramp-delay = <1920>;
++				regulator-always-on;
++			};
++
++			mt6359p_vbbck_reg: ldo_vbbck {
++				regulator-name = "vbbck";
++				regulator-min-microvolt = <1100000>;
++				regulator-max-microvolt = <1200000>;
++				regulator-enable-ramp-delay = <480>;
++			};
++
++			mt6359p_vsram_proc1_reg: ldo_vsram_proc1 {
++				regulator-name = "vsram_proc1";
++				regulator-min-microvolt = <500000>;
++				regulator-max-microvolt = <1293750>;
++				regulator-ramp-delay = <7500>;
++				regulator-enable-ramp-delay = <240>;
++				regulator-always-on;
++			};
++
++			mt6359p_vsim2_reg: ldo_vsim2 {
++				regulator-name = "vsim2";
++				regulator-min-microvolt = <1700000>;
++				regulator-max-microvolt = <3100000>;
++				regulator-enable-ramp-delay = <480>;
++			};
++
++			mt6359p_vsram_others_sshub_ldo: ldo_vsram_others_sshub {
++				regulator-name = "vsram_others_sshub";
++				regulator-min-microvolt = <500000>;
++				regulator-max-microvolt = <1193750>;
++			};
++		};
++	};
++};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8192-asurada.dts b/arch/arm64/boot/dts/mediatek/mt8192-asurada.dts
 new file mode 100755
-index 0000000000000000000000000000000000000000..8764002889745c13bce55eb0fcb2f128df6df994
+index 0000000000000000000000000000000000000000..cbc3385d36704d13c8410a9c7516f3bce56ef866
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt8192-asurada.dts
-@@ -0,0 +1,748 @@
+@@ -0,0 +1,953 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
 +/*
 + * Copyright (C) 2020 MediaTek Inc.
@@ -54,6 +400,7 @@ index 0000000000000000000000000000000000000000..8764002889745c13bce55eb0fcb2f128
 +/dts-v1/;
 +#include "mt8192.dtsi"
 +#include <dt-bindings/gpio/gpio.h>
++#include "mt6359p.dtsi"
 +
 +/ {
 +	model = "MediaTek Asurada rev1 board";
@@ -145,6 +492,18 @@ index 0000000000000000000000000000000000000000..8764002889745c13bce55eb0fcb2f128
 +		gpio = <&pio 129 GPIO_ACTIVE_HIGH>;
 +	};
 +
++	pp1000_dpbrdg: pp1000-dpbrdg {
++		compatible = "regulator-fixed";
++		regulator-name = "pp1000_dpbrdg";
++		pinctrl-names = "default";
++		pinctrl-0 = <&pp1000_dpbrdg_en>;
++
++		enable-active-high;
++		regulator-always-on;
++
++		gpio = <&pio 30 GPIO_ACTIVE_HIGH>;
++	};
++
 +	pp1800_mipibrdg: pp1800-mipibrdg {
 +		compatible = "regulator-fixed";
 +		regulator-name = "pp1800_mipibrdg";
@@ -155,6 +514,18 @@ index 0000000000000000000000000000000000000000..8764002889745c13bce55eb0fcb2f128
 +		regulator-always-on;
 +
 +		gpio = <&pio 128 GPIO_ACTIVE_HIGH>;
++	};
++
++	pp1800_dpbrdg: pp1800-dpbrdg {
++		compatible = "regulator-fixed";
++		regulator-name = "pp1800_dpbrdg";
++		pinctrl-names = "default";
++		pinctrl-0 = <&pp1800_dpbrdg_en>;
++
++		enable-active-high;
++		regulator-always-on;
++
++		gpio = <&pio 126 GPIO_ACTIVE_HIGH>;
 +	};
 +
 +	/* Probably useless, as we use pp3300_mipibrdg for panel power */
@@ -184,6 +555,18 @@ index 0000000000000000000000000000000000000000..8764002889745c13bce55eb0fcb2f128
 +		gpio = <&pio 127 GPIO_ACTIVE_HIGH>;
 +	};
 +
++	pp3300_dpbrdg: pp3300-dpbrdg {
++		compatible = "regulator-fixed";
++		regulator-name = "pp3300_dpbrdg";
++		pinctrl-names = "default";
++		pinctrl-0 = <&pp3300_dpbrdg_en>;
++
++		enable-active-high;
++		regulator-always-on;
++
++		gpio = <&pio 26 GPIO_ACTIVE_HIGH>;
++	};
++
 +	usb_vbus_5v0: fixedregulator@0 {
 +		compatible = "regulator-fixed";
 +		regulator-name = "vbus";
@@ -208,6 +591,7 @@ index 0000000000000000000000000000000000000000..8764002889745c13bce55eb0fcb2f128
 +
 +&gpu {
 +/*
++	supply-names = "mali","mali_sram";
 +	mali-supply = <&mt8192_vgpu_reg>;
 +	mali_sram-supply = <&mt8192_vsram_gpu_reg>;
 +*/
@@ -228,24 +612,26 @@ index 0000000000000000000000000000000000000000..8764002889745c13bce55eb0fcb2f128
 +&mmc0 {
 +	status = "okay";
 +	bus-width = <8>;
-+	max-frequency = <1000000>;
-+//	cap-mmc-highspeed;
++	max-frequency = <192000000>;
++	cap-mmc-highspeed;
++	mmc-ddr-1_8v;
++	mmc-hs200-1_8v;
++	//mmc-hs400-1_8v;
 +	no-sdio;
 +	no-sd;
 +	vmmc-supply = <&mmc_fixed_3v3>;
 +	vqmmc-supply = <&mmc_fixed_1v8_io>;
 +	non-removable;
-+#if 0
-+	pinctrl-names = "default";//, "state_uhs";
++	pinctrl-names = "default", "state_uhs";
 +	pinctrl-0 = <&mmc0_pins_default>;
-+#endif
++	pinctrl-1 = <&mmc0_pins_uhs>;
 +};
 +
 +&mmc1 {
 +	status = "okay";
-+	pinctrl-names = "default";//, "state_uhs";
++	pinctrl-names = "default", "state_uhs";
 +	pinctrl-0 = <&mmc1_pins_default>;
-+//	pinctrl-1 = <&mmc1_pins_uhs>;
++	pinctrl-1 = <&mmc1_pins_default>;
 +	bus-width = <4>;
 +	max-frequency = <50000000>;
 +//	cap-sd-highspeed;
@@ -327,7 +713,7 @@ index 0000000000000000000000000000000000000000..8764002889745c13bce55eb0fcb2f128
 +		};
 +	};
 +
-+	mmc0_pins_default: mmc1default {
++	mmc0_pins_default: mmc0default {
 +		pins_cmd_dat {
 +			pinmux = <PINMUX_GPIO184__FUNC_MSDC0_DAT0>,
 +				 <PINMUX_GPIO188__FUNC_MSDC0_DAT1>,
@@ -353,6 +739,41 @@ index 0000000000000000000000000000000000000000..8764002889745c13bce55eb0fcb2f128
 +			pinmux = <PINMUX_GPIO194__FUNC_MSDC0_RSTB>;
 +			drive-strength = <MTK_DRIVE_14mA>;
 +			mediatek,pull-down-adv = <01>;
++		};
++	};
++
++	mmc0_pins_uhs: mmc0uhs{
++		pins_cmd_dat {
++			pinmux = <PINMUX_GPIO184__FUNC_MSDC0_DAT0>,
++				 <PINMUX_GPIO188__FUNC_MSDC0_DAT1>,
++				 <PINMUX_GPIO185__FUNC_MSDC0_DAT2>,
++				 <PINMUX_GPIO193__FUNC_MSDC0_DAT3>,
++				 <PINMUX_GPIO186__FUNC_MSDC0_DAT4>,
++				 <PINMUX_GPIO189__FUNC_MSDC0_DAT5>,
++				 <PINMUX_GPIO187__FUNC_MSDC0_DAT6>,
++				 <PINMUX_GPIO190__FUNC_MSDC0_DAT7>,
++				 <PINMUX_GPIO183__FUNC_MSDC0_CMD>;
++			input-enable;
++			drive-strength = <MTK_DRIVE_4mA>;
++			mediatek,pull-up-adv = <2>;
++		};
++
++		pins_clk {
++			pinmux = <PINMUX_GPIO192__FUNC_MSDC0_CLK>;
++			drive-strength = <MTK_DRIVE_4mA>;
++			mediatek,pull-down-adv = <2>;
++		};
++
++		pins_rst {
++			pinmux = <PINMUX_GPIO194__FUNC_MSDC0_RSTB>;
++			drive-strength = <MTK_DRIVE_14mA>;
++			mediatek,pull-down-adv = <01>;
++		};
++
++		pins_ds {
++			pinmux = <PINMUX_GPIO191__FUNC_MSDC0_DSL>;
++			drive-strength = <MTK_DRIVE_14mA>;
++			mediatek,pull-down-adv = <2>;
 +		};
 +	};
 +
@@ -494,6 +915,14 @@ index 0000000000000000000000000000000000000000..8764002889745c13bce55eb0fcb2f128
 +		};
 +	};
 +
++	i2c7_pins: i2c7 {
++		pins_bus {
++			pinmux = <PINMUX_GPIO124__FUNC_SCL7>,
++				 <PINMUX_GPIO125__FUNC_SDA7>;
++			bias-pull-up;
++		};
++	};
++
 +	pp1000_mipibrdg_en: pp1000-mipibrdg-en {
 +		pins1 {
 +			pinmux = <PINMUX_GPIO129__FUNC_GPIO129>;
@@ -501,9 +930,23 @@ index 0000000000000000000000000000000000000000..8764002889745c13bce55eb0fcb2f128
 +		};
 +	};
 +
++	pp1000_dpbrdg_en: pp1000-dpbrdg-en {
++		pins1 {
++			pinmux = <PINMUX_GPIO30__FUNC_GPIO30>;
++			output-low;
++		};
++	};
++
 +	pp1800_mipibrdg_en: pp1800-mipibrd-en {
 +		pins1 {
 +			pinmux = <PINMUX_GPIO128__FUNC_GPIO128>;
++			output-low;
++		};
++	};
++
++	pp1800_dpbrdg_en: pp1800-dpbrdg-en {
++		pins1 {
++			pinmux = <PINMUX_GPIO126__FUNC_GPIO126>;
 +			output-low;
 +		};
 +	};
@@ -542,9 +985,29 @@ index 0000000000000000000000000000000000000000..8764002889745c13bce55eb0fcb2f128
 +		};
 +	};
 +
++	anx7625_dp_pins: anx7625-dp-pins {
++		pins1 {
++			pinmux = <PINMUX_GPIO8__FUNC_GPIO8>,
++				 <PINMUX_GPIO9__FUNC_GPIO9>;
++			output-low;
++		};
++		pins2 {
++			pinmux = <PINMUX_GPIO0__FUNC_GPIO0>;
++			input-enable;
++			bias-pull-up;
++		};
++	};
++
 +	pp3300_mipibrdg_en: pp3300-mipibrdg-en {
 +		pins1 {
 +			pinmux = <PINMUX_GPIO127__FUNC_GPIO127>;
++			output-low;
++		};
++	};
++
++	pp3300_dpbrdg_en: pp3300-dpbrdg-en {
++		pins1 {
++			pinmux = <PINMUX_GPIO26__FUNC_GPIO26>;
 +			output-low;
 +		};
 +	};
@@ -686,6 +1149,15 @@ index 0000000000000000000000000000000000000000..8764002889745c13bce55eb0fcb2f128
 +	/* TODO: Add SAR sensor. */
 +};
 +
++&i2c7 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&i2c7_pins>;
++	status = "okay";
++	clock-frequency = <100000>;
++
++	/* TODO: Add ANX7625 external DP bridge. */
++};
++
 +&nor_flash {
 +	status = "okay";
 +	pinctrl-names = "default";
@@ -705,6 +1177,11 @@ index 0000000000000000000000000000000000000000..8764002889745c13bce55eb0fcb2f128
 +	pinctrl-0 = <&pcie_pinmux>;
 +};
 +
++&pmic {
++	interrupt-parent = <&pio>;
++	interrupts = <214 IRQ_TYPE_LEVEL_HIGH>;
++};
++
 +&spi1 {
 +	pinctrl-names = "default";
 +	pinctrl-0 = <&spi_pins_1>;
@@ -722,7 +1199,7 @@ index 0000000000000000000000000000000000000000..8764002889745c13bce55eb0fcb2f128
 +
 +		i2c_tunnel: i2c-tunnel {
 +			compatible = "google,cros-ec-i2c-tunnel";
-+			google,remote-bus = <1>;
++			google,remote-bus = <0>;
 +			#address-cells = <1>;
 +			#size-cells = <0>;
 +		};
@@ -737,6 +1214,80 @@ index 0000000000000000000000000000000000000000..8764002889745c13bce55eb0fcb2f128
 +			#extcon-cells = <0>;
 +		};
 +	};
++};
++
++&spmi_bus {
++	grpid = <11>;
++	mt6315_6: mt6315@6 {
++		compatible = "mediatek,mt6315_6-regulator";
++		reg = <0x6 0 0xb 1>;
++
++		mt6315_6_vbuck1: 6_vbuck1 {
++			regulator-name = "6_vbuck1";
++			regulator-min-microvolt = <300000>;
++			regulator-max-microvolt = <1193750>;
++			regulator-enable-ramp-delay = <256>;
++			regulator-allowed-modes = <0 1 2 4>;
++			regulator-always-on;
++		};
++
++		mt6315_6_vbuck3: 6_vbuck3 {
++			regulator-name = "6_vbuck3";
++			regulator-min-microvolt = <300000>;
++			regulator-max-microvolt = <1193750>;
++			regulator-enable-ramp-delay = <256>;
++			regulator-allowed-modes = <0 1 2 4>;
++			regulator-always-on;
++		};
++	};
++
++	mt6315_7: mt6315@7 {
++		compatible = "mediatek,mt6315_7-regulator";
++		reg = <0x7 0 0xb 1>;
++
++		mt6315_7_vbuck1: 7_vbuck1 {
++			regulator-name = "7_vbuck1";
++			regulator-min-microvolt = <300000>;
++			regulator-max-microvolt = <1193750>;
++			regulator-enable-ramp-delay = <256>;
++			regulator-allowed-modes = <0 1 2 4>;
++			regulator-always-on;
++		};
++
++		mt6315_7_vbuck3: 7_vbuck3 {
++			regulator-name = "7_vbuck3";
++			regulator-min-microvolt = <300000>;
++			regulator-max-microvolt = <1193750>;
++			regulator-enable-ramp-delay = <256>;
++		};
++	};
++};
++
++/* for CORE */
++&mt6359p_vgpu11_reg {
++	regulator-always-on;
++};
++
++/* for APU */
++&mt6359p_vproc1_reg {
++	regulator-always-on;
++};
++
++/* for EMMC */
++&mt6359p_vufs_reg {
++	regulator-always-on;
++};
++
++&mt6359p_vemc_reg {
++	regulator-always-on;
++};
++
++&mt6359p_vaud18_reg {
++	regulator-always-on;
++};
++
++&mt6359p_vrf12_reg {
++	regulator-always-on;
 +};
 +
 +#include <arm/cros-ec-keyboard.dtsi>
@@ -795,11 +1346,11 @@ index 0000000000000000000000000000000000000000..8764002889745c13bce55eb0fcb2f128
 +	};
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8192-evb.dts b/arch/arm64/boot/dts/mediatek/mt8192-evb.dts
-new file mode 100755
-index 0000000000000000000000000000000000000000..4a2ac22ee652eea59a2bff5c8b639dcf9a0ecb04
+new file mode 100644
+index 0000000000000000000000000000000000000000..ec644c94ba6bb48bf69c837354e92d64f8fc8359
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt8192-evb.dts
-@@ -0,0 +1,248 @@
+@@ -0,0 +1,327 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
 +/*
 + * Copyright (C) 2020 MediaTek Inc.
@@ -808,6 +1359,7 @@ index 0000000000000000000000000000000000000000..4a2ac22ee652eea59a2bff5c8b639dcf
 +/dts-v1/;
 +#include <dt-bindings/gpio/gpio.h>
 +#include "mt8192.dtsi"
++#include "mt6359p.dtsi"
 +
 +/ {
 +	model = "MediaTek MT8192 evaluation board";
@@ -968,6 +1520,11 @@ index 0000000000000000000000000000000000000000..4a2ac22ee652eea59a2bff5c8b639dcf
 +	};
 +};
 +
++&pmic {
++        interrupt-parent = <&pio>;
++        interrupts = <214 IRQ_TYPE_LEVEL_HIGH>;
++};
++
 +&pwm0 {
 +	status = "okay";
 +	pinctrl-names = "default";
@@ -1030,30 +1587,103 @@ index 0000000000000000000000000000000000000000..4a2ac22ee652eea59a2bff5c8b639dcf
 +	status = "okay";
 +};
 +
++&spmi_bus {
++	grpid = <11>;
++	mt6315_6: mt6315@6 {
++		compatible = "mediatek,mt6315_6-regulator";
++		reg = <0x6 0 0xb 1>;
++
++		mt6315_6_vbuck1: 6_vbuck1 {
++			regulator-name = "6_vbuck1";
++			regulator-min-microvolt = <300000>;
++			regulator-max-microvolt = <1193750>;
++			regulator-enable-ramp-delay = <256>;
++			regulator-allowed-modes = <0 1 2 4>;
++			regulator-always-on;
++		};
++
++		mt6315_6_vbuck3: 6_vbuck3 {
++			regulator-name = "6_vbuck3";
++			regulator-min-microvolt = <300000>;
++			regulator-max-microvolt = <1193750>;
++			regulator-enable-ramp-delay = <256>;
++			regulator-allowed-modes = <0 1 2 4>;
++			regulator-always-on;
++		};
++	};
++
++	mt6315_7: mt6315@7 {
++		compatible = "mediatek,mt6315_7-regulator";
++		reg = <0x7 0 0xb 1>;
++
++		mt6315_7_vbuck1: 7_vbuck1 {
++			regulator-name = "7_vbuck1";
++			regulator-min-microvolt = <300000>;
++			regulator-max-microvolt = <1193750>;
++			regulator-enable-ramp-delay = <256>;
++			regulator-allowed-modes = <0 1 2 4>;
++			regulator-always-on;
++		};
++
++		mt6315_7_vbuck3: 7_vbuck3 {
++			regulator-name = "7_vbuck3";
++			regulator-min-microvolt = <300000>;
++			regulator-max-microvolt = <1193750>;
++			regulator-enable-ramp-delay = <256>;
++		};
++	};
++};
++
 +&gpu {
-+/*
-+        mali-supply = <&mt8192_vgpu_reg>;
-+        mali_sram-supply = <&mt8192_vsram_gpu_reg>;
-+*/
-+        operating-points-v2 = <&gpu_opp_table>;
-+        power_model@0 {
-+                compatible = "arm,mali-simple-power-model";
-+                static-coefficient = <2427750>;
-+                dynamic-coefficient = <4687>;
-+                ts = <20000 2000 (-20) 2>;
-+                thermal-zone = "cpu_thermal";
-+        };
-+        power_model@1 {
-+                compatible = "arm,mali-tnax-power-model";
-+                scale = <5>;
-+        };
++	supply-names = "mali","mali_sram";
++	mali-supply = <&mt6315_7_vbuck1>;
++	mali_sram-supply = <&mt6359p_vsram_others_reg>;
++	operating-points-v2 = <&gpu_opp_table>;
++	power_model@0 {
++		compatible = "arm,mali-simple-power-model";
++		static-coefficient = <2427750>;
++		dynamic-coefficient = <4687>;
++		ts = <20000 2000 (-20) 2>;
++		thermal-zone = "cpu_thermal";
++	};
++	power_model@1 {
++		compatible = "arm,mali-tnax-power-model";
++		scale = <5>;
++	};
++};
++
++/* for CORE */
++&mt6359p_vgpu11_reg {
++	regulator-always-on;
++};
++
++/* for APU */
++&mt6359p_vproc1_reg {
++	regulator-always-on;
++};
++
++/* for EMMC */
++&mt6359p_vufs_reg {
++	regulator-always-on;
++};
++
++&mt6359p_vemc_reg {
++	regulator-always-on;
++};
++
++&mt6359p_vaud18_reg {
++	regulator-always-on;
++};
++
++&mt6359p_vrf12_reg {
++	regulator-always-on;
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8192.dtsi b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
 new file mode 100755
-index 0000000000000000000000000000000000000000..75262edfa582ac0a1eaeed1df64e174e8b03a0c9
+index 0000000000000000000000000000000000000000..c3d0c1b7a65fded4c1f3d504173328d03db3bd11
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-@@ -0,0 +1,1297 @@
+@@ -0,0 +1,1471 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
 +/*
 + * Copyright (C) 2020 MediaTek Inc.
@@ -1389,6 +2019,48 @@ index 0000000000000000000000000000000000000000..75262edfa582ac0a1eaeed1df64e174e
 +			#clock-cells = <1>;
 +		};
 +
++		systimer: timer@10017000 {
++			compatible = "mediatek,mt8192-timer",
++				     "mediatek,mt6765-timer";
++			reg = <0 0x10017000 0 0x1000>;
++			interrupts = <GIC_SPI 233 IRQ_TYPE_LEVEL_HIGH 0>;
++			clocks = <&topckgen CLK_TOP_CSW_F26M_D2>;
++			clock-names = "clk13m";
++		};
++
++		pwrap: pwrap@10026000 {
++			compatible = "mediatek,mt6873-pwrap";
++			reg = <0 0x10026000 0 0x1000>;
++			reg-names = "pwrap";
++			interrupts = <GIC_SPI 220 IRQ_TYPE_LEVEL_HIGH 0>;
++			clocks = <&infracfg CLK_INFRA_PMIC_AP>,
++				 <&infracfg CLK_INFRA_PMIC_TMR>;
++			clock-names = "spi", "wrap";
++			assigned-clocks = <&topckgen CLK_TOP_PWRAP_ULPOSC_SEL>;
++			assigned-clock-parents = <&topckgen CLK_TOP_OSC_D10>;
++		};
++
++		spmi_bus: spmi@10027000 {
++			compatible = "mediatek,pmif";
++			reg = <0 0x10027000 0 0x000e00>,
++			      <0 0x10027f00 0 0x00008c>,
++			      <0 0x10029000 0 0x000100>;
++			reg-names = "pmif", "pmifmpu", "spmimst";
++			interrupts = <GIC_SPI 221 IRQ_TYPE_LEVEL_HIGH 0>;
++			interrupt-names = "pmif_irq";
++			irq_event_en = <0x0 0x0 0x00300000 0x00000100 0x0>;
++			clocks = <&infracfg CLK_INFRA_PMIC_AP>,
++				<&infracfg CLK_INFRA_PMIC_TMR>,
++				<&topckgen CLK_TOP_SPMI_MST_SEL>;
++			clock-names = "pmif_sys_ck",
++				"pmif_tmr_ck",
++				"spmimst_clk_mux";
++			assigned-clocks = <&topckgen CLK_TOP_PWRAP_ULPOSC_SEL>;
++			assigned-clock-parents = <&topckgen CLK_TOP_OSC_D10>;
++			swinf_ch_start = <4>;
++			ap_swinf_no = <2>;
++		};
++
 +		scp_adsp: scp_adsp@10720000 {
 +			compatible = "mediatek,mt8192-scp_adsp", "syscon";
 +			reg = <0 0x10720000 0 0x1000>;
@@ -1498,20 +2170,14 @@ index 0000000000000000000000000000000000000000..75262edfa582ac0a1eaeed1df64e174e
 +			reg = <0 0x11f60000 0 0x1000>,
 +			      <0 0x11f50000 0 0x1000>;
 +			interrupts = <GIC_SPI 99 IRQ_TYPE_LEVEL_HIGH 0>;
-+			clocks = <&clk26m>, <&clk26m>;
-+			clock-names = "source", "hclk";
++			clocks = <&topckgen CLK_TOP_MSDC50_0_SEL>,
++				 <&infracfg CLK_INFRA_MSDC0>,
++				 <&infracfg CLK_INFRA_MSDC0_SRC>;
++			clock-names = "source", "hclk", "source_cg";
 +			power-domains = <&scpsys MT8192_POWER_DOMAIN_MSDC>;
 +
-+			assigned-clocks = <&topckgen CLK_TOP_MSDC50_0_SEL>,
-+					  <&topckgen CLK_TOP_MSDC30_1_SEL>,
-+					  <&topckgen CLK_TOP_MSDC30_2_SEL>;
-+/*					  <&topckgen CLK_TOP_MSDC50_0_H_SEL>,
-+					  <&topckgen CLK_TOP_AES_MSDCFDE_SEL>;*/
-+			assigned-clock-parents = <&topckgen CLK_TOP_MSDCPLL>,
-+						 <&topckgen CLK_TOP_MSDCPLL_D2>,
-+						 <&topckgen CLK_TOP_MSDCPLL_D2>;
-+/*					  	 <&topckgen CLK_TOP_MAINPLL_D4_D2>,
-+						 <&topckgen CLK_TOP_UNIVPLL_D6>;*/
++			assigned-clocks = <&topckgen CLK_TOP_MSDC50_0_SEL>;
++			assigned-clock-parents = <&topckgen CLK_TOP_MSDCPLL>;
 +		};
 +
 +		mmc1: mmc@11f70000 {
@@ -1519,9 +2185,14 @@ index 0000000000000000000000000000000000000000..75262edfa582ac0a1eaeed1df64e174e
 +			reg = <0 0x11f70000 0 0x1000>,
 +			      <0 0x11c70000 0 0x1000>;
 +			interrupts = <GIC_SPI 103 IRQ_TYPE_LEVEL_HIGH 0>;
-+			clocks = <&clk26m>, <&clk26m>;
-+			clock-names = "source", "hclk";
++			clocks = <&topckgen CLK_TOP_MSDC30_1_SEL>,
++				 <&infracfg CLK_INFRA_MSDC1>,
++				 <&infracfg CLK_INFRA_MSDC1_SRC>;
++			clock-names = "source", "hclk", "source_cg";
 +			power-domains = <&scpsys MT8192_POWER_DOMAIN_MSDC>;
++
++			assigned-clocks = <&topckgen CLK_TOP_MSDC30_1_SEL>;
++			assigned-clock-parents = <&topckgen CLK_TOP_MSDCPLL_D2>;
 +		};
 +
 +		ufsphy: phy@11fa0000 {
@@ -1564,27 +2235,17 @@ index 0000000000000000000000000000000000000000..75262edfa582ac0a1eaeed1df64e174e
 +                                "clk_sub_parent",
 +                                "subsys_mfg_cg";
 +
-+                        power-domains = <&scpsys MT8192_POWER_DOMAIN_MFG2>;
-+                };
-+
-+                gpu_core1: mali_gpu_core1 {
-+                        compatible = "mediatek,gpu_core1";
-+                        power-domains = <&scpsys MT8192_POWER_DOMAIN_MFG3>;
-+                };
-+
-+                gpu_core2: mali_gpu_core2 {
-+                        compatible = "mediatek,gpu_core2";
-+                        power-domains = <&scpsys MT8192_POWER_DOMAIN_MFG4>;
-+                };
-+
-+                gpu_core3: mali_gpu_core3 {
-+                        compatible = "mediatek,gpu_core3";
-+                        power-domains = <&scpsys MT8192_POWER_DOMAIN_MFG5>;
-+                };
-+
-+                gpu_core4: mali_gpu_core4 {
-+                        compatible = "mediatek,gpu_core4";
-+                        power-domains = <&scpsys MT8192_POWER_DOMAIN_MFG6>;
++			power-domains =
++				<&scpsys MT8192_POWER_DOMAIN_MFG2>,
++				<&scpsys MT8192_POWER_DOMAIN_MFG3>,
++				<&scpsys MT8192_POWER_DOMAIN_MFG4>,
++				<&scpsys MT8192_POWER_DOMAIN_MFG5>,
++				<&scpsys MT8192_POWER_DOMAIN_MFG6>;
++			power-domain-names = "core0",
++					     "core1",
++					     "core2",
++					     "core3",
++					     "core4";
 +                };
 +
 +                gpu_opp_table: opp_table0 {
@@ -1599,20 +2260,146 @@ index 0000000000000000000000000000000000000000..75262edfa582ac0a1eaeed1df64e174e
 +
 +                        opp-358000000 {
 +                                opp-hz = /bits/ 64 <358000000>;
-+                                opp-microvolt = <606250>;
-+                                opp-core-mask = /bits/ 64 <0xf>;
++                                opp-hz-real = /bits/ 64 <358000000>,
++					      /bits/ 64 <358000000>;
++                                opp-microvolt = <606250>,
++                                                <750000>;
++                                opp-core-mask = /bits/ 64 <0x1f>;
++                        };
++
++                        opp-399000000 {
++                                opp-hz = /bits/ 64 <399000000>;
++                                opp-hz-real = /bits/ 64 <399000000>,
++                                              /bits/ 64 <399000000>;
++                                opp-microvolt = <618750>,
++                                                <750000>;
++                                opp-core-mask = /bits/ 64 <0x1f>;
++                        };
++
++                        opp-440000000 {
++                                opp-hz = /bits/ 64 <440000000>;
++                                opp-hz-real = /bits/ 64 <440000000>,
++                                              /bits/ 64 <440000000>;
++                                opp-microvolt = <631250>,
++                                                <750000>;
++                                opp-core-mask = /bits/ 64 <0x1f>;
++                        };
++
++                        opp-482000000 {
++                                opp-hz = /bits/ 64 <482000000>;
++                                opp-hz-real = /bits/ 64 <482000000>,
++                                              /bits/ 64 <482000000>;
++                                opp-microvolt = <643750>,
++                                                <750000>;
++                                opp-core-mask = /bits/ 64 <0x1f>;
++                        };
++
++                        opp-523000000 {
++                                opp-hz = /bits/ 64 <523000000>;
++                                opp-hz-real = /bits/ 64 <523000000>,
++                                              /bits/ 64 <523000000>;
++                                opp-microvolt = <656250>,
++                                                <750000>;
++                                opp-core-mask = /bits/ 64 <0x1f>;
++                        };
++
++                        opp-564000000 {
++                                opp-hz = /bits/ 64 <564000000>;
++                                opp-hz-real = /bits/ 64 <564000000>,
++                                              /bits/ 64 <564000000>;
++                                opp-microvolt = <668750>,
++                                                <750000>;
++                                opp-core-mask = /bits/ 64 <0x1f>;
++                        };
++
++                        opp-605000000 {
++                                opp-hz = /bits/ 64 <605000000>;
++                                opp-hz-real = /bits/ 64 <605000000>,
++                                              /bits/ 64 <605000000>;
++                                opp-microvolt = <681250>,
++                                                <750000>;
++                                opp-core-mask = /bits/ 64 <0x1f>;
++                        };
++
++                        opp-647000000 {
++                                opp-hz = /bits/ 64 <647000000>;
++                                opp-hz-real = /bits/ 64 <647000000>,
++                                              /bits/ 64 <647000000>;
++                                opp-microvolt = <693750>,
++                                                <750000>;
++                                opp-core-mask = /bits/ 64 <0x1f>;
 +                        };
 +
 +                        opp-688000000 {
 +                                opp-hz = /bits/ 64 <688000000>;
-+                                opp-microvolt = <706250>;
-+                                opp-core-mask = /bits/ 64 <0xf>;
++                                opp-hz-real = /bits/ 64 <688000000>,
++                                              /bits/ 64 <688000000>;
++                                opp-microvolt = <706250>,
++                                                <750000>;
++                                opp-core-mask = /bits/ 64 <0x1f>;
++                        };
++
++                        opp-724000000 {
++                                opp-hz = /bits/ 64 <724000000>;
++                                opp-hz-real = /bits/ 64 <724000000>,
++                                              /bits/ 64 <724000000>;
++                                opp-microvolt = <725000>,
++                                                <750000>;
++                                opp-core-mask = /bits/ 64 <0x1f>;
++                        };
++
++                        opp-760000000 {
++                                opp-hz = /bits/ 64 <760000000>;
++                                opp-hz-real = /bits/ 64 <760000000>,
++                                              /bits/ 64 <760000000>;
++                                opp-microvolt = <743750>,
++                                                <750000>;
++                                opp-core-mask = /bits/ 64 <0x1f>;
++                        };
++
++                        opp-795000000 {
++                                opp-hz = /bits/ 64 <795000000>;
++                                opp-hz-real = /bits/ 64 <795000000>,
++                                              /bits/ 64 <795000000>;
++                                opp-microvolt = <762500>,
++                                                <762500>;
++                                opp-core-mask = /bits/ 64 <0x1f>;
++                        };
++
++                        opp-831000000 {
++                                opp-hz = /bits/ 64 <831000000>;
++                                opp-hz-real = /bits/ 64 <831000000>,
++                                              /bits/ 64 <831000000>;
++                                opp-microvolt = <781250>,
++                                                <781250>;
++                                opp-core-mask = /bits/ 64 <0x1f>;
++                        };
++
++                        opp-855000000 {
++                                opp-hz = /bits/ 64 <855000000>;
++                                opp-hz-real = /bits/ 64 <855000000>,
++                                              /bits/ 64 <855000000>;
++                                opp-microvolt = <793750>,
++                                                <793750>;
++                                opp-core-mask = /bits/ 64 <0x1f>;
++                        };
++
++                        opp-902000000 {
++                                opp-hz = /bits/ 64 <902000000>;
++                                opp-hz-real = /bits/ 64 <902000000>,
++                                              /bits/ 64 <902000000>;
++                                opp-microvolt = <818750>,
++                                                <818750>;
++                                opp-core-mask = /bits/ 64 <0x1f>;
 +                        };
 +
 +                        opp-950000000 {
 +                                opp-hz = /bits/ 64 <950000000>;
-+                               opp-microvolt = <843750>;
-+                               opp-core-mask = /bits/ 64 <0xf>;
++                                opp-hz-real = /bits/ 64 <950000000>,
++                                              /bits/ 64 <950000000>;
++                                opp-microvolt = <843750>,
++                                                <843750>;
++                                opp-core-mask = /bits/ 64 <0x1f>;
 +                        };
 +                };
 +
@@ -2060,6 +2847,7 @@ index 0000000000000000000000000000000000000000..75262edfa582ac0a1eaeed1df64e174e
 +			clock-div = <1>;
 +			#address-cells = <1>;
 +			#size-cells = <0>;
++			status = "disabled";
 +		};
 +
 +		i2c1: i2c1@11d20000 {
@@ -2072,6 +2860,7 @@ index 0000000000000000000000000000000000000000..75262edfa582ac0a1eaeed1df64e174e
 +			clock-div = <1>;
 +			#address-cells = <1>;
 +			#size-cells = <0>;
++			status = "disabled";
 +		};
 +
 +		i2c2: i2c2@11d21000 {
@@ -2084,6 +2873,7 @@ index 0000000000000000000000000000000000000000..75262edfa582ac0a1eaeed1df64e174e
 +			clock-div = <1>;
 +			#address-cells = <1>;
 +			#size-cells = <0>;
++			status = "disabled";
 +		};
 +
 +		i2c3: i2c3@11cb0000 {
@@ -2096,6 +2886,7 @@ index 0000000000000000000000000000000000000000..75262edfa582ac0a1eaeed1df64e174e
 +			clock-div = <1>;
 +			#address-cells = <1>;
 +			#size-cells = <0>;
++			status = "disabled";
 +		};
 +
 +		i2c4: i2c4@11d22000 {
@@ -2108,6 +2899,7 @@ index 0000000000000000000000000000000000000000..75262edfa582ac0a1eaeed1df64e174e
 +			clock-div = <1>;
 +			#address-cells = <1>;
 +			#size-cells = <0>;
++			status = "disabled";
 +		};
 +
 +		i2c5: i2c5@11e00000 {
@@ -2120,6 +2912,7 @@ index 0000000000000000000000000000000000000000..75262edfa582ac0a1eaeed1df64e174e
 +			clock-div = <1>;
 +			#address-cells = <1>;
 +			#size-cells = <0>;
++			status = "disabled";
 +		};
 +
 +		i2c6: i2c6@11f01000 {
@@ -2132,6 +2925,7 @@ index 0000000000000000000000000000000000000000..75262edfa582ac0a1eaeed1df64e174e
 +			clock-div = <1>;
 +			#address-cells = <1>;
 +			#size-cells = <0>;
++			status = "disabled";
 +		};
 +
 +		i2c7: i2c7@11d00000 {
@@ -2144,6 +2938,7 @@ index 0000000000000000000000000000000000000000..75262edfa582ac0a1eaeed1df64e174e
 +			clock-div = <1>;
 +			#address-cells = <1>;
 +			#size-cells = <0>;
++			status = "disabled";
 +		};
 +
 +		i2c8: i2c8@11d01000 {
@@ -2156,6 +2951,7 @@ index 0000000000000000000000000000000000000000..75262edfa582ac0a1eaeed1df64e174e
 +			clock-div = <1>;
 +			#address-cells = <1>;
 +			#size-cells = <0>;
++			status = "disabled";
 +		};
 +
 +		i2c9: i2c9@11d02000 {
@@ -2168,6 +2964,7 @@ index 0000000000000000000000000000000000000000..75262edfa582ac0a1eaeed1df64e174e
 +			clock-div = <1>;
 +			#address-cells = <1>;
 +			#size-cells = <0>;
++			status = "disabled";
 +                };
 +
 +		pwm0: pwm@1100e000 {
@@ -2176,9 +2973,8 @@ index 0000000000000000000000000000000000000000..75262edfa582ac0a1eaeed1df64e174e
 +			interrupts = <GIC_SPI 171 IRQ_TYPE_LEVEL_HIGH 0>;
 +			#pwm-cells = <2>;
 +			clocks = <&infracfg CLK_INFRA_DISP_PWM>,
-+				<&topckgen CLK_TOP_DISP_PWM_SEL>,
-+				<&topckgen CLK_TOP_OSC_D4>;
-+			clock-names = "main", "mm", "pwm_src";
++				<&topckgen CLK_TOP_DISP_PWM_SEL>;
++			clock-names = "main", "mm";
 +		};
 +
 +		mipi_tx0: mipi-dphy@11e50000 {
@@ -2224,9 +3020,12 @@ index 0000000000000000000000000000000000000000..75262edfa582ac0a1eaeed1df64e174e
 +			interrupts = <GIC_SPI 96 IRQ_TYPE_LEVEL_HIGH 0>;
 +			phys = <&u2port0 PHY_TYPE_USB2>,
 +			       <&u3port0 PHY_TYPE_USB3>;
-+			clocks = <&clk26m>, <&clk26m>, <&clk26m>, <&clk26m>;
++			clocks = <&infracfg CLK_INFRA_SSUSB>,
++				 <&infracfg CLK_INFRA_SSUSB_XHCI>,
++				 <&infracfg CLK_INFRA_SSUSB_XHCI>,
++				 <&infracfg CLK_INFRA_SSUSB_XHCI>;
 +			clock-names = "sys_ck", "ref_ck", "mcu_ck", "dma_ck";
-+			mediatek,syscon-wakeup = <&pericfg 0x420 2>;
++			mediatek,syscon-wakeup = <&pericfg 0x420 3>;
 +			#address-cells = <2>;
 +			#size-cells = <2>;
 +			ranges;
@@ -2241,10 +3040,13 @@ index 0000000000000000000000000000000000000000..75262edfa582ac0a1eaeed1df64e174e
 +					     "mediatek,mtk-xhci";
 +				reg = <0 0x11200000 0 0x1000>;
 +				reg-names = "mac";
-+				interrupts = <GIC_SPI 97 IRQ_TYPE_LEVEL_HIGH 0>;
-+				clocks = <&clk26m>,
-+					 <&clk26m>, <&clk26m>,
-+					 <&clk26m>, <&clk26m>;
++				interrupts-extended = <&gic GIC_SPI 97 IRQ_TYPE_LEVEL_HIGH 0>,
++						      <&pio 211 IRQ_TYPE_LEVEL_LOW>;
++				clocks = <&infracfg CLK_INFRA_SSUSB>,
++					 <&infracfg CLK_INFRA_SSUSB_XHCI>,
++					 <&infracfg CLK_INFRA_SSUSB_XHCI>,
++					 <&infracfg CLK_INFRA_SSUSB_XHCI>,
++					 <&infracfg CLK_INFRA_SSUSB_XHCI>;
 +				clock-names = "sys_ck",
 +					      "xhci_ck", "ref_ck",
 +					      "mcu_ck", "dma_ck";
@@ -2283,6 +3085,7 @@ index 0000000000000000000000000000000000000000..75262edfa582ac0a1eaeed1df64e174e
 +				 <&topckgen CLK_TOP_SPI_SEL>,
 +				 <&infracfg CLK_INFRA_SPI1>;
 +			clock-names = "parent-clk", "sel-clk", "spi-clk";
++			status = "disabled";
 +		};
 +
 +		spi5: spi5@11019000 {
@@ -2293,6 +3096,52 @@ index 0000000000000000000000000000000000000000..75262edfa582ac0a1eaeed1df64e174e
 +				 <&topckgen CLK_TOP_SPI_SEL>,
 +				 <&infracfg CLK_INFRA_SPI5>;
 +			clock-names = "parent-clk", "sel-clk", "spi-clk";
++			status = "disabled";
++		};
++
++		pcie: pcie@11230000 {
++			compatible = "mediatek,mt8192-pcie";
++			device_type = "pci";
++			reg = <0 0x11230000 0 0x2000>;
++			reg-names = "port0";
++			#address-cells = <3>;
++			#size-cells = <2>;
++			clocks = <&infracfg CLK_INFRA_PCIE_TL_26M>,
++				<&infracfg CLK_INFRA_PCIE_TL_96M>,
++				<&infracfg CLK_INFRA_PCIE_TL_32K>,
++				<&infracfg CLK_INFRA_PCIE_PERI_26M>,
++				<&infracfg CLK_INFRA_PCIE_TOP_H_133M>,
++				<&infracfg CLK_INFRA_PCIE_PL_P_250M>;
++			clock-names = "sys_ck0", "sys_ck1", "sys_ck2",
++				 "sys_ck3", "axi_ck0", "pipe_ck0";
++			resets = <&infracfg
++				 MT8192_INFRACFG_AO_PEXTP_PHY_SW_RST>;
++			reset-names = "phy_rst";
++			interrupts = <GIC_SPI 251 IRQ_TYPE_LEVEL_HIGH 0>;
++			bus-range = <0x00 0xff>;
++			ranges = <0x82000000 0 0x12000000
++				  0x0 0x12000000 0 0x1000000>;
++			status = "okay";
++
++			pcie0: pcie@0,0 {
++				device_type = "pci";
++				reg = <0x0000 0 0 0 0>;
++				#address-cells = <3>;
++				#size-cells = <2>;
++				ranges;
++				num-lanes = <1>;
++				#interrupt-cells = <1>;
++				interrupt-map-mask = <0 0 0 7>;
++				interrupt-map = <0 0 0 1 &pcie_intc0 0>,
++					   <0 0 0 2 &pcie_intc0 1>,
++					   <0 0 0 3 &pcie_intc0 2>,
++					   <0 0 0 4 &pcie_intc0 3>;
++				pcie_intc0: interrupt-controller {
++					interrupt-controller;
++					#address-cells = <0>;
++					#interrupt-cells = <1>;
++				};
++			};
 +		};
 +
 +		nor_flash: spi@11234000 {
@@ -2305,54 +3154,9 @@ index 0000000000000000000000000000000000000000..75262edfa582ac0a1eaeed1df64e174e
 +			status = "disabled";
 +		};
 +	};
-+
-+	pcie: pcie@11230000 {
-+		compatible = "mediatek,margaux-pcie";
-+		device_type = "pci";
-+		reg = <0 0x11230000 0 0x2000>;
-+		reg-names = "port0";
-+		#address-cells = <3>;
-+		#size-cells = <2>;
-+		clocks = <&infracfg CLK_INFRA_PCIE_TL_26M>,
-+			<&infracfg CLK_INFRA_PCIE_TL_96M>,
-+			<&infracfg CLK_INFRA_PCIE_TL_32K>,
-+			<&infracfg CLK_INFRA_PCIE_PERI_26M>,
-+			<&infracfg CLK_INFRA_PCIE_TOP_H_133M>,
-+			<&infracfg CLK_INFRA_PCIE_PL_P_250M>;
-+		clock-names = "sys_ck0", "sys_ck1", "sys_ck2",
-+			 "sys_ck3", "axi_ck0", "pipe_ck0";
-+		resets = <&infracfg
-+			 MT8192_INFRACFG_AO_PEXTP_PHY_SW_RST>;
-+		reset-names = "phy_rst";
-+		interrupts = <GIC_SPI 251 IRQ_TYPE_LEVEL_HIGH 0>;
-+		bus-range = <0x00 0xff>;
-+		ranges = <0x82000000 0 0x12000000
-+			  0x0 0x12000000 0 0x1000000>;
-+		status = "disabled";
-+
-+		pcie0: pcie@0,0 {
-+			device_type = "pci";
-+			reg = <0x0000 0 0 0 0>;
-+			#address-cells = <3>;
-+			#size-cells = <2>;
-+			ranges;
-+			num-lanes = <1>;
-+			#interrupt-cells = <1>;
-+			interrupt-map-mask = <0 0 0 7>;
-+			interrupt-map = <0 0 0 1 &pcie_intc0 0>,
-+				   <0 0 0 2 &pcie_intc0 1>,
-+				   <0 0 0 3 &pcie_intc0 2>,
-+				   <0 0 0 4 &pcie_intc0 3>;
-+			pcie_intc0: interrupt-controller {
-+				interrupt-controller;
-+				#address-cells = <0>;
-+				#interrupt-cells = <1>;
-+			};
-+		};
-+	};
 +};
 diff --git a/chromeos/config/arm64/chromiumos-arm64.flavour.config b/chromeos/config/arm64/chromiumos-arm64.flavour.config
-index f5355aa589a3539e3c5ec0834b328e78c7f6c3f0..c19df0e2944df44825c9b8f889e765080ea757b4 100644
+index e82405fdadcde92b0a4e7e05340cf818adcdeaa0..9a30ae7699d92d79333c8f40443733f1ea30a166 100644
 --- a/chromeos/config/arm64/chromiumos-arm64.flavour.config
 +++ b/chromeos/config/arm64/chromiumos-arm64.flavour.config
 @@ -32,6 +32,34 @@ CONFIG_COMMON_CLK_MT8183_MFGCFG=y
@@ -2406,16 +3210,25 @@ index f5355aa589a3539e3c5ec0834b328e78c7f6c3f0..c19df0e2944df44825c9b8f889e76508
  CONFIG_PHY_MTK_TPHY=y
  CONFIG_PHY_QCOM_QMP=y
  CONFIG_PHY_QCOM_QUSB2=y
-@@ -216,6 +246,7 @@ CONFIG_SND_SOC_ROCKCHIP_SPDIF=y
- CONFIG_SND_SOC_SSM4567=m
- CONFIG_SPI_GPIO=y
- CONFIG_SPI_MT65XX=y
-+CONFIG_SPI_MTK_QUADSPI=y
- CONFIG_SPI_QCOM_GENI=y
+@@ -147,6 +177,8 @@ CONFIG_QRTR_SMD=y
+ CONFIG_QRTR_TUN=y
+ CONFIG_REGULATOR_MAX8973=y
+ CONFIG_REGULATOR_MT6311=y
++CONFIG_REGULATOR_MT6315=y
++CONFIG_REGULATOR_MT6359P=y
+ CONFIG_REGULATOR_MT6397=y
+ CONFIG_REGULATOR_PALMAS=y
+ CONFIG_REGULATOR_QCOM_RPMH=y
+@@ -221,6 +253,7 @@ CONFIG_SPI_QCOM_GENI=y
  CONFIG_SPI_QCOM_QSPI=y
  CONFIG_SPI_ROCKCHIP=y
+ CONFIG_SPMI=y
++CONFIG_SPMI_MTK_PMIF=y
+ CONFIG_STMMAC_ETH=m
+ CONFIG_TOUCHSCREEN_MELFAS_MIP4=y
+ CONFIG_TYPEC=m
 diff --git a/chromeos/config/arm64/chromiumos-mediatek.flavour.config b/chromeos/config/arm64/chromiumos-mediatek.flavour.config
-index b2244bcd9a3a60434bec901eccafefe2b5b651bf..c729650505ae3a7f04ebd328cc2cf4853a027030 100644
+index c34fc68897644de80b40cce162a42fcfd736a6da..443ecbbf6ba6f231a3f486820c74c2f33d1c43ec 100644
 --- a/chromeos/config/arm64/chromiumos-mediatek.flavour.config
 +++ b/chromeos/config/arm64/chromiumos-mediatek.flavour.config
 @@ -23,6 +23,34 @@ CONFIG_COMMON_CLK_MT8183_MFGCFG=y
@@ -2469,20 +3282,29 @@ index b2244bcd9a3a60434bec901eccafefe2b5b651bf..c729650505ae3a7f04ebd328cc2cf485
  CONFIG_MEDIATEK_MT6577_AUXADC=y
  CONFIG_MEDIATEK_WATCHDOG=y
  CONFIG_MEDIA_CONTROLLER=y
-@@ -55,6 +85,8 @@ CONFIG_MTK_IOMMU=y
- CONFIG_MTK_PMIC_WRAP=y
+@@ -56,6 +86,7 @@ CONFIG_MTK_PMIC_WRAP=y
  CONFIG_MTK_SCP=m
  CONFIG_MTK_SVS=y
-+CONFIG_PCI=y
+ CONFIG_PCI=y
 +CONFIG_PCIE_MEDIATEK=y
  CONFIG_PHY_MTK_TPHY=y
  # CONFIG_PINCTRL_MT2712 is not set
  # CONFIG_PINCTRL_MT7622 is not set
-@@ -82,6 +114,7 @@ CONFIG_SND_SOC_MT8183_DA7219_MAX98357A=y
- CONFIG_SND_SOC_MT8183_MT6358_TS3A227E_MAX98357A=y
+@@ -63,6 +94,8 @@ CONFIG_PM_DEVFREQ=y
+ CONFIG_POWER_AVS=y
+ CONFIG_PWM_MTK_DISP=y
+ CONFIG_RAS=y
++CONFIG_REGULATOR_MT6315=y
++CONFIG_REGULATOR_MT6359P=y
+ CONFIG_REGULATOR_MT6397=y
+ CONFIG_REMOTEPROC=y
+ CONFIG_RTC_DRV_MT6397=y
+@@ -88,6 +121,8 @@ CONFIG_SND_SOC_MT8183_MT6358_TS3A227E_MAX98357A=y
  CONFIG_SPI_GPIO=y
  CONFIG_SPI_MT65XX=y
-+CONFIG_SPI_MTK_QUADSPI=y
+ CONFIG_SPI_MTK_QUADSPI=y
++CONFIG_SPMI=y
++CONFIG_SPMI_MTK_PMIF=y
  CONFIG_STAGING_MEDIA=y
  CONFIG_TCG_CR50_I2C=y
  CONFIG_TMPFS=y
@@ -2687,16 +3509,14 @@ index 40b45420d4844a1067bace0c58567fcd4fd7affc..1d422238b6046a93f816524464ac5150
  	bool "Clock driver for MediaTek MT8516"
  	depends on ARCH_MEDIATEK || COMPILE_TEST
 diff --git a/drivers/clk/mediatek/Makefile b/drivers/clk/mediatek/Makefile
-old mode 100644
-new mode 100755
-index bb05369420755f04695c3181716f4863da793672..ea44df865cef612d2fa6885187f8b3428b1251a7
+index bb05369420755f04695c3181716f4863da793672..26733c3fa0d108cc58714f0fd82869b04b710183 100644
 --- a/drivers/clk/mediatek/Makefile
 +++ b/drivers/clk/mediatek/Makefile
 @@ -54,5 +54,34 @@ obj-$(CONFIG_COMMON_CLK_MT8183_MFGCFG) += clk-mt8183-mfgcfg.o
  obj-$(CONFIG_COMMON_CLK_MT8183_MMSYS) += clk-mt8183-mm.o
  obj-$(CONFIG_COMMON_CLK_MT8183_VDECSYS) += clk-mt8183-vdec.o
  obj-$(CONFIG_COMMON_CLK_MT8183_VENCSYS) += clk-mt8183-venc.o
-+obj-$(CONFIG_COMMON_CLK_MT8192) += clk-mt8192.o clk-bringup.o clkdbg.o clkdbg-mt8192.o
++obj-$(CONFIG_COMMON_CLK_MT8192) += clk-mt8192.o clkdbg.o clkdbg-mt8192.o
 +obj-$(CONFIG_COMMON_CLK_MT8192_APU0) += clk-mt8192-apu0.o
 +obj-$(CONFIG_COMMON_CLK_MT8192_APU1) += clk-mt8192-apu1.o
 +obj-$(CONFIG_COMMON_CLK_MT8192_APU_VCORE) += clk-mt8192-apu_vcore.o
@@ -2727,72 +3547,6 @@ index bb05369420755f04695c3181716f4863da793672..ea44df865cef612d2fa6885187f8b342
 +obj-$(CONFIG_COMMON_CLK_MT8192_VENCSYS) += clk-mt8192-venc.o
  obj-$(CONFIG_COMMON_CLK_MT8516) += clk-mt8516.o
  obj-$(CONFIG_COMMON_CLK_MT8516_AUDSYS) += clk-mt8516-aud.o
-diff --git a/drivers/clk/mediatek/clk-bringup.c b/drivers/clk/mediatek/clk-bringup.c
-new file mode 100755
-index 0000000000000000000000000000000000000000..3b88fbd945abae68b48fc649927f836e9940c853
---- /dev/null
-+++ b/drivers/clk/mediatek/clk-bringup.c
-@@ -0,0 +1,60 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Copyright (C) 2020 MediaTek Inc.
-+ */
-+
-+#include <linux/clk.h>
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/of.h>
-+#include <linux/of_platform.h>
-+
-+static const struct of_device_id bring_up_id_table[] = {
-+	{ .compatible = "mediatek,clk-bring-up",},
-+	{ },
-+};
-+MODULE_DEVICE_TABLE(of, bring_up_id_table);
-+
-+static int bring_up_probe(struct platform_device *pdev)
-+{
-+	struct clk *clk;
-+	int clk_con, i;
-+
-+	clk_con = of_count_phandle_with_args(pdev->dev.of_node, "clocks",
-+			"#clock-cells");
-+
-+	for (i = 0; i < clk_con; i++) {
-+		clk = of_clk_get(pdev->dev.of_node, i);
-+		if (IS_ERR(clk)) {
-+			long ret = PTR_ERR(clk);
-+
-+			if (ret == -EPROBE_DEFER)
-+				pr_err("clk %d is not ready\n", i);
-+			else
-+				pr_err("get clk %d fail, ret=%d, clk_con=%d\n",
-+				       i, (int)ret, clk_con);
-+		} else {
-+			pr_err("get clk %d ok\n", i);
-+			clk_prepare_enable(clk);
-+		}
-+	}
-+
-+	return 0;
-+}
-+
-+static int bring_up_remove(struct platform_device *pdev)
-+{
-+	return 0;
-+}
-+
-+static struct platform_driver bring_up = {
-+	.probe		= bring_up_probe,
-+	.remove		= bring_up_remove,
-+	.driver		= {
-+		.name	= "bring_up",
-+		.owner	= THIS_MODULE,
-+		.of_match_table = bring_up_id_table,
-+	},
-+};
-+
-+module_platform_driver(bring_up);
 diff --git a/drivers/clk/mediatek/clk-mt8183-mm.c b/drivers/clk/mediatek/clk-mt8183-mm.c
 index 720c696b506d59b5cd0ed34d3b8f29488ff382b0..c6a1ce2495fc404a1c6f38e922e51c524f76725a 100644
 --- a/drivers/clk/mediatek/clk-mt8183-mm.c
@@ -4294,10 +5048,10 @@ index 0000000000000000000000000000000000000000..1d8c17db5617e9bab4f8a37083d98c84
 +builtin_platform_driver(clk_mt8192_mfg_drv);
 diff --git a/drivers/clk/mediatek/clk-mt8192-mm.c b/drivers/clk/mediatek/clk-mt8192-mm.c
 new file mode 100644
-index 0000000000000000000000000000000000000000..fd8d3654386f72e31c32f21927e276dd1a21265d
+index 0000000000000000000000000000000000000000..18171c0a7c17962135620b746a9f66555ff9fc12
 --- /dev/null
 +++ b/drivers/clk/mediatek/clk-mt8192-mm.c
-@@ -0,0 +1,134 @@
+@@ -0,0 +1,130 @@
 +// SPDX-License-Identifier: GPL-2.0
 +//
 +// Copyright (c) 2020 MediaTek Inc.
@@ -4401,8 +5155,6 @@ index 0000000000000000000000000000000000000000..fd8d3654386f72e31c32f21927e276dd
 +	struct clk_onecell_data *clk_data;
 +	int ret;
 +
-+	pr_info("%s\n", __func__);
-+
 +	clk_data = mtk_alloc_clk_data(CLK_MM_NR_CLK);
 +	if (!clk_data)
 +		return -ENOMEM;
@@ -4417,8 +5169,6 @@ index 0000000000000000000000000000000000000000..fd8d3654386f72e31c32f21927e276dd
 +	ret = of_clk_add_provider(node, of_clk_src_onecell_get, clk_data);
 +	if (ret)
 +		return ret;
-+
-+	pr_info("%s done\n", __func__);
 +
 +	return 0;
 +}
@@ -4865,10 +5615,10 @@ index 0000000000000000000000000000000000000000..8675d6a1e24dc80d3b7650551a46b508
 +builtin_platform_driver(clk_mt8192_venc_drv);
 diff --git a/drivers/clk/mediatek/clk-mt8192.c b/drivers/clk/mediatek/clk-mt8192.c
 new file mode 100755
-index 0000000000000000000000000000000000000000..7acb5b26d86a80c927fae0b1a52146d079473d9a
+index 0000000000000000000000000000000000000000..aaa4231eaa1d2ac935a0700880521a20af9acaf0
 --- /dev/null
 +++ b/drivers/clk/mediatek/clk-mt8192.c
-@@ -0,0 +1,1329 @@
+@@ -0,0 +1,1357 @@
 +// SPDX-License-Identifier: GPL-2.0
 +//
 +// Copyright (c) 2020 MediaTek Inc.
@@ -4896,6 +5646,10 @@ index 0000000000000000000000000000000000000000..7acb5b26d86a80c927fae0b1a52146d0
 +
 +static const struct mtk_fixed_clk top_fixed_clks[] = {
 +	FIXED_CLK(CLK_TOP_ULPOSC, "ulposc", NULL, 260000000),
++};
++
++static const struct mtk_fixed_factor top_early_divs[] = {
++	FACTOR(CLK_TOP_CSW_F26M_D2, "csw_f26m_d2", "clk26m", 1, 2),
 +};
 +
 +static const struct mtk_fixed_factor top_divs[] = {
@@ -4963,7 +5717,6 @@ index 0000000000000000000000000000000000000000..7acb5b26d86a80c927fae0b1a52146d0
 +	FACTOR(CLK_TOP_OSC_D10, "osc_d10", "ulposc", 1, 10),
 +	FACTOR(CLK_TOP_OSC_D16, "osc_d16", "ulposc", 1, 16),
 +	FACTOR(CLK_TOP_OSC_D20, "osc_d20", "ulposc", 1, 20),
-+	FACTOR(CLK_TOP_CSW_F26M_D2, "csw_f26m_d2", "clk26m", 1, 2),
 +	FACTOR(CLK_TOP_ADSPPLL, "adsppll_ck", "adsppll", 1, 1),
 +	FACTOR(CLK_TOP_UNIVPLL_192M, "univpll_192m", "univpll", 1, 13),
 +	FACTOR(CLK_TOP_UNIVPLL_192M_D2, "univpll_192m_d2", "univpll_192m", 1, 2),
@@ -5581,11 +6334,6 @@ index 0000000000000000000000000000000000000000..7acb5b26d86a80c927fae0b1a52146d0
 +	"clk32k"
 +};
 +
-+static const char * const dvfsrc_parents[] = {
-+	"clk26m",
-+	"osc_d10"
-+};
-+
 +static const char * const aes_msdcfde_parents[] = {
 +	"clk26m",
 +	"mainpll_d4_d2",
@@ -5747,7 +6495,6 @@ index 0000000000000000000000000000000000000000..7acb5b26d86a80c927fae0b1a52146d0
 +	/* CLK_CFG_15 */
 +	MUX_GATE_CLR_SET_UPD(CLK_TOP_AUDIO_H_SEL, "audio_h_sel", audio_h_parents, 0x100, 0x104, 0x108, 0, 2, 7, 0x008, 29),
 +	MUX_GATE_CLR_SET_UPD(CLK_TOP_SPMI_MST_SEL, "spmi_mst_sel", spmi_mst_parents, 0x100, 0x104, 0x108, 8, 3, 15, 0x008, 30),
-+	MUX_GATE_CLR_SET_UPD(CLK_TOP_DVFSRC_SEL, "dvfsrc_sel", dvfsrc_parents, 0x100, 0x104, 0x108, 16, 1, 23, 0x00c, 0),
 +	MUX_GATE_CLR_SET_UPD(CLK_TOP_AES_MSDCFDE_SEL, "aes_msdcfde_sel", aes_msdcfde_parents, 0x100, 0x104, 0x108, 24, 3, 31, 0x00c, 1),
 +	/* CLK_CFG_16 */
 +	MUX_GATE_CLR_SET_UPD(CLK_TOP_MCUPM_SEL, "mcupm_sel", mcupm_parents, 0x110, 0x114, 0x118, 0, 2, 7, 0x00c, 2),
@@ -5840,10 +6587,6 @@ index 0000000000000000000000000000000000000000..7acb5b26d86a80c927fae0b1a52146d0
 +	GATE_MTK(_id, _name, _parent, &infra1_cg_regs, _shift,	\
 +		&mtk_clk_gate_ops_setclr)
 +
-+#define GATE_INFRA1_I(_id, _name, _parent, _shift)			\
-+	GATE_MTK(_id, _name, _parent, &infra1_cg_regs, _shift,	\
-+		&mtk_clk_gate_ops_setclr_inv)
-+
 +#define GATE_INFRA2(_id, _name, _parent, _shift)			\
 +	GATE_MTK(_id, _name, _parent, &infra2_cg_regs, _shift,	\
 +		&mtk_clk_gate_ops_setclr)
@@ -5896,14 +6639,13 @@ index 0000000000000000000000000000000000000000..7acb5b26d86a80c927fae0b1a52146d0
 +	GATE_INFRA1(CLK_INFRA_MSDC1, "infra_msdc1", "msdc50_0_h_sel", 4),
 +	GATE_INFRA1(CLK_INFRA_MSDC2, "infra_msdc2", "msdc50_0_h_sel", 5),
 +	GATE_INFRA1(CLK_INFRA_MSDC0_SRC, "infra_msdc0_src", "msdc50_0_sel", 6),
-+	GATE_INFRA1(CLK_INFRA_DVFSRC, "infra_dvfsrc", "clk26m", 7),
 +	GATE_INFRA1(CLK_INFRA_GCPU, "infra_gcpu", "axi_sel", 8),
 +	GATE_INFRA1(CLK_INFRA_TRNG, "infra_trng", "axi_sel", 9),
-+	GATE_INFRA1_I(CLK_INFRA_AUXADC, "infra_auxadc", "clk26m", 10),
++	GATE_INFRA1(CLK_INFRA_AUXADC, "infra_auxadc", "clk26m", 10),
 +	GATE_INFRA1(CLK_INFRA_CPUM, "infra_cpum", "axi_sel", 11),
 +	GATE_INFRA1(CLK_INFRA_CCIF1_AP, "infra_ccif1_ap", "axi_sel", 12),
 +	GATE_INFRA1(CLK_INFRA_CCIF1_MD, "infra_ccif1_md", "axi_sel", 13),
-+	GATE_INFRA1_I(CLK_INFRA_AUXADC_MD, "infra_auxadc_md", "clk26m", 14),
++	GATE_INFRA1(CLK_INFRA_AUXADC_MD, "infra_auxadc_md", "clk26m", 14),
 +	GATE_INFRA1(CLK_INFRA_PCIE_TL_26M, "infra_pcie_tl_26m", "axi_sel", 15),
 +	GATE_INFRA1(CLK_INFRA_MSDC1_SRC, "infra_msdc1_src", "msdc30_1_sel", 16),
 +	GATE_INFRA1(CLK_INFRA_MSDC2_SRC, "infra_msdc2_src", "msdc30_2_sel", 17),
@@ -5921,7 +6663,7 @@ index 0000000000000000000000000000000000000000..7acb5b26d86a80c927fae0b1a52146d0
 +	GATE_INFRA1(CLK_INFRA_DRAMC_F26M, "infra_dramc_f26m", "clk26m", 31),
 +	/* INFRA2 */
 +	GATE_INFRA2(CLK_INFRA_IRTX, "infra_irtx", "clk26m", 0),
-+	GATE_INFRA2(CLK_INFRA_SSUSB, "infra_ssusb", "usbpll", 1),
++	GATE_INFRA2(CLK_INFRA_SSUSB, "infra_ssusb", "usb_top_sel", 1),
 +	GATE_INFRA2(CLK_INFRA_DISP_PWM, "infra_disp_pwm", "axi_sel", 2),
 +	GATE_INFRA2(CLK_INFRA_CLDMA_B, "infra_cldma_b", "axi_sel", 3),
 +	GATE_INFRA2(CLK_INFRA_AUDIO_26M_B, "infra_audio_26m_b", "clk26m", 4),
@@ -6010,6 +6752,21 @@ index 0000000000000000000000000000000000000000..7acb5b26d86a80c927fae0b1a52146d0
 +	GATE_PERI(CLK_PERI_PERIAXI, "peri_periaxi", "axi_sel", 31),
 +};
 +
++static const struct mtk_gate_regs top_cg_regs = {
++	.set_ofs = 0x150,
++	.clr_ofs = 0x150,
++	.sta_ofs = 0x150,
++};
++
++#define GATE_TOP(_id, _name, _parent, _shift)			\
++	GATE_MTK(_id, _name, _parent, &top_cg_regs, _shift,	\
++		&mtk_clk_gate_ops_no_setclr_inv)
++
++static const struct mtk_gate top_clks[] = {
++	GATE_TOP(CLK_TOP_SSUSB_TOP_REF, "ssusb_top_ref", "clk26m", 24),
++	GATE_TOP(CLK_TOP_SSUSB_PHY_REF, "ssusb_phy_ref", "clk26m", 25),
++};
++
 +#define MT8192_PLL_FMAX		(3800UL * MHZ)
 +#define MT8192_PLL_FMIN		(1500UL * MHZ)
 +#define MT8192_INTEGER_BITS	8
@@ -6078,9 +6835,28 @@ index 0000000000000000000000000000000000000000..7acb5b26d86a80c927fae0b1a52146d0
 +		0, 0, 22, 0x03b8, 24, 0, 0, 0, 0x03b8, 0),
 +};
 +
++static struct clk_onecell_data *top_clk_data;
++
++static void clk_mt8192_top_init_early(struct device_node *node)
++{
++	int i;
++
++	top_clk_data = mtk_alloc_clk_data(CLK_TOP_NR_CLK);
++
++	for (i = 0; i < CLK_TOP_NR_CLK; i++)
++		top_clk_data->clks[i] = ERR_PTR(-EPROBE_DEFER);
++
++	mtk_clk_register_factors(top_early_divs, ARRAY_SIZE(top_early_divs),
++			top_clk_data);
++
++	of_clk_add_provider(node, of_clk_src_onecell_get, top_clk_data);
++}
++
++CLK_OF_DECLARE_DRIVER(mt8192_topckgen, "mediatek,mt8192-topckgen",
++			clk_mt8192_top_init_early);
++
 +static int clk_mt8192_top_probe(struct platform_device *pdev)
 +{
-+	struct clk_onecell_data *clk_data;
 +	struct device_node *node = pdev->dev.of_node;
 +	void __iomem *base;
 +
@@ -6088,20 +6864,22 @@ index 0000000000000000000000000000000000000000..7acb5b26d86a80c927fae0b1a52146d0
 +	if (IS_ERR(base))
 +		return PTR_ERR(base);
 +
-+	clk_data = mtk_alloc_clk_data(CLK_TOP_NR_CLK);
-+
 +	mtk_clk_register_fixed_clks(top_fixed_clks, ARRAY_SIZE(top_fixed_clks),
-+			clk_data);
-+	mtk_clk_register_factors(top_divs, ARRAY_SIZE(top_divs), clk_data);
++			top_clk_data);
++	mtk_clk_register_factors(top_early_divs, ARRAY_SIZE(top_early_divs),
++			top_clk_data);
++	mtk_clk_register_factors(top_divs, ARRAY_SIZE(top_divs), top_clk_data);
 +	mtk_clk_register_muxes(top_mtk_muxes, ARRAY_SIZE(top_mtk_muxes), node,
-+			&mt8192_clk_lock, clk_data);
++			&mt8192_clk_lock, top_clk_data);
 +
 +	mtk_clk_register_composites(top_muxes, ARRAY_SIZE(top_muxes), base,
-+			&mt8192_clk_lock, clk_data);
++			&mt8192_clk_lock, top_clk_data);
 +	mtk_clk_register_composites(top_adj_divs, ARRAY_SIZE(top_adj_divs), base,
-+			&mt8192_clk_lock, clk_data);
++			&mt8192_clk_lock, top_clk_data);
++	mtk_clk_register_gates(node, top_clks, ARRAY_SIZE(top_clks),
++			top_clk_data);
 +
-+	return of_clk_add_provider(node, of_clk_src_onecell_get, clk_data);
++	return of_clk_add_provider(node, of_clk_src_onecell_get, top_clk_data);
 +}
 +
 +static int clk_mt8192_infra_probe(struct platform_device *pdev)
@@ -9967,10 +10745,10 @@ index cb939c071b0ccabeeda89331043002967209cf17..89916acf0bc3290101194ae03b801f8c
  
  static int mtk_reset_assert(struct reset_controller_dev *rcdev,
 diff --git a/drivers/gpu/arm/valhall/backend/gpu/mali_kbase_devfreq.c b/drivers/gpu/arm/valhall/backend/gpu/mali_kbase_devfreq.c
-index 177398bea550ab676f05440c1f981695e864991d..8796db4f169b40354c4b59693f5ac53b9ff00821 100644
+index 177398bea550ab676f05440c1f981695e864991d..f027b0113de95610abfeaa881ed8a5c9743eb905 100644
 --- a/drivers/gpu/arm/valhall/backend/gpu/mali_kbase_devfreq.c
 +++ b/drivers/gpu/arm/valhall/backend/gpu/mali_kbase_devfreq.c
-@@ -91,6 +91,34 @@ static void opp_translate(struct kbase_device *kbdev, unsigned long freq,
+@@ -91,6 +91,33 @@ static void opp_translate(struct kbase_device *kbdev, unsigned long freq,
  	}
  }
  
@@ -9983,13 +10761,12 @@ index 177398bea550ab676f05440c1f981695e864991d..8796db4f169b40354c4b59693f5ac53b
 +
 +static int set_frequency(struct kbase_device *kbdev, unsigned long freq)
 +{
-+	int err, i;
++	int err = 0, i;
 +	if (kbdev->devfreq_ops.set_frequency)
 +		return kbdev->devfreq_ops.set_frequency(kbdev, freq);
 +
 +	for (i = 0; i < kbdev->nr_clocks; i++) {
 +		if (kbdev->clocks[i]) {
-+
 +			err = clk_set_rate(kbdev->clocks[i], freq);
 +			if (!err) {
 +				kbdev->current_freqs[i] = freq;
@@ -10005,7 +10782,7 @@ index 177398bea550ab676f05440c1f981695e864991d..8796db4f169b40354c4b59693f5ac53b
  static int
  kbase_devfreq_target(struct device *dev, unsigned long *target_freq, u32 flags)
  {
-@@ -101,6 +129,7 @@ kbase_devfreq_target(struct device *dev, unsigned long *target_freq, u32 flags)
+@@ -101,6 +128,7 @@ kbase_devfreq_target(struct device *dev, unsigned long *target_freq, u32 flags)
  	unsigned long volts[BASE_MAX_NR_CLOCKS_REGULATORS] = {0};
  	unsigned int i;
  	u64 core_mask;
@@ -10013,7 +10790,7 @@ index 177398bea550ab676f05440c1f981695e864991d..8796db4f169b40354c4b59693f5ac53b
  
  	nominal_freq = *target_freq;
  
-@@ -128,6 +157,7 @@ kbase_devfreq_target(struct device *dev, unsigned long *target_freq, u32 flags)
+@@ -128,6 +156,7 @@ kbase_devfreq_target(struct device *dev, unsigned long *target_freq, u32 flags)
  	}
  
  	opp_translate(kbdev, nominal_freq, &core_mask, freqs, volts);
@@ -10021,7 +10798,7 @@ index 177398bea550ab676f05440c1f981695e864991d..8796db4f169b40354c4b59693f5ac53b
  
  #ifdef CONFIG_REGULATOR
  	/* Regulators and clocks work in pairs: every clock has a regulator,
-@@ -162,19 +192,11 @@ kbase_devfreq_target(struct device *dev, unsigned long *target_freq, u32 flags)
+@@ -162,19 +191,11 @@ kbase_devfreq_target(struct device *dev, unsigned long *target_freq, u32 flags)
  	}
  #endif
  
@@ -10062,19 +10839,60 @@ index 9f3d6b1d5b51fda9e8792c0536246ffbbcfc38bf..ea7f49e30200e9ce1b0f69bb1e83b077
 diff --git a/drivers/gpu/arm/valhall/mali_kbase_core_linux.c b/drivers/gpu/arm/valhall/mali_kbase_core_linux.c
 old mode 100644
 new mode 100755
-index 0da37270ac4837a7a5cc3ca5c64a24f10b9bdbfe..01daa225a26220545dec95269e23ebfd0cf90365
+index 0da37270ac4837a7a5cc3ca5c64a24f10b9bdbfe..131e72d2d59651dfdbf58adb36fa553b52246d32
 --- a/drivers/gpu/arm/valhall/mali_kbase_core_linux.c
 +++ b/drivers/gpu/arm/valhall/mali_kbase_core_linux.c
-@@ -3390,7 +3390,7 @@ int power_control_init(struct kbase_device *kbdev)
+@@ -3389,10 +3389,7 @@ int power_control_init(struct kbase_device *kbdev)
+ 	int err = 0;
  	unsigned int i;
  #if defined(CONFIG_REGULATOR)
- 	static const char *regulator_names[] = {
+-	static const char *regulator_names[] = {
 -		"mali", "shadercores"
-+		"mali", "mali_sram"
- 	};
- 	BUILD_BUG_ON(ARRAY_SIZE(regulator_names) < BASE_MAX_NR_CLOCKS_REGULATORS);
+-	};
+-	BUILD_BUG_ON(ARRAY_SIZE(regulator_names) < BASE_MAX_NR_CLOCKS_REGULATORS);
++	const char *regulator_names[BASE_MAX_NR_CLOCKS_REGULATORS];
  #endif /* CONFIG_REGULATOR */
-@@ -3444,22 +3444,6 @@ int power_control_init(struct kbase_device *kbdev)
+ 
+ 	if (!kbdev)
+@@ -3401,6 +3398,37 @@ int power_control_init(struct kbase_device *kbdev)
+ 	pdev = to_platform_device(kbdev->dev);
+ 
+ #if defined(CONFIG_REGULATOR)
++
++	kbdev->nr_regulators = of_property_count_strings(kbdev->dev->of_node,
++			"supply-names");
++
++	if (kbdev->nr_regulators == -EINVAL) {
++		/* The 'supply-names' is optional; if not there assume default */
++#if (KERNEL_VERSION(4, 0, 0) <= LINUX_VERSION_CODE) || \
++					defined(LSK_OPPV2_BACKPORT)
++		regulator_names[0] = "mali";
++		regulator_names[1] = "shadercores";
++#else
++		regulator_names[0] = "mali";
++#endif
++	} else if (kbdev->nr_regulators > BASE_MAX_NR_CLOCKS_REGULATORS) {
++		dev_err(&pdev->dev, "Too many regulators: %d > %d\n",
++			kbdev->nr_regulators, BASE_MAX_NR_CLOCKS_REGULATORS);
++		return -EINVAL;
++    } else if (kbdev->nr_regulators < 0) {
++		err = kbdev->nr_regulators;
++	} else {
++		err = of_property_read_string_array(kbdev->dev->of_node,
++						    "supply-names",
++						    regulator_names,
++						    kbdev->nr_regulators);
++	}
++
++	if (err < 0) {
++		dev_err(&pdev->dev, "Error reading supply-names: %d\n", err);
++		return err;
++	}
++
+ 	/* Since the error code EPROBE_DEFER causes the entire probing
+ 	 * procedure to be restarted from scratch at a later time,
+ 	 * all regulators will be released before returning.
+@@ -3444,22 +3472,6 @@ int power_control_init(struct kbase_device *kbdev)
  			kbdev->clocks[i] = NULL;
  			break;
  		}
@@ -10097,7 +10915,7 @@ index 0da37270ac4837a7a5cc3ca5c64a24f10b9bdbfe..01daa225a26220545dec95269e23ebfd
  	}
  
  	kbdev->nr_clocks = i;
-@@ -3491,12 +3475,6 @@ int power_control_init(struct kbase_device *kbdev)
+@@ -3491,12 +3503,6 @@ int power_control_init(struct kbase_device *kbdev)
  #endif /* KERNEL_VERSION(4, 4, 0) > LINUX_VERSION_CODE */
  	return 0;
  
@@ -10110,7 +10928,7 @@ index 0da37270ac4837a7a5cc3ca5c64a24f10b9bdbfe..01daa225a26220545dec95269e23ebfd
  #endif /* KERNEL_VERSION(3, 18, 0) > LINUX_VERSION_CODE */
  }
  
-@@ -3524,8 +3502,6 @@ void power_control_term(struct kbase_device *kbdev)
+@@ -3524,8 +3530,6 @@ void power_control_term(struct kbase_device *kbdev)
  
  	for (i = 0; i < BASE_MAX_NR_CLOCKS_REGULATORS; i++) {
  		if (kbdev->clocks[i]) {
@@ -10119,7 +10937,7 @@ index 0da37270ac4837a7a5cc3ca5c64a24f10b9bdbfe..01daa225a26220545dec95269e23ebfd
  			clk_put(kbdev->clocks[i]);
  			kbdev->clocks[i] = NULL;
  		} else
-@@ -4192,6 +4168,7 @@ static const struct of_device_id kbase_dt_ids[] = {
+@@ -4192,6 +4196,7 @@ static const struct of_device_id kbase_dt_ids[] = {
  	{ .compatible = "arm,malit6xx" },
  	{ .compatible = "arm,mali-midgard" },
  	{ .compatible = "arm,mali-bifrost" },
@@ -10128,10 +10946,31 @@ index 0da37270ac4837a7a5cc3ca5c64a24f10b9bdbfe..01daa225a26220545dec95269e23ebfd
  };
  MODULE_DEVICE_TABLE(of, kbase_dt_ids);
 diff --git a/drivers/gpu/arm/valhall/mali_kbase_defs.h b/drivers/gpu/arm/valhall/mali_kbase_defs.h
-index bd2301f383df5bf4a7641c18638562d731fbb25a..1363a5beec8b4d9f22861d5d7d4352c0651db160 100644
+old mode 100644
+new mode 100755
+index bd2301f383df5bf4a7641c18638562d731fbb25a..0ae29b55419d67fd314e56011af9a9e1c42c8ccb
 --- a/drivers/gpu/arm/valhall/mali_kbase_defs.h
 +++ b/drivers/gpu/arm/valhall/mali_kbase_defs.h
-@@ -990,6 +990,17 @@ struct kbase_device {
+@@ -108,6 +108,8 @@
+  */
+ #define BASE_MAX_NR_AS              16
+ 
++#define MAX_PM_DOMAINS 5
++
+ /* mmu */
+ #define MIDGARD_MMU_LEVEL(x) (x)
+ 
+@@ -891,6 +893,9 @@ struct kbase_device {
+ 
+ 	struct clk *clocks[BASE_MAX_NR_CLOCKS_REGULATORS];
+ 	unsigned int nr_clocks;
++	/* pm_domains for devices with more than one. */
++	struct device *pm_domain_devs[MAX_PM_DOMAINS];
++	int num_pm_domains;
+ #ifdef CONFIG_REGULATOR
+ 	struct regulator *regulators[BASE_MAX_NR_CLOCKS_REGULATORS];
+ 	unsigned int nr_regulators;
+@@ -990,6 +995,17 @@ struct kbase_device {
  	struct kbase_devfreq_queue_info devfreq_queue;
  #endif
  
@@ -10243,10 +11082,10 @@ index 0000000000000000000000000000000000000000..a2737171371195af712ab092556d3147
 +}
 diff --git a/drivers/gpu/arm/valhall/platform/mt8192/mali_kbase_config_platform.h b/drivers/gpu/arm/valhall/platform/mt8192/mali_kbase_config_platform.h
 new file mode 100755
-index 0000000000000000000000000000000000000000..3b76c4311b45eab5cff50dfeea94ffb301bf758b
+index 0000000000000000000000000000000000000000..dbfa8fa413a148d47d6f36541e0292829ed8883b
 --- /dev/null
 +++ b/drivers/gpu/arm/valhall/platform/mt8192/mali_kbase_config_platform.h
-@@ -0,0 +1,100 @@
+@@ -0,0 +1,98 @@
 +/*
 + * Copyright (C) 2018 MediaTek Inc.
 + *
@@ -10260,17 +11099,13 @@ index 0000000000000000000000000000000000000000..3b76c4311b45eab5cff50dfeea94ffb3
 + * See http://www.gnu.org/licenses/gpl-2.0.html for more details.
 + */
 +
-+#define EXTRA_GPU_CORE_NUM 4
-+
 +struct mfg_base {
 +	struct clk *clk_mux;
 +	struct clk *clk_main_parent;
 +	struct clk *clk_sub_parent;
 +	struct clk *subsys_mfg_cg;
 +	void __iomem *g_mfg_base;
-+	struct platform_device *gpu_coreX_dev[EXTRA_GPU_CORE_NUM];
 +	bool is_powered;
-+	bool reg_is_powered;
 +};
 +
 +/* Definition for PMIC regulators */
@@ -10282,6 +11117,8 @@ index 0000000000000000000000000000000000000000..3b76c4311b45eab5cff50dfeea94ffb3
 +#define MIN_VOLT_BIAS (0) /* uV */
 +#define MAX_VOLT_BIAS (250000) /* uV */
 +#define VOLT_TOL (125) /* uV */
++
++#define GPU_CORE_NUM 5
 +
 +/**
 + * Maximum frequency GPU will be clocked at. Given in kHz.
@@ -10349,10 +11186,10 @@ index 0000000000000000000000000000000000000000..3b76c4311b45eab5cff50dfeea94ffb3
 +#define AUTO_SUSPEND_DELAY (100)
 diff --git a/drivers/gpu/arm/valhall/platform/mt8192/mali_kbase_runtime_pm.c b/drivers/gpu/arm/valhall/platform/mt8192/mali_kbase_runtime_pm.c
 new file mode 100755
-index 0000000000000000000000000000000000000000..155fd9f716d86b518cd6223d6ccb5b38fef50e79
+index 0000000000000000000000000000000000000000..d6e617de4fdbd82a4ea1d442c1fbaf2da89f8857
 --- /dev/null
 +++ b/drivers/gpu/arm/valhall/platform/mt8192/mali_kbase_runtime_pm.c
-@@ -0,0 +1,516 @@
+@@ -0,0 +1,454 @@
 +/*
 + * Copyright (C) 2018 MediaTek Inc.
 + *
@@ -10368,70 +11205,97 @@ index 0000000000000000000000000000000000000000..155fd9f716d86b518cd6223d6ccb5b38
 +
 +#include <linux/of_address.h>
 +#include <linux/of_device.h>
++#include <linux/pm_domain.h>
 +#include <linux/pm_runtime.h>
 +#include <linux/regulator/consumer.h>
 +#include <mali_kbase.h>
 +#include "mali_kbase_config_platform.h"
 +#include <mali_kbase_defs.h>
 +
-+static struct platform_device *probe_gpu_coreX_dev[EXTRA_GPU_CORE_NUM];
-+
-+static const struct of_device_id mtk_gpu_corex_of_ids[] = {
-+	{ .compatible = "mediatek,gpu_core1", .data = "1" },
-+	{ .compatible = "mediatek,gpu_core2", .data = "2" },
-+	{ .compatible = "mediatek,gpu_core3", .data = "3" },
-+	{ .compatible = "mediatek,gpu_core4", .data = "4" },
-+	{}
-+};
-+
-+static int mtk_gpu_corex_probe(struct platform_device *pdev)
++static void pm_domain_term(struct kbase_device *kbdev)
 +{
-+	struct device *dev = &pdev->dev;
-+	const struct of_device_id *match;
-+	const char *tmp;
++	int i;
 +
-+	match = of_match_device(mtk_gpu_corex_of_ids, dev);
-+	if (!match)
-+		return -ENODEV;
-+	tmp = match->data;
-+	switch(*tmp) {
-+		case '1':
-+			probe_gpu_coreX_dev[0] = pdev;
-+		break;
-+		case '2':
-+			probe_gpu_coreX_dev[1] = pdev;
-+		break;
-+		case '3':
-+			probe_gpu_coreX_dev[2] = pdev;
-+		break;
-+		case '4':
-+			probe_gpu_coreX_dev[3] = pdev;
-+		break;
-+		default:
-+			return -EINVAL;
++	for (i = 0; i < ARRAY_SIZE(kbdev->pm_domain_devs); i++) {
++		if (kbdev->pm_domain_devs[i])
++			dev_pm_domain_detach(kbdev->pm_domain_devs[i], true);
 +	}
-+
-+	pm_runtime_set_autosuspend_delay(&pdev->dev, 50);
-+	pm_runtime_use_autosuspend(&pdev->dev);
-+	pm_runtime_enable(&pdev->dev);
-+
-+	return 0;
 +}
 +
-+static int mtk_gpu_corex_remove(struct platform_device *pdev)
++static int pm_domain_init(struct kbase_device *kbdev)
 +{
-+	pm_runtime_disable(&pdev->dev);
-+	return 0;
-+}
++	int err;
++	int i, num_domains, num_domain_names;
++	const char *pd_names[GPU_CORE_NUM];
 +
-+static struct platform_driver mtk_gpu_corex_driver = {
-+	.probe  = mtk_gpu_corex_probe,
-+	.remove = mtk_gpu_corex_remove,
-+	.driver = {
-+		.name = "gpu_corex",
-+		.of_match_table = mtk_gpu_corex_of_ids,
++	num_domains = of_count_phandle_with_args(kbdev->dev->of_node,
++						 "power-domains",
++						 "#power-domain-cells");
++
++	num_domain_names = of_property_count_strings(kbdev->dev->of_node,
++					"power-domain-names");
++
++	/*
++	 * Single domain is handled by the core, and, if only a single power
++	 * the power domain is requested, the property is optional.
++	 */
++	if (num_domains < 2 && kbdev->num_pm_domains < 2)
++		return 0;
++
++	if (num_domains != num_domain_names) {
++		dev_err(kbdev->dev,
++			"Device tree power domains are not match: PD %d, PD names %d\n",
++			num_domains, num_domain_names);
++		return -EINVAL;
 +	}
-+};
++
++	if (num_domains != kbdev->num_pm_domains) {
++		dev_err(kbdev->dev,
++			"Incorrect number of power domains: %d provided, %d needed\n",
++			num_domains, kbdev->num_pm_domains);
++		return -EINVAL;
++	}
++
++	if (WARN(num_domains > ARRAY_SIZE(kbdev->pm_domain_devs),
++			"Too many supplies in compatible structure.\n"))
++		return -EINVAL;
++
++	err = of_property_read_string_array(kbdev->dev->of_node,
++										"power-domain-names",
++										pd_names,
++										num_domain_names);
++
++	if (err < 0) {
++		dev_err(kbdev->dev, "Error reading supply-names: %d\n", err);
++		return err;
++	}
++
++	for (i = 0; i < num_domains; i++) {
++		kbdev->pm_domain_devs[i] =
++			dev_pm_domain_attach_by_name(kbdev->dev,
++					pd_names[i]);
++		if (IS_ERR_OR_NULL(kbdev->pm_domain_devs[i])) {
++			err = PTR_ERR(kbdev->pm_domain_devs[i]) ? : -ENODATA;
++			kbdev->pm_domain_devs[i] = NULL;
++			if (err == -EPROBE_DEFER) {
++				dev_err(kbdev->dev,
++					"Probe deferral for pm-domain %s(%d)\n",
++					pd_names[i], i);
++			} else {
++				dev_err(kbdev->dev,
++					"failed to get pm-domain %s(%d): %d\n",
++					pd_names[i], i, err);
++			}
++			goto err;
++		}
++	}
++
++	return 0;
++
++err:
++	pm_domain_term(kbdev);
++	return err;
++}
 +
 +static void check_bus_idle(struct kbase_device *kbdev)
 +{
@@ -10473,23 +11337,24 @@ index 0000000000000000000000000000000000000000..155fd9f716d86b518cd6223d6ccb5b38
 +		return 0;
 +	}
 +
-+	error = pm_runtime_get_sync(kbdev->dev);
-+	if (error < 0) {
-+		dev_err(kbdev->dev,
-+			"Power on core 0 failed (err: %d)\n", error);
-+		return error;
-+	}
-+
-+	for (i = 0; i < EXTRA_GPU_CORE_NUM; i++) {
-+		error = pm_runtime_get_sync(&mfg->gpu_coreX_dev[i]->dev);
++	for (i = 0; i < kbdev->nr_regulators; i++) {
++		error = regulator_enable(kbdev->regulators[i]);
 +		if (error < 0) {
 +			dev_err(kbdev->dev,
-+				"Power on core %d failed (err: %d)\n", i+1, error);
++				"Power on reg %d failed error = %d\n",
++				i, error);
 +			return error;
 +		}
 +	}
 +
-+	error = clk_enable(mfg->clk_main_parent);
++	for(i = 0; i < kbdev->num_pm_domains; i++) {
++		error = pm_runtime_get_sync(kbdev->pm_domain_devs[i]);
++		if (error < 0)
++			dev_err(kbdev->dev,
++			"Power on core %d failed (err: %d)\n", i+1, error);
++	}
++
++	error = clk_prepare_enable(mfg->clk_main_parent);
 +	if (error < 0) {
 +		dev_err(kbdev->dev,
 +			"clk_main_parent clock enable failed (err: %d)\n",
@@ -10497,7 +11362,7 @@ index 0000000000000000000000000000000000000000..155fd9f716d86b518cd6223d6ccb5b38
 +		return error;
 +	}
 +
-+	error = clk_enable(mfg->clk_sub_parent);
++	error = clk_prepare_enable(mfg->clk_sub_parent);
 +	if (error < 0) {
 +		dev_err(kbdev->dev,
 +			"clk_sub_parent clock enable failed (err: %d)\n",
@@ -10505,14 +11370,14 @@ index 0000000000000000000000000000000000000000..155fd9f716d86b518cd6223d6ccb5b38
 +		return error;
 +	}
 +
-+	error = clk_enable(mfg->clk_mux);
++	error = clk_prepare_enable(mfg->clk_mux);
 +	if (error < 0) {
 +		dev_err(kbdev->dev,
 +			"clk_mux clock enable failed (err: %d)\n", error);
 +		return error;
 +	}
 +
-+	error = clk_enable(mfg->subsys_mfg_cg);
++	error = clk_prepare_enable(mfg->subsys_mfg_cg);
 +	if (error < 0) {
 +		dev_err(kbdev->dev,
 +			"subsys_mfg_cg clock enable failed (err: %d)\n", error);
@@ -10538,27 +11403,30 @@ index 0000000000000000000000000000000000000000..155fd9f716d86b518cd6223d6ccb5b38
 +
 +	check_bus_idle(kbdev);
 +
-+	clk_disable(mfg->subsys_mfg_cg);
++	clk_disable_unprepare(mfg->subsys_mfg_cg);
 +
-+	clk_disable(mfg->clk_mux);
++	clk_disable_unprepare(mfg->clk_mux);
 +
-+	clk_disable(mfg->clk_sub_parent);
++	clk_disable_unprepare(mfg->clk_sub_parent);
 +
-+	clk_disable(mfg->clk_main_parent);
++	clk_disable_unprepare(mfg->clk_main_parent);
 +
-+	for (i = EXTRA_GPU_CORE_NUM - 1; i >= 0; i--) {
-+		pm_runtime_mark_last_busy(&mfg->gpu_coreX_dev[i]->dev);
-+		error = pm_runtime_put_autosuspend(&mfg->gpu_coreX_dev[i]->dev);
++	for(i = kbdev->num_pm_domains - 1; i >= 0; i--) {
++		pm_runtime_mark_last_busy(kbdev->pm_domain_devs[i]);
++		error = pm_runtime_put_autosuspend(kbdev->pm_domain_devs[i]);
 +		if (error < 0)
 +			dev_err(kbdev->dev,
 +			"Power off core %d failed (err: %d)\n", i+1, error);
 +	}
 +
-+	pm_runtime_mark_last_busy(kbdev->dev);
-+	error = pm_runtime_put_autosuspend(kbdev->dev);
-+	if (error < 0)
-+		dev_err(kbdev->dev,
-+		"Power off core 0 failed (err: %d)\n", error);
++	for (i = kbdev->nr_regulators - 1; i >= 0; i--) {
++		error = regulator_disable(kbdev->regulators[i]);
++		if (error < 0) {
++			dev_err(kbdev->dev,
++				"Power off reg %d failed error = %d\n",
++				i, error);
++		}
++	}
 +}
 +
 +static int kbase_device_runtime_init(struct kbase_device *kbdev)
@@ -10575,100 +11443,21 @@ index 0000000000000000000000000000000000000000..155fd9f716d86b518cd6223d6ccb5b38
 +
 +static int pm_callback_runtime_on(struct kbase_device *kbdev)
 +{
-+	struct mfg_base *mfg = kbdev->platform_context;
-+	int error, i;
-+
-+	if(mfg->reg_is_powered) {
-+		dev_dbg(kbdev->dev,"GPU regulators are already power on\n");
-+		return 1;
-+	}
-+
-+	for (i = 0; i < kbdev->nr_regulators; i++) {
-+		error = regulator_enable(kbdev->regulators[i]);
-+		if (error < 0) {
-+			dev_err(kbdev->dev,
-+				"Power on reg %d failed error = %d\n",
-+				i, error);
-+			return error;
-+		}
-+	}
-+
-+	error = clk_prepare(mfg->clk_main_parent);
-+	if (error < 0) {
-+		dev_err(kbdev->dev,
-+			"clk_main_parent clock prepare failed (err: %d)\n",
-+			error);
-+		return error;
-+	}
-+
-+	error = clk_prepare(mfg->clk_sub_parent);
-+	if (error < 0) {
-+		dev_err(kbdev->dev,
-+			"clk_sub_parent clock prepare failed (err: %d)\n",
-+			error);
-+		return error;
-+	}
-+
-+	error = clk_prepare(mfg->clk_mux);
-+	if (error < 0) {
-+		dev_err(kbdev->dev,
-+			"clk_mux clock prepare failed (err: %d)\n", error);
-+		return error;
-+	}
-+
-+	error = clk_prepare(mfg->subsys_mfg_cg);
-+	if (error < 0) {
-+		dev_err(kbdev->dev,
-+			"subsys_mfg_cg clock prepare failed (err: %d)\n",
-+			error);
-+		return error;
-+	}
-+
-+	mfg->reg_is_powered = true;
-+
 +	return 0;
 +}
 +
 +static void pm_callback_runtime_off(struct kbase_device *kbdev)
 +{
-+	struct mfg_base *mfg = kbdev->platform_context;
-+	int error, i;
-+
-+	if(!mfg->reg_is_powered) {
-+		dev_dbg(kbdev->dev,"GPU regulators are already power off\n");
-+		return;
-+	}
-+
-+	clk_unprepare(mfg->subsys_mfg_cg);
-+
-+	clk_unprepare(mfg->clk_mux);
-+
-+	clk_unprepare(mfg->clk_sub_parent);
-+
-+	clk_unprepare(mfg->clk_main_parent);
-+
-+	for (i = kbdev->nr_regulators - 1; i >= 0; i--) {
-+		error = regulator_disable(kbdev->regulators[i]);
-+		if (error < 0) {
-+			dev_err(kbdev->dev,
-+				"Power off reg %d failed error = %d\n",
-+				i, error);
-+		}
-+	}
-+
-+	mfg->reg_is_powered = false;
 +}
 +
 +static void pm_callback_resume(struct kbase_device *kbdev)
 +{
-+	pm_callback_runtime_on(kbdev);
 +	pm_callback_power_on(kbdev);
 +}
 +
 +static void pm_callback_suspend(struct kbase_device *kbdev)
 +{
 +	pm_callback_power_off(kbdev);
-+	pm_callback_runtime_off(kbdev);
 +}
 +
 +struct kbase_pm_callback_conf pm_callbacks = {
@@ -10695,16 +11484,15 @@ index 0000000000000000000000000000000000000000..155fd9f716d86b518cd6223d6ccb5b38
 +	int err, i;
 +	unsigned long volt;
 +
-+	for (i = 0; i < EXTRA_GPU_CORE_NUM; i++)
-+		if (!probe_gpu_coreX_dev[i])
-+			return -EPROBE_DEFER;
++	kbdev->num_pm_domains = GPU_CORE_NUM;
++
++	err = pm_domain_init(kbdev);
++	if (err < 0)
++		return err;
 +
 +	for (i = 0; i < kbdev->nr_regulators; i++)
 +		if (kbdev->regulators[i] == NULL)
 +			return -EINVAL;
-+
-+	for (i = 0; i < EXTRA_GPU_CORE_NUM; i++)
-+		mfg->gpu_coreX_dev[i] = probe_gpu_coreX_dev[i];
 +
 +	mfg->clk_main_parent = devm_clk_get(kbdev->dev, "clk_main_parent");
 +	if (IS_ERR(mfg->clk_main_parent)) {
@@ -10754,7 +11542,6 @@ index 0000000000000000000000000000000000000000..155fd9f716d86b518cd6223d6ccb5b38
 +	}
 +
 +	mfg->is_powered = false;
-+	mfg->reg_is_powered = false;
 +
 +	return 0;
 +}
@@ -10798,7 +11585,7 @@ index 0000000000000000000000000000000000000000..155fd9f716d86b518cd6223d6ccb5b38
 +
 +static int platform_init(struct kbase_device *kbdev)
 +{
-+	int err;
++	int err,i;
 +	struct mfg_base *mfg;
 +
 +	mfg = kzalloc(sizeof(*mfg), GFP_KERNEL);
@@ -10810,9 +11597,10 @@ index 0000000000000000000000000000000000000000..155fd9f716d86b518cd6223d6ccb5b38
 +		goto platform_init_err;
 +
 +	kbdev->platform_context = mfg;
-+	pm_runtime_set_autosuspend_delay(kbdev->dev, 50);
-+	pm_runtime_use_autosuspend(kbdev->dev);
-+	pm_runtime_enable(kbdev->dev);
++	for(i = 0; i < kbdev->num_pm_domains; i++) {
++		pm_runtime_set_autosuspend_delay(kbdev->pm_domain_devs[i], 50);
++		pm_runtime_use_autosuspend(kbdev->pm_domain_devs[i]);
++	}
 +
 +	err = clk_set_parent(mfg->clk_mux, mfg->clk_sub_parent);
 +	if (err) {
@@ -10849,26 +11637,13 @@ index 0000000000000000000000000000000000000000..155fd9f716d86b518cd6223d6ccb5b38
 +
 +	kfree(mfg);
 +	kbdev->platform_context = NULL;
-+	pm_runtime_disable(kbdev->dev);
++	pm_domain_term(kbdev);
 +}
 +
 +struct kbase_platform_funcs_conf platform_funcs = {
 +	.platform_init_func = platform_init,
 +	.platform_term_func = platform_term
 +};
-+
-+static int __init mtk_mfg_corex(void)
-+{
-+	int ret;
-+
-+	ret = platform_driver_register(&mtk_gpu_corex_driver);
-+	if (ret != 0)
-+		pr_debug("%s: Failed to register GPU core driver", __func__);
-+
-+	return ret;
-+}
-+
-+subsys_initcall(mtk_mfg_corex);
 diff --git a/drivers/gpu/drm/mediatek/mtk_disp_color.c b/drivers/gpu/drm/mediatek/mtk_disp_color.c
 index 3ae9c810845bbfebb49f36a232fc7eaec5f8dc63..83b075a0d3a57b434b39893cb1eacbcca800addb 100644
 --- a/drivers/gpu/drm/mediatek/mtk_disp_color.c
@@ -14105,7 +14880,7 @@ index ea949a324e33847403a8ce3e7e9800e5bc21e3f6..a456a91d3b5c05ca7efdd0d719c25a9f
  	struct mtk_smi_larb_iommu	larb_imu[MTK_LARB_NR_MAX];
  };
 diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
-index 7bdd74c7cb9fde7ae31596a7f6c67262723c2e63..85b9d650ef767bde91769f77e15985cddd963aec 100644
+index 5c35ebc946912c3b8778c2e51081d1621cda99dd..cd16061ed0f9de997b853174150b85fe42bea59a 100644
 --- a/drivers/iommu/mtk_iommu_v1.c
 +++ b/drivers/iommu/mtk_iommu_v1.c
 @@ -422,7 +422,9 @@ static struct iommu_device *mtk_iommu_probe_device(struct device *dev)
@@ -14134,17 +14909,16 @@ index 7bdd74c7cb9fde7ae31596a7f6c67262723c2e63..85b9d650ef767bde91769f77e15985cd
  	return &data->iommu;
  }
  
-@@ -465,11 +475,18 @@ static void mtk_iommu_release_device(struct device *dev)
+@@ -464,10 +474,17 @@ static void mtk_iommu_probe_finalize(struct device *dev)
+ static void mtk_iommu_release_device(struct device *dev)
  {
  	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
- 	struct mtk_iommu_data *data;
 +	struct device *larbdev;
 +	unsigned int larbid;
  
  	if (!fwspec || fwspec->ops != &mtk_iommu_ops)
  		return;
  
- 	data = dev_iommu_priv_get(dev);
 +
 +	larbid = mt2701_m4u_to_larb(fwspec->ids[0]);
 +	larbdev = data->larb_imu[larbid].dev;
@@ -14153,7 +14927,7 @@ index 7bdd74c7cb9fde7ae31596a7f6c67262723c2e63..85b9d650ef767bde91769f77e15985cd
  	iommu_fwspec_free(dev);
  }
  
-@@ -592,10 +609,15 @@ static int mtk_iommu_probe(struct platform_device *pdev)
+@@ -590,10 +607,15 @@ static int mtk_iommu_probe(struct platform_device *pdev)
  
  		plarbdev = of_find_device_by_node(larb_spec.np);
  		if (!plarbdev) {
@@ -14170,7 +14944,7 @@ index 7bdd74c7cb9fde7ae31596a7f6c67262723c2e63..85b9d650ef767bde91769f77e15985cd
  				of_node_put(larb_spec.np);
  				return -EPROBE_DEFER;
  			}
-@@ -630,22 +652,6 @@ static int mtk_iommu_probe(struct platform_device *pdev)
+@@ -628,22 +650,6 @@ static int mtk_iommu_probe(struct platform_device *pdev)
  	return component_master_add_with_match(dev, &mtk_iommu_com_ops, match);
  }
  
@@ -14193,7 +14967,7 @@ index 7bdd74c7cb9fde7ae31596a7f6c67262723c2e63..85b9d650ef767bde91769f77e15985cd
  static int __maybe_unused mtk_iommu_suspend(struct device *dev)
  {
  	struct mtk_iommu_data *data = dev_get_drvdata(dev);
-@@ -682,16 +688,10 @@ static const struct dev_pm_ops mtk_iommu_pm_ops = {
+@@ -680,16 +686,10 @@ static const struct dev_pm_ops mtk_iommu_pm_ops = {
  
  static struct platform_driver mtk_iommu_driver = {
  	.probe	= mtk_iommu_probe,
@@ -14309,7 +15083,7 @@ index a113e811faabea34387d0d15ac1e4b74315ec29c..ca2c62c618d74de185d6ba1e6ce75115
 diff --git a/drivers/mmc/host/mtk-sd.c b/drivers/mmc/host/mtk-sd.c
 old mode 100644
 new mode 100755
-index 5c6f61ff01928b8145d71ad9162604112c8deea7..0183322e3156f4adb603a7be55fcdaa952a400e5
+index 5c6f61ff01928b8145d71ad9162604112c8deea7..29bf849a084108152e4dffff1d509f24fb9106f4
 --- a/drivers/mmc/host/mtk-sd.c
 +++ b/drivers/mmc/host/mtk-sd.c
 @@ -475,6 +475,17 @@ static const struct mtk_mmc_compatible mt8183_compat = {
@@ -14338,64 +15112,10 @@ index 5c6f61ff01928b8145d71ad9162604112c8deea7..0183322e3156f4adb603a7be55fcdaa9
  	{ .compatible = "mediatek,mt2701-mmc", .data = &mt2701_compat},
  	{ .compatible = "mediatek,mt2712-mmc", .data = &mt2712_compat},
  	{ .compatible = "mediatek,mt7622-mmc", .data = &mt7622_compat},
-@@ -1384,10 +1396,12 @@ static int msdc_ops_switch_volt(struct mmc_host *mmc, struct mmc_ios *ios)
- 				ret, ios->signal_voltage);
- 		} else {
- 			/* Apply different pinctrl settings for different signal voltage */
-+#if 0
- 			if (ios->signal_voltage == MMC_SIGNAL_VOLTAGE_180)
- 				pinctrl_select_state(host->pinctrl, host->pins_uhs);
- 			else
- 				pinctrl_select_state(host->pinctrl, host->pins_default);
-+#endif
- 		}
- 	}
- 	return ret;
-@@ -2279,6 +2293,7 @@ static int msdc_drv_probe(struct platform_device *pdev)
- 		goto host_free;
- 	}
- 
-+#if 0
- 	host->pinctrl = devm_pinctrl_get(&pdev->dev);
- 	if (IS_ERR(host->pinctrl)) {
- 		ret = PTR_ERR(host->pinctrl);
-@@ -2299,6 +2314,7 @@ static int msdc_drv_probe(struct platform_device *pdev)
- 		dev_err(&pdev->dev, "Cannot find pinctrl uhs!\n");
- 		goto host_free;
- 	}
-+#endif
- 
- 	msdc_of_property_parse(pdev, host);
- 
-diff --git a/drivers/mtd/spi-nor/spi-nor.c b/drivers/mtd/spi-nor/spi-nor.c
-index f417fb680cd800d91256d3ca37407e995a222be6..46633e9a145ee008fc815b84d8b3db80dc055cf7 100644
---- a/drivers/mtd/spi-nor/spi-nor.c
-+++ b/drivers/mtd/spi-nor/spi-nor.c
-@@ -2485,6 +2485,22 @@ static const struct flash_info spi_nor_ids[] = {
- 			     SECT_4K | SPI_NOR_DUAL_READ | SPI_NOR_QUAD_READ) },
- 	{ "w25m512jv", INFO(0xef7119, 0, 64 * 1024, 1024,
- 			SECT_4K | SPI_NOR_QUAD_READ | SPI_NOR_DUAL_READ) },
-+	{ "w25q32jwxxIM", INFO(0xef8016, 0, 64 * 1024,  64,
-+		SECT_4K | SPI_NOR_DUAL_READ | SPI_NOR_QUAD_READ |
-+		SPI_NOR_HAS_LOCK | SPI_NOR_HAS_TB)
-+	},
-+	{ "w25q64jwxxIM", INFO(0xef8017, 0, 64 * 1024, 128,
-+		SECT_4K | SPI_NOR_DUAL_READ | SPI_NOR_QUAD_READ |
-+		SPI_NOR_HAS_LOCK | SPI_NOR_HAS_TB)
-+	},
-+	{ "w25q128jwxxIM", INFO(0xef8018, 0, 64 * 1024, 256,
-+		SECT_4K | SPI_NOR_DUAL_READ | SPI_NOR_QUAD_READ |
-+		SPI_NOR_HAS_LOCK | SPI_NOR_HAS_TB)
-+	},
-+	{ "w25q256jwxxIM", INFO(0xef8019, 0, 64 * 1024, 512,
-+		SECT_4K | SPI_NOR_DUAL_READ | SPI_NOR_QUAD_READ |
-+		SPI_NOR_HAS_LOCK | SPI_NOR_HAS_TB)
-+	},
- 
- 	/* Catalyst / On Semiconductor -- non-JEDEC */
- 	{ "cat25c11", CAT25_INFO(  16, 8, 16, 1, SPI_NOR_NO_ERASE | SPI_NOR_NO_FR) },
 diff --git a/drivers/pci/controller/pcie-mediatek.c b/drivers/pci/controller/pcie-mediatek.c
-index 626a7c352dfdf8ca5e238ada09a51fab5d3061b4..1c6db83fbccce6ff6759554bdb6728d9ffeddeac 100644
+old mode 100644
+new mode 100755
+index 626a7c352dfdf8ca5e238ada09a51fab5d3061b4..f66d20c482b0b4a9e9bf00cd05bad02a1b8d3362
 --- a/drivers/pci/controller/pcie-mediatek.c
 +++ b/drivers/pci/controller/pcie-mediatek.c
 @@ -13,6 +13,7 @@
@@ -15440,7 +16160,7 @@ index 626a7c352dfdf8ca5e238ada09a51fab5d3061b4..1c6db83fbccce6ff6759554bdb6728d9
  	{ .compatible = "mediatek,mt2712-pcie", .data = &mtk_pcie_soc_mt2712 },
  	{ .compatible = "mediatek,mt7622-pcie", .data = &mtk_pcie_soc_mt7622 },
  	{ .compatible = "mediatek,mt7629-pcie", .data = &mtk_pcie_soc_mt7629 },
-+	{ .compatible = "mediatek,margaux-pcie", .data = &mtk_pcie_soc_v3 },
++	{ .compatible = "mediatek,mt8192-pcie", .data = &mtk_pcie_soc_v3 },
  	{},
  };
  
@@ -19570,6 +20290,513 @@ index 923264d0e9ef2c595b93d559bc04fb209e736045..ab1732c61c9a2f20e82f9bb287029a61
  	desc = (const struct mtk_pin_desc *)&hw->soc->pins[gpio];
  
  	err = mtk_hw_get_value(hw, desc, PINCTRL_PIN_REG_DIR, &value);
+diff --git a/drivers/regulator/Kconfig b/drivers/regulator/Kconfig
+index 3ee63531f6d5c36d36ffd24b2e7477cf1290e439..741316140754114154e0e00c6509104c64530f68 100644
+--- a/drivers/regulator/Kconfig
++++ b/drivers/regulator/Kconfig
+@@ -610,6 +610,16 @@ config REGULATOR_MT6311
+ 	  This driver supports the control of different power rails of device
+ 	  through regulator interface.
+ 
++config REGULATOR_MT6315
++	tristate "MediaTek MT6315 PMIC"
++	depends on SPMI
++	select REGMAP_SPMI
++	help
++	  Say y here to select this option to enable the power regulator of
++	  MediaTek MT6315 PMIC.
++	  This driver supports the control of different power rails of device
++	  through regulator interface.
++
+ config REGULATOR_MT6323
+ 	tristate "MediaTek MT6323 PMIC"
+ 	depends on MFD_MT6397
+diff --git a/drivers/regulator/Makefile b/drivers/regulator/Makefile
+index 2210ba56f9bd115e6229e02861d7009358d977dd..a014cc936d26594ef6ff9e3a2baf935aa24c2c96 100644
+--- a/drivers/regulator/Makefile
++++ b/drivers/regulator/Makefile
+@@ -78,6 +78,7 @@ obj-$(CONFIG_REGULATOR_MC13892) += mc13892-regulator.o
+ obj-$(CONFIG_REGULATOR_MC13XXX_CORE) +=  mc13xxx-regulator-core.o
+ obj-$(CONFIG_REGULATOR_MCP16502) += mcp16502.o
+ obj-$(CONFIG_REGULATOR_MT6311) += mt6311-regulator.o
++obj-$(CONFIG_REGULATOR_MT6315) += mt6315-regulator.o
+ obj-$(CONFIG_REGULATOR_MT6323)	+= mt6323-regulator.o
+ obj-$(CONFIG_REGULATOR_MT6358)	+= mt6358-regulator.o
+ obj-$(CONFIG_REGULATOR_MT6380)	+= mt6380-regulator.o
+diff --git a/drivers/regulator/mt6315-regulator.c b/drivers/regulator/mt6315-regulator.c
+new file mode 100644
+index 0000000000000000000000000000000000000000..188e670746c519e3f52aaad69ea69a6b1a83b270
+--- /dev/null
++++ b/drivers/regulator/mt6315-regulator.c
+@@ -0,0 +1,468 @@
++// SPDX-License-Identifier: GPL-2.0
++//
++// Copyright (c) 2020 MediaTek Inc.
++
++#include <linux/interrupt.h>
++#include <linux/module.h>
++#include <linux/of_device.h>
++#include <linux/of_irq.h>
++#include <linux/platform_device.h>
++#include <linux/regmap.h>
++#include <linux/regulator/driver.h>
++#include <linux/regulator/machine.h>
++#include <linux/regulator/mt6315-regulator.h>
++#include <linux/regulator/of_regulator.h>
++#include <linux/spmi.h>
++
++#define MT6315_REG_WIDTH	8
++
++#define MT6315_BUCK_MODE_AUTO		0
++#define MT6315_BUCK_MODE_FORCE_PWM	1
++#define MT6315_BUCK_MODE_NORMAL		0
++#define MT6315_BUCK_MODE_LP		2
++
++/*
++ * MT6315 regulators' information
++ *
++ * @desc: standard fields of regulator description.
++ * @da_reg: for query status of regulators.
++ * @qi: Mask for query enable signal status of regulators.
++ * @modeset_reg: for operating AUTO/PWM mode register.
++ * @modeset_mask: MASK for operating modeset register.
++ */
++struct mt6315_regulator_info {
++	struct regulator_desc desc;
++	u32 da_vsel_reg;
++	u32 da_reg;
++	u32 qi;
++	u32 modeset_reg;
++	u32 modeset_mask;
++	u32 lp_mode_reg;
++	u32 lp_mode_mask;
++	u32 lp_mode_shift;
++};
++
++/*
++ * MTK regulators' init data
++ *
++ * @id: chip slave id
++ * @size: num of regulators
++ * @regulator_info: regulator info.
++ */
++struct mt_regulator_init_data {
++	u32 id;
++	u32 size;
++	struct mt6315_regulator_info *regulator_info;
++};
++
++struct mt6315_chip {
++	struct device *dev;
++	struct regmap *regmap;
++	struct mutex lock;
++	u32 reg_value;
++	u32 slave_id;
++};
++
++#define MT_BUCK(match, _name, min, max, step, volt_ranges, _bid, _vsel, _da_vsel,	\
++		_modeset_mask)						\
++[MT6315_ID_##_name] = {							\
++	.desc = {							\
++		.name = #_name,						\
++		.of_match = of_match_ptr(match),			\
++		.ops = &mt6315_volt_range_ops,				\
++		.type = REGULATOR_VOLTAGE,				\
++		.id = MT6315_ID_##_name,				\
++		.owner = THIS_MODULE,					\
++		.uV_step = (step),					\
++		.linear_min_sel = (0x30),				\
++		.n_voltages = (max) / (step) + 1,			\
++		.min_uV = (min),					\
++		.linear_ranges = volt_ranges,				\
++		.n_linear_ranges = ARRAY_SIZE(volt_ranges),		\
++		.vsel_reg = _vsel,\
++		.vsel_mask = 0xFF, \
++		.enable_reg = MT6315_BUCK_TOP_CON0,\
++		.enable_mask = BIT(_bid - 1),\
++		.of_map_mode = mt6358_map_mode,	\
++	},								\
++	.da_vsel_reg = _da_vsel,		\
++	.da_reg = MT6315_BUCK_VBUCK##_bid##_DBG4,			\
++	.qi = BIT(0),							\
++	.lp_mode_reg = MT6315_BUCK_TOP_CON1,	\
++	.lp_mode_mask = BIT(_bid - 1),\
++	.lp_mode_shift = _bid - 1,	\
++	.modeset_reg = MT6315_BUCK_TOP_4PHASE_ANA_CON42,		\
++	.modeset_mask = _modeset_mask,					\
++}
++
++static const struct regulator_linear_range mt_volt_range1[] = {
++	REGULATOR_LINEAR_RANGE(300000, 0x30, 0xbf, 6250),
++};
++
++static unsigned int mt6358_map_mode(unsigned int mode)
++{
++	switch (mode) {
++	case MT6315_BUCK_MODE_AUTO:
++		return REGULATOR_MODE_NORMAL;
++	case MT6315_BUCK_MODE_FORCE_PWM:
++		return REGULATOR_MODE_FAST;
++	case MT6315_BUCK_MODE_LP:
++		return REGULATOR_MODE_IDLE;
++	default:
++		return -EINVAL;
++	}
++}
++
++static int mt6315_regulator_get_voltage_sel(struct regulator_dev *rdev)
++{
++	struct mt6315_regulator_info *info = rdev_get_drvdata(rdev);
++	int ret = 0, regval = 0;
++
++	ret = regmap_read(rdev->regmap, info->da_vsel_reg, &regval);
++	if (ret != 0) {
++		dev_notice(&rdev->dev,
++			"Failed to get mt6315 regulator voltage: %d\n", ret);
++		return ret;
++	}
++
++	ret = regval & MT6315_DA_VOSEL_MASK;
++	pr_notice("[%s] %d, reg_val 0x%x, 0x%x\n", __func__, __LINE__, regval, ret);
++
++	return ret;
++}
++
++static unsigned int mt6315_regulator_get_mode(struct regulator_dev *rdev)
++{
++	struct mt6315_regulator_info *info = rdev_get_drvdata(rdev);
++	int ret = 0, regval = 0;
++
++	dev_notice(&rdev->dev,"[%s] %d\n", __func__, __LINE__);
++
++	ret = regmap_read(rdev->regmap, info->modeset_reg, &regval);
++	if (ret != 0) {
++		dev_notice(&rdev->dev,
++			"Failed to get mt6315 buck mode: %d\n", ret);
++		return ret;
++	}
++
++	dev_notice(&rdev->dev,"[%s] %d, modeset 0x%x = 0x%x\n", __func__, __LINE__, info->modeset_reg, regval);
++
++	if ((regval & info->modeset_mask) == info->modeset_mask)
++		return REGULATOR_MODE_FAST;
++
++	ret = regmap_read(rdev->regmap, info->lp_mode_reg, &regval);
++	if (ret != 0) {
++		dev_notice(&rdev->dev,
++			"Failed to get mt6315 buck lp mode: %d\n", ret);
++		return ret;
++	}
++
++	if (regval & info->lp_mode_mask)
++		return REGULATOR_MODE_IDLE;
++	else
++		return REGULATOR_MODE_NORMAL;
++}
++
++static int mt6315_regulator_set_mode(struct regulator_dev *rdev,
++				     unsigned int mode)
++{
++	struct mt6315_regulator_info *info = rdev_get_drvdata(rdev);
++	int ret = 0, val;
++	int curr_mode;
++
++	curr_mode = mt6315_regulator_get_mode(rdev);
++	switch (mode) {
++	case REGULATOR_MODE_FAST:
++		if (curr_mode == REGULATOR_MODE_IDLE) {
++			WARN_ON(1);
++			dev_notice(&rdev->dev,
++				   "BUCK %s is LP mode, can't FPWM\n",
++				   rdev->desc->name);
++			return -EIO;
++		}
++		ret = regmap_update_bits(rdev->regmap,
++					 info->modeset_reg,
++					 info->modeset_mask,
++					 info->modeset_mask);
++		break;
++	case REGULATOR_MODE_NORMAL:
++		if (curr_mode == REGULATOR_MODE_FAST) {
++			ret = regmap_update_bits(rdev->regmap,
++						 info->modeset_reg,
++						 info->modeset_mask,
++						 0);
++		} else if (curr_mode == REGULATOR_MODE_IDLE) {
++			val = MT6315_BUCK_MODE_NORMAL;
++			val <<= info->lp_mode_shift;
++			ret = regmap_update_bits(rdev->regmap,
++						 info->lp_mode_reg,
++						 info->lp_mode_mask,
++						 val);
++			udelay(100);
++		}
++		break;
++	case REGULATOR_MODE_IDLE:
++		if (curr_mode == REGULATOR_MODE_FAST) {
++			WARN_ON(1);
++			dev_notice(&rdev->dev,
++				   "BUCK %s is FPWM mode, can't enter LP\n",
++				   rdev->desc->name);
++			return -EIO;
++		}
++		val = MT6315_BUCK_MODE_LP >> 1;
++		val <<= info->lp_mode_shift;
++		ret = regmap_update_bits(rdev->regmap,
++					 info->lp_mode_reg,
++					 info->lp_mode_mask,
++					 val);
++		break;
++	default:
++		ret = -EINVAL;
++		goto err_mode;
++	}
++
++err_mode:
++	if (ret != 0) {
++		dev_notice(&rdev->dev,
++			"Failed to set mt6315 buck mode: %d\n", ret);
++		return ret;
++	}
++
++	return 0;
++}
++
++static int mt6315_get_status(struct regulator_dev *rdev)
++{
++	int ret = 0;
++	u32 regval = 0;
++	struct mt6315_regulator_info *info = rdev_get_drvdata(rdev);
++
++	ret = regmap_read(rdev->regmap, info->da_reg, &regval);
++	if (ret != 0) {
++		dev_notice(&rdev->dev, "Failed to get enable reg: %d\n", ret);
++		return ret;
++	}
++
++	return (regval & info->qi) ? REGULATOR_STATUS_ON : REGULATOR_STATUS_OFF;
++}
++
++static const struct regulator_ops mt6315_volt_range_ops = {
++	.list_voltage = regulator_list_voltage_linear_range,
++	.map_voltage = regulator_map_voltage_linear_range,
++	.set_voltage_sel = regulator_set_voltage_sel_regmap,
++	.get_voltage_sel = mt6315_regulator_get_voltage_sel,
++	.set_voltage_time_sel = regulator_set_voltage_time_sel,
++	.enable = regulator_enable_regmap,
++	.disable = regulator_disable_regmap,
++	.is_enabled = regulator_is_enabled_regmap,
++	.get_status = mt6315_get_status,
++	.set_mode = mt6315_regulator_set_mode,
++	.get_mode = mt6315_regulator_get_mode,
++};
++
++static struct mt6315_regulator_info mt6315_3_regulators[] = {
++	MT_BUCK("3_vbuck1", 3_VBUCK1, 300000, 1193750, 6250,
++		mt_volt_range1, 1, MT6315_BUCK_TOP_ELR0, MT6315_BUCK_TOP_ELR0, 0x3),
++	MT_BUCK("3_vbuck3", 3_VBUCK3, 300000, 1193750, 6250,
++		mt_volt_range1, 3, MT6315_BUCK_TOP_ELR4, MT6315_BUCK_TOP_ELR4, 0x4),
++	MT_BUCK("3_vbuck4", 3_VBUCK4, 300000, 1193750, 6250,
++		mt_volt_range1, 4, MT6315_BUCK_TOP_ELR6, MT6315_BUCK_TOP_ELR6, 0x8),
++};
++
++static struct mt6315_regulator_info mt6315_6_regulators[] = {
++	MT_BUCK("6_vbuck1", 6_VBUCK1, 300000, 1193750, 6250,
++		mt_volt_range1, 1, MT6315_BUCK_TOP_ELR0, MT6315_BUCK_TOP_ELR0, 0xB),
++	MT_BUCK("6_vbuck3", 6_VBUCK3, 300000, 1193750, 6250,
++		mt_volt_range1, 3, MT6315_BUCK_TOP_ELR4, MT6315_BUCK_TOP_ELR4, 0x4),
++};
++
++static struct mt6315_regulator_info mt6315_7_regulators[] = {
++	MT_BUCK("7_vbuck1", 7_VBUCK1, 300000, 1193750, 6250,
++		mt_volt_range1, 1, MT6315_BUCK_TOP_ELR0, MT6315_BUCK_TOP_ELR0, 0x3),
++	MT_BUCK("7_vbuck3", 7_VBUCK3, 300000, 1193750, 6250,
++		mt_volt_range1, 3, MT6315_BUCK_TOP_ELR4, MT6315_BUCK_TOP_ELR4, 0x4),
++};
++
++static const struct mt_regulator_init_data mt6315_3_regulator_init_data = {
++	.id = MT6315_SLAVE_ID_3,
++	.size = MT6315_ID_3_MAX,
++	.regulator_info = &mt6315_3_regulators[0],
++};
++
++static const struct mt_regulator_init_data mt6315_6_regulator_init_data = {
++	.id = MT6315_SLAVE_ID_6,
++	.size = MT6315_ID_6_MAX,
++	.regulator_info = &mt6315_6_regulators[0],
++};
++
++static const struct mt_regulator_init_data mt6315_7_regulator_init_data = {
++	.id = MT6315_SLAVE_ID_7,
++	.size = MT6315_ID_7_MAX,
++	.regulator_info = &mt6315_7_regulators[0],
++};
++
++#if 1
++static ssize_t extbuck_access_show(struct device *dev,
++				   struct device_attribute *attr,
++				   char *buf)
++{
++	struct mt6315_chip *chip = dev_get_drvdata(dev);
++
++	pr_info("[%s] 0x%x\n", __func__, chip->reg_value);
++
++	return sprintf(buf, "0x%x\n", chip->reg_value);
++}
++
++static ssize_t extbuck_access_store(struct device *dev,
++				    struct device_attribute *attr,
++				    const char *buf,
++				    size_t size)
++{
++	struct mt6315_chip *chip;
++	int ret = 0;
++	char *pvalue = NULL, *addr, *val;
++	unsigned int sid = 0;
++	unsigned int reg_val = 0;
++	unsigned int reg_adr = 0;
++
++	if (dev) {
++		chip = dev_get_drvdata(dev);
++		if (!chip)
++			return -ENODEV;
++	} else
++		return -ENODEV;
++
++	if (buf != NULL && size != 0) {
++		pr_info("[%s] size is %d, buf is %s\n", __func__,
++			(int)size, buf);
++
++		pvalue = (char *)buf;
++		addr = strsep(&pvalue, " ");
++		val = strsep(&pvalue, " ");
++		sid = chip->slave_id;
++		if (addr)
++			ret = kstrtou32(addr, 16, (unsigned int *)&reg_adr);
++		if (val) {
++			ret = kstrtou32(val, 16, (unsigned int *)&reg_val);
++			pr_info("write MT6315_S%d Reg[0x%x] to 0x%x!\n",
++				sid, reg_adr, reg_val);
++			ret = regmap_write(chip->regmap, reg_adr, reg_val);
++		} else {
++			mutex_lock(&chip->lock);
++			ret = regmap_read(chip->regmap,
++					  reg_adr, &chip->reg_value);
++			mutex_unlock(&chip->lock);
++			pr_info("read MT6315_S%d Reg[0x%x]=0x%x!\n",
++				sid, reg_adr, chip->reg_value);
++		}
++	}
++	return size;
++}
++static DEVICE_ATTR_RW(extbuck_access);
++#endif
++
++static const struct regmap_config mt6315_regmap_config = {
++	.reg_bits	= 16,
++	.val_bits	= 8,
++	.max_register	= 0x16d0,
++	.fast_io	= true,
++};
++
++static const struct of_device_id mt6315_of_match[] = {
++	{
++		.compatible = "mediatek,mt6315_3-regulator",
++		.data = &mt6315_3_regulator_init_data,
++	}, {
++		.compatible = "mediatek,mt6315_6-regulator",
++		.data = &mt6315_6_regulator_init_data,
++	}, {
++		.compatible = "mediatek,mt6315_7-regulator",
++		.data = &mt6315_7_regulator_init_data,
++	}, {
++		/* sentinel */
++	},
++};
++MODULE_DEVICE_TABLE(of, mt6315_of_match);
++
++static int mt6315_regulator_probe(struct spmi_device *pdev)
++{
++	const struct of_device_id *of_id;
++	struct device *dev = &pdev->dev;
++	struct regmap *regmap;
++	struct mt6315_regulator_info *mt_regulators;
++	struct mt_regulator_init_data *regulator_init_data;
++	struct mt6315_chip *chip;
++	struct regulator_config config = {};
++	struct regulator_dev *rdev;
++	int i;
++
++	regmap = devm_regmap_init_spmi_ext(pdev, &mt6315_regmap_config);
++	if (!regmap)
++		return -ENODEV;
++
++	chip = devm_kzalloc(dev, sizeof(struct mt6315_chip), GFP_KERNEL);
++	if (!chip)
++		return -ENOMEM;
++
++	of_id = of_match_device(mt6315_of_match, dev);
++	if (!of_id || !of_id->data)
++		return -ENODEV;
++
++	regulator_init_data = (struct mt_regulator_init_data *)of_id->data;
++	mt_regulators = regulator_init_data->regulator_info;
++	chip->slave_id = regulator_init_data->id;
++	chip->dev = dev;
++	chip->regmap = regmap;
++	mutex_init(&chip->lock);
++	dev_set_drvdata(dev, chip);
++
++	for (i = 0; i < regulator_init_data->size; i++) {
++		config.dev = dev;
++		config.driver_data = (mt_regulators + i);
++		config.regmap = regmap;
++		rdev = devm_regulator_register(dev,
++				&(mt_regulators + i)->desc, &config);
++		if (IS_ERR(rdev)) {
++			dev_notice(dev, "failed to register %s\n",
++				(mt_regulators + i)->desc.name);
++			continue;
++		}
++	}
++
++#if 1
++dev_notice(dev, "bingo 1\n");
++{
++	int ret = 0;
++	u32 reg_value = 0;
++
++	/* Read chip revision to update constraints */
++	if (regmap_read(regmap, MT6315_SWCID_H, &reg_value) < 0) {
++		dev_notice(dev, "Failed to read Chip ID\n");
++		return -EIO;
++	}
++	dev_info(dev, "Chip ID = 0x%x\n", reg_value);
++
++	/* Create sysfs entry */
++	ret = device_create_file(dev, &dev_attr_extbuck_access);
++	if (ret)
++		dev_notice(dev, "failed to create regs access file\n");
++}
++dev_notice(dev, "bingo 2\n");
++#endif
++
++	return 0;
++}
++
++static struct spmi_driver mt6315_regulator_driver = {
++	.driver		= {
++		.name	= "mt6315-regulator",
++		.of_match_table = mt6315_of_match,
++	},
++	.probe = mt6315_regulator_probe,
++};
++
++module_spmi_driver(mt6315_regulator_driver);
++
++MODULE_AUTHOR("Hsin-Hsiung Wang <hsin-hsiung.wang@mediatek.com>");
++MODULE_DESCRIPTION("Regulator Driver for MediaTek MT6315 PMIC");
++MODULE_LICENSE("GPL");
 diff --git a/drivers/soc/mediatek/Kconfig b/drivers/soc/mediatek/Kconfig
 index 59a56cd790ec313347b3ba822c124de9183916e0..3f5e5cb12b05a4bdab0e19e0ef2ca6e473b12b89 100644
 --- a/drivers/soc/mediatek/Kconfig
@@ -20322,7 +21549,7 @@ index 05e322c9c301ad911f5bce978387553ad4262650..161d11df2b7ce7cd1c55c4acdbaa5b91
  };
  
 diff --git a/drivers/soc/mediatek/mtk-scpsys.c b/drivers/soc/mediatek/mtk-scpsys.c
-index 503222d0d0da1233e6e8f74d3dcc1720b5889320..f8da48b421653b5aa093fe97a70d526809b8d411 100644
+index f669d3754627daddc9619214150aa4ff00b5b963..dfaf375ea6fe2e5525596182a8a9bb2ad2cdd92c 100644
 --- a/drivers/soc/mediatek/mtk-scpsys.c
 +++ b/drivers/soc/mediatek/mtk-scpsys.c
 @@ -10,8 +10,9 @@
@@ -20343,8 +21570,7 @@ index 503222d0d0da1233e6e8f74d3dcc1720b5889320..f8da48b421653b5aa093fe97a70d5268
 +#include <dt-bindings/power/mt8192-power.h>
  
  #define MTK_POLL_DELAY_US   10
--#define MTK_POLL_TIMEOUT    (jiffies_to_usecs(HZ))
-+#define MTK_POLL_TIMEOUT    USEC_PER_SEC
+ #define MTK_POLL_TIMEOUT    USEC_PER_SEC
  
  #define MTK_SCPD_ACTIVE_WAKEUP		BIT(0)
  #define MTK_SCPD_FWAIT_SRAM		BIT(1)
@@ -20361,7 +21587,7 @@ index 503222d0d0da1233e6e8f74d3dcc1720b5889320..f8da48b421653b5aa093fe97a70d5268
  
  #define PWR_STATUS_CONN			BIT(1)
  #define PWR_STATUS_DISP			BIT(3)
-@@ -78,45 +83,32 @@
+@@ -78,35 +83,8 @@
  #define PWR_STATUS_HIF1			BIT(26)	/* MT7622 */
  #define PWR_STATUS_WB			BIT(27)	/* MT7622 */
  
@@ -20394,25 +21620,25 @@ index 503222d0d0da1233e6e8f74d3dcc1720b5889320..f8da48b421653b5aa093fe97a70d5268
 -};
 -
  #define MAX_CLKS	3
--
 +#define MAX_SUBSYS_CLKS 10
-+
-+/**
-+ * struct scp_domain_data - scp domain data for power on/off flow
-+ * @name: The domain name.
-+ * @sta_mask: The mask for power on/off status bit.
-+ * @ctl_offs: The offset for main power control register.
-+ * @sram_pdn_bits: The mask for sram power control bits.
-+ * @sram_pdn_ack_bits: The mask for sram power control acked bits.
+ 
+ /**
+  * struct scp_domain_data - scp domain data for power on/off flow
+@@ -115,9 +93,11 @@ static const char * const clk_names[] = {
+  * @ctl_offs: The offset for main power control register.
+  * @sram_pdn_bits: The mask for sram power control bits.
+  * @sram_pdn_ack_bits: The mask for sram power control acked bits.
+- * @bus_prot_mask: The mask for single step bus protection.
+- * @clk_id: The basic clocks required by this power domain.
 + * @basic_clk_name: The basic clocks required by this power domain.
 + * @subsys_clk_prefix: The prefix name of the clocks need to be enabled
 + *                     before releasing bus protection.
-+ * @caps: The flag for active wake-up action.
+  * @caps: The flag for active wake-up action.
 + * @bp_table: The mask table for multiple step bus protection.
-+ */
+  */
  struct scp_domain_data {
  	const char *name;
- 	u32 sta_mask;
+@@ -125,9 +105,10 @@ struct scp_domain_data {
  	int ctl_offs;
  	u32 sram_pdn_bits;
  	u32 sram_pdn_ack_bits;
@@ -20425,7 +21651,7 @@ index 503222d0d0da1233e6e8f74d3dcc1720b5889320..f8da48b421653b5aa093fe97a70d5268
  };
  
  struct scp;
-@@ -125,6 +117,7 @@ struct scp_domain {
+@@ -136,6 +117,7 @@ struct scp_domain {
  	struct generic_pm_domain genpd;
  	struct scp *scp;
  	struct clk *clk[MAX_CLKS];
@@ -20433,7 +21659,7 @@ index 503222d0d0da1233e6e8f74d3dcc1720b5889320..f8da48b421653b5aa093fe97a70d5268
  	const struct scp_domain_data *data;
  	struct regulator *supply;
  };
-@@ -140,8 +133,8 @@ struct scp {
+@@ -151,8 +133,8 @@ struct scp {
  	struct device *dev;
  	void __iomem *base;
  	struct regmap *infracfg;
@@ -20443,7 +21669,7 @@ index 503222d0d0da1233e6e8f74d3dcc1720b5889320..f8da48b421653b5aa093fe97a70d5268
  };
  
  struct scp_subdomain {
-@@ -155,7 +148,6 @@ struct scp_soc_data {
+@@ -166,7 +148,6 @@ struct scp_soc_data {
  	const struct scp_subdomain *subdomains;
  	int num_subdomains;
  	const struct scp_ctrl_reg regs;
@@ -20451,80 +21677,10 @@ index 503222d0d0da1233e6e8f74d3dcc1720b5889320..f8da48b421653b5aa093fe97a70d5268
  };
  
  static int scpsys_domain_is_on(struct scp_domain *scpd)
-@@ -180,32 +172,236 @@ static int scpsys_domain_is_on(struct scp_domain *scpd)
- 	return -EINVAL;
- }
+@@ -257,6 +238,14 @@ static int scpsys_sram_enable(struct scp_domain *scpd, void __iomem *ctl_addr)
+ 			return ret;
+ 	}
  
--static int scpsys_power_on(struct generic_pm_domain *genpd)
-+static int scpsys_regulator_enable(struct scp_domain *scpd)
- {
--	struct scp_domain *scpd = container_of(genpd, struct scp_domain, genpd);
--	struct scp *scp = scpd->scp;
--	void __iomem *ctl_addr = scp->base + scpd->data->ctl_offs;
-+	if (!scpd->supply)
-+		return 0;
-+
-+	return regulator_enable(scpd->supply);
-+}
-+
-+static int scpsys_regulator_disable(struct scp_domain *scpd)
-+{
-+	if (!scpd->supply)
-+		return 0;
-+
-+	return regulator_disable(scpd->supply);
-+}
-+
-+static void scpsys_clk_disable(struct clk *clk[], int max_num)
-+{
-+	int i;
-+
-+	for (i = max_num - 1; i >= 0; i--)
-+		clk_disable_unprepare(clk[i]);
-+}
-+
-+static int scpsys_clk_enable(struct clk *clk[], int max_num)
-+{
-+	int i, ret = 0;
-+
-+	for (i = 0; i < max_num && clk[i]; i++) {
-+		ret = clk_prepare_enable(clk[i]);
-+		if (ret) {
-+			scpsys_clk_disable(clk, i);
-+			break;
-+		}
-+	}
-+
-+	return ret;
-+}
-+
-+static int scpsys_sram_enable(struct scp_domain *scpd, void __iomem *ctl_addr)
-+{
-+	u32 val;
- 	u32 pdn_ack = scpd->data->sram_pdn_ack_bits;
-+	int tmp;
-+
-+	val = readl(ctl_addr);
-+	val &= ~scpd->data->sram_pdn_bits;
-+	writel(val, ctl_addr);
-+
-+	/* Either wait until SRAM_PDN_ACK all 0 or have a force wait */
-+	if (MTK_SCPD_CAPS(scpd, MTK_SCPD_FWAIT_SRAM)) {
-+		/*
-+		 * Currently, MTK_SCPD_FWAIT_SRAM is necessary only for
-+		 * MT7622_POWER_DOMAIN_WB and thus just a trivial setup
-+		 * is applied here.
-+		 */
-+		usleep_range(12000, 12100);
-+	} else {
-+		/* Either wait until SRAM_PDN_ACK all 1 or 0 */
-+		int ret = readl_poll_timeout(ctl_addr, tmp,
-+				(tmp & pdn_ack) == 0,
-+				MTK_POLL_DELAY_US, MTK_POLL_TIMEOUT);
-+		if (ret < 0)
-+			return ret;
-+	}
-+
 +	if (MTK_SCPD_CAPS(scpd, MTK_SCPD_SRAM_ISO))	{
 +		val = readl(ctl_addr) | PWR_SRAM_ISOINT_B_BIT;
 +		writel(val, ctl_addr);
@@ -20533,16 +21689,15 @@ index 503222d0d0da1233e6e8f74d3dcc1720b5889320..f8da48b421653b5aa093fe97a70d5268
 +		writel(val, ctl_addr);
 +	}
 +
-+	return 0;
-+}
-+
-+static int scpsys_sram_disable(struct scp_domain *scpd, void __iomem *ctl_addr)
-+{
- 	u32 val;
--	int ret, tmp;
-+	u32 pdn_ack = scpd->data->sram_pdn_ack_bits;
-+	int tmp;
-+
+ 	return 0;
+ }
+ 
+@@ -266,8 +255,15 @@ static int scpsys_sram_disable(struct scp_domain *scpd, void __iomem *ctl_addr)
+ 	u32 pdn_ack = scpd->data->sram_pdn_ack_bits;
+ 	int tmp;
+ 
+-	val = readl(ctl_addr);
+-	val |= scpd->data->sram_pdn_bits;
 +	if (MTK_SCPD_CAPS(scpd, MTK_SCPD_SRAM_ISO))	{
 +		val = readl(ctl_addr) | PWR_SRAM_CLKISO_BIT;
 +		writel(val, ctl_addr);
@@ -20552,14 +21707,13 @@ index 503222d0d0da1233e6e8f74d3dcc1720b5889320..f8da48b421653b5aa093fe97a70d5268
 +	}
 +
 +	val = readl(ctl_addr) | scpd->data->sram_pdn_bits;
-+	writel(val, ctl_addr);
-+
-+	/* Either wait until SRAM_PDN_ACK all 1 or 0 */
-+	return readl_poll_timeout(ctl_addr, tmp,
-+			(tmp & pdn_ack) == pdn_ack,
-+			MTK_POLL_DELAY_US, MTK_POLL_TIMEOUT);
-+}
-+
+ 	writel(val, ctl_addr);
+ 
+ 	/* Either wait until SRAM_PDN_ACK all 1 or 0 */
+@@ -276,28 +272,114 @@ static int scpsys_sram_disable(struct scp_domain *scpd, void __iomem *ctl_addr)
+ 			MTK_POLL_DELAY_US, MTK_POLL_TIMEOUT);
+ }
+ 
 +static int set_bus_protection(struct regmap *map, struct bus_prot *bp)
 +{
 +	u32 val;
@@ -20612,16 +21766,16 @@ index 503222d0d0da1233e6e8f74d3dcc1720b5889320..f8da48b421653b5aa093fe97a70d5268
 +	return 0;
 +}
 +
-+static int scpsys_bus_protect_enable(struct scp_domain *scpd)
-+{
-+	struct scp *scp = scpd->scp;
+ static int scpsys_bus_protect_enable(struct scp_domain *scpd)
+ {
+ 	struct scp *scp = scpd->scp;
 +	const struct bus_prot *bp_table = scpd->data->bp_table;
 +	struct regmap *infracfg = scp->infracfg;
 +	struct regmap *smi_common = scp->smi_common;
- 	int i;
++	int i;
  
--	if (scpd->supply) {
--		ret = regulator_enable(scpd->supply);
+-	if (!scpd->data->bus_prot_mask)
+-		return 0;
 +	for (i = 0; i < MAX_STEPS; i++) {
 +		struct regmap *map = NULL;
 +		int ret;
@@ -20635,29 +21789,27 @@ index 503222d0d0da1233e6e8f74d3dcc1720b5889320..f8da48b421653b5aa093fe97a70d5268
 +			break;
 +
 +		ret = set_bus_protection(map, &bp);
+ 
+-	return mtk_infracfg_set_bus_protection(scp->infracfg,
+-			scpd->data->bus_prot_mask,
+-			scp->bus_prot_reg_update);
++		if (ret)
++			return ret;
++	}
 +
- 		if (ret)
- 			return ret;
- 	}
- 
--	for (i = 0; i < MAX_CLKS && scpd->clk[i]; i++) {
--		ret = clk_prepare_enable(scpd->clk[i]);
--		if (ret) {
--			for (--i; i >= 0; i--)
--				clk_disable_unprepare(scpd->clk[i]);
 +	return 0;
-+}
+ }
  
--			goto err_clk;
--		}
-+static int scpsys_bus_protect_disable(struct scp_domain *scpd)
-+{
-+	struct scp *scp = scpd->scp;
+ static int scpsys_bus_protect_disable(struct scp_domain *scpd)
+ {
+ 	struct scp *scp = scpd->scp;
 +	const struct bus_prot *bp_table = scpd->data->bp_table;
 +	struct regmap *infracfg = scp->infracfg;
 +	struct regmap *smi_common = scp->smi_common;
 +	int i;
-+
+ 
+-	if (!scpd->data->bus_prot_mask)
+-		return 0;
 +	for (i = MAX_STEPS - 1; i >= 0; i--) {
 +		struct regmap *map = NULL;
 +		int ret;
@@ -20674,155 +21826,60 @@ index 503222d0d0da1233e6e8f74d3dcc1720b5889320..f8da48b421653b5aa093fe97a70d5268
 +
 +		if (ret)
 +			return ret;
- 	}
++	}
  
+-	return mtk_infracfg_clear_bus_protection(scp->infracfg,
+-			scpd->data->bus_prot_mask,
+-			scp->bus_prot_reg_update);
 +	return 0;
-+}
-+
-+static int scpsys_power_on(struct generic_pm_domain *genpd)
-+{
-+	struct scp_domain *scpd = container_of(genpd, struct scp_domain, genpd);
-+	struct scp *scp = scpd->scp;
-+	void __iomem *ctl_addr = scp->base + scpd->data->ctl_offs;
-+	u32 val;
-+	int ret, tmp;
-+
-+	ret = scpsys_regulator_enable(scpd);
-+	if (ret < 0)
-+		return ret;
-+
-+	if (strncmp(scpd->data->name, "mfg", 3))
-+		pr_err("%s %s\n", __func__, scpd->data->name);
-+
-+	ret = scpsys_clk_enable(scpd->clk, MAX_CLKS);
-+	if (ret)
-+		goto err_clk;
-+
-+	/* subsys power on */
- 	val = readl(ctl_addr);
- 	val |= PWR_ON_BIT;
- 	writel(val, ctl_addr);
-@@ -227,43 +423,29 @@ static int scpsys_power_on(struct generic_pm_domain *genpd)
+ }
+ 
+ static int scpsys_power_on(struct generic_pm_domain *genpd)
+@@ -338,16 +420,22 @@ static int scpsys_power_on(struct generic_pm_domain *genpd)
  	val |= PWR_RST_B_BIT;
  	writel(val, ctl_addr);
  
--	val &= ~scpd->data->sram_pdn_bits;
--	writel(val, ctl_addr);
+-	ret = scpsys_sram_enable(scpd, ctl_addr);
 +	ret = scpsys_clk_enable(scpd->subsys_clk, MAX_SUBSYS_CLKS);
-+	if (ret < 0)
-+		goto err_pwr_ack;
+ 	if (ret < 0)
+ 		goto err_pwr_ack;
  
--	/* Either wait until SRAM_PDN_ACK all 0 or have a force wait */
--	if (MTK_SCPD_CAPS(scpd, MTK_SCPD_FWAIT_SRAM)) {
--		/*
--		 * Currently, MTK_SCPD_FWAIT_SRAM is necessary only for
--		 * MT7622_POWER_DOMAIN_WB and thus just a trivial setup is
--		 * applied here.
--		 */
--		usleep_range(12000, 12100);
 +	ret = scpsys_sram_enable(scpd, ctl_addr);
 +	if (ret < 0)
 +		goto err_sram;
- 
--	} else {
--		ret = readl_poll_timeout(ctl_addr, tmp, (tmp & pdn_ack) == 0,
--					 MTK_POLL_DELAY_US, MTK_POLL_TIMEOUT);
--		if (ret < 0)
--			goto err_pwr_ack;
--	}
-+	ret = scpsys_bus_protect_disable(scpd);
-+	if (ret < 0)
++
+ 	ret = scpsys_bus_protect_disable(scpd);
+ 	if (ret < 0)
+-		goto err_pwr_ack;
 +		goto err_sram;
- 
--	if (scpd->data->bus_prot_mask) {
--		ret = mtk_infracfg_clear_bus_protection(scp->infracfg,
--				scpd->data->bus_prot_mask,
--				scp->bus_prot_reg_update);
--		if (ret)
--			goto err_pwr_ack;
--	}
-+	if (strncmp(scpd->data->name, "mfg", 3))
-+		pr_err("%s %s done\n", __func__, scpd->data->name);
  
  	return 0;
  
 +err_sram:
 +	scpsys_clk_disable(scpd->subsys_clk, MAX_SUBSYS_CLKS);
  err_pwr_ack:
--	for (i = MAX_CLKS - 1; i >= 0; i--) {
--		if (scpd->clk[i])
--			clk_disable_unprepare(scpd->clk[i]);
--	}
-+	scpsys_clk_disable(scpd->clk, MAX_CLKS);
+ 	scpsys_clk_disable(scpd->clk, MAX_CLKS);
  err_clk:
--	if (scpd->supply)
--		regulator_disable(scpd->supply);
-+	scpsys_regulator_disable(scpd);
- 
- 	dev_err(scp->dev, "Failed to power on domain %s\n", genpd->name);
- 
-@@ -275,29 +457,27 @@ static int scpsys_power_off(struct generic_pm_domain *genpd)
- 	struct scp_domain *scpd = container_of(genpd, struct scp_domain, genpd);
- 	struct scp *scp = scpd->scp;
- 	void __iomem *ctl_addr = scp->base + scpd->data->ctl_offs;
--	u32 pdn_ack = scpd->data->sram_pdn_ack_bits;
+@@ -366,6 +454,9 @@ static int scpsys_power_off(struct generic_pm_domain *genpd)
  	u32 val;
  	int ret, tmp;
--	int i;
  
--	if (scpd->data->bus_prot_mask) {
--		ret = mtk_infracfg_set_bus_protection(scp->infracfg,
--				scpd->data->bus_prot_mask,
--				scp->bus_prot_reg_update);
--		if (ret)
--			goto out;
--	}
-+	if (strncmp(scpd->data->name, "mfg", 3))
-+		pr_err("%s %s SKIPPING\n", __func__, scpd->data->name);
-+	/* This makes booting slow, and breaks msdc unless we add the power domain */
 +	if (1)
 +		return 0;
- 
--	val = readl(ctl_addr);
--	val |= scpd->data->sram_pdn_bits;
--	writel(val, ctl_addr);
-+	ret = scpsys_bus_protect_enable(scpd);
-+	if (ret < 0)
-+		goto out;
- 
--	/* wait until SRAM_PDN_ACK all 1 */
--	ret = readl_poll_timeout(ctl_addr, tmp, (tmp & pdn_ack) == pdn_ack,
--				 MTK_POLL_DELAY_US, MTK_POLL_TIMEOUT);
-+	ret = scpsys_sram_disable(scpd, ctl_addr);
++
+ 	ret = scpsys_bus_protect_enable(scpd);
+ 	if (ret < 0)
+ 		goto out;
+@@ -374,6 +465,8 @@ static int scpsys_power_off(struct generic_pm_domain *genpd)
  	if (ret < 0)
  		goto out;
  
 +	scpsys_clk_disable(scpd->subsys_clk, MAX_SUBSYS_CLKS);
 +
-+	/* subsys power off */
-+	val = readl(ctl_addr);
+ 	/* subsys power off */
+ 	val = readl(ctl_addr);
  	val |= PWR_ISO_BIT;
- 	writel(val, ctl_addr);
- 
-@@ -319,11 +499,13 @@ static int scpsys_power_off(struct generic_pm_domain *genpd)
- 	if (ret < 0)
- 		goto out;
- 
--	for (i = 0; i < MAX_CLKS && scpd->clk[i]; i++)
--		clk_disable_unprepare(scpd->clk[i]);
-+	scpsys_clk_disable(scpd->clk, MAX_CLKS);
- 
--	if (scpd->supply)
--		regulator_disable(scpd->supply);
-+	ret = scpsys_regulator_disable(scpd);
-+	if (ret < 0)
-+		goto out;
-+
-+	pr_err("%s %s done\n", __func__, scpd->data->name);
- 
- 	return 0;
- 
-@@ -333,24 +515,75 @@ static int scpsys_power_off(struct generic_pm_domain *genpd)
+@@ -411,24 +504,75 @@ static int scpsys_power_off(struct generic_pm_domain *genpd)
  	return ret;
  }
  
@@ -20905,7 +21962,7 @@ index 503222d0d0da1233e6e8f74d3dcc1720b5889320..f8da48b421653b5aa093fe97a70d5268
  
  	scp = devm_kzalloc(&pdev->dev, sizeof(*scp), GFP_KERNEL);
  	if (!scp)
-@@ -359,8 +592,6 @@ static struct scp *init_scp(struct platform_device *pdev,
+@@ -437,8 +581,6 @@ static struct scp *init_scp(struct platform_device *pdev,
  	scp->ctrl_reg.pwr_sta_offs = scp_ctrl_reg->pwr_sta_offs;
  	scp->ctrl_reg.pwr_sta2nd_offs = scp_ctrl_reg->pwr_sta2nd_offs;
  
@@ -20914,7 +21971,7 @@ index 503222d0d0da1233e6e8f74d3dcc1720b5889320..f8da48b421653b5aa093fe97a70d5268
  	scp->dev = &pdev->dev;
  
  	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-@@ -388,6 +619,17 @@ static struct scp *init_scp(struct platform_device *pdev,
+@@ -466,6 +608,17 @@ static struct scp *init_scp(struct platform_device *pdev,
  		return ERR_CAST(scp->infracfg);
  	}
  
@@ -20932,7 +21989,7 @@ index 503222d0d0da1233e6e8f74d3dcc1720b5889320..f8da48b421653b5aa093fe97a70d5268
  	for (i = 0; i < num; i++) {
  		struct scp_domain *scpd = &scp->domains[i];
  		const struct scp_domain_data *data = &scp_domain_data[i];
-@@ -403,8 +645,6 @@ static struct scp *init_scp(struct platform_device *pdev,
+@@ -481,8 +634,6 @@ static struct scp *init_scp(struct platform_device *pdev,
  
  	pd_data->num_domains = num;
  
@@ -20941,7 +21998,7 @@ index 503222d0d0da1233e6e8f74d3dcc1720b5889320..f8da48b421653b5aa093fe97a70d5268
  	for (i = 0; i < num; i++) {
  		struct scp_domain *scpd = &scp->domains[i];
  		struct generic_pm_domain *genpd = &scpd->genpd;
-@@ -415,16 +655,20 @@ static struct scp *init_scp(struct platform_device *pdev,
+@@ -493,16 +644,20 @@ static struct scp *init_scp(struct platform_device *pdev,
  
  		scpd->data = data;
  
@@ -20970,7 +22027,7 @@ index 503222d0d0da1233e6e8f74d3dcc1720b5889320..f8da48b421653b5aa093fe97a70d5268
  		}
  
  		genpd->name = data->name;
-@@ -480,9 +724,11 @@ static const struct scp_domain_data scp_domain_data_mt2701[] = {
+@@ -558,9 +713,11 @@ static const struct scp_domain_data scp_domain_data_mt2701[] = {
  		.name = "conn",
  		.sta_mask = PWR_STATUS_CONN,
  		.ctl_offs = SPM_CONN_PWR_CON,
@@ -20985,7 +22042,7 @@ index 503222d0d0da1233e6e8f74d3dcc1720b5889320..f8da48b421653b5aa093fe97a70d5268
  		.caps = MTK_SCPD_ACTIVE_WAKEUP,
  	},
  	[MT2701_POWER_DOMAIN_DISP] = {
-@@ -490,8 +736,11 @@ static const struct scp_domain_data scp_domain_data_mt2701[] = {
+@@ -568,8 +725,11 @@ static const struct scp_domain_data scp_domain_data_mt2701[] = {
  		.sta_mask = PWR_STATUS_DISP,
  		.ctl_offs = SPM_DIS_PWR_CON,
  		.sram_pdn_bits = GENMASK(11, 8),
@@ -20999,7 +22056,7 @@ index 503222d0d0da1233e6e8f74d3dcc1720b5889320..f8da48b421653b5aa093fe97a70d5268
  		.caps = MTK_SCPD_ACTIVE_WAKEUP,
  	},
  	[MT2701_POWER_DOMAIN_MFG] = {
-@@ -500,7 +749,7 @@ static const struct scp_domain_data scp_domain_data_mt2701[] = {
+@@ -578,7 +738,7 @@ static const struct scp_domain_data scp_domain_data_mt2701[] = {
  		.ctl_offs = SPM_MFG_PWR_CON,
  		.sram_pdn_bits = GENMASK(11, 8),
  		.sram_pdn_ack_bits = GENMASK(12, 12),
@@ -21008,7 +22065,7 @@ index 503222d0d0da1233e6e8f74d3dcc1720b5889320..f8da48b421653b5aa093fe97a70d5268
  		.caps = MTK_SCPD_ACTIVE_WAKEUP,
  	},
  	[MT2701_POWER_DOMAIN_VDEC] = {
-@@ -509,7 +758,7 @@ static const struct scp_domain_data scp_domain_data_mt2701[] = {
+@@ -587,7 +747,7 @@ static const struct scp_domain_data scp_domain_data_mt2701[] = {
  		.ctl_offs = SPM_VDE_PWR_CON,
  		.sram_pdn_bits = GENMASK(11, 8),
  		.sram_pdn_ack_bits = GENMASK(12, 12),
@@ -21017,7 +22074,7 @@ index 503222d0d0da1233e6e8f74d3dcc1720b5889320..f8da48b421653b5aa093fe97a70d5268
  		.caps = MTK_SCPD_ACTIVE_WAKEUP,
  	},
  	[MT2701_POWER_DOMAIN_ISP] = {
-@@ -518,7 +767,7 @@ static const struct scp_domain_data scp_domain_data_mt2701[] = {
+@@ -596,7 +756,7 @@ static const struct scp_domain_data scp_domain_data_mt2701[] = {
  		.ctl_offs = SPM_ISP_PWR_CON,
  		.sram_pdn_bits = GENMASK(11, 8),
  		.sram_pdn_ack_bits = GENMASK(13, 12),
@@ -21026,7 +22083,7 @@ index 503222d0d0da1233e6e8f74d3dcc1720b5889320..f8da48b421653b5aa093fe97a70d5268
  		.caps = MTK_SCPD_ACTIVE_WAKEUP,
  	},
  	[MT2701_POWER_DOMAIN_BDP] = {
-@@ -526,7 +775,6 @@ static const struct scp_domain_data scp_domain_data_mt2701[] = {
+@@ -604,7 +764,6 @@ static const struct scp_domain_data scp_domain_data_mt2701[] = {
  		.sta_mask = PWR_STATUS_BDP,
  		.ctl_offs = SPM_BDP_PWR_CON,
  		.sram_pdn_bits = GENMASK(11, 8),
@@ -21034,7 +22091,7 @@ index 503222d0d0da1233e6e8f74d3dcc1720b5889320..f8da48b421653b5aa093fe97a70d5268
  		.caps = MTK_SCPD_ACTIVE_WAKEUP,
  	},
  	[MT2701_POWER_DOMAIN_ETH] = {
-@@ -535,7 +783,7 @@ static const struct scp_domain_data scp_domain_data_mt2701[] = {
+@@ -613,7 +772,7 @@ static const struct scp_domain_data scp_domain_data_mt2701[] = {
  		.ctl_offs = SPM_ETH_PWR_CON,
  		.sram_pdn_bits = GENMASK(11, 8),
  		.sram_pdn_ack_bits = GENMASK(15, 12),
@@ -21043,7 +22100,7 @@ index 503222d0d0da1233e6e8f74d3dcc1720b5889320..f8da48b421653b5aa093fe97a70d5268
  		.caps = MTK_SCPD_ACTIVE_WAKEUP,
  	},
  	[MT2701_POWER_DOMAIN_HIF] = {
-@@ -544,14 +792,13 @@ static const struct scp_domain_data scp_domain_data_mt2701[] = {
+@@ -622,14 +781,13 @@ static const struct scp_domain_data scp_domain_data_mt2701[] = {
  		.ctl_offs = SPM_HIF_PWR_CON,
  		.sram_pdn_bits = GENMASK(11, 8),
  		.sram_pdn_ack_bits = GENMASK(15, 12),
@@ -21059,7 +22116,7 @@ index 503222d0d0da1233e6e8f74d3dcc1720b5889320..f8da48b421653b5aa093fe97a70d5268
  		.caps = MTK_SCPD_ACTIVE_WAKEUP,
  	},
  };
-@@ -566,7 +813,7 @@ static const struct scp_domain_data scp_domain_data_mt2712[] = {
+@@ -644,7 +802,7 @@ static const struct scp_domain_data scp_domain_data_mt2712[] = {
  		.ctl_offs = SPM_DIS_PWR_CON,
  		.sram_pdn_bits = GENMASK(8, 8),
  		.sram_pdn_ack_bits = GENMASK(12, 12),
@@ -21068,7 +22125,7 @@ index 503222d0d0da1233e6e8f74d3dcc1720b5889320..f8da48b421653b5aa093fe97a70d5268
  		.caps = MTK_SCPD_ACTIVE_WAKEUP,
  	},
  	[MT2712_POWER_DOMAIN_VDEC] = {
-@@ -575,7 +822,7 @@ static const struct scp_domain_data scp_domain_data_mt2712[] = {
+@@ -653,7 +811,7 @@ static const struct scp_domain_data scp_domain_data_mt2712[] = {
  		.ctl_offs = SPM_VDE_PWR_CON,
  		.sram_pdn_bits = GENMASK(8, 8),
  		.sram_pdn_ack_bits = GENMASK(12, 12),
@@ -21077,7 +22134,7 @@ index 503222d0d0da1233e6e8f74d3dcc1720b5889320..f8da48b421653b5aa093fe97a70d5268
  		.caps = MTK_SCPD_ACTIVE_WAKEUP,
  	},
  	[MT2712_POWER_DOMAIN_VENC] = {
-@@ -584,7 +831,7 @@ static const struct scp_domain_data scp_domain_data_mt2712[] = {
+@@ -662,7 +820,7 @@ static const struct scp_domain_data scp_domain_data_mt2712[] = {
  		.ctl_offs = SPM_VEN_PWR_CON,
  		.sram_pdn_bits = GENMASK(11, 8),
  		.sram_pdn_ack_bits = GENMASK(15, 12),
@@ -21086,7 +22143,7 @@ index 503222d0d0da1233e6e8f74d3dcc1720b5889320..f8da48b421653b5aa093fe97a70d5268
  		.caps = MTK_SCPD_ACTIVE_WAKEUP,
  	},
  	[MT2712_POWER_DOMAIN_ISP] = {
-@@ -593,7 +840,7 @@ static const struct scp_domain_data scp_domain_data_mt2712[] = {
+@@ -671,7 +829,7 @@ static const struct scp_domain_data scp_domain_data_mt2712[] = {
  		.ctl_offs = SPM_ISP_PWR_CON,
  		.sram_pdn_bits = GENMASK(11, 8),
  		.sram_pdn_ack_bits = GENMASK(13, 12),
@@ -21095,7 +22152,7 @@ index 503222d0d0da1233e6e8f74d3dcc1720b5889320..f8da48b421653b5aa093fe97a70d5268
  		.caps = MTK_SCPD_ACTIVE_WAKEUP,
  	},
  	[MT2712_POWER_DOMAIN_AUDIO] = {
-@@ -602,7 +849,7 @@ static const struct scp_domain_data scp_domain_data_mt2712[] = {
+@@ -680,7 +838,7 @@ static const struct scp_domain_data scp_domain_data_mt2712[] = {
  		.ctl_offs = SPM_AUDIO_PWR_CON,
  		.sram_pdn_bits = GENMASK(11, 8),
  		.sram_pdn_ack_bits = GENMASK(15, 12),
@@ -21104,7 +22161,7 @@ index 503222d0d0da1233e6e8f74d3dcc1720b5889320..f8da48b421653b5aa093fe97a70d5268
  		.caps = MTK_SCPD_ACTIVE_WAKEUP,
  	},
  	[MT2712_POWER_DOMAIN_USB] = {
-@@ -611,7 +858,6 @@ static const struct scp_domain_data scp_domain_data_mt2712[] = {
+@@ -689,7 +847,6 @@ static const struct scp_domain_data scp_domain_data_mt2712[] = {
  		.ctl_offs = SPM_USB_PWR_CON,
  		.sram_pdn_bits = GENMASK(10, 8),
  		.sram_pdn_ack_bits = GENMASK(14, 12),
@@ -21112,7 +22169,7 @@ index 503222d0d0da1233e6e8f74d3dcc1720b5889320..f8da48b421653b5aa093fe97a70d5268
  		.caps = MTK_SCPD_ACTIVE_WAKEUP,
  	},
  	[MT2712_POWER_DOMAIN_USB2] = {
-@@ -620,7 +866,6 @@ static const struct scp_domain_data scp_domain_data_mt2712[] = {
+@@ -698,7 +855,6 @@ static const struct scp_domain_data scp_domain_data_mt2712[] = {
  		.ctl_offs = SPM_USB2_PWR_CON,
  		.sram_pdn_bits = GENMASK(10, 8),
  		.sram_pdn_ack_bits = GENMASK(14, 12),
@@ -21120,7 +22177,7 @@ index 503222d0d0da1233e6e8f74d3dcc1720b5889320..f8da48b421653b5aa093fe97a70d5268
  		.caps = MTK_SCPD_ACTIVE_WAKEUP,
  	},
  	[MT2712_POWER_DOMAIN_MFG] = {
-@@ -629,8 +874,11 @@ static const struct scp_domain_data scp_domain_data_mt2712[] = {
+@@ -707,8 +863,11 @@ static const struct scp_domain_data scp_domain_data_mt2712[] = {
  		.ctl_offs = SPM_MFG_PWR_CON,
  		.sram_pdn_bits = GENMASK(8, 8),
  		.sram_pdn_ack_bits = GENMASK(16, 16),
@@ -21134,7 +22191,7 @@ index 503222d0d0da1233e6e8f74d3dcc1720b5889320..f8da48b421653b5aa093fe97a70d5268
  		.caps = MTK_SCPD_ACTIVE_WAKEUP,
  	},
  	[MT2712_POWER_DOMAIN_MFG_SC1] = {
-@@ -639,7 +887,6 @@ static const struct scp_domain_data scp_domain_data_mt2712[] = {
+@@ -717,7 +876,6 @@ static const struct scp_domain_data scp_domain_data_mt2712[] = {
  		.ctl_offs = 0x02c0,
  		.sram_pdn_bits = GENMASK(8, 8),
  		.sram_pdn_ack_bits = GENMASK(16, 16),
@@ -21142,7 +22199,7 @@ index 503222d0d0da1233e6e8f74d3dcc1720b5889320..f8da48b421653b5aa093fe97a70d5268
  		.caps = MTK_SCPD_ACTIVE_WAKEUP,
  	},
  	[MT2712_POWER_DOMAIN_MFG_SC2] = {
-@@ -648,7 +895,6 @@ static const struct scp_domain_data scp_domain_data_mt2712[] = {
+@@ -726,7 +884,6 @@ static const struct scp_domain_data scp_domain_data_mt2712[] = {
  		.ctl_offs = 0x02c4,
  		.sram_pdn_bits = GENMASK(8, 8),
  		.sram_pdn_ack_bits = GENMASK(16, 16),
@@ -21150,7 +22207,7 @@ index 503222d0d0da1233e6e8f74d3dcc1720b5889320..f8da48b421653b5aa093fe97a70d5268
  		.caps = MTK_SCPD_ACTIVE_WAKEUP,
  	},
  	[MT2712_POWER_DOMAIN_MFG_SC3] = {
-@@ -657,7 +903,6 @@ static const struct scp_domain_data scp_domain_data_mt2712[] = {
+@@ -735,7 +892,6 @@ static const struct scp_domain_data scp_domain_data_mt2712[] = {
  		.ctl_offs = 0x01f8,
  		.sram_pdn_bits = GENMASK(8, 8),
  		.sram_pdn_ack_bits = GENMASK(16, 16),
@@ -21158,7 +22215,7 @@ index 503222d0d0da1233e6e8f74d3dcc1720b5889320..f8da48b421653b5aa093fe97a70d5268
  		.caps = MTK_SCPD_ACTIVE_WAKEUP,
  	},
  };
-@@ -682,7 +927,7 @@ static const struct scp_domain_data scp_domain_data_mt6797[] = {
+@@ -760,7 +916,7 @@ static const struct scp_domain_data scp_domain_data_mt6797[] = {
  		.ctl_offs = 0x300,
  		.sram_pdn_bits = GENMASK(8, 8),
  		.sram_pdn_ack_bits = GENMASK(12, 12),
@@ -21167,7 +22224,7 @@ index 503222d0d0da1233e6e8f74d3dcc1720b5889320..f8da48b421653b5aa093fe97a70d5268
  	},
  	[MT6797_POWER_DOMAIN_VENC] = {
  		.name = "venc",
-@@ -690,7 +935,6 @@ static const struct scp_domain_data scp_domain_data_mt6797[] = {
+@@ -768,7 +924,6 @@ static const struct scp_domain_data scp_domain_data_mt6797[] = {
  		.ctl_offs = 0x304,
  		.sram_pdn_bits = GENMASK(11, 8),
  		.sram_pdn_ack_bits = GENMASK(15, 12),
@@ -21175,7 +22232,7 @@ index 503222d0d0da1233e6e8f74d3dcc1720b5889320..f8da48b421653b5aa093fe97a70d5268
  	},
  	[MT6797_POWER_DOMAIN_ISP] = {
  		.name = "isp",
-@@ -698,7 +942,6 @@ static const struct scp_domain_data scp_domain_data_mt6797[] = {
+@@ -776,7 +931,6 @@ static const struct scp_domain_data scp_domain_data_mt6797[] = {
  		.ctl_offs = 0x308,
  		.sram_pdn_bits = GENMASK(9, 8),
  		.sram_pdn_ack_bits = GENMASK(13, 12),
@@ -21183,7 +22240,7 @@ index 503222d0d0da1233e6e8f74d3dcc1720b5889320..f8da48b421653b5aa093fe97a70d5268
  	},
  	[MT6797_POWER_DOMAIN_MM] = {
  		.name = "mm",
-@@ -706,8 +949,11 @@ static const struct scp_domain_data scp_domain_data_mt6797[] = {
+@@ -784,8 +938,11 @@ static const struct scp_domain_data scp_domain_data_mt6797[] = {
  		.ctl_offs = 0x30C,
  		.sram_pdn_bits = GENMASK(8, 8),
  		.sram_pdn_ack_bits = GENMASK(12, 12),
@@ -21197,7 +22254,7 @@ index 503222d0d0da1233e6e8f74d3dcc1720b5889320..f8da48b421653b5aa093fe97a70d5268
  	},
  	[MT6797_POWER_DOMAIN_AUDIO] = {
  		.name = "audio",
-@@ -715,7 +961,6 @@ static const struct scp_domain_data scp_domain_data_mt6797[] = {
+@@ -793,7 +950,6 @@ static const struct scp_domain_data scp_domain_data_mt6797[] = {
  		.ctl_offs = 0x314,
  		.sram_pdn_bits = GENMASK(11, 8),
  		.sram_pdn_ack_bits = GENMASK(15, 12),
@@ -21205,7 +22262,7 @@ index 503222d0d0da1233e6e8f74d3dcc1720b5889320..f8da48b421653b5aa093fe97a70d5268
  	},
  	[MT6797_POWER_DOMAIN_MFG_ASYNC] = {
  		.name = "mfg_async",
-@@ -723,7 +968,7 @@ static const struct scp_domain_data scp_domain_data_mt6797[] = {
+@@ -801,7 +957,7 @@ static const struct scp_domain_data scp_domain_data_mt6797[] = {
  		.ctl_offs = 0x334,
  		.sram_pdn_bits = 0,
  		.sram_pdn_ack_bits = 0,
@@ -21214,7 +22271,7 @@ index 503222d0d0da1233e6e8f74d3dcc1720b5889320..f8da48b421653b5aa093fe97a70d5268
  	},
  	[MT6797_POWER_DOMAIN_MJC] = {
  		.name = "mjc",
-@@ -731,7 +976,6 @@ static const struct scp_domain_data scp_domain_data_mt6797[] = {
+@@ -809,7 +965,6 @@ static const struct scp_domain_data scp_domain_data_mt6797[] = {
  		.ctl_offs = 0x310,
  		.sram_pdn_bits = GENMASK(8, 8),
  		.sram_pdn_ack_bits = GENMASK(12, 12),
@@ -21222,7 +22279,7 @@ index 503222d0d0da1233e6e8f74d3dcc1720b5889320..f8da48b421653b5aa093fe97a70d5268
  	},
  };
  
-@@ -756,8 +1000,10 @@ static const struct scp_domain_data scp_domain_data_mt7622[] = {
+@@ -834,8 +989,10 @@ static const struct scp_domain_data scp_domain_data_mt7622[] = {
  		.ctl_offs = SPM_ETHSYS_PWR_CON,
  		.sram_pdn_bits = GENMASK(11, 8),
  		.sram_pdn_ack_bits = GENMASK(15, 12),
@@ -21235,7 +22292,7 @@ index 503222d0d0da1233e6e8f74d3dcc1720b5889320..f8da48b421653b5aa093fe97a70d5268
  		.caps = MTK_SCPD_ACTIVE_WAKEUP,
  	},
  	[MT7622_POWER_DOMAIN_HIF0] = {
-@@ -766,8 +1012,11 @@ static const struct scp_domain_data scp_domain_data_mt7622[] = {
+@@ -844,8 +1001,11 @@ static const struct scp_domain_data scp_domain_data_mt7622[] = {
  		.ctl_offs = SPM_HIF0_PWR_CON,
  		.sram_pdn_bits = GENMASK(11, 8),
  		.sram_pdn_ack_bits = GENMASK(15, 12),
@@ -21249,7 +22306,7 @@ index 503222d0d0da1233e6e8f74d3dcc1720b5889320..f8da48b421653b5aa093fe97a70d5268
  		.caps = MTK_SCPD_ACTIVE_WAKEUP,
  	},
  	[MT7622_POWER_DOMAIN_HIF1] = {
-@@ -776,8 +1025,11 @@ static const struct scp_domain_data scp_domain_data_mt7622[] = {
+@@ -854,8 +1014,11 @@ static const struct scp_domain_data scp_domain_data_mt7622[] = {
  		.ctl_offs = SPM_HIF1_PWR_CON,
  		.sram_pdn_bits = GENMASK(11, 8),
  		.sram_pdn_ack_bits = GENMASK(15, 12),
@@ -21263,7 +22320,7 @@ index 503222d0d0da1233e6e8f74d3dcc1720b5889320..f8da48b421653b5aa093fe97a70d5268
  		.caps = MTK_SCPD_ACTIVE_WAKEUP,
  	},
  	[MT7622_POWER_DOMAIN_WB] = {
-@@ -786,8 +1038,10 @@ static const struct scp_domain_data scp_domain_data_mt7622[] = {
+@@ -864,8 +1027,10 @@ static const struct scp_domain_data scp_domain_data_mt7622[] = {
  		.ctl_offs = SPM_WB_PWR_CON,
  		.sram_pdn_bits = 0,
  		.sram_pdn_ack_bits = 0,
@@ -21276,7 +22333,7 @@ index 503222d0d0da1233e6e8f74d3dcc1720b5889320..f8da48b421653b5aa093fe97a70d5268
  		.caps = MTK_SCPD_ACTIVE_WAKEUP | MTK_SCPD_FWAIT_SRAM,
  	},
  };
-@@ -801,9 +1055,11 @@ static const struct scp_domain_data scp_domain_data_mt7623a[] = {
+@@ -879,9 +1044,11 @@ static const struct scp_domain_data scp_domain_data_mt7623a[] = {
  		.name = "conn",
  		.sta_mask = PWR_STATUS_CONN,
  		.ctl_offs = SPM_CONN_PWR_CON,
@@ -21291,7 +22348,7 @@ index 503222d0d0da1233e6e8f74d3dcc1720b5889320..f8da48b421653b5aa093fe97a70d5268
  		.caps = MTK_SCPD_ACTIVE_WAKEUP,
  	},
  	[MT7623A_POWER_DOMAIN_ETH] = {
-@@ -812,7 +1068,7 @@ static const struct scp_domain_data scp_domain_data_mt7623a[] = {
+@@ -890,7 +1057,7 @@ static const struct scp_domain_data scp_domain_data_mt7623a[] = {
  		.ctl_offs = SPM_ETH_PWR_CON,
  		.sram_pdn_bits = GENMASK(11, 8),
  		.sram_pdn_ack_bits = GENMASK(15, 12),
@@ -21300,7 +22357,7 @@ index 503222d0d0da1233e6e8f74d3dcc1720b5889320..f8da48b421653b5aa093fe97a70d5268
  		.caps = MTK_SCPD_ACTIVE_WAKEUP,
  	},
  	[MT7623A_POWER_DOMAIN_HIF] = {
-@@ -821,14 +1077,13 @@ static const struct scp_domain_data scp_domain_data_mt7623a[] = {
+@@ -899,14 +1066,13 @@ static const struct scp_domain_data scp_domain_data_mt7623a[] = {
  		.ctl_offs = SPM_HIF_PWR_CON,
  		.sram_pdn_bits = GENMASK(11, 8),
  		.sram_pdn_ack_bits = GENMASK(15, 12),
@@ -21316,7 +22373,7 @@ index 503222d0d0da1233e6e8f74d3dcc1720b5889320..f8da48b421653b5aa093fe97a70d5268
  		.caps = MTK_SCPD_ACTIVE_WAKEUP,
  	},
  };
-@@ -844,7 +1099,7 @@ static const struct scp_domain_data scp_domain_data_mt8173[] = {
+@@ -922,7 +1088,7 @@ static const struct scp_domain_data scp_domain_data_mt8173[] = {
  		.ctl_offs = SPM_VDE_PWR_CON,
  		.sram_pdn_bits = GENMASK(11, 8),
  		.sram_pdn_ack_bits = GENMASK(12, 12),
@@ -21325,7 +22382,7 @@ index 503222d0d0da1233e6e8f74d3dcc1720b5889320..f8da48b421653b5aa093fe97a70d5268
  	},
  	[MT8173_POWER_DOMAIN_VENC] = {
  		.name = "venc",
-@@ -852,7 +1107,7 @@ static const struct scp_domain_data scp_domain_data_mt8173[] = {
+@@ -930,7 +1096,7 @@ static const struct scp_domain_data scp_domain_data_mt8173[] = {
  		.ctl_offs = SPM_VEN_PWR_CON,
  		.sram_pdn_bits = GENMASK(11, 8),
  		.sram_pdn_ack_bits = GENMASK(15, 12),
@@ -21334,7 +22391,7 @@ index 503222d0d0da1233e6e8f74d3dcc1720b5889320..f8da48b421653b5aa093fe97a70d5268
  	},
  	[MT8173_POWER_DOMAIN_ISP] = {
  		.name = "isp",
-@@ -860,7 +1115,7 @@ static const struct scp_domain_data scp_domain_data_mt8173[] = {
+@@ -938,7 +1104,7 @@ static const struct scp_domain_data scp_domain_data_mt8173[] = {
  		.ctl_offs = SPM_ISP_PWR_CON,
  		.sram_pdn_bits = GENMASK(11, 8),
  		.sram_pdn_ack_bits = GENMASK(13, 12),
@@ -21343,7 +22400,7 @@ index 503222d0d0da1233e6e8f74d3dcc1720b5889320..f8da48b421653b5aa093fe97a70d5268
  	},
  	[MT8173_POWER_DOMAIN_MM] = {
  		.name = "mm",
-@@ -868,9 +1123,12 @@ static const struct scp_domain_data scp_domain_data_mt8173[] = {
+@@ -946,9 +1112,12 @@ static const struct scp_domain_data scp_domain_data_mt8173[] = {
  		.ctl_offs = SPM_DIS_PWR_CON,
  		.sram_pdn_bits = GENMASK(11, 8),
  		.sram_pdn_ack_bits = GENMASK(12, 12),
@@ -21359,7 +22416,7 @@ index 503222d0d0da1233e6e8f74d3dcc1720b5889320..f8da48b421653b5aa093fe97a70d5268
  	},
  	[MT8173_POWER_DOMAIN_VENC_LT] = {
  		.name = "venc_lt",
-@@ -878,7 +1136,7 @@ static const struct scp_domain_data scp_domain_data_mt8173[] = {
+@@ -956,7 +1125,7 @@ static const struct scp_domain_data scp_domain_data_mt8173[] = {
  		.ctl_offs = SPM_VEN2_PWR_CON,
  		.sram_pdn_bits = GENMASK(11, 8),
  		.sram_pdn_ack_bits = GENMASK(15, 12),
@@ -21368,7 +22425,7 @@ index 503222d0d0da1233e6e8f74d3dcc1720b5889320..f8da48b421653b5aa093fe97a70d5268
  	},
  	[MT8173_POWER_DOMAIN_AUDIO] = {
  		.name = "audio",
-@@ -886,7 +1144,6 @@ static const struct scp_domain_data scp_domain_data_mt8173[] = {
+@@ -964,7 +1133,6 @@ static const struct scp_domain_data scp_domain_data_mt8173[] = {
  		.ctl_offs = SPM_AUDIO_PWR_CON,
  		.sram_pdn_bits = GENMASK(11, 8),
  		.sram_pdn_ack_bits = GENMASK(15, 12),
@@ -21376,7 +22433,7 @@ index 503222d0d0da1233e6e8f74d3dcc1720b5889320..f8da48b421653b5aa093fe97a70d5268
  	},
  	[MT8173_POWER_DOMAIN_USB] = {
  		.name = "usb",
-@@ -894,7 +1151,6 @@ static const struct scp_domain_data scp_domain_data_mt8173[] = {
+@@ -972,7 +1140,6 @@ static const struct scp_domain_data scp_domain_data_mt8173[] = {
  		.ctl_offs = SPM_USB_PWR_CON,
  		.sram_pdn_bits = GENMASK(11, 8),
  		.sram_pdn_ack_bits = GENMASK(15, 12),
@@ -21384,7 +22441,7 @@ index 503222d0d0da1233e6e8f74d3dcc1720b5889320..f8da48b421653b5aa093fe97a70d5268
  		.caps = MTK_SCPD_ACTIVE_WAKEUP,
  	},
  	[MT8173_POWER_DOMAIN_MFG_ASYNC] = {
-@@ -903,7 +1159,7 @@ static const struct scp_domain_data scp_domain_data_mt8173[] = {
+@@ -981,7 +1148,7 @@ static const struct scp_domain_data scp_domain_data_mt8173[] = {
  		.ctl_offs = SPM_MFG_ASYNC_PWR_CON,
  		.sram_pdn_bits = GENMASK(11, 8),
  		.sram_pdn_ack_bits = 0,
@@ -21393,7 +22450,7 @@ index 503222d0d0da1233e6e8f74d3dcc1720b5889320..f8da48b421653b5aa093fe97a70d5268
  	},
  	[MT8173_POWER_DOMAIN_MFG_2D] = {
  		.name = "mfg_2d",
-@@ -911,7 +1167,6 @@ static const struct scp_domain_data scp_domain_data_mt8173[] = {
+@@ -989,7 +1156,6 @@ static const struct scp_domain_data scp_domain_data_mt8173[] = {
  		.ctl_offs = SPM_MFG_2D_PWR_CON,
  		.sram_pdn_bits = GENMASK(11, 8),
  		.sram_pdn_ack_bits = GENMASK(13, 12),
@@ -21401,7 +22458,7 @@ index 503222d0d0da1233e6e8f74d3dcc1720b5889320..f8da48b421653b5aa093fe97a70d5268
  	},
  	[MT8173_POWER_DOMAIN_MFG] = {
  		.name = "mfg",
-@@ -919,11 +1174,13 @@ static const struct scp_domain_data scp_domain_data_mt8173[] = {
+@@ -997,11 +1163,13 @@ static const struct scp_domain_data scp_domain_data_mt8173[] = {
  		.ctl_offs = SPM_MFG_PWR_CON,
  		.sram_pdn_bits = GENMASK(13, 8),
  		.sram_pdn_ack_bits = GENMASK(21, 16),
@@ -21420,7 +22477,7 @@ index 503222d0d0da1233e6e8f74d3dcc1720b5889320..f8da48b421653b5aa093fe97a70d5268
  	},
  };
  
-@@ -932,6 +1189,308 @@ static const struct scp_subdomain scp_subdomain_mt8173[] = {
+@@ -1010,6 +1178,308 @@ static const struct scp_subdomain scp_subdomain_mt8173[] = {
  	{MT8173_POWER_DOMAIN_MFG_2D, MT8173_POWER_DOMAIN_MFG},
  };
  
@@ -21729,7 +22786,7 @@ index 503222d0d0da1233e6e8f74d3dcc1720b5889320..f8da48b421653b5aa093fe97a70d5268
  static const struct scp_soc_data mt2701_data = {
  	.domains = scp_domain_data_mt2701,
  	.num_domains = ARRAY_SIZE(scp_domain_data_mt2701),
-@@ -939,7 +1498,6 @@ static const struct scp_soc_data mt2701_data = {
+@@ -1017,7 +1487,6 @@ static const struct scp_soc_data mt2701_data = {
  		.pwr_sta_offs = SPM_PWR_STATUS,
  		.pwr_sta2nd_offs = SPM_PWR_STATUS_2ND
  	},
@@ -21737,7 +22794,7 @@ index 503222d0d0da1233e6e8f74d3dcc1720b5889320..f8da48b421653b5aa093fe97a70d5268
  };
  
  static const struct scp_soc_data mt2712_data = {
-@@ -951,7 +1509,6 @@ static const struct scp_soc_data mt2712_data = {
+@@ -1029,7 +1498,6 @@ static const struct scp_soc_data mt2712_data = {
  		.pwr_sta_offs = SPM_PWR_STATUS,
  		.pwr_sta2nd_offs = SPM_PWR_STATUS_2ND
  	},
@@ -21745,7 +22802,7 @@ index 503222d0d0da1233e6e8f74d3dcc1720b5889320..f8da48b421653b5aa093fe97a70d5268
  };
  
  static const struct scp_soc_data mt6797_data = {
-@@ -963,7 +1520,6 @@ static const struct scp_soc_data mt6797_data = {
+@@ -1041,7 +1509,6 @@ static const struct scp_soc_data mt6797_data = {
  		.pwr_sta_offs = SPM_PWR_STATUS_MT6797,
  		.pwr_sta2nd_offs = SPM_PWR_STATUS_2ND_MT6797
  	},
@@ -21753,7 +22810,7 @@ index 503222d0d0da1233e6e8f74d3dcc1720b5889320..f8da48b421653b5aa093fe97a70d5268
  };
  
  static const struct scp_soc_data mt7622_data = {
-@@ -973,7 +1529,6 @@ static const struct scp_soc_data mt7622_data = {
+@@ -1051,7 +1518,6 @@ static const struct scp_soc_data mt7622_data = {
  		.pwr_sta_offs = SPM_PWR_STATUS,
  		.pwr_sta2nd_offs = SPM_PWR_STATUS_2ND
  	},
@@ -21761,7 +22818,7 @@ index 503222d0d0da1233e6e8f74d3dcc1720b5889320..f8da48b421653b5aa093fe97a70d5268
  };
  
  static const struct scp_soc_data mt7623a_data = {
-@@ -983,7 +1538,6 @@ static const struct scp_soc_data mt7623a_data = {
+@@ -1061,7 +1527,6 @@ static const struct scp_soc_data mt7623a_data = {
  		.pwr_sta_offs = SPM_PWR_STATUS,
  		.pwr_sta2nd_offs = SPM_PWR_STATUS_2ND
  	},
@@ -21769,7 +22826,7 @@ index 503222d0d0da1233e6e8f74d3dcc1720b5889320..f8da48b421653b5aa093fe97a70d5268
  };
  
  static const struct scp_soc_data mt8173_data = {
-@@ -995,7 +1549,17 @@ static const struct scp_soc_data mt8173_data = {
+@@ -1073,7 +1538,17 @@ static const struct scp_soc_data mt8173_data = {
  		.pwr_sta_offs = SPM_PWR_STATUS,
  		.pwr_sta2nd_offs = SPM_PWR_STATUS_2ND
  	},
@@ -21788,7 +22845,7 @@ index 503222d0d0da1233e6e8f74d3dcc1720b5889320..f8da48b421653b5aa093fe97a70d5268
  };
  
  /*
-@@ -1021,6 +1585,9 @@ static const struct of_device_id of_scpsys_match_tbl[] = {
+@@ -1099,6 +1574,9 @@ static const struct of_device_id of_scpsys_match_tbl[] = {
  	}, {
  		.compatible = "mediatek,mt8173-scpsys",
  		.data = &mt8173_data,
@@ -21798,7 +22855,7 @@ index 503222d0d0da1233e6e8f74d3dcc1720b5889320..f8da48b421653b5aa093fe97a70d5268
  	}, {
  		/* sentinel */
  	}
-@@ -1036,8 +1603,7 @@ static int scpsys_probe(struct platform_device *pdev)
+@@ -1114,8 +1592,7 @@ static int scpsys_probe(struct platform_device *pdev)
  
  	soc = of_device_get_match_data(&pdev->dev);
  
@@ -21914,6 +22971,946 @@ index 0000000000000000000000000000000000000000..a8242ccc3eb4f9afe4631836710d9209
 +};
 +
 +#endif /* __SOC_MEDIATEK_SCPSYS_H */
+diff --git a/drivers/spmi/Kconfig b/drivers/spmi/Kconfig
+index a53bad541f1a34686cb5b14a60708923db823de1..418848840999b5b5fb8035dad36328c3ff51c518 100644
+--- a/drivers/spmi/Kconfig
++++ b/drivers/spmi/Kconfig
+@@ -25,4 +25,13 @@ config SPMI_MSM_PMIC_ARB
+ 	  This is required for communicating with Qualcomm PMICs and
+ 	  other devices that have the SPMI interface.
+ 
++config SPMI_MTK_PMIF
++	tristate "Mediatek SPMI Controller (PMIC Arbiter)"
++	help
++	  If you say yes to this option, support will be included for the
++	  built-in SPMI PMIC Arbiter interface on Mediatek family
++	  processors.
++
++	  This is required for communicating with Mediatek PMICs and
++	  other devices that have the SPMI interface.
+ endif
+diff --git a/drivers/spmi/Makefile b/drivers/spmi/Makefile
+index 55a94cadeffe4b0a955b48ef7219f53db3f8e959..91f303b96925a038f4736afc087e125de301b930 100644
+--- a/drivers/spmi/Makefile
++++ b/drivers/spmi/Makefile
+@@ -5,3 +5,4 @@
+ obj-$(CONFIG_SPMI)	+= spmi.o
+ 
+ obj-$(CONFIG_SPMI_MSM_PMIC_ARB)	+= spmi-pmic-arb.o
++obj-$(CONFIG_SPMI_MTK_PMIF)	+= spmi-mtk-pmif.o
+\ No newline at end of file
+diff --git a/drivers/spmi/spmi-mtk-pmif.c b/drivers/spmi/spmi-mtk-pmif.c
+new file mode 100644
+index 0000000000000000000000000000000000000000..c31fa460f1c8c9db7f3ed182c261d8320950c861
+--- /dev/null
++++ b/drivers/spmi/spmi-mtk-pmif.c
+@@ -0,0 +1,906 @@
++// SPDX-License-Identifier: GPL-2.0
++//
++// Copyright (c) 2020 MediaTek Inc.
++
++#include <linux/clk.h>
++#include <linux/interrupt.h>
++#include <linux/io.h>
++#include <linux/regmap.h>
++#include <linux/reset.h>
++#include <linux/delay.h>
++#include <linux/err.h>
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/of.h>
++#include <linux/of_device.h>
++#include <linux/of_address.h>
++#include <linux/platform_device.h>
++#include <linux/slab.h>
++#include <linux/sched/clock.h>
++#include <linux/kthread.h>
++#include <linux/mutex.h>
++#include <linux/pm_wakeup.h>
++#include <linux/spmi.h>
++#include <dt-bindings/spmi/spmi.h>
++
++static struct wakeup_source *pmifThread_lock;
++static struct mutex pmif_mutex;
++
++/* macro for PMIF SWINF FSM */
++#define PMIF_SWINF_FSM_IDLE		0x00
++#define PMIF_SWINF_FSM_REQ		0x02
++#define PMIF_SWINF_FSM_WFDLE		0x04
++#define PMIF_SWINF_FSM_WFVLDCLR		0x06
++#define PMIF_SWINF_INIT_DONE		0x01
++#define PMIF_SWINF_SYS_IDLE		0x00
++#define PMIF_SWINF_SYS_BUSY		0x01
++
++#define PMIF_GET_SWINF_FSM(x)           ((x>>1)  & 0x00000007)
++
++#define PMIF_CMD_REG_0			0
++#define PMIF_CMD_REG			1
++#define PMIF_CMD_EXT_REG		2
++#define PMIF_CMD_EXT_REG_LONG		3
++/* 0: SPI, 1: SPMI */
++#define PMIF_PMIFID_SPI			0
++#define PMIF_PMIFID_SPMI0		0
++#define PMIF_PMIFID_SPMI1		1
++
++struct pmif {
++	void __iomem	*base;
++	const u32		*regs;
++	void __iomem	*spmimst_base;
++	const u32		*spmimst_regs;
++	void __iomem	*infra_base;
++	const u32		*infra_regs;
++	void __iomem	*topckgen_base;
++	const u32		*topckgen_regs;
++	const u32		*dbgregs;
++	u32				swinf_ch_start;
++	u32				ap_swinf_no;
++	int				write;
++	int				pmifid;
++	int			grpid;
++	raw_spinlock_t	lock;
++	struct spmi_controller	*spmic;
++	struct clk	*pmif_sys_ck;
++	struct clk	*pmif_tmr_ck;
++	struct clk	*spmimst_clk_mux;
++	int (*cmd)(struct spmi_controller *ctrl, unsigned int opcode);
++	int (*read_cmd)(struct spmi_controller *ctrl, u8 opc, u8 sid,
++			u16 addr, u8 *buf, size_t len);
++	int (*write_cmd)(struct spmi_controller *ctrl, u8 opc, u8 sid,
++			u16 addr, const u8 *buf, size_t len);
++	void (*pmif_enable_clk_set)(struct pmif *arb);
++	void (*pmif_force_normal_mode)(struct pmif *arb);
++	void (*pmif_enable_swinf)(struct pmif *arb, unsigned int chan_no,
++			unsigned int swinf_no);
++	void (*pmif_enable_cmdIssue)(struct pmif *arb, bool en);
++	void (*pmif_enable)(struct pmif *arb);
++	int (*is_pmif_init_done)(struct pmif *arb);
++};
++
++enum pmif_regs {
++	PMIF_INIT_DONE,
++	PMIF_INF_EN,
++	PMIF_ARB_EN,
++	PMIF_CMDISSUE_EN,
++	PMIF_TIMER_CTRL,
++	PMIF_SPI_MODE_CTRL,
++	PMIF_IRQ_EVENT_EN_0,
++	PMIF_IRQ_FLAG_0,
++	PMIF_IRQ_CLR_0,
++	PMIF_IRQ_EVENT_EN_1,
++	PMIF_IRQ_FLAG_1,
++	PMIF_IRQ_CLR_1,
++	PMIF_IRQ_EVENT_EN_2,
++	PMIF_IRQ_FLAG_2,
++	PMIF_IRQ_CLR_2,
++	PMIF_IRQ_EVENT_EN_3,
++	PMIF_IRQ_FLAG_3,
++	PMIF_IRQ_CLR_3,
++	PMIF_IRQ_EVENT_EN_4,
++	PMIF_IRQ_FLAG_4,
++	PMIF_IRQ_CLR_4,
++	PMIF_WDT_EVENT_EN_0,
++	PMIF_WDT_FLAG_0,
++	PMIF_WDT_EVENT_EN_1,
++	PMIF_WDT_FLAG_1,
++	PMIF_SWINF_0_STA,
++	PMIF_SWINF_0_WDATA_31_0,
++	PMIF_SWINF_0_RDATA_31_0,
++	PMIF_SWINF_0_ACC,
++	PMIF_SWINF_0_VLD_CLR,
++	PMIF_SWINF_1_STA,
++	PMIF_SWINF_1_WDATA_31_0,
++	PMIF_SWINF_1_RDATA_31_0,
++	PMIF_SWINF_1_ACC,
++	PMIF_SWINF_1_VLD_CLR,
++	PMIF_SWINF_2_STA,
++	PMIF_SWINF_2_WDATA_31_0,
++	PMIF_SWINF_2_RDATA_31_0,
++	PMIF_SWINF_2_ACC,
++	PMIF_SWINF_2_VLD_CLR,
++	PMIF_SWINF_3_STA,
++	PMIF_SWINF_3_WDATA_31_0,
++	PMIF_SWINF_3_RDATA_31_0,
++	PMIF_SWINF_3_ACC,
++	PMIF_SWINF_3_VLD_CLR,
++};
++
++static const u32 mt6xxx_regs[] = {
++	[PMIF_INIT_DONE] =			0x0000,
++	[PMIF_INF_EN] =				0x0024,
++	[PMIF_ARB_EN] =				0x0150,
++	[PMIF_CMDISSUE_EN] =			0x03B4,
++	[PMIF_TIMER_CTRL] =			0x03E0,
++	[PMIF_SPI_MODE_CTRL] =			0x0400,
++	[PMIF_IRQ_EVENT_EN_0] =                 0x0418,
++	[PMIF_IRQ_FLAG_0] =                     0x0420,
++	[PMIF_IRQ_CLR_0] =                      0x0424,
++	[PMIF_IRQ_EVENT_EN_1] =                 0x0428,
++	[PMIF_IRQ_FLAG_1] =                     0x0430,
++	[PMIF_IRQ_CLR_1] =                      0x0434,
++	[PMIF_IRQ_EVENT_EN_2] =                 0x0438,
++	[PMIF_IRQ_FLAG_2] =                     0x0440,
++	[PMIF_IRQ_CLR_2] =                      0x0444,
++	[PMIF_IRQ_EVENT_EN_3] =                 0x0448,
++	[PMIF_IRQ_FLAG_3] =                     0x0450,
++	[PMIF_IRQ_CLR_3] =                      0x0454,
++	[PMIF_IRQ_EVENT_EN_4] =                 0x0458,
++	[PMIF_IRQ_FLAG_4] =                     0x0460,
++	[PMIF_IRQ_CLR_4] =                      0x0464,
++	[PMIF_WDT_EVENT_EN_0] =			0x046C,
++	[PMIF_WDT_FLAG_0] =			0x0470,
++	[PMIF_WDT_EVENT_EN_1] =			0x0474,
++	[PMIF_WDT_FLAG_1] =			0x0478,
++	[PMIF_SWINF_0_ACC] =			0x0C00,
++	[PMIF_SWINF_0_WDATA_31_0] =		0x0C04,
++	[PMIF_SWINF_0_RDATA_31_0] =		0x0C14,
++	[PMIF_SWINF_0_VLD_CLR] =		0x0C24,
++	[PMIF_SWINF_0_STA] =			0x0C28,
++	[PMIF_SWINF_1_ACC] =			0x0C40,
++	[PMIF_SWINF_1_WDATA_31_0] =		0x0C44,
++	[PMIF_SWINF_1_RDATA_31_0] =		0x0C54,
++	[PMIF_SWINF_1_VLD_CLR] =		0x0C64,
++	[PMIF_SWINF_1_STA] =			0x0C68,
++	[PMIF_SWINF_2_ACC] =			0x0C80,
++	[PMIF_SWINF_2_WDATA_31_0] =		0x0C84,
++	[PMIF_SWINF_2_RDATA_31_0] =		0x0C94,
++	[PMIF_SWINF_2_VLD_CLR] =		0x0CA4,
++	[PMIF_SWINF_2_STA] =			0x0CA8,
++	[PMIF_SWINF_3_ACC] =			0x0CC0,
++	[PMIF_SWINF_3_WDATA_31_0] =		0x0CC4,
++	[PMIF_SWINF_3_RDATA_31_0] =		0x0CD4,
++	[PMIF_SWINF_3_VLD_CLR] =		0x0CE4,
++	[PMIF_SWINF_3_STA] =			0x0CE8,
++};
++
++enum spmi_regs {
++	SPMI_OP_ST_CTRL,
++	SPMI_GRP_ID_EN,
++	SPMI_OP_ST_STA,
++	SPMI_MST_SAMPL,
++	SPMI_MST_REQ_EN,
++	SPMI_REC_CTRL,
++	SPMI_REC0,
++	SPMI_REC1,
++	SPMI_REC2,
++	SPMI_REC3,
++	SPMI_REC4,
++	SPMI_MST_DBG,
++};
++
++static const u32 mt6xxx_spmi_regs[] = {
++	[SPMI_OP_ST_CTRL] =			0x0000,
++	[SPMI_GRP_ID_EN] =			0x0004,
++	[SPMI_OP_ST_STA] =			0x0008,
++	[SPMI_MST_SAMPL] =			0x000c,
++	[SPMI_MST_REQ_EN] =			0x0010,
++	[SPMI_REC_CTRL] =			0x0040,
++	[SPMI_REC0] =				0x0044,
++	[SPMI_REC1] =				0x0048,
++	[SPMI_REC2] =				0x004c,
++	[SPMI_REC3] =				0x0050,
++	[SPMI_REC4] =				0x0054,
++	[SPMI_MST_DBG] =			0x00fc,
++};
++
++enum {
++	SPMI_OP_ST_BUSY = 1,
++	SPMI_OP_ST_ACK = 0,
++	SPMI_OP_ST_NACK = 1
++};
++
++enum {
++	SPMI_RCS_SR_BIT,
++	SPMI_RCS_A_BIT
++};
++
++enum {
++	SPMI_RCS_MST_W = 1,
++	SPMI_RCS_SLV_W = 3
++};
++
++enum infra_regs {
++	MODULE_SW_CG_0_SET,
++	MODULE_SW_CG_0_CLR,
++	MODULE_SW_CG_2_SET,
++	MODULE_SW_CG_2_CLR,
++	PMICW_CLOCK_CTRL,
++	INFRA_GLOBALCON_RST2_SET,
++	INFRA_GLOBALCON_RST2_CLR,
++};
++
++static const u32 mt6xxx_infra_regs[] = {
++	[MODULE_SW_CG_0_SET] =			0x0080,
++	[MODULE_SW_CG_0_CLR] =			0x0084,
++	[MODULE_SW_CG_2_SET] =			0x00a4,
++	[MODULE_SW_CG_2_CLR] =			0x00a8,
++	[PMICW_CLOCK_CTRL] =			0x0108,
++	[INFRA_GLOBALCON_RST2_SET] =		0x0140,
++	[INFRA_GLOBALCON_RST2_CLR] =		0x0144,
++};
++
++enum topckgen_regs {
++	CLK_CFG_UPDATE1,
++	CLK_CFG_UPDATE2,
++	WDT_SWSYSRST2,
++	CLK_CFG_8_CLR,
++	CLK_CFG_16,
++	CLK_CFG_16_CLR,
++};
++
++static const u32 mt6xxx_topckgen_regs[] = {
++	[CLK_CFG_UPDATE1] =			0x0008,
++	[CLK_CFG_UPDATE2] =			0x000c,
++	[WDT_SWSYSRST2] =			0x0090,
++	[CLK_CFG_8_CLR] =			0x0098,
++	[CLK_CFG_16] =				0x0110,
++	[CLK_CFG_16_CLR] =			0x0118,
++};
++
++enum {
++	IRQ_PMIC_CMD_ERR_PARITY_ERR = 17,
++	IRQ_PMIF_ACC_VIO = 20,
++	IRQ_PMIC_ACC_VIO = 21,
++	IRQ_LAT_LIMIT_REACHED = 6,
++	IRQ_HW_MONITOR = 7,
++	IRQ_WDT = 8
++};
++
++/*
++ * pmif internal API declaration
++ */
++static void pmif_enable_soft_reset(struct pmif *arb);
++static void pmif_spmi_enable_clk_set(struct pmif *arb);
++static void pmif_spmi_force_normal_mode(struct pmif *arb);
++static void pmif_spmi_enable_swinf(struct pmif *arb,
++	unsigned int chan_no, unsigned int swinf_no);
++static void pmif_spmi_enable_cmdIssue(struct pmif *arb, bool en);
++static void pmif_spmi_enable(struct pmif *arb);
++static int is_pmif_spmi_init_done(struct pmif *arb);
++static int pmif_spmi_read_cmd(struct spmi_controller *ctrl, u8 opc, u8 sid,
++		u16 addr, u8 *buf, size_t len);
++static int pmif_spmi_write_cmd(struct spmi_controller *ctrl, u8 opc, u8 sid,
++		u16 addr, const u8 *buf, size_t len);
++static int mtk_spmi_config_master(struct pmif *arb, bool en);
++static int mtk_spmi_cali_rd_clock_polarity(struct pmif *arb);
++static int mtk_spmi_ctrl_op_st(struct spmi_controller *ctrl,
++			u8 opc, u8 sid);
++static int mtk_spmi_enable_group_id(struct pmif *arb, u8 grpid);
++
++static struct pmif mt6xxx_pmif_arb[] = {
++	{
++		.base = 0x0,
++		.regs = mt6xxx_regs,
++		.spmimst_base = 0x0,
++		.spmimst_regs = mt6xxx_spmi_regs,
++		.infra_base = 0x0,
++		.infra_regs = mt6xxx_infra_regs,
++		.topckgen_base = 0x0,
++		.topckgen_regs = mt6xxx_topckgen_regs,
++		.swinf_ch_start = 0,
++		.ap_swinf_no = 0,
++		.write = 0x0,
++		.pmifid = PMIF_PMIFID_SPMI1,
++		.spmic = 0x0,
++		.read_cmd = pmif_spmi_read_cmd,
++		.write_cmd = pmif_spmi_write_cmd,
++		.pmif_enable_clk_set = pmif_spmi_enable_clk_set,
++		.pmif_force_normal_mode = pmif_spmi_force_normal_mode,
++		.pmif_enable_swinf = pmif_spmi_enable_swinf,
++		.pmif_enable_cmdIssue = pmif_spmi_enable_cmdIssue,
++		.pmif_enable = pmif_spmi_enable,
++		.is_pmif_init_done = is_pmif_spmi_init_done,
++	},
++};
++
++static const struct of_device_id pmif_match_table[] = {
++	{
++		.compatible = "mediatek,pmif",
++		.data = &mt6xxx_pmif_arb,
++	}, {
++		/* sentinel */
++	},
++};
++MODULE_DEVICE_TABLE(of, pmif_match_table);
++static struct platform_driver pmif_driver;
++
++/*
++ * pmif define for FSM
++ */
++static inline bool pmif_is_fsm_idle(struct pmif *arb)
++{
++	u32 offset = 0, reg_rdata = 0;
++
++	offset = arb->regs[PMIF_SWINF_0_STA] + (0x40 * arb->ap_swinf_no);
++	reg_rdata = readl(arb->base + offset);
++	return PMIF_GET_SWINF_FSM(reg_rdata) == PMIF_SWINF_FSM_IDLE;
++}
++
++static inline bool pmif_is_fsm_vldclr(struct pmif *arb)
++{
++	u32 offset = 0, reg_rdata = 0;
++
++	offset = arb->regs[PMIF_SWINF_0_STA] + (0x40 * arb->ap_swinf_no);
++	reg_rdata = readl(arb->base + offset);
++	return PMIF_GET_SWINF_FSM(reg_rdata) == PMIF_SWINF_FSM_WFVLDCLR;
++}
++static inline void pmif_leave_fsm_vldclr(struct pmif *arb)
++{
++	u32 offset = 0;
++
++	offset = arb->regs[PMIF_SWINF_0_VLD_CLR] + (0x40 * arb->ap_swinf_no);
++	if (pmif_is_fsm_vldclr(arb))
++		writel(0x1, arb->base + offset);
++}
++
++static int pmif_wait_for_state(struct spmi_controller *ctrl,
++		bool (*fp)(struct pmif *))
++{
++	struct pmif *arb = spmi_controller_get_drvdata(ctrl);
++	unsigned long timeout;
++
++	timeout = jiffies + usecs_to_jiffies(10000);
++	do {
++		if (time_after(jiffies, timeout))
++			return fp(arb) ? 0 : -ETIMEDOUT;
++		if (fp(arb))
++			return 0;
++	} while (1);
++}
++
++/*
++ * Function : pmif_readl()
++ * Description : mtk pmif controller read api
++ * Parameter :
++ * Return :
++ */
++static u32 pmif_readl(struct pmif *arb, enum pmif_regs reg)
++{
++	return readl(arb->base + arb->regs[reg]);
++}
++
++/*
++ * Function : pmif_writel()
++ * Description : mtk pmif controller write api
++ * Parameter :
++ * Return :
++ */
++static void pmif_writel(struct pmif *arb, u32 val, enum pmif_regs reg)
++{
++	writel(val, arb->base + arb->regs[reg]);
++}
++/*
++ * Function : mtk_spmi_readl()
++ * Description : mtk spmi controller read api
++ * Parameter :
++ * Return :
++ */
++u32 mtk_spmi_readl(struct pmif *arb, enum spmi_regs reg)
++{
++	return readl(arb->spmimst_base + arb->spmimst_regs[reg]);
++}
++
++/*
++ * Function : mtk_spmi_writel()
++ * Description : mtk spmi controller write api
++ * Parameter :
++ * Return :
++ */
++void mtk_spmi_writel(struct pmif *arb, u32 val,
++		enum spmi_regs reg)
++{
++	writel(val, arb->spmimst_base + arb->spmimst_regs[reg]);
++}
++
++static void pmif_enable_soft_reset(struct pmif *arb)
++{
++	writel(0x1 << 14,
++		arb->infra_base + arb->infra_regs[INFRA_GLOBALCON_RST2_SET]);
++	writel(0x1 << 14,
++		arb->infra_base + arb->infra_regs[INFRA_GLOBALCON_RST2_CLR]);
++}
++
++static void pmif_spmi_enable_clk_set(struct pmif *arb)
++{
++	writel((0x1 << 15) | (0x1 << 12) | (0x7 << 8),
++		arb->topckgen_base + arb->topckgen_regs[CLK_CFG_8_CLR]);
++	writel(0x1 << 2,
++		arb->topckgen_base + arb->topckgen_regs[CLK_CFG_UPDATE1]);
++
++	/* sys_ck cg enable, turn off clock */
++	writel(0x0000000f,
++		arb->infra_base + arb->infra_regs[MODULE_SW_CG_0_SET]);
++	/* turn off clock */
++	writel(0x00000100,
++		arb->infra_base + arb->infra_regs[MODULE_SW_CG_2_SET]);
++
++	/* toggle SPMI sw reset */
++	pmif_enable_soft_reset(arb);
++
++	/* sys_ck cg enable, turn on clock */
++	writel(0x0000000f,
++		arb->infra_base + arb->infra_regs[MODULE_SW_CG_0_CLR]);
++	/* turn on clock */
++	writel(0x00000100,
++		arb->infra_base + arb->infra_regs[MODULE_SW_CG_2_CLR]);
++}
++
++static void pmif_spmi_force_normal_mode(struct pmif *arb)
++{
++	/* Force SPMI in normal mode. */
++	pmif_writel(arb, pmif_readl(arb, PMIF_SPI_MODE_CTRL) & (~(0x3 << 9)),
++			PMIF_SPI_MODE_CTRL);
++	pmif_writel(arb, pmif_readl(arb, PMIF_SPI_MODE_CTRL) | (0x1 << 9),
++			PMIF_SPI_MODE_CTRL);
++
++}
++
++static void pmif_spmi_enable_swinf(struct pmif *arb, unsigned int chan_no,
++	unsigned int swinf_no)
++{
++	/* Enable swinf */
++	pmif_writel(arb, 0x1 << (chan_no + swinf_no), PMIF_INF_EN);
++
++	/* Enable arbitration */
++	pmif_writel(arb, 0x1 << (chan_no + swinf_no), PMIF_ARB_EN);
++
++}
++
++static void pmif_spmi_enable_cmdIssue(struct pmif *arb, bool en)
++{
++	/* Enable cmdIssue */
++	pmif_writel(arb, en, PMIF_CMDISSUE_EN);
++
++}
++
++static void pmif_spmi_enable(struct pmif *arb)
++{
++	pmif_writel(arb, 0x2F5, PMIF_INF_EN);
++	pmif_writel(arb, 0x2F5, PMIF_ARB_EN);
++	pmif_writel(arb, 0x3, PMIF_TIMER_CTRL);
++	pmif_writel(arb, 0x1, PMIF_INIT_DONE);
++
++}
++
++static int mtk_spmi_ctrl_op_st(struct spmi_controller *ctrl,
++			u8 opc, u8 sid)
++{
++	struct pmif *arb = spmi_controller_get_drvdata(ctrl);
++	u32 rdata = 0x0;
++	u8 cmd = 0;
++
++	/* Check the opcode */
++	if (opc == SPMI_CMD_RESET)
++		cmd = 0;
++	else if (opc == SPMI_CMD_SLEEP)
++		cmd = 1;
++	else if (opc == SPMI_CMD_SHUTDOWN)
++		cmd = 2;
++	else if (opc == SPMI_CMD_WAKEUP)
++		cmd = 3;
++
++	mtk_spmi_writel(arb, (cmd << 0x4) | sid, SPMI_OP_ST_CTRL);
++
++	rdata = mtk_spmi_readl(arb, SPMI_OP_ST_CTRL);
++	pr_notice("[SPMIMST]:pmif_ctrl_op_st 0x%x\r\n", rdata);
++
++	do {
++		rdata = mtk_spmi_readl(arb, SPMI_OP_ST_STA);
++		pr_notice("[SPMIMST]:pmif_ctrl_op_st 0x%x\r\n", rdata);
++	} while ((rdata & SPMI_OP_ST_BUSY) == SPMI_OP_ST_BUSY);
++
++	return 0;
++}
++
++/* Non-data command */
++static int pmif_arb_cmd(struct spmi_controller *ctrl, u8 opc, u8 sid)
++{
++	return mtk_spmi_ctrl_op_st(ctrl, opc, sid);
++}
++
++static int mtk_spmi_enable_group_id(struct pmif *arb, u8 grpid)
++{
++	mtk_spmi_writel(arb, 0x1 << grpid, SPMI_GRP_ID_EN);
++
++	return 0;
++}
++
++static int pmif_spmi_read_cmd(struct spmi_controller *ctrl, u8 opc, u8 sid,
++		u16 addr, u8 *buf, size_t len)
++{
++	struct pmif *arb = spmi_controller_get_drvdata(ctrl);
++	int ret = 0, write = 0x0;
++	u32 offset = 0, data = 0;
++	u8 bc = len - 1;
++	unsigned long flags;
++
++	/* Check for argument validation. */
++	if ((arb->ap_swinf_no & ~(0x3)) != 0x0)
++		return -EINVAL;
++
++	if ((arb->pmifid & ~(0x1)) != 0x0)
++		return -EINVAL;
++
++	if ((sid & ~(0xf)) != 0x0)
++		return -EINVAL;
++
++	if ((bc & ~(0x1)) != 0x0)
++		return -EINVAL;
++
++	/* Check the opcode */
++	if (opc >= 0x60 && opc <= 0x7F)
++		opc = PMIF_CMD_REG;
++	else if (opc >= 0x20 && opc <= 0x2F)
++		opc = PMIF_CMD_EXT_REG_LONG; /* wk1 opc = PMIF_CMD_EXT_REG; */
++	else if (opc >= 0x38 && opc <= 0x3F)
++		opc = PMIF_CMD_EXT_REG_LONG;
++	else
++		return -EINVAL;
++
++	raw_spin_lock_irqsave(&arb->lock, flags);
++	/* Wait for Software Interface FSM state to be IDLE. */
++	ret = pmif_wait_for_state(ctrl, pmif_is_fsm_idle);
++	if (ret) {
++		pmif_leave_fsm_vldclr(arb);
++		raw_spin_unlock_irqrestore(&arb->lock, flags);
++		return ret;
++	}
++	/* Send the command. */
++	offset = arb->regs[PMIF_SWINF_0_ACC] + (0x40 * arb->ap_swinf_no);
++	writel((opc << 30) | (write << 29) | (sid << 24) | (bc << 16) | addr,
++		arb->base + offset);
++
++	/* Wait for Software Interface FSM state to be WFVLDCLR,
++	 *
++	 * read the data and clear the valid flag.
++	 */
++	if (write == 0) {
++		ret = pmif_wait_for_state(ctrl, pmif_is_fsm_vldclr);
++		if (ret) {
++			raw_spin_unlock_irqrestore(&arb->lock, flags);
++			return ret;
++		}
++		offset =
++		arb->regs[PMIF_SWINF_0_RDATA_31_0] + (0x40 * arb->ap_swinf_no);
++
++		data = readl(arb->base + offset);
++		memcpy(buf, &data, (bc & 3) + 1);
++		offset =
++		arb->regs[PMIF_SWINF_0_VLD_CLR] + (0x40 * arb->ap_swinf_no);
++
++		writel(0x1, arb->base + offset);
++	}
++
++	raw_spin_unlock_irqrestore(&arb->lock, flags);
++
++	return 0x0;
++}
++
++static int pmif_spmi_write_cmd(struct spmi_controller *ctrl, u8 opc, u8 sid,
++		u16 addr, const u8 *buf, size_t len)
++{
++	struct pmif *arb = spmi_controller_get_drvdata(ctrl);
++	int ret = 0, write = 0x1;
++	u32 offset = 0, data = 0;
++	u8 bc = len - 1;
++	unsigned long flags = 0;
++
++	/* Check for argument validation. */
++	if ((arb->ap_swinf_no & ~(0x3)) != 0x0)
++		return -EINVAL;
++
++	if ((arb->pmifid & ~(0x1)) != 0x0)
++		return -EINVAL;
++
++	if ((sid & ~(0xf)) != 0x0)
++		return -EINVAL;
++
++	if ((bc & ~(0x1)) != 0x0)
++		return -EINVAL;
++
++	/* Check the opcode */
++	if (opc >= 0x40 && opc <= 0x5F)
++		opc = PMIF_CMD_REG;
++	else if (opc <= 0x0F)
++		opc = PMIF_CMD_EXT_REG_LONG; /* wk1 opc = PMIF_CMD_EXT_REG; */
++	else if (opc >= 0x30 && opc <= 0x37)
++		opc = PMIF_CMD_EXT_REG_LONG;
++	else if (opc >= 0x80)
++		opc = PMIF_CMD_REG_0;
++	else
++		return -EINVAL;
++
++	raw_spin_lock_irqsave(&arb->lock, flags);
++	/* Wait for Software Interface FSM state to be IDLE. */
++	ret = pmif_wait_for_state(ctrl, pmif_is_fsm_idle);
++	if (ret) {
++		pmif_leave_fsm_vldclr(arb);
++		raw_spin_unlock_irqrestore(&arb->lock, flags);
++		return ret;
++	}
++	/* Set the write data. */
++	offset = arb->regs[PMIF_SWINF_0_WDATA_31_0] + (0x40 * arb->ap_swinf_no);
++	if (write == 1) {
++		memcpy(&data, buf, (bc & 3) + 1);
++		writel(data, arb->base + offset);
++	}
++
++	/* Send the command. */
++	offset = arb->regs[PMIF_SWINF_0_ACC] + (0x40 * arb->ap_swinf_no);
++	writel((opc << 30) | (write << 29) | (sid << 24) | (bc << 16) | addr,
++			arb->base + offset);
++	raw_spin_unlock_irqrestore(&arb->lock, flags);
++
++	return 0x0;
++}
++
++int is_pmif_spmi_init_done(struct pmif *arb)
++{
++	int ret = 0;
++
++	ret = pmif_readl(arb, PMIF_INIT_DONE);
++	if ((ret & 0x1) == 1)
++		return 0;
++
++	return -1;
++}
++
++static int mtk_spmi_config_master(struct pmif *arb, bool en)
++{
++	/* Software reset */
++	writel(0x85 << 24 | 0x1 << 4,
++		arb->topckgen_base + arb->topckgen_regs[WDT_SWSYSRST2]);
++
++	writel(0x7 | (0x1 << 4) | (0x1 << 7),
++		arb->topckgen_base + arb->topckgen_regs[CLK_CFG_16_CLR]);
++	writel(0x1 << 2,
++		arb->topckgen_base + arb->topckgen_regs[CLK_CFG_UPDATE2]);
++
++	/* Software reset */
++	writel(0x85 << 24,
++		arb->topckgen_base + arb->topckgen_regs[WDT_SWSYSRST2]);
++
++	/* Enable SPMI */
++	mtk_spmi_writel(arb, en, SPMI_MST_REQ_EN);
++
++	return 0;
++}
++
++static int mtk_spmi_cali_rd_clock_polarity(struct pmif *arb)
++{
++	unsigned int dly = 1, pol = 1;
++
++	/* Indicate sampling clock polarity, 1: Positive 0: Negative  */
++	mtk_spmi_writel(arb, (dly << 0x1) | pol, SPMI_MST_SAMPL);
++
++	return 0;
++}
++
++static int mtk_spmimst_init(struct platform_device *pdev, struct pmif *arb)
++{
++	struct resource *res = NULL;
++	int err = 0, i = 0;
++
++	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "spmimst");
++	arb->spmimst_base = devm_ioremap_resource(&pdev->dev, res);
++	if (IS_ERR(arb->spmimst_base)) {
++		err = PTR_ERR(arb->spmimst_base);
++		return err;
++	}
++
++	err = of_property_read_u32(pdev->dev.of_node, "grpid", &arb->grpid);
++	if (err) {
++		dev_notice(&pdev->dev, "[SPMIMST]:grpid unspecified.\n");
++		return -EINVAL;
++	}
++	/* set group id */
++	mtk_spmi_enable_group_id(arb, arb->grpid);
++
++	/* if spmimst not enabled, enable it */
++	if ((mtk_spmi_readl(arb, SPMI_MST_REQ_EN) & 0x1) != 0x1) {
++		dev_info(&pdev->dev, "[SPMIMST]:enable spmimst.\n");
++		mtk_spmi_config_master(arb, true);
++		for (i = 0; i < 3; i++)
++			mtk_spmi_cali_rd_clock_polarity(arb);
++	}
++	pr_notice("[SPMIMST]:%s done\n", __func__);
++
++	return 0;
++}
++
++
++static int pmif_probe(struct platform_device *pdev)
++{
++	struct device_node *node = NULL;
++	const struct of_device_id *of_id =
++		of_match_device(pmif_match_table, &pdev->dev);
++	struct spmi_controller *ctrl = NULL;
++	struct pmif *arb = NULL;
++	struct resource *res = NULL;
++	u32 swinf_ch_start = 0, ap_swinf_no = 0;
++	int err = 0;
++
++	if (!of_id) {
++		dev_notice(&pdev->dev, "[PMIF]:Error: No device match found\n");
++		return -ENODEV;
++	}
++
++	ctrl = spmi_controller_alloc(&pdev->dev, sizeof(*arb));
++	if (!ctrl)
++		return -ENOMEM;
++
++	/* re-assign of_id->data */
++	spmi_controller_set_drvdata(ctrl, (void *)of_id->data);
++	arb = spmi_controller_get_drvdata(ctrl);
++
++	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "pmif");
++	arb->base = devm_ioremap_resource(&pdev->dev, res);
++	if (IS_ERR(arb->base)) {
++		err = PTR_ERR(arb->base);
++		goto err_put_ctrl;
++	}
++
++	/* pmif is not initialized, just init once */
++	node = of_find_compatible_node(NULL, NULL,
++			"mediatek,mt8192-infracfg");
++	arb->infra_base = of_iomap(node, 0);
++	dev_info(&pdev->dev, "[PMIF]:mtk-pmif arb infra ao base:0x%x\n",
++			arb->infra_base);
++	if (IS_ERR(arb->infra_base)) {
++		err = PTR_ERR(arb->infra_base);
++		goto err_put_ctrl;
++	}
++
++	node = of_find_compatible_node(NULL, NULL,
++			"mediatek,mt8192-topckgen");
++	arb->topckgen_base = of_iomap(node, 0);
++	dev_info(&pdev->dev, "[PMIF]:mtk-pmif arb topckgen base:0x%x\n",
++			arb->topckgen_base);
++	if (IS_ERR(arb->topckgen_base)) {
++		err = PTR_ERR(arb->topckgen_base);
++		goto err_put_ctrl;
++	}
++
++	/* get pmif infracfg_ao clock */
++	arb->pmif_sys_ck = devm_clk_get(&pdev->dev, "pmif_sys_ck");
++	if (IS_ERR(arb->pmif_sys_ck)) {
++		dev_notice(&pdev->dev, "[PMIF]:failed to get ap clock: %ld\n",
++			PTR_ERR(arb->pmif_sys_ck));
++		return PTR_ERR(arb->pmif_sys_ck);
++	}
++
++	arb->pmif_tmr_ck = devm_clk_get(&pdev->dev, "pmif_tmr_ck");
++	if (IS_ERR(arb->pmif_tmr_ck)) {
++		dev_notice(&pdev->dev, "[PMIF]:failed to get tmr clock: %ld\n",
++			PTR_ERR(arb->pmif_tmr_ck));
++		return PTR_ERR(arb->pmif_tmr_ck);
++	}
++
++	/* get spmimst topckgen clock */
++	arb->spmimst_clk_mux = devm_clk_get(&pdev->dev, "spmimst_clk_mux");
++	if (IS_ERR(arb->spmimst_clk_mux)) {
++		dev_notice(&pdev->dev, "[SPMIMST]:failed to get clock: %ld\n",
++			PTR_ERR(arb->spmimst_clk_mux));
++		return PTR_ERR(arb->spmimst_clk_mux);
++	}
++
++	err = clk_prepare_enable(arb->spmimst_clk_mux);
++	if (err)
++		return err;
++
++	err = of_property_read_u32(pdev->dev.of_node,
++			"swinf_ch_start", &swinf_ch_start);
++	if (err) {
++		dev_notice(&pdev->dev, "[PMIF]:swinf_ch_start unspecified.\n");
++		goto err_put_ctrl;
++	}
++	arb->swinf_ch_start = swinf_ch_start;
++
++	err = of_property_read_u32(pdev->dev.of_node,
++			"ap_swinf_no", &ap_swinf_no);
++	if (err) {
++		dev_notice(&pdev->dev, "[PMIF]:ap_swinf_no unspecified.\n");
++		goto err_put_ctrl;
++	}
++	arb->ap_swinf_no = ap_swinf_no;
++
++	if (arb->is_pmif_init_done(arb) != 0) {
++		/* pmif initialize start */
++		arb->pmif_enable_clk_set(arb);
++		arb->pmif_force_normal_mode(arb);
++		/* Enable SWINF and arbitration for AP. */
++		arb->pmif_enable_swinf(arb,
++				arb->swinf_ch_start, arb->ap_swinf_no);
++		arb->pmif_enable_cmdIssue(arb, true);
++
++		arb->pmif_enable(arb);
++		arb->is_pmif_init_done(arb);
++		/* pmif initialize end */
++	}
++
++	raw_spin_lock_init(&arb->lock);
++	pmifThread_lock =
++		wakeup_source_register(&pdev->dev, "pmif wakelock");
++	mutex_init(&pmif_mutex);
++
++	ctrl->cmd = pmif_arb_cmd;
++	ctrl->read_cmd = pmif_spmi_read_cmd;
++	ctrl->write_cmd = pmif_spmi_write_cmd;
++
++	if (arb->is_pmif_init_done(arb) == 0) {
++		/* pmif already done, call spmi master driver init */
++		err = mtk_spmimst_init(pdev, arb);
++		if (err)
++			goto err_put_ctrl;
++	}
++
++	platform_set_drvdata(pdev, ctrl);
++
++	err = spmi_controller_add(ctrl);
++	if (err)
++		goto err_domain_remove;
++
++	return 0;
++
++err_domain_remove:
++	clk_disable_unprepare(arb->spmimst_clk_mux);
++err_put_ctrl:
++	spmi_controller_put(ctrl);
++	return err;
++}
++
++static int pmif_remove(struct platform_device *pdev)
++{
++	struct spmi_controller *ctrl = platform_get_drvdata(pdev);
++
++	spmi_controller_remove(ctrl);
++	spmi_controller_put(ctrl);
++	return 0;
++}
++
++static struct platform_driver pmif_driver = {
++	.probe		= pmif_probe,
++	.remove		= pmif_remove,
++	.driver		= {
++		.name	= "pmif",
++		.of_match_table = of_match_ptr(pmif_match_table),
++	},
++};
++
++static int __init mtk_pmif_init(void)
++{
++	int ret = 0;
++
++	ret = platform_driver_register(&pmif_driver);
++	if (ret)
++		return -ENODEV;
++	return 0;
++}
++postcore_initcall(mtk_pmif_init);
++
++MODULE_AUTHOR("Hsin-Hsiung Wang <hsin-hsiung.wang@mediatek.com>");
++MODULE_DESCRIPTION("SPMI Driver for MediaTek MT8192");
++MODULE_LICENSE("GPL");
 diff --git a/drivers/usb/host/xhci-mtk-sch.c b/drivers/usb/host/xhci-mtk-sch.c
 index fea555570ad4f7df464ff4a57d34755817cda211..6ab9da09c6b9e0acb1a98047382c3eed7acc86a4 100644
 --- a/drivers/usb/host/xhci-mtk-sch.c
@@ -21936,6 +23933,347 @@ index fea555570ad4f7df464ff4a57d34755817cda211..6ab9da09c6b9e0acb1a98047382c3eed
  	}
  
  	list_add_tail(&sch_ep->endpoint, &sch_bw->bw_ep_list);
+diff --git a/drivers/usb/host/xhci-mtk.c b/drivers/usb/host/xhci-mtk.c
+old mode 100644
+new mode 100755
+index b18a6baef204a60b1ac5071a55fdb25b0280aea5..e02f5a33d24499e30ad0b7b2e48d637fac3474fa
+--- a/drivers/usb/host/xhci-mtk.c
++++ b/drivers/usb/host/xhci-mtk.c
+@@ -68,11 +68,51 @@
+ #define SSC_IP_SLEEP_EN	BIT(4)
+ #define SSC_SPM_INT_EN		BIT(1)
+ 
++/* mt8192 etc */
++#define SSC_IP_SLEEP_EN_V3	BIT(6)
++
+ enum ssusb_uwk_vers {
+ 	SSUSB_UWK_V1 = 1,
+ 	SSUSB_UWK_V2,
++	SSUSB_UWK_V3,
+ };
+ 
++int xhci_mtk_runtime_ready;
++static void xhci_mtk_seal_work(struct work_struct *work)
++{
++	struct xhci_hcd_mtk *mtk = container_of(work, struct xhci_hcd_mtk, seal.work);
++	struct usb_hcd *hcd = mtk->hcd;
++	struct xhci_hcd *xhci = hcd_to_xhci(hcd);
++
++	xhci_info(xhci, "spm unseals xHCI controller\n");
++	pm_runtime_get_sync(mtk->dev);
++}
++
++static irqreturn_t xhci_mtk_seal_irq (int irq, void *__hcd)
++{
++	irqreturn_t		rc= IRQ_HANDLED;
++	struct xhci_hcd_mtk *mtk = __hcd;
++	struct usb_hcd *hcd = mtk->hcd;
++	struct xhci_hcd *xhci = hcd_to_xhci(hcd);
++
++	disable_irq_nosync(mtk->seal_irq);
++
++	xhci_info(xhci, "seal irq ISR invoked\n");
++	schedule_delayed_work(&mtk->seal, 0);
++
++	return rc;
++}
++
++static void xhci_mtk_seal_wakeup_enable(struct xhci_hcd_mtk *mtk, bool enable)
++{
++	if (mtk && mtk->seal_irq) {
++		if (enable)
++			enable_irq(mtk->seal_irq);
++		else
++			disable_irq(mtk->seal_irq);
++	}
++}
++
+ static int xhci_mtk_host_enable(struct xhci_hcd_mtk *mtk)
+ {
+ 	struct mu3c_ippc_regs __iomem *ippc = mtk->ippc_regs;
+@@ -305,6 +345,11 @@ static void usb_wakeup_ip_sleep_set(struct xhci_hcd_mtk *mtk, bool enable)
+ 		msk = SSC_IP_SLEEP_EN | SSC_SPM_INT_EN;
+ 		val = enable ? msk : 0;
+ 		break;
++	case SSUSB_UWK_V3:
++		reg = mtk->uwk_reg_base + PERI_SSUSB_SPM_CTRL;
++		msk = SSC_IP_SLEEP_EN_V3 | SSC_SPM_INT_EN;
++		val = enable ? msk : 0;
++		break;
+ 	default:
+ 		return;
+ 	}
+@@ -470,10 +515,9 @@ static int xhci_mtk_probe(struct platform_device *pdev)
+ 		return ret;
+ 	}
+ 
++	pm_runtime_set_active(dev);
+ 	pm_runtime_enable(dev);
+-	pm_runtime_get_sync(dev);
+-	device_enable_async_suspend(dev);
+-
++	pm_runtime_get_noresume(dev);
+ 	ret = xhci_mtk_ldos_enable(mtk);
+ 	if (ret)
+ 		goto disable_pm;
+@@ -487,6 +531,14 @@ static int xhci_mtk_probe(struct platform_device *pdev)
+ 		ret = irq;
+ 		goto disable_clk;
+ 	}
++	dev_info(dev, "irq %i\n", irq);
++
++	mtk->seal_irq = platform_get_irq(pdev, 1);
++	if (mtk->seal_irq < 0) {
++		ret = mtk->seal_irq;
++		goto disable_clk;
++	}
++	dev_info(dev, "seal_irq %i\n", mtk->seal_irq);
+ 
+ 	/* Initialize dma_mask and coherent_dma_mask to 32-bits */
+ 	ret = dma_set_mask_and_coherent(dev, DMA_BIT_MASK(32));
+@@ -558,6 +610,30 @@ static int xhci_mtk_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		goto dealloc_usb2_hcd;
+ 
++	INIT_DELAYED_WORK(&mtk->seal, xhci_mtk_seal_work);
++	snprintf(mtk->seal_descr, sizeof(mtk->seal_descr), "seal%s:usb%d",
++				hcd->driver->description, hcd->self.busnum);
++	ret = request_irq(mtk->seal_irq, &xhci_mtk_seal_irq, IRQF_SHARED,
++			mtk->seal_descr, mtk);
++	if (ret != 0) {
++		dev_err(hcd->self.controller,
++				"seal request interrupt %d failed\n",
++				mtk->seal_irq);
++		goto dealloc_usb2_hcd;
++	}
++	xhci_mtk_seal_wakeup_enable(mtk, false);
++
++	pm_runtime_set_autosuspend_delay(dev, CONFIG_USB_AUTOSUSPEND_DELAY*1000);
++	device_enable_async_suspend(dev);
++	pm_runtime_put_noidle(dev);
++
++	/*
++	 * to expert runtime pm from being on as default.
++	 */
++	pm_runtime_allow(dev);
++	xhci_mtk_runtime_ready = 1;
++	dev_info(dev, "%s: xhci_mtk_runtime_ready %i", __func__, xhci_mtk_runtime_ready);
++
+ 	return 0;
+ 
+ dealloc_usb2_hcd:
+@@ -592,6 +668,7 @@ static int xhci_mtk_remove(struct platform_device *dev)
+ 	struct xhci_hcd	*xhci = hcd_to_xhci(hcd);
+ 	struct usb_hcd  *shared_hcd = xhci->shared_hcd;
+ 
++	xhci_mtk_runtime_ready = 0;
+ 	usb_remove_hcd(shared_hcd);
+ 	xhci->shared_hcd = NULL;
+ 	device_init_wakeup(&dev->dev, false);
+@@ -630,6 +707,7 @@ static int __maybe_unused xhci_mtk_suspend(struct device *dev)
+ 	xhci_mtk_host_disable(mtk);
+ 	xhci_mtk_clks_disable(mtk);
+ 	usb_wakeup_set(mtk, true);
++
+ 	return 0;
+ }
+ 
+@@ -650,10 +728,171 @@ static int __maybe_unused xhci_mtk_resume(struct device *dev)
+ 	usb_hcd_poll_rh_status(hcd);
+ 	return 0;
+ }
++static int __maybe_unused xhci_mtk_bus_status(struct device *dev)
++{
++	int i;
++	int ret = 0;
++	int num_ports;
++	struct xhci_hcd_mtk  *mtk = dev_get_drvdata(dev);
++	struct usb_hcd *hcd;
++	struct xhci_hcd *xhci;
++	struct xhci_hub *usb2_rhub;
++	struct xhci_hub *usb3_rhub;
++	struct xhci_bus_state *bus_state;
++	struct xhci_port *port;
++	u32	usb2_suspended_ports = -1;
++	u32	usb3_suspended_ports = -1;
++	u16 status;
++
++	if (!mtk->hcd)
++		return -ESHUTDOWN;
++
++	hcd = mtk->hcd;
++	xhci = hcd_to_xhci(hcd);
++	if ((xhci->xhc_state & XHCI_STATE_REMOVING) ||
++			(xhci->xhc_state & XHCI_STATE_HALTED)) {
++		return -ESHUTDOWN;
++	}
++
++	usb2_rhub	   = &xhci->usb2_rhub;
++	if (usb2_rhub != NULL) {
++		bus_state  = &usb2_rhub->bus_state;
++		num_ports  = usb2_rhub->num_ports;
++		usb2_suspended_ports  = bus_state->suspended_ports;
++		usb2_suspended_ports ^= (BIT(num_ports) - 1);
++		usb2_suspended_ports &= (BIT(num_ports) - 1);
++		for (i = 0; i < num_ports; i++ ) {
++			if (usb2_suspended_ports & (1UL << i)) {
++				port = usb2_rhub->ports[i];
++				status = readl(port->addr);
++				xhci_info(xhci, "USB20: portsc[%i]: 0x%04X\n", i, status);
++				if (!(status & PORT_CONNECT))
++					usb2_suspended_ports &= ~(1UL << i);
++			}
++		}
++
++		if (usb2_suspended_ports) {
++			ret = -EBUSY;
++			goto ebusy;
++		}
++	}
++
++	usb3_rhub       = &xhci->usb3_rhub;
++	if (usb3_rhub != NULL) {
++		bus_state  = &usb3_rhub->bus_state;
++		num_ports  = usb3_rhub->num_ports;
++		usb3_suspended_ports  = bus_state->suspended_ports;
++		usb3_suspended_ports ^= (BIT(num_ports) - 1);
++		usb3_suspended_ports &= (BIT(num_ports) - 1);
++		for (i = 0; i < num_ports; i++ ) {
++			if (usb3_suspended_ports & (1UL << i)) {
++				port = usb3_rhub->ports[i];
++				status = readl(port->addr);
++				xhci_info(xhci, "USB30: portsc[%i]: 0x%04X\n", i, status);
++				if (!(status & PORT_CONNECT))
++					usb3_suspended_ports &= ~(1UL << i);
++			}
++		}
++
++		if (usb3_suspended_ports) {
++			ret = -EBUSY;
++			goto ebusy;
++		}
++	}
++
++ebusy:
++	xhci_info(xhci, "%s: USB20: 0x%08X, USB30: 0x%08X ret: %i\n",
++			  __func__, usb2_suspended_ports, usb3_suspended_ports, ret);
++
++	return ret;
++}
++
++static int __maybe_unused xhci_mtk_runtime_suspend(struct device *dev)
++{
++	int  ret = 0;
++	bool wakeup = device_may_wakeup(dev);
++	struct xhci_hcd_mtk  *mtk = dev_get_drvdata(dev);
++	struct usb_hcd *hcd;
++	struct xhci_hcd *xhci;
++
++	if (!mtk->hcd)
++		return -ESHUTDOWN;
++
++	hcd = mtk->hcd;
++	xhci = hcd_to_xhci(hcd);
++	if ((xhci->xhc_state & XHCI_STATE_REMOVING) ||
++			(xhci->xhc_state & XHCI_STATE_HALTED)) {
++		return -ESHUTDOWN;
++	}
++
++	ret = xhci_mtk_bus_status(dev);
++	if (wakeup && !ret) {
++		xhci_mtk_seal_wakeup_enable(mtk, true);
++		xhci_mtk_suspend(dev);
++		xhci_dbg(xhci,
++			"%s: arm seals xHCI controller %i\n", __func__, ret);
++	}
++
++	xhci_info(xhci, "%s: seals wakeup = %i, ret = %i!\n", __func__, wakeup, ret);
++
++	return ret;
++}
++
++static int __maybe_unused xhci_mtk_runtime_resume(struct device *dev)
++{
++	int  ret = 0;
++	bool wakeup = device_may_wakeup(dev);
++	struct xhci_hcd_mtk  *mtk = dev_get_drvdata(dev);
++	struct usb_hcd *hcd;
++	struct xhci_hcd *xhci;
++
++	if (!mtk->hcd)
++		return -ESHUTDOWN;
++
++	hcd = mtk->hcd;
++	xhci = hcd_to_xhci(hcd);
++	if ((xhci->xhc_state & XHCI_STATE_REMOVING) ||
++			(xhci->xhc_state & XHCI_STATE_HALTED)) {
++		return -ESHUTDOWN;
++	}
++
++    /*
++        * Maybe need one extra interrupt to process it!!!
++        *  Who to process these module reinitilization after SPM wakeup
++        *  case 1: himself wakeup, therefore xHCI need reinitilizate also.
++        *  case 2: other-wakeup-source wakeup, therefore, xHCI need reinit
++        *  case 3: user active
++        */
++	if (wakeup) {
++		xhci_mtk_seal_wakeup_enable(mtk, false);
++		xhci_mtk_resume(dev);
++		xhci_dbg(xhci,
++			"%s: arms unseals xHCI controller\n", __func__);
++	}
++
++	xhci_info(xhci, "%s: unseals wakeup = %i, ret = %i\n", __func__, wakeup, ret);
++
++	return ret;
++}
++
++static int __maybe_unused xhci_mtk_runtime_idle(struct device *dev)
++{
++	int ret = 0;
++
++	dev_info(dev, "%s: xhci_mtk_runtime_ready %i", __func__, xhci_mtk_runtime_ready);
++	if (!xhci_mtk_runtime_ready)
++		ret = -EAGAIN;
++
++	return ret;
++}
+ 
+ static const struct dev_pm_ops xhci_mtk_pm_ops = {
+ 	SET_SYSTEM_SLEEP_PM_OPS(xhci_mtk_suspend, xhci_mtk_resume)
++	SET_RUNTIME_PM_OPS(xhci_mtk_runtime_suspend,
++			   xhci_mtk_runtime_resume,
++			   xhci_mtk_runtime_idle)
+ };
++
+ #define DEV_PM_OPS IS_ENABLED(CONFIG_PM) ? &xhci_mtk_pm_ops : NULL
+ 
+ #ifdef CONFIG_OF
+@@ -678,6 +917,7 @@ MODULE_ALIAS("platform:xhci-mtk");
+ 
+ static int __init xhci_mtk_init(void)
+ {
++	xhci_mtk_runtime_ready = 0;
+ 	xhci_init_driver(&xhci_mtk_hc_driver, &xhci_mtk_overrides);
+ 	return platform_driver_register(&mtk_xhci_driver);
+ }
+diff --git a/drivers/usb/host/xhci-mtk.h b/drivers/usb/host/xhci-mtk.h
+old mode 100644
+new mode 100755
+index 5ac458b7d2e0efa406e5db2ca57dfe3dde59e550..a391587ee6298ae1afeb28fef0ecfc8225baeb48
+--- a/drivers/usb/host/xhci-mtk.h
++++ b/drivers/usb/host/xhci-mtk.h
+@@ -152,6 +152,9 @@ struct xhci_hcd_mtk {
+ 	struct regmap *uwk;
+ 	u32 uwk_reg_base;
+ 	u32 uwk_vers;
++	int seal_irq;
++	struct delayed_work  seal;
++	char   seal_descr[32];	/* "seal" + driver + bus # */
+ };
+ 
+ static inline struct xhci_hcd_mtk *hcd_to_mtk(struct usb_hcd *hcd)
 diff --git a/drivers/usb/host/xhci.c b/drivers/usb/host/xhci.c
 index b4825fbb8f68cb4b898ec9601739e31bcaf95331..844249ca7050759e101b1bf26c6ab12a5d34812c 100644
 --- a/drivers/usb/host/xhci.c
@@ -21955,7 +24293,7 @@ index b4825fbb8f68cb4b898ec9601739e31bcaf95331..844249ca7050759e101b1bf26c6ab12a
  	slot_ctx = xhci_get_slot_ctx(xhci, command->in_ctx);
 diff --git a/include/dt-bindings/clock/mt8192-clk.h b/include/dt-bindings/clock/mt8192-clk.h
 new file mode 100644
-index 0000000000000000000000000000000000000000..2439a7757619ff3ac3d10bdb24455d6e105f7c9d
+index 0000000000000000000000000000000000000000..3c4ad1f968dd792fe6ca9a7e7ec038dd282ac27b
 --- /dev/null
 +++ b/include/dt-bindings/clock/mt8192-clk.h
 @@ -0,0 +1,666 @@
@@ -22036,105 +24374,106 @@ index 0000000000000000000000000000000000000000..2439a7757619ff3ac3d10bdb24455d6e
 +#define CLK_TOP_PWM_SEL			63
 +#define CLK_TOP_AUDIO_H_SEL		64
 +#define CLK_TOP_SPMI_MST_SEL		65
-+#define CLK_TOP_DVFSRC_SEL		66
-+#define CLK_TOP_AES_MSDCFDE_SEL		67
-+#define CLK_TOP_MCUPM_SEL		68
-+#define CLK_TOP_SFLASH_SEL		69
-+#define CLK_TOP_APLL_I2S0_M_SEL		70
-+#define CLK_TOP_APLL_I2S1_M_SEL		71
-+#define CLK_TOP_APLL_I2S2_M_SEL		72
-+#define CLK_TOP_APLL_I2S3_M_SEL		73
-+#define CLK_TOP_APLL_I2S4_M_SEL		74
-+#define CLK_TOP_APLL_I2S5_M_SEL		75
-+#define CLK_TOP_APLL_I2S6_M_SEL		76
-+#define CLK_TOP_APLL_I2S7_M_SEL		77
-+#define CLK_TOP_APLL_I2S8_M_SEL		78
-+#define CLK_TOP_APLL_I2S9_M_SEL		79
-+#define CLK_TOP_MAINPLL_D3		80
-+#define CLK_TOP_MAINPLL_D4		81
-+#define CLK_TOP_MAINPLL_D4_D2		82
-+#define CLK_TOP_MAINPLL_D4_D4		83
-+#define CLK_TOP_MAINPLL_D4_D8		84
-+#define CLK_TOP_MAINPLL_D4_D16		85
-+#define CLK_TOP_MAINPLL_D5		86
-+#define CLK_TOP_MAINPLL_D5_D2		87
-+#define CLK_TOP_MAINPLL_D5_D4		88
-+#define CLK_TOP_MAINPLL_D5_D8		89
-+#define CLK_TOP_MAINPLL_D6		90
-+#define CLK_TOP_MAINPLL_D6_D2		91
-+#define CLK_TOP_MAINPLL_D6_D4		92
-+#define CLK_TOP_MAINPLL_D7		93
-+#define CLK_TOP_MAINPLL_D7_D2		94
-+#define CLK_TOP_MAINPLL_D7_D4		95
-+#define CLK_TOP_MAINPLL_D7_D8		96
-+#define CLK_TOP_UNIVPLL_D3		97
-+#define CLK_TOP_UNIVPLL_D4		98
-+#define CLK_TOP_UNIVPLL_D4_D2		99
-+#define CLK_TOP_UNIVPLL_D4_D4		100
-+#define CLK_TOP_UNIVPLL_D4_D8		101
-+#define CLK_TOP_UNIVPLL_D5		102
-+#define CLK_TOP_UNIVPLL_D5_D2		103
-+#define CLK_TOP_UNIVPLL_D5_D4		104
-+#define CLK_TOP_UNIVPLL_D5_D8		105
-+#define CLK_TOP_UNIVPLL_D6		106
-+#define CLK_TOP_UNIVPLL_D6_D2		107
-+#define CLK_TOP_UNIVPLL_D6_D4		108
-+#define CLK_TOP_UNIVPLL_D6_D8		109
-+#define CLK_TOP_UNIVPLL_D6_D16		110
-+#define CLK_TOP_UNIVPLL_D7		111
-+#define CLK_TOP_APLL1			112
-+#define CLK_TOP_APLL1_D2		113
-+#define CLK_TOP_APLL1_D4		114
-+#define CLK_TOP_APLL1_D8		115
-+#define CLK_TOP_APLL2			116
-+#define CLK_TOP_APLL2_D2		117
-+#define CLK_TOP_APLL2_D4		118
-+#define CLK_TOP_APLL2_D8		119
-+#define CLK_TOP_MMPLL_D4		120
-+#define CLK_TOP_MMPLL_D4_D2		121
-+#define CLK_TOP_MMPLL_D5		122
-+#define CLK_TOP_MMPLL_D5_D2		123
-+#define CLK_TOP_MMPLL_D6		124
-+#define CLK_TOP_MMPLL_D6_D2		125
-+#define CLK_TOP_MMPLL_D7		126
-+#define CLK_TOP_MMPLL_D9		127
-+#define CLK_TOP_APUPLL			128
-+#define CLK_TOP_NPUPLL			129
-+#define CLK_TOP_TVDPLL			130
-+#define CLK_TOP_TVDPLL_D2		131
-+#define CLK_TOP_TVDPLL_D4		132
-+#define CLK_TOP_TVDPLL_D8		133
-+#define CLK_TOP_TVDPLL_D16		134
-+#define CLK_TOP_MSDCPLL			135
-+#define CLK_TOP_MSDCPLL_D2		136
-+#define CLK_TOP_MSDCPLL_D4		137
-+#define CLK_TOP_ULPOSC			138
-+#define CLK_TOP_OSC_D2			139
-+#define CLK_TOP_OSC_D4			140
-+#define CLK_TOP_OSC_D8			141
-+#define CLK_TOP_OSC_D10			142
-+#define CLK_TOP_OSC_D16			143
-+#define CLK_TOP_OSC_D20			144
-+#define CLK_TOP_CSW_F26M_D2		145
-+#define CLK_TOP_ADSPPLL			146
-+#define CLK_TOP_UNIVPLL_192M		147
-+#define CLK_TOP_UNIVPLL_192M_D2		148
-+#define CLK_TOP_UNIVPLL_192M_D4		149
-+#define CLK_TOP_UNIVPLL_192M_D8		150
-+#define CLK_TOP_UNIVPLL_192M_D16	151
-+#define CLK_TOP_UNIVPLL_192M_D32	152
-+#define CLK_TOP_APLL12_DIV0		153
-+#define CLK_TOP_APLL12_DIV1		154
-+#define CLK_TOP_APLL12_DIV2		155
-+#define CLK_TOP_APLL12_DIV3		156
-+#define CLK_TOP_APLL12_DIV4		157
-+#define CLK_TOP_APLL12_DIVB		158
-+#define CLK_TOP_APLL12_DIV5		159
-+#define CLK_TOP_APLL12_DIV6		160
-+#define CLK_TOP_APLL12_DIV7		161
-+#define CLK_TOP_APLL12_DIV8		162
-+#define CLK_TOP_APLL12_DIV9		163
-+#define CLK_TOP_NR_CLK			164
++#define CLK_TOP_AES_MSDCFDE_SEL		66
++#define CLK_TOP_MCUPM_SEL		67
++#define CLK_TOP_SFLASH_SEL		68
++#define CLK_TOP_APLL_I2S0_M_SEL		69
++#define CLK_TOP_APLL_I2S1_M_SEL		70
++#define CLK_TOP_APLL_I2S2_M_SEL		71
++#define CLK_TOP_APLL_I2S3_M_SEL		72
++#define CLK_TOP_APLL_I2S4_M_SEL		73
++#define CLK_TOP_APLL_I2S5_M_SEL		74
++#define CLK_TOP_APLL_I2S6_M_SEL		75
++#define CLK_TOP_APLL_I2S7_M_SEL		76
++#define CLK_TOP_APLL_I2S8_M_SEL		77
++#define CLK_TOP_APLL_I2S9_M_SEL		78
++#define CLK_TOP_MAINPLL_D3		79
++#define CLK_TOP_MAINPLL_D4		80
++#define CLK_TOP_MAINPLL_D4_D2		81
++#define CLK_TOP_MAINPLL_D4_D4		82
++#define CLK_TOP_MAINPLL_D4_D8		83
++#define CLK_TOP_MAINPLL_D4_D16		84
++#define CLK_TOP_MAINPLL_D5		85
++#define CLK_TOP_MAINPLL_D5_D2		86
++#define CLK_TOP_MAINPLL_D5_D4		87
++#define CLK_TOP_MAINPLL_D5_D8		88
++#define CLK_TOP_MAINPLL_D6		89
++#define CLK_TOP_MAINPLL_D6_D2		90
++#define CLK_TOP_MAINPLL_D6_D4		91
++#define CLK_TOP_MAINPLL_D7		92
++#define CLK_TOP_MAINPLL_D7_D2		93
++#define CLK_TOP_MAINPLL_D7_D4		94
++#define CLK_TOP_MAINPLL_D7_D8		95
++#define CLK_TOP_UNIVPLL_D3		96
++#define CLK_TOP_UNIVPLL_D4		97
++#define CLK_TOP_UNIVPLL_D4_D2		98
++#define CLK_TOP_UNIVPLL_D4_D4		99
++#define CLK_TOP_UNIVPLL_D4_D8		100
++#define CLK_TOP_UNIVPLL_D5		101
++#define CLK_TOP_UNIVPLL_D5_D2		102
++#define CLK_TOP_UNIVPLL_D5_D4		103
++#define CLK_TOP_UNIVPLL_D5_D8		104
++#define CLK_TOP_UNIVPLL_D6		105
++#define CLK_TOP_UNIVPLL_D6_D2		106
++#define CLK_TOP_UNIVPLL_D6_D4		107
++#define CLK_TOP_UNIVPLL_D6_D8		108
++#define CLK_TOP_UNIVPLL_D6_D16		109
++#define CLK_TOP_UNIVPLL_D7		110
++#define CLK_TOP_APLL1			111
++#define CLK_TOP_APLL1_D2		112
++#define CLK_TOP_APLL1_D4		113
++#define CLK_TOP_APLL1_D8		114
++#define CLK_TOP_APLL2			115
++#define CLK_TOP_APLL2_D2		116
++#define CLK_TOP_APLL2_D4		117
++#define CLK_TOP_APLL2_D8		118
++#define CLK_TOP_MMPLL_D4		119
++#define CLK_TOP_MMPLL_D4_D2		120
++#define CLK_TOP_MMPLL_D5		121
++#define CLK_TOP_MMPLL_D5_D2		122
++#define CLK_TOP_MMPLL_D6		123
++#define CLK_TOP_MMPLL_D6_D2		124
++#define CLK_TOP_MMPLL_D7		125
++#define CLK_TOP_MMPLL_D9		126
++#define CLK_TOP_APUPLL			127
++#define CLK_TOP_NPUPLL			128
++#define CLK_TOP_TVDPLL			129
++#define CLK_TOP_TVDPLL_D2		130
++#define CLK_TOP_TVDPLL_D4		131
++#define CLK_TOP_TVDPLL_D8		132
++#define CLK_TOP_TVDPLL_D16		133
++#define CLK_TOP_MSDCPLL			134
++#define CLK_TOP_MSDCPLL_D2		135
++#define CLK_TOP_MSDCPLL_D4		136
++#define CLK_TOP_ULPOSC			137
++#define CLK_TOP_OSC_D2			138
++#define CLK_TOP_OSC_D4			139
++#define CLK_TOP_OSC_D8			140
++#define CLK_TOP_OSC_D10			141
++#define CLK_TOP_OSC_D16			142
++#define CLK_TOP_OSC_D20			143
++#define CLK_TOP_CSW_F26M_D2		144
++#define CLK_TOP_ADSPPLL			145
++#define CLK_TOP_UNIVPLL_192M		146
++#define CLK_TOP_UNIVPLL_192M_D2		147
++#define CLK_TOP_UNIVPLL_192M_D4		148
++#define CLK_TOP_UNIVPLL_192M_D8		149
++#define CLK_TOP_UNIVPLL_192M_D16	150
++#define CLK_TOP_UNIVPLL_192M_D32	151
++#define CLK_TOP_APLL12_DIV0		152
++#define CLK_TOP_APLL12_DIV1		153
++#define CLK_TOP_APLL12_DIV2		154
++#define CLK_TOP_APLL12_DIV3		155
++#define CLK_TOP_APLL12_DIV4		156
++#define CLK_TOP_APLL12_DIVB		157
++#define CLK_TOP_APLL12_DIV5		158
++#define CLK_TOP_APLL12_DIV6		159
++#define CLK_TOP_APLL12_DIV7		160
++#define CLK_TOP_APLL12_DIV8		161
++#define CLK_TOP_APLL12_DIV9		162
++#define CLK_TOP_SSUSB_TOP_REF		163
++#define CLK_TOP_SSUSB_PHY_REF		164
++#define CLK_TOP_NR_CLK			165
 +
 +/* INFRACFG */
 +
@@ -22171,101 +24510,100 @@ index 0000000000000000000000000000000000000000..2439a7757619ff3ac3d10bdb24455d6e
 +#define CLK_INFRA_MSDC1			30
 +#define CLK_INFRA_MSDC2			31
 +#define CLK_INFRA_MSDC0_SRC		32
-+#define CLK_INFRA_DVFSRC		33
-+#define CLK_INFRA_GCPU			34
-+#define CLK_INFRA_TRNG			35
-+#define CLK_INFRA_AUXADC		36
-+#define CLK_INFRA_CPUM			37
-+#define CLK_INFRA_CCIF1_AP		38
-+#define CLK_INFRA_CCIF1_MD		39
-+#define CLK_INFRA_AUXADC_MD		40
-+#define CLK_INFRA_PCIE_TL_26M		41
-+#define CLK_INFRA_MSDC1_SRC		42
-+#define CLK_INFRA_MSDC2_SRC		43
-+#define CLK_INFRA_PCIE_TL_96M		44
-+#define CLK_INFRA_PCIE_PL_P_250M	45
-+#define CLK_INFRA_DEVICE_APC		46
-+#define CLK_INFRA_CCIF_AP		47
-+#define CLK_INFRA_DEBUGSYS		48
-+#define CLK_INFRA_AUDIO			49
-+#define CLK_INFRA_CCIF_MD		50
-+#define CLK_INFRA_DXCC_SEC_CORE		51
-+#define CLK_INFRA_DXCC_AO		52
-+#define CLK_INFRA_DBG_TRACE		53
-+#define CLK_INFRA_DEVMPU_B		54
-+#define CLK_INFRA_DRAMC_F26M		55
-+#define CLK_INFRA_IRTX			56
-+#define CLK_INFRA_SSUSB			57
-+#define CLK_INFRA_DISP_PWM		58
-+#define CLK_INFRA_CLDMA_B		59
-+#define CLK_INFRA_AUDIO_26M_B		60
-+#define CLK_INFRA_MODEM_TEMP_SHARE	61
-+#define CLK_INFRA_SPI1			62
-+#define CLK_INFRA_I2C4			63
-+#define CLK_INFRA_SPI2			64
-+#define CLK_INFRA_SPI3			65
-+#define CLK_INFRA_UNIPRO_SYS		66
-+#define CLK_INFRA_UNIPRO_TICK		67
-+#define CLK_INFRA_UFS_MP_SAP_B		68
-+#define CLK_INFRA_MD32_B		69
-+#define CLK_INFRA_SSPM			70
-+#define CLK_INFRA_UNIPRO_MBIST		71
-+#define CLK_INFRA_SSPM_BUS_H		72
-+#define CLK_INFRA_I2C5			73
-+#define CLK_INFRA_I2C5_ARBITER		74
-+#define CLK_INFRA_I2C5_IMM		75
-+#define CLK_INFRA_I2C1_ARBITER		76
-+#define CLK_INFRA_I2C1_IMM		77
-+#define CLK_INFRA_I2C2_ARBITER		78
-+#define CLK_INFRA_I2C2_IMM		79
-+#define CLK_INFRA_SPI4			80
-+#define CLK_INFRA_SPI5			81
-+#define CLK_INFRA_CQ_DMA		82
-+#define CLK_INFRA_UFS			83
-+#define CLK_INFRA_AES_UFSFDE		84
-+#define CLK_INFRA_UFS_TICK		85
-+#define CLK_INFRA_SSUSB_XHCI		86
-+#define CLK_INFRA_MSDC0_SELF		87
-+#define CLK_INFRA_MSDC1_SELF		88
-+#define CLK_INFRA_MSDC2_SELF		89
-+#define CLK_INFRA_SSPM_26M_SELF		90
-+#define CLK_INFRA_SSPM_32K_SELF		91
-+#define CLK_INFRA_UFS_AXI		92
-+#define CLK_INFRA_I2C6			93
-+#define CLK_INFRA_AP_MSDC0		94
-+#define CLK_INFRA_MD_MSDC0		95
-+#define CLK_INFRA_CCIF5_AP		96
-+#define CLK_INFRA_CCIF5_MD		97
-+#define CLK_INFRA_PCIE_TOP_H_133M	98
-+#define CLK_INFRA_FLASHIF_TOP_H_133M	99
-+#define CLK_INFRA_PCIE_PERI_26M		100
-+#define CLK_INFRA_CCIF2_AP		101
-+#define CLK_INFRA_CCIF2_MD		102
-+#define CLK_INFRA_CCIF3_AP		103
-+#define CLK_INFRA_CCIF3_MD		104
-+#define CLK_INFRA_SEJ_F13M		105
-+#define CLK_INFRA_AES			106
-+#define CLK_INFRA_I2C7			107
-+#define CLK_INFRA_I2C8			108
-+#define CLK_INFRA_FBIST2FPC		109
-+#define CLK_INFRA_DEVICE_APC_SYNC	110
-+#define CLK_INFRA_DPMAIF_MAIN		111
-+#define CLK_INFRA_PCIE_TL_32K		112
-+#define CLK_INFRA_CCIF4_AP		113
-+#define CLK_INFRA_CCIF4_MD		114
-+#define CLK_INFRA_SPI6			115
-+#define CLK_INFRA_SPI7			116
-+#define CLK_INFRA_133M			117
-+#define CLK_INFRA_66M			118
-+#define CLK_INFRA_66M_PERI_BUS		119
-+#define CLK_INFRA_FREE_DCM_133M		120
-+#define CLK_INFRA_FREE_DCM_66M		121
-+#define CLK_INFRA_PERI_BUS_DCM_133M	122
-+#define CLK_INFRA_PERI_BUS_DCM_66M	123
-+#define CLK_INFRA_FLASHIF_PERI_26M	124
-+#define CLK_INFRA_FLASHIF_SFLASH	125
-+#define CLK_INFRA_AP_DMA		126
-+#define CLK_INFRA_NR_CLK		127
++#define CLK_INFRA_GCPU			33
++#define CLK_INFRA_TRNG			34
++#define CLK_INFRA_AUXADC		35
++#define CLK_INFRA_CPUM			36
++#define CLK_INFRA_CCIF1_AP		37
++#define CLK_INFRA_CCIF1_MD		38
++#define CLK_INFRA_AUXADC_MD		39
++#define CLK_INFRA_PCIE_TL_26M		40
++#define CLK_INFRA_MSDC1_SRC		41
++#define CLK_INFRA_MSDC2_SRC		42
++#define CLK_INFRA_PCIE_TL_96M		43
++#define CLK_INFRA_PCIE_PL_P_250M	44
++#define CLK_INFRA_DEVICE_APC		45
++#define CLK_INFRA_CCIF_AP		46
++#define CLK_INFRA_DEBUGSYS		47
++#define CLK_INFRA_AUDIO			48
++#define CLK_INFRA_CCIF_MD		49
++#define CLK_INFRA_DXCC_SEC_CORE		50
++#define CLK_INFRA_DXCC_AO		51
++#define CLK_INFRA_DBG_TRACE		52
++#define CLK_INFRA_DEVMPU_B		53
++#define CLK_INFRA_DRAMC_F26M		54
++#define CLK_INFRA_IRTX			55
++#define CLK_INFRA_SSUSB			56
++#define CLK_INFRA_DISP_PWM		57
++#define CLK_INFRA_CLDMA_B		58
++#define CLK_INFRA_AUDIO_26M_B		59
++#define CLK_INFRA_MODEM_TEMP_SHARE	60
++#define CLK_INFRA_SPI1			61
++#define CLK_INFRA_I2C4			62
++#define CLK_INFRA_SPI2			63
++#define CLK_INFRA_SPI3			64
++#define CLK_INFRA_UNIPRO_SYS		65
++#define CLK_INFRA_UNIPRO_TICK		66
++#define CLK_INFRA_UFS_MP_SAP_B		67
++#define CLK_INFRA_MD32_B		68
++#define CLK_INFRA_SSPM			69
++#define CLK_INFRA_UNIPRO_MBIST		70
++#define CLK_INFRA_SSPM_BUS_H		71
++#define CLK_INFRA_I2C5			72
++#define CLK_INFRA_I2C5_ARBITER		73
++#define CLK_INFRA_I2C5_IMM		74
++#define CLK_INFRA_I2C1_ARBITER		75
++#define CLK_INFRA_I2C1_IMM		76
++#define CLK_INFRA_I2C2_ARBITER		77
++#define CLK_INFRA_I2C2_IMM		78
++#define CLK_INFRA_SPI4			79
++#define CLK_INFRA_SPI5			80
++#define CLK_INFRA_CQ_DMA		81
++#define CLK_INFRA_UFS			82
++#define CLK_INFRA_AES_UFSFDE		83
++#define CLK_INFRA_UFS_TICK		84
++#define CLK_INFRA_SSUSB_XHCI		85
++#define CLK_INFRA_MSDC0_SELF		86
++#define CLK_INFRA_MSDC1_SELF		87
++#define CLK_INFRA_MSDC2_SELF		88
++#define CLK_INFRA_SSPM_26M_SELF		89
++#define CLK_INFRA_SSPM_32K_SELF		90
++#define CLK_INFRA_UFS_AXI		91
++#define CLK_INFRA_I2C6			92
++#define CLK_INFRA_AP_MSDC0		93
++#define CLK_INFRA_MD_MSDC0		94
++#define CLK_INFRA_CCIF5_AP		95
++#define CLK_INFRA_CCIF5_MD		96
++#define CLK_INFRA_PCIE_TOP_H_133M	97
++#define CLK_INFRA_FLASHIF_TOP_H_133M	98
++#define CLK_INFRA_PCIE_PERI_26M		99
++#define CLK_INFRA_CCIF2_AP		100
++#define CLK_INFRA_CCIF2_MD		101
++#define CLK_INFRA_CCIF3_AP		102
++#define CLK_INFRA_CCIF3_MD		103
++#define CLK_INFRA_SEJ_F13M		104
++#define CLK_INFRA_AES			105
++#define CLK_INFRA_I2C7			106
++#define CLK_INFRA_I2C8			107
++#define CLK_INFRA_FBIST2FPC		108
++#define CLK_INFRA_DEVICE_APC_SYNC	109
++#define CLK_INFRA_DPMAIF_MAIN		110
++#define CLK_INFRA_PCIE_TL_32K		111
++#define CLK_INFRA_CCIF4_AP		112
++#define CLK_INFRA_CCIF4_MD		113
++#define CLK_INFRA_SPI6			114
++#define CLK_INFRA_SPI7			115
++#define CLK_INFRA_133M			116
++#define CLK_INFRA_66M			117
++#define CLK_INFRA_66M_PERI_BUS		118
++#define CLK_INFRA_FREE_DCM_133M		119
++#define CLK_INFRA_FREE_DCM_66M		120
++#define CLK_INFRA_PERI_BUS_DCM_133M	121
++#define CLK_INFRA_PERI_BUS_DCM_66M	122
++#define CLK_INFRA_FLASHIF_PERI_26M	123
++#define CLK_INFRA_FLASHIF_SFLASH	124
++#define CLK_INFRA_AP_DMA		125
++#define CLK_INFRA_NR_CLK		126
 +
 +/* PERICFG */
 +
@@ -24712,6 +27050,64 @@ index 53d53c6c2be9a486e6000df17a4bdb27906e3401..48d343189e2873b89afc3f66d56fa74d
  	 *
  	 * IO_PGTABLE_QUIRK_NON_STRICT: Skip issuing synchronous leaf TLBIs
  	 *	on unmap, for DMA domains using the flush queue mechanism for
+diff --git a/include/linux/regulator/mt6315-regulator.h b/include/linux/regulator/mt6315-regulator.h
+new file mode 100644
+index 0000000000000000000000000000000000000000..6ee022c833365bb6d5c2023a89af0ea5d0fe792e
+--- /dev/null
++++ b/include/linux/regulator/mt6315-regulator.h
+@@ -0,0 +1,52 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/*
++ * Copyright (c) 2020 MediaTek Inc.
++ */
++
++#ifndef __LINUX_REGULATOR_MT6315_H
++#define __LINUX_REGULATOR_MT6315_H
++
++#define MT6315_SLAVE_ID_3	3
++#define MT6315_SLAVE_ID_6	6
++#define MT6315_SLAVE_ID_7	7
++
++enum {
++	MT6315_ID_6_VBUCK1 = 0,
++	MT6315_ID_6_VBUCK3,
++	MT6315_ID_6_MAX,
++};
++
++enum {
++	MT6315_ID_7_VBUCK1 = 0,
++	MT6315_ID_7_VBUCK3,
++	MT6315_ID_7_MAX,
++};
++
++enum {
++	MT6315_ID_3_VBUCK1 = 0,
++	MT6315_ID_3_VBUCK3,
++	MT6315_ID_3_VBUCK4,
++	MT6315_ID_3_MAX,
++};
++
++/* Register */
++#define MT6315_SWCID_H	0xb
++#define MT6315_TOP2_ELR7	0x139
++#define MT6315_TOP_TMA_KEY	0x39f
++#define MT6315_TOP_TMA_KEY_H	0x3a0
++#define MT6315_BUCK_TOP_CON0	0x1440
++#define MT6315_BUCK_TOP_CON1	0x1443
++#define MT6315_BUCK_TOP_ELR0	0x1449
++#define MT6315_BUCK_TOP_ELR4	0x144d
++#define MT6315_BUCK_TOP_ELR6	0x144f
++#define MT6315_BUCK_VBUCK1_DBG0	0x1499
++#define MT6315_BUCK_VBUCK1_DBG4	0x149d
++#define MT6315_BUCK_VBUCK3_DBG0	0x1599
++#define MT6315_BUCK_VBUCK3_DBG4	0x159d
++#define MT6315_BUCK_VBUCK4_DBG0	0x1619
++#define MT6315_BUCK_VBUCK4_DBG4	0x161d
++#define MT6315_BUCK_TOP_4PHASE_ANA_CON42	0x16b1
++
++#define MT6315_DA_VOSEL_MASK	0xFF
++
++#endif /* __LINUX_REGULATOR_MT6315_H */
 diff --git a/include/linux/soc/mediatek/infracfg.h b/include/linux/soc/mediatek/infracfg.h
 deleted file mode 100644
 index fd25f01485660e0401cb9a4be8dbc5ac8e3eecfa..0000000000000000000000000000000000000000
