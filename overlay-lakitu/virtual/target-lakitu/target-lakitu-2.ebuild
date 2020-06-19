@@ -67,6 +67,7 @@ LAKITU_RDEPEND="
 	module_sign? ( sys-apps/keyutils )
 	sys-apps/less
 	sys-apps/mosys
+	sys-apps/nvme-cli
 	sys-apps/pv
 	sys-fs/mdadm
 	uefi_bootloaders? (
