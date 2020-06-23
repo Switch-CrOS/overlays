@@ -53,6 +53,9 @@ src_install() {
 	insinto "$(systemd_get_unitdir)/sys-kernel-debug.mount.d"
 	newins "${FILESDIR}"/sys-kernel-debug-lakitu.conf lakitu.conf
 
+	insinto "$(systemd_get_systemunitdir)/sys-fs-fuse-connections.mount.d"
+	newins "${FILESDIR}"/sys-fs-fuse-connections-lakitu.conf lakitu.conf
+
 	insinto "$(systemd_get_unitdir)/tmp.mount.d"
 	newins "${FILESDIR}"/tmp-lakitu.conf lakitu.conf
 
