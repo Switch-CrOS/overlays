@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # get config path for camera
-config_path=$(cros_config /camera config-path)
+config_path=$(cros_config /camera/config-file system-path)
 ln -s "$config_path" /run/camera/camera_config_path
 
 # update eeprom to /run/camera/EEPROM/
