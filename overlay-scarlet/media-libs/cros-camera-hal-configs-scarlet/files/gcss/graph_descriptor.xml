@@ -22,7 +22,7 @@
     <node name="csi_be_soc" type="hw" stream_id="1" subsystem="imgu">
       <!-- ports -->
       <port name="input" id="0" direction="0"/>
-      <port name="output" id="1" direction="1"/>
+      <port name="output" id="2" direction="1"/>
       <!-- ports end -->
     </node>
 
@@ -43,6 +43,21 @@
       </port>
       <!-- ports end -->
     </node>
+
+    <node name="rsz_video" type="hw" stream_id="1" subsystem="imgu">
+      <!-- ports -->
+      <port name="rsz_video_input" id="0" direction="0"/>
+      <port name="rsz_video_output" id="1" direction="1"/>
+      <!-- ports end -->
+    </node>
+
+    <node name="rsz_preview" type="hw" stream_id="1" subsystem="imgu">
+      <!-- ports -->
+      <port name="rsz_preview_input" id="0" direction="0"/>
+      <port name="rsz_preview_output" id="1" direction="1"/>
+      <!-- ports end -->
+    </node>
+
     <sink name="preview"/>
     <sink name="video"/>
     <sink name="still"/>
@@ -50,12 +65,15 @@
   </nodes>
   <graphs>
     <graph id="1" name="Full graph">
-      <connection source="sensor:port_0" sink="csi_be_soc:input"/>
-      <connection source="csi_be_soc:output" sink="imgu:input"/>
-      <connection source="imgu:output" sink="preview"/>
-      <connection source="imgu:output" sink="video"/>
-      <connection source="imgu:output" sink="still"/>
-      <connection source="imgu:output" sink="raw"/>
+      <connection source="sensor:port_0" sink="imgu:input"/>
+
+      <connection source="imgu:output" sink="rsz_video:rsz_video_input"/>
+      <connection source="imgu:output" sink="rsz_preview:rsz_preview_input"/>
+
+      <connection source="rsz_preview:rsz_preview_output" sink="preview"/>
+      <connection source="rsz_video:rsz_video_output" sink="video"/>
+      <connection source="rsz_video:rsz_video_output" sink="still"/>
+      <connection source="rsz_video:rsz_video_output" sink="raw"/>
     </graph>
   </graphs>
 </graph_descriptor>
