@@ -3,7 +3,7 @@
 
 EAPI=6
 
-inherit appid cros-unibuild
+inherit appid cros-unibuild udev
 
 DESCRIPTION="Ebuild which pulls in any necessary ebuilds as dependencies
 or portage actions."
@@ -36,4 +36,6 @@ src_install() {
 	fi
 
 	unibuild_install_audio_files
+
+	udev_dorules "${FILESDIR}"/udev/*.rules
 }
