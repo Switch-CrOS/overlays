@@ -35,7 +35,6 @@ src_install() {
 
 	unibuild_install_audio_files
 	unibuild_install_thermal_files
-	unibuild_install_bluetooth_files
 
 	# Projects might support multiple panels with the same Wacom digitizer
 	# chip but have different firmwares for fine-tuned performance.

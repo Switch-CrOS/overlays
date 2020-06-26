@@ -47,7 +47,6 @@ src_install() {
 	dosbin "${FILESDIR}/board_hardware_features"
 
 	unibuild_install_audio_files
-	unibuild_install_bluetooth_files
 
 	# Arcada use Wacom touch screen with different firmware to support
 	# different panels. As a result, we need a way to identify the correct
