@@ -1,7 +1,7 @@
-From 2c6f56bf5051f26eef72c071004cb5f17d2c82ca Mon Sep 17 00:00:00 2001
+From 8900501d1017ca032c867ef6734d615fea6008da Mon Sep 17 00:00:00 2001
 From: Tianshu Qiu <tian.shu.qiu@intel.com>
 Date: Wed, 15 Apr 2020 19:03:03 +0800
-Subject: [PATCH] CHROMIUM: media: intel-ipu6: Add IPU6 and IPU6SE drivers
+Subject: [PATCH 1/3] CHROMIUM: media: intel-ipu6: Add IPU6 and IPU6SE drivers
 
 This patch adds Intel IPU6 and IPU6SE drivers.
 
@@ -13,9 +13,9 @@ Signed-off-by: Tianshu Qiu <tian.shu.qiu@intel.com>
 Signed-off-by: Bingbu Cao <bingbu.cao@intel.com>
 ---
  drivers/media/pci/Kconfig                     |    2 +-
- drivers/media/pci/intel/Kconfig               |   41 +
+ drivers/media/pci/intel/Kconfig               |   47 +
  drivers/media/pci/intel/Makefile              |    1 +
- drivers/media/pci/intel/ipu-bus.c             |  255 +++
+ drivers/media/pci/intel/ipu-bus.c             |  246 +++
  drivers/media/pci/intel/ipu-bus.h             |   67 +
  drivers/media/pci/intel/ipu-buttress.c        | 1569 +++++++++++++++
  drivers/media/pci/intel/ipu-buttress.h        |  131 ++
@@ -23,16 +23,16 @@ Signed-off-by: Bingbu Cao <bingbu.cao@intel.com>
  drivers/media/pci/intel/ipu-cpd.h             |  106 +
  drivers/media/pci/intel/ipu-dma.c             |  450 +++++
  drivers/media/pci/intel/ipu-dma.h             |   19 +
- drivers/media/pci/intel/ipu-fw-com.c          |  504 +++++
+ drivers/media/pci/intel/ipu-fw-com.c          |  496 +++++
  drivers/media/pci/intel/ipu-fw-com.h          |   48 +
  drivers/media/pci/intel/ipu-fw-isys.c         |  540 ++++++
  drivers/media/pci/intel/ipu-fw-isys.h         |  809 ++++++++
- drivers/media/pci/intel/ipu-fw-psys.c         |  466 +++++
+ drivers/media/pci/intel/ipu-fw-psys.c         |  471 +++++
  drivers/media/pci/intel/ipu-fw-psys.h         |  352 ++++
- .../media/pci/intel/ipu-isys-csi2-be-soc.c    |  263 +++
+ .../media/pci/intel/ipu-isys-csi2-be-soc.c    |  261 +++
  drivers/media/pci/intel/ipu-isys-csi2-be.c    |  294 +++
  drivers/media/pci/intel/ipu-isys-csi2-be.h    |   66 +
- drivers/media/pci/intel/ipu-isys-csi2.c       |  663 +++++++
+ drivers/media/pci/intel/ipu-isys-csi2.c       |  661 +++++++
  drivers/media/pci/intel/ipu-isys-csi2.h       |  164 ++
  drivers/media/pci/intel/ipu-isys-media.h      |   77 +
  drivers/media/pci/intel/ipu-isys-queue.c      | 1056 ++++++++++
@@ -41,7 +41,7 @@ Signed-off-by: Bingbu Cao <bingbu.cao@intel.com>
  drivers/media/pci/intel/ipu-isys-subdev.h     |  153 ++
  drivers/media/pci/intel/ipu-isys-tpg.c        |  311 +++
  drivers/media/pci/intel/ipu-isys-tpg.h        |   99 +
- drivers/media/pci/intel/ipu-isys-video.c      | 1703 +++++++++++++++++
+ drivers/media/pci/intel/ipu-isys-video.c      | 1701 +++++++++++++++++
  drivers/media/pci/intel/ipu-isys-video.h      |  175 ++
  drivers/media/pci/intel/ipu-isys.c            | 1399 ++++++++++++++
  drivers/media/pci/intel/ipu-isys.h            |  217 +++
@@ -49,7 +49,7 @@ Signed-off-by: Bingbu Cao <bingbu.cao@intel.com>
  drivers/media/pci/intel/ipu-mmu.h             |   69 +
  drivers/media/pci/intel/ipu-pdata.h           |  275 +++
  drivers/media/pci/intel/ipu-psys-compat32.c   |  227 +++
- drivers/media/pci/intel/ipu-psys.c            | 1603 ++++++++++++++++
+ drivers/media/pci/intel/ipu-psys.c            | 1602 ++++++++++++++++
  drivers/media/pci/intel/ipu-psys.h            |  217 +++
  drivers/media/pci/intel/ipu-trace.c           |  880 +++++++++
  drivers/media/pci/intel/ipu-trace.h           |  312 +++
@@ -57,30 +57,30 @@ Signed-off-by: Bingbu Cao <bingbu.cao@intel.com>
  drivers/media/pci/intel/ipu.h                 |  102 +
  drivers/media/pci/intel/ipu6/Makefile         |   57 +
  .../intel/ipu6/ipu-platform-buttress-regs.h   |  321 ++++
- .../intel/ipu6/ipu-platform-isys-csi2-reg.h   |  279 +++
+ .../intel/ipu6/ipu-platform-isys-csi2-reg.h   |  283 +++
  .../media/pci/intel/ipu6/ipu-platform-isys.h  |   18 +
- .../media/pci/intel/ipu6/ipu-platform-psys.h  |   76 +
+ .../media/pci/intel/ipu6/ipu-platform-psys.h  |   77 +
  .../media/pci/intel/ipu6/ipu-platform-regs.h  |  340 ++++
  .../pci/intel/ipu6/ipu-platform-resources.h   |  405 ++++
  drivers/media/pci/intel/ipu6/ipu-platform.h   |   39 +
  .../media/pci/intel/ipu6/ipu6-fw-resources.c  |  740 +++++++
- drivers/media/pci/intel/ipu6/ipu6-isys-csi2.c |  505 +++++
+ drivers/media/pci/intel/ipu6/ipu6-isys-csi2.c |  514 +++++
  drivers/media/pci/intel/ipu6/ipu6-isys-csi2.h |   14 +
  drivers/media/pci/intel/ipu6/ipu6-isys-gpc.c  |  211 ++
- drivers/media/pci/intel/ipu6/ipu6-isys-phy.c  |  650 +++++++
+ drivers/media/pci/intel/ipu6/ipu6-isys-phy.c  |  649 +++++++
  drivers/media/pci/intel/ipu6/ipu6-isys-phy.h  |  161 ++
  drivers/media/pci/intel/ipu6/ipu6-isys.c      |  311 +++
- .../media/pci/intel/ipu6/ipu6-l-scheduler.c   |  591 ++++++
- drivers/media/pci/intel/ipu6/ipu6-ppg.c       |  559 ++++++
- drivers/media/pci/intel/ipu6/ipu6-ppg.h       |   25 +
+ .../media/pci/intel/ipu6/ipu6-l-scheduler.c   |  624 ++++++
+ drivers/media/pci/intel/ipu6/ipu6-ppg.c       |  556 ++++++
+ drivers/media/pci/intel/ipu6/ipu6-ppg.h       |   32 +
  drivers/media/pci/intel/ipu6/ipu6-psys-gpc.c  |  218 +++
- drivers/media/pci/intel/ipu6/ipu6-psys.c      |  992 ++++++++++
+ drivers/media/pci/intel/ipu6/ipu6-psys.c      | 1001 ++++++++++
  drivers/media/pci/intel/ipu6/ipu6-resources.c |  778 ++++++++
  drivers/media/pci/intel/ipu6/ipu6.c           |  390 ++++
  include/media/ipu-isys.h                      |   44 +
  include/uapi/linux/ipu-isys.h                 |   14 +
  include/uapi/linux/ipu-psys.h                 |  121 ++
- 68 files changed, 26312 insertions(+), 1 deletion(-)
+ 68 files changed, 26358 insertions(+), 1 deletion(-)
  create mode 100644 drivers/media/pci/intel/Kconfig
  create mode 100644 drivers/media/pci/intel/ipu-bus.c
  create mode 100644 drivers/media/pci/intel/ipu-bus.h
@@ -163,10 +163,10 @@ index dcb3719f440e..a2977453e4a2 100644
  endif #PCI
 diff --git a/drivers/media/pci/intel/Kconfig b/drivers/media/pci/intel/Kconfig
 new file mode 100644
-index 000000000000..574e8e851d37
+index 000000000000..7495b7731fbe
 --- /dev/null
 +++ b/drivers/media/pci/intel/Kconfig
-@@ -0,0 +1,41 @@
+@@ -0,0 +1,47 @@
 +config VIDEO_INTEL_IPU
 +	tristate "Intel IPU driver"
 +	depends on ACPI
@@ -183,12 +183,16 @@ index 000000000000..574e8e851d37
 +	  This is the Intel imaging processing unit, found in Intel SoCs and
 +	  used for capturing images and video from a camera sensor.
 +
-+	  To compile this driver, say Y here!
++	  To compile this driver, say Y here! It contains 3 modules -
++	  intel_ipu6, intel_ipu6_isys and intel_ipu6_psys.
 +
 +choice
 +	prompt "intel ipu generation type"
 +	depends on VIDEO_INTEL_IPU
 +	default VIDEO_INTEL_IPU6
++	help
++	  This option selects the generation of Intel imaging processing unit
++	  to be supported. If in doubt, select default.
 +
 +config VIDEO_INTEL_IPU6
 +	bool "Compile for IPU6 driver"
@@ -196,7 +200,8 @@ index 000000000000..574e8e851d37
 +	  Sixth generation Intel imaging processing unit found in Intel
 +	  SoCs.
 +
-+	  To compile this driver, say Y here!
++	  To compile this driver, say Y here! Please select the proper option,
++	  it conflicts with other choice.
 +
 +config VIDEO_INTEL_IPU6SE
 +        bool "Compile for IPU6SE driver"
@@ -204,7 +209,8 @@ index 000000000000..574e8e851d37
 +	  Slim enhanced sixth generation Intel imaging processing unit found
 +	  in Intel SoC.
 +
-+	  To compile this driver, say Y here!
++	  To compile this driver, say Y here! Please select the proper option,
++	  it conflicts with other choice.
 +
 +endchoice
 +
@@ -219,10 +225,10 @@ index 0b4236c4db49..356363dfe8e4 100644
 +obj-y	+= ipu6/
 diff --git a/drivers/media/pci/intel/ipu-bus.c b/drivers/media/pci/intel/ipu-bus.c
 new file mode 100644
-index 000000000000..e4524898b586
+index 000000000000..40de19da2a12
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu-bus.c
-@@ -0,0 +1,255 @@
+@@ -0,0 +1,246 @@
 +// SPDX-License-Identifier: GPL-2.0
 +// Copyright (C) 2013 - 2020 Intel Corporation
 +
@@ -365,13 +371,6 @@ index 000000000000..e4524898b586
 +
 +static struct mutex ipu_bus_mutex;
 +
-+static void ipu_bus_release(struct device *dev)
-+{
-+	struct ipu_bus_device *adev = to_ipu_bus_device(dev);
-+
-+	kfree(adev);
-+}
-+
 +struct ipu_bus_device *ipu_bus_add_device(struct pci_dev *pdev,
 +					  struct device *parent, void *pdata,
 +					  struct ipu_buttress_ctrl *ctrl,
@@ -381,13 +380,12 @@ index 000000000000..e4524898b586
 +	struct ipu_device *isp = pci_get_drvdata(pdev);
 +	int rval;
 +
-+	adev = kzalloc(sizeof(*adev), GFP_KERNEL);
++	adev = devm_kzalloc(&pdev->dev, sizeof(*adev), GFP_KERNEL);
 +	if (!adev)
 +		return ERR_PTR(-ENOMEM);
 +
 +	adev->dev.parent = parent;
 +	adev->dev.bus = &ipu_bus;
-+	adev->dev.release = ipu_bus_release;
 +	adev->dev.dma_ops = &ipu_dma_ops;
 +	adev->dma_mask = DMA_BIT_MASK(isp->secure_mode ?
 +				      IPU_MMU_ADDRESS_BITS :
@@ -403,7 +401,6 @@ index 000000000000..e4524898b586
 +	rval = device_register(&adev->dev);
 +	if (rval) {
 +		put_device(&adev->dev);
-+		kfree(adev);
 +		return ERR_PTR(rval);
 +	}
 +
@@ -480,12 +477,12 @@ index 000000000000..e4524898b586
 +}
 diff --git a/drivers/media/pci/intel/ipu-bus.h b/drivers/media/pci/intel/ipu-bus.h
 new file mode 100644
-index 000000000000..3e7849abbd14
+index 000000000000..1108cd377705
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu-bus.h
 @@ -0,0 +1,67 @@
 +/* SPDX-License-Identifier: GPL-2.0 */
-+/* Copyright (C) 2013 - 2018 Intel Corporation */
++/* Copyright (C) 2013 - 2020 Intel Corporation */
 +
 +#ifndef IPU_BUS_H
 +#define IPU_BUS_H
@@ -553,12 +550,12 @@ index 000000000000..3e7849abbd14
 +#endif
 diff --git a/drivers/media/pci/intel/ipu-buttress.c b/drivers/media/pci/intel/ipu-buttress.c
 new file mode 100644
-index 000000000000..6fbda6bf0285
+index 000000000000..9e44c7d8f8d2
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu-buttress.c
 @@ -0,0 +1,1569 @@
 +// SPDX-License-Identifier: GPL-2.0
-+// Copyright (C) 2013 - 2018 Intel Corporation
++// Copyright (C) 2013 - 2020 Intel Corporation
 +
 +#include <linux/clk.h>
 +#include <linux/clkdev.h>
@@ -2128,12 +2125,12 @@ index 000000000000..6fbda6bf0285
 +}
 diff --git a/drivers/media/pci/intel/ipu-buttress.h b/drivers/media/pci/intel/ipu-buttress.h
 new file mode 100644
-index 000000000000..1038f02c8a25
+index 000000000000..722b9857d4c6
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu-buttress.h
 @@ -0,0 +1,131 @@
 +/* SPDX-License-Identifier: GPL-2.0 */
-+/* Copyright (C) 2013 - 2018 Intel Corporation */
++/* Copyright (C) 2013 - 2020 Intel Corporation */
 +
 +#ifndef IPU_BUTTRESS_H
 +#define IPU_BUTTRESS_H
@@ -2265,12 +2262,12 @@ index 000000000000..1038f02c8a25
 +#endif /* IPU_BUTTRESS_H */
 diff --git a/drivers/media/pci/intel/ipu-cpd.c b/drivers/media/pci/intel/ipu-cpd.c
 new file mode 100644
-index 000000000000..c0c01ed48384
+index 000000000000..621c1b06bdc9
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu-cpd.c
 @@ -0,0 +1,393 @@
 +// SPDX-License-Identifier: GPL-2.0
-+// Copyright (C) 2015 - 2018 Intel Corporation
++// Copyright (C) 2015 - 2020 Intel Corporation
 +
 +#include <linux/dma-mapping.h>
 +#include <linux/module.h>
@@ -2664,12 +2661,12 @@ index 000000000000..c0c01ed48384
 +EXPORT_SYMBOL_GPL(ipu_cpd_pkg_dir_get_type);
 diff --git a/drivers/media/pci/intel/ipu-cpd.h b/drivers/media/pci/intel/ipu-cpd.h
 new file mode 100644
-index 000000000000..bfc557fbcec4
+index 000000000000..792d8c06d749
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu-cpd.h
 @@ -0,0 +1,106 @@
 +/* SPDX-License-Identifier: GPL-2.0 */
-+/* Copyright (C) 2015 - 2018 Intel Corporation */
++/* Copyright (C) 2015 - 2020 Intel Corporation */
 +
 +#ifndef IPU_CPD_H
 +#define IPU_CPD_H
@@ -2776,12 +2773,12 @@ index 000000000000..bfc557fbcec4
 +#endif /* IPU_CPD_H */
 diff --git a/drivers/media/pci/intel/ipu-dma.c b/drivers/media/pci/intel/ipu-dma.c
 new file mode 100644
-index 000000000000..dea4129c6649
+index 000000000000..7dc47fb51e1f
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu-dma.c
 @@ -0,0 +1,450 @@
 +// SPDX-License-Identifier: GPL-2.0
-+// Copyright (C) 2013 - 2018 Intel Corporation
++// Copyright (C) 2013 - 2020 Intel Corporation
 +
 +#include <asm/cacheflush.h>
 +
@@ -3232,12 +3229,12 @@ index 000000000000..dea4129c6649
 +};
 diff --git a/drivers/media/pci/intel/ipu-dma.h b/drivers/media/pci/intel/ipu-dma.h
 new file mode 100644
-index 000000000000..f5af2c6fe90b
+index 000000000000..e3a68aa5adec
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu-dma.h
 @@ -0,0 +1,19 @@
 +/* SPDX-License-Identifier: GPL-2.0 */
-+/* Copyright (C) 2013 - 2018 Intel Corporation */
++/* Copyright (C) 2013 - 2020 Intel Corporation */
 +
 +#ifndef IPU_DMA_H
 +#define IPU_DMA_H
@@ -3257,12 +3254,12 @@ index 000000000000..f5af2c6fe90b
 +#endif /* IPU_DMA_H */
 diff --git a/drivers/media/pci/intel/ipu-fw-com.c b/drivers/media/pci/intel/ipu-fw-com.c
 new file mode 100644
-index 000000000000..62dfb270e900
+index 000000000000..59d69ea6110c
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu-fw-com.c
-@@ -0,0 +1,504 @@
+@@ -0,0 +1,496 @@
 +// SPDX-License-Identifier: GPL-2.0
-+// Copyright (C) 2013 - 2019 Intel Corporation
++// Copyright (C) 2013 - 2020 Intel Corporation
 +
 +#include <asm/cacheflush.h>
 +
@@ -3592,9 +3589,6 @@ index 000000000000..62dfb270e900
 +	fw_cfg->output_queue = ctx->output_queue_vied_addr;
 +	fw_cfg->specific_addr = ctx->specific_vied_addr;
 +	fw_cfg->specific_size = cfg->specific_size;
-+
-+	clflush_cache_range(ctx->dma_buffer, sizeall);
-+
 +	return ctx;
 +}
 +EXPORT_SYMBOL_GPL(ipu_fw_com_prepare);
@@ -3714,10 +3708,6 @@ index 000000000000..62dfb270e900
 +	struct ipu_fw_sys_queue *q = &ctx->input_queue[q_nbr];
 +	void __iomem *q_dmem = ctx->dmem_addr + q->wr_reg * 4;
 +	int index = curr_index(q_dmem, DIR_SEND);
-+	void *addr = (void *)(unsigned long)q->host_address +
-+				(index * q->token_size);
-+
-+	clflush_cache_range(addr, q->token_size);
 +
 +	/* Increment index */
 +	index = inc_index(q_dmem, q, DIR_SEND);
@@ -3746,7 +3736,6 @@ index 000000000000..62dfb270e900
 +		return NULL;
 +
 +	addr = (void *)(unsigned long)q->host_address + (rd * q->token_size);
-+	clflush_cache_range(addr, q->token_size);
 +
 +	return addr;
 +}
@@ -3767,12 +3756,12 @@ index 000000000000..62dfb270e900
 +MODULE_DESCRIPTION("Intel ipu fw comm library");
 diff --git a/drivers/media/pci/intel/ipu-fw-com.h b/drivers/media/pci/intel/ipu-fw-com.h
 new file mode 100644
-index 000000000000..56a6d102d301
+index 000000000000..855dba667372
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu-fw-com.h
 @@ -0,0 +1,48 @@
 +/* SPDX-License-Identifier: GPL-2.0 */
-+/* Copyright (C) 2013 - 2019 Intel Corporation */
++/* Copyright (C) 2013 - 2020 Intel Corporation */
 +
 +#ifndef IPU_FW_COM_H
 +#define IPU_FW_COM_H
@@ -3821,12 +3810,12 @@ index 000000000000..56a6d102d301
 +#endif
 diff --git a/drivers/media/pci/intel/ipu-fw-isys.c b/drivers/media/pci/intel/ipu-fw-isys.c
 new file mode 100644
-index 000000000000..1a8d31fdb9cd
+index 000000000000..4313af6a99ea
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu-fw-isys.c
 @@ -0,0 +1,540 @@
 +// SPDX-License-Identifier: GPL-2.0
-+// Copyright (C) 2013 - 2019 Intel Corporation
++// Copyright (C) 2013 - 2020 Intel Corporation
 +
 +#include <asm/cacheflush.h>
 +
@@ -4367,12 +4356,12 @@ index 000000000000..1a8d31fdb9cd
 +}
 diff --git a/drivers/media/pci/intel/ipu-fw-isys.h b/drivers/media/pci/intel/ipu-fw-isys.h
 new file mode 100644
-index 000000000000..bd3ba8a4c7be
+index 000000000000..554b0bae2853
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu-fw-isys.h
 @@ -0,0 +1,809 @@
 +/* SPDX-License-Identifier: GPL-2.0 */
-+/* Copyright (C) 2013 - 2019 Intel Corporation */
++/* Copyright (C) 2013 - 2020 Intel Corporation */
 +
 +#ifndef IPU_FW_ISYS_H
 +#define IPU_FW_ISYS_H
@@ -5182,12 +5171,12 @@ index 000000000000..bd3ba8a4c7be
 +#endif
 diff --git a/drivers/media/pci/intel/ipu-fw-psys.c b/drivers/media/pci/intel/ipu-fw-psys.c
 new file mode 100644
-index 000000000000..365e8fd429eb
+index 000000000000..8621b3a9a43f
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu-fw-psys.c
-@@ -0,0 +1,466 @@
+@@ -0,0 +1,471 @@
 +// SPDX-License-Identifier: GPL-2.0
-+// Copyright (C) 2016 - 2019 Intel Corporation
++// Copyright (C) 2016 - 2020 Intel Corporation
 +
 +#include <linux/delay.h>
 +
@@ -5210,7 +5199,8 @@ index 000000000000..365e8fd429eb
 +
 +	psys_cmd = ipu_send_get_token(kcmd->fh->psys->fwcom, 0);
 +	if (!psys_cmd) {
-+		dev_err(&kcmd->fh->psys->adev->dev, "failed to get token!\n");
++		dev_err(&kcmd->fh->psys->adev->dev,
++			"%s failed to get token!\n", __func__);
 +		kcmd->pg_user = NULL;
 +		ret = -ENODATA;
 +		goto out;
@@ -5232,7 +5222,8 @@ index 000000000000..365e8fd429eb
 +	/* ppg suspend cmd uses QUEUE_DEVICE_ID instead of QUEUE_COMMAND_ID */
 +	psys_cmd = ipu_send_get_token(kcmd->fh->psys->fwcom, 1);
 +	if (!psys_cmd) {
-+		dev_err(&kcmd->fh->psys->adev->dev, "failed to get token!\n");
++		dev_err(&kcmd->fh->psys->adev->dev,
++			"%s failed to get token!\n", __func__);
 +		kcmd->pg_user = NULL;
 +		ret = -ENODATA;
 +		goto out;
@@ -5253,7 +5244,8 @@ index 000000000000..365e8fd429eb
 +
 +	psys_cmd = ipu_send_get_token(kcmd->fh->psys->fwcom, 0);
 +	if (!psys_cmd) {
-+		dev_err(&kcmd->fh->psys->adev->dev, "failed to get token!\n");
++		dev_err(&kcmd->fh->psys->adev->dev,
++			"%s failed to get token!\n", __func__);
 +		kcmd->pg_user = NULL;
 +		ret = -ENODATA;
 +		goto out;
@@ -5274,7 +5266,8 @@ index 000000000000..365e8fd429eb
 +
 +	psys_cmd = ipu_send_get_token(kcmd->fh->psys->fwcom, 0);
 +	if (!psys_cmd) {
-+		dev_err(&kcmd->fh->psys->adev->dev, "failed to get token!\n");
++		dev_err(&kcmd->fh->psys->adev->dev,
++			"%s failed to get token!\n", __func__);
 +		kcmd->pg_user = NULL;
 +		ret = -ENODATA;
 +		goto out;
@@ -5588,7 +5581,8 @@ index 000000000000..365e8fd429eb
 +
 +	psys_cmd = ipu_send_get_token(kcmd->fh->psys->fwcom, queue_id);
 +	if (!psys_cmd) {
-+		dev_err(&kcmd->fh->psys->adev->dev, "failed to get token!\n");
++		dev_err(&kcmd->fh->psys->adev->dev,
++			"%s failed to get token!\n", __func__);
 +		kcmd->pg_user = NULL;
 +		return -ENODATA;
 +	}
@@ -5654,12 +5648,12 @@ index 000000000000..365e8fd429eb
 +}
 diff --git a/drivers/media/pci/intel/ipu-fw-psys.h b/drivers/media/pci/intel/ipu-fw-psys.h
 new file mode 100644
-index 000000000000..ce450ded9c0b
+index 000000000000..822932f0f4ab
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu-fw-psys.h
 @@ -0,0 +1,352 @@
 +/* SPDX-License-Identifier: GPL-2.0 */
-+/* Copyright (C) 2016 - 2019 Intel Corporation */
++/* Copyright (C) 2016 - 2020 Intel Corporation */
 +
 +#ifndef IPU_FW_PSYS_H
 +#define IPU_FW_PSYS_H
@@ -6012,12 +6006,12 @@ index 000000000000..ce450ded9c0b
 +#endif /* IPU_FW_PSYS_H */
 diff --git a/drivers/media/pci/intel/ipu-isys-csi2-be-soc.c b/drivers/media/pci/intel/ipu-isys-csi2-be-soc.c
 new file mode 100644
-index 000000000000..d8403a55fba1
+index 000000000000..db90680e736d
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu-isys-csi2-be-soc.c
-@@ -0,0 +1,263 @@
+@@ -0,0 +1,261 @@
 +// SPDX-License-Identifier: GPL-2.0
-+// Copyright (C) 2014 - 2019 Intel Corporation
++// Copyright (C) 2014 - 2020 Intel Corporation
 +
 +#include <linux/device.h>
 +#include <linux/module.h>
@@ -6232,7 +6226,6 @@ index 000000000000..d8403a55fba1
 +		 IPU_ISYS_ENTITY_PREFIX " CSI2 BE SOC %d", index);
 +	v4l2_set_subdevdata(&csi2_be_soc->asd.sd, &csi2_be_soc->asd);
 +
-+	mutex_lock(&csi2_be_soc->asd.mutex);
 +	rval = v4l2_device_register_subdev(&isys->v4l2_dev,
 +					   &csi2_be_soc->asd.sd);
 +	if (rval) {
@@ -6240,7 +6233,6 @@ index 000000000000..d8403a55fba1
 +		goto fail;
 +	}
 +
-+	mutex_unlock(&csi2_be_soc->asd.mutex);
 +	snprintf(csi2_be_soc->av.vdev.name, sizeof(csi2_be_soc->av.vdev.name),
 +		 IPU_ISYS_ENTITY_PREFIX " BE SOC capture %d", index);
 +
@@ -6281,12 +6273,12 @@ index 000000000000..d8403a55fba1
 +}
 diff --git a/drivers/media/pci/intel/ipu-isys-csi2-be.c b/drivers/media/pci/intel/ipu-isys-csi2-be.c
 new file mode 100644
-index 000000000000..3a483e9dfcbc
+index 000000000000..9aae37af8011
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu-isys-csi2-be.c
 @@ -0,0 +1,294 @@
 +// SPDX-License-Identifier: GPL-2.0
-+// Copyright (C) 2014 - 2019 Intel Corporation
++// Copyright (C) 2014 - 2020 Intel Corporation
 +
 +#include <linux/device.h>
 +#include <linux/module.h>
@@ -6581,12 +6573,12 @@ index 000000000000..3a483e9dfcbc
 +}
 diff --git a/drivers/media/pci/intel/ipu-isys-csi2-be.h b/drivers/media/pci/intel/ipu-isys-csi2-be.h
 new file mode 100644
-index 000000000000..6c82dc17e524
+index 000000000000..b90e55446948
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu-isys-csi2-be.h
 @@ -0,0 +1,66 @@
 +/* SPDX-License-Identifier: GPL-2.0 */
-+/* Copyright (C) 2014 - 2018 Intel Corporation */
++/* Copyright (C) 2014 - 2020 Intel Corporation */
 +
 +#ifndef IPU_ISYS_CSI2_BE_H
 +#define IPU_ISYS_CSI2_BE_H
@@ -6653,12 +6645,12 @@ index 000000000000..6c82dc17e524
 +#endif /* IPU_ISYS_CSI2_BE_H */
 diff --git a/drivers/media/pci/intel/ipu-isys-csi2.c b/drivers/media/pci/intel/ipu-isys-csi2.c
 new file mode 100644
-index 000000000000..f9b1b12bb5ac
+index 000000000000..2842acd633c6
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu-isys-csi2.c
-@@ -0,0 +1,663 @@
+@@ -0,0 +1,661 @@
 +// SPDX-License-Identifier: GPL-2.0
-+// Copyright (C) 2013 - 2019 Intel Corporation
++// Copyright (C) 2013 - 2020 Intel Corporation
 +
 +#include <linux/device.h>
 +#include <linux/module.h>
@@ -7150,16 +7142,14 @@ index 000000000000..f9b1b12bb5ac
 +		 IPU_ISYS_ENTITY_PREFIX " CSI-2 %u", index);
 +	v4l2_set_subdevdata(&csi2->asd.sd, &csi2->asd);
 +
-+	mutex_lock(&csi2->asd.mutex);
 +	rval = v4l2_device_register_subdev(&isys->v4l2_dev, &csi2->asd.sd);
 +	if (rval) {
-+		mutex_unlock(&csi2->asd.mutex);
 +		dev_info(&isys->adev->dev, "can't register v4l2 subdev\n");
 +		goto fail;
 +	}
 +
++	mutex_lock(&csi2->asd.mutex);
 +	__ipu_isys_subdev_set_ffmt(&csi2->asd.sd, NULL, &fmt);
-+
 +	mutex_unlock(&csi2->asd.mutex);
 +
 +	snprintf(csi2->av.vdev.name, sizeof(csi2->av.vdev.name),
@@ -7322,12 +7312,12 @@ index 000000000000..f9b1b12bb5ac
 +}
 diff --git a/drivers/media/pci/intel/ipu-isys-csi2.h b/drivers/media/pci/intel/ipu-isys-csi2.h
 new file mode 100644
-index 000000000000..368f0ad6f869
+index 000000000000..04c45571e9e1
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu-isys-csi2.h
 @@ -0,0 +1,164 @@
 +/* SPDX-License-Identifier: GPL-2.0 */
-+/* Copyright (C) 2013 - 2018 Intel Corporation */
++/* Copyright (C) 2013 - 2020 Intel Corporation */
 +
 +#ifndef IPU_ISYS_CSI2_H
 +#define IPU_ISYS_CSI2_H
@@ -7492,12 +7482,12 @@ index 000000000000..368f0ad6f869
 +#endif /* IPU_ISYS_CSI2_H */
 diff --git a/drivers/media/pci/intel/ipu-isys-media.h b/drivers/media/pci/intel/ipu-isys-media.h
 new file mode 100644
-index 000000000000..e00fe4e47f95
+index 000000000000..72b48bcbf7f1
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu-isys-media.h
 @@ -0,0 +1,77 @@
 +/* SPDX-License-Identifier: GPL-2.0 */
-+/* Copyright (C) 2016 - 2018 Intel Corporation */
++/* Copyright (C) 2016 - 2020 Intel Corporation */
 +
 +#ifndef IPU_ISYS_MEDIA_H
 +#define IPU_ISYS_MEDIA_H
@@ -7575,12 +7565,12 @@ index 000000000000..e00fe4e47f95
 +#endif /* IPU_ISYS_MEDIA_H */
 diff --git a/drivers/media/pci/intel/ipu-isys-queue.c b/drivers/media/pci/intel/ipu-isys-queue.c
 new file mode 100644
-index 000000000000..3855d91e1711
+index 000000000000..f7ffa51e25cf
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu-isys-queue.c
 @@ -0,0 +1,1056 @@
 +// SPDX-License-Identifier: GPL-2.0
-+// Copyright (C) 2013 - 2019 Intel Corporation
++// Copyright (C) 2013 - 2020 Intel Corporation
 +
 +#include <linux/completion.h>
 +#include <linux/device.h>
@@ -8332,7 +8322,7 @@ index 000000000000..3855d91e1711
 +			goto out_stream_start;
 +		} else if (rval < 0) {
 +			dev_dbg(&av->isys->adev->dev,
-+				"no request available --- postponing streamon\n");
++				"no request available, postponing streamon\n");
 +			goto out;
 +		}
 +	}
@@ -8418,7 +8408,7 @@ index 000000000000..3855d91e1711
 +	for (i = 0; i < IPU_ISYS_MAX_PARALLEL_SOF; i++)
 +		if (time == ip->seq[i].timestamp) {
 +			dev_dbg(&isys->adev->dev,
-+				"sof: using sequence number %u for timestamp 0x%16.16llx\n",
++				"sof: using seq nr %u for ts 0x%16.16llx\n",
 +				ip->seq[i].sequence, time);
 +			return ip->seq[i].sequence;
 +		}
@@ -8530,7 +8520,7 @@ index 000000000000..3855d91e1711
 +		if (info->pin.addr != addr) {
 +			if (first)
 +				dev_err(&isys->adev->dev,
-+					"WARNING: buffer address %pad expected!\n",
++					"WARN: buffer address %pad expected!\n",
 +					&addr);
 +			first = false;
 +			continue;
@@ -8637,12 +8627,12 @@ index 000000000000..3855d91e1711
 +}
 diff --git a/drivers/media/pci/intel/ipu-isys-queue.h b/drivers/media/pci/intel/ipu-isys-queue.h
 new file mode 100644
-index 000000000000..b3f796cca3f7
+index 000000000000..99be2989a088
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu-isys-queue.h
 @@ -0,0 +1,142 @@
 +/* SPDX-License-Identifier: GPL-2.0 */
-+/* Copyright (C) 2013 - 2018 Intel Corporation */
++/* Copyright (C) 2013 - 2020 Intel Corporation */
 +
 +#ifndef IPU_ISYS_QUEUE_H
 +#define IPU_ISYS_QUEUE_H
@@ -8785,12 +8775,12 @@ index 000000000000..b3f796cca3f7
 +#endif /* IPU_ISYS_QUEUE_H */
 diff --git a/drivers/media/pci/intel/ipu-isys-subdev.c b/drivers/media/pci/intel/ipu-isys-subdev.c
 new file mode 100644
-index 000000000000..44706de44590
+index 000000000000..05438baec572
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu-isys-subdev.c
 @@ -0,0 +1,656 @@
 +// SPDX-License-Identifier: GPL-2.0
-+// Copyright (C) 2013 - 2019 Intel Corporation
++// Copyright (C) 2013 - 2020 Intel Corporation
 +
 +#include <linux/types.h>
 +#include <linux/videodev2.h>
@@ -9447,12 +9437,12 @@ index 000000000000..44706de44590
 +}
 diff --git a/drivers/media/pci/intel/ipu-isys-subdev.h b/drivers/media/pci/intel/ipu-isys-subdev.h
 new file mode 100644
-index 000000000000..5cdc84b97096
+index 000000000000..35eb9d1d3cb7
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu-isys-subdev.h
 @@ -0,0 +1,153 @@
 +/* SPDX-License-Identifier: GPL-2.0 */
-+/* Copyright (C) 2013 - 2018 Intel Corporation */
++/* Copyright (C) 2013 - 2020 Intel Corporation */
 +
 +#ifndef IPU_ISYS_SUBDEV_H
 +#define IPU_ISYS_SUBDEV_H
@@ -9606,12 +9596,12 @@ index 000000000000..5cdc84b97096
 +#endif /* IPU_ISYS_SUBDEV_H */
 diff --git a/drivers/media/pci/intel/ipu-isys-tpg.c b/drivers/media/pci/intel/ipu-isys-tpg.c
 new file mode 100644
-index 000000000000..49cbea4680ec
+index 000000000000..9c6855ff0cbc
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu-isys-tpg.c
 @@ -0,0 +1,311 @@
 +// SPDX-License-Identifier: GPL-2.0
-+// Copyright (C) 2013 - 2018 Intel Corporation
++// Copyright (C) 2013 - 2020 Intel Corporation
 +
 +#include <linux/device.h>
 +#include <linux/module.h>
@@ -9923,12 +9913,12 @@ index 000000000000..49cbea4680ec
 +}
 diff --git a/drivers/media/pci/intel/ipu-isys-tpg.h b/drivers/media/pci/intel/ipu-isys-tpg.h
 new file mode 100644
-index 000000000000..90bed77182fd
+index 000000000000..332f087ed774
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu-isys-tpg.h
 @@ -0,0 +1,99 @@
 +/* SPDX-License-Identifier: GPL-2.0 */
-+/* Copyright (C) 2013 - 2018 Intel Corporation */
++/* Copyright (C) 2013 - 2020 Intel Corporation */
 +
 +#ifndef IPU_ISYS_TPG_H
 +#define IPU_ISYS_TPG_H
@@ -10028,10 +10018,10 @@ index 000000000000..90bed77182fd
 +#endif /* IPU_ISYS_TPG_H */
 diff --git a/drivers/media/pci/intel/ipu-isys-video.c b/drivers/media/pci/intel/ipu-isys-video.c
 new file mode 100644
-index 000000000000..cfeeba414e41
+index 000000000000..d31950eecf22
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu-isys-video.c
-@@ -0,0 +1,1703 @@
+@@ -0,0 +1,1701 @@
 +// SPDX-License-Identifier: GPL-2.0
 +// Copyright (C) 2013 - 2020 Intel Corporation
 +
@@ -11472,7 +11462,7 @@ index 000000000000..cfeeba414e41
 +		stop_streaming_firmware(av);
 +
 +		/* stop external sub-device now. */
-+		dev_err(dev, "s_stream %s (ext)\n", ip->external->entity->name);
++		dev_info(dev, "stream off %s\n", ip->external->entity->name);
 +
 +		v4l2_subdev_call(esd, video, s_stream, state);
 +	}
@@ -11485,8 +11475,6 @@ index 000000000000..cfeeba414e41
 +	while ((entity = media_graph_walk_next(&ip->graph))) {
 +		sd = media_entity_to_v4l2_subdev(entity);
 +
-+		dev_dbg(dev, "set stream: entity %s\n", entity->name);
-+
 +		/* Non-subdev nodes can be safely ignored here. */
 +		if (!is_media_entity_v4l2_subdev(entity))
 +			continue;
@@ -11497,7 +11485,8 @@ index 000000000000..cfeeba414e41
 +		    ip->external->entity == entity)
 +			continue;
 +
-+		dev_dbg(dev, "s_stream %s\n", entity->name);
++		dev_dbg(dev, "s_stream %s entity %s\n", state ? "on" : "off",
++			entity->name);
 +		rval = v4l2_subdev_call(sd, video, s_stream, state);
 +		if (!state)
 +			continue;
@@ -11525,8 +11514,7 @@ index 000000000000..cfeeba414e41
 +			ip->source, ip->stream_handle);
 +
 +		/* Start external sub-device now. */
-+		dev_dbg(dev, "set stream: s_stream %s (ext)\n",
-+			ip->external->entity->name);
++		dev_info(dev, "stream on %s\n", ip->external->entity->name);
 +
 +		rval = v4l2_subdev_call(esd, video, s_stream, state);
 +		if (rval)
@@ -11737,12 +11725,12 @@ index 000000000000..cfeeba414e41
 +}
 diff --git a/drivers/media/pci/intel/ipu-isys-video.h b/drivers/media/pci/intel/ipu-isys-video.h
 new file mode 100644
-index 000000000000..93c5583517af
+index 000000000000..1bf9b0573a56
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu-isys-video.h
 @@ -0,0 +1,175 @@
 +/* SPDX-License-Identifier: GPL-2.0 */
-+/* Copyright (C) 2013 - 2019 Intel Corporation */
++/* Copyright (C) 2013 - 2020 Intel Corporation */
 +
 +#ifndef IPU_ISYS_VIDEO_H
 +#define IPU_ISYS_VIDEO_H
@@ -11918,7 +11906,7 @@ index 000000000000..93c5583517af
 +#endif /* IPU_ISYS_VIDEO_H */
 diff --git a/drivers/media/pci/intel/ipu-isys.c b/drivers/media/pci/intel/ipu-isys.c
 new file mode 100644
-index 000000000000..4e73f9393129
+index 000000000000..83b0f527f7cf
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu-isys.c
 @@ -0,0 +1,1399 @@
@@ -12956,7 +12944,7 @@ index 000000000000..4e73f9393129
 +	INIT_LIST_HEAD(&isys->framebuflist);
 +	INIT_LIST_HEAD(&isys->framebuflist_fw);
 +
-+	dev_info(&adev->dev, "isys probe %p %p\n", adev, &adev->dev);
++	dev_dbg(&adev->dev, "isys probe %p %p\n", adev, &adev->dev);
 +	ipu_bus_set_drvdata(adev, isys);
 +
 +	isys->line_align = IPU_ISYS_2600_MEM_LINE_ALIGN;
@@ -13323,12 +13311,12 @@ index 000000000000..4e73f9393129
 +MODULE_DESCRIPTION("Intel ipu input system driver");
 diff --git a/drivers/media/pci/intel/ipu-isys.h b/drivers/media/pci/intel/ipu-isys.h
 new file mode 100644
-index 000000000000..c0aa1ecd2dd6
+index 000000000000..c5155fa35ee6
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu-isys.h
 @@ -0,0 +1,217 @@
 +/* SPDX-License-Identifier: GPL-2.0 */
-+/* Copyright (C) 2013 - 2018 Intel Corporation */
++/* Copyright (C) 2013 - 2020 Intel Corporation */
 +
 +#ifndef IPU_ISYS_H
 +#define IPU_ISYS_H
@@ -13546,7 +13534,7 @@ index 000000000000..c0aa1ecd2dd6
 +#endif /* IPU_ISYS_H */
 diff --git a/drivers/media/pci/intel/ipu-mmu.c b/drivers/media/pci/intel/ipu-mmu.c
 new file mode 100644
-index 000000000000..38ff2d036bd1
+index 000000000000..29bcf036a510
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu-mmu.c
 @@ -0,0 +1,790 @@
@@ -13916,8 +13904,8 @@ index 000000000000..38ff2d036bd1
 +
 +	/* save the address for the ZLW invalidation */
 +	mmu->iova_addr_trash = iova->pfn_lo << PAGE_SHIFT;
-+	dev_info(mmu->dev, "iova trash buffer for MMUID: %d is %u\n",
-+		 mmu->mmid, (unsigned int)mmu->iova_addr_trash);
++	dev_dbg(mmu->dev, "iova trash buffer for MMUID: %d is %u\n",
++		mmu->mmid, (unsigned int)mmu->iova_addr_trash);
 +	return 0;
 +
 +out_unmap:
@@ -14342,12 +14330,12 @@ index 000000000000..38ff2d036bd1
 +MODULE_DESCRIPTION("Intel ipu mmu driver");
 diff --git a/drivers/media/pci/intel/ipu-mmu.h b/drivers/media/pci/intel/ipu-mmu.h
 new file mode 100644
-index 000000000000..ff11b6d7a321
+index 000000000000..bc7b93b50b63
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu-mmu.h
 @@ -0,0 +1,69 @@
 +/* SPDX-License-Identifier: GPL-2.0 */
-+/* Copyright (C) 2013 - 2018 Intel Corporation */
++/* Copyright (C) 2013 - 2020 Intel Corporation */
 +
 +#ifndef IPU_MMU_H
 +#define IPU_MMU_H
@@ -14417,12 +14405,12 @@ index 000000000000..ff11b6d7a321
 +#endif
 diff --git a/drivers/media/pci/intel/ipu-pdata.h b/drivers/media/pci/intel/ipu-pdata.h
 new file mode 100644
-index 000000000000..c098f43da1f4
+index 000000000000..c68e39b1735c
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu-pdata.h
 @@ -0,0 +1,275 @@
 +/* SPDX-License-Identifier: GPL-2.0 */
-+/* Copyright (C) 2013 - 2018 Intel Corporation */
++/* Copyright (C) 2013 - 2020 Intel Corporation */
 +
 +#ifndef IPU_PDATA_H
 +#define IPU_PDATA_H
@@ -14698,12 +14686,12 @@ index 000000000000..c098f43da1f4
 +#endif
 diff --git a/drivers/media/pci/intel/ipu-psys-compat32.c b/drivers/media/pci/intel/ipu-psys-compat32.c
 new file mode 100644
-index 000000000000..cc73827abbe8
+index 000000000000..5283c85bd57b
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu-psys-compat32.c
 @@ -0,0 +1,227 @@
 +// SPDX-License-Identifier: GPL-2.0
-+// Copyright (C) 2013 - 2018 Intel Corporation
++// Copyright (C) 2013 - 2020 Intel Corporation
 +
 +#include <linux/compat.h>
 +#include <linux/errno.h>
@@ -14931,10 +14919,10 @@ index 000000000000..cc73827abbe8
 +EXPORT_SYMBOL_GPL(ipu_psys_compat_ioctl32);
 diff --git a/drivers/media/pci/intel/ipu-psys.c b/drivers/media/pci/intel/ipu-psys.c
 new file mode 100644
-index 000000000000..c87e09faa71e
+index 000000000000..684e9e1d4191
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu-psys.c
-@@ -0,0 +1,1603 @@
+@@ -0,0 +1,1602 @@
 +// SPDX-License-Identifier: GPL-2.0
 +// Copyright (C) 2013 - 2020 Intel Corporation
 +
@@ -15027,8 +15015,7 @@ index 000000000000..c87e09faa71e
 +		return NULL;
 +
 +	kpg->pg = dma_alloc_attrs(&psys->adev->dev, pg_size,
-+				  &kpg->pg_dma_addr, GFP_KERNEL,
-+				  DMA_ATTR_NON_CONSISTENT);
++				  &kpg->pg_dma_addr, GFP_KERNEL, 0);
 +	if (!kpg->pg) {
 +		kfree(kpg);
 +		return NULL;
@@ -16285,7 +16272,7 @@ index 000000000000..c87e09faa71e
 +		kpg->pg = dma_alloc_attrs(&adev->dev,
 +					  IPU_PSYS_PG_MAX_SIZE,
 +					  &kpg->pg_dma_addr,
-+					  GFP_KERNEL, DMA_ATTR_NON_CONSISTENT);
++					  GFP_KERNEL, 0);
 +		if (!kpg->pg) {
 +			kfree(kpg);
 +			goto out_free_pgs;
@@ -16352,7 +16339,7 @@ index 000000000000..c87e09faa71e
 +out_free_pgs:
 +	list_for_each_entry_safe(kpg, kpg0, &psys->pgs, list) {
 +		dma_free_attrs(&adev->dev, kpg->size, kpg->pg,
-+			       kpg->pg_dma_addr, DMA_ATTR_NON_CONSISTENT);
++			       kpg->pg_dma_addr, 0);
 +		kfree(kpg);
 +	}
 +
@@ -16401,7 +16388,7 @@ index 000000000000..c87e09faa71e
 +
 +	list_for_each_entry_safe(kpg, kpg0, &psys->pgs, list) {
 +		dma_free_attrs(&adev->dev, kpg->size, kpg->pg,
-+			       kpg->pg_dma_addr, DMA_ATTR_NON_CONSISTENT);
++			       kpg->pg_dma_addr, 0);
 +		kfree(kpg);
 +	}
 +
@@ -16540,12 +16527,12 @@ index 000000000000..c87e09faa71e
 +MODULE_DESCRIPTION("Intel ipu processing system driver");
 diff --git a/drivers/media/pci/intel/ipu-psys.h b/drivers/media/pci/intel/ipu-psys.h
 new file mode 100644
-index 000000000000..8a033820fbab
+index 000000000000..a0d9883badc6
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu-psys.h
 @@ -0,0 +1,217 @@
 +/* SPDX-License-Identifier: GPL-2.0 */
-+/* Copyright (C) 2013 - 2018 Intel Corporation */
++/* Copyright (C) 2013 - 2020 Intel Corporation */
 +
 +#ifndef IPU_PSYS_H
 +#define IPU_PSYS_H
@@ -16763,12 +16750,12 @@ index 000000000000..8a033820fbab
 +#endif /* IPU_PSYS_H */
 diff --git a/drivers/media/pci/intel/ipu-trace.c b/drivers/media/pci/intel/ipu-trace.c
 new file mode 100644
-index 000000000000..4233431af19f
+index 000000000000..10e4d5c68619
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu-trace.c
 @@ -0,0 +1,880 @@
 +// SPDX-License-Identifier: GPL-2.0
-+// Copyright (C) 2014 - 2018 Intel Corporation
++// Copyright (C) 2014 - 2020 Intel Corporation
 +
 +#include <linux/debugfs.h>
 +#include <linux/delay.h>
@@ -17649,12 +17636,12 @@ index 000000000000..4233431af19f
 +MODULE_DESCRIPTION("Intel ipu trace support");
 diff --git a/drivers/media/pci/intel/ipu-trace.h b/drivers/media/pci/intel/ipu-trace.h
 new file mode 100644
-index 000000000000..022c40e538be
+index 000000000000..f66b63aacc9a
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu-trace.h
 @@ -0,0 +1,312 @@
 +/* SPDX-License-Identifier: GPL-2.0 */
-+/* Copyright (C) 2014 - 2018 Intel Corporation */
++/* Copyright (C) 2014 - 2020 Intel Corporation */
 +
 +#ifndef IPU_TRACE_H
 +#define IPU_TRACE_H
@@ -17967,12 +17954,12 @@ index 000000000000..022c40e538be
 +#endif
 diff --git a/drivers/media/pci/intel/ipu.c b/drivers/media/pci/intel/ipu.c
 new file mode 100644
-index 000000000000..80d8b319ded8
+index 000000000000..a47da02b52ab
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu.c
 @@ -0,0 +1,788 @@
 +// SPDX-License-Identifier: GPL-2.0
-+// Copyright (C) 2013 - 2018 Intel Corporation
++// Copyright (C) 2013 - 2020 Intel Corporation
 +
 +#include <linux/debugfs.h>
 +#include <linux/device.h>
@@ -18761,12 +18748,12 @@ index 000000000000..80d8b319ded8
 +MODULE_DESCRIPTION("Intel ipu pci driver");
 diff --git a/drivers/media/pci/intel/ipu.h b/drivers/media/pci/intel/ipu.h
 new file mode 100644
-index 000000000000..68ebdef8bd34
+index 000000000000..5ad628c61b75
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu.h
 @@ -0,0 +1,102 @@
 +/* SPDX-License-Identifier: GPL-2.0 */
-+/* Copyright (C) 2013 - 2018 Intel Corporation */
++/* Copyright (C) 2013 - 2020 Intel Corporation */
 +
 +#ifndef IPU_H
 +#define IPU_H
@@ -18869,12 +18856,12 @@ index 000000000000..68ebdef8bd34
 +#endif /* IPU_H */
 diff --git a/drivers/media/pci/intel/ipu6/Makefile b/drivers/media/pci/intel/ipu6/Makefile
 new file mode 100644
-index 000000000000..3595642f1d26
+index 000000000000..9838df285260
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu6/Makefile
 @@ -0,0 +1,57 @@
 +# SPDX-License-Identifier: GPL-2.0
-+# Copyright (c) 2017 - 2019, Intel Corporation.
++# Copyright (c) 2017 - 2020 Intel Corporation.
 +
 +ifneq ($(EXTERNAL_BUILD), 1)
 +srcpath := $(srctree)
@@ -18932,12 +18919,12 @@ index 000000000000..3595642f1d26
 +ccflags-y += -I$(srcpath)/$(src)/
 diff --git a/drivers/media/pci/intel/ipu6/ipu-platform-buttress-regs.h b/drivers/media/pci/intel/ipu6/ipu-platform-buttress-regs.h
 new file mode 100644
-index 000000000000..5f9595ebba8c
+index 000000000000..4e2e6f163835
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu6/ipu-platform-buttress-regs.h
 @@ -0,0 +1,321 @@
 +/* SPDX-License-Identifier: GPL-2.0 */
-+/* Copyright (C) 2018 Intel Corporation */
++/* Copyright (C) 2020 Intel Corporation */
 +
 +#ifndef IPU_PLATFORM_BUTTRESS_REGS_H
 +#define IPU_PLATFORM_BUTTRESS_REGS_H
@@ -19259,12 +19246,12 @@ index 000000000000..5f9595ebba8c
 +#endif /* IPU_PLATFORM_BUTTRESS_REGS_H */
 diff --git a/drivers/media/pci/intel/ipu6/ipu-platform-isys-csi2-reg.h b/drivers/media/pci/intel/ipu6/ipu-platform-isys-csi2-reg.h
 new file mode 100644
-index 000000000000..2c1232ca4360
+index 000000000000..c8850db75938
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu6/ipu-platform-isys-csi2-reg.h
-@@ -0,0 +1,279 @@
+@@ -0,0 +1,283 @@
 +/* SPDX-License-Identifier: GPL-2.0 */
-+/* Copyright (C) 2018 Intel Corporation */
++/* Copyright (C) 2020 Intel Corporation */
 +
 +#ifndef IPU_PLATFORM_ISYS_CSI2_REG_H
 +#define IPU_PLATFORM_ISYS_CSI2_REG_H
@@ -19313,7 +19300,11 @@ index 000000000000..2c1232ca4360
 +#define CSI_PORT_REG_BASE_IRQ_ENABLE_OFFSET	0x10
 +#define CSI_PORT_REG_BASE_IRQ_LEVEL_NOT_PULSE_OFFSET	0x14
 +
++#ifdef CONFIG_VIDEO_INTEL_IPU6SE
++#define IPU_CSI_RX_ERROR_IRQ_MASK		0x7ffff
++#else
 +#define IPU_CSI_RX_ERROR_IRQ_MASK		0xfffff
++#endif
 +
 +#define CSI_RX_NUM_ERRORS_IN_IRQ		20
 +#define CSI_RX_NUM_IRQ				32
@@ -19544,12 +19535,12 @@ index 000000000000..2c1232ca4360
 +#endif /* IPU6_ISYS_CSI2_REG_H */
 diff --git a/drivers/media/pci/intel/ipu6/ipu-platform-isys.h b/drivers/media/pci/intel/ipu6/ipu-platform-isys.h
 new file mode 100644
-index 000000000000..485425519400
+index 000000000000..886947870387
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu6/ipu-platform-isys.h
 @@ -0,0 +1,18 @@
 +/* SPDX-License-Identifier: GPL-2.0 */
-+/* Copyright (C) 2019 Intel Corporation */
++/* Copyright (C) 2020 Intel Corporation */
 +
 +#ifndef IPU_PLATFORM_ISYS_H
 +#define IPU_PLATFORM_ISYS_H
@@ -19568,12 +19559,12 @@ index 000000000000..485425519400
 +#endif
 diff --git a/drivers/media/pci/intel/ipu6/ipu-platform-psys.h b/drivers/media/pci/intel/ipu6/ipu-platform-psys.h
 new file mode 100644
-index 000000000000..447d86870716
+index 000000000000..e8483e9a325b
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu6/ipu-platform-psys.h
-@@ -0,0 +1,76 @@
+@@ -0,0 +1,77 @@
 +/* SPDX-License-Identifier: GPL-2.0 */
-+/* Copyright (C) 2018 Intel Corporation */
++/* Copyright (C) 2020 Intel Corporation */
 +
 +#ifndef IPU_PLATFORM_PSYS_H
 +#define IPU_PLATFORM_PSYS_H
@@ -19624,8 +19615,9 @@ index 000000000000..447d86870716
 +	u64 token;
 +	void *manifest;
 +	struct mutex mutex;     /* Protects kcmd and ppg state field */
-+	struct list_head kcmds_drv_list;
-+	struct list_head kcmds_fw_list;
++	struct list_head kcmds_new_list;
++	struct list_head kcmds_processing_list;
++	struct list_head kcmds_finished_list;
 +	enum ipu_psys_ppg_state state;
 +	u32 pri_base;
 +	int pri_dynamic;
@@ -19650,12 +19642,12 @@ index 000000000000..447d86870716
 +#endif /* IPU_PLATFORM_PSYS_H */
 diff --git a/drivers/media/pci/intel/ipu6/ipu-platform-regs.h b/drivers/media/pci/intel/ipu6/ipu-platform-regs.h
 new file mode 100644
-index 000000000000..7f1a26ab74cc
+index 000000000000..47aa0909d0aa
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu6/ipu-platform-regs.h
 @@ -0,0 +1,340 @@
 +/* SPDX-License-Identifier: GPL-2.0 */
-+/* Copyright (C) 2018 - 2019 Intel Corporation */
++/* Copyright (C) 2018 - 2020 Intel Corporation */
 +
 +#ifndef IPU_PLATFORM_REGS_H
 +#define IPU_PLATFORM_REGS_H
@@ -20407,12 +20399,12 @@ index 000000000000..b8b195ef433f
 +#endif /* IPU_PLATFORM_RESOURCES_H */
 diff --git a/drivers/media/pci/intel/ipu6/ipu-platform.h b/drivers/media/pci/intel/ipu6/ipu-platform.h
 new file mode 100644
-index 000000000000..2664da14784d
+index 000000000000..27faa0ee5e98
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu6/ipu-platform.h
 @@ -0,0 +1,39 @@
 +/* SPDX-License-Identifier: GPL-2.0 */
-+/* Copyright (C) 2013 - 2018 Intel Corporation */
++/* Copyright (C) 2013 - 2020 Intel Corporation */
 +
 +#ifndef IPU_PLATFORM_H
 +#define IPU_PLATFORM_H
@@ -20452,12 +20444,12 @@ index 000000000000..2664da14784d
 +#endif
 diff --git a/drivers/media/pci/intel/ipu6/ipu6-fw-resources.c b/drivers/media/pci/intel/ipu6/ipu6-fw-resources.c
 new file mode 100644
-index 000000000000..7fcbbde2632e
+index 000000000000..124e8acf463d
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu6/ipu6-fw-resources.c
 @@ -0,0 +1,740 @@
 +// SPDX-License-Identifier: GPL-2.0
-+// Copyright (C) 2015 - 2019 Intel Corporation
++// Copyright (C) 2015 - 2020 Intel Corporation
 +
 +#include <linux/err.h>
 +#include <linux/string.h>
@@ -21198,12 +21190,12 @@ index 000000000000..7fcbbde2632e
 +}
 diff --git a/drivers/media/pci/intel/ipu6/ipu6-isys-csi2.c b/drivers/media/pci/intel/ipu6/ipu6-isys-csi2.c
 new file mode 100644
-index 000000000000..ff65c7645e67
+index 000000000000..051c08658640
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu6/ipu6-isys-csi2.c
-@@ -0,0 +1,505 @@
+@@ -0,0 +1,514 @@
 +// SPDX-License-Identifier: GPL-2.0
-+// Copyright (C) 2018 Intel Corporation
++// Copyright (C) 2020 Intel Corporation
 +
 +#include <linux/delay.h>
 +#include <linux/spinlock.h>
@@ -21255,7 +21247,7 @@ index 000000000000..ff65c7645e67
 +	{"FIFO overflow", false},
 +	{"Lane deskew", false},
 +	{"SOT sync error", false},
-+	{"Reserved Pin tieoff0", false}
++	{"HSIDLE detected", false}
 +};
 +
 +#if !defined(CONFIG_VIDEO_INTEL_IPU6SE)
@@ -21440,12 +21432,11 @@ index 000000000000..ff65c7645e67
 +	return 0;
 +}
 +
-+static int ipu_isys_csi2_rx_control(struct ipu_isys *isys)
++static void ipu_isys_csi2_rx_control(struct ipu_isys *isys)
 +{
 +	void __iomem *base = isys->adev->isp->base;
 +	u32 val, reg;
 +
-+	dev_info(&isys->adev->dev, "%s", __func__);
 +	/* lp11 release */
 +	reg = CSI2_HUB_GPREG_SIP0_CSI_RX_A_CONTROL;
 +	val = readl(base + reg);
@@ -21466,7 +21457,6 @@ index 000000000000..ff65c7645e67
 +	val = readl(base + reg);
 +	val |= 0x1;
 +	writel(0x1, base + CSI2_HUB_GPREG_SIP1_CSI_RX_B_CONTROL);
-+	return 0;
 +}
 +
 +static int ipu_isys_csi2_set_port_cfg(struct v4l2_subdev *sd, unsigned int port,
@@ -21477,25 +21467,34 @@ index 000000000000..ff65c7645e67
 +	unsigned int sip = port / 2;
 +	unsigned int index;
 +
-+	dev_info(&isys->adev->dev, "port config for port %u with %u lanes\n",
-+		 port, nlanes);
-+
-+	if (nlanes == 1)
++	switch (nlanes) {
++	case 1:
 +		index = 5;
-+	if (nlanes == 2)
++		break;
++	case 2:
 +		index = 6;
-+	if (nlanes == 4)
++		break;
++	case 4:
 +		index = 1;
++		break;
++	default:
++		dev_err(&isys->adev->dev, "lanes nr %u is unsupported\n",
++			nlanes);
++		return -EINVAL;
++	}
 +
++	dev_dbg(&isys->adev->dev, "port config for port %u with %u lanes\n",
++		port, nlanes);
 +	writel(csi2_port_cfg[index][2],
 +	       isys->pdata->base + CSI2_HUB_GPREG_SIP_FB_PORT_CFG(sip));
++
 +	return 0;
 +}
 +
-+static int ipu_isys_csi2_set_timing(struct v4l2_subdev *sd,
-+				    struct ipu_isys_csi2_timing timing,
-+				    unsigned int port,
-+				    unsigned int nlanes)
++static void ipu_isys_csi2_set_timing(struct v4l2_subdev *sd,
++				     struct ipu_isys_csi2_timing timing,
++				     unsigned int port,
++				     unsigned int nlanes)
 +{
 +	u32 port_base;
 +	void __iomem *reg;
@@ -21506,9 +21505,9 @@ index 000000000000..ff65c7645e67
 +	port_base = (port % 2) ? CSI2_SIP_TOP_CSI_RX_PORT_BASE_1(port) :
 +		CSI2_SIP_TOP_CSI_RX_PORT_BASE_0(port);
 +
-+	dev_info(&isys->adev->dev,
-+		 "set timing for port %u base 0x%x with %u lanes\n",
-+		 port, port_base, nlanes);
++	dev_dbg(&isys->adev->dev,
++		"set timing for port %u base 0x%x with %u lanes\n",
++		port, port_base, nlanes);
 +
 +	reg = isys->pdata->base + port_base;
 +	reg += CSI2_SIP_TOP_CSI_RX_DLY_CNT_TERMEN_CLANE;
@@ -21528,8 +21527,6 @@ index 000000000000..ff65c7645e67
 +		reg += CSI2_SIP_TOP_CSI_RX_DLY_CNT_SETTLE_DLANE(i);
 +		writel(timing.dsettle, reg);
 +	}
-+
-+	return 0;
 +}
 +#endif
 +
@@ -21610,9 +21607,13 @@ index 000000000000..ff65c7645e67
 +	/* 9'b00010.1000 for 400Mhz isys freqency */
 +	writel(0x28, isys->pdata->base + CSI2_HUB_GPREG_DPHY_TIMER_INCR);
 +	/* set port cfg and rx timing */
-+	ret = ipu_isys_csi2_set_timing(sd, timing, port, nlanes);
++	ipu_isys_csi2_set_timing(sd, timing, port, nlanes);
++
 +	ret = ipu_isys_csi2_set_port_cfg(sd, port, nlanes);
-+	ret = ipu_isys_csi2_rx_control(isys);
++	if (ret)
++		return ret;
++
++	ipu_isys_csi2_rx_control(isys);
 +#endif
 +
 +	/* enable all error related irq */
@@ -21709,12 +21710,12 @@ index 000000000000..ff65c7645e67
 +}
 diff --git a/drivers/media/pci/intel/ipu6/ipu6-isys-csi2.h b/drivers/media/pci/intel/ipu6/ipu6-isys-csi2.h
 new file mode 100644
-index 000000000000..e3be12750d91
+index 000000000000..9db3ef6f8869
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu6/ipu6-isys-csi2.h
 @@ -0,0 +1,14 @@
 +/* SPDX-License-Identifier: GPL-2.0 */
-+/* Copyright (C) 2018 Intel Corporation */
++/* Copyright (C) 2020 Intel Corporation */
 +
 +#ifndef IPU6_ISYS_CSI2_H
 +#define IPU6_ISYS_CSI2_H
@@ -21729,12 +21730,12 @@ index 000000000000..e3be12750d91
 +#endif /* IPU6_ISYS_CSI2_H */
 diff --git a/drivers/media/pci/intel/ipu6/ipu6-isys-gpc.c b/drivers/media/pci/intel/ipu6/ipu6-isys-gpc.c
 new file mode 100644
-index 000000000000..30e7a474f0f4
+index 000000000000..227a5ba9ed03
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu6/ipu6-isys-gpc.c
 @@ -0,0 +1,211 @@
 +// SPDX-License-Identifier: GPL-2.0
-+// Copyright (C) 2018 Intel Corporation
++// Copyright (C) 2020 Intel Corporation
 +
 +#ifdef CONFIG_DEBUG_FS
 +#include <linux/debugfs.h>
@@ -21946,13 +21947,13 @@ index 000000000000..30e7a474f0f4
 +#endif
 diff --git a/drivers/media/pci/intel/ipu6/ipu6-isys-phy.c b/drivers/media/pci/intel/ipu6/ipu6-isys-phy.c
 new file mode 100644
-index 000000000000..389d2986bbda
+index 000000000000..477138ac15e9
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu6/ipu6-isys-phy.c
-@@ -0,0 +1,650 @@
+@@ -0,0 +1,649 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
-+ * Copyright (C) 2013 - 2019 Intel Corporation
++ * Copyright (C) 2013 - 2020 Intel Corporation
 + */
 +
 +#include <linux/delay.h>
@@ -22436,8 +22437,8 @@ index 000000000000..389d2986bbda
 +
 +	for (i = 0; i < LOOP; i++) {
 +		val = readl(isys_base + CSI_REG_HUB_GPREG_PHY_STATUS(phy_id));
-+		dev_info(&isys->adev->dev, "PHY%d ready status 0x%x\n",
-+			 phy_id, val);
++		dev_dbg(&isys->adev->dev, "PHY%d ready status 0x%x\n",
++			phy_id, val);
 +		if (val & CSI_REG_HUB_GPREG_PHY_STATUS_PHY_READY)
 +			return 0;
 +		usleep_range(10, 20);
@@ -22445,7 +22446,6 @@ index 000000000000..389d2986bbda
 +
 +	dev_warn(&isys->adev->dev, "PHY%d ready timeout\n", phy_id);
 +
-+	return 0;
 +	return -ETIMEDOUT;
 +}
 +
@@ -22477,9 +22477,9 @@ index 000000000000..389d2986bbda
 +			usleep_range(10, 20);
 +		}
 +		if (j == LOOP)
-+			dev_warn(&isys->adev->dev,
-+				 "phy %d ppi %d tinit NOT done!",
-+				 phy_id, i);
++			dev_dbg(&isys->adev->dev,
++				"phy %d ppi %d tinit NOT done!",
++				phy_id, i);
 +	}
 +
 +	return -ETIMEDOUT;
@@ -22582,7 +22582,7 @@ index 000000000000..389d2986bbda
 +}
 +
 +void __maybe_unused ipu6_isys_phy_dump_status(struct ipu_isys *isys,
-+					     struct ipu_isys_csi2_config *cfg)
++					      struct ipu_isys_csi2_config *cfg)
 +{
 +	unsigned int port, phy_id, nlanes;
 +	struct ipu_bus_device *adev = to_ipu_bus_device(&isys->adev->dev);
@@ -22602,13 +22602,13 @@ index 000000000000..389d2986bbda
 +}
 diff --git a/drivers/media/pci/intel/ipu6/ipu6-isys-phy.h b/drivers/media/pci/intel/ipu6/ipu6-isys-phy.h
 new file mode 100644
-index 000000000000..cdded695daa2
+index 000000000000..e8c063fcf452
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu6/ipu6-isys-phy.h
 @@ -0,0 +1,161 @@
 +/* SPDX-License-Identifier: GPL-2.0 */
 +/*
-+ * Copyright (C) 2013 - 2019 Intel Corporation
++ * Copyright (C) 2013 - 2020 Intel Corporation
 + */
 +
 +#ifndef IPU6_ISYS_PHY_H
@@ -22769,12 +22769,12 @@ index 000000000000..cdded695daa2
 +#endif
 diff --git a/drivers/media/pci/intel/ipu6/ipu6-isys.c b/drivers/media/pci/intel/ipu6/ipu6-isys.c
 new file mode 100644
-index 000000000000..af3f81957636
+index 000000000000..f492e926bdb0
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu6/ipu6-isys.c
 @@ -0,0 +1,311 @@
 +// SPDX-License-Identifier: GPL-2.0
-+// Copyright (C) 2019 Intel Corporation
++// Copyright (C) 2020 Intel Corporation
 +
 +#include <linux/module.h>
 +#include <media/v4l2-event.h>
@@ -23086,12 +23086,12 @@ index 000000000000..af3f81957636
 +}
 diff --git a/drivers/media/pci/intel/ipu6/ipu6-l-scheduler.c b/drivers/media/pci/intel/ipu6/ipu6-l-scheduler.c
 new file mode 100644
-index 000000000000..687363c6e589
+index 000000000000..fc967e88c5f1
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu6/ipu6-l-scheduler.c
-@@ -0,0 +1,591 @@
+@@ -0,0 +1,624 @@
 +// SPDX-License-Identifier: GPL-2.0
-+// Copyright (C) 2018 Intel Corporation
++// Copyright (C) 2020 Intel Corporation
 +
 +#include "ipu-psys.h"
 +#include "ipu6-ppg.h"
@@ -23104,9 +23104,31 @@ index 000000000000..687363c6e589
 +	PSYS_POWER_GATED
 +};
 +
-+static LIST_HEAD(start_list);
-+static LIST_HEAD(stop_list);
-+static DEFINE_MUTEX(sched_list_lock);
++struct sched_list {
++	struct list_head list;
++	/* to protect the list */
++	struct mutex lock;
++};
++
++static struct sched_list start_list = {
++	.list	= LIST_HEAD_INIT(start_list.list),
++	.lock	= __MUTEX_INITIALIZER(start_list.lock),
++};
++
++static struct sched_list stop_list = {
++	.list	= LIST_HEAD_INIT(stop_list.list),
++	.lock	= __MUTEX_INITIALIZER(stop_list.lock),
++};
++
++static struct sched_list *get_sc_list(enum SCHED_LIST type)
++{
++	/* for debug purposes */
++	WARN_ON(type != SCHED_START_LIST && type != SCHED_STOP_LIST);
++
++	if (type == SCHED_START_LIST)
++		return &start_list;
++	return &stop_list;
++}
 +
 +static bool is_kppg_in_list(struct ipu_psys_ppg *kppg, struct list_head *head)
 +{
@@ -23120,67 +23142,71 @@ index 000000000000..687363c6e589
 +	return false;
 +}
 +
-+void ipu_psys_scheduler_update_list(struct ipu_psys_ppg *kppg, bool add,
-+				    bool start)
++void ipu_psys_scheduler_remove_kppg(struct ipu_psys_ppg *kppg,
++				    enum SCHED_LIST type)
++{
++	struct sched_list *sc_list = get_sc_list(type);
++	struct ipu_psys_ppg *tmp0, *tmp1;
++	struct ipu_psys *psys = kppg->fh->psys;
++
++	mutex_lock(&sc_list->lock);
++	list_for_each_entry_safe(tmp0, tmp1, &sc_list->list, sched_list) {
++		if (tmp0 == kppg) {
++			dev_dbg(&psys->adev->dev,
++				 "remove from %s list, kppg(%d 0x%p) state %d\n",
++				 type == SCHED_START_LIST ? "start" : "stop",
++				 kppg->kpg->pg->ID, kppg, kppg->state);
++			list_del_init(&kppg->sched_list);
++		}
++	}
++	mutex_unlock(&sc_list->lock);
++}
++
++void ipu_psys_scheduler_add_kppg(struct ipu_psys_ppg *kppg,
++				 enum SCHED_LIST type)
 +{
 +	int cur_pri = kppg->pri_base + kppg->pri_dynamic;
-+	struct list_head *list = start ? &start_list : &stop_list;
++	struct sched_list *sc_list = get_sc_list(type);
 +	struct ipu_psys *psys = kppg->fh->psys;
 +	struct ipu_psys_ppg *tmp0, *tmp1;
-+	bool found = false;
 +
 +	dev_dbg(&psys->adev->dev,
-+		"%s in %s list, kppg(%d 0x%p) state %d prio(%d %d) fh 0x%p\n",
-+		add ? "add" : "delete", start ? "start" : "stop",
++		"add to %s list, kppg(%d 0x%p) state %d prio(%d %d) fh 0x%p\n",
++		type == SCHED_START_LIST ? "start" : "stop",
 +		kppg->kpg->pg->ID, kppg, kppg->state,
 +		kppg->pri_base, kppg->pri_dynamic, kppg->fh);
 +
-+	mutex_lock(&sched_list_lock);
-+	if (list_empty(list)) {
-+		if (add)
-+			list_add(&kppg->sched_list, list);
-+		else
-+			dev_dbg(&psys->adev->dev, "sched list is empty\n");
-+		mutex_unlock(&sched_list_lock);
-+		return;
++	mutex_lock(&sc_list->lock);
++	if (list_empty(&sc_list->list)) {
++		list_add(&kppg->sched_list, &sc_list->list);
++		goto out;
 +	}
 +
-+	if (add && is_kppg_in_list(kppg, list)) {
++	if (is_kppg_in_list(kppg, &sc_list->list)) {
 +		dev_dbg(&psys->adev->dev, "kppg already in list\n");
-+		mutex_unlock(&sched_list_lock);
-+		return;
++		goto out;
 +	}
 +
-+	list_for_each_entry_safe(tmp0, tmp1, list, sched_list) {
++	list_for_each_entry_safe(tmp0, tmp1, &sc_list->list, sched_list) {
 +		int tmp_pri = tmp0->pri_base + tmp0->pri_dynamic;
 +
 +		dev_dbg(&psys->adev->dev,
 +			"found kppg(%d 0x%p), state %d pri(%d %d) fh 0x%p\n",
 +			tmp0->kpg->pg->ID, tmp0, tmp0->state,
 +			tmp0->pri_base, tmp0->pri_dynamic, tmp0->fh);
-+		if (add) {
-+			if (start && tmp_pri > cur_pri) {
-+				list_add(&kppg->sched_list,
-+					 tmp0->sched_list.prev);
-+				found = true;
-+				break;
-+			} else if (!start && tmp_pri < cur_pri) {
-+				list_add(&kppg->sched_list,
-+					 tmp0->sched_list.prev);
-+				found = true;
-+				break;
-+			}
-+		} else {
-+			if (kppg == tmp0) {
-+				list_del(&tmp0->sched_list);
-+				break;
-+			}
++
++		if (type == SCHED_START_LIST && tmp_pri > cur_pri) {
++			list_add(&kppg->sched_list, tmp0->sched_list.prev);
++			goto out;
++		} else if (type == SCHED_STOP_LIST && tmp_pri < cur_pri) {
++			list_add(&kppg->sched_list, tmp0->sched_list.prev);
++			goto out;
 +		}
 +	}
 +
-+	if (add && !found)
-+		list_add_tail(&kppg->sched_list, list);
-+	mutex_unlock(&sched_list_lock);
++	list_add_tail(&kppg->sched_list, &sc_list->list);
++out:
++	mutex_unlock(&sc_list->lock);
 +}
 +
 +static int ipu_psys_detect_resource_contention(struct ipu_psys_ppg *kppg)
@@ -23188,10 +23214,13 @@ index 000000000000..687363c6e589
 +	struct ipu_psys_resource_pool try_res_pool;
 +	struct ipu_psys *psys = kppg->fh->psys;
 +	int ret;
++	int state;
 +
-+	if (kppg->state == PPG_STATE_STARTED ||
-+	    kppg->state == PPG_STATE_RUNNING ||
-+	    kppg->state == PPG_STATE_RESUMED)
++	mutex_lock(&kppg->mutex);
++	state = kppg->state;
++	mutex_unlock(&kppg->mutex);
++	if (state == PPG_STATE_STARTED || state == PPG_STATE_RUNNING ||
++	    state == PPG_STATE_RESUMED)
 +		return 0;
 +
 +	ret = ipu_psys_resource_pool_init(&try_res_pool);
@@ -23231,11 +23260,11 @@ index 000000000000..687363c6e589
 +			mutex_lock(&kppg->mutex);
 +			if (kppg->state == PPG_STATE_START ||
 +			    kppg->state == PPG_STATE_RESUME) {
-+				ipu_psys_scheduler_update_list(kppg, true,
-+							       true);
++				ipu_psys_scheduler_add_kppg(kppg,
++							    SCHED_START_LIST);
 +			} else if (kppg->state == PPG_STATE_RUNNING) {
-+				ipu_psys_scheduler_update_list(kppg, true,
-+							       false);
++				ipu_psys_scheduler_add_kppg(kppg,
++							    SCHED_STOP_LIST);
 +			} else if (kppg->state == PPG_STATE_SUSPENDING ||
 +				   kppg->state == PPG_STATE_STOPPING) {
 +				/* there are some suspending/stopping ppgs */
@@ -23252,29 +23281,32 @@ index 000000000000..687363c6e589
 +
 +static void ipu_psys_scheduler_update_start_ppg_priority(void)
 +{
++	struct sched_list *sc_list = get_sc_list(SCHED_START_LIST);
 +	struct ipu_psys_ppg *kppg;
 +
-+	mutex_lock(&sched_list_lock);
-+	if (!list_empty(&start_list))
-+		list_for_each_entry(kppg, &start_list, sched_list)
++	mutex_lock(&sc_list->lock);
++	if (!list_empty(&sc_list->list))
++		list_for_each_entry(kppg, &sc_list->list, sched_list)
 +			kppg->pri_dynamic--;
-+	mutex_unlock(&sched_list_lock);
++	mutex_unlock(&sc_list->lock);
 +}
 +
 +static bool ipu_psys_scheduler_switch_ppg(struct ipu_psys *psys)
 +{
++	struct sched_list *sc_list = get_sc_list(SCHED_STOP_LIST);
 +	struct ipu_psys_ppg *kppg;
 +	bool resched = false;
 +
-+	mutex_lock(&sched_list_lock);
-+	if (list_empty(&stop_list)) {
++	mutex_lock(&sc_list->lock);
++	if (list_empty(&sc_list->list)) {
 +		/* some ppgs are RESUMING/STARTING */
 +		dev_dbg(&psys->adev->dev, "no candidated stop ppg\n");
-+		mutex_unlock(&sched_list_lock);
++		mutex_unlock(&sc_list->lock);
 +		return false;
 +	}
-+	kppg = list_first_entry(&stop_list, struct ipu_psys_ppg, sched_list);
-+	mutex_unlock(&sched_list_lock);
++	kppg = list_first_entry(&sc_list->list, struct ipu_psys_ppg,
++				sched_list);
++	mutex_unlock(&sc_list->lock);
 +
 +	mutex_lock(&kppg->mutex);
 +	if (!(kppg->state & PPG_STATE_STOP)) {
@@ -23296,22 +23328,23 @@ index 000000000000..687363c6e589
 + */
 +static bool ipu_psys_scheduler_ppg_start(struct ipu_psys *psys)
 +{
++	struct sched_list *sc_list = get_sc_list(SCHED_START_LIST);
 +	struct ipu_psys_ppg *kppg, *kppg0;
 +	bool stopping_existed = false;
 +	int ret;
 +
 +	ipu_psys_scheduler_ppg_sort(psys, &stopping_existed);
 +
-+	mutex_lock(&sched_list_lock);
-+	if (list_empty(&start_list)) {
++	mutex_lock(&sc_list->lock);
++	if (list_empty(&sc_list->list)) {
 +		dev_dbg(&psys->adev->dev, "no ppg to start\n");
-+		mutex_unlock(&sched_list_lock);
++		mutex_unlock(&sc_list->lock);
 +		return false;
 +	}
 +
 +	list_for_each_entry_safe(kppg, kppg0,
-+				 &start_list, sched_list) {
-+		mutex_unlock(&sched_list_lock);
++				 &sc_list->list, sched_list) {
++		mutex_unlock(&sc_list->lock);
 +
 +		ret = ipu_psys_detect_resource_contention(kppg);
 +		if (ret < 0) {
@@ -23344,13 +23377,13 @@ index 000000000000..687363c6e589
 +				ipu_psys_ppg_resume(kppg);
 +			mutex_unlock(&kppg->mutex);
 +
-+			ipu_psys_scheduler_update_list(kppg, false, true);
++			ipu_psys_scheduler_remove_kppg(kppg,
++						       SCHED_START_LIST);
 +			ipu_psys_scheduler_update_start_ppg_priority();
 +		}
-+
-+		mutex_lock(&sched_list_lock);
++		mutex_lock(&sc_list->lock);
 +	}
-+	mutex_unlock(&sched_list_lock);
++	mutex_unlock(&sc_list->lock);
 +
 +	return false;
 +}
@@ -23405,12 +23438,12 @@ index 000000000000..687363c6e589
 +			mutex_lock(&kppg->mutex);
 +			if (kppg->state & PPG_STATE_STOP) {
 +				ipu_psys_ppg_stop(kppg);
-+				ipu_psys_scheduler_update_list(kppg, false,
-+							       false);
++				ipu_psys_scheduler_remove_kppg(kppg,
++							       SCHED_STOP_LIST);
 +			} else if (kppg->state == PPG_STATE_SUSPEND) {
 +				ipu_psys_ppg_suspend(kppg);
-+				ipu_psys_scheduler_update_list(kppg, false,
-+							       false);
++				ipu_psys_scheduler_remove_kppg(kppg,
++							       SCHED_STOP_LIST);
 +			} else if (kppg->state == PPG_STATE_SUSPENDING ||
 +				   kppg->state == PPG_STATE_STOPPING) {
 +				stopping_exit = true;
@@ -23437,7 +23470,7 @@ index 000000000000..687363c6e589
 +	    kppg->state == PPG_STATE_RUNNING) {
 +		if (kcmd->state == KCMD_STATE_PPG_START) {
 +			dev_dbg(&psys->adev->dev, "ppg %p started!\n", kppg);
-+			list_move_tail(&kcmd->list, &kppg->kcmds_fw_list);
++			list_move_tail(&kcmd->list, &kppg->kcmds_finished_list);
 +			ipu_psys_kcmd_complete(psys, kcmd, 0);
 +		} else if (kcmd->state == KCMD_STATE_PPG_STOP) {
 +			kppg->state = PPG_STATE_STOP;
@@ -23445,7 +23478,7 @@ index 000000000000..687363c6e589
 +	} else if (kppg->state == PPG_STATE_SUSPENDED) {
 +		if (kcmd->state == KCMD_STATE_PPG_START) {
 +			dev_dbg(&psys->adev->dev, "ppg %p started!\n", kppg);
-+			list_move_tail(&kcmd->list, &kppg->kcmds_fw_list);
++			list_move_tail(&kcmd->list, &kppg->kcmds_finished_list);
 +			ipu_psys_kcmd_complete(psys, kcmd, 0);
 +		} else if (kcmd->state == KCMD_STATE_PPG_STOP) {
 +			/*
@@ -23461,11 +23494,11 @@ index 000000000000..687363c6e589
 +			kppg->state = PPG_STATE_START;
 +		} else if (kcmd->state == KCMD_STATE_PPG_STOP) {
 +			dev_dbg(&psys->adev->dev, "ppg %p stopped!\n", kppg);
-+			list_move_tail(&kcmd->list, &kppg->kcmds_fw_list);
++			list_move_tail(&kcmd->list, &kppg->kcmds_finished_list);
 +			ipu_psys_kcmd_complete(psys, kcmd, 0);
 +		} else if (kcmd->state == KCMD_STATE_PPG_ENQUEUE) {
 +			dev_err(&psys->adev->dev, "ppg %p stopped!\n", kppg);
-+			list_move_tail(&kcmd->list, &kppg->kcmds_fw_list);
++			list_move_tail(&kcmd->list, &kppg->kcmds_finished_list);
 +			ipu_psys_kcmd_complete(psys, kcmd, -EIO);
 +		}
 +	}
@@ -23492,12 +23525,12 @@ index 000000000000..687363c6e589
 +
 +		list_for_each_entry(kppg, &sched->ppgs, list) {
 +			mutex_lock(&kppg->mutex);
-+			if (list_empty(&kppg->kcmds_drv_list)) {
++			if (list_empty(&kppg->kcmds_new_list)) {
 +				mutex_unlock(&kppg->mutex);
 +				continue;
 +			};
 +
-+			kcmd = list_first_entry(&kppg->kcmds_drv_list,
++			kcmd = list_first_entry(&kppg->kcmds_new_list,
 +						struct ipu_psys_kcmd, list);
 +			ipu_psys_update_ppg_state_by_kcmd(psys, kppg, kcmd);
 +			mutex_unlock(&kppg->mutex);
@@ -23522,8 +23555,8 @@ index 000000000000..687363c6e589
 +
 +		list_for_each_entry(kppg, &sched->ppgs, list) {
 +			mutex_lock(&kppg->mutex);
-+			if (!list_empty(&kppg->kcmds_drv_list) ||
-+			    !list_empty(&kppg->kcmds_fw_list)) {
++			if (!list_empty(&kppg->kcmds_new_list) ||
++			    !list_empty(&kppg->kcmds_processing_list)) {
 +				mutex_unlock(&kppg->mutex);
 +				mutex_unlock(&fh->mutex);
 +				return false;
@@ -23559,8 +23592,8 @@ index 000000000000..687363c6e589
 +
 +		list_for_each_entry(kppg, &sched->ppgs, list) {
 +			mutex_lock(&kppg->mutex);
-+			if (!list_empty(&kppg->kcmds_drv_list) ||
-+			    !list_empty(&kppg->kcmds_fw_list)) {
++			if (!list_empty(&kppg->kcmds_new_list) ||
++			    !list_empty(&kppg->kcmds_processing_list)) {
 +				mutex_unlock(&kppg->mutex);
 +				mutex_unlock(&fh->mutex);
 +				return true;
@@ -23683,12 +23716,12 @@ index 000000000000..687363c6e589
 +}
 diff --git a/drivers/media/pci/intel/ipu6/ipu6-ppg.c b/drivers/media/pci/intel/ipu6/ipu6-ppg.c
 new file mode 100644
-index 000000000000..3449a9ab05b6
+index 000000000000..2f7aab85a535
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu6/ipu6-ppg.c
-@@ -0,0 +1,559 @@
+@@ -0,0 +1,556 @@
 +// SPDX-License-Identifier: GPL-2.0
-+// Copyright (C) 2019 Intel Corporation
++// Copyright (C) 2020 Intel Corporation
 +
 +#include <linux/module.h>
 +#include <linux/pm_runtime.h>
@@ -23706,10 +23739,10 @@ index 000000000000..3449a9ab05b6
 +{
 +	struct ipu_psys_kcmd *kcmd;
 +
-+	if (list_empty(&kppg->kcmds_drv_list))
++	if (list_empty(&kppg->kcmds_new_list))
 +		return NULL;
 +
-+	list_for_each_entry(kcmd, &kppg->kcmds_drv_list, list) {
++	list_for_each_entry(kcmd, &kppg->kcmds_new_list, list) {
 +		if (kcmd->state == state)
 +			return kcmd;
 +	}
@@ -23722,8 +23755,8 @@ index 000000000000..3449a9ab05b6
 +	struct ipu_psys_kcmd *kcmd;
 +
 +	mutex_lock(&kppg->mutex);
-+	if (!list_empty(&kppg->kcmds_fw_list)) {
-+		list_for_each_entry(kcmd, &kppg->kcmds_fw_list, list) {
++	if (!list_empty(&kppg->kcmds_processing_list)) {
++		list_for_each_entry(kcmd, &kppg->kcmds_processing_list, list) {
 +			if (kcmd->state == KCMD_STATE_PPG_STOP) {
 +				mutex_unlock(&kppg->mutex);
 +				return kcmd;
@@ -23759,7 +23792,7 @@ index 000000000000..3449a9ab05b6
 +
 +	kbuf_set->kaddr = dma_alloc_attrs(&fh->psys->adev->dev,
 +					  buf_set_size, &kbuf_set->dma_addr,
-+					  GFP_KERNEL, DMA_ATTR_NON_CONSISTENT);
++					  GFP_KERNEL, 0);
 +	if (!kbuf_set->kaddr) {
 +		kfree(kbuf_set);
 +		return NULL;
@@ -23842,13 +23875,6 @@ index 000000000000..3449a9ab05b6
 +			goto error;
 +		}
 +	}
-+
-+	/*
-+	 * Be sure the lastest change flushed to memory as buf_set content
-+	 * was changed when creating, such as terminal enable bitmap,
-+	 * ipu_address, etc.
-+	 */
-+	clflush_cache_range(kbuf_set->buf_set, buf_set_size);
 +
 +	return 0;
 +
@@ -23962,13 +23988,16 @@ index 000000000000..3449a9ab05b6
 +	}
 +
 +	ret = ipu_psys_kcmd_start(psys, kcmd);
-+	if (ret)
++	if (ret) {
++		list_move_tail(&kcmd->list, &kppg->kcmds_finished_list);
++		ipu_psys_kcmd_complete(psys, kcmd, -EIO);
 +		return ret;
++	}
 +
 +	dev_dbg(&psys->adev->dev, "s_change:%s: %p %d -> %d\n",
 +		__func__, kppg, kppg->state, PPG_STATE_STARTED);
 +	kppg->state = PPG_STATE_STARTED;
-+	list_move_tail(&kcmd->list, &kppg->kcmds_fw_list);
++	list_move_tail(&kcmd->list, &kppg->kcmds_finished_list);
 +	ipu_psys_kcmd_complete(psys, kcmd, 0);
 +
 +	return 0;
@@ -24047,14 +24076,14 @@ index 000000000000..3449a9ab05b6
 +	int ppg_id, ret = 0;
 +
 +	if (kcmd) {
-+		list_move_tail(&kcmd->list, &kppg->kcmds_fw_list);
++		list_move_tail(&kcmd->list, &kppg->kcmds_processing_list);
 +	} else {
 +		dev_dbg(&psys->adev->dev, "Exceptional stop happened!\n");
 +		kcmd_temp.kpg = kppg->kpg;
 +		kcmd_temp.fh = kppg->fh;
 +		kcmd = &kcmd_temp;
 +		/* delete kppg in stop list to avoid this ppg resuming */
-+		ipu_psys_scheduler_update_list(kppg, false, false);
++		ipu_psys_scheduler_remove_kppg(kppg, SCHED_STOP_LIST);
 +	}
 +
 +	ppg_id = ipu_fw_psys_pg_get_id(kcmd);
@@ -24075,6 +24104,7 @@ index 000000000000..3449a9ab05b6
 +			ipu_psys_free_cmd_queue_resource(
 +				&psys->resource_pool_running,
 +				ipu_fw_psys_ppg_get_base_queue_id(kcmd));
++			list_move_tail(&kcmd->list, &kppg->kcmds_finished_list);
 +			ipu_psys_kcmd_complete(psys, kcmd, 0);
 +			spin_lock_irqsave(&psys->pgs_lock, flags);
 +			kppg->kpg->pg_size = 0;
@@ -24125,7 +24155,7 @@ index 000000000000..3449a9ab05b6
 +
 +static bool ipu_psys_ppg_is_bufset_existing(struct ipu_psys_ppg *kppg)
 +{
-+	return !list_empty(&kppg->kcmds_drv_list);
++	return !list_empty(&kppg->kcmds_new_list);
 +}
 +
 +/*
@@ -24146,7 +24176,7 @@ index 000000000000..3449a9ab05b6
 +			   PPG_STATE_RUNNING)) {
 +		if (ipu_psys_ppg_is_bufset_existing(kppg)) {
 +			list_for_each_entry_safe(kcmd, kcmd0,
-+						 &kppg->kcmds_drv_list, list) {
++						 &kppg->kcmds_new_list, list) {
 +				int ret;
 +
 +				if (kcmd->state != KCMD_STATE_PPG_ENQUEUE) {
@@ -24162,7 +24192,7 @@ index 000000000000..3449a9ab05b6
 +					break;
 +				}
 +				list_move_tail(&kcmd->list,
-+					       &kppg->kcmds_fw_list);
++					       &kppg->kcmds_processing_list);
 +				dev_dbg(&psys->adev->dev,
 +					"kppg %d %p queue kcmd 0x%p fh 0x%p\n",
 +					ipu_fw_psys_pg_get_id(kcmd),
@@ -24248,25 +24278,32 @@ index 000000000000..3449a9ab05b6
 +}
 diff --git a/drivers/media/pci/intel/ipu6/ipu6-ppg.h b/drivers/media/pci/intel/ipu6/ipu6-ppg.h
 new file mode 100644
-index 000000000000..a83e1eacaeb1
+index 000000000000..410168d3e147
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu6/ipu6-ppg.h
-@@ -0,0 +1,25 @@
+@@ -0,0 +1,32 @@
 +/* SPDX-License-Identifier: GPL-2.0 */
 +/*
-+ * Copyright (C) 2018 Intel Corporation
++ * Copyright (C) 2020 Intel Corporation
 + */
 +
 +#ifndef IPU6_PPG_H
 +#define IPU6_PPG_H
 +
 +#include "ipu-psys.h"
++/* starting from '2' in case of someone passes true or false */
++enum SCHED_LIST {
++	SCHED_START_LIST = 2,
++	SCHED_STOP_LIST
++};
 +
 +int ipu_psys_ppg_get_bufset(struct ipu_psys_kcmd *kcmd,
 +			    struct ipu_psys_ppg *kppg);
 +struct ipu_psys_kcmd *ipu_psys_ppg_get_stop_kcmd(struct ipu_psys_ppg *kppg);
-+void ipu_psys_scheduler_update_list(struct ipu_psys_ppg *kppg, bool add,
-+				    bool start);
++void ipu_psys_scheduler_remove_kppg(struct ipu_psys_ppg *kppg,
++				    enum SCHED_LIST type);
++void ipu_psys_scheduler_add_kppg(struct ipu_psys_ppg *kppg,
++				 enum SCHED_LIST type);
 +int ipu_psys_ppg_start(struct ipu_psys_ppg *kppg);
 +int ipu_psys_ppg_resume(struct ipu_psys_ppg *kppg);
 +int ipu_psys_ppg_stop(struct ipu_psys_ppg *kppg);
@@ -24279,12 +24316,12 @@ index 000000000000..a83e1eacaeb1
 +#endif /* IPU6_PPG_H */
 diff --git a/drivers/media/pci/intel/ipu6/ipu6-psys-gpc.c b/drivers/media/pci/intel/ipu6/ipu6-psys-gpc.c
 new file mode 100644
-index 000000000000..6221be97f786
+index 000000000000..4d8ef61d8449
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu6/ipu6-psys-gpc.c
 @@ -0,0 +1,218 @@
 +// SPDX-License-Identifier: GPL-2.0
-+// Copyright (C) 2018 Intel Corporation
++// Copyright (C) 2020 Intel Corporation
 +
 +#ifdef CONFIG_DEBUG_FS
 +#include <linux/debugfs.h>
@@ -24503,12 +24540,12 @@ index 000000000000..6221be97f786
 +#endif
 diff --git a/drivers/media/pci/intel/ipu6/ipu6-psys.c b/drivers/media/pci/intel/ipu6/ipu6-psys.c
 new file mode 100644
-index 000000000000..e30ee20f50a2
+index 000000000000..3ac81351f473
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu6/ipu6-psys.c
-@@ -0,0 +1,992 @@
+@@ -0,0 +1,1001 @@
 +// SPDX-License-Identifier: GPL-2.0
-+// Copyright (C) 2019 Intel Corporation
++// Copyright (C) 2020 Intel Corporation
 +
 +#include <linux/uaccess.h>
 +#include <linux/device.h>
@@ -24613,9 +24650,9 @@ index 000000000000..e30ee20f50a2
 +		val = readl(psys->adev->isp->base +
 +			    IPU_PSYS_SUBDOMAINS_POWER_STATUS);
 +		if (!(val & BIT(31))) {
-+			dev_info(&psys->adev->dev,
-+				 "PS sub-domains req done with status 0x%x",
-+				 val);
++			dev_dbg(&psys->adev->dev,
++				"PS sub-domains req done with status 0x%x",
++				val);
 +			break;
 +		}
 +		i++;
@@ -24841,10 +24878,6 @@ index 000000000000..e30ee20f50a2
 +			continue;
 +
 +		prevfd = kcmd->buffers[i].base.fd;
-+		dma_sync_sg_for_device(&psys->adev->dev,
-+				       kcmd->kbufs[i]->sgt->sgl,
-+				       kcmd->kbufs[i]->sgt->orig_nents,
-+				       DMA_BIDIRECTIONAL);
 +	}
 +
 +	if (kcmd->state != KCMD_STATE_PPG_START)
@@ -24956,7 +24989,6 @@ index 000000000000..e30ee20f50a2
 +	int ret;
 +
 +	if (psys->adev->isp->flr_done) {
-+		ipu_psys_kcmd_complete(psys, kcmd, -EIO);
 +		return -EIO;
 +	}
 +
@@ -24971,12 +25003,6 @@ index 000000000000..e30ee20f50a2
 +
 +	ipu_fw_psys_pg_dump(psys, kcmd, "run");
 +
-+	/*
-+	 * Starting from scci_master_20151228_1800, pg start api is split into
-+	 * two different calls, making driver responsible to flush pg between
-+	 * start and disown library calls.
-+	 */
-+	clflush_cache_range(kcmd->kpg->pg, kcmd->kpg->pg_size);
 +	ret = ipu_fw_psys_pg_disown(kcmd);
 +	if (ret) {
 +		dev_err(&psys->adev->dev, "failed to start kcmd!\n");
@@ -24987,7 +25013,6 @@ index 000000000000..e30ee20f50a2
 +
 +error:
 +	dev_err(&psys->adev->dev, "failed to start process group\n");
-+	ipu_psys_kcmd_complete(psys, kcmd, -EIO);
 +	return ret;
 +}
 +
@@ -25043,8 +25068,9 @@ index 000000000000..e30ee20f50a2
 +		INIT_LIST_HEAD(&kppg->list);
 +
 +		mutex_init(&kppg->mutex);
-+		INIT_LIST_HEAD(&kppg->kcmds_drv_list);
-+		INIT_LIST_HEAD(&kppg->kcmds_fw_list);
++		INIT_LIST_HEAD(&kppg->kcmds_new_list);
++		INIT_LIST_HEAD(&kppg->kcmds_processing_list);
++		INIT_LIST_HEAD(&kppg->kcmds_finished_list);
 +		INIT_LIST_HEAD(&kppg->sched_list);
 +
 +		kppg->manifest = kzalloc(kcmd->pg_manifest_size, GFP_KERNEL);
@@ -25076,7 +25102,7 @@ index 000000000000..e30ee20f50a2
 +		mutex_unlock(&fh->mutex);
 +
 +		mutex_lock(&kppg->mutex);
-+		list_add(&kcmd->list, &kppg->kcmds_drv_list);
++		list_add(&kcmd->list, &kppg->kcmds_new_list);
 +		mutex_unlock(&kppg->mutex);
 +
 +		dev_dbg(&psys->adev->dev,
@@ -25113,7 +25139,7 @@ index 000000000000..e30ee20f50a2
 +				"kppg 0x%p  stopped!\n", kppg);
 +			id = ipu_fw_psys_ppg_get_base_queue_id(kcmd);
 +			ipu_psys_free_cmd_queue_resource(rpr, id);
-+			list_add(&kcmd->list, &kppg->kcmds_fw_list);
++			list_add(&kcmd->list, &kppg->kcmds_finished_list);
 +			ipu_psys_kcmd_complete(psys, kcmd, 0);
 +			spin_lock_irqsave(&psys->pgs_lock, flags);
 +			kppg->kpg->pg_size = 0;
@@ -25121,7 +25147,7 @@ index 000000000000..e30ee20f50a2
 +			pm_runtime_put(&psys->adev->dev);
 +			resche = false;
 +		} else {
-+			list_add(&kcmd->list, &kppg->kcmds_drv_list);
++			list_add(&kcmd->list, &kppg->kcmds_new_list);
 +		}
 +		mutex_unlock(&kppg->mutex);
 +	} else {
@@ -25132,7 +25158,7 @@ index 000000000000..e30ee20f50a2
 +			return ret;
 +
 +		mutex_lock(&kppg->mutex);
-+		list_add_tail(&kcmd->list, &kppg->kcmds_drv_list);
++		list_add_tail(&kcmd->list, &kppg->kcmds_new_list);
 +		mutex_unlock(&kppg->mutex);
 +	}
 +
@@ -25213,7 +25239,9 @@ index 000000000000..e30ee20f50a2
 +		}
 +		list_for_each_entry(kppg, &sched->ppgs, list) {
 +			mutex_lock(&kppg->mutex);
-+			list_for_each_entry(kcmd0, &kppg->kcmds_fw_list, list) {
++			list_for_each_entry(kcmd0,
++					    &kppg->kcmds_processing_list,
++					    list) {
 +				if (kcmd0 == kcmd) {
 +					mutex_unlock(&kppg->mutex);
 +					mutex_unlock(&fh->mutex);
@@ -25236,7 +25264,7 @@ index 000000000000..e30ee20f50a2
 +	bool error;
 +	u32 hdl;
 +	u16 cmd, status;
-+	int res;
++	int res, state;
 +
 +	do {
 +		memset(&event, 0, sizeof(event));
@@ -25264,17 +25292,17 @@ index 000000000000..e30ee20f50a2
 +		kcmd = NULL;
 +		if (cmd == IPU_FW_PSYS_PROCESS_GROUP_CMD_RUN) {
 +			struct ipu_psys_buffer_set *kbuf_set;
-+
++			/*
++			 * Need change ppg state when the 1st running is done
++			 * (after PPG started/resumed)
++			 */
 +			kbuf_set = ipu_psys_lookup_kbuffer_set(psys, hdl);
 +			if (kbuf_set)
 +				kcmd = kbuf_set->kcmd;
 +			if (!kbuf_set || !kcmd)
 +				error = true;
-+			/*
-+			 * Need change ppg state when the 1st running is done
-+			 * (after PPG started/resumed)
-+			 */
-+			kppg = ipu_psys_identify_kppg(kcmd);
++			else
++				kppg = ipu_psys_identify_kppg(kcmd);
 +		} else if (cmd == IPU_FW_PSYS_PROCESS_GROUP_CMD_STOP ||
 +			   cmd == IPU_FW_PSYS_PROCESS_GROUP_CMD_SUSPEND ||
 +			   cmd == IPU_FW_PSYS_PROCESS_GROUP_CMD_RESUME) {
@@ -25284,12 +25312,17 @@ index 000000000000..e30ee20f50a2
 +			 * to notify user to dequeue.
 +			 */
 +			kppg = ipu_psys_lookup_ppg(psys, hdl);
-+			if (!kppg) {
++			if (kppg) {
++				mutex_lock(&kppg->mutex);
++				state = kppg->state;
++				mutex_unlock(&kppg->mutex);
++				if (state == PPG_STATE_STOPPING) {
++					kcmd = ipu_psys_ppg_get_stop_kcmd(kppg);
++					if (!kcmd)
++						error = true;
++				}
++			} else {
 +				error = true;
-+			} else if (kppg->state == PPG_STATE_STOPPING) {
-+				kcmd = ipu_psys_ppg_get_stop_kcmd(kppg);
-+				if (!kcmd)
-+					error = true;
 +			}
 +		} else {
 +			dev_err(&psys->adev->dev, "invalid event\n");
@@ -25312,6 +25345,9 @@ index 000000000000..e30ee20f50a2
 +			res = (status == IPU_PSYS_EVENT_CMD_COMPLETE ||
 +			       status == IPU_PSYS_EVENT_FRAGMENT_COMPLETE) ?
 +				0 : -EIO;
++			mutex_lock(&kppg->mutex);
++			list_move_tail(&kcmd->list, &kppg->kcmds_finished_list);
++			mutex_unlock(&kppg->mutex);
 +			ipu_psys_kcmd_complete(psys, kcmd, res);
 +		}
 +	} while (1);
@@ -25337,7 +25373,7 @@ index 000000000000..e30ee20f50a2
 +						  IPU_PSYS_BUF_SET_MAX_SIZE,
 +						  &kbuf_set->dma_addr,
 +						  GFP_KERNEL,
-+						  DMA_ATTR_NON_CONSISTENT);
++						  0);
 +		if (!kbuf_set->kaddr) {
 +			kfree(kbuf_set);
 +			goto out_free_buf_sets;
@@ -25353,7 +25389,7 @@ index 000000000000..e30ee20f50a2
 +				 &sched->buf_sets, list) {
 +		dma_free_attrs(&psys->adev->dev,
 +			       kbuf_set->size, kbuf_set->kaddr,
-+			       kbuf_set->dma_addr, DMA_ATTR_NON_CONSISTENT);
++			       kbuf_set->dma_addr, 0);
 +		list_del(&kbuf_set->list);
 +		kfree(kbuf_set);
 +	}
@@ -25404,13 +25440,21 @@ index 000000000000..e30ee20f50a2
 +			mutex_unlock(&kppg->mutex);
 +
 +			list_for_each_entry_safe(kcmd, kcmd0,
-+						 &kppg->kcmds_drv_list, list) {
++						 &kppg->kcmds_new_list, list) {
 +				kcmd->pg_user = NULL;
 +				ipu_psys_kcmd_free(kcmd);
 +			}
 +
 +			list_for_each_entry_safe(kcmd, kcmd0,
-+						 &kppg->kcmds_fw_list, list) {
++						 &kppg->kcmds_processing_list,
++						 list) {
++				kcmd->pg_user = NULL;
++				ipu_psys_kcmd_free(kcmd);
++			}
++
++			list_for_each_entry_safe(kcmd, kcmd0,
++						 &kppg->kcmds_finished_list,
++						 list) {
 +				kcmd->pg_user = NULL;
 +				ipu_psys_kcmd_free(kcmd);
 +			}
@@ -25431,7 +25475,7 @@ index 000000000000..e30ee20f50a2
 +	list_for_each_entry_safe(kbuf_set, kbuf_set0, &sched->buf_sets, list) {
 +		dma_free_attrs(&psys->adev->dev,
 +			       kbuf_set->size, kbuf_set->kaddr,
-+			       kbuf_set->dma_addr, DMA_ATTR_NON_CONSISTENT);
++			       kbuf_set->dma_addr, 0);
 +		list_del(&kbuf_set->list);
 +		kfree(kbuf_set);
 +	}
@@ -25455,16 +25499,18 @@ index 000000000000..e30ee20f50a2
 +
 +	list_for_each_entry(kppg, &sched->ppgs, list) {
 +		mutex_lock(&kppg->mutex);
-+		list_for_each_entry(kcmd, &kppg->kcmds_fw_list, list) {
-+			if (kcmd->state == KCMD_STATE_PPG_COMPLETE) {
-+				mutex_unlock(&kppg->mutex);
-+				mutex_unlock(&fh->mutex);
-+				dev_dbg(&fh->psys->adev->dev,
-+					"get completed kcmd 0x%p\n", kcmd);
-+				return kcmd;
-+			}
++		if (list_empty(&kppg->kcmds_finished_list)) {
++			mutex_unlock(&kppg->mutex);
++			continue;
 +		}
++
++		kcmd = list_first_entry(&kppg->kcmds_finished_list,
++					struct ipu_psys_kcmd, list);
++		mutex_unlock(&fh->mutex);
 +		mutex_unlock(&kppg->mutex);
++		dev_dbg(&fh->psys->adev->dev,
++			"get completed kcmd 0x%p\n", kcmd);
++		return kcmd;
 +	}
 +	mutex_unlock(&fh->mutex);
 +
@@ -25501,12 +25547,12 @@ index 000000000000..e30ee20f50a2
 +}
 diff --git a/drivers/media/pci/intel/ipu6/ipu6-resources.c b/drivers/media/pci/intel/ipu6/ipu6-resources.c
 new file mode 100644
-index 000000000000..ab1613352d09
+index 000000000000..70df4dd495e8
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu6/ipu6-resources.c
 @@ -0,0 +1,778 @@
 +// SPDX-License-Identifier: GPL-2.0
-+// Copyright (C) 2015 - 2019 Intel Corporation
++// Copyright (C) 2015 - 2020 Intel Corporation
 +
 +#include <linux/bitmap.h>
 +#include <linux/errno.h>
@@ -26285,12 +26331,12 @@ index 000000000000..ab1613352d09
 +}
 diff --git a/drivers/media/pci/intel/ipu6/ipu6.c b/drivers/media/pci/intel/ipu6/ipu6.c
 new file mode 100644
-index 000000000000..2b141b933d1d
+index 000000000000..c9a7ca57008a
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu6/ipu6.c
 @@ -0,0 +1,390 @@
 +// SPDX-License-Identifier: GPL-2.0
-+// Copyright (C) 2018 Intel Corporation
++// Copyright (C) 2020 Intel Corporation
 +
 +#include <linux/device.h>
 +#include <linux/delay.h>
@@ -26681,12 +26727,12 @@ index 000000000000..2b141b933d1d
 +}
 diff --git a/include/media/ipu-isys.h b/include/media/ipu-isys.h
 new file mode 100644
-index 000000000000..47006b435e0a
+index 000000000000..ed202c7c6134
 --- /dev/null
 +++ b/include/media/ipu-isys.h
 @@ -0,0 +1,44 @@
 +/* SPDX-License-Identifier: GPL-2.0 */
-+/* Copyright (C) 2014 - 2018 Intel Corporation */
++/* Copyright (C) 2014 - 2020 Intel Corporation */
 +
 +#ifndef MEDIA_IPU_H
 +#define MEDIA_IPU_H
@@ -26731,12 +26777,12 @@ index 000000000000..47006b435e0a
 +#endif /* MEDIA_IPU_H */
 diff --git a/include/uapi/linux/ipu-isys.h b/include/uapi/linux/ipu-isys.h
 new file mode 100644
-index 000000000000..64c34a4b7b5d
+index 000000000000..a0e657704087
 --- /dev/null
 +++ b/include/uapi/linux/ipu-isys.h
 @@ -0,0 +1,14 @@
 +/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-+/* Copyright (C) 2016 - 2019 Intel Corporation */
++/* Copyright (C) 2016 - 2020 Intel Corporation */
 +
 +#ifndef UAPI_LINUX_IPU_ISYS_H
 +#define UAPI_LINUX_IPU_ISYS_H
@@ -26751,12 +26797,12 @@ index 000000000000..64c34a4b7b5d
 +#endif /* UAPI_LINUX_IPU_ISYS_H */
 diff --git a/include/uapi/linux/ipu-psys.h b/include/uapi/linux/ipu-psys.h
 new file mode 100644
-index 000000000000..015b80aa6043
+index 000000000000..30538e706062
 --- /dev/null
 +++ b/include/uapi/linux/ipu-psys.h
 @@ -0,0 +1,121 @@
 +/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-+/* Copyright (C) 2013 - 2018 Intel Corporation */
++/* Copyright (C) 2013 - 2020 Intel Corporation */
 +
 +#ifndef _UAPI_IPU_PSYS_H
 +#define _UAPI_IPU_PSYS_H
