@@ -4,13 +4,13 @@
 EAPI=5
 
 DESCRIPTION="Gemini Lake SOF firmware binary"
-SRC_URI="gs://chromeos-localmirror/distfiles/${P}-glk.tar.bz2"
+SRC_URI="gs://chromeos-localmirror/distfiles/${PN}-glk-${PV}.tar.bz2"
 
 LICENSE="SOF"
 SLOT="0"
 KEYWORDS="*"
 
-S=${WORKDIR}/${P}-glk
+S=${WORKDIR}/${PN}-glk-${PV}
 
 src_install() {
 	insinto /lib/firmware/intel/sof
