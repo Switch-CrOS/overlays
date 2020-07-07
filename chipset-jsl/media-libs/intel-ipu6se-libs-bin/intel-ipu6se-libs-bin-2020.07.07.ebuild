@@ -16,6 +16,9 @@ src_install() {
 	dolib.so usr/"$(get_libdir)"/*.so
 	dolib.a usr/"$(get_libdir)"/*.a
 
+	# Not using wildcard since the package incorrectly included igfxcmrt.pc.
 	insinto /usr/"$(get_libdir)"/pkgconfig
-	doins usr/"$(get_libdir)"/pkgconfig/*
+	doins usr/"$(get_libdir)"/pkgconfig/ia_imaging.pc
+	doins usr/"$(get_libdir)"/pkgconfig/libiacss.pc
+	doins usr/"$(get_libdir)"/pkgconfig/libipu6sepla.pc
 }
