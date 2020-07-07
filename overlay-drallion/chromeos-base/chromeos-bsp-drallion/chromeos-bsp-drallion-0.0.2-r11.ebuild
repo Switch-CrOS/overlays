@@ -33,5 +33,4 @@ src_install() {
 
 	unibuild_install_audio_files
 	unibuild_install_thermal_files
-	unibuild_install_bluetooth_files
 }
