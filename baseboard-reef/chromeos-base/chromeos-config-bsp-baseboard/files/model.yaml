@@ -1,0 +1,143 @@
+# Copyright 2020 The Chromium OS Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+base-config: &base_config
+  brand-code: "{{$brand-code}}"
+  camera:
+    legacy-usb: True
+  firmware:
+    build-targets:
+      coreboot: "{{$firmware-target}}"
+      depthcharge: "{{$firmware-target}}"
+      # Only "reef" EC board is left on ToT.
+      ec: reef
+    image-name: "{{$device-name}}"
+  hardware-properties:
+    psu-type: battery
+  identity:
+    customization-id: "{{$loem}}-{{$chassis}}"
+    platform-name: Reef
+    smbios-name-match: "{{$smbios-name-match}}"
+  name: "{{$device-name}}"
+  test-label: "{{$device-name}}"
+
+zerg-base-config: &zerg_base_config
+  <<: *base_config
+  $firmware-target: "{{$zerg-group}}"
+  $smbios-name-match: "{{$zerg-group}}"
+
+nonzerg-base-config: &nonzerg_base_config
+  <<: *base_config
+  $firmware-target: "{{$device-name}}"
+  $smbios-name-match: "{{$device-name}}"
+
+reef-config: &reef_config
+  <<: *zerg_base_config
+  $zerg-group: reef
+  nnpalm:
+    touch-compatible: True
+    radius-polynomial: "0.17889799, 4.22584412"
+  power:
+    charging-ports: |-
+      CROS_USB_PD_CHARGER0 LEFT
+      CROS_USB_PD_CHARGER1 RIGHT
+    low-battery-shutdown-percent: '4.0'
+    set-wifi-transmit-power-for-tablet-mode: '1'
+    touchpad-wakeup: '0'
+
+snappy-config: &snappy_config
+  <<: *zerg_base_config
+  $zerg-group: snappy
+  power:
+    touchpad-wakeup: '0'
+    charging-ports: |-
+      CROS_USB_PD_CHARGER0 RIGHT
+      CROS_USB_PD_CHARGER1 LEFT
+    has-keyboard-backlight: '1'
+    internal-backlight-no-als-battery-brightness: |-
+      70.0 171
+      65.5 185
+      60.4 223
+      60.4 235
+      69.3 170
+      68.5 181
+      62.7 215
+      62.7 217
+      60.7 229
+      66.0 188
+      69.3 176
+      62.7 208
+      66.0 184
+      63.0
+    keyboard-backlight-no-als-brightness: '10.0'
+    low-battery-shutdown-percent: '6.0'
+  ui:
+    side-volume-button:
+      region: keyboard
+      side: left
+
+pyro-config: &pyro_config
+  <<: *nonzerg_base_config
+  power:
+    low-battery-shutdown-percent: '4.0'
+
+sand-config: &sand_config
+  <<: *nonzerg_base_config
+  power:
+    has-keyboard-backlight: '1'
+    power-supply-full-factor: '0.94'
+    suspend-to-idle: '1'
+
+chromeos-board-reef: &reef_board_config
+  devices:
+    - $device-name: electro
+      products:
+        - $brand-code: ACBB
+          $chassis: ELECTRO
+          $loem: PARMA
+      skus:
+        - config: *reef_config
+    - $device-name: basking
+      products:
+        - $brand-code: ASUN
+          $chassis: BASKING
+          $loem: OEM2
+      skus:
+        - config: *reef_config
+
+chromeos-board-pyro: &pyro_board_config
+  devices:
+    - $device-name: pyro
+      products:
+        - $brand-code: LEAN
+          $chassis: PYRO
+          $loem: NEWTON2
+      skus:
+        - config: *pyro_config
+
+chromeos-board-sand: &sand_board_config
+  devices:
+    - $device-name: sand
+      products:
+        - $brand-code: ACBD
+          $chassis: SAND
+          $loem: ACER
+      skus:
+        - config: *sand_config
+
+chromeos-board-snappy: &snappy_board_config
+  devices:
+    - $device-name: snappy
+      products:
+        - $brand-code: CLSF
+          $chassis: ALAN
+          $loem: DOLPHIN
+        - $brand-code: FQZI
+          $chassis: BIGDADDY
+          $loem: BENTLEY
+        - $brand-code: HPZO
+          $chassis: SNAPPY
+          $loem: MORGAN
+      skus:
+        - config: *snappy_config
