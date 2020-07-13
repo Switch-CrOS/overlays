@@ -14,4 +14,5 @@
 modify_kernel_command_line() {
   echo "tpm_tis.force=1" >> "$1"
   echo "tpm_tis.interrupts=0" >> "$1"
+  echo "kvm-intel.vmentry_l1d_flush=always" >> "$1"
 }
