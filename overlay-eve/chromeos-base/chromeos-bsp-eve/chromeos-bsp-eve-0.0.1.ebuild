@@ -47,7 +47,11 @@ src_install() {
 	doins "${FILESDIR}"/powerd_prefs/*
 
 	# Install audio config files
-	local audio_config_dir="${FILESDIR}/audio-config"
+	if use eve-kernelnext; then
+		local audio_config_dir="${FILESDIR}/kernelnext-audio-config"
+	else
+		local audio_config_dir="${FILESDIR}/audio-config"
+	fi
 	install_audio_configs eve "${audio_config_dir}"
 
 	# Install platform-specific internal keyboard keymap.
