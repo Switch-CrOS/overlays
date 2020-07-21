@@ -20,6 +20,7 @@ IUSE="cheets"
 
 RDEPEND="
 	net-misc/rmtfs
+	net-misc/qc-netmgr
 "
 DEPEND="${RDEPEND}"
 
