@@ -18,6 +18,7 @@ S="${WORKDIR}"
 RDEPEND="
 	chromeos-base/sof-binary
 	chromeos-base/sof-topology
+	media-sound/sound_card_init
 "
 DEPEND="
 	${RDEPEND}
