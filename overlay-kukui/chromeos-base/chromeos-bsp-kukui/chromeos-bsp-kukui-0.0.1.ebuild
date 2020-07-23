@@ -12,7 +12,7 @@ or portage actions."
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="-* arm64 arm"
-IUSE=""
+IUSE="kukui-tablet"
 S="${WORKDIR}"
 
 # Add dependencies on other ebuilds from within this board overlay
@@ -23,7 +23,11 @@ RDEPEND="
 DEPEND="${RDEPEND}"
 
 src_install() {
-	doappid "{50F3C95B-CA5B-4AF8-87A2-8CD19588BD12}" "CHROMEBOOK"
+	if use kukui-tablet; then
+		doappid "{8748A652-A3D9-4EA6-9E3D-4B97795DBF5B}" "CHROMEBOOK"
+	else
+		doappid "{50F3C95B-CA5B-4AF8-87A2-8CD19588BD12}" "CHROMEBOOK"
+	fi
 
 	# Install a rule tagging keyboard as internal
 	udev_dorules "${FILESDIR}/91-hammer-keyboard.rules"
