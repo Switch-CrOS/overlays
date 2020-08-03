@@ -3,23 +3,26 @@
 
 EAPI=7
 
-inherit appid cros-audio-configs udev
+# This ebuild only cares about its own FILESDIR and ebuild file, so it tracks
+# the canonical empty project.
+CROS_WORKON_PROJECT="chromiumos/infra/build/empty-project"
+CROS_WORKON_LOCALNAME="platform/empty-project"
+
+inherit appid cros-audio-configs udev cros-workon
 
 
 DESCRIPTION="Ebuild which pulls in any necessary ebuilds as dependencies
 or portage actions."
 
 LICENSE="BSD-Google"
-SLOT="0" # TODO(b/144948221): convert this to cros-workon
-KEYWORDS="-* arm64 arm"
+KEYWORDS="-* ~arm64 ~arm"
 IUSE="elm-cheets elm-kernelnext"
-S="${WORKDIR}"
 
 # Add dependencies on other ebuilds from within this board overlay
 DEPEND=""
 RDEPEND="${DEPEND}
-	chromeos-base/chromeos-accelerometer-init
-	chromeos-base/chromeos-bsp-baseboard-oak
+	chromeos-base/chromeos-accelerometer-init:=
+	chromeos-base/chromeos-bsp-baseboard-oak:=
 	sys-apps/ethtool
 "
 
