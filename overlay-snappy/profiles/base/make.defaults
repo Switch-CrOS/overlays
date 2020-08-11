@@ -7,25 +7,10 @@ INPUT_DEVICES=""
 LINUX_FIRMWARE=""
 USE=""
 
-USE="${USE} has_keyboard_backlight snappy cros_ec touchview stylus pointer_events"
+USE="${USE} snappy touchview stylus pointer_events"
 
 # Avoid inhibiting the keyboard (which reports events from side buttons).
 USE="${USE} keyboard_includes_side_buttons"
-
-# Disable touchpad wakeup since it can't be turned off dynamically when the
-# system is converted to tablet mode while it's suspended.
-USE="${USE} -touchpad_wakeup"
-
-# Disable unibuild on this legacy board. This is only for existing (as of Jan 2019)
-# boards as all new boards must be unibuild enabled moving forward. Do not copy this
-# to new boards as it will be rejected. See
-# https://chromium.googlesource.com/chromiumos/platform2/+/HEAD/chromeos-config/README.md
-# for further details about chromeos-config, which is the required entry point for
-# unified builds.
-USE="${USE} -unibuild"
-
-# All firmwares to build from the EC code base
-EC_FIRMWARE="snappy"
 
 # Include the wacom firmware updating tool
 INPUT_DEVICES="${INPUT_DEVICES} wacom"
