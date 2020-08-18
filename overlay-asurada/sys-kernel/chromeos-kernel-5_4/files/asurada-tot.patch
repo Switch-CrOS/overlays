@@ -404,11 +404,11 @@ index b45a45a565a1791f9508d6c936008c193507fc4d..d3843b7e989fdd0018f2be7ff436a1d6
 +dtb-$(CONFIG_ARCH_MEDIATEK) += mt8192-asurada-rev1.dtb
 \ No newline at end of file
 diff --git a/arch/arm64/boot/dts/mediatek/mt6359.dtsi b/arch/arm64/boot/dts/mediatek/mt6359.dtsi
-new file mode 100644
-index 0000000000000000000000000000000000000000..bba8e2fdcaa004527548645e263952ae75fc8ab7
+new file mode 100755
+index 0000000000000000000000000000000000000000..1e3e6f824b1fbed1c850c727c84fbcfba707cfb5
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt6359.dtsi
-@@ -0,0 +1,296 @@
+@@ -0,0 +1,300 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
 + * Copyright (c) 2020 MediaTek Inc.
@@ -702,6 +702,10 @@ index 0000000000000000000000000000000000000000..bba8e2fdcaa004527548645e263952ae
 +				regulator-min-microvolt = <500000>;
 +				regulator-max-microvolt = <1293750>;
 +			};
++		};
++
++		mt6359rtc: mt6359rtc {
++			compatible = "mediatek,mt6358-rtc";
 +		};
 +	};
 +};
@@ -14199,7 +14203,7 @@ index 3ae9c810845bbfebb49f36a232fc7eaec5f8dc63..83b075a0d3a57b434b39893cb1eacbcc
  };
  MODULE_DEVICE_TABLE(of, mtk_disp_color_driver_dt_match);
 diff --git a/drivers/gpu/drm/mediatek/mtk_disp_ovl.c b/drivers/gpu/drm/mediatek/mtk_disp_ovl.c
-index 0f445d5ca5492c6bba406112b14ee09b58b0d2c8..2be19d3e949ac9d4cc789d8be145b7062570429b 100644
+index 0f445d5ca5492c6bba406112b14ee09b58b0d2c8..ec3ac67e4263dd6093280eddf324a6cb1b047569 100644
 --- a/drivers/gpu/drm/mediatek/mtk_disp_ovl.c
 +++ b/drivers/gpu/drm/mediatek/mtk_disp_ovl.c
 @@ -3,6 +3,8 @@
@@ -14219,7 +14223,7 @@ index 0f445d5ca5492c6bba406112b14ee09b58b0d2c8..2be19d3e949ac9d4cc789d8be145b706
  #include <linux/soc/mediatek/mtk-cmdq.h>
  
  #include "mtk_drm_crtc.h"
-@@ -19,6 +22,9 @@
+@@ -19,10 +22,14 @@
  #define DISP_REG_OVL_INTEN			0x0004
  #define OVL_FME_CPL_INT					BIT(1)
  #define DISP_REG_OVL_INTSTA			0x0008
@@ -14229,7 +14233,12 @@ index 0f445d5ca5492c6bba406112b14ee09b58b0d2c8..2be19d3e949ac9d4cc789d8be145b706
  #define DISP_REG_OVL_EN				0x000c
  #define DISP_REG_OVL_RST			0x0014
  #define DISP_REG_OVL_ROI_SIZE			0x0020
-@@ -61,6 +67,7 @@ struct mtk_disp_ovl_data {
+ #define DISP_REG_OVL_DATAPATH_CON		0x0024
++#define OVL_LAYER_SMI_ID_EN				BIT(0)
+ #define OVL_BGCLR_SEL_IN				BIT(2)
+ #define DISP_REG_OVL_ROI_BGCLR			0x0028
+ #define DISP_REG_OVL_SRC_CON			0x002c
+@@ -61,6 +68,7 @@ struct mtk_disp_ovl_data {
  	unsigned int gmc_bits;
  	unsigned int layer_nr;
  	bool fmt_rgb565_is_0;
@@ -14237,12 +14246,15 @@ index 0f445d5ca5492c6bba406112b14ee09b58b0d2c8..2be19d3e949ac9d4cc789d8be145b706
  };
  
  /**
-@@ -115,12 +122,23 @@ static void mtk_ovl_disable_vblank(struct mtk_ddp_comp *comp)
+@@ -115,12 +123,26 @@ static void mtk_ovl_disable_vblank(struct mtk_ddp_comp *comp)
  
  static void mtk_ovl_start(struct mtk_ddp_comp *comp)
  {
 -	writel_relaxed(0x1, comp->regs + DISP_REG_OVL_EN);
 +	mtk_ddp_write_mask(NULL, OVL_EN, comp, DISP_REG_OVL_EN, OVL_EN);
++
++	mtk_ddp_write_mask(NULL, OVL_LAYER_SMI_ID_EN, comp,
++			   DISP_REG_OVL_DATAPATH_CON, OVL_LAYER_SMI_ID_EN);
  }
  
  static void mtk_ovl_stop(struct mtk_ddp_comp *comp)
@@ -14263,7 +14275,7 @@ index 0f445d5ca5492c6bba406112b14ee09b58b0d2c8..2be19d3e949ac9d4cc789d8be145b706
  }
  
  static void mtk_ovl_config(struct mtk_ddp_comp *comp, unsigned int w,
-@@ -132,6 +150,11 @@ static void mtk_ovl_config(struct mtk_ddp_comp *comp, unsigned int w,
+@@ -132,6 +154,11 @@ static void mtk_ovl_config(struct mtk_ddp_comp *comp, unsigned int w,
  				      DISP_REG_OVL_ROI_SIZE);
  	mtk_ddp_write_relaxed(cmdq_pkt, 0x0, comp, DISP_REG_OVL_ROI_BGCLR);
  
@@ -14275,7 +14287,7 @@ index 0f445d5ca5492c6bba406112b14ee09b58b0d2c8..2be19d3e949ac9d4cc789d8be145b706
  	mtk_ddp_write(cmdq_pkt, 0x1, comp, DISP_REG_OVL_RST);
  	mtk_ddp_write(cmdq_pkt, 0x0, comp, DISP_REG_OVL_RST);
  }
-@@ -260,11 +283,13 @@ static void mtk_ovl_layer_config(struct mtk_ddp_comp *comp, unsigned int idx,
+@@ -260,11 +287,13 @@ static void mtk_ovl_layer_config(struct mtk_ddp_comp *comp, unsigned int idx,
  	unsigned int src_size = (pending->height << 16) | pending->width;
  	unsigned int con;
  
@@ -14287,11 +14299,11 @@ index 0f445d5ca5492c6bba406112b14ee09b58b0d2c8..2be19d3e949ac9d4cc789d8be145b706
  
  	con = ovl_fmt_convert(ovl, fmt);
 -	if (idx != 0)
-+	if (state->base.fb->format->has_alpha)
++	if (state->base.fb && state->base.fb->format->has_alpha)
  		con |= OVL_CON_AEN | OVL_CON_ALPHA;
  
  	if (pending->rotation & DRM_MODE_REFLECT_Y) {
-@@ -288,8 +313,7 @@ static void mtk_ovl_layer_config(struct mtk_ddp_comp *comp, unsigned int idx,
+@@ -288,8 +317,7 @@ static void mtk_ovl_layer_config(struct mtk_ddp_comp *comp, unsigned int idx,
  	mtk_ddp_write_relaxed(cmdq_pkt, addr, comp,
  			      DISP_REG_OVL_ADDR(ovl, idx));
  
@@ -14301,7 +14313,7 @@ index 0f445d5ca5492c6bba406112b14ee09b58b0d2c8..2be19d3e949ac9d4cc789d8be145b706
  }
  
  static void mtk_ovl_bgclr_in_on(struct mtk_ddp_comp *comp)
-@@ -314,6 +338,7 @@ static const struct mtk_ddp_comp_funcs mtk_disp_ovl_funcs = {
+@@ -314,6 +342,7 @@ static const struct mtk_ddp_comp_funcs mtk_disp_ovl_funcs = {
  	.config = mtk_ovl_config,
  	.start = mtk_ovl_start,
  	.stop = mtk_ovl_stop,
@@ -14309,7 +14321,7 @@ index 0f445d5ca5492c6bba406112b14ee09b58b0d2c8..2be19d3e949ac9d4cc789d8be145b706
  	.enable_vblank = mtk_ovl_enable_vblank,
  	.disable_vblank = mtk_ovl_disable_vblank,
  	.supported_rotations = mtk_ovl_supported_rotations,
-@@ -401,6 +426,8 @@ static int mtk_disp_ovl_probe(struct platform_device *pdev)
+@@ -401,6 +430,8 @@ static int mtk_disp_ovl_probe(struct platform_device *pdev)
  		return ret;
  	}
  
@@ -14318,7 +14330,7 @@ index 0f445d5ca5492c6bba406112b14ee09b58b0d2c8..2be19d3e949ac9d4cc789d8be145b706
  	ret = component_add(dev, &mtk_disp_ovl_component_ops);
  	if (ret)
  		dev_err(dev, "Failed to add component: %d\n", ret);
-@@ -412,6 +439,8 @@ static int mtk_disp_ovl_remove(struct platform_device *pdev)
+@@ -412,6 +443,8 @@ static int mtk_disp_ovl_remove(struct platform_device *pdev)
  {
  	component_del(&pdev->dev, &mtk_disp_ovl_component_ops);
  
@@ -14327,7 +14339,7 @@ index 0f445d5ca5492c6bba406112b14ee09b58b0d2c8..2be19d3e949ac9d4cc789d8be145b706
  	return 0;
  }
  
-@@ -429,11 +458,49 @@ static const struct mtk_disp_ovl_data mt8173_ovl_driver_data = {
+@@ -429,11 +462,49 @@ static const struct mtk_disp_ovl_data mt8173_ovl_driver_data = {
  	.fmt_rgb565_is_0 = true,
  };
  
@@ -14538,6 +14550,91 @@ index e04319fedf463e47ae3c54677471ec3c6c8aa5ad..efd84285eaa4bb057c29db3f51006487
  	{},
  };
  MODULE_DEVICE_TABLE(of, mtk_disp_rdma_driver_dt_match);
+diff --git a/drivers/gpu/drm/mediatek/mtk_dpi.c b/drivers/gpu/drm/mediatek/mtk_dpi.c
+index ed33665bf53ede5853ff1d6d9f3db0dd91303196..a27159aaa8646832edbb05016d82499c7d09dfb8 100644
+--- a/drivers/gpu/drm/mediatek/mtk_dpi.c
++++ b/drivers/gpu/drm/mediatek/mtk_dpi.c
+@@ -118,6 +118,7 @@ struct mtk_dpi_conf {
+ 	unsigned int (*cal_factor)(int clock);
+ 	u32 reg_h_fre_con;
+ 	bool edge_sel_en;
++	bool dual_edge;
+ };
+ 
+ static void mtk_dpi_mask(struct mtk_dpi *dpi, u32 offset, u32 val, u32 mask)
+@@ -354,6 +355,13 @@ static void mtk_dpi_config_disable_edge(struct mtk_dpi *dpi)
+ 		mtk_dpi_mask(dpi, dpi->conf->reg_h_fre_con, 0, EDGE_SEL_EN);
+ }
+ 
++static void mtk_dpi_enable_dual_edge(struct mtk_dpi *dpi)
++{
++	mtk_dpi_mask(dpi, DPI_DDR_SETTING, DDR_EN | DDR_4PHASE,
++		     DDR_EN | DDR_4PHASE);
++	mtk_dpi_mask(dpi, DPI_OUTPUT_SETTING, EDGE_SEL, EDGE_SEL);
++}
++
+ static void mtk_dpi_config_color_format(struct mtk_dpi *dpi,
+ 					enum mtk_dpi_out_color_format format)
+ {
+@@ -451,7 +459,8 @@ static int mtk_dpi_set_display_mode(struct mtk_dpi *dpi,
+ 	pll_rate = clk_get_rate(dpi->tvd_clk);
+ 
+ 	vm.pixelclock = pll_rate / factor;
+-	clk_set_rate(dpi->pixel_clk, vm.pixelclock);
++	clk_set_rate(dpi->pixel_clk,
++		     vm.pixelclock * (dpi->conf->dual_edge ? 2 : 1));
+ 	vm.pixelclock = clk_get_rate(dpi->pixel_clk);
+ 
+ 	dev_dbg(dpi->dev, "Got  PLL %lu Hz, pixel clock %lu Hz\n",
+@@ -516,6 +525,8 @@ static int mtk_dpi_set_display_mode(struct mtk_dpi *dpi,
+ 	mtk_dpi_config_color_format(dpi, dpi->color_format);
+ 	mtk_dpi_config_2n_h_fre(dpi);
+ 	mtk_dpi_config_disable_edge(dpi);
++	if (dpi->conf->dual_edge)
++		mtk_dpi_enable_dual_edge(dpi);
+ 	mtk_dpi_sw_reset(dpi, false);
+ 
+ 	return 0;
+@@ -667,6 +678,16 @@ static unsigned int mt2701_calculate_factor(int clock)
+ 		return 1;
+ }
+ 
++static unsigned int mt8183_calculate_factor(int clock)
++{
++	if (clock <= 27000)
++		return 8;
++	else if (clock <= 167000)
++		return 4;
++	else
++		return 2;
++}
++
+ static const struct mtk_dpi_conf mt8173_conf = {
+ 	.cal_factor = mt8173_calculate_factor,
+ 	.reg_h_fre_con = 0xe0,
+@@ -678,6 +699,12 @@ static const struct mtk_dpi_conf mt2701_conf = {
+ 	.edge_sel_en = true,
+ };
+ 
++static const struct mtk_dpi_conf mt8183_conf = {
++	.cal_factor = mt8183_calculate_factor,
++	.reg_h_fre_con = 0xe0,
++	.dual_edge = true,
++};
++
+ static int mtk_dpi_probe(struct platform_device *pdev)
+ {
+ 	struct device *dev = &pdev->dev;
+@@ -799,6 +826,9 @@ static const struct of_device_id mtk_dpi_of_ids[] = {
+ 	{ .compatible = "mediatek,mt8173-dpi",
+ 	  .data = &mt8173_conf,
+ 	},
++	{ .compatible = "mediatek,mt8183-dpi",
++	  .data = &mt8183_conf,
++	},
+ 	{ },
+ };
+ 
 diff --git a/drivers/gpu/drm/mediatek/mtk_drm_crtc.c b/drivers/gpu/drm/mediatek/mtk_drm_crtc.c
 index feedbac027d99e23e426f2095ffe5f19440e0507..af4505be0a9f072763d8e5ad300dd2dde794c553 100644
 --- a/drivers/gpu/drm/mediatek/mtk_drm_crtc.c
@@ -16567,7 +16664,7 @@ index 4272fe4e17f4c9b322be38580c750594503b40d0..cad314a92abc482e15be08220825f256
  	if (!data->l2_tables)
  		goto out_free_data;
 diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index 59e5a62a34dbe162cf2bb6c8ef579cdf99acbf09..31a6084a21865af2081808c3dcd0ad657d81edb2 100644
+index 59e5a62a34dbe162cf2bb6c8ef579cdf99acbf09..548ae561b4fdc997892d8ff8a61c05bd6f864cba 100644
 --- a/drivers/iommu/mtk_iommu.c
 +++ b/drivers/iommu/mtk_iommu.c
 @@ -4,6 +4,7 @@
@@ -16663,15 +16760,15 @@ index 59e5a62a34dbe162cf2bb6c8ef579cdf99acbf09..31a6084a21865af2081808c3dcd0ad65
  
 +static int mtk_iommu_rpm_get(struct device *dev)
 +{
-+	//if (pm_runtime_enabled(dev))
-+	//		return pm_runtime_get_sync(dev);
++	if (pm_runtime_enabled(dev))
++		return pm_runtime_get_sync(dev);
 +	return 0;
 +}
 +
 +static void mtk_iommu_rpm_put(struct device *dev)
 +{
-+	//if (pm_runtime_enabled(dev))
-+	//	pm_runtime_put_autosuspend(dev);
++	if (pm_runtime_enabled(dev))
++		pm_runtime_put_autosuspend(dev);
 +}
 +
  static void mtk_iommu_tlb_flush_all(void *cookie)
@@ -16885,7 +16982,47 @@ index 59e5a62a34dbe162cf2bb6c8ef579cdf99acbf09..31a6084a21865af2081808c3dcd0ad65
  		pa &= ~BIT_ULL(32);
  
  	return pa;
-@@ -491,19 +562,31 @@ static void mtk_iommu_release_device(struct device *dev)
+@@ -469,41 +540,71 @@ static struct iommu_device *mtk_iommu_probe_device(struct device *dev)
+ {
+ 	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+ 	struct mtk_iommu_data *data;
++	struct device_link *link;
++	struct device *larbdev;
++	unsigned int larbid;
+ 
+ 	if (!fwspec || fwspec->ops != &mtk_iommu_ops)
+ 		return ERR_PTR(-ENODEV); /* Not a iommu client device */
+ 
+ 	data = dev_iommu_priv_get(dev);
+ 
++	/* Link the consumer device with the smi-larb device(supplier) */
++	larbid = MTK_M4U_TO_LARB(fwspec->ids[0]);
++	larbdev = data->larb_imu[larbid].dev;
++	link = device_link_add(dev, larbdev,
++			       DL_FLAG_PM_RUNTIME | DL_FLAG_STATELESS);
++	if (!link)
++		dev_err(dev, "Unable to link %s\n", dev_name(larbdev));
+ 	return &data->iommu;
+ }
+ 
+ static void mtk_iommu_release_device(struct device *dev)
+ {
+ 	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
++	struct mtk_iommu_data *data;
++	struct device *larbdev;
++	unsigned int larbid;
+ 
+ 	if (!fwspec || fwspec->ops != &mtk_iommu_ops)
+ 		return;
+ 
++	data = dev_iommu_priv_get(dev);
++	larbid = MTK_M4U_TO_LARB(fwspec->ids[0]);
++	larbdev = data->larb_imu[larbid].dev;
++	device_link_remove(dev, larbdev);
++
+ 	iommu_fwspec_free(dev);
+ }
+ 
  static struct iommu_group *mtk_iommu_device_group(struct device *dev)
  {
  	struct mtk_iommu_data *data = mtk_iommu_get_m4u_data();
@@ -16923,7 +17060,7 @@ index 59e5a62a34dbe162cf2bb6c8ef579cdf99acbf09..31a6084a21865af2081808c3dcd0ad65
  }
  
  static int mtk_iommu_of_xlate(struct device *dev, struct of_phandle_args *args)
-@@ -528,6 +611,43 @@ static int mtk_iommu_of_xlate(struct device *dev, struct of_phandle_args *args)
+@@ -528,6 +629,43 @@ static int mtk_iommu_of_xlate(struct device *dev, struct of_phandle_args *args)
  	return iommu_fwspec_add_ids(dev, args->args, 1);
  }
  
@@ -16967,7 +17104,7 @@ index 59e5a62a34dbe162cf2bb6c8ef579cdf99acbf09..31a6084a21865af2081808c3dcd0ad65
  static const struct iommu_ops mtk_iommu_ops = {
  	.domain_alloc	= mtk_iommu_domain_alloc,
  	.domain_free	= mtk_iommu_domain_free,
-@@ -542,6 +662,8 @@ static const struct iommu_ops mtk_iommu_ops = {
+@@ -542,6 +680,8 @@ static const struct iommu_ops mtk_iommu_ops = {
  	.release_device	= mtk_iommu_release_device,
  	.device_group	= mtk_iommu_device_group,
  	.of_xlate	= mtk_iommu_of_xlate,
@@ -16976,7 +17113,7 @@ index 59e5a62a34dbe162cf2bb6c8ef579cdf99acbf09..31a6084a21865af2081808c3dcd0ad65
  	.pgsize_bitmap	= SZ_4K | SZ_64K | SZ_1M | SZ_16M,
  };
  
-@@ -550,10 +672,14 @@ static int mtk_iommu_hw_init(const struct mtk_iommu_data *data)
+@@ -550,10 +690,14 @@ static int mtk_iommu_hw_init(const struct mtk_iommu_data *data)
  	u32 regval;
  	int ret;
  
@@ -16995,7 +17132,7 @@ index 59e5a62a34dbe162cf2bb6c8ef579cdf99acbf09..31a6084a21865af2081808c3dcd0ad65
  	}
  
  	if (data->plat_data->m4u_plat == M4U_MT8173) {
-@@ -585,8 +711,7 @@ static int mtk_iommu_hw_init(const struct mtk_iommu_data *data)
+@@ -585,8 +729,7 @@ static int mtk_iommu_hw_init(const struct mtk_iommu_data *data)
  	if (data->plat_data->m4u_plat == M4U_MT8173)
  		regval = (data->protect_base >> 1) | (data->enable_4GB << 31);
  	else
@@ -17005,18 +17142,42 @@ index 59e5a62a34dbe162cf2bb6c8ef579cdf99acbf09..31a6084a21865af2081808c3dcd0ad65
  	writel_relaxed(regval, data->base + REG_MMU_IVRP_PADDR);
  
  	if (data->enable_4GB &&
-@@ -682,8 +807,9 @@ static int mtk_iommu_probe(struct platform_device *pdev)
+@@ -676,14 +819,19 @@ static int mtk_iommu_probe(struct platform_device *pdev)
+ 			return PTR_ERR(data->bclk);
+ 	}
+ 
++	if (dev->pm_domain)
++		pm_runtime_enable(dev);
++
+ 	larb_nr = of_count_phandle_with_args(dev->of_node,
+ 					     "mediatek,larbs", NULL);
+ 	if (larb_nr < 0)
  		return larb_nr;
  
  	for (i = 0; i < larb_nr; i++) {
 -		struct device_node *larbnode;
 +		struct device_node *larbnode, *smicomm_node;
  		struct platform_device *plarbdev;
++		bool larbdev_is_bound = false;
 +		struct device_link *link;
  		u32 id;
  
  		larbnode = of_parse_phandle(dev->of_node, "mediatek,larbs", i);
-@@ -708,10 +834,39 @@ static int mtk_iommu_probe(struct platform_device *pdev)
+@@ -700,7 +848,12 @@ static int mtk_iommu_probe(struct platform_device *pdev)
+ 			id = i;
+ 
+ 		plarbdev = of_find_device_by_node(larbnode);
+-		if (!plarbdev) {
++		if (plarbdev) {
++			device_lock(&plarbdev->dev);
++			larbdev_is_bound = device_is_bound(&plarbdev->dev);
++			device_unlock(&plarbdev->dev);
++		}
++		if (!plarbdev || !larbdev_is_bound) {
+ 			of_node_put(larbnode);
+ 			return -EPROBE_DEFER;
+ 		}
+@@ -708,11 +861,38 @@ static int mtk_iommu_probe(struct platform_device *pdev)
  
  		component_match_add_release(dev, &match, release_of,
  					    compare_of, larbnode);
@@ -17046,17 +17207,16 @@ index 59e5a62a34dbe162cf2bb6c8ef579cdf99acbf09..31a6084a21865af2081808c3dcd0ad65
  
  	platform_set_drvdata(pdev, data);
  
-+	if (dev->pm_domain)
-+		pm_runtime_enable(dev);
-+
-+	ret = pm_runtime_get_sync(dev);
++	ret = mtk_iommu_rpm_get(dev);
 +	if (ret < 0)
 +		return ret;
 +
  	ret = mtk_iommu_hw_init(data);
++	mtk_iommu_rpm_put(dev);
  	if (ret)
  		return ret;
-@@ -747,6 +902,7 @@ static int mtk_iommu_remove(struct platform_device *pdev)
+ 
+@@ -747,6 +927,7 @@ static int mtk_iommu_remove(struct platform_device *pdev)
  	if (iommu_present(&platform_bus_type))
  		bus_set_iommu(&platform_bus_type, NULL);
  
@@ -17064,7 +17224,7 @@ index 59e5a62a34dbe162cf2bb6c8ef579cdf99acbf09..31a6084a21865af2081808c3dcd0ad65
  	clk_disable_unprepare(data->bclk);
  	devm_free_irq(&pdev->dev, data->irq, data);
  	component_master_del(&pdev->dev, &mtk_iommu_com_ops);
-@@ -784,6 +940,10 @@ static int __maybe_unused mtk_iommu_resume(struct device *dev)
+@@ -784,6 +965,10 @@ static int __maybe_unused mtk_iommu_resume(struct device *dev)
  		dev_err(data->dev, "Failed to enable clk(%d) in resume\n", ret);
  		return ret;
  	}
@@ -17075,7 +17235,7 @@ index 59e5a62a34dbe162cf2bb6c8ef579cdf99acbf09..31a6084a21865af2081808c3dcd0ad65
  	writel_relaxed(reg->wr_len_ctrl, base + REG_MMU_WR_LEN_CTRL);
  	writel_relaxed(reg->misc_ctrl, base + REG_MMU_MISC_CTRL);
  	writel_relaxed(reg->dcm_dis, base + REG_MMU_DCM_DIS);
-@@ -792,13 +952,13 @@ static int __maybe_unused mtk_iommu_resume(struct device *dev)
+@@ -792,13 +977,13 @@ static int __maybe_unused mtk_iommu_resume(struct device *dev)
  	writel_relaxed(reg->int_main_control, base + REG_MMU_INT_MAIN_CONTROL);
  	writel_relaxed(reg->ivrp_paddr, base + REG_MMU_IVRP_PADDR);
  	writel_relaxed(reg->vld_pa_rng, base + REG_MMU_VLD_PA_RNG);
@@ -17092,7 +17252,7 @@ index 59e5a62a34dbe162cf2bb6c8ef579cdf99acbf09..31a6084a21865af2081808c3dcd0ad65
  	SET_NOIRQ_SYSTEM_SLEEP_PM_OPS(mtk_iommu_suspend, mtk_iommu_resume)
  };
  
-@@ -806,6 +966,8 @@ static const struct mtk_iommu_plat_data mt2712_data = {
+@@ -806,6 +991,8 @@ static const struct mtk_iommu_plat_data mt2712_data = {
  	.m4u_plat     = M4U_MT2712,
  	.flags        = HAS_4GB_MODE | HAS_BCLK | HAS_VLD_PA_RNG,
  	.inv_sel_reg  = REG_MMU_INV_SEL_GEN1,
@@ -17101,7 +17261,7 @@ index 59e5a62a34dbe162cf2bb6c8ef579cdf99acbf09..31a6084a21865af2081808c3dcd0ad65
  	.larbid_remap = {{0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}},
  };
  
-@@ -813,6 +975,8 @@ static const struct mtk_iommu_plat_data mt6779_data = {
+@@ -813,6 +1000,8 @@ static const struct mtk_iommu_plat_data mt6779_data = {
  	.m4u_plat      = M4U_MT6779,
  	.flags         = HAS_SUB_COMM | OUT_ORDER_WR_EN | WR_THROT_EN,
  	.inv_sel_reg   = REG_MMU_INV_SEL_GEN2,
@@ -17110,7 +17270,7 @@ index 59e5a62a34dbe162cf2bb6c8ef579cdf99acbf09..31a6084a21865af2081808c3dcd0ad65
  	.larbid_remap  = {{0}, {1}, {2}, {3}, {5}, {7, 8}, {10}, {9}},
  };
  
-@@ -820,6 +984,8 @@ static const struct mtk_iommu_plat_data mt8173_data = {
+@@ -820,6 +1009,8 @@ static const struct mtk_iommu_plat_data mt8173_data = {
  	.m4u_plat     = M4U_MT8173,
  	.flags	      = HAS_4GB_MODE | HAS_BCLK | RESET_AXI,
  	.inv_sel_reg  = REG_MMU_INV_SEL_GEN1,
@@ -17119,7 +17279,7 @@ index 59e5a62a34dbe162cf2bb6c8ef579cdf99acbf09..31a6084a21865af2081808c3dcd0ad65
  	.larbid_remap = {{0}, {1}, {2}, {3}, {4}, {5}}, /* Linear mapping. */
  };
  
-@@ -827,14 +993,28 @@ static const struct mtk_iommu_plat_data mt8183_data = {
+@@ -827,14 +1018,28 @@ static const struct mtk_iommu_plat_data mt8183_data = {
  	.m4u_plat     = M4U_MT8183,
  	.flags        = RESET_AXI,
  	.inv_sel_reg  = REG_MMU_INV_SEL_GEN1,
@@ -17196,6 +17356,72 @@ index 21489857802654590f73fe3f910fc0845edec5c1..d42a250156bd345317eb95b487180961
  	struct list_head		list;
  	struct mtk_smi_larb_iommu	larb_imu[MTK_LARB_NR_MAX];
  };
+diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
+index 5c35ebc946912c3b8778c2e51081d1621cda99dd..23bdc64921c8ecb2ec912e396b2b104d108b3ebe 100644
+--- a/drivers/iommu/mtk_iommu_v1.c
++++ b/drivers/iommu/mtk_iommu_v1.c
+@@ -422,7 +422,9 @@ static struct iommu_device *mtk_iommu_probe_device(struct device *dev)
+ 	struct of_phandle_args iommu_spec;
+ 	struct of_phandle_iterator it;
+ 	struct mtk_iommu_data *data;
+-	int err;
++	struct device_link *link;
++	struct device *larbdev;
++	int err, larbid;
+ 
+ 	of_for_each_phandle(&it, err, dev->of_node, "iommus",
+ 			"#iommu-cells", -1) {
+@@ -444,6 +446,14 @@ static struct iommu_device *mtk_iommu_probe_device(struct device *dev)
+ 
+ 	data = dev_iommu_priv_get(dev);
+ 
++	/* Link the consumer device with the smi-larb device(supplier) */
++	larbid = mt2701_m4u_to_larb(fwspec->ids[0]);
++	larbdev = data->larb_imu[larbid].dev;
++	link = device_link_add(dev, larbdev,
++			       DL_FLAG_PM_RUNTIME | DL_FLAG_STATELESS);
++	if (!link)
++		dev_err(dev, "Unable to link %s\n", dev_name(larbdev));
++
+ 	return &data->iommu;
+ }
+ 
+@@ -464,10 +474,18 @@ static void mtk_iommu_probe_finalize(struct device *dev)
+ static void mtk_iommu_release_device(struct device *dev)
+ {
+ 	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
++	struct mtk_iommu_data *data;
++	struct device *larbdev;
++	unsigned int larbid;
+ 
+ 	if (!fwspec || fwspec->ops != &mtk_iommu_ops)
+ 		return;
+ 
++	data = dev_iommu_priv_get(dev);
++	larbid = mt2701_m4u_to_larb(fwspec->ids[0]);
++	larbdev = data->larb_imu[larbid].dev;
++	device_link_remove(dev, larbdev);
++
+ 	iommu_fwspec_free(dev);
+ }
+ 
+@@ -590,10 +608,15 @@ static int mtk_iommu_probe(struct platform_device *pdev)
+ 
+ 		plarbdev = of_find_device_by_node(larb_spec.np);
+ 		if (!plarbdev) {
++			bool larbdev_is_bound;
++
+ 			plarbdev = of_platform_device_create(
+ 						larb_spec.np, NULL,
+ 						platform_bus_type.dev_root);
+-			if (!plarbdev) {
++			device_lock(&plarbdev->dev);
++			larbdev_is_bound = device_is_bound(&plarbdev->dev);
++			device_unlock(&plarbdev->dev);
++			if (!plarbdev || !larbdev_is_bound) {
+ 				of_node_put(larb_spec.np);
+ 				return -EPROBE_DEFER;
+ 			}
 diff --git a/drivers/media/asurada-media-tot b/drivers/media/asurada-media-tot
 new file mode 100644
 index 0000000000000000000000000000000000000000..e69de29bb2d1d6434b8b29ae775ad8c2e48c5391
@@ -23256,7 +23482,7 @@ index 660294eea8c88ba45aa17f803310bb0b044a8f21..185fc14d46fe36c5b918510a08a2ff07
  	default:
  		/* Compressed formats */
 diff --git a/drivers/memory/mtk-smi.c b/drivers/memory/mtk-smi.c
-index a113e811faabea34387d0d15ac1e4b74315ec29c..5d0268630e706004c6033f9e9cd6851fc17a52c4 100644
+index a113e811faabea34387d0d15ac1e4b74315ec29c..3c8491a3313a9e4e1ac6efe00cdee16c74526cc9 100644
 --- a/drivers/memory/mtk-smi.c
 +++ b/drivers/memory/mtk-smi.c
 @@ -14,6 +14,7 @@
@@ -23322,7 +23548,64 @@ index a113e811faabea34387d0d15ac1e4b74315ec29c..5d0268630e706004c6033f9e9cd6851f
  	{}
  };
  
-@@ -395,6 +409,13 @@ static const struct mtk_smi_common_plat mtk_smi_common_mt8183 = {
+@@ -273,6 +287,7 @@ static int mtk_smi_larb_probe(struct platform_device *pdev)
+ 	struct device *dev = &pdev->dev;
+ 	struct device_node *smi_node;
+ 	struct platform_device *smi_pdev;
++	struct device_link *link;
+ 
+ 	larb = devm_kzalloc(dev, sizeof(*larb), GFP_KERNEL);
+ 	if (!larb)
+@@ -312,6 +327,12 @@ static int mtk_smi_larb_probe(struct platform_device *pdev)
+ 		if (!platform_get_drvdata(smi_pdev))
+ 			return -EPROBE_DEFER;
+ 		larb->smi_common_dev = &smi_pdev->dev;
++		link = device_link_add(dev, larb->smi_common_dev,
++				       DL_FLAG_PM_RUNTIME | DL_FLAG_STATELESS);
++		if (!link) {
++			dev_err(dev, "Unable to link smi-common dev\n");
++			return -ENODEV;
++		}
+ 	} else {
+ 		dev_err(dev, "Failed to get the smi_common device\n");
+ 		return -EINVAL;
+@@ -324,6 +345,9 @@ static int mtk_smi_larb_probe(struct platform_device *pdev)
+ 
+ static int mtk_smi_larb_remove(struct platform_device *pdev)
+ {
++	struct mtk_smi_larb *larb = platform_get_drvdata(pdev);
++
++	device_link_remove(&pdev->dev, larb->smi_common_dev);
+ 	pm_runtime_disable(&pdev->dev);
+ 	component_del(&pdev->dev, &mtk_smi_larb_component_ops);
+ 	return 0;
+@@ -335,17 +359,9 @@ static int __maybe_unused mtk_smi_larb_resume(struct device *dev)
+ 	const struct mtk_smi_larb_gen *larb_gen = larb->larb_gen;
+ 	int ret;
+ 
+-	/* Power on smi-common. */
+-	ret = pm_runtime_get_sync(larb->smi_common_dev);
+-	if (ret < 0) {
+-		dev_err(dev, "Failed to pm get for smi-common(%d).\n", ret);
+-		return ret;
+-	}
+-
+ 	ret = mtk_smi_clk_enable(&larb->smi);
+ 	if (ret < 0) {
+ 		dev_err(dev, "Failed to enable clock(%d).\n", ret);
+-		pm_runtime_put_sync(larb->smi_common_dev);
+ 		return ret;
+ 	}
+ 
+@@ -360,7 +376,6 @@ static int __maybe_unused mtk_smi_larb_suspend(struct device *dev)
+ 	struct mtk_smi_larb *larb = dev_get_drvdata(dev);
+ 
+ 	mtk_smi_clk_disable(&larb->smi);
+-	pm_runtime_put_sync(larb->smi_common_dev);
+ 	return 0;
+ }
+ 
+@@ -395,6 +410,13 @@ static const struct mtk_smi_common_plat mtk_smi_common_mt8183 = {
  		    F_MMU1_LARB(7),
  };
  
@@ -23336,7 +23619,7 @@ index a113e811faabea34387d0d15ac1e4b74315ec29c..5d0268630e706004c6033f9e9cd6851f
  static const struct of_device_id mtk_smi_common_of_ids[] = {
  	{
  		.compatible = "mediatek,mt8173-smi-common",
-@@ -412,6 +433,10 @@ static const struct of_device_id mtk_smi_common_of_ids[] = {
+@@ -412,6 +434,10 @@ static const struct of_device_id mtk_smi_common_of_ids[] = {
  		.compatible = "mediatek,mt8183-smi-common",
  		.data = &mtk_smi_common_mt8183,
  	},
@@ -23523,7 +23806,9 @@ index db734f2831ff07080709e7c33aea5050fbe205e2..83f3ffbdbb4ca59158fd33c71287242d
  
  	chip->irq_domain = irq_domain_add_linear(chip->dev->of_node,
 diff --git a/drivers/mfd/mt6397-core.c b/drivers/mfd/mt6397-core.c
-index f6cd8a66060286a7192eb162fd2d3f574f5a43cd..62942139b4e7d3914f64b5e020ebe8e66a95a020 100644
+old mode 100644
+new mode 100755
+index f6cd8a66060286a7192eb162fd2d3f574f5a43cd..07240eaf4055e8fee7a94f8d971446c0d800faa6
 --- a/drivers/mfd/mt6397-core.c
 +++ b/drivers/mfd/mt6397-core.c
 @@ -13,9 +13,11 @@
@@ -23538,7 +23823,7 @@ index f6cd8a66060286a7192eb162fd2d3f574f5a43cd..62942139b4e7d3914f64b5e020ebe8e6
  #include <linux/mfd/mt6397/registers.h>
  
  #define MT6323_RTC_BASE		0x8000
-@@ -99,6 +101,16 @@ static const struct mfd_cell mt6358_devs[] = {
+@@ -99,6 +101,21 @@ static const struct mfd_cell mt6358_devs[] = {
  	},
  };
  
@@ -23546,6 +23831,11 @@ index f6cd8a66060286a7192eb162fd2d3f574f5a43cd..62942139b4e7d3914f64b5e020ebe8e6
 +	{
 +		.name = "mt6359-regulator",
 +		.of_compatible = "mediatek,mt6359-regulator",
++	}, {
++		.name = "mt6359-rtc",
++		.num_resources = ARRAY_SIZE(mt6358_rtc_resources),
++		.resources = mt6358_rtc_resources,
++		.of_compatible = "mediatek,mt6358-rtc",
 +	}, {
 +		.name = "mt6359-sound",
 +		.of_compatible = "mediatek,mt6359-sound",
@@ -23555,7 +23845,7 @@ index f6cd8a66060286a7192eb162fd2d3f574f5a43cd..62942139b4e7d3914f64b5e020ebe8e6
  static const struct mfd_cell mt6397_devs[] = {
  	{
  		.name = "mt6397-rtc",
-@@ -149,6 +161,14 @@ static const struct chip_data mt6358_core = {
+@@ -149,6 +166,14 @@ static const struct chip_data mt6358_core = {
  	.irq_init = mt6358_irq_init,
  };
  
@@ -23570,7 +23860,7 @@ index f6cd8a66060286a7192eb162fd2d3f574f5a43cd..62942139b4e7d3914f64b5e020ebe8e6
  static const struct chip_data mt6397_core = {
  	.cid_addr = MT6397_CID,
  	.cid_shift = 0,
-@@ -218,6 +238,9 @@ static const struct of_device_id mt6397_of_match[] = {
+@@ -218,6 +243,9 @@ static const struct of_device_id mt6397_of_match[] = {
  	}, {
  		.compatible = "mediatek,mt6358",
  		.data = &mt6358_core,
@@ -30785,6 +31075,21 @@ index a2635c21db7f8eccc77965ed7975f9e34a9e28fd..51cf8bc4efac406b9fe08fa87bdcdcef
  };
  
  static int ti_syscon_reset_probe(struct platform_device *pdev)
+diff --git a/drivers/rtc/rtc-mt6397.c b/drivers/rtc/rtc-mt6397.c
+old mode 100644
+new mode 100755
+index 75969ba676d1586e376cf5a0e339959d829dace8..0d56f7695dd20b705cf39d74e5f3ba2792316e8c
+--- a/drivers/rtc/rtc-mt6397.c
++++ b/drivers/rtc/rtc-mt6397.c
+@@ -74,7 +74,7 @@ static int __mtk_rtc_read_time(struct mt6397_rtc *rtc,
+ 	tm->tm_min = data[RTC_OFFSET_MIN];
+ 	tm->tm_hour = data[RTC_OFFSET_HOUR];
+ 	tm->tm_mday = data[RTC_OFFSET_DOM];
+-	tm->tm_mon = data[RTC_OFFSET_MTH];
++	tm->tm_mon = data[RTC_OFFSET_MTH] & RTC_TC_MTH_MASK;
+ 	tm->tm_year = data[RTC_OFFSET_YEAR];
+ 
+ 	ret = regmap_read(rtc->regmap, rtc->addr_base + RTC_TC_SEC, sec);
 diff --git a/drivers/soc/mediatek/Kconfig b/drivers/soc/mediatek/Kconfig
 index 59a56cd790ec313347b3ba822c124de9183916e0..3f5e5cb12b05a4bdab0e19e0ef2ca6e473b12b89 100644
 --- a/drivers/soc/mediatek/Kconfig
@@ -38018,6 +38323,21 @@ index 949268581b369a910404dd0a3e00e66f2f2dba09..56f210eebc541612f01e953c7e221bda
  	MT6391_CHIP_ID = 0x91,
  	MT6397_CHIP_ID = 0x97,
  };
+diff --git a/include/linux/mfd/mt6397/rtc.h b/include/linux/mfd/mt6397/rtc.h
+old mode 100644
+new mode 100755
+index 66989a16221acfdcb8ea3e50f8d8677791cefa0a..7090c57b702e6ac2558c2d60c22970310ebb32c1
+--- a/include/linux/mfd/mt6397/rtc.h
++++ b/include/linux/mfd/mt6397/rtc.h
+@@ -36,6 +36,8 @@
+ #define RTC_AL_MASK_DOW                BIT(4)
+ 
+ #define RTC_TC_SEC             0x000a
++
++#define RTC_TC_MTH_MASK        0x000f
+ /* Min, Hour, Dom... register offset to RTC_TC_SEC */
+ #define RTC_OFFSET_SEC         0
+ #define RTC_OFFSET_MIN         1
 diff --git a/include/linux/platform_data/cros_ec_commands.h b/include/linux/platform_data/cros_ec_commands.h
 index ab6b25701d42e3fcaeefd9e4a53f8f881678cef5..2e437e7ce7f5eb6aec4045189bb2d75104df687b 100644
 --- a/include/linux/platform_data/cros_ec_commands.h
