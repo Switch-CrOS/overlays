@@ -2,6 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+identity-common: &identity_common
+  platform-name: Reef
+  smbios-name-match: "{{$smbios-name-match}}"
+
 base-config: &base_config
   brand-code: "{{$brand-code}}"
   camera:
@@ -16,9 +20,8 @@ base-config: &base_config
   hardware-properties:
     psu-type: battery
   identity:
+    <<: *identity_common
     customization-id: "{{$loem}}-{{$chassis}}"
-    platform-name: Reef
-    smbios-name-match: "{{$smbios-name-match}}"
   name: "{{$device-name}}"
   test-label: "{{$device-name}}"
 
@@ -150,3 +153,8 @@ chromeos-board-snappy: &snappy_board_config
           $loem: MORGAN
       skus:
         - config: *snappy_config
+        # Devices pre-DVT2 were not provisioned with a
+        # customization_id.  Tolerate these devices.
+        - config:
+            <<: *snappy_config
+            identity: *identity_common
