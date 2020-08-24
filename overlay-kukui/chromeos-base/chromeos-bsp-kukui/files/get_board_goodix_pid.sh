@@ -27,37 +27,37 @@ get_sensor_id() {
 main() {
   local touch_device_path=""
   local product_id=""
-  local chassis_id=""
+  local model=""
   local board_rev=""
 
   if [ -z "${FLAGS_device}" ]; then
     die "Please specify a device using -d"
   fi
 
-  chassis_id="$(get_chassis_id)"
+  model="$(cros_config / name)"
   board_rev="$(get_platform_ver)"
   touch_device_path="${GOODIX_TOUCHSCREEN_HIDRAW}"
   product_id="${FLAGS_device##*_}"
 
-  if [ "${chassis_id}" = "KRANE" ] && [ "${board_rev}" -eq "4" ] && \
-       [ "${product_id}" = "0E30" ]; then
-    local sensor_id=""
-    sensor_id="$(get_sensor_id "${touch_device_path}" \
-        "${product_id}")"
-    sensor_id="${sensor_id#module_id:}"
-    if [ "${sensor_id}" -eq "10" ]; then
-      # In the krane device, we separate the 0E30 to two different
-      # PID (0E30, 0E31) after the board_rev>=5. To backward compatible
-      # with the old devices, override the active_product_id to force
-      # the touch updater use the new PID.
-      product_id="0E31"
-    else
-      # Return empty string if the sensor id is not 10
-      product_id=""
-    fi
-  elif [ "${chassis_id}" = "KRANE" ] && [ "${product_id}" = "0E0C" ]; then
+  if [ "${model}" = "krane" ]; then
+    if [ "${board_rev}" -eq "4" ] && [ "${product_id}" = "0E30" ]; then
+      local sensor_id=""
+      sensor_id="$(get_sensor_id "${touch_device_path}" "${product_id}")"
+      sensor_id="${sensor_id#module_id:}"
+      if [ "${sensor_id}" -eq "10" ]; then
+        # In the krane device, we separate the 0E30 to two different
+        # PID (0E30, 0E31) after the board_rev>=5. To backward compatible
+        # with the old devices, override the active_product_id to force
+        # the touch updater use the new PID.
+        product_id="0E31"
+      else
+        # Return empty string if the sensor id is not 10
+        product_id=""
+      fi
+    elif [ "${product_id}" = "0E0C" ]; then
       # Correct the wrong PID 0E0C to the 0E30
       product_id="0E30"
+    fi
   fi
   echo "${product_id}"
 }
