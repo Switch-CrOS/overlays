@@ -1,7 +1,7 @@
-From 092fb1b8003cd5c508de5e27a78125ed65a73a57 Mon Sep 17 00:00:00 2001
+From 55713851f991f82ca6fd85f63bdf2e67b6823b3e Mon Sep 17 00:00:00 2001
 From: Tianshu Qiu <tian.shu.qiu@intel.com>
 Date: Sun, 16 Feb 2020 16:55:05 +0800
-Subject: [PATCH 3/4] CHROMIUM: media: i2c: Add driver for ov9734
+Subject: [PATCH 3/3] CHROMIUM: media: i2c: Add driver for ov9734
 
 This CL adds camera sensor driver for ov9734
 
@@ -18,10 +18,10 @@ Signed-off-by: Tianshu Qiu <tian.shu.qiu@intel.com>
  create mode 100644 drivers/media/i2c/ov9734.c
 
 diff --git a/drivers/media/i2c/Kconfig b/drivers/media/i2c/Kconfig
-index 552e47f59f74..736858c83230 100644
+index 5453366dd4f9..19d5ca428dda 100644
 --- a/drivers/media/i2c/Kconfig
 +++ b/drivers/media/i2c/Kconfig
-@@ -830,6 +830,19 @@ config VIDEO_OV9650
+@@ -844,6 +844,19 @@ config VIDEO_OV9650
  	  This is a V4L2 sensor driver for the Omnivision
  	  OV9650 and OV9652 camera sensors.
  
@@ -42,7 +42,7 @@ index 552e47f59f74..736858c83230 100644
  	tristate "OmniVision OV13858 sensor support"
  	depends on I2C && VIDEO_V4L2 && VIDEO_V4L2_SUBDEV_API
 diff --git a/drivers/media/i2c/Makefile b/drivers/media/i2c/Makefile
-index e8c77ad1dbfd..9a26462b308e 100644
+index 96e8ae6f19bc..ad7a420beaff 100644
 --- a/drivers/media/i2c/Makefile
 +++ b/drivers/media/i2c/Makefile
 @@ -82,6 +82,7 @@ obj-$(CONFIG_VIDEO_OV7740) += ov7740.o
@@ -55,7 +55,7 @@ index e8c77ad1dbfd..9a26462b308e 100644
  obj-$(CONFIG_VIDEO_MT9M032) += mt9m032.o
 diff --git a/drivers/media/i2c/ov9734.c b/drivers/media/i2c/ov9734.c
 new file mode 100644
-index 000000000000..f71c15ce5080
+index 000000000000..43588aee9338
 --- /dev/null
 +++ b/drivers/media/i2c/ov9734.c
 @@ -0,0 +1,1023 @@
@@ -524,8 +524,8 @@ index 000000000000..f71c15ce5080
 +	/* Propagate change of current control to all related controls */
 +	if (ctrl->id == V4L2_CID_VBLANK) {
 +		/* Update max exposure while meeting expected vblanking */
-+		exposure_max = (ov9734->cur_mode->height + ctrl->val -
-+			       OV9734_EXPOSURE_MAX_MARGIN) / 2;
++		exposure_max = ov9734->cur_mode->height + ctrl->val -
++			       OV9734_EXPOSURE_MAX_MARGIN;
 +		__v4l2_ctrl_modify_range(ov9734->exposure,
 +					 ov9734->exposure->minimum,
 +					 exposure_max, ov9734->exposure->step,
