@@ -25,11 +25,6 @@ DEPEND="${RDEPEND}"
 src_install() {
 	doappid "{9023C063-08D6-4A4F-908C-BCF97DE8BA69}" "CHROMEBOOK"
 
-	# TODO b/162883167: remove before ship, but for now hack the first
-	# random MAC into early hardware to help folks out.
-	insinto "/etc/init"
-	doins "${FILESDIR}/hack-a-mac.conf"
-
 	# Install audio config
 	unibuild_install_audio_files
 }
