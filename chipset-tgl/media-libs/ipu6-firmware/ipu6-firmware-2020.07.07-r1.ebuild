@@ -1,1 +1,0 @@
-ipu6-firmware-2020.07.07.ebuild
