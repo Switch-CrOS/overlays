@@ -16,3 +16,9 @@ IUSE=""
 # Add dependencies on other ebuilds from within this board overlay
 RDEPEND=""
 DEPEND="${RDEPEND}"
+
+src_install() {
+	# Override default CPU clock speed governor.
+	insinto "/etc"
+	doins "${FILESDIR}/cpufreq.conf"
+}
