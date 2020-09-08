@@ -27,14 +27,13 @@ common_config: &common_config
   $ucm-source: "{{cras-config-dir}}/audio/ucm-config{{$ucm-source-suffix}}"
   $ucm-dest: "{{$ucm_root}}/{{$card}}.{{ucm-suffix}}"
   name: "{{$device-name}}"
-  identity:
-    sku-id: "{{$sku-id}}"
+  identity: &identity
     platform-name: "Asurada"
-    device-tree-compatible-match: "google,asurada"
+    device-tree-compatible-match: "{{$fw-name}}"
   firmware:
     build-targets:
-      coreboot: "asurada"
-      ec: "asurada"
+      coreboot: "{{$fw-build-name}}"
+      ec: "{{$fw-build-name}}"
       depthcharge: "asurada"
       libpayload: "asurada"
     no-firmware: true
@@ -47,13 +46,27 @@ common_config: &common_config
 
 asurada-config: &asurada_config
   <<: *common_config
+  $fw-name: "google,asurada"
+  $fw-build-name: "asurada"
+  $key-id: "DEFAULT"
+  identity:
+    <<: *identity
+  audio: *audio_config
+
+hayato-config: &hayato_config
+  <<: *common_config
+  $fw-name: "google,hayato"
+  $fw-build-name: "hayato"
+  $key-id: "DEFAULT"
+  identity:
+    <<: *identity
   audio: *audio_config
 
 chromeos:
   devices:
     - $device-name: "asurada"
-      products:
-        - $key-id: "DEFAULT"
       skus:
-        - $sku-id: 0
-          config: *asurada_config
+        - config: *asurada_config
+    - $device-name: "hayato"
+      skus:
+        - config: *hayato_config
