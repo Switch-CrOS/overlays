@@ -918,10 +918,10 @@ index 0000000000000000000000000000000000000000..1ca9b285b2b03979308c219bfc474096
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8192-asurada.dtsi b/arch/arm64/boot/dts/mediatek/mt8192-asurada.dtsi
 new file mode 100644
-index 0000000000000000000000000000000000000000..ad3fc36ecd5111a2cc10760fa1d3c9c9cc34b928
+index 0000000000000000000000000000000000000000..b73af7d4e77293e42743b422518c5e947dde1814
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt8192-asurada.dtsi
-@@ -0,0 +1,976 @@
+@@ -0,0 +1,991 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
 +/*
 + * Copyright (C) 2020 MediaTek Inc.
@@ -1474,6 +1474,8 @@ index 0000000000000000000000000000000000000000..ad3fc36ecd5111a2cc10760fa1d3c9c9
 +			pinmux = <PINMUX_GPIO204__FUNC_SCL0>,
 +				 <PINMUX_GPIO205__FUNC_SDA0>;
 +			bias-pull-up;
++			mediatek,pull-up-adv = <3>;
++			mediatek,drive-strength-adv = <7>;
 +		};
 +	};
 +
@@ -1482,6 +1484,8 @@ index 0000000000000000000000000000000000000000..ad3fc36ecd5111a2cc10760fa1d3c9c9
 +			pinmux = <PINMUX_GPIO118__FUNC_SCL1>,
 +				 <PINMUX_GPIO119__FUNC_SDA1>;
 +			bias-pull-up;
++			mediatek,pull-up-adv = <3>;
++			mediatek,drive-strength-adv = <7>;
 +		};
 +	};
 +
@@ -1490,6 +1494,8 @@ index 0000000000000000000000000000000000000000..ad3fc36ecd5111a2cc10760fa1d3c9c9
 +			pinmux = <PINMUX_GPIO141__FUNC_SCL2>,
 +				 <PINMUX_GPIO142__FUNC_SDA2>;
 +			bias-pull-up;
++			mediatek,pull-up-adv = <3>;
++			mediatek,drive-strength-adv = <7>;
 +		};
 +	};
 +
@@ -1498,6 +1504,8 @@ index 0000000000000000000000000000000000000000..ad3fc36ecd5111a2cc10760fa1d3c9c9
 +			pinmux = <PINMUX_GPIO160__FUNC_SCL3>,
 +				 <PINMUX_GPIO161__FUNC_SDA3>;
 +			bias-pull-up;
++			mediatek,pull-up-adv = <3>;
++			mediatek,drive-strength-adv = <7>;
 +		};
 +	};
 +
@@ -1506,6 +1514,8 @@ index 0000000000000000000000000000000000000000..ad3fc36ecd5111a2cc10760fa1d3c9c9
 +			pinmux = <PINMUX_GPIO200__FUNC_SCL6>,
 +				 <PINMUX_GPIO201__FUNC_SDA6>;
 +			bias-pull-up;
++			mediatek,pull-up-adv = <3>;
++			mediatek,drive-strength-adv = <7>;
 +		};
 +	};
 +
@@ -1514,6 +1524,8 @@ index 0000000000000000000000000000000000000000..ad3fc36ecd5111a2cc10760fa1d3c9c9
 +			pinmux = <PINMUX_GPIO124__FUNC_SCL7>,
 +				 <PINMUX_GPIO125__FUNC_SDA7>;
 +			bias-pull-up;
++			mediatek,pull-up-adv = <3>;
++			mediatek,drive-strength-adv = <7>;
 +		};
 +	};
 +
@@ -1789,12 +1801,15 @@ index 0000000000000000000000000000000000000000..ad3fc36ecd5111a2cc10760fa1d3c9c9
 +	status = "okay";
 +	pinctrl-names = "default";
 +	pinctrl-0 = <&nor_gpio1_pins>;
-+	bus-width = <8>;
-+	max-frequency = <50000000>;
-+	non-removable;
++	assigned-clocks = <&topckgen CLK_TOP_SFLASH_SEL>;
++	assigned-clock-parents = <&topckgen CLK_TOP_UNIVPLL_D6_D8>;
++
 +	flash@0 {
-+		compatible = "jedec,spi-nor";
++		compatible = "winbond,w25q64", "jedec,spi-nor";
 +		reg = <0>;
++		spi-max-frequency = <52000000>;
++		spi-rx-bus-width = <2>;
++		spi-tx-bus-width = <2>;
 +	};
 +};
 +
@@ -1900,10 +1915,10 @@ index 0000000000000000000000000000000000000000..ad3fc36ecd5111a2cc10760fa1d3c9c9
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8192.dtsi b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
 new file mode 100644
-index 0000000000000000000000000000000000000000..4e7b54412a8e8ebf1ca7353fb5a48a0fb13ff9fb
+index 0000000000000000000000000000000000000000..5849741d78571d7e3e8d08a4a703d530f0547973
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-@@ -0,0 +1,1892 @@
+@@ -0,0 +1,1916 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
 +/*
 + * Copyright (C) 2020 MediaTek Inc.
@@ -2840,10 +2855,11 @@ index 0000000000000000000000000000000000000000..4e7b54412a8e8ebf1ca7353fb5a48a0f
 +				<&infracfg CLK_INFRA_PCIE_TL_32K>,
 +				<&infracfg CLK_INFRA_PCIE_PERI_26M>,
 +				<&infracfg CLK_INFRA_PCIE_TOP_H_133M>,
-+				<&infracfg CLK_INFRA_PCIE_PL_P_250M>,
-+				<&topckgen CLK_TOP_UNIVPLL_192M_D2>;
++				<&infracfg CLK_INFRA_PCIE_PL_P_250M>;
 +			clock-names = "sys_ck0", "sys_ck1", "sys_ck2",
-+				 "sys_ck3", "axi_ck0", "pipe_ck0", "mainpll_ck";
++				 "sys_ck3", "axi_ck0", "pipe_ck0";
++			assigned-clocks = <&topckgen CLK_TOP_TL_SEL>;
++			assigned-clock-parents = <&topckgen CLK_TOP_MAINPLL_D6_D4>;
 +			resets = <&infracfg_rst 0>;
 +			reset-names = "phy_rst";
 +			interrupts = <GIC_SPI 251 IRQ_TYPE_LEVEL_HIGH 0>;
@@ -2876,10 +2892,13 @@ index 0000000000000000000000000000000000000000..4e7b54412a8e8ebf1ca7353fb5a48a0f
 +		nor_flash: spi@11234000 {
 +			compatible = "mediatek,mt8173-nor";
 +			reg = <0 0x11234000 0 0xe0>;
-+			clocks = <&clk26m>, <&clk26m>;
++			clocks = <&topckgen CLK_TOP_SFLASH_SEL>, <&infracfg CLK_INFRA_FLASHIF_SFLASH>;
 +			clock-names = "spi", "sf";
++			assigned-clocks = <&topckgen CLK_TOP_SFLASH_SEL>;
++			assigned-clock-parents = <&clk26m>;
 +			#address-cells = <1>;
 +			#size-cells = <0>;
++			interrupts = <GIC_SPI 431 IRQ_TYPE_LEVEL_HIGH 0>;
 +			status = "disabled";
 +		};
 +
@@ -2911,7 +2930,8 @@ index 0000000000000000000000000000000000000000..4e7b54412a8e8ebf1ca7353fb5a48a0f
 +			reg = <0 0x11cb0000 0 0x1000>,
 +			      <0 0x10217300 0 0x80>;
 +			interrupts = <GIC_SPI 115 IRQ_TYPE_LEVEL_HIGH 0>;
-+			clocks = <&clk26m>, <&clk26m>;
++			clocks = <&imp_iic_wrap_e CLK_IMP_IIC_WRAP_E_I2C3>,
++				 <&infracfg CLK_INFRA_AP_DMA>;
 +			clock-names = "main", "dma";
 +			clock-div = <1>;
 +			#address-cells = <1>;
@@ -2930,7 +2950,8 @@ index 0000000000000000000000000000000000000000..4e7b54412a8e8ebf1ca7353fb5a48a0f
 +			reg = <0 0x11d00000 0 0x1000>,
 +			      <0 0x10217600 0 0x180>;
 +			interrupts = <GIC_SPI 119 IRQ_TYPE_LEVEL_HIGH 0>;
-+			clocks = <&clk26m>, <&clk26m>;
++			clocks = <&imp_iic_wrap_s CLK_IMP_IIC_WRAP_S_I2C7>,
++				 <&infracfg CLK_INFRA_AP_DMA>;
 +			clock-names = "main", "dma";
 +			clock-div = <1>;
 +			#address-cells = <1>;
@@ -2943,7 +2964,8 @@ index 0000000000000000000000000000000000000000..4e7b54412a8e8ebf1ca7353fb5a48a0f
 +			reg = <0 0x11d01000 0 0x1000>,
 +			      <0 0x10217780 0 0x180>;
 +			interrupts = <GIC_SPI 120 IRQ_TYPE_LEVEL_HIGH 0>;
-+			clocks = <&clk26m>, <&clk26m>;
++			clocks = <&imp_iic_wrap_s CLK_IMP_IIC_WRAP_S_I2C8>,
++				 <&infracfg CLK_INFRA_AP_DMA>;
 +			clock-names = "main", "dma";
 +			clock-div = <1>;
 +			#address-cells = <1>;
@@ -2956,7 +2978,8 @@ index 0000000000000000000000000000000000000000..4e7b54412a8e8ebf1ca7353fb5a48a0f
 +			reg = <0 0x11d02000 0 0x1000>,
 +			      <0 0x10217900 0 0x180>;
 +			interrupts = <GIC_SPI 121 IRQ_TYPE_LEVEL_HIGH 0>;
-+			clocks = <&clk26m>, <&clk26m>;
++			clocks = <&imp_iic_wrap_s CLK_IMP_IIC_WRAP_S_I2C9>,
++				 <&infracfg CLK_INFRA_AP_DMA>;
 +			clock-names = "main", "dma";
 +			clock-div = <1>;
 +			#address-cells = <1>;
@@ -2975,7 +2998,8 @@ index 0000000000000000000000000000000000000000..4e7b54412a8e8ebf1ca7353fb5a48a0f
 +			reg = <0 0x11d20000 0 0x1000>,
 +			      <0 0x10217100 0 0x80>;
 +			interrupts = <GIC_SPI 113 IRQ_TYPE_LEVEL_HIGH 0>;
-+			clocks = <&clk26m>, <&clk26m>;
++			clocks = <&imp_iic_wrap_ws CLK_IMP_IIC_WRAP_WS_I2C1>,
++				 <&infracfg CLK_INFRA_AP_DMA>;
 +			clock-names = "main", "dma";
 +			clock-div = <1>;
 +			#address-cells = <1>;
@@ -2988,7 +3012,8 @@ index 0000000000000000000000000000000000000000..4e7b54412a8e8ebf1ca7353fb5a48a0f
 +			reg = <0 0x11d21000 0 0x1000>,
 +			      <0 0x10217180 0 0x180>;
 +			interrupts = <GIC_SPI 114 IRQ_TYPE_LEVEL_HIGH 0>;
-+			clocks = <&clk26m>, <&clk26m>;
++			clocks = <&imp_iic_wrap_ws CLK_IMP_IIC_WRAP_WS_I2C2>,
++				 <&infracfg CLK_INFRA_AP_DMA>;
 +			clock-names = "main", "dma";
 +			clock-div = <1>;
 +			#address-cells = <1>;
@@ -3001,7 +3026,8 @@ index 0000000000000000000000000000000000000000..4e7b54412a8e8ebf1ca7353fb5a48a0f
 +			reg = <0 0x11d22000 0 0x1000>,
 +			      <0 0x10217380 0 0x180>;
 +			interrupts = <GIC_SPI 116 IRQ_TYPE_LEVEL_HIGH 0>;
-+			clocks = <&clk26m>, <&clk26m>;
++			clocks = <&imp_iic_wrap_ws CLK_IMP_IIC_WRAP_WS_I2C4>,
++				 <&infracfg CLK_INFRA_AP_DMA>;
 +			clock-names = "main", "dma";
 +			clock-div = <1>;
 +			#address-cells = <1>;
@@ -3020,7 +3046,8 @@ index 0000000000000000000000000000000000000000..4e7b54412a8e8ebf1ca7353fb5a48a0f
 +			reg = <0 0x11e00000 0 0x1000>,
 +			      <0 0x10217500 0 0x80>;
 +			interrupts = <GIC_SPI 117 IRQ_TYPE_LEVEL_HIGH 0>;
-+			clocks = <&clk26m>, <&clk26m>;
++			clocks = <&imp_iic_wrap_w CLK_IMP_IIC_WRAP_W_I2C5>,
++				 <&infracfg CLK_INFRA_AP_DMA>;
 +			clock-names = "main", "dma";
 +			clock-div = <1>;
 +			#address-cells = <1>;
@@ -3075,7 +3102,8 @@ index 0000000000000000000000000000000000000000..4e7b54412a8e8ebf1ca7353fb5a48a0f
 +			reg = <0 0x11f00000 0 0x1000>,
 +			      <0 0x10217080 0 0x80>;
 +			interrupts = <GIC_SPI 112 IRQ_TYPE_LEVEL_HIGH 0>;
-+			clocks = <&clk26m>, <&clk26m>;
++			clocks = <&imp_iic_wrap_n CLK_IMP_IIC_WRAP_N_I2C0>,
++				 <&infracfg CLK_INFRA_AP_DMA>;
 +			clock-names = "main", "dma";
 +			clock-div = <1>;
 +			#address-cells = <1>;
@@ -3088,7 +3116,8 @@ index 0000000000000000000000000000000000000000..4e7b54412a8e8ebf1ca7353fb5a48a0f
 +			reg = <0 0x11f01000 0 0x1000>,
 +			      <0 0x10217580 0 0x80>;
 +			interrupts = <GIC_SPI 118 IRQ_TYPE_LEVEL_HIGH 0>;
-+			clocks = <&clk26m>, <&clk26m>;
++			clocks = <&imp_iic_wrap_n CLK_IMP_IIC_WRAP_N_I2C6>,
++				 <&infracfg CLK_INFRA_AP_DMA>;
 +			clock-names = "main", "dma";
 +			clock-div = <1>;
 +			#address-cells = <1>;
@@ -3114,9 +3143,14 @@ index 0000000000000000000000000000000000000000..4e7b54412a8e8ebf1ca7353fb5a48a0f
 +			      <0 0x11f50000 0 0x1000>;
 +			interrupts = <GIC_SPI 99 IRQ_TYPE_LEVEL_HIGH 0>;
 +			clocks = <&topckgen CLK_TOP_MSDC50_0_SEL>,
-+				<&msdc_top CLK_MSDC_TOP_H_MST_0P>,
-+				<&msdc_top CLK_MSDC_TOP_SRC_0P>;
-+			clock-names = "source", "hclk", "source_cg";
++				 <&msdc_top CLK_MSDC_TOP_H_MST_0P>,
++				 <&msdc_top CLK_MSDC_TOP_SRC_0P>,
++				 <&msdc_top CLK_MSDC_TOP_P_CFG>,
++				 <&msdc_top CLK_MSDC_TOP_AXI>,
++				 <&msdc_top CLK_MSDC_TOP_AHB2AXI_BRG_AXI>,
++				 <&msdc_top CLK_MSDC_TOP_P_MSDC0>;
++			clock-names = "source", "hclk", "source_cg", "sys_cg",
++				      "axi_cg", "ahb_cg", "pclk_cg";
 +			status = "disabled";
 +		};
 +
@@ -3126,9 +3160,14 @@ index 0000000000000000000000000000000000000000..4e7b54412a8e8ebf1ca7353fb5a48a0f
 +			      <0 0x11c70000 0 0x1000>;
 +			interrupts = <GIC_SPI 103 IRQ_TYPE_LEVEL_HIGH 0>;
 +			clocks = <&topckgen CLK_TOP_MSDC30_1_SEL>,
-+				<&msdc_top CLK_MSDC_TOP_H_MST_1P>,
-+				<&msdc_top CLK_MSDC_TOP_SRC_1P>;
-+			clock-names = "source", "hclk", "source_cg";
++				 <&msdc_top CLK_MSDC_TOP_H_MST_1P>,
++				 <&msdc_top CLK_MSDC_TOP_SRC_1P>,
++				 <&msdc_top CLK_MSDC_TOP_P_CFG>,
++				 <&msdc_top CLK_MSDC_TOP_AXI>,
++				 <&msdc_top CLK_MSDC_TOP_AHB2AXI_BRG_AXI>,
++				 <&msdc_top CLK_MSDC_TOP_P_MSDC1>;
++			clock-names = "source", "hclk", "source_cg", "sys_cg",
++				      "axi_cg", "ahb_cg", "pclk_cg";
 +			status = "disabled";
 +		};
 +
@@ -3897,7 +3936,7 @@ index e57735414b95361ad67060f05700744a440cd4b8..b0c1e1888a693fae28213dafefd853f2
  CONFIG_SX9310=y
  CONFIG_TOUCHSCREEN_MELFAS_MIP4=y
 diff --git a/chromeos/config/arm64/chromiumos-mediatek.flavour.config b/chromeos/config/arm64/chromiumos-mediatek.flavour.config
-index 3fc301748fc955f047104b9de7f7f83fb7546cd4..3cb88a823f47f42baef63aac8419e807bc77302e 100644
+index 3fc301748fc955f047104b9de7f7f83fb7546cd4..7a4f06ac500996cdda88a6080a9199543cc54753 100644
 --- a/chromeos/config/arm64/chromiumos-mediatek.flavour.config
 +++ b/chromeos/config/arm64/chromiumos-mediatek.flavour.config
 @@ -3,6 +3,7 @@
@@ -3988,15 +4027,21 @@ index 3fc301748fc955f047104b9de7f7f83fb7546cd4..3cb88a823f47f42baef63aac8419e807
  CONFIG_RTC_DRV_MT6397=y
  CONFIG_RTW88=m
  CONFIG_RTW88_8822BE=y
-@@ -88,6 +126,8 @@ CONFIG_SND_SOC_MT8183_MT6358_TS3A227E_MAX98357A=y
+@@ -87,7 +125,8 @@ CONFIG_SND_SOC_MT8183_DA7219_MAX98357A=y
+ CONFIG_SND_SOC_MT8183_MT6358_TS3A227E_MAX98357A=y
  CONFIG_SPI_GPIO=y
  CONFIG_SPI_MT65XX=y
- CONFIG_SPI_MTK_QUADSPI=y
+-CONFIG_SPI_MTK_QUADSPI=y
 +CONFIG_SPMI=y
 +CONFIG_SPMI_MTK_PMIF=y
  CONFIG_STAGING_MEDIA=y
  CONFIG_TCG_CR50_I2C=y
  CONFIG_TMPFS=y
+@@ -98,3 +137,4 @@ CONFIG_VIDEO_MEDIATEK_VCODEC=m
+ CONFIG_VIDEO_OV5695=m
+ CONFIG_VIDEO_OV8856=m
+ CONFIG_VIDEO_V4L2_SUBDEV_API=y
++CONFIG_SPI_MTK_NOR=y
 diff --git a/chromeos/config/arm64/common.config b/chromeos/config/arm64/common.config
 index bc4cf20f7839a61ddc93363972c7b2c060afa21f..ed7fa7fa90393287d9d641de34a782d2fe30ec80 100644
 --- a/chromeos/config/arm64/common.config
@@ -4262,6 +4307,21 @@ index bb05369420755f04695c3181716f4863da793672..26733c3fa0d108cc58714f0fd82869b0
 +obj-$(CONFIG_COMMON_CLK_MT8192_VENCSYS) += clk-mt8192-venc.o
  obj-$(CONFIG_COMMON_CLK_MT8516) += clk-mt8516.o
  obj-$(CONFIG_COMMON_CLK_MT8516_AUDSYS) += clk-mt8516-aud.o
+diff --git a/drivers/clk/mediatek/clk-gate.c b/drivers/clk/mediatek/clk-gate.c
+old mode 100644
+new mode 100755
+index a35cf0b221501197ca5ccd980183209494f1aaa3..35d389d154fe0f27774102dbf3b528740b2811e8
+--- a/drivers/clk/mediatek/clk-gate.c
++++ b/drivers/clk/mediatek/clk-gate.c
+@@ -162,7 +162,7 @@ struct clk *mtk_clk_register_gate(
+ 		return ERR_PTR(-ENOMEM);
+ 
+ 	init.name = name;
+-	init.flags = flags | CLK_SET_RATE_PARENT;
++	init.flags = flags | CLK_SET_RATE_PARENT | CLK_OPS_PARENT_ENABLE;
+ 	init.parent_names = parent_name ? &parent_name : NULL;
+ 	init.num_parents = parent_name ? 1 : 0;
+ 	init.ops = ops;
 diff --git a/drivers/clk/mediatek/clk-mt8183-mm.c b/drivers/clk/mediatek/clk-mt8183-mm.c
 index 720c696b506d59b5cd0ed34d3b8f29488ff382b0..c6a1ce2495fc404a1c6f38e922e51c524f76725a 100644
 --- a/drivers/clk/mediatek/clk-mt8183-mm.c
@@ -6339,11 +6399,11 @@ index 0000000000000000000000000000000000000000..8675d6a1e24dc80d3b7650551a46b508
 +
 +builtin_platform_driver(clk_mt8192_venc_drv);
 diff --git a/drivers/clk/mediatek/clk-mt8192.c b/drivers/clk/mediatek/clk-mt8192.c
-new file mode 100755
-index 0000000000000000000000000000000000000000..aaa4231eaa1d2ac935a0700880521a20af9acaf0
+new file mode 100644
+index 0000000000000000000000000000000000000000..c42403c69a707e200e8464eaeeab48645f90345e
 --- /dev/null
 +++ b/drivers/clk/mediatek/clk-mt8192.c
-@@ -0,0 +1,1357 @@
+@@ -0,0 +1,1364 @@
 +// SPDX-License-Identifier: GPL-2.0
 +//
 +// Copyright (c) 2020 MediaTek Inc.
@@ -7324,10 +7384,17 @@ index 0000000000000000000000000000000000000000..aaa4231eaa1d2ac935a0700880521a20
 +	GATE_MTK(_id, _name, _parent, &infra4_cg_regs, _shift,	\
 +		&mtk_clk_gate_ops_setclr)
 +
-+#define GATE_INFRA5(_id, _name, _parent, _shift)			\
-+	GATE_MTK(_id, _name, _parent, &infra5_cg_regs, _shift,	\
-+		&mtk_clk_gate_ops_setclr)
++#define GATE_INFRA5_FLAGS(_id, _name, _parent, _shift, _flag)		\
++	GATE_MTK_FLAGS(_id, _name, _parent, &infra5_cg_regs, _shift,	\
++		&mtk_clk_gate_ops_setclr, _flag)
 +
++#define GATE_INFRA5(_id, _name, _parent, _shift)		\
++	GATE_INFRA5_FLAGS(_id, _name, _parent, _shift, 0)
++
++/*
++ * CRITICAL CLOCK:
++ * infra_133m and infra_66m are main peripheral bus clocks of SOC.
++ */
 +static const struct mtk_gate infra_clks[] = {
 +	/* INFRA0 */
 +	GATE_INFRA0(CLK_INFRA_PMIC_TMR, "infra_pmic_tmr", "pwrap_ulposc_sel", 0),
@@ -7452,8 +7519,8 @@ index 0000000000000000000000000000000000000000..aaa4231eaa1d2ac935a0700880521a20
 +	/* INFRA4 */
 +	GATE_INFRA4(CLK_INFRA_AP_DMA, "infra_ap_dma", "infra_ap_dma_pseudo", 31),
 +	/* INFRA5 */
-+	GATE_INFRA5(CLK_INFRA_133M, "infra_133m", "axi_sel", 0),
-+	GATE_INFRA5(CLK_INFRA_66M, "infra_66m", "axi_sel", 1),
++	GATE_INFRA5_FLAGS(CLK_INFRA_133M, "infra_133m", "axi_sel", 0, CLK_IS_CRITICAL),
++	GATE_INFRA5_FLAGS(CLK_INFRA_66M, "infra_66m", "axi_sel", 1, CLK_IS_CRITICAL),
 +	GATE_INFRA5(CLK_INFRA_66M_PERI_BUS, "infra_66m_peri_bus", "axi_sel", 2),
 +	GATE_INFRA5(CLK_INFRA_FREE_DCM_133M, "infra_free_dcm_133m", "axi_sel", 3),
 +	GATE_INFRA5(CLK_INFRA_FREE_DCM_66M, "infra_free_dcm_66m", "axi_sel", 4),
@@ -11856,10 +11923,10 @@ index 0000000000000000000000000000000000000000..5048c52c8bf7c7e4462c74bb208a40ea
 +MODULE_DESCRIPTION("Medaitek MCUPM CPUFreq Platform driver");
 +MODULE_LICENSE("GPL v2");
 diff --git a/drivers/gpu/arm/valhall/backend/gpu/mali_kbase_devfreq.c b/drivers/gpu/arm/valhall/backend/gpu/mali_kbase_devfreq.c
-index dd1bdec682c1cc45d2d03bd497b1759fafb8370a..0fce67c10a34ce774023a8b71d1eef84149fe157 100644
+index dd1bdec682c1cc45d2d03bd497b1759fafb8370a..5fe046b01ebe5b805ab6a46f395423f77b748af7 100644
 --- a/drivers/gpu/arm/valhall/backend/gpu/mali_kbase_devfreq.c
 +++ b/drivers/gpu/arm/valhall/backend/gpu/mali_kbase_devfreq.c
-@@ -89,6 +89,33 @@ static void opp_translate(struct kbase_device *kbdev, unsigned long freq,
+@@ -89,6 +89,75 @@ static void opp_translate(struct kbase_device *kbdev, unsigned long freq,
  	}
  }
  
@@ -11870,19 +11937,61 @@ index dd1bdec682c1cc45d2d03bd497b1759fafb8370a..0fce67c10a34ce774023a8b71d1eef84
 +		kbdev->devfreq_ops.voltage_range_check(kbdev, voltages);
 +}
 +
-+static int set_frequency(struct kbase_device *kbdev, unsigned long freq)
++#ifdef CONFIG_REGULATOR
++static int set_voltages(struct kbase_device *kbdev, unsigned long *volts,
++			bool inc)
++{
++	int first, step, err, i;
++
++	if (kbdev->devfreq_ops.set_voltages)
++		return kbdev->devfreq_ops.set_voltages(kbdev, volts, inc);
++
++	if (inc) {
++		first = kbdev->nr_clocks - 1;
++		step = -1;
++	} else {
++		first = 0;
++		step = 1;
++	}
++
++	for (i = first; i >= 0 && i < kbdev->nr_clocks; i += step) {
++		if (kbdev->current_voltages[i] == volts[i])
++			continue;
++
++		err = regulator_set_voltage(kbdev->regulators[i],
++					    volts[i], volts[i]);
++
++		if (err) {
++			dev_err(kbdev->dev,
++				"Failed to set reg %d voltage err:(%d)\n",
++				i, err);
++			return err;
++		} else {
++			kbdev->current_voltages[i] = volts[i];
++		}
++	}
++
++	return err;
++}
++#endif
++
++static int set_frequency(struct kbase_device *kbdev, unsigned long *freqs)
 +{
 +	int err = 0, i;
++
 +	if (kbdev->devfreq_ops.set_frequency)
-+		return kbdev->devfreq_ops.set_frequency(kbdev, freq);
++		return kbdev->devfreq_ops.set_frequency(kbdev, freqs[0]);
 +
 +	for (i = 0; i < kbdev->nr_clocks; i++) {
 +		if (kbdev->clocks[i]) {
-+			err = clk_set_rate(kbdev->clocks[i], freq);
-+			if (!err) {
-+				kbdev->current_freqs[i] = freq;
-+			} else {
++			err = clk_set_rate(kbdev->clocks[i], freqs[i]);
++			if (err) {
++				dev_err(kbdev->dev,
++					"Failed to set clocks[%d] to freq: %lu\n",
++					i, freqs[i]);
 +				return err;
++			} else {
++				kbdev->current_freqs[i] = freqs[i];
 +			}
 +		}
 +	}
@@ -11893,23 +12002,56 @@ index dd1bdec682c1cc45d2d03bd497b1759fafb8370a..0fce67c10a34ce774023a8b71d1eef84
  static int
  kbase_devfreq_target(struct device *dev, unsigned long *target_freq, u32 flags)
  {
-@@ -99,6 +126,7 @@ kbase_devfreq_target(struct device *dev, unsigned long *target_freq, u32 flags)
+@@ -97,8 +166,8 @@ kbase_devfreq_target(struct device *dev, unsigned long *target_freq, u32 flags)
+ 	unsigned long nominal_freq;
+ 	unsigned long freqs[BASE_MAX_NR_CLOCKS_REGULATORS] = {0};
  	unsigned long volts[BASE_MAX_NR_CLOCKS_REGULATORS] = {0};
- 	unsigned int i;
+-	unsigned int i;
  	u64 core_mask;
 +	int err;
  
  	nominal_freq = *target_freq;
  
-@@ -126,6 +154,7 @@ kbase_devfreq_target(struct device *dev, unsigned long *target_freq, u32 flags)
+@@ -126,12 +195,10 @@ kbase_devfreq_target(struct device *dev, unsigned long *target_freq, u32 flags)
  	}
  
  	opp_translate(kbdev, nominal_freq, &core_mask, freqs, volts);
 +	voltage_range_check(kbdev, volts);
  
  #ifdef CONFIG_REGULATOR
- 	/* Regulators and clocks work in pairs: every clock has a regulator,
-@@ -160,19 +189,11 @@ kbase_devfreq_target(struct device *dev, unsigned long *target_freq, u32 flags)
+-	/* Regulators and clocks work in pairs: every clock has a regulator,
+-	 * and we never expect to have more regulators than clocks.
+-	 *
+-	 * We always need to increase the voltage before increasing
++	/* We always need to increase the voltage before increasing
+ 	 * the frequency of a regulator/clock pair, otherwise the clock
+ 	 * wouldn't have enough power to perform the transition.
+ 	 *
+@@ -141,56 +208,27 @@ kbase_devfreq_target(struct device *dev, unsigned long *target_freq, u32 flags)
+ 	 * to sustain its current frequency (even if that happens for a short
+ 	 * transition interval).
+ 	 */
+-	for (i = 0; i < kbdev->nr_clocks; i++) {
+-		if (kbdev->regulators[i] &&
+-				kbdev->current_voltages[i] != volts[i] &&
+-				kbdev->current_freqs[i] < freqs[i]) {
+-			int err;
+-
+-			err = regulator_set_voltage(kbdev->regulators[i],
+-				volts[i], volts[i]);
+-			if (!err) {
+-				kbdev->current_voltages[i] = volts[i];
+-			} else {
+-				dev_err(dev, "Failed to increase voltage (%d) (target %lu)\n",
+-					err, volts[i]);
+-				return err;
+-			}
++	if (kbdev->current_voltages[0] < volts[0]) {
++		err = set_voltages(kbdev, volts, true);
++		if (err) {
++			dev_err(kbdev->dev, "Failed to increase voltage\n");
++			return err;
+ 		}
  	}
  #endif
  
@@ -11926,14 +12068,36 @@ index dd1bdec682c1cc45d2d03bd497b1759fafb8370a..0fce67c10a34ce774023a8b71d1eef84
 -				return err;
 -			}
 -		}
-+	err = set_frequency(kbdev, freqs[0]);
++	err = set_frequency(kbdev, freqs);
 +	if (err) {
-+		dev_err(dev, "Failed to set clock %lu (target %lu)\n",
-+				freqs[0], *target_freq);
++		dev_err(dev, "Failed to set clocks error num = %d\n", err);
 +		return err;
  	}
  
  #ifdef CONFIG_REGULATOR
+-	for (i = 0; i < kbdev->nr_clocks; i++) {
+-		if (kbdev->regulators[i] &&
+-				kbdev->current_voltages[i] != volts[i] &&
+-				kbdev->current_freqs[i] > freqs[i]) {
+-			int err;
+-
+-			err = regulator_set_voltage(kbdev->regulators[i],
+-				volts[i], volts[i]);
+-			if (!err) {
+-				kbdev->current_voltages[i] = volts[i];
+-			} else {
+-				dev_err(dev, "Failed to decrease voltage (%d) (target %lu)\n",
+-					err, volts[i]);
+-				return err;
+-			}
++	if (kbdev->current_voltages[0] > volts[0]) {
++		err = set_voltages(kbdev, volts, false);
++		if (err) {
++			dev_err(kbdev->dev, "Failed to decrease voltage\n");
++			return err;
+ 		}
+ 	}
+ #endif
 diff --git a/drivers/gpu/arm/valhall/backend/gpu/mali_kbase_gpuprops_backend.c b/drivers/gpu/arm/valhall/backend/gpu/mali_kbase_gpuprops_backend.c
 index 352afa11907a448c64e3112e79a96326332df3df..f719a88eb2fdc42625e1406ceeebea3c0c743e91 100644
 --- a/drivers/gpu/arm/valhall/backend/gpu/mali_kbase_gpuprops_backend.c
@@ -12071,9 +12235,7 @@ index 05cf7cb053f983c18f66e7296da1ad2dde0d7185..5f216866c9cbeaf91700293a1bac52ee
  };
  MODULE_DEVICE_TABLE(of, kbase_dt_ids);
 diff --git a/drivers/gpu/arm/valhall/mali_kbase_defs.h b/drivers/gpu/arm/valhall/mali_kbase_defs.h
-old mode 100644
-new mode 100755
-index 557fe7868d7582da1405d0a8937ff77952972a0f..4d0de4fce35ef8ef566efc03c2c61b9fa986da81
+index 557fe7868d7582da1405d0a8937ff77952972a0f..ef8a47893d5b496df60301414a2ebe610fe30ea1 100644
 --- a/drivers/gpu/arm/valhall/mali_kbase_defs.h
 +++ b/drivers/gpu/arm/valhall/mali_kbase_defs.h
 @@ -101,6 +101,8 @@
@@ -12095,13 +12257,18 @@ index 557fe7868d7582da1405d0a8937ff77952972a0f..4d0de4fce35ef8ef566efc03c2c61b9f
  #ifdef CONFIG_REGULATOR
  	struct regulator *regulators[BASE_MAX_NR_CLOCKS_REGULATORS];
  	unsigned int nr_regulators;
-@@ -922,6 +927,13 @@ struct kbase_device {
+@@ -922,6 +927,18 @@ struct kbase_device {
  	struct kbase_devfreq_queue_info devfreq_queue;
  #endif
  
 +	struct {
 +		void (*voltage_range_check)(struct kbase_device *kbdev,
 +					    unsigned long *voltages);
++#ifdef CONFIG_REGULATOR
++		int (*set_voltages)(struct kbase_device *kbdev,
++				    unsigned long *voltages,
++				    bool inc);
++#endif
 +		int (*set_frequency)(struct kbase_device *kbdev,
 +				     unsigned long freq);
 +	} devfreq_ops;
@@ -12131,12 +12298,12 @@ index 0000000000000000000000000000000000000000..72bbe2311639bbce8af727eea466c52f
 +	$(MALI_PLATFORM_DIR)/mali_kbase_runtime_pm.o
 diff --git a/drivers/gpu/arm/valhall/platform/mt8192/mali_kbase_config_mt8192.c b/drivers/gpu/arm/valhall/platform/mt8192/mali_kbase_config_mt8192.c
 new file mode 100644
-index 0000000000000000000000000000000000000000..a2737171371195af712ab092556d314751ec5517
+index 0000000000000000000000000000000000000000..95511b9ae581c7dcb8f12c3683ce63cc8c914a5d
 --- /dev/null
 +++ b/drivers/gpu/arm/valhall/platform/mt8192/mali_kbase_config_mt8192.c
 @@ -0,0 +1,37 @@
 +/*
-+ * Copyright (C) 2018 MediaTek Inc.
++ * Copyright (C) 2020 MediaTek Inc.
 + *
 + * This program is free software; you can redistribute it and/or modify
 + * it under the terms of the GNU General Public License version 2 as
@@ -12173,13 +12340,13 @@ index 0000000000000000000000000000000000000000..a2737171371195af712ab092556d3147
 +{
 +}
 diff --git a/drivers/gpu/arm/valhall/platform/mt8192/mali_kbase_config_platform.h b/drivers/gpu/arm/valhall/platform/mt8192/mali_kbase_config_platform.h
-new file mode 100755
-index 0000000000000000000000000000000000000000..dbfa8fa413a148d47d6f36541e0292829ed8883b
+new file mode 100644
+index 0000000000000000000000000000000000000000..25a5a690ce89d393bdfff7b0f40f6949cc5f8e26
 --- /dev/null
 +++ b/drivers/gpu/arm/valhall/platform/mt8192/mali_kbase_config_platform.h
-@@ -0,0 +1,98 @@
+@@ -0,0 +1,96 @@
 +/*
-+ * Copyright (C) 2018 MediaTek Inc.
++ * Copyright (C) 2020 MediaTek Inc.
 + *
 + * This program is free software; you can redistribute it and/or modify
 + * it under the terms of the GNU General Public License version 2 as
@@ -12192,23 +12359,21 @@ index 0000000000000000000000000000000000000000..dbfa8fa413a148d47d6f36541e029282
 + */
 +
 +struct mfg_base {
-+	struct clk *clk_mux;
-+	struct clk *clk_main_parent;
-+	struct clk *clk_sub_parent;
-+	struct clk *subsys_mfg_cg;
++	struct clk_bulk_data *clks;
++	int num_clks;
 +	void __iomem *g_mfg_base;
 +	bool is_powered;
 +};
 +
 +/* Definition for PMIC regulators */
 +#define VSRAM_GPU_MAX_VOLT (843750)	/* uV */
-+#define VSRAM_GPU_MIN_VOLT (750000) /* uV */
++#define VSRAM_GPU_MIN_VOLT (750000)	/* uV */
 +#define VGPU_MAX_VOLT (843750)	/* uV */
 +#define VGPU_MIN_VOLT (562500)	/* uV */
 +
-+#define MIN_VOLT_BIAS (0) /* uV */
-+#define MAX_VOLT_BIAS (250000) /* uV */
-+#define VOLT_TOL (125) /* uV */
++#define MIN_VOLT_BIAS (0)	/* uV */
++#define MAX_VOLT_BIAS (250000)	/* uV */
++#define VOLT_TOL (125)	/* uV */
 +
 +#define GPU_CORE_NUM 5
 +
@@ -12277,13 +12442,13 @@ index 0000000000000000000000000000000000000000..dbfa8fa413a148d47d6f36541e029282
 + */
 +#define AUTO_SUSPEND_DELAY (100)
 diff --git a/drivers/gpu/arm/valhall/platform/mt8192/mali_kbase_runtime_pm.c b/drivers/gpu/arm/valhall/platform/mt8192/mali_kbase_runtime_pm.c
-new file mode 100755
-index 0000000000000000000000000000000000000000..d6e617de4fdbd82a4ea1d442c1fbaf2da89f8857
+new file mode 100644
+index 0000000000000000000000000000000000000000..b34708dc1abed375801a7917d4555d046d24e55e
 --- /dev/null
 +++ b/drivers/gpu/arm/valhall/platform/mt8192/mali_kbase_runtime_pm.c
-@@ -0,0 +1,454 @@
+@@ -0,0 +1,429 @@
 +/*
-+ * Copyright (C) 2018 MediaTek Inc.
++ * Copyright (C) 2020 MediaTek Inc.
 + *
 + * This program is free software; you can redistribute it and/or modify
 + * it under the terms of the GNU General Public License version 2 as
@@ -12303,6 +12468,12 @@ index 0000000000000000000000000000000000000000..d6e617de4fdbd82a4ea1d442c1fbaf2d
 +#include <mali_kbase.h>
 +#include "mali_kbase_config_platform.h"
 +#include <mali_kbase_defs.h>
++
++enum gpu_clk_idx {main, sub, mux, cg};
++/* list of clocks required by GPU */
++static const char * const gpu_clocks[] = {
++	"clk_main_parent", "clk_sub_parent", "clk_mux", "subsys_mfg_cg",
++};
 +
 +static void pm_domain_term(struct kbase_device *kbdev)
 +{
@@ -12353,9 +12524,9 @@ index 0000000000000000000000000000000000000000..d6e617de4fdbd82a4ea1d442c1fbaf2d
 +		return -EINVAL;
 +
 +	err = of_property_read_string_array(kbdev->dev->of_node,
-+										"power-domain-names",
-+										pd_names,
-+										num_domain_names);
++					    "power-domain-names",
++					    pd_names,
++					    num_domain_names);
 +
 +	if (err < 0) {
 +		dev_err(kbdev->dev, "Error reading supply-names: %d\n", err);
@@ -12370,7 +12541,7 @@ index 0000000000000000000000000000000000000000..d6e617de4fdbd82a4ea1d442c1fbaf2d
 +			err = PTR_ERR(kbdev->pm_domain_devs[i]) ? : -ENODATA;
 +			kbdev->pm_domain_devs[i] = NULL;
 +			if (err == -EPROBE_DEFER) {
-+				dev_err(kbdev->dev,
++				dev_dbg(kbdev->dev,
 +					"Probe deferral for pm-domain %s(%d)\n",
 +					pd_names[i], i);
 +			} else {
@@ -12439,40 +12610,21 @@ index 0000000000000000000000000000000000000000..d6e617de4fdbd82a4ea1d442c1fbaf2d
 +		}
 +	}
 +
-+	for(i = 0; i < kbdev->num_pm_domains; i++) {
++	for (i = 0; i < kbdev->num_pm_domains; i++) {
 +		error = pm_runtime_get_sync(kbdev->pm_domain_devs[i]);
-+		if (error < 0)
++		if (error < 0) {
 +			dev_err(kbdev->dev,
-+			"Power on core %d failed (err: %d)\n", i+1, error);
++				"Power on core %d failed (err: %d)\n",
++				i+1, error);
++			return error;
++		}
 +	}
 +
-+	error = clk_prepare_enable(mfg->clk_main_parent);
++	error = clk_bulk_prepare_enable(mfg->num_clks, mfg->clks);
 +	if (error < 0) {
 +		dev_err(kbdev->dev,
-+			"clk_main_parent clock enable failed (err: %d)\n",
++			"gpu clock enable failed (err: %d)\n",
 +			error);
-+		return error;
-+	}
-+
-+	error = clk_prepare_enable(mfg->clk_sub_parent);
-+	if (error < 0) {
-+		dev_err(kbdev->dev,
-+			"clk_sub_parent clock enable failed (err: %d)\n",
-+			error);
-+		return error;
-+	}
-+
-+	error = clk_prepare_enable(mfg->clk_mux);
-+	if (error < 0) {
-+		dev_err(kbdev->dev,
-+			"clk_mux clock enable failed (err: %d)\n", error);
-+		return error;
-+	}
-+
-+	error = clk_prepare_enable(mfg->subsys_mfg_cg);
-+	if (error < 0) {
-+		dev_err(kbdev->dev,
-+			"subsys_mfg_cg clock enable failed (err: %d)\n", error);
 +		return error;
 +	}
 +
@@ -12495,29 +12647,23 @@ index 0000000000000000000000000000000000000000..d6e617de4fdbd82a4ea1d442c1fbaf2d
 +
 +	check_bus_idle(kbdev);
 +
-+	clk_disable_unprepare(mfg->subsys_mfg_cg);
++	clk_bulk_disable_unprepare(mfg->num_clks, mfg->clks);
 +
-+	clk_disable_unprepare(mfg->clk_mux);
-+
-+	clk_disable_unprepare(mfg->clk_sub_parent);
-+
-+	clk_disable_unprepare(mfg->clk_main_parent);
-+
-+	for(i = kbdev->num_pm_domains - 1; i >= 0; i--) {
++	for (i = kbdev->num_pm_domains - 1; i >= 0; i--) {
 +		pm_runtime_mark_last_busy(kbdev->pm_domain_devs[i]);
 +		error = pm_runtime_put_autosuspend(kbdev->pm_domain_devs[i]);
 +		if (error < 0)
 +			dev_err(kbdev->dev,
-+			"Power off core %d failed (err: %d)\n", i+1, error);
++				"Power off core %d failed (err: %d)\n",
++				i+1, error);
 +	}
 +
 +	for (i = kbdev->nr_regulators - 1; i >= 0; i--) {
 +		error = regulator_disable(kbdev->regulators[i]);
-+		if (error < 0) {
++		if (error < 0)
 +			dev_err(kbdev->dev,
 +				"Power off reg %d failed error = %d\n",
 +				i, error);
-+		}
 +	}
 +}
 +
@@ -12586,36 +12732,26 @@ index 0000000000000000000000000000000000000000..d6e617de4fdbd82a4ea1d442c1fbaf2d
 +		if (kbdev->regulators[i] == NULL)
 +			return -EINVAL;
 +
-+	mfg->clk_main_parent = devm_clk_get(kbdev->dev, "clk_main_parent");
-+	if (IS_ERR(mfg->clk_main_parent)) {
-+		err = PTR_ERR(mfg->clk_main_parent);
-+		dev_err(kbdev->dev, "devm_clk_get clk_main_parent failed\n");
-+		return err;
-+	}
++	mfg->num_clks = ARRAY_SIZE(gpu_clocks);
++	mfg->clks = devm_kcalloc(kbdev->dev, mfg->num_clks,
++				     sizeof(*mfg->clks), GFP_KERNEL);
 +
-+	mfg->clk_sub_parent = devm_clk_get(kbdev->dev, "clk_sub_parent");
-+	if (IS_ERR(mfg->clk_sub_parent)) {
-+		err = PTR_ERR(mfg->clk_sub_parent);
-+		dev_err(kbdev->dev, "devm_clk_get clk_sub_parent failed\n");
-+		return err;
-+	}
++	if (!mfg->clks)
++		return -ENOMEM;
 +
-+	mfg->clk_mux = devm_clk_get(kbdev->dev, "clk_mux");
-+	if (IS_ERR(mfg->clk_mux)) {
-+		err = PTR_ERR(mfg->clk_mux);
-+		dev_err(kbdev->dev, "devm_clk_get clk_mux failed\n");
-+		return err;
-+	}
++	for (i = 0; i < mfg->num_clks; ++i)
++		mfg->clks[i].id = gpu_clocks[i];
 +
-+	mfg->subsys_mfg_cg = devm_clk_get(kbdev->dev, "subsys_mfg_cg");
-+	if (IS_ERR(mfg->subsys_mfg_cg)) {
-+		err = PTR_ERR(mfg->subsys_mfg_cg);
-+		dev_err(kbdev->dev, "devm_clk_get subsys_mfg_cg failed\n");
++	err = devm_clk_bulk_get(kbdev->dev, mfg->num_clks, mfg->clks);
++	if (err != 0) {
++		dev_err(kbdev->dev,
++			"clk_bulk_get error: %d\n",
++			err);
 +		return err;
 +	}
 +
 +	for (i = 0; i < kbdev->nr_regulators; i++) {
-+		volt = (0 == i) ? VGPU_MAX_VOLT : VSRAM_GPU_MAX_VOLT;
++		volt = (i == 0) ? VGPU_MAX_VOLT : VSRAM_GPU_MAX_VOLT;
 +		err = regulator_set_voltage(kbdev->regulators[i],
 +			volt, volt + VOLT_TOL);
 +		if (err < 0) {
@@ -12654,20 +12790,24 @@ index 0000000000000000000000000000000000000000..d6e617de4fdbd82a4ea1d442c1fbaf2d
 +	struct mfg_base *mfg = kbdev->platform_context;
 +
 +	if (kbdev->current_freqs[0] != freq) {
-+		err = clk_set_parent(mfg->clk_mux, mfg->clk_sub_parent);
++		err = clk_set_parent(mfg->clks[mux].clk, mfg->clks[sub].clk);
 +		if (err) {
 +			dev_err(kbdev->dev, "Failed to select sub clock src\n");
 +			return err;
 +		}
 +
-+		err = clk_set_rate(mfg->clk_main_parent, freq);
-+		if (err)
-+			return err;
-+
-+		err = clk_set_parent(mfg->clk_mux, mfg->clk_main_parent);
++		err = clk_set_rate(mfg->clks[main].clk, freq);
 +		if (err) {
 +			dev_err(kbdev->dev,
-+				"Failed to select main clock src\n");
++				"Failed to set clock rate: %lu (err: %d)\n",
++				freq, err);
++			return err;
++		}
++		kbdev->current_freqs[0] = freq;
++
++		err = clk_set_parent(mfg->clks[mux].clk, mfg->clks[main].clk);
++		if (err) {
++			dev_err(kbdev->dev, "Failed to select main clock src\n");
 +			return err;
 +		}
 +	}
@@ -12677,10 +12817,10 @@ index 0000000000000000000000000000000000000000..d6e617de4fdbd82a4ea1d442c1fbaf2d
 +
 +static int platform_init(struct kbase_device *kbdev)
 +{
-+	int err,i;
++	int err, i;
 +	struct mfg_base *mfg;
 +
-+	mfg = kzalloc(sizeof(*mfg), GFP_KERNEL);
++	mfg = devm_kzalloc(kbdev->dev, sizeof(*mfg), GFP_KERNEL);
 +	if (!mfg)
 +		return -ENOMEM;
 +
@@ -12689,25 +12829,25 @@ index 0000000000000000000000000000000000000000..d6e617de4fdbd82a4ea1d442c1fbaf2d
 +		goto platform_init_err;
 +
 +	kbdev->platform_context = mfg;
-+	for(i = 0; i < kbdev->num_pm_domains; i++) {
++	for (i = 0; i < kbdev->num_pm_domains; i++) {
 +		pm_runtime_set_autosuspend_delay(kbdev->pm_domain_devs[i], 50);
 +		pm_runtime_use_autosuspend(kbdev->pm_domain_devs[i]);
 +	}
 +
-+	err = clk_set_parent(mfg->clk_mux, mfg->clk_sub_parent);
++	err = clk_set_parent(mfg->clks[mux].clk, mfg->clks[sub].clk);
 +	if (err) {
 +		dev_err(kbdev->dev, "Failed to select sub clock src\n");
 +		goto platform_init_err;
 +	}
 +
-+	err = clk_set_rate(mfg->clk_main_parent, GPU_FREQ_KHZ_MAX * 1000);
++	err = clk_set_rate(mfg->clks[main].clk, GPU_FREQ_KHZ_MAX * 1000);
 +	if (err) {
 +		dev_err(kbdev->dev, "Failed to set clock %d kHz\n",
-+				GPU_FREQ_KHZ_MAX);
++			GPU_FREQ_KHZ_MAX);
 +		goto platform_init_err;
 +	}
 +
-+	err = clk_set_parent(mfg->clk_mux, mfg->clk_main_parent);
++	err = clk_set_parent(mfg->clks[mux].clk, mfg->clks[main].clk);
 +	if (err) {
 +		dev_err(kbdev->dev, "Failed to select main clock src\n");
 +		goto platform_init_err;
@@ -24422,6 +24562,1580 @@ index f6cd8a66060286a7192eb162fd2d3f574f5a43cd..07240eaf4055e8fee7a94f8d971446c0
  	}, {
  		.compatible = "mediatek,mt6397",
  		.data = &mt6397_core,
+diff --git a/drivers/mmc/host/mtk-sd.c b/drivers/mmc/host/mtk-sd.c
+index 5c6f61ff01928b8145d71ad9162604112c8deea7..c9326b8a7af0af6354c6cfffbde0d1f3248ff671 100644
+--- a/drivers/mmc/host/mtk-sd.c
++++ b/drivers/mmc/host/mtk-sd.c
+@@ -419,6 +419,8 @@ struct msdc_host {
+ 	struct clk *h_clk;      /* msdc h_clk */
+ 	struct clk *bus_clk;	/* bus clock which used to access register */
+ 	struct clk *src_clk_cg; /* msdc source clock control gate */
++	struct clk *sys_clk_cg;	/* msdc subsys clock control gate */
++	struct clk_bulk_data bulk_clks[3];	/* axi, ahb, pclk clock control gate */
+ 	u32 mclk;		/* mmc subsystem clock frequency */
+ 	u32 src_clk_freq;	/* source clock frequency */
+ 	unsigned char timing;
+@@ -741,6 +743,8 @@ static void msdc_set_timeout(struct msdc_host *host, u32 ns, u32 clks)
+ 
+ static void msdc_gate_clock(struct msdc_host *host)
+ {
++	clk_bulk_disable_unprepare(ARRAY_SIZE(host->bulk_clks),
++                                   host->bulk_clks);
+ 	clk_disable_unprepare(host->src_clk_cg);
+ 	clk_disable_unprepare(host->src_clk);
+ 	clk_disable_unprepare(host->bus_clk);
+@@ -749,10 +753,17 @@ static void msdc_gate_clock(struct msdc_host *host)
+ 
+ static void msdc_ungate_clock(struct msdc_host *host)
+ {
++	int ret;
++
+ 	clk_prepare_enable(host->h_clk);
+ 	clk_prepare_enable(host->bus_clk);
+ 	clk_prepare_enable(host->src_clk);
+ 	clk_prepare_enable(host->src_clk_cg);
++	ret = clk_bulk_prepare_enable(ARRAY_SIZE(host->bulk_clks),
++				      host->bulk_clks);
++	if (ret)
++		dev_dbg(host->dev, "enable clks failed!\n");
++
+ 	while (!(readl(host->base + MSDC_CFG) & MSDC_CFG_CKSTB))
+ 		cpu_relax();
+ }
+@@ -2218,6 +2229,7 @@ static int msdc_drv_probe(struct platform_device *pdev)
+ 	struct mmc_host *mmc;
+ 	struct msdc_host *host;
+ 	struct resource *res;
++	struct clk *clk;
+ 	int ret;
+ 
+ 	if (!pdev->dev.of_node) {
+@@ -2268,11 +2280,33 @@ static int msdc_drv_probe(struct platform_device *pdev)
+ 	host->bus_clk = devm_clk_get(&pdev->dev, "bus_clk");
+ 	if (IS_ERR(host->bus_clk))
+ 		host->bus_clk = NULL;
++
+ 	/*source clock control gate is optional clock*/
+ 	host->src_clk_cg = devm_clk_get(&pdev->dev, "source_cg");
+ 	if (IS_ERR(host->src_clk_cg))
+ 		host->src_clk_cg = NULL;
+ 
++	host->sys_clk_cg = devm_clk_get(&pdev->dev, "sys_cg");
++	if (IS_ERR(host->sys_clk_cg))
++		host->sys_clk_cg = NULL;
++	else
++		clk_prepare_enable(host->sys_clk_cg);
++
++	clk = devm_clk_get(&pdev->dev, "axi_cg");
++        if (IS_ERR(clk))
++		clk = NULL;
++        host->bulk_clks[0].clk = clk;
++
++	clk = devm_clk_get(&pdev->dev, "ahb_cg");
++        if (IS_ERR(clk))
++		clk = NULL;
++        host->bulk_clks[1].clk = clk;
++
++	clk = devm_clk_get(&pdev->dev, "pclk_cg");
++        if (IS_ERR(clk))
++		clk = NULL;
++        host->bulk_clks[2].clk = clk;
++
+ 	host->irq = platform_get_irq(pdev, 0);
+ 	if (host->irq < 0) {
+ 		ret = -EINVAL;
+diff --git a/drivers/mtd/spi-nor/aspeed-smc.c b/drivers/mtd/spi-nor/aspeed-smc.c
+index 009c1da8574c917b9e96f4d6c64597e8119825bc..395127349aa8d0f8b3c6a17363c25defc59b4ab3 100644
+--- a/drivers/mtd/spi-nor/aspeed-smc.c
++++ b/drivers/mtd/spi-nor/aspeed-smc.c
+@@ -305,7 +305,7 @@ static void aspeed_smc_stop_user(struct spi_nor *nor)
+ 	writel(ctl, chip->ctl);		/* default to fread or read mode */
+ }
+ 
+-static int aspeed_smc_prep(struct spi_nor *nor, enum spi_nor_ops ops)
++static int aspeed_smc_prep(struct spi_nor *nor)
+ {
+ 	struct aspeed_smc_chip *chip = nor->priv;
+ 
+@@ -313,14 +313,15 @@ static int aspeed_smc_prep(struct spi_nor *nor, enum spi_nor_ops ops)
+ 	return 0;
+ }
+ 
+-static void aspeed_smc_unprep(struct spi_nor *nor, enum spi_nor_ops ops)
++static void aspeed_smc_unprep(struct spi_nor *nor)
+ {
+ 	struct aspeed_smc_chip *chip = nor->priv;
+ 
+ 	mutex_unlock(&chip->controller->mutex);
+ }
+ 
+-static int aspeed_smc_read_reg(struct spi_nor *nor, u8 opcode, u8 *buf, int len)
++static int aspeed_smc_read_reg(struct spi_nor *nor, u8 opcode, u8 *buf,
++			       size_t len)
+ {
+ 	struct aspeed_smc_chip *chip = nor->priv;
+ 
+@@ -331,8 +332,8 @@ static int aspeed_smc_read_reg(struct spi_nor *nor, u8 opcode, u8 *buf, int len)
+ 	return 0;
+ }
+ 
+-static int aspeed_smc_write_reg(struct spi_nor *nor, u8 opcode, u8 *buf,
+-				int len)
++static int aspeed_smc_write_reg(struct spi_nor *nor, u8 opcode, const u8 *buf,
++				size_t len)
+ {
+ 	struct aspeed_smc_chip *chip = nor->priv;
+ 
+@@ -746,6 +747,15 @@ static int aspeed_smc_chip_setup_finish(struct aspeed_smc_chip *chip)
+ 	return 0;
+ }
+ 
++static const struct spi_nor_controller_ops aspeed_smc_controller_ops = {
++	.prepare = aspeed_smc_prep,
++	.unprepare = aspeed_smc_unprep,
++	.read_reg = aspeed_smc_read_reg,
++	.write_reg = aspeed_smc_write_reg,
++	.read = aspeed_smc_read_user,
++	.write = aspeed_smc_write_user,
++};
++
+ static int aspeed_smc_setup_flash(struct aspeed_smc_controller *controller,
+ 				  struct device_node *np, struct resource *r)
+ {
+@@ -805,12 +815,7 @@ static int aspeed_smc_setup_flash(struct aspeed_smc_controller *controller,
+ 		nor->dev = dev;
+ 		nor->priv = chip;
+ 		spi_nor_set_flash_node(nor, child);
+-		nor->read = aspeed_smc_read_user;
+-		nor->write = aspeed_smc_write_user;
+-		nor->read_reg = aspeed_smc_read_reg;
+-		nor->write_reg = aspeed_smc_write_reg;
+-		nor->prepare = aspeed_smc_prep;
+-		nor->unprepare = aspeed_smc_unprep;
++		nor->controller_ops = &aspeed_smc_controller_ops;
+ 
+ 		ret = aspeed_smc_chip_setup_init(chip, r);
+ 		if (ret)
+diff --git a/drivers/mtd/spi-nor/cadence-quadspi.c b/drivers/mtd/spi-nor/cadence-quadspi.c
+index 7bef63947b29fb8b6e6a9ae10163c7aa63159ea7..91d33d4bc01ec9661078199d0fbc3e4bf3ebb10a 100644
+--- a/drivers/mtd/spi-nor/cadence-quadspi.c
++++ b/drivers/mtd/spi-nor/cadence-quadspi.c
+@@ -356,18 +356,19 @@ static int cqspi_exec_flash_cmd(struct cqspi_st *cqspi, unsigned int reg)
+ 
+ static int cqspi_command_read(struct spi_nor *nor,
+ 			      const u8 *txbuf, const unsigned n_tx,
+-			      u8 *rxbuf, const unsigned n_rx)
++			      u8 *rxbuf, size_t n_rx)
+ {
+ 	struct cqspi_flash_pdata *f_pdata = nor->priv;
+ 	struct cqspi_st *cqspi = f_pdata->cqspi;
+ 	void __iomem *reg_base = cqspi->iobase;
+ 	unsigned int rdreg;
+ 	unsigned int reg;
+-	unsigned int read_len;
++	size_t read_len;
+ 	int status;
+ 
+ 	if (!n_rx || n_rx > CQSPI_STIG_DATA_LEN_MAX || !rxbuf) {
+-		dev_err(nor->dev, "Invalid input argument, len %d rxbuf 0x%p\n",
++		dev_err(nor->dev,
++			"Invalid input argument, len %zu rxbuf 0x%p\n",
+ 			n_rx, rxbuf);
+ 		return -EINVAL;
+ 	}
+@@ -404,19 +405,19 @@ static int cqspi_command_read(struct spi_nor *nor,
+ }
+ 
+ static int cqspi_command_write(struct spi_nor *nor, const u8 opcode,
+-			       const u8 *txbuf, const unsigned n_tx)
++			       const u8 *txbuf, size_t n_tx)
+ {
+ 	struct cqspi_flash_pdata *f_pdata = nor->priv;
+ 	struct cqspi_st *cqspi = f_pdata->cqspi;
+ 	void __iomem *reg_base = cqspi->iobase;
+ 	unsigned int reg;
+ 	unsigned int data;
+-	u32 write_len;
++	size_t write_len;
+ 	int ret;
+ 
+ 	if (n_tx > CQSPI_STIG_DATA_LEN_MAX || (n_tx && !txbuf)) {
+ 		dev_err(nor->dev,
+-			"Invalid input argument, cmdlen %d txbuf 0x%p\n",
++			"Invalid input argument, cmdlen %zu txbuf 0x%p\n",
+ 			n_tx, txbuf);
+ 		return -EINVAL;
+ 	}
+@@ -1050,7 +1051,7 @@ static int cqspi_erase(struct spi_nor *nor, loff_t offs)
+ 		return ret;
+ 
+ 	/* Send write enable, then erase commands. */
+-	ret = nor->write_reg(nor, SPINOR_OP_WREN, NULL, 0);
++	ret = nor->controller_ops->write_reg(nor, SPINOR_OP_WREN, NULL, 0);
+ 	if (ret)
+ 		return ret;
+ 
+@@ -1062,7 +1063,7 @@ static int cqspi_erase(struct spi_nor *nor, loff_t offs)
+ 	return 0;
+ }
+ 
+-static int cqspi_prep(struct spi_nor *nor, enum spi_nor_ops ops)
++static int cqspi_prep(struct spi_nor *nor)
+ {
+ 	struct cqspi_flash_pdata *f_pdata = nor->priv;
+ 	struct cqspi_st *cqspi = f_pdata->cqspi;
+@@ -1072,7 +1073,7 @@ static int cqspi_prep(struct spi_nor *nor, enum spi_nor_ops ops)
+ 	return 0;
+ }
+ 
+-static void cqspi_unprep(struct spi_nor *nor, enum spi_nor_ops ops)
++static void cqspi_unprep(struct spi_nor *nor)
+ {
+ 	struct cqspi_flash_pdata *f_pdata = nor->priv;
+ 	struct cqspi_st *cqspi = f_pdata->cqspi;
+@@ -1080,7 +1081,7 @@ static void cqspi_unprep(struct spi_nor *nor, enum spi_nor_ops ops)
+ 	mutex_unlock(&cqspi->bus_mutex);
+ }
+ 
+-static int cqspi_read_reg(struct spi_nor *nor, u8 opcode, u8 *buf, int len)
++static int cqspi_read_reg(struct spi_nor *nor, u8 opcode, u8 *buf, size_t len)
+ {
+ 	int ret;
+ 
+@@ -1091,7 +1092,8 @@ static int cqspi_read_reg(struct spi_nor *nor, u8 opcode, u8 *buf, int len)
+ 	return ret;
+ }
+ 
+-static int cqspi_write_reg(struct spi_nor *nor, u8 opcode, u8 *buf, int len)
++static int cqspi_write_reg(struct spi_nor *nor, u8 opcode, const u8 *buf,
++			   size_t len)
+ {
+ 	int ret;
+ 
+@@ -1216,6 +1218,16 @@ static void cqspi_request_mmap_dma(struct cqspi_st *cqspi)
+ 	init_completion(&cqspi->rx_dma_complete);
+ }
+ 
++static const struct spi_nor_controller_ops cqspi_controller_ops = {
++	.prepare = cqspi_prep,
++	.unprepare = cqspi_unprep,
++	.read_reg = cqspi_read_reg,
++	.write_reg = cqspi_write_reg,
++	.read = cqspi_read,
++	.write = cqspi_write,
++	.erase = cqspi_erase,
++};
++
+ static int cqspi_setup_flash(struct cqspi_st *cqspi, struct device_node *np)
+ {
+ 	struct platform_device *pdev = cqspi->pdev;
+@@ -1265,14 +1277,7 @@ static int cqspi_setup_flash(struct cqspi_st *cqspi, struct device_node *np)
+ 		nor->dev = dev;
+ 		spi_nor_set_flash_node(nor, np);
+ 		nor->priv = f_pdata;
+-
+-		nor->read_reg = cqspi_read_reg;
+-		nor->write_reg = cqspi_write_reg;
+-		nor->read = cqspi_read;
+-		nor->write = cqspi_write;
+-		nor->erase = cqspi_erase;
+-		nor->prepare = cqspi_prep;
+-		nor->unprepare = cqspi_unprep;
++		nor->controller_ops = &cqspi_controller_ops;
+ 
+ 		mtd->name = devm_kasprintf(dev, GFP_KERNEL, "%s.%d",
+ 					   dev_name(dev), cs);
+diff --git a/drivers/mtd/spi-nor/hisi-sfc.c b/drivers/mtd/spi-nor/hisi-sfc.c
+index 6dac9dd8bf42d1c8db866fb5cf24a41dc4ee5aad..554713db63e667cc78ab7672b712e2258679999f 100644
+--- a/drivers/mtd/spi-nor/hisi-sfc.c
++++ b/drivers/mtd/spi-nor/hisi-sfc.c
+@@ -144,7 +144,7 @@ static void hisi_spi_nor_init(struct hifmc_host *host)
+ 	writel(reg, host->regbase + FMC_SPI_TIMING_CFG);
+ }
+ 
+-static int hisi_spi_nor_prep(struct spi_nor *nor, enum spi_nor_ops ops)
++static int hisi_spi_nor_prep(struct spi_nor *nor)
+ {
+ 	struct hifmc_priv *priv = nor->priv;
+ 	struct hifmc_host *host = priv->host;
+@@ -167,7 +167,7 @@ static int hisi_spi_nor_prep(struct spi_nor *nor, enum spi_nor_ops ops)
+ 	return ret;
+ }
+ 
+-static void hisi_spi_nor_unprep(struct spi_nor *nor, enum spi_nor_ops ops)
++static void hisi_spi_nor_unprep(struct spi_nor *nor)
+ {
+ 	struct hifmc_priv *priv = nor->priv;
+ 	struct hifmc_host *host = priv->host;
+@@ -177,7 +177,7 @@ static void hisi_spi_nor_unprep(struct spi_nor *nor, enum spi_nor_ops ops)
+ }
+ 
+ static int hisi_spi_nor_op_reg(struct spi_nor *nor,
+-				u8 opcode, int len, u8 optype)
++				u8 opcode, size_t len, u8 optype)
+ {
+ 	struct hifmc_priv *priv = nor->priv;
+ 	struct hifmc_host *host = priv->host;
+@@ -200,7 +200,7 @@ static int hisi_spi_nor_op_reg(struct spi_nor *nor,
+ }
+ 
+ static int hisi_spi_nor_read_reg(struct spi_nor *nor, u8 opcode, u8 *buf,
+-		int len)
++				 size_t len)
+ {
+ 	struct hifmc_priv *priv = nor->priv;
+ 	struct hifmc_host *host = priv->host;
+@@ -215,7 +215,7 @@ static int hisi_spi_nor_read_reg(struct spi_nor *nor, u8 opcode, u8 *buf,
+ }
+ 
+ static int hisi_spi_nor_write_reg(struct spi_nor *nor, u8 opcode,
+-				u8 *buf, int len)
++				  const u8 *buf, size_t len)
+ {
+ 	struct hifmc_priv *priv = nor->priv;
+ 	struct hifmc_host *host = priv->host;
+@@ -311,6 +311,15 @@ static ssize_t hisi_spi_nor_write(struct spi_nor *nor, loff_t to,
+ 	return len;
+ }
+ 
++static const struct spi_nor_controller_ops hisi_controller_ops = {
++	.prepare = hisi_spi_nor_prep,
++	.unprepare = hisi_spi_nor_unprep,
++	.read_reg = hisi_spi_nor_read_reg,
++	.write_reg = hisi_spi_nor_write_reg,
++	.read = hisi_spi_nor_read,
++	.write = hisi_spi_nor_write,
++};
++
+ /**
+  * Get spi flash device information and register it as a mtd device.
+  */
+@@ -357,14 +366,8 @@ static int hisi_spi_nor_register(struct device_node *np,
+ 	}
+ 	priv->host = host;
+ 	nor->priv = priv;
++	nor->controller_ops = &hisi_controller_ops;
+ 
+-	nor->prepare = hisi_spi_nor_prep;
+-	nor->unprepare = hisi_spi_nor_unprep;
+-	nor->read_reg = hisi_spi_nor_read_reg;
+-	nor->write_reg = hisi_spi_nor_write_reg;
+-	nor->read = hisi_spi_nor_read;
+-	nor->write = hisi_spi_nor_write;
+-	nor->erase = NULL;
+ 	ret = spi_nor_scan(nor, NULL, &hwcaps);
+ 	if (ret)
+ 		return ret;
+diff --git a/drivers/mtd/spi-nor/intel-spi.c b/drivers/mtd/spi-nor/intel-spi.c
+index 43e55a2e9b2714a9a2ea818f629d0c822c63948e..dc38f19ac7aeebea5bb813144a538cc9965492c9 100644
+--- a/drivers/mtd/spi-nor/intel-spi.c
++++ b/drivers/mtd/spi-nor/intel-spi.c
+@@ -426,7 +426,7 @@ static int intel_spi_opcode_index(struct intel_spi *ispi, u8 opcode, int optype)
+ 	return 0;
+ }
+ 
+-static int intel_spi_hw_cycle(struct intel_spi *ispi, u8 opcode, int len)
++static int intel_spi_hw_cycle(struct intel_spi *ispi, u8 opcode, size_t len)
+ {
+ 	u32 val, status;
+ 	int ret;
+@@ -469,7 +469,7 @@ static int intel_spi_hw_cycle(struct intel_spi *ispi, u8 opcode, int len)
+ 	return 0;
+ }
+ 
+-static int intel_spi_sw_cycle(struct intel_spi *ispi, u8 opcode, int len,
++static int intel_spi_sw_cycle(struct intel_spi *ispi, u8 opcode, size_t len,
+ 			      int optype)
+ {
+ 	u32 val = 0, status;
+@@ -535,7 +535,8 @@ static int intel_spi_sw_cycle(struct intel_spi *ispi, u8 opcode, int len,
+ 	return 0;
+ }
+ 
+-static int intel_spi_read_reg(struct spi_nor *nor, u8 opcode, u8 *buf, int len)
++static int intel_spi_read_reg(struct spi_nor *nor, u8 opcode, u8 *buf,
++			      size_t len)
+ {
+ 	struct intel_spi *ispi = nor->priv;
+ 	int ret;
+@@ -555,7 +556,8 @@ static int intel_spi_read_reg(struct spi_nor *nor, u8 opcode, u8 *buf, int len)
+ 	return intel_spi_read_block(ispi, buf, len);
+ }
+ 
+-static int intel_spi_write_reg(struct spi_nor *nor, u8 opcode, u8 *buf, int len)
++static int intel_spi_write_reg(struct spi_nor *nor, u8 opcode, const u8 *buf,
++			       size_t len)
+ {
+ 	struct intel_spi *ispi = nor->priv;
+ 	int ret;
+@@ -864,6 +866,14 @@ static void intel_spi_fill_partition(struct intel_spi *ispi,
+ 	}
+ }
+ 
++static const struct spi_nor_controller_ops intel_spi_controller_ops = {
++	.read_reg = intel_spi_read_reg,
++	.write_reg = intel_spi_write_reg,
++	.read = intel_spi_read,
++	.write = intel_spi_write,
++	.erase = intel_spi_erase,
++};
++
+ struct intel_spi *intel_spi_probe(struct device *dev,
+ 	struct resource *mem, const struct intel_spi_boardinfo *info)
+ {
+@@ -897,11 +907,7 @@ struct intel_spi *intel_spi_probe(struct device *dev,
+ 
+ 	ispi->nor.dev = ispi->dev;
+ 	ispi->nor.priv = ispi;
+-	ispi->nor.read_reg = intel_spi_read_reg;
+-	ispi->nor.write_reg = intel_spi_write_reg;
+-	ispi->nor.read = intel_spi_read;
+-	ispi->nor.write = intel_spi_write;
+-	ispi->nor.erase = intel_spi_erase;
++	ispi->nor.controller_ops = &intel_spi_controller_ops;
+ 
+ 	ret = spi_nor_scan(&ispi->nor, NULL, &hwcaps);
+ 	if (ret) {
+diff --git a/drivers/mtd/spi-nor/mtk-quadspi.c b/drivers/mtd/spi-nor/mtk-quadspi.c
+index 34db01ab6cab52927931d58a9e81ad0668892a2c..b1691680d174e1aeb7123a3e92c43714ecebbef3 100644
+--- a/drivers/mtd/spi-nor/mtk-quadspi.c
++++ b/drivers/mtd/spi-nor/mtk-quadspi.c
+@@ -151,9 +151,9 @@ static int mtk_nor_execute_cmd(struct mtk_nor *mtk_nor, u8 cmdval)
+ }
+ 
+ static int mtk_nor_do_tx_rx(struct mtk_nor *mtk_nor, u8 op,
+-			    u8 *tx, int txlen, u8 *rx, int rxlen)
++			    const u8 *tx, size_t txlen, u8 *rx, size_t rxlen)
+ {
+-	int len = 1 + txlen + rxlen;
++	size_t len = 1 + txlen + rxlen;
+ 	int i, ret, idx;
+ 
+ 	if (len > MTK_NOR_MAX_SHIFT)
+@@ -193,7 +193,7 @@ static int mtk_nor_do_tx_rx(struct mtk_nor *mtk_nor, u8 op,
+ }
+ 
+ /* Do a WRSR (Write Status Register) command */
+-static int mtk_nor_wr_sr(struct mtk_nor *mtk_nor, u8 sr)
++static int mtk_nor_wr_sr(struct mtk_nor *mtk_nor, const u8 sr)
+ {
+ 	writeb(sr, mtk_nor->base + MTK_NOR_PRGDATA5_REG);
+ 	writeb(8, mtk_nor->base + MTK_NOR_CNT_REG);
+@@ -354,7 +354,7 @@ static ssize_t mtk_nor_write(struct spi_nor *nor, loff_t to, size_t len,
+ 	return len;
+ }
+ 
+-static int mtk_nor_read_reg(struct spi_nor *nor, u8 opcode, u8 *buf, int len)
++static int mtk_nor_read_reg(struct spi_nor *nor, u8 opcode, u8 *buf, size_t len)
+ {
+ 	int ret;
+ 	struct mtk_nor *mtk_nor = nor->priv;
+@@ -376,8 +376,8 @@ static int mtk_nor_read_reg(struct spi_nor *nor, u8 opcode, u8 *buf, int len)
+ 	return ret;
+ }
+ 
+-static int mtk_nor_write_reg(struct spi_nor *nor, u8 opcode, u8 *buf,
+-			     int len)
++static int mtk_nor_write_reg(struct spi_nor *nor, u8 opcode, const u8 *buf,
++			     size_t len)
+ {
+ 	int ret;
+ 	struct mtk_nor *mtk_nor = nor->priv;
+@@ -419,6 +419,13 @@ static int mtk_nor_enable_clk(struct mtk_nor *mtk_nor)
+ 	return 0;
+ }
+ 
++static const struct spi_nor_controller_ops mtk_controller_ops = {
++	.read_reg = mtk_nor_read_reg,
++	.write_reg = mtk_nor_write_reg,
++	.read = mtk_nor_read,
++	.write = mtk_nor_write,
++};
++
+ static int mtk_nor_init(struct mtk_nor *mtk_nor,
+ 			struct device_node *flash_node)
+ {
+@@ -438,12 +445,8 @@ static int mtk_nor_init(struct mtk_nor *mtk_nor,
+ 	nor->dev = mtk_nor->dev;
+ 	nor->priv = mtk_nor;
+ 	spi_nor_set_flash_node(nor, flash_node);
++	nor->controller_ops = &mtk_controller_ops;
+ 
+-	/* fill the hooks to spi nor */
+-	nor->read = mtk_nor_read;
+-	nor->read_reg = mtk_nor_read_reg;
+-	nor->write = mtk_nor_write;
+-	nor->write_reg = mtk_nor_write_reg;
+ 	nor->mtd.name = "mtk_nor";
+ 	/* initialized with NULL */
+ 	ret = spi_nor_scan(nor, NULL, &hwcaps);
+diff --git a/drivers/mtd/spi-nor/nxp-spifi.c b/drivers/mtd/spi-nor/nxp-spifi.c
+index 4a871587392b901452c4e467c3789c310e62137c..9a5b1a7c636a027f11963d47633d216ef646ad37 100644
+--- a/drivers/mtd/spi-nor/nxp-spifi.c
++++ b/drivers/mtd/spi-nor/nxp-spifi.c
+@@ -123,7 +123,8 @@ static int nxp_spifi_set_memory_mode_on(struct nxp_spifi *spifi)
+ 	return ret;
+ }
+ 
+-static int nxp_spifi_read_reg(struct spi_nor *nor, u8 opcode, u8 *buf, int len)
++static int nxp_spifi_read_reg(struct spi_nor *nor, u8 opcode, u8 *buf,
++			      size_t len)
+ {
+ 	struct nxp_spifi *spifi = nor->priv;
+ 	u32 cmd;
+@@ -145,7 +146,8 @@ static int nxp_spifi_read_reg(struct spi_nor *nor, u8 opcode, u8 *buf, int len)
+ 	return nxp_spifi_wait_for_cmd(spifi);
+ }
+ 
+-static int nxp_spifi_write_reg(struct spi_nor *nor, u8 opcode, u8 *buf, int len)
++static int nxp_spifi_write_reg(struct spi_nor *nor, u8 opcode, const u8 *buf,
++			       size_t len)
+ {
+ 	struct nxp_spifi *spifi = nor->priv;
+ 	u32 cmd;
+@@ -263,9 +265,18 @@ static int nxp_spifi_setup_memory_cmd(struct nxp_spifi *spifi)
+ static void nxp_spifi_dummy_id_read(struct spi_nor *nor)
+ {
+ 	u8 id[SPI_NOR_MAX_ID_LEN];
+-	nor->read_reg(nor, SPINOR_OP_RDID, id, SPI_NOR_MAX_ID_LEN);
++	nor->controller_ops->read_reg(nor, SPINOR_OP_RDID, id,
++				      SPI_NOR_MAX_ID_LEN);
+ }
+ 
++static const struct spi_nor_controller_ops nxp_spifi_controller_ops = {
++	.read_reg  = nxp_spifi_read_reg,
++	.write_reg = nxp_spifi_write_reg,
++	.read  = nxp_spifi_read,
++	.write = nxp_spifi_write,
++	.erase = nxp_spifi_erase,
++};
++
+ static int nxp_spifi_setup_flash(struct nxp_spifi *spifi,
+ 				 struct device_node *np)
+ {
+@@ -332,11 +343,7 @@ static int nxp_spifi_setup_flash(struct nxp_spifi *spifi,
+ 	spifi->nor.dev   = spifi->dev;
+ 	spi_nor_set_flash_node(&spifi->nor, np);
+ 	spifi->nor.priv  = spifi;
+-	spifi->nor.read  = nxp_spifi_read;
+-	spifi->nor.write = nxp_spifi_write;
+-	spifi->nor.erase = nxp_spifi_erase;
+-	spifi->nor.read_reg  = nxp_spifi_read_reg;
+-	spifi->nor.write_reg = nxp_spifi_write_reg;
++	spifi->nor.controller_ops = &nxp_spifi_controller_ops;
+ 
+ 	/*
+ 	 * The first read on a hard reset isn't reliable so do a
+diff --git a/drivers/mtd/spi-nor/spi-nor.c b/drivers/mtd/spi-nor/spi-nor.c
+index 46633e9a145ee008fc815b84d8b3db80dc055cf7..99cf1752f7491547e53e0a5a904af8a3805a7141 100644
+--- a/drivers/mtd/spi-nor/spi-nor.c
++++ b/drivers/mtd/spi-nor/spi-nor.c
+@@ -241,55 +241,45 @@ struct flash_info {
+ #define JEDEC_MFR(info)	((info)->id[0])
+ 
+ /**
+- * spi_nor_spimem_xfer_data() - helper function to read/write data to
+- *                              flash's memory region
++ * spi_nor_spimem_bounce() - check if a bounce buffer is needed for the data
++ *                           transfer
+  * @nor:        pointer to 'struct spi_nor'
+  * @op:         pointer to 'struct spi_mem_op' template for transfer
+  *
+- * Return: number of bytes transferred on success, -errno otherwise
++ * If we have to use the bounce buffer, the data field in @op will be updated.
++ *
++ * Return: true if the bounce buffer is needed, false if not
+  */
+-static ssize_t spi_nor_spimem_xfer_data(struct spi_nor *nor,
+-					struct spi_mem_op *op)
++static bool spi_nor_spimem_bounce(struct spi_nor *nor, struct spi_mem_op *op)
+ {
+-	bool usebouncebuf = false;
+-	void *rdbuf = NULL;
+-	const void *buf;
+-	int ret;
+-
+-	if (op->data.dir == SPI_MEM_DATA_IN)
+-		buf = op->data.buf.in;
+-	else
+-		buf = op->data.buf.out;
+-
+-	if (object_is_on_stack(buf) || !virt_addr_valid(buf))
+-		usebouncebuf = true;
+-
+-	if (usebouncebuf) {
++	/* op->data.buf.in occupies the same memory as op->data.buf.out */
++	if (object_is_on_stack(op->data.buf.in) ||
++	    !virt_addr_valid(op->data.buf.in)) {
+ 		if (op->data.nbytes > nor->bouncebuf_size)
+ 			op->data.nbytes = nor->bouncebuf_size;
+-
+-		if (op->data.dir == SPI_MEM_DATA_IN) {
+-			rdbuf = op->data.buf.in;
+-			op->data.buf.in = nor->bouncebuf;
+-		} else {
+-			op->data.buf.out = nor->bouncebuf;
+-			memcpy(nor->bouncebuf, buf,
+-			       op->data.nbytes);
+-		}
++		op->data.buf.in = nor->bouncebuf;
++		return true;
+ 	}
+ 
+-	ret = spi_mem_adjust_op_size(nor->spimem, op);
+-	if (ret)
+-		return ret;
++	return false;
++}
+ 
+-	ret = spi_mem_exec_op(nor->spimem, op);
+-	if (ret)
+-		return ret;
++/**
++ * spi_nor_spimem_exec_op() - execute a memory operation
++ * @nor:        pointer to 'struct spi_nor'
++ * @op:         pointer to 'struct spi_mem_op' template for transfer
++ *
++ * Return: 0 on success, -error otherwise.
++ */
++static int spi_nor_spimem_exec_op(struct spi_nor *nor, struct spi_mem_op *op)
++{
++	int error;
+ 
+-	if (usebouncebuf && op->data.dir == SPI_MEM_DATA_IN)
+-		memcpy(rdbuf, nor->bouncebuf, op->data.nbytes);
++	error = spi_mem_adjust_op_size(nor->spimem, op);
++	if (error)
++		return error;
+ 
+-	return op->data.nbytes;
++	return spi_mem_exec_op(nor->spimem, op);
+ }
+ 
+ /**
+@@ -310,6 +300,9 @@ static ssize_t spi_nor_spimem_read_data(struct spi_nor *nor, loff_t from,
+ 			   SPI_MEM_OP_ADDR(nor->addr_width, from, 1),
+ 			   SPI_MEM_OP_DUMMY(nor->read_dummy, 1),
+ 			   SPI_MEM_OP_DATA_IN(len, buf, 1));
++	bool usebouncebuf;
++	ssize_t nbytes;
++	int error;
+ 
+ 	/* get transfer protocols. */
+ 	op.cmd.buswidth = spi_nor_get_protocol_inst_nbits(nor->read_proto);
+@@ -320,7 +313,22 @@ static ssize_t spi_nor_spimem_read_data(struct spi_nor *nor, loff_t from,
+ 	/* convert the dummy cycles to the number of bytes */
+ 	op.dummy.nbytes = (nor->read_dummy * op.dummy.buswidth) / 8;
+ 
+-	return spi_nor_spimem_xfer_data(nor, &op);
++	usebouncebuf = spi_nor_spimem_bounce(nor, &op);
++
++	if (nor->dirmap.rdesc) {
++		nbytes = spi_mem_dirmap_read(nor->dirmap.rdesc, op.addr.val,
++					     op.data.nbytes, op.data.buf.in);
++	} else {
++		error = spi_nor_spimem_exec_op(nor, &op);
++		if (error)
++			return error;
++		nbytes = op.data.nbytes;
++	}
++
++	if (usebouncebuf && nbytes > 0)
++		memcpy(buf, op.data.buf.in, nbytes);
++
++	return nbytes;
+ }
+ 
+ /**
+@@ -338,7 +346,7 @@ static ssize_t spi_nor_read_data(struct spi_nor *nor, loff_t from, size_t len,
+ 	if (nor->spimem)
+ 		return spi_nor_spimem_read_data(nor, from, len, buf);
+ 
+-	return nor->read(nor, from, len, buf);
++	return nor->controller_ops->read(nor, from, len, buf);
+ }
+ 
+ /**
+@@ -359,6 +367,8 @@ static ssize_t spi_nor_spimem_write_data(struct spi_nor *nor, loff_t to,
+ 			   SPI_MEM_OP_ADDR(nor->addr_width, to, 1),
+ 			   SPI_MEM_OP_NO_DUMMY,
+ 			   SPI_MEM_OP_DATA_OUT(len, buf, 1));
++	ssize_t nbytes;
++	int error;
+ 
+ 	op.cmd.buswidth = spi_nor_get_protocol_inst_nbits(nor->write_proto);
+ 	op.addr.buswidth = spi_nor_get_protocol_addr_nbits(nor->write_proto);
+@@ -367,7 +377,20 @@ static ssize_t spi_nor_spimem_write_data(struct spi_nor *nor, loff_t to,
+ 	if (nor->program_opcode == SPINOR_OP_AAI_WP && nor->sst_write_second)
+ 		op.addr.nbytes = 0;
+ 
+-	return spi_nor_spimem_xfer_data(nor, &op);
++	if (spi_nor_spimem_bounce(nor, &op))
++		memcpy(nor->bouncebuf, buf, op.data.nbytes);
++
++	if (nor->dirmap.wdesc) {
++		nbytes = spi_mem_dirmap_write(nor->dirmap.wdesc, op.addr.val,
++					      op.data.nbytes, op.data.buf.out);
++	} else {
++		error = spi_nor_spimem_exec_op(nor, &op);
++		if (error)
++			return error;
++		nbytes = op.data.nbytes;
++	}
++
++	return nbytes;
+ }
+ 
+ /**
+@@ -385,7 +408,7 @@ static ssize_t spi_nor_write_data(struct spi_nor *nor, loff_t to, size_t len,
+ 	if (nor->spimem)
+ 		return spi_nor_spimem_write_data(nor, to, len, buf);
+ 
+-	return nor->write(nor, to, len, buf);
++	return nor->controller_ops->write(nor, to, len, buf);
+ }
+ 
+ /*
+@@ -393,7 +416,7 @@ static ssize_t spi_nor_write_data(struct spi_nor *nor, loff_t to, size_t len,
+  * Return the status register value.
+  * Returns negative if error occurred.
+  */
+-static int read_sr(struct spi_nor *nor)
++static int spi_nor_read_sr(struct spi_nor *nor)
+ {
+ 	int ret;
+ 
+@@ -406,7 +429,8 @@ static int read_sr(struct spi_nor *nor)
+ 
+ 		ret = spi_mem_exec_op(nor->spimem, &op);
+ 	} else {
+-		ret = nor->read_reg(nor, SPINOR_OP_RDSR, nor->bouncebuf, 1);
++		ret = nor->controller_ops->read_reg(nor, SPINOR_OP_RDSR,
++						    nor->bouncebuf, 1);
+ 	}
+ 
+ 	if (ret < 0) {
+@@ -422,7 +446,7 @@ static int read_sr(struct spi_nor *nor)
+  * Return the status register value.
+  * Returns negative if error occurred.
+  */
+-static int read_fsr(struct spi_nor *nor)
++static int spi_nor_read_fsr(struct spi_nor *nor)
+ {
+ 	int ret;
+ 
+@@ -435,7 +459,8 @@ static int read_fsr(struct spi_nor *nor)
+ 
+ 		ret = spi_mem_exec_op(nor->spimem, &op);
+ 	} else {
+-		ret = nor->read_reg(nor, SPINOR_OP_RDFSR, nor->bouncebuf, 1);
++		ret = nor->controller_ops->read_reg(nor, SPINOR_OP_RDFSR,
++						    nor->bouncebuf, 1);
+ 	}
+ 
+ 	if (ret < 0) {
+@@ -451,7 +476,7 @@ static int read_fsr(struct spi_nor *nor)
+  * location. Return the configuration register value.
+  * Returns negative if error occurred.
+  */
+-static int read_cr(struct spi_nor *nor)
++static int spi_nor_read_cr(struct spi_nor *nor)
+ {
+ 	int ret;
+ 
+@@ -464,7 +489,8 @@ static int read_cr(struct spi_nor *nor)
+ 
+ 		ret = spi_mem_exec_op(nor->spimem, &op);
+ 	} else {
+-		ret = nor->read_reg(nor, SPINOR_OP_RDCR, nor->bouncebuf, 1);
++		ret = nor->controller_ops->read_reg(nor, SPINOR_OP_RDCR,
++						    nor->bouncebuf, 1);
+ 	}
+ 
+ 	if (ret < 0) {
+@@ -479,7 +505,7 @@ static int read_cr(struct spi_nor *nor)
+  * Write status register 1 byte
+  * Returns negative if error occurred.
+  */
+-static int write_sr(struct spi_nor *nor, u8 val)
++static int spi_nor_write_sr(struct spi_nor *nor, u8 val)
+ {
+ 	nor->bouncebuf[0] = val;
+ 	if (nor->spimem) {
+@@ -492,14 +518,15 @@ static int write_sr(struct spi_nor *nor, u8 val)
+ 		return spi_mem_exec_op(nor->spimem, &op);
+ 	}
+ 
+-	return nor->write_reg(nor, SPINOR_OP_WRSR, nor->bouncebuf, 1);
++	return nor->controller_ops->write_reg(nor, SPINOR_OP_WRSR,
++					      nor->bouncebuf, 1);
+ }
+ 
+ /*
+  * Set write enable latch with Write Enable command.
+  * Returns negative if error occurred.
+  */
+-static int write_enable(struct spi_nor *nor)
++static int spi_nor_write_enable(struct spi_nor *nor)
+ {
+ 	if (nor->spimem) {
+ 		struct spi_mem_op op =
+@@ -511,13 +538,13 @@ static int write_enable(struct spi_nor *nor)
+ 		return spi_mem_exec_op(nor->spimem, &op);
+ 	}
+ 
+-	return nor->write_reg(nor, SPINOR_OP_WREN, NULL, 0);
++	return nor->controller_ops->write_reg(nor, SPINOR_OP_WREN, NULL, 0);
+ }
+ 
+ /*
+  * Send write disable instruction to the chip.
+  */
+-static int write_disable(struct spi_nor *nor)
++static int spi_nor_write_disable(struct spi_nor *nor)
+ {
+ 	if (nor->spimem) {
+ 		struct spi_mem_op op =
+@@ -529,7 +556,7 @@ static int write_disable(struct spi_nor *nor)
+ 		return spi_mem_exec_op(nor->spimem, &op);
+ 	}
+ 
+-	return nor->write_reg(nor, SPINOR_OP_WRDI, NULL, 0);
++	return nor->controller_ops->write_reg(nor, SPINOR_OP_WRDI, NULL, 0);
+ }
+ 
+ static struct spi_nor *mtd_to_spi_nor(struct mtd_info *mtd)
+@@ -631,17 +658,18 @@ static int macronix_set_4byte(struct spi_nor *nor, bool enable)
+ 		return spi_mem_exec_op(nor->spimem, &op);
+ 	}
+ 
+-	return nor->write_reg(nor, enable ? SPINOR_OP_EN4B : SPINOR_OP_EX4B,
+-			      NULL, 0);
++	return nor->controller_ops->write_reg(nor, enable ? SPINOR_OP_EN4B :
++							    SPINOR_OP_EX4B,
++					      NULL, 0);
+ }
+ 
+ static int st_micron_set_4byte(struct spi_nor *nor, bool enable)
+ {
+ 	int ret;
+ 
+-	write_enable(nor);
++	spi_nor_write_enable(nor);
+ 	ret = macronix_set_4byte(nor, enable);
+-	write_disable(nor);
++	spi_nor_write_disable(nor);
+ 
+ 	return ret;
+ }
+@@ -660,7 +688,8 @@ static int spansion_set_4byte(struct spi_nor *nor, bool enable)
+ 		return spi_mem_exec_op(nor->spimem, &op);
+ 	}
+ 
+-	return nor->write_reg(nor, SPINOR_OP_BRWR, nor->bouncebuf, 1);
++	return nor->controller_ops->write_reg(nor, SPINOR_OP_BRWR,
++					      nor->bouncebuf, 1);
+ }
+ 
+ static int spi_nor_write_ear(struct spi_nor *nor, u8 ear)
+@@ -677,7 +706,8 @@ static int spi_nor_write_ear(struct spi_nor *nor, u8 ear)
+ 		return spi_mem_exec_op(nor->spimem, &op);
+ 	}
+ 
+-	return nor->write_reg(nor, SPINOR_OP_WREAR, nor->bouncebuf, 1);
++	return nor->controller_ops->write_reg(nor, SPINOR_OP_WREAR,
++					      nor->bouncebuf, 1);
+ }
+ 
+ static int winbond_set_4byte(struct spi_nor *nor, bool enable)
+@@ -693,9 +723,9 @@ static int winbond_set_4byte(struct spi_nor *nor, bool enable)
+ 	 * Register to be set to 1, so all 3-byte-address reads come from the
+ 	 * second 16M. We must clear the register to enable normal behavior.
+ 	 */
+-	write_enable(nor);
++	spi_nor_write_enable(nor);
+ 	ret = spi_nor_write_ear(nor, 0);
+-	write_disable(nor);
++	spi_nor_write_disable(nor);
+ 
+ 	return ret;
+ }
+@@ -712,7 +742,7 @@ static int spi_nor_xread_sr(struct spi_nor *nor, u8 *sr)
+ 		return spi_mem_exec_op(nor->spimem, &op);
+ 	}
+ 
+-	return nor->read_reg(nor, SPINOR_OP_XRDSR, sr, 1);
++	return nor->controller_ops->read_reg(nor, SPINOR_OP_XRDSR, sr, 1);
+ }
+ 
+ static int s3an_sr_ready(struct spi_nor *nor)
+@@ -740,12 +770,12 @@ static int spi_nor_clear_sr(struct spi_nor *nor)
+ 		return spi_mem_exec_op(nor->spimem, &op);
+ 	}
+ 
+-	return nor->write_reg(nor, SPINOR_OP_CLSR, NULL, 0);
++	return nor->controller_ops->write_reg(nor, SPINOR_OP_CLSR, NULL, 0);
+ }
+ 
+ static int spi_nor_sr_ready(struct spi_nor *nor)
+ {
+-	int sr = read_sr(nor);
++	int sr = spi_nor_read_sr(nor);
+ 	if (sr < 0)
+ 		return sr;
+ 
+@@ -774,12 +804,12 @@ static int spi_nor_clear_fsr(struct spi_nor *nor)
+ 		return spi_mem_exec_op(nor->spimem, &op);
+ 	}
+ 
+-	return nor->write_reg(nor, SPINOR_OP_CLFSR, NULL, 0);
++	return nor->controller_ops->write_reg(nor, SPINOR_OP_CLFSR, NULL, 0);
+ }
+ 
+ static int spi_nor_fsr_ready(struct spi_nor *nor)
+ {
+-	int fsr = read_fsr(nor);
++	int fsr = spi_nor_read_fsr(nor);
+ 	if (fsr < 0)
+ 		return fsr;
+ 
+@@ -857,7 +887,7 @@ static int spi_nor_wait_till_ready(struct spi_nor *nor)
+  *
+  * Returns 0 if successful, non-zero otherwise.
+  */
+-static int erase_chip(struct spi_nor *nor)
++static int spi_nor_erase_chip(struct spi_nor *nor)
+ {
+ 	dev_dbg(nor->dev, " %lldKiB\n", (long long)(nor->mtd.size >> 10));
+ 
+@@ -871,19 +901,19 @@ static int erase_chip(struct spi_nor *nor)
+ 		return spi_mem_exec_op(nor->spimem, &op);
+ 	}
+ 
+-	return nor->write_reg(nor, SPINOR_OP_CHIP_ERASE, NULL, 0);
++	return nor->controller_ops->write_reg(nor, SPINOR_OP_CHIP_ERASE,
++					      NULL, 0);
+ }
+ 
+-static int spi_nor_lock_and_prep(struct spi_nor *nor, enum spi_nor_ops ops)
++static int spi_nor_lock_and_prep(struct spi_nor *nor)
+ {
+ 	int ret = 0;
+ 
+ 	mutex_lock(&nor->lock);
+ 
+-	if (nor->prepare) {
+-		ret = nor->prepare(nor, ops);
++	if (nor->controller_ops &&  nor->controller_ops->prepare) {
++		ret = nor->controller_ops->prepare(nor);
+ 		if (ret) {
+-			dev_err(nor->dev, "failed in the preparation.\n");
+ 			mutex_unlock(&nor->lock);
+ 			return ret;
+ 		}
+@@ -891,10 +921,10 @@ static int spi_nor_lock_and_prep(struct spi_nor *nor, enum spi_nor_ops ops)
+ 	return ret;
+ }
+ 
+-static void spi_nor_unlock_and_unprep(struct spi_nor *nor, enum spi_nor_ops ops)
++static void spi_nor_unlock_and_unprep(struct spi_nor *nor)
+ {
+-	if (nor->unprepare)
+-		nor->unprepare(nor, ops);
++	if (nor->controller_ops && nor->controller_ops->unprepare)
++		nor->controller_ops->unprepare(nor);
+ 	mutex_unlock(&nor->lock);
+ }
+ 
+@@ -935,8 +965,8 @@ static int spi_nor_erase_sector(struct spi_nor *nor, u32 addr)
+ 
+ 	addr = spi_nor_convert_addr(nor, addr);
+ 
+-	if (nor->erase)
+-		return nor->erase(nor, addr);
++	if (nor->controller_ops && nor->controller_ops->erase)
++		return nor->controller_ops->erase(nor, addr);
+ 
+ 	if (nor->spimem) {
+ 		struct spi_mem_op op =
+@@ -957,8 +987,8 @@ static int spi_nor_erase_sector(struct spi_nor *nor, u32 addr)
+ 		addr >>= 8;
+ 	}
+ 
+-	return nor->write_reg(nor, nor->erase_opcode, nor->bouncebuf,
+-			      nor->addr_width);
++	return nor->controller_ops->write_reg(nor, nor->erase_opcode,
++					      nor->bouncebuf, nor->addr_width);
+ }
+ 
+ /**
+@@ -1208,7 +1238,7 @@ static int spi_nor_erase_multi_sectors(struct spi_nor *nor, u64 addr, u32 len)
+ 	list_for_each_entry_safe(cmd, next, &erase_list, list) {
+ 		nor->erase_opcode = cmd->opcode;
+ 		while (cmd->count) {
+-			write_enable(nor);
++			spi_nor_write_enable(nor);
+ 
+ 			ret = spi_nor_erase_sector(nor, addr);
+ 			if (ret)
+@@ -1255,7 +1285,7 @@ static int spi_nor_erase(struct mtd_info *mtd, struct erase_info *instr)
+ 	addr = instr->addr;
+ 	len = instr->len;
+ 
+-	ret = spi_nor_lock_and_prep(nor, SPI_NOR_OPS_ERASE);
++	ret = spi_nor_lock_and_prep(nor);
+ 	if (ret)
+ 		return ret;
+ 
+@@ -1263,9 +1293,9 @@ static int spi_nor_erase(struct mtd_info *mtd, struct erase_info *instr)
+ 	if (len == mtd->size && !(nor->flags & SNOR_F_NO_OP_CHIP_ERASE)) {
+ 		unsigned long timeout;
+ 
+-		write_enable(nor);
++		spi_nor_write_enable(nor);
+ 
+-		if (erase_chip(nor)) {
++		if (spi_nor_erase_chip(nor)) {
+ 			ret = -EIO;
+ 			goto erase_err;
+ 		}
+@@ -1291,7 +1321,7 @@ static int spi_nor_erase(struct mtd_info *mtd, struct erase_info *instr)
+ 	/* "sector"-at-a-time erase */
+ 	} else if (spi_nor_has_uniform_erase(nor)) {
+ 		while (len) {
+-			write_enable(nor);
++			spi_nor_write_enable(nor);
+ 
+ 			ret = spi_nor_erase_sector(nor, addr);
+ 			if (ret)
+@@ -1312,21 +1342,22 @@ static int spi_nor_erase(struct mtd_info *mtd, struct erase_info *instr)
+ 			goto erase_err;
+ 	}
+ 
+-	write_disable(nor);
++	spi_nor_write_disable(nor);
+ 
+ erase_err:
+-	spi_nor_unlock_and_unprep(nor, SPI_NOR_OPS_ERASE);
++	spi_nor_unlock_and_unprep(nor);
+ 
+ 	return ret;
+ }
+ 
+ /* Write status register and ensure bits in mask match written values */
+-static int write_sr_and_check(struct spi_nor *nor, u8 status_new, u8 mask)
++static int spi_nor_write_sr_and_check(struct spi_nor *nor, u8 status_new,
++				      u8 mask)
+ {
+ 	int ret;
+ 
+-	write_enable(nor);
+-	ret = write_sr(nor, status_new);
++	spi_nor_write_enable(nor);
++	ret = spi_nor_write_sr(nor, status_new);
+ 	if (ret)
+ 		return ret;
+ 
+@@ -1334,7 +1365,7 @@ static int write_sr_and_check(struct spi_nor *nor, u8 status_new, u8 mask)
+ 	if (ret)
+ 		return ret;
+ 
+-	ret = read_sr(nor);
++	ret = spi_nor_read_sr(nor);
+ 	if (ret < 0)
+ 		return ret;
+ 
+@@ -1440,7 +1471,7 @@ static int stm_lock(struct spi_nor *nor, loff_t ofs, uint64_t len)
+ 	bool can_be_top = true, can_be_bottom = nor->flags & SNOR_F_HAS_SR_TB;
+ 	bool use_top;
+ 
+-	status_old = read_sr(nor);
++	status_old = spi_nor_read_sr(nor);
+ 	if (status_old < 0)
+ 		return status_old;
+ 
+@@ -1502,7 +1533,7 @@ static int stm_lock(struct spi_nor *nor, loff_t ofs, uint64_t len)
+ 	if ((status_new & mask) < (status_old & mask))
+ 		return -EINVAL;
+ 
+-	return write_sr_and_check(nor, status_new, mask);
++	return spi_nor_write_sr_and_check(nor, status_new, mask);
+ }
+ 
+ /*
+@@ -1520,7 +1551,7 @@ static int stm_unlock(struct spi_nor *nor, loff_t ofs, uint64_t len)
+ 	bool can_be_top = true, can_be_bottom = nor->flags & SNOR_F_HAS_SR_TB;
+ 	bool use_top;
+ 
+-	status_old = read_sr(nor);
++	status_old = spi_nor_read_sr(nor);
+ 	if (status_old < 0)
+ 		return status_old;
+ 
+@@ -1585,7 +1616,7 @@ static int stm_unlock(struct spi_nor *nor, loff_t ofs, uint64_t len)
+ 	if ((status_new & mask) > (status_old & mask))
+ 		return -EINVAL;
+ 
+-	return write_sr_and_check(nor, status_new, mask);
++	return spi_nor_write_sr_and_check(nor, status_new, mask);
+ }
+ 
+ /*
+@@ -1599,7 +1630,7 @@ static int stm_is_locked(struct spi_nor *nor, loff_t ofs, uint64_t len)
+ {
+ 	int status;
+ 
+-	status = read_sr(nor);
++	status = spi_nor_read_sr(nor);
+ 	if (status < 0)
+ 		return status;
+ 
+@@ -1617,13 +1648,13 @@ static int spi_nor_lock(struct mtd_info *mtd, loff_t ofs, uint64_t len)
+ 	struct spi_nor *nor = mtd_to_spi_nor(mtd);
+ 	int ret;
+ 
+-	ret = spi_nor_lock_and_prep(nor, SPI_NOR_OPS_LOCK);
++	ret = spi_nor_lock_and_prep(nor);
+ 	if (ret)
+ 		return ret;
+ 
+ 	ret = nor->params.locking_ops->lock(nor, ofs, len);
+ 
+-	spi_nor_unlock_and_unprep(nor, SPI_NOR_OPS_UNLOCK);
++	spi_nor_unlock_and_unprep(nor);
+ 	return ret;
+ }
+ 
+@@ -1632,13 +1663,13 @@ static int spi_nor_unlock(struct mtd_info *mtd, loff_t ofs, uint64_t len)
+ 	struct spi_nor *nor = mtd_to_spi_nor(mtd);
+ 	int ret;
+ 
+-	ret = spi_nor_lock_and_prep(nor, SPI_NOR_OPS_UNLOCK);
++	ret = spi_nor_lock_and_prep(nor);
+ 	if (ret)
+ 		return ret;
+ 
+ 	ret = nor->params.locking_ops->unlock(nor, ofs, len);
+ 
+-	spi_nor_unlock_and_unprep(nor, SPI_NOR_OPS_LOCK);
++	spi_nor_unlock_and_unprep(nor);
+ 	return ret;
+ }
+ 
+@@ -1647,13 +1678,13 @@ static int spi_nor_is_locked(struct mtd_info *mtd, loff_t ofs, uint64_t len)
+ 	struct spi_nor *nor = mtd_to_spi_nor(mtd);
+ 	int ret;
+ 
+-	ret = spi_nor_lock_and_prep(nor, SPI_NOR_OPS_UNLOCK);
++	ret = spi_nor_lock_and_prep(nor);
+ 	if (ret)
+ 		return ret;
+ 
+ 	ret = nor->params.locking_ops->is_locked(nor, ofs, len);
+ 
+-	spi_nor_unlock_and_unprep(nor, SPI_NOR_OPS_LOCK);
++	spi_nor_unlock_and_unprep(nor);
+ 	return ret;
+ }
+ 
+@@ -1663,11 +1694,11 @@ static int spi_nor_is_locked(struct mtd_info *mtd, loff_t ofs, uint64_t len)
+  * second byte will be written to the configuration register.
+  * Return negative if error occurred.
+  */
+-static int write_sr_cr(struct spi_nor *nor, u8 *sr_cr)
++static int spi_nor_write_sr_cr(struct spi_nor *nor, u8 *sr_cr)
+ {
+ 	int ret;
+ 
+-	write_enable(nor);
++	spi_nor_write_enable(nor);
+ 
+ 	if (nor->spimem) {
+ 		struct spi_mem_op op =
+@@ -1678,7 +1709,8 @@ static int write_sr_cr(struct spi_nor *nor, u8 *sr_cr)
+ 
+ 		ret = spi_mem_exec_op(nor->spimem, &op);
+ 	} else {
+-		ret = nor->write_reg(nor, SPINOR_OP_WRSR, sr_cr, 2);
++		ret = nor->controller_ops->write_reg(nor, SPINOR_OP_WRSR,
++						     sr_cr, 2);
+ 	}
+ 
+ 	if (ret < 0) {
+@@ -1711,21 +1743,21 @@ static int macronix_quad_enable(struct spi_nor *nor)
+ {
+ 	int ret, val;
+ 
+-	val = read_sr(nor);
++	val = spi_nor_read_sr(nor);
+ 	if (val < 0)
+ 		return val;
+ 	if (val & SR_QUAD_EN_MX)
+ 		return 0;
+ 
+-	write_enable(nor);
++	spi_nor_write_enable(nor);
+ 
+-	write_sr(nor, val | SR_QUAD_EN_MX);
++	spi_nor_write_sr(nor, val | SR_QUAD_EN_MX);
+ 
+ 	ret = spi_nor_wait_till_ready(nor);
+ 	if (ret)
+ 		return ret;
+ 
+-	ret = read_sr(nor);
++	ret = spi_nor_read_sr(nor);
+ 	if (!(ret > 0 && (ret & SR_QUAD_EN_MX))) {
+ 		dev_err(nor->dev, "Macronix Quad bit not set\n");
+ 		return -EINVAL;
+@@ -1750,7 +1782,8 @@ static int macronix_quad_enable(struct spi_nor *nor)
+  * some very old and few memories don't support this instruction. If a pull-up
+  * resistor is present on the MISO/IO1 line, we might still be able to pass the
+  * "read back" test because the QSPI memory doesn't recognize the command,
+- * so leaves the MISO/IO1 line state unchanged, hence read_cr() returns 0xFF.
++ * so leaves the MISO/IO1 line state unchanged, hence spi_nor_read_cr() returns
++ * 0xFF.
+  *
+  * bit 1 of the Configuration Register is the QE bit for Spansion like QSPI
+  * memories.
+@@ -1764,12 +1797,12 @@ static int spansion_quad_enable(struct spi_nor *nor)
+ 
+ 	sr_cr[0] = 0;
+ 	sr_cr[1] = CR_QUAD_EN_SPAN;
+-	ret = write_sr_cr(nor, sr_cr);
++	ret = spi_nor_write_sr_cr(nor, sr_cr);
+ 	if (ret)
+ 		return ret;
+ 
+ 	/* read back and check it */
+-	ret = read_cr(nor);
++	ret = spi_nor_read_cr(nor);
+ 	if (!(ret > 0 && (ret & CR_QUAD_EN_SPAN))) {
+ 		dev_err(nor->dev, "Spansion Quad bit not set\n");
+ 		return -EINVAL;
+@@ -1797,7 +1830,7 @@ static int spansion_no_read_cr_quad_enable(struct spi_nor *nor)
+ 	int ret;
+ 
+ 	/* Keep the current value of the Status Register. */
+-	ret = read_sr(nor);
++	ret = spi_nor_read_sr(nor);
+ 	if (ret < 0) {
+ 		dev_err(nor->dev, "error while reading status register\n");
+ 		return -EINVAL;
+@@ -1805,7 +1838,7 @@ static int spansion_no_read_cr_quad_enable(struct spi_nor *nor)
+ 	sr_cr[0] = ret;
+ 	sr_cr[1] = CR_QUAD_EN_SPAN;
+ 
+-	return write_sr_cr(nor, sr_cr);
++	return spi_nor_write_sr_cr(nor, sr_cr);
+ }
+ 
+ /**
+@@ -1828,7 +1861,7 @@ static int spansion_read_cr_quad_enable(struct spi_nor *nor)
+ 	int ret;
+ 
+ 	/* Check current Quad Enable bit value. */
+-	ret = read_cr(nor);
++	ret = spi_nor_read_cr(nor);
+ 	if (ret < 0) {
+ 		dev_err(dev, "error while reading configuration register\n");
+ 		return -EINVAL;
+@@ -1840,19 +1873,19 @@ static int spansion_read_cr_quad_enable(struct spi_nor *nor)
+ 	sr_cr[1] = ret | CR_QUAD_EN_SPAN;
+ 
+ 	/* Keep the current value of the Status Register. */
+-	ret = read_sr(nor);
++	ret = spi_nor_read_sr(nor);
+ 	if (ret < 0) {
+ 		dev_err(dev, "error while reading status register\n");
+ 		return -EINVAL;
+ 	}
+ 	sr_cr[0] = ret;
+ 
+-	ret = write_sr_cr(nor, sr_cr);
++	ret = spi_nor_write_sr_cr(nor, sr_cr);
+ 	if (ret)
+ 		return ret;
+ 
+ 	/* Read back and check it. */
+-	ret = read_cr(nor);
++	ret = spi_nor_read_cr(nor);
+ 	if (!(ret > 0 && (ret & CR_QUAD_EN_SPAN))) {
+ 		dev_err(nor->dev, "Spansion Quad bit not set\n");
+ 		return -EINVAL;
+@@ -1873,7 +1906,7 @@ static int spi_nor_write_sr2(struct spi_nor *nor, u8 *sr2)
+ 		return spi_mem_exec_op(nor->spimem, &op);
+ 	}
+ 
+-	return nor->write_reg(nor, SPINOR_OP_WRSR2, sr2, 1);
++	return nor->controller_ops->write_reg(nor, SPINOR_OP_WRSR2, sr2, 1);
+ }
+ 
+ static int spi_nor_read_sr2(struct spi_nor *nor, u8 *sr2)
+@@ -1888,7 +1921,7 @@ static int spi_nor_read_sr2(struct spi_nor *nor, u8 *sr2)
+ 		return spi_mem_exec_op(nor->spimem, &op);
+ 	}
+ 
+-	return nor->read_reg(nor, SPINOR_OP_RDSR2, sr2, 1);
++	return nor->controller_ops->read_reg(nor, SPINOR_OP_RDSR2, sr2, 1);
+ }
+ 
+ /**
+@@ -1918,7 +1951,7 @@ static int sr2_bit7_quad_enable(struct spi_nor *nor)
+ 	/* Update the Quad Enable bit. */
+ 	*sr2 |= SR2_QUAD_EN_BIT7;
+ 
+-	write_enable(nor);
++	spi_nor_write_enable(nor);
+ 
+ 	ret = spi_nor_write_sr2(nor, sr2);
+ 	if (ret < 0) {
+@@ -1956,15 +1989,15 @@ static int spi_nor_clear_sr_bp(struct spi_nor *nor)
+ 	int ret;
+ 	u8 mask = SR_BP2 | SR_BP1 | SR_BP0;
+ 
+-	ret = read_sr(nor);
++	ret = spi_nor_read_sr(nor);
+ 	if (ret < 0) {
+ 		dev_err(nor->dev, "error while reading status register\n");
+ 		return ret;
+ 	}
+ 
+-	write_enable(nor);
++	spi_nor_write_enable(nor);
+ 
+-	ret = write_sr(nor, ret & ~mask);
++	ret = spi_nor_write_sr(nor, ret & ~mask);
+ 	if (ret) {
+ 		dev_err(nor->dev, "write to status register failed\n");
+ 		return ret;
+@@ -1996,7 +2029,7 @@ static int spi_nor_spansion_clear_sr_bp(struct spi_nor *nor)
+ 	u8 *sr_cr =  nor->bouncebuf;
+ 
+ 	/* Check current Quad Enable bit value. */
+-	ret = read_cr(nor);
++	ret = spi_nor_read_cr(nor);
+ 	if (ret < 0) {
+ 		dev_err(nor->dev,
+ 			"error while reading configuration register\n");
+@@ -2010,7 +2043,7 @@ static int spi_nor_spansion_clear_sr_bp(struct spi_nor *nor)
+ 	if (ret & CR_QUAD_EN_SPAN) {
+ 		sr_cr[1] = ret;
+ 
+-		ret = read_sr(nor);
++		ret = spi_nor_read_sr(nor);
+ 		if (ret < 0) {
+ 			dev_err(nor->dev,
+ 				"error while reading status register\n");
+@@ -2018,7 +2051,7 @@ static int spi_nor_spansion_clear_sr_bp(struct spi_nor *nor)
+ 		}
+ 		sr_cr[0] = ret & ~mask;
+ 
+-		ret = write_sr_cr(nor, sr_cr);
++		ret = spi_nor_write_sr_cr(nor, sr_cr);
+ 		if (ret)
+ 			dev_err(nor->dev, "16-bit write register failed\n");
+ 		return ret;
+@@ -2537,8 +2570,8 @@ static const struct flash_info *spi_nor_read_id(struct spi_nor *nor)
+ 
+ 		tmp = spi_mem_exec_op(nor->spimem, &op);
+ 	} else {
+-		tmp = nor->read_reg(nor, SPINOR_OP_RDID, id,
+-				    SPI_NOR_MAX_ID_LEN);
++		tmp = nor->controller_ops->read_reg(nor, SPINOR_OP_RDID, id,
++						    SPI_NOR_MAX_ID_LEN);
+ 	}
+ 	if (tmp < 0) {
+ 		dev_err(nor->dev, "error %d reading JEDEC ID\n", tmp);
+@@ -2565,7 +2598,7 @@ static int spi_nor_read(struct mtd_info *mtd, loff_t from, size_t len,
+ 
+ 	dev_dbg(nor->dev, "from 0x%08x, len %zd\n", (u32)from, len);
+ 
+-	ret = spi_nor_lock_and_prep(nor, SPI_NOR_OPS_READ);
++	ret = spi_nor_lock_and_prep(nor);
+ 	if (ret)
+ 		return ret;
+ 
+@@ -2592,7 +2625,7 @@ static int spi_nor_read(struct mtd_info *mtd, loff_t from, size_t len,
+ 	ret = 0;
+ 
+ read_err:
+-	spi_nor_unlock_and_unprep(nor, SPI_NOR_OPS_READ);
++	spi_nor_unlock_and_unprep(nor);
+ 	return ret;
+ }
+ 
+@@ -2605,11 +2638,11 @@ static int sst_write(struct mtd_info *mtd, loff_t to, size_t len,
+ 
+ 	dev_dbg(nor->dev, "to 0x%08x, len %zd\n", (u32)to, len);
+ 
+-	ret = spi_nor_lock_and_prep(nor, SPI_NOR_OPS_WRITE);
++	ret = spi_nor_lock_and_prep(nor);
+ 	if (ret)
+ 		return ret;
+ 
+-	write_enable(nor);
++	spi_nor_write_enable(nor);
+ 
+ 	nor->sst_write_second = false;
+ 
+@@ -2648,14 +2681,14 @@ static int sst_write(struct mtd_info *mtd, loff_t to, size_t len,
+ 	}
+ 	nor->sst_write_second = false;
+ 
+-	write_disable(nor);
++	spi_nor_write_disable(nor);
+ 	ret = spi_nor_wait_till_ready(nor);
+ 	if (ret)
+ 		goto sst_write_err;
+ 
+ 	/* Write out trailing byte if it exists. */
+ 	if (actual != len) {
+-		write_enable(nor);
++		spi_nor_write_enable(nor);
+ 
+ 		nor->program_opcode = SPINOR_OP_BP;
+ 		ret = spi_nor_write_data(nor, to, 1, buf + actual);
+@@ -2666,12 +2699,12 @@ static int sst_write(struct mtd_info *mtd, loff_t to, size_t len,
+ 		ret = spi_nor_wait_till_ready(nor);
+ 		if (ret)
+ 			goto sst_write_err;
+-		write_disable(nor);
++		spi_nor_write_disable(nor);
+ 		actual += 1;
+ 	}
+ sst_write_err:
+ 	*retlen += actual;
+-	spi_nor_unlock_and_unprep(nor, SPI_NOR_OPS_WRITE);
++	spi_nor_unlock_and_unprep(nor);
+ 	return ret;
+ }
+ 
+@@ -2689,7 +2722,7 @@ static int spi_nor_write(struct mtd_info *mtd, loff_t to, size_t len,
+ 
+ 	dev_dbg(nor->dev, "to 0x%08x, len %zd\n", (u32)to, len);
+ 
+-	ret = spi_nor_lock_and_prep(nor, SPI_NOR_OPS_WRITE);
++	ret = spi_nor_lock_and_prep(nor);
+ 	if (ret)
+ 		return ret;
+ 
+@@ -2718,7 +2751,7 @@ static int spi_nor_write(struct mtd_info *mtd, loff_t to, size_t len,
+ 
+ 		addr = spi_nor_convert_addr(nor, addr);
+ 
+-		write_enable(nor);
++		spi_nor_write_enable(nor);
+ 		ret = spi_nor_write_data(nor, addr, page_remain, buf + i);
+ 		if (ret < 0)
+ 			goto write_err;
+@@ -2732,20 +2765,28 @@ static int spi_nor_write(struct mtd_info *mtd, loff_t to, size_t len,
+ 	}
+ 
+ write_err:
+-	spi_nor_unlock_and_unprep(nor, SPI_NOR_OPS_WRITE);
++	spi_nor_unlock_and_unprep(nor);
+ 	return ret;
+ }
+ 
+ static int spi_nor_check(struct spi_nor *nor)
+ {
+ 	if (!nor->dev ||
+-	    (!nor->spimem &&
+-	    (!nor->read || !nor->write || !nor->read_reg ||
+-	      !nor->write_reg))) {
++	    (!nor->spimem && !nor->controller_ops) ||
++	    (!nor->spimem && nor->controller_ops &&
++	    (!nor->controller_ops->read ||
++	     !nor->controller_ops->write ||
++	     !nor->controller_ops->read_reg ||
++	     !nor->controller_ops->write_reg))) {
+ 		pr_err("spi-nor: please fill all the necessary fields!\n");
+ 		return -EINVAL;
+ 	}
+ 
++	if (nor->spimem && nor->controller_ops) {
++		dev_err(nor->dev, "nor->spimem and nor->controller_ops are mutually exclusive, please set just one of them.\n");
++		return -EINVAL;
++	}
++
+ 	return 0;
+ }
+ 
+@@ -4994,6 +5035,58 @@ int spi_nor_scan(struct spi_nor *nor, const char *name,
+ }
+ EXPORT_SYMBOL_GPL(spi_nor_scan);
+ 
++static int spi_nor_create_read_dirmap(struct spi_nor *nor)
++{
++	struct spi_mem_dirmap_info info = {
++		.op_tmpl = SPI_MEM_OP(SPI_MEM_OP_CMD(nor->read_opcode, 1),
++				      SPI_MEM_OP_ADDR(nor->addr_width, 0, 1),
++				      SPI_MEM_OP_DUMMY(nor->read_dummy, 1),
++				      SPI_MEM_OP_DATA_IN(0, NULL, 1)),
++		.offset = 0,
++		.length = nor->mtd.size,
++	};
++	struct spi_mem_op *op = &info.op_tmpl;
++
++	/* get transfer protocols. */
++	op->cmd.buswidth = spi_nor_get_protocol_inst_nbits(nor->read_proto);
++	op->addr.buswidth = spi_nor_get_protocol_addr_nbits(nor->read_proto);
++	op->dummy.buswidth = op->addr.buswidth;
++	op->data.buswidth = spi_nor_get_protocol_data_nbits(nor->read_proto);
++
++	/* convert the dummy cycles to the number of bytes */
++	op->dummy.nbytes = (nor->read_dummy * op->dummy.buswidth) / 8;
++
++	nor->dirmap.rdesc = devm_spi_mem_dirmap_create(nor->dev, nor->spimem,
++						       &info);
++	return PTR_ERR_OR_ZERO(nor->dirmap.rdesc);
++}
++
++static int spi_nor_create_write_dirmap(struct spi_nor *nor)
++{
++	struct spi_mem_dirmap_info info = {
++		.op_tmpl = SPI_MEM_OP(SPI_MEM_OP_CMD(nor->program_opcode, 1),
++				      SPI_MEM_OP_ADDR(nor->addr_width, 0, 1),
++				      SPI_MEM_OP_NO_DUMMY,
++				      SPI_MEM_OP_DATA_OUT(0, NULL, 1)),
++		.offset = 0,
++		.length = nor->mtd.size,
++	};
++	struct spi_mem_op *op = &info.op_tmpl;
++
++	/* get transfer protocols. */
++	op->cmd.buswidth = spi_nor_get_protocol_inst_nbits(nor->write_proto);
++	op->addr.buswidth = spi_nor_get_protocol_addr_nbits(nor->write_proto);
++	op->dummy.buswidth = op->addr.buswidth;
++	op->data.buswidth = spi_nor_get_protocol_data_nbits(nor->write_proto);
++
++	if (nor->program_opcode == SPINOR_OP_AAI_WP && nor->sst_write_second)
++		op->addr.nbytes = 0;
++
++	nor->dirmap.wdesc = devm_spi_mem_dirmap_create(nor->dev, nor->spimem,
++						       &info);
++	return PTR_ERR_OR_ZERO(nor->dirmap.wdesc);
++}
++
+ static int spi_nor_probe(struct spi_mem *spimem)
+ {
+ 	struct spi_device *spi = spimem->spi;
+@@ -5055,6 +5148,14 @@ static int spi_nor_probe(struct spi_mem *spimem)
+ 			return -ENOMEM;
+ 	}
+ 
++	ret = spi_nor_create_read_dirmap(nor);
++	if (ret)
++		return ret;
++
++	ret = spi_nor_create_write_dirmap(nor);
++	if (ret)
++		return ret;
++
+ 	return mtd_device_register(&nor->mtd, data ? data->parts : NULL,
+ 				   data ? data->nr_parts : 0);
+ }
 diff --git a/drivers/pci/controller/pcie-mediatek.c b/drivers/pci/controller/pcie-mediatek.c
 old mode 100644
 new mode 100755
@@ -35442,6 +37156,753 @@ index 0000000000000000000000000000000000000000..812e7e26bf4cee22d38c97090392f962
 +};
 +
 +#endif /* __SOC_MEDIATEK_SCPSYS_H */
+diff --git a/drivers/spi/Kconfig b/drivers/spi/Kconfig
+index 6f7fdcbb9151f8c20321219cac8464d9f347ae91..6478c898a1ea8f370522881549d6138bb8d98f4a 100644
+--- a/drivers/spi/Kconfig
++++ b/drivers/spi/Kconfig
+@@ -433,6 +433,16 @@ config SPI_MT7621
+ 	help
+ 	  This selects a driver for the MediaTek MT7621 SPI Controller.
+ 
++config SPI_MTK_NOR
++	tristate "MediaTek SPI NOR controller"
++	depends on ARCH_MEDIATEK || COMPILE_TEST
++	help
++	  This enables support for SPI NOR controller found on MediaTek
++	  ARM SoCs. This is a controller specifically for SPI-NOR flash.
++	  It can perform generic SPI transfers up to 6 bytes via generic
++	  SPI interface as well as several SPI-NOR specific instructions
++	  via SPI MEM interface.
++
+ config SPI_NPCM_FIU
+ 	tristate "Nuvoton NPCM FLASH Interface Unit"
+ 	depends on ARCH_NPCM || COMPILE_TEST
+diff --git a/drivers/spi/Makefile b/drivers/spi/Makefile
+index bb49c9e6d0a0c00cddf2275a84cb74fdc08ddf74..954d6171aed3f962793038008a8b12d7e2b4da24 100644
+--- a/drivers/spi/Makefile
++++ b/drivers/spi/Makefile
+@@ -61,6 +61,7 @@ obj-$(CONFIG_SPI_MPC52xx_PSC)		+= spi-mpc52xx-psc.o
+ obj-$(CONFIG_SPI_MPC52xx)		+= spi-mpc52xx.o
+ obj-$(CONFIG_SPI_MT65XX)                += spi-mt65xx.o
+ obj-$(CONFIG_SPI_MT7621)		+= spi-mt7621.o
++obj-$(CONFIG_SPI_MTK_NOR)		+= spi-mtk-nor.o
+ obj-$(CONFIG_SPI_MXIC)			+= spi-mxic.o
+ obj-$(CONFIG_SPI_MXS)			+= spi-mxs.o
+ obj-$(CONFIG_SPI_NPCM_FIU)		+= spi-npcm-fiu.o
+diff --git a/drivers/spi/spi-mtk-nor.c b/drivers/spi/spi-mtk-nor.c
+new file mode 100644
+index 0000000000000000000000000000000000000000..d69996ba8e95f3f751a346734446435d1993a296
+--- /dev/null
++++ b/drivers/spi/spi-mtk-nor.c
+@@ -0,0 +1,708 @@
++// SPDX-License-Identifier: GPL-2.0
++//
++// Mediatek SPI NOR controller driver
++//
++// Copyright (C) 2020 Chuanhong Guo <gch981213@gmail.com>
++
++#include <linux/bits.h>
++#include <linux/clk.h>
++#include <linux/completion.h>
++#include <linux/dma-mapping.h>
++#include <linux/interrupt.h>
++#include <linux/io.h>
++#include <linux/iopoll.h>
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/of_device.h>
++#include <linux/spi/spi.h>
++#include <linux/spi/spi-mem.h>
++#include <linux/string.h>
++
++#define DRIVER_NAME "mtk-spi-nor"
++
++#define MTK_NOR_REG_CMD			0x00
++#define MTK_NOR_CMD_WRITE		BIT(4)
++#define MTK_NOR_CMD_PROGRAM		BIT(2)
++#define MTK_NOR_CMD_READ		BIT(0)
++#define MTK_NOR_CMD_MASK		GENMASK(5, 0)
++
++#define MTK_NOR_REG_PRG_CNT		0x04
++#define MTK_NOR_REG_RDATA		0x0c
++
++#define MTK_NOR_REG_RADR0		0x10
++#define MTK_NOR_REG_RADR(n)		(MTK_NOR_REG_RADR0 + 4 * (n))
++#define MTK_NOR_REG_RADR3		0xc8
++
++#define MTK_NOR_REG_WDATA		0x1c
++
++#define MTK_NOR_REG_PRGDATA0		0x20
++#define MTK_NOR_REG_PRGDATA(n)		(MTK_NOR_REG_PRGDATA0 + 4 * (n))
++#define MTK_NOR_REG_PRGDATA_MAX		5
++
++#define MTK_NOR_REG_SHIFT0		0x38
++#define MTK_NOR_REG_SHIFT(n)		(MTK_NOR_REG_SHIFT0 + 4 * (n))
++#define MTK_NOR_REG_SHIFT_MAX		9
++
++#define MTK_NOR_REG_CFG1		0x60
++#define MTK_NOR_FAST_READ		BIT(0)
++
++#define MTK_NOR_REG_CFG2		0x64
++#define MTK_NOR_WR_CUSTOM_OP_EN		BIT(4)
++#define MTK_NOR_WR_BUF_EN		BIT(0)
++
++#define MTK_NOR_REG_PP_DATA		0x98
++
++#define MTK_NOR_REG_IRQ_STAT		0xa8
++#define MTK_NOR_REG_IRQ_EN		0xac
++#define MTK_NOR_IRQ_DMA			BIT(7)
++#define MTK_NOR_IRQ_MASK		GENMASK(7, 0)
++
++#define MTK_NOR_REG_CFG3		0xb4
++#define MTK_NOR_DISABLE_WREN		BIT(7)
++#define MTK_NOR_DISABLE_SR_POLL		BIT(5)
++
++#define MTK_NOR_REG_WP			0xc4
++#define MTK_NOR_ENABLE_SF_CMD		0x30
++
++#define MTK_NOR_REG_BUSCFG		0xcc
++#define MTK_NOR_4B_ADDR			BIT(4)
++#define MTK_NOR_QUAD_ADDR		BIT(3)
++#define MTK_NOR_QUAD_READ		BIT(2)
++#define MTK_NOR_DUAL_ADDR		BIT(1)
++#define MTK_NOR_DUAL_READ		BIT(0)
++#define MTK_NOR_BUS_MODE_MASK		GENMASK(4, 0)
++
++#define MTK_NOR_REG_DMA_CTL		0x718
++#define MTK_NOR_DMA_START		BIT(0)
++
++#define MTK_NOR_REG_DMA_FADR		0x71c
++#define MTK_NOR_REG_DMA_DADR		0x720
++#define MTK_NOR_REG_DMA_END_DADR	0x724
++#define MTK_NOR_REG_DMA_DADR_HB		0x738
++#define MTK_NOR_REG_DMA_END_DADR_HB	0x73c
++
++#define MTK_NOR_PRG_MAX_SIZE		6
++// Reading DMA src/dst addresses have to be 16-byte aligned
++#define MTK_NOR_DMA_ALIGN		16
++#define MTK_NOR_DMA_ALIGN_MASK		(MTK_NOR_DMA_ALIGN - 1)
++// and we allocate a bounce buffer if destination address isn't aligned.
++#define MTK_NOR_BOUNCE_BUF_SIZE		PAGE_SIZE
++
++// Buffered page program can do one 128-byte transfer
++#define MTK_NOR_PP_SIZE			128
++
++#define CLK_TO_US(sp, clkcnt)		((clkcnt) * 1000000 / sp->spi_freq)
++
++struct mtk_nor {
++	struct spi_controller *ctlr;
++	struct device *dev;
++	void __iomem *base;
++	u8 *buffer;
++	struct clk *spi_clk;
++	struct clk *ctlr_clk;
++	unsigned int spi_freq;
++	bool wbuf_en;
++	bool has_irq;
++	struct completion op_done;
++};
++
++static inline void mtk_nor_rmw(struct mtk_nor *sp, u32 reg, u32 set, u32 clr)
++{
++	u32 val = readl(sp->base + reg);
++
++	val &= ~clr;
++	val |= set;
++	writel(val, sp->base + reg);
++}
++
++static inline int mtk_nor_cmd_exec(struct mtk_nor *sp, u32 cmd, ulong clk)
++{
++	ulong delay = CLK_TO_US(sp, clk);
++	u32 reg;
++	int ret;
++
++	writel(cmd, sp->base + MTK_NOR_REG_CMD);
++	ret = readl_poll_timeout(sp->base + MTK_NOR_REG_CMD, reg, !(reg & cmd),
++				 delay / 3, (delay + 1) * 200);
++	if (ret < 0)
++		dev_err(sp->dev, "command %u timeout.\n", cmd);
++	return ret;
++}
++
++static void mtk_nor_set_addr(struct mtk_nor *sp, const struct spi_mem_op *op)
++{
++	u32 addr = op->addr.val;
++	int i;
++
++	for (i = 0; i < 3; i++) {
++		writeb(addr & 0xff, sp->base + MTK_NOR_REG_RADR(i));
++		addr >>= 8;
++	}
++	if (op->addr.nbytes == 4) {
++		writeb(addr & 0xff, sp->base + MTK_NOR_REG_RADR3);
++		mtk_nor_rmw(sp, MTK_NOR_REG_BUSCFG, MTK_NOR_4B_ADDR, 0);
++	} else {
++		mtk_nor_rmw(sp, MTK_NOR_REG_BUSCFG, 0, MTK_NOR_4B_ADDR);
++	}
++}
++
++static bool mtk_nor_match_read(const struct spi_mem_op *op)
++{
++	int dummy = 0;
++
++	if (op->dummy.buswidth)
++		dummy = op->dummy.nbytes * BITS_PER_BYTE / op->dummy.buswidth;
++
++	if ((op->data.buswidth == 2) || (op->data.buswidth == 4)) {
++		if (op->addr.buswidth == 1)
++			return dummy == 8;
++		else if (op->addr.buswidth == 2)
++			return dummy == 4;
++		else if (op->addr.buswidth == 4)
++			return dummy == 6;
++	} else if ((op->addr.buswidth == 1) && (op->data.buswidth == 1)) {
++		if (op->cmd.opcode == 0x03)
++			return dummy == 0;
++		else if (op->cmd.opcode == 0x0b)
++			return dummy == 8;
++	}
++	return false;
++}
++
++static int mtk_nor_adjust_op_size(struct spi_mem *mem, struct spi_mem_op *op)
++{
++	size_t len;
++
++	if (!op->data.nbytes)
++		return 0;
++
++	if ((op->addr.nbytes == 3) || (op->addr.nbytes == 4)) {
++		if ((op->data.dir == SPI_MEM_DATA_IN) &&
++		    mtk_nor_match_read(op)) {
++			if ((op->addr.val & MTK_NOR_DMA_ALIGN_MASK) ||
++			    (op->data.nbytes < MTK_NOR_DMA_ALIGN))
++				op->data.nbytes = 1;
++			else if (!((ulong)(op->data.buf.in) &
++				   MTK_NOR_DMA_ALIGN_MASK))
++				op->data.nbytes &= ~MTK_NOR_DMA_ALIGN_MASK;
++			else if (op->data.nbytes > MTK_NOR_BOUNCE_BUF_SIZE)
++				op->data.nbytes = MTK_NOR_BOUNCE_BUF_SIZE;
++			return 0;
++		} else if (op->data.dir == SPI_MEM_DATA_OUT) {
++			if (op->data.nbytes >= MTK_NOR_PP_SIZE)
++				op->data.nbytes = MTK_NOR_PP_SIZE;
++			else
++				op->data.nbytes = 1;
++			return 0;
++		}
++	}
++
++	len = MTK_NOR_PRG_MAX_SIZE - sizeof(op->cmd.opcode) - op->addr.nbytes -
++	      op->dummy.nbytes;
++	if (op->data.nbytes > len)
++		op->data.nbytes = len;
++
++	return 0;
++}
++
++static bool mtk_nor_supports_op(struct spi_mem *mem,
++				const struct spi_mem_op *op)
++{
++	size_t len;
++
++	if (op->cmd.buswidth != 1)
++		return false;
++
++	if ((op->addr.nbytes == 3) || (op->addr.nbytes == 4)) {
++		switch(op->data.dir) {
++		case SPI_MEM_DATA_IN:
++			if (!mtk_nor_match_read(op))
++				return false;
++			break;
++		case SPI_MEM_DATA_OUT:
++			if (op->addr.buswidth != 1)
++				return false;
++			if (op->dummy.nbytes)
++				return false;
++			if (op->data.buswidth != 1)
++				return false;
++			break;
++		default:
++			break;
++		}
++	}
++
++	len = sizeof(op->cmd.opcode) + op->addr.nbytes + op->dummy.nbytes;
++	if ((len > MTK_NOR_PRG_MAX_SIZE) ||
++	    ((op->data.nbytes) && (len == MTK_NOR_PRG_MAX_SIZE)))
++		return false;
++
++	return spi_mem_default_supports_op(mem, op);
++}
++
++static void mtk_nor_setup_bus(struct mtk_nor *sp, const struct spi_mem_op *op)
++{
++	u32 reg = 0;
++
++	if (op->addr.nbytes == 4)
++		reg |= MTK_NOR_4B_ADDR;
++
++	if (op->data.buswidth == 4) {
++		reg |= MTK_NOR_QUAD_READ;
++		writeb(op->cmd.opcode, sp->base + MTK_NOR_REG_PRGDATA(4));
++		if (op->addr.buswidth == 4)
++			reg |= MTK_NOR_QUAD_ADDR;
++	} else if (op->data.buswidth == 2) {
++		reg |= MTK_NOR_DUAL_READ;
++		writeb(op->cmd.opcode, sp->base + MTK_NOR_REG_PRGDATA(3));
++		if (op->addr.buswidth == 2)
++			reg |= MTK_NOR_DUAL_ADDR;
++	} else {
++		if (op->cmd.opcode == 0x0b)
++			mtk_nor_rmw(sp, MTK_NOR_REG_CFG1, MTK_NOR_FAST_READ, 0);
++		else
++			mtk_nor_rmw(sp, MTK_NOR_REG_CFG1, 0, MTK_NOR_FAST_READ);
++	}
++	mtk_nor_rmw(sp, MTK_NOR_REG_BUSCFG, reg, MTK_NOR_BUS_MODE_MASK);
++}
++
++static int mtk_nor_read_dma(struct mtk_nor *sp, u32 from, unsigned int length,
++			    u8 *buffer)
++{
++	int ret = 0;
++	ulong delay;
++	u32 reg;
++	dma_addr_t dma_addr;
++
++	dma_addr = dma_map_single(sp->dev, buffer, length, DMA_FROM_DEVICE);
++	if (dma_mapping_error(sp->dev, dma_addr)) {
++		dev_err(sp->dev, "failed to map dma buffer.\n");
++		return -EINVAL;
++	}
++
++	writel(from, sp->base + MTK_NOR_REG_DMA_FADR);
++	writel(dma_addr >> 32, sp->base + MTK_NOR_REG_DMA_DADR_HB);
++	writel(dma_addr, sp->base + MTK_NOR_REG_DMA_DADR);
++	writel((dma_addr + length) >> 32, sp->base + MTK_NOR_REG_DMA_END_DADR_HB);
++	writel(dma_addr + length, sp->base + MTK_NOR_REG_DMA_END_DADR);
++
++	if (sp->has_irq) {
++		reinit_completion(&sp->op_done);
++		mtk_nor_rmw(sp, MTK_NOR_REG_IRQ_EN, MTK_NOR_IRQ_DMA, 0);
++	}
++
++	mtk_nor_rmw(sp, MTK_NOR_REG_DMA_CTL, MTK_NOR_DMA_START, 0);
++
++	delay = CLK_TO_US(sp, (length + 5) * BITS_PER_BYTE);
++
++	if (sp->has_irq) {
++		if (!wait_for_completion_timeout(&sp->op_done,
++						 (delay + 1) * 100))
++			ret = -ETIMEDOUT;
++	} else {
++		ret = readl_poll_timeout(sp->base + MTK_NOR_REG_DMA_CTL, reg,
++					 !(reg & MTK_NOR_DMA_START), delay / 3,
++					 (delay + 1) * 100);
++	}
++
++	dma_unmap_single(sp->dev, dma_addr, length, DMA_FROM_DEVICE);
++	if (ret < 0)
++		dev_err(sp->dev, "dma read timeout.\n");
++
++	return ret;
++}
++
++static int mtk_nor_read_bounce(struct mtk_nor *sp, u32 from,
++			       unsigned int length, u8 *buffer)
++{
++	unsigned int rdlen;
++	int ret;
++
++	if (length & MTK_NOR_DMA_ALIGN_MASK)
++		rdlen = (length + MTK_NOR_DMA_ALIGN) & ~MTK_NOR_DMA_ALIGN_MASK;
++	else
++		rdlen = length;
++
++	ret = mtk_nor_read_dma(sp, from, rdlen, sp->buffer);
++	if (ret)
++		return ret;
++
++	memcpy(buffer, sp->buffer, length);
++	return 0;
++}
++
++static int mtk_nor_read_pio(struct mtk_nor *sp, const struct spi_mem_op *op)
++{
++	u8 *buf = op->data.buf.in;
++	int ret;
++
++	ret = mtk_nor_cmd_exec(sp, MTK_NOR_CMD_READ, 6 * BITS_PER_BYTE);
++	if (!ret)
++		buf[0] = readb(sp->base + MTK_NOR_REG_RDATA);
++	return ret;
++}
++
++static int mtk_nor_write_buffer_enable(struct mtk_nor *sp)
++{
++	int ret;
++	u32 val;
++
++	if (sp->wbuf_en)
++		return 0;
++
++	val = readl(sp->base + MTK_NOR_REG_CFG2);
++	writel(val | MTK_NOR_WR_BUF_EN, sp->base + MTK_NOR_REG_CFG2);
++	ret = readl_poll_timeout(sp->base + MTK_NOR_REG_CFG2, val,
++				 val & MTK_NOR_WR_BUF_EN, 0, 10000);
++	if (!ret)
++		sp->wbuf_en = true;
++	return ret;
++}
++
++static int mtk_nor_write_buffer_disable(struct mtk_nor *sp)
++{
++	int ret;
++	u32 val;
++
++	if (!sp->wbuf_en)
++		return 0;
++	val = readl(sp->base + MTK_NOR_REG_CFG2);
++	writel(val & ~MTK_NOR_WR_BUF_EN, sp->base + MTK_NOR_REG_CFG2);
++	ret = readl_poll_timeout(sp->base + MTK_NOR_REG_CFG2, val,
++				 !(val & MTK_NOR_WR_BUF_EN), 0, 10000);
++	if (!ret)
++		sp->wbuf_en = false;
++	return ret;
++}
++
++static int mtk_nor_pp_buffered(struct mtk_nor *sp, const struct spi_mem_op *op)
++{
++	const u8 *buf = op->data.buf.out;
++	u32 val;
++	int ret, i;
++
++	ret = mtk_nor_write_buffer_enable(sp);
++	if (ret < 0)
++		return ret;
++
++	for (i = 0; i < op->data.nbytes; i += 4) {
++		val = buf[i + 3] << 24 | buf[i + 2] << 16 | buf[i + 1] << 8 |
++		      buf[i];
++		writel(val, sp->base + MTK_NOR_REG_PP_DATA);
++	}
++	return mtk_nor_cmd_exec(sp, MTK_NOR_CMD_WRITE,
++				(op->data.nbytes + 5) * BITS_PER_BYTE);
++}
++
++static int mtk_nor_pp_unbuffered(struct mtk_nor *sp,
++				 const struct spi_mem_op *op)
++{
++	const u8 *buf = op->data.buf.out;
++	int ret;
++
++	ret = mtk_nor_write_buffer_disable(sp);
++	if (ret < 0)
++		return ret;
++	writeb(buf[0], sp->base + MTK_NOR_REG_WDATA);
++	return mtk_nor_cmd_exec(sp, MTK_NOR_CMD_WRITE, 6 * BITS_PER_BYTE);
++}
++
++int mtk_nor_exec_op(struct spi_mem *mem, const struct spi_mem_op *op)
++{
++	struct mtk_nor *sp = spi_controller_get_devdata(mem->spi->master);
++	int ret;
++
++	if ((op->data.nbytes == 0) ||
++	    ((op->addr.nbytes != 3) && (op->addr.nbytes != 4)))
++		return -ENOTSUPP;
++
++	if (op->data.dir == SPI_MEM_DATA_OUT) {
++		mtk_nor_set_addr(sp, op);
++		writeb(op->cmd.opcode, sp->base + MTK_NOR_REG_PRGDATA0);
++		if (op->data.nbytes == MTK_NOR_PP_SIZE)
++			return mtk_nor_pp_buffered(sp, op);
++		return mtk_nor_pp_unbuffered(sp, op);
++	}
++
++	if ((op->data.dir == SPI_MEM_DATA_IN) && mtk_nor_match_read(op)) {
++		ret = mtk_nor_write_buffer_disable(sp);
++		if (ret < 0)
++			return ret;
++		mtk_nor_setup_bus(sp, op);
++		if (op->data.nbytes == 1) {
++			mtk_nor_set_addr(sp, op);
++			return mtk_nor_read_pio(sp, op);
++		} else if (((ulong)(op->data.buf.in) &
++			    MTK_NOR_DMA_ALIGN_MASK)) {
++			return mtk_nor_read_bounce(sp, op->addr.val,
++						   op->data.nbytes,
++						   op->data.buf.in);
++		} else {
++			return mtk_nor_read_dma(sp, op->addr.val,
++						op->data.nbytes,
++						op->data.buf.in);
++		}
++	}
++
++	return -ENOTSUPP;
++}
++
++static int mtk_nor_setup(struct spi_device *spi)
++{
++	struct mtk_nor *sp = spi_controller_get_devdata(spi->master);
++
++	if (spi->max_speed_hz && (spi->max_speed_hz < sp->spi_freq)) {
++		dev_err(&spi->dev, "spi clock should be %u Hz.\n",
++			sp->spi_freq);
++		return -EINVAL;
++	}
++	spi->max_speed_hz = sp->spi_freq;
++
++	return 0;
++}
++
++static int mtk_nor_transfer_one_message(struct spi_controller *master,
++					struct spi_message *m)
++{
++	struct mtk_nor *sp = spi_controller_get_devdata(master);
++	struct spi_transfer *t = NULL;
++	unsigned long trx_len = 0;
++	int stat = 0;
++	int reg_offset = MTK_NOR_REG_PRGDATA_MAX;
++	void __iomem *reg;
++	const u8 *txbuf;
++	u8 *rxbuf;
++	int i;
++
++	list_for_each_entry(t, &m->transfers, transfer_list) {
++		txbuf = t->tx_buf;
++		for (i = 0; i < t->len; i++, reg_offset--) {
++			reg = sp->base + MTK_NOR_REG_PRGDATA(reg_offset);
++			if (txbuf)
++				writeb(txbuf[i], reg);
++			else
++				writeb(0, reg);
++		}
++		trx_len += t->len;
++	}
++
++	writel(trx_len * BITS_PER_BYTE, sp->base + MTK_NOR_REG_PRG_CNT);
++
++	stat = mtk_nor_cmd_exec(sp, MTK_NOR_CMD_PROGRAM,
++				trx_len * BITS_PER_BYTE);
++	if (stat < 0)
++		goto msg_done;
++
++	reg_offset = trx_len - 1;
++	list_for_each_entry(t, &m->transfers, transfer_list) {
++		rxbuf = t->rx_buf;
++		for (i = 0; i < t->len; i++, reg_offset--) {
++			reg = sp->base + MTK_NOR_REG_SHIFT(reg_offset);
++			if (rxbuf)
++				rxbuf[i] = readb(reg);
++		}
++	}
++
++	m->actual_length = trx_len;
++msg_done:
++	m->status = stat;
++	spi_finalize_current_message(master);
++
++	return 0;
++}
++
++static void mtk_nor_disable_clk(struct mtk_nor *sp)
++{
++	clk_disable_unprepare(sp->spi_clk);
++	clk_disable_unprepare(sp->ctlr_clk);
++}
++
++static int mtk_nor_enable_clk(struct mtk_nor *sp)
++{
++	int ret;
++
++	ret = clk_prepare_enable(sp->spi_clk);
++	if (ret)
++		return ret;
++
++	ret = clk_prepare_enable(sp->ctlr_clk);
++	if (ret) {
++		clk_disable_unprepare(sp->spi_clk);
++		return ret;
++	}
++
++	return 0;
++}
++
++static int mtk_nor_init(struct mtk_nor *sp)
++{
++	int ret;
++
++	ret = mtk_nor_enable_clk(sp);
++	if (ret)
++		return ret;
++
++	sp->spi_freq = clk_get_rate(sp->spi_clk);
++
++	writel(MTK_NOR_ENABLE_SF_CMD, sp->base + MTK_NOR_REG_WP);
++	mtk_nor_rmw(sp, MTK_NOR_REG_CFG2, MTK_NOR_WR_CUSTOM_OP_EN, 0);
++	mtk_nor_rmw(sp, MTK_NOR_REG_CFG3,
++		    MTK_NOR_DISABLE_WREN | MTK_NOR_DISABLE_SR_POLL, 0);
++
++	return ret;
++}
++
++static irqreturn_t mtk_nor_irq_handler(int irq, void *data)
++{
++	struct mtk_nor *sp = data;
++	u32 irq_status, irq_enabled;
++
++	irq_status = readl(sp->base + MTK_NOR_REG_IRQ_STAT);
++	irq_enabled = readl(sp->base + MTK_NOR_REG_IRQ_EN);
++	// write status back to clear interrupt
++	writel(irq_status, sp->base + MTK_NOR_REG_IRQ_STAT);
++
++	if (!(irq_status & irq_enabled))
++		return IRQ_NONE;
++
++	if (irq_status & MTK_NOR_IRQ_DMA) {
++		complete(&sp->op_done);
++		writel(0, sp->base + MTK_NOR_REG_IRQ_EN);
++	}
++
++	return IRQ_HANDLED;
++}
++
++static size_t mtk_max_msg_size(struct spi_device *spi)
++{
++	return MTK_NOR_PRG_MAX_SIZE;
++}
++
++static const struct spi_controller_mem_ops mtk_nor_mem_ops = {
++	.adjust_op_size = mtk_nor_adjust_op_size,
++	.supports_op = mtk_nor_supports_op,
++	.exec_op = mtk_nor_exec_op
++};
++
++static const struct of_device_id mtk_nor_match[] = {
++	{ .compatible = "mediatek,mt8173-nor" },
++	{ /* sentinel */ }
++};
++MODULE_DEVICE_TABLE(of, mtk_nor_match);
++
++static int mtk_nor_probe(struct platform_device *pdev)
++{
++	struct spi_controller *ctlr;
++	struct mtk_nor *sp;
++	void __iomem *base;
++	u8 *buffer;
++	struct clk *spi_clk, *ctlr_clk;
++	int ret, irq;
++
++	base = devm_platform_ioremap_resource(pdev, 0);
++	if (IS_ERR(base))
++		return PTR_ERR(base);
++
++	spi_clk = devm_clk_get(&pdev->dev, "spi");
++	if (IS_ERR(spi_clk))
++		return PTR_ERR(spi_clk);
++
++	ctlr_clk = devm_clk_get(&pdev->dev, "sf");
++	if (IS_ERR(ctlr_clk))
++		return PTR_ERR(ctlr_clk);
++
++	if (dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(36)))
++		dev_warn(&pdev->dev, "failed to set dma mask(36)\n");
++
++	buffer = devm_kmalloc(&pdev->dev,
++			      MTK_NOR_BOUNCE_BUF_SIZE + MTK_NOR_DMA_ALIGN,
++			      GFP_KERNEL);
++	if (!buffer)
++		return -ENOMEM;
++
++	if ((ulong)buffer & MTK_NOR_DMA_ALIGN_MASK)
++		buffer = (u8 *)(((ulong)buffer + MTK_NOR_DMA_ALIGN) &
++				~MTK_NOR_DMA_ALIGN_MASK);
++
++	ctlr = spi_alloc_master(&pdev->dev, sizeof(*sp));
++	if (!ctlr) {
++		dev_err(&pdev->dev, "failed to allocate spi controller\n");
++		return -ENOMEM;
++	}
++
++	ctlr->bits_per_word_mask = SPI_BPW_MASK(8);
++	ctlr->dev.of_node = pdev->dev.of_node;
++	ctlr->max_message_size = mtk_max_msg_size;
++	ctlr->mem_ops = &mtk_nor_mem_ops;
++	ctlr->mode_bits = SPI_RX_DUAL | SPI_RX_QUAD | SPI_TX_DUAL | SPI_TX_QUAD;
++	ctlr->num_chipselect = 1;
++	ctlr->setup = mtk_nor_setup;
++	ctlr->transfer_one_message = mtk_nor_transfer_one_message;
++
++	dev_set_drvdata(&pdev->dev, ctlr);
++
++	sp = spi_controller_get_devdata(ctlr);
++	sp->base = base;
++	sp->buffer = buffer;
++	sp->has_irq = false;
++	sp->wbuf_en = false;
++	sp->ctlr = ctlr;
++	sp->dev = &pdev->dev;
++	sp->spi_clk = spi_clk;
++	sp->ctlr_clk = ctlr_clk;
++
++	irq = platform_get_irq_optional(pdev, 0);
++	if (irq < 0) {
++		dev_warn(sp->dev, "IRQ not available.");
++	} else {
++		writel(MTK_NOR_IRQ_MASK, base + MTK_NOR_REG_IRQ_STAT);
++		writel(0, base + MTK_NOR_REG_IRQ_EN);
++		ret = devm_request_irq(sp->dev, irq, mtk_nor_irq_handler, 0,
++				       pdev->name, sp);
++		if (ret < 0) {
++			dev_warn(sp->dev, "failed to request IRQ.");
++		} else {
++			init_completion(&sp->op_done);
++			sp->has_irq = true;
++		}
++	}
++
++	ret = mtk_nor_init(sp);
++	if (ret < 0) {
++		kfree(ctlr);
++		return ret;
++	}
++
++	dev_info(&pdev->dev, "spi frequency: %d Hz\n", sp->spi_freq);
++
++	return devm_spi_register_controller(&pdev->dev, ctlr);
++}
++
++static int mtk_nor_remove(struct platform_device *pdev)
++{
++	struct spi_controller *ctlr;
++	struct mtk_nor *sp;
++
++	ctlr = dev_get_drvdata(&pdev->dev);
++	sp = spi_controller_get_devdata(ctlr);
++
++	mtk_nor_disable_clk(sp);
++
++	return 0;
++}
++
++static struct platform_driver mtk_nor_driver = {
++	.driver = {
++		.name = DRIVER_NAME,
++		.of_match_table = mtk_nor_match,
++	},
++	.probe = mtk_nor_probe,
++	.remove = mtk_nor_remove,
++};
++
++module_platform_driver(mtk_nor_driver);
++
++MODULE_DESCRIPTION("Mediatek SPI NOR controller driver");
++MODULE_AUTHOR("Chuanhong Guo <gch981213@gmail.com>");
++MODULE_LICENSE("GPL v2");
++MODULE_ALIAS("platform:" DRIVER_NAME);
 diff --git a/drivers/spmi/Kconfig b/drivers/spmi/Kconfig
 index a53bad541f1a34686cb5b14a60708923db823de1..418848840999b5b5fb8035dad36328c3ff51c518 100644
 --- a/drivers/spmi/Kconfig
@@ -36483,18 +38944,10 @@ index 45c54d56ecbd55fd8241983c2c3ce42d76ffb809..94292b9bbc6331e6296da30f5be98e3b
 diff --git a/drivers/usb/host/xhci-mtk.c b/drivers/usb/host/xhci-mtk.c
 old mode 100644
 new mode 100755
-index 85f1ff0399a9c2b555663bd821ea496884f74747..34240209b7eb535ecf4ee16074c45e574d6dca57
+index 85f1ff0399a9c2b555663bd821ea496884f74747..5c068dc54e2b2fa751be4945297ab3520dd319c9
 --- a/drivers/usb/host/xhci-mtk.c
 +++ b/drivers/usb/host/xhci-mtk.c
-@@ -18,6 +18,7 @@
- #include <linux/pm_runtime.h>
- #include <linux/regmap.h>
- #include <linux/regulator/consumer.h>
-+#include <linux/of_irq.h>
- 
- #include "xhci.h"
- #include "xhci-mtk.h"
-@@ -68,11 +69,235 @@
+@@ -68,9 +68,13 @@
  #define SSC_IP_SLEEP_EN	BIT(4)
  #define SSC_SPM_INT_EN		BIT(1)
  
@@ -36507,239 +38960,8 @@ index 85f1ff0399a9c2b555663bd821ea496884f74747..34240209b7eb535ecf4ee16074c45e57
 +	SSUSB_UWK_V3,
  };
  
-+int xhci_mtk_runtime_ready;
-+
-+#if IS_ENABLED(CONFIG_PM)
-+static int xhci_mtk_runtime_suspend(struct device *dev);
-+static int xhci_mtk_runtime_resume(struct device *dev);
-+static int xhci_mtk_runtime_idle(struct device *dev);
-+static ssize_t xhci_mtk_runtime_show(struct device *dev,
-+				     struct device_attribute *attr,
-+				     char *buf)
-+{
-+	int i;
-+	int ret = 0;
-+	int num_ports;
-+	struct xhci_hcd_mtk  *mtk = dev_get_drvdata(dev);
-+	struct usb_hcd *hcd;
-+	struct xhci_hcd *xhci;
-+	struct xhci_hub *usb2_rhub;
-+	struct xhci_hub *usb3_rhub;
-+	struct xhci_bus_state *bus_state;
-+	struct xhci_port *port;
-+	u32 usb2_suspended_ports = -1;
-+	u32 usb3_suspended_ports = -1;
-+	u16 status;
-+
-+	if (!xhci_mtk_runtime_ready)
-+		return	sprintf(buf,
-+			"xhci_mtk_runtime_ready is not ready yet!\n");
-+
-+	if (!mtk->hcd)
-+		return -ESHUTDOWN;
-+
-+	hcd = mtk->hcd;
-+	xhci = hcd_to_xhci(hcd);
-+	if ((xhci->xhc_state & XHCI_STATE_REMOVING) ||
-+			(xhci->xhc_state & XHCI_STATE_HALTED)) {
-+		return -ESHUTDOWN;
-+	}
-+
-+	usb2_rhub = &xhci->usb2_rhub;
-+	if (usb2_rhub != NULL) {
-+		bus_state  = &usb2_rhub->bus_state;
-+		num_ports  = usb2_rhub->num_ports;
-+		usb2_suspended_ports  = bus_state->suspended_ports;
-+		usb2_suspended_ports ^= (BIT(num_ports) - 1);
-+		usb2_suspended_ports &= (BIT(num_ports) - 1);
-+		for (i = 0; i < num_ports; i++ ) {
-+			if (usb2_suspended_ports & (1UL << i)) {
-+				port = usb2_rhub->ports[i];
-+				status = readl(port->addr);
-+
-+				xhci_info(xhci,
-+					  "USB20: portsc[%i]: 0x%04X\n",
-+					  i, status);
-+
-+				if (!(status & PORT_CONNECT))
-+					usb2_suspended_ports &= ~(1UL << i);
-+			}
-+		}
-+	}
-+
-+	usb3_rhub = &xhci->usb3_rhub;
-+	if (usb3_rhub != NULL) {
-+		bus_state  = &usb3_rhub->bus_state;
-+		num_ports  = usb3_rhub->num_ports;
-+		usb3_suspended_ports  = bus_state->suspended_ports;
-+		usb3_suspended_ports ^= (BIT(num_ports) - 1);
-+		usb3_suspended_ports &= (BIT(num_ports) - 1);
-+		for (i = 0; i < num_ports; i++ ) {
-+			if (usb3_suspended_ports & (1UL << i)) {
-+				port = usb3_rhub->ports[i];
-+				status = readl(port->addr);
-+
-+				xhci_info(xhci,
-+					  "USB30: portsc[%i]: 0x%04X\n",
-+					  i, status);
-+
-+				if (!(status & PORT_CONNECT))
-+					usb3_suspended_ports &= ~(1UL << i);
-+			}
-+		}
-+	}
-+
-+	return sprintf(buf, "USB20: 0x%08X, USB30: 0x%08X ret: %i\n",
-+			usb2_suspended_ports, usb3_suspended_ports, ret);
-+}
-+
-+static ssize_t xhci_mtk_runtime_store(struct device *dev,
-+				      struct device_attribute *attr,
-+				      const char *buf, size_t count)
-+{
-+	int len = count;
-+	char *cp;
-+	int rc = count;
-+	static const char suspend_string[] = "suspend";
-+	static const char resume_string[]  = "resume";
-+	static const char idle_string[]    = "idle";
-+
-+	cp = memchr(buf, '\n', count);
-+	if (cp)
-+		len = cp - buf;
-+
-+	if (!xhci_mtk_runtime_ready) {
-+		rc = -EAGAIN;
-+		dev_info(dev,
-+			"xhci_mtk_runtime_ready is not ready yet!\n");
-+		goto exit;
-+	}
-+
-+	if (len == sizeof suspend_string - 1 &&
-+			strncmp(buf, suspend_string, len) == 0)
-+		xhci_mtk_runtime_suspend(dev);
-+	else if (len == sizeof resume_string - 1 &&
-+			strncmp(buf, resume_string, len) == 0)
-+		xhci_mtk_runtime_resume(dev);
-+	else if (len == sizeof idle_string - 1 &&
-+			strncmp(buf, idle_string, len) == 0)
-+		xhci_mtk_runtime_idle(dev);
-+	else
-+		rc = -EINVAL;
-+
-+exit:
-+	return rc;
-+}
-+static DEVICE_ATTR_RW(xhci_mtk_runtime);
-+
-+static ssize_t seal_runtime_status_show(struct device *dev,
-+				struct device_attribute *attr, char *buf)
-+{
-+	static char  *const seal_status[] = {
-+	"SEAL_BUSY",
-+	"SEAL_SUSPENDING",
-+	"SEAL_SUSPENDED",
-+	"SEAL_RESUMING",
-+	"SEAL_RESUMED"
-+	};
-+	struct xhci_hcd_mtk  *mtk = dev_get_drvdata(dev);
-+
-+	return sprintf(buf, "status: %s(%i)\n",
-+			seal_status[mtk->seal_status], mtk->seal_status);
-+}
-+static DEVICE_ATTR_RO(seal_runtime_status);
-+
-+static struct attribute *power_attrs[] = {
-+	&dev_attr_xhci_mtk_runtime.attr,
-+	&dev_attr_seal_runtime_status.attr,
-+	NULL,
-+};
-+static struct attribute_group power_attr_group = {
-+	.name	= power_group_name,
-+	.attrs	= power_attrs,
-+};
-+
-+static int add_power_attributes(struct device *dev)
-+{
-+	int rc = 0;
-+
-+	rc = sysfs_merge_group(&dev->kobj, &power_attr_group);
-+
-+	return rc;
-+}
-+
-+static void remove_power_attributes(struct device *dev)
-+{
-+	sysfs_unmerge_group(&dev->kobj, &power_attr_group);
-+}
-+#else
-+#define add_power_attributes(dev)	do {} while (0)
-+#define remove_power_attributes(dev)	do {} while (0)
-+#endif
-+
-+static void xhci_mtk_seal_work(struct work_struct *work)
-+{
-+	struct xhci_hcd_mtk *mtk =
-+			container_of(work, struct xhci_hcd_mtk, seal.work);
-+	struct usb_hcd *hcd = mtk->hcd;
-+	struct xhci_hcd *xhci = hcd_to_xhci(hcd);
-+
-+	xhci_dbg(xhci, "spm unseals xHCI controller %i\n", mtk->seal_status);
-+	if (mtk->seal_status == SEAL_SUSPENDED) {
-+		mtk->seal_status = SEAL_RESUMING;
-+		pm_runtime_put_sync_autosuspend(mtk->dev);
-+	} else
-+		xhci_warn(xhci,
-+		 "Ignore seal wakeup source disordered in xHCI controller\n");
-+}
-+
-+static irqreturn_t xhci_mtk_seal_irq (int irq, void *__hcd)
-+{
-+	irqreturn_t		rc= IRQ_HANDLED;
-+	struct xhci_hcd_mtk *mtk = __hcd;
-+	struct usb_hcd *hcd = mtk->hcd;
-+	struct xhci_hcd *xhci = hcd_to_xhci(hcd);
-+
-+	xhci_dbg(xhci, "seal irq ISR invoked\n");
-+
-+	schedule_delayed_work(&mtk->seal, 0);
-+
-+	return rc;
-+}
-+
-+static void xhci_mtk_seal_wakeup_enable(struct xhci_hcd_mtk *mtk, bool enable)
-+{
-+	struct irq_desc *desc;
-+	struct device *dev =mtk->dev;
-+
-+	if (mtk && mtk->seal_irq) {
-+		desc = irq_to_desc(mtk->seal_irq);
-+		if (enable) {
-+			desc->irq_data.chip->irq_ack(&desc->irq_data);
-+			enable_irq(mtk->seal_irq);
-+			dev_dbg(dev, "%s: enable_irq %i\n",
-+				 __func__, mtk->seal_irq);
-+		} else {
-+			disable_irq(mtk->seal_irq);
-+			dev_dbg(dev, "%s: disable_irq %i\n",
-+				 __func__, mtk->seal_irq);
-+		}
-+	}
-+}
-+
  static int xhci_mtk_host_enable(struct xhci_hcd_mtk *mtk)
- {
- 	struct mu3c_ippc_regs __iomem *ippc = mtk->ippc_regs;
-@@ -121,7 +346,7 @@ static int xhci_mtk_host_enable(struct xhci_hcd_mtk *mtk)
- 		check_val |= STS1_U3_MAC_RST;
- 
- 	ret = readl_poll_timeout(&ippc->ip_pw_sts1, value,
--			  (check_val == (value & check_val)), 100, 20000);
-+		  (check_val == (value & check_val)), 100, 20000);
- 	if (ret) {
- 		dev_err(mtk->dev, "clocks are not stable (0x%x)\n", value);
- 		return ret;
-@@ -305,6 +530,11 @@ static void usb_wakeup_ip_sleep_set(struct xhci_hcd_mtk *mtk, bool enable)
+@@ -305,6 +309,11 @@ static void usb_wakeup_ip_sleep_set(struct xhci_hcd_mtk *mtk, bool enable)
  		msk = SSC_IP_SLEEP_EN | SSC_SPM_INT_EN;
  		val = enable ? msk : 0;
  		break;
@@ -36751,311 +38973,8 @@ index 85f1ff0399a9c2b555663bd821ea496884f74747..34240209b7eb535ecf4ee16074c45e57
  	default:
  		return;
  	}
-@@ -470,9 +700,11 @@ static int xhci_mtk_probe(struct platform_device *pdev)
- 		return ret;
- 	}
- 
-+	pm_runtime_set_active(dev);
-+	pm_runtime_use_autosuspend(dev);
-+	pm_runtime_set_autosuspend_delay(dev,
-+				CONFIG_USB_AUTOSUSPEND_DELAY*1000);
- 	pm_runtime_enable(dev);
--	pm_runtime_get_sync(dev);
--	device_enable_async_suspend(dev);
- 
- 	ret = xhci_mtk_ldos_enable(mtk);
- 	if (ret)
-@@ -487,6 +719,14 @@ static int xhci_mtk_probe(struct platform_device *pdev)
- 		ret = irq;
- 		goto disable_clk;
- 	}
-+	dev_dbg(dev, "irq %i\n", irq);
-+
-+	mtk->seal_irq = platform_get_irq(pdev, 1);
-+	if (mtk->seal_irq < 0) {
-+		ret = mtk->seal_irq;
-+		goto disable_clk;
-+	}
-+	dev_dbg(dev, "seal_irq %i\n", mtk->seal_irq);
- 
- 	/* Initialize dma_mask and coherent_dma_mask to 32-bits */
- 	ret = dma_set_mask_and_coherent(dev, DMA_BIT_MASK(32));
-@@ -538,7 +778,8 @@ static int xhci_mtk_probe(struct platform_device *pdev)
- 	 * the xHCI spec on MTK's controller.
- 	 */
- 	xhci->imod_interval = 5000;
--	device_property_read_u32(dev, "imod-interval-ns", &xhci->imod_interval);
-+	device_property_read_u32(dev,
-+			 "imod-interval-ns", &xhci->imod_interval);
- 
- 	xhci->shared_hcd = usb_create_shared_hcd(driver, dev,
- 			dev_name(dev), hcd);
-@@ -558,6 +799,33 @@ static int xhci_mtk_probe(struct platform_device *pdev)
- 	if (ret)
- 		goto dealloc_usb2_hcd;
- 
-+	INIT_DELAYED_WORK(&mtk->seal, xhci_mtk_seal_work);
-+	snprintf(mtk->seal_descr, sizeof(mtk->seal_descr), "seal%s:usb%d",
-+		 hcd->driver->description, hcd->self.busnum);
-+	ret = request_irq(mtk->seal_irq, &xhci_mtk_seal_irq,
-+			  IRQF_TRIGGER_FALLING,	mtk->seal_descr, mtk);
-+	if (ret != 0) {
-+		dev_err(hcd->self.controller,
-+			"seal request interrupt %d failed\n",
-+			mtk->seal_irq);
-+		goto dealloc_usb2_hcd;
-+	}
-+	xhci_mtk_seal_wakeup_enable(mtk, false);
-+
-+	device_enable_async_suspend(dev);
-+	xhci_mtk_runtime_ready = 1;
-+
-+	ret = add_power_attributes(dev);
-+	if (ret)
-+		goto dealloc_usb2_hcd;
-+
-+	pm_runtime_mark_last_busy(dev);
-+	pm_runtime_put_autosuspend(dev);
-+
-+	dev_dbg(dev,
-+		 "%s: xhci_mtk_runtime_ready %i",
-+		 __func__, xhci_mtk_runtime_ready);
-+
- 	return 0;
- 
- dealloc_usb2_hcd:
-@@ -580,7 +848,7 @@ static int xhci_mtk_probe(struct platform_device *pdev)
- 	xhci_mtk_ldos_disable(mtk);
- 
- disable_pm:
--	pm_runtime_put_sync(dev);
-+	pm_runtime_put_sync_autosuspend(dev);
- 	pm_runtime_disable(dev);
- 	return ret;
- }
-@@ -594,7 +862,9 @@ static int xhci_mtk_remove(struct platform_device *dev)
- 
- 	pm_runtime_put_noidle(&dev->dev);
- 	pm_runtime_disable(&dev->dev);
-+	remove_power_attributes(&dev->dev);
- 
-+	xhci_mtk_runtime_ready = 0;
- 	usb_remove_hcd(shared_hcd);
- 	xhci->shared_hcd = NULL;
- 	device_init_wakeup(&dev->dev, false);
-@@ -631,6 +901,7 @@ static int __maybe_unused xhci_mtk_suspend(struct device *dev)
- 	xhci_mtk_host_disable(mtk);
- 	xhci_mtk_clks_disable(mtk);
- 	usb_wakeup_set(mtk, true);
-+
- 	return 0;
- }
- 
-@@ -651,10 +922,192 @@ static int __maybe_unused xhci_mtk_resume(struct device *dev)
- 	usb_hcd_poll_rh_status(hcd);
- 	return 0;
- }
-+static int __maybe_unused xhci_mtk_bus_status(struct device *dev)
-+{
-+	int i;
-+	int ret = 0;
-+	int num_ports;
-+	struct xhci_hcd_mtk  *mtk = dev_get_drvdata(dev);
-+	struct usb_hcd *hcd;
-+	struct xhci_hcd *xhci;
-+	struct xhci_hub *usb2_rhub;
-+	struct xhci_hub *usb3_rhub;
-+	struct xhci_bus_state *bus_state;
-+	struct xhci_port *port;
-+	u32	usb2_suspended_ports = -1;
-+	u32	usb3_suspended_ports = -1;
-+	u16 status;
-+
-+	if (!mtk->hcd)
-+		return -ESHUTDOWN;
-+
-+	hcd = mtk->hcd;
-+	xhci = hcd_to_xhci(hcd);
-+	if ((xhci->xhc_state & XHCI_STATE_REMOVING) ||
-+			(xhci->xhc_state & XHCI_STATE_HALTED)) {
-+		return -ESHUTDOWN;
-+	}
-+
-+	usb2_rhub	   = &xhci->usb2_rhub;
-+	if (usb2_rhub != NULL) {
-+		bus_state  = &usb2_rhub->bus_state;
-+		num_ports  = usb2_rhub->num_ports;
-+		usb2_suspended_ports  = bus_state->suspended_ports;
-+		usb2_suspended_ports ^= (BIT(num_ports) - 1);
-+		usb2_suspended_ports &= (BIT(num_ports) - 1);
-+		for (i = 0; i < num_ports; i++ ) {
-+			if (usb2_suspended_ports & (1UL << i)) {
-+				port = usb2_rhub->ports[i];
-+				status = readl(port->addr);
-+
-+				xhci_dbg(xhci,
-+					  "USB20: portsc[%i]: 0x%04X\n",
-+					  i, status);
-+
-+				if (!(status & PORT_CONNECT))
-+					usb2_suspended_ports &= ~(1UL << i);
-+			}
-+		}
-+
-+		if (usb2_suspended_ports) {
-+			ret = -EBUSY;
-+			goto ebusy;
-+		}
-+	}
-+
-+	usb3_rhub       = &xhci->usb3_rhub;
-+	if (usb3_rhub != NULL) {
-+		bus_state  = &usb3_rhub->bus_state;
-+		num_ports  = usb3_rhub->num_ports;
-+		usb3_suspended_ports  = bus_state->suspended_ports;
-+		usb3_suspended_ports ^= (BIT(num_ports) - 1);
-+		usb3_suspended_ports &= (BIT(num_ports) - 1);
-+		for (i = 0; i < num_ports; i++ ) {
-+			if (usb3_suspended_ports & (1UL << i)) {
-+				port = usb3_rhub->ports[i];
-+				status = readl(port->addr);
-+
-+				xhci_dbg(xhci,
-+					  "USB30: portsc[%i]: 0x%04X\n",
-+					  i, status);
-+
-+				if (!(status & PORT_CONNECT))
-+					usb3_suspended_ports &= ~(1UL << i);
-+			}
-+		}
-+
-+		if (usb3_suspended_ports) {
-+			ret = -EBUSY;
-+			goto ebusy;
-+		}
-+	}
-+
-+ebusy:
-+	xhci_dbg(xhci, "%s: USB20: 0x%08X, USB30: 0x%08X ret: %i\n",
-+		  __func__, usb2_suspended_ports,
-+		  usb3_suspended_ports, ret);
-+
-+	return ret;
-+}
-+
-+static int __maybe_unused xhci_mtk_runtime_suspend(struct device *dev)
-+{
-+	int  ret = 0;
-+	bool wakeup = device_may_wakeup(dev);
-+	struct xhci_hcd_mtk  *mtk = dev_get_drvdata(dev);
-+	struct usb_hcd *hcd;
-+	struct xhci_hcd *xhci;
-+
-+	if (!mtk->hcd)
-+		return -ESHUTDOWN;
-+
-+	hcd = mtk->hcd;
-+	xhci = hcd_to_xhci(hcd);
-+	if ((xhci->xhc_state & XHCI_STATE_REMOVING) ||
-+			(xhci->xhc_state & XHCI_STATE_HALTED)) {
-+		return -ESHUTDOWN;
-+	}
-+
-+	mtk->seal_status = SEAL_BUSY;
-+	ret = xhci_mtk_bus_status(dev);
-+	if (wakeup && !ret) {
-+		mtk->seal_status = SEAL_SUSPENDING;
-+		xhci_mtk_suspend(dev);
-+		xhci_mtk_seal_wakeup_enable(mtk, true);
-+		mtk->seal_status = SEAL_SUSPENDED;
-+		xhci_dbg(xhci,
-+			"%s: arm seals xHCI controller\n",__func__);
-+	}
-+
-+	xhci_dbg(xhci,
-+		  "%s: seals wakeup = %i, ret = %i!\n",
-+		  __func__, wakeup, ret);
-+
-+	return ret;
-+}
-+
-+static int __maybe_unused xhci_mtk_runtime_resume(struct device *dev)
-+{
-+	int  ret = 0;
-+	bool wakeup = device_may_wakeup(dev);
-+	struct xhci_hcd_mtk  *mtk = dev_get_drvdata(dev);
-+	struct usb_hcd *hcd;
-+	struct xhci_hcd *xhci;
-+
-+	if (!mtk->hcd)
-+		return -ESHUTDOWN;
-+
-+	hcd = mtk->hcd;
-+	xhci = hcd_to_xhci(hcd);
-+	if ((xhci->xhc_state & XHCI_STATE_REMOVING) ||
-+			(xhci->xhc_state & XHCI_STATE_HALTED)) {
-+		return -ESHUTDOWN;
-+	}
-+
-+	/*
-+	 *  list cases by one extra interrupt named seal to process!!!
-+	 *  Who to process these module reinitilization after SPM wakeup
-+	 *  case 1: usb remote wakeup, therefore xHCI need reinitilizate also.
-+	 *  case 2: other-wakeup-source wakeup, therefore, xHCI need reinit
-+	 *  case 3: usb client driver can invoke it in runtime mechanism
-+	 *  case 4: user active
-+	 */
-+	if (wakeup) {
-+		xhci_mtk_seal_wakeup_enable(mtk, false);
-+		xhci_mtk_resume(dev);
-+		xhci_dbg(xhci,
-+			"%s: arms unseals xHCI controller\n", __func__);
-+	}
-+	mtk->seal_status = SEAL_RESUMED;
-+
-+	xhci_dbg(xhci,
-+		  "%s: unseals wakeup = %i, ret = %i\n",
-+		  __func__, wakeup, ret);
-+
-+	return ret;
-+}
-+
-+static int __maybe_unused xhci_mtk_runtime_idle(struct device *dev)
-+{
-+	int ret = 0;
-+
-+	dev_dbg(dev,
-+		 "%s: xhci_mtk_runtime_ready %i",
-+		 __func__, xhci_mtk_runtime_ready);
-+
-+	if (!xhci_mtk_runtime_ready)
-+		ret = -EAGAIN;
-+
-+	return ret;
-+}
- 
- static const struct dev_pm_ops xhci_mtk_pm_ops = {
- 	SET_SYSTEM_SLEEP_PM_OPS(xhci_mtk_suspend, xhci_mtk_resume)
-+	SET_RUNTIME_PM_OPS(xhci_mtk_runtime_suspend,
-+			   xhci_mtk_runtime_resume,
-+			   xhci_mtk_runtime_idle)
- };
-+
- #define DEV_PM_OPS IS_ENABLED(CONFIG_PM) ? &xhci_mtk_pm_ops : NULL
- 
- #ifdef CONFIG_OF
-@@ -679,6 +1132,7 @@ MODULE_ALIAS("platform:xhci-mtk");
- 
- static int __init xhci_mtk_init(void)
- {
-+	xhci_mtk_runtime_ready = 0;
- 	xhci_init_driver(&xhci_mtk_hc_driver, &xhci_mtk_overrides);
- 	return platform_driver_register(&mtk_xhci_driver);
- }
 diff --git a/drivers/usb/host/xhci-mtk.h b/drivers/usb/host/xhci-mtk.h
-old mode 100644
-new mode 100755
-index 5ac458b7d2e0efa406e5db2ca57dfe3dde59e550..c7f6806704acf35973119fd3898a1f1a62d501aa
+index 5ac458b7d2e0efa406e5db2ca57dfe3dde59e550..7b7898f1208ef87e158bbca8ddf64b67f2baaa44 100644
 --- a/drivers/usb/host/xhci-mtk.h
 +++ b/drivers/usb/host/xhci-mtk.h
 @@ -21,12 +21,18 @@
@@ -37086,34 +39005,6 @@ index 5ac458b7d2e0efa406e5db2ca57dfe3dde59e550..c7f6806704acf35973119fd3898a1f1a
  	struct list_head bw_ep_list;
  };
  
-@@ -127,6 +133,14 @@ struct mu3c_ippc_regs {
- 	__le32 reserved3[33]; /* 0x80 ~ 0xff */
- };
- 
-+enum xhci_mtk_seal {
-+	SEAL_BUSY = 0,
-+	SEAL_SUSPENDING,
-+	SEAL_SUSPENDED,
-+	SEAL_RESUMING,
-+	SEAL_RESUMED
-+};
-+
- struct xhci_hcd_mtk {
- 	struct device *dev;
- 	struct usb_hcd *hcd;
-@@ -152,6 +166,12 @@ struct xhci_hcd_mtk {
- 	struct regmap *uwk;
- 	u32 uwk_reg_base;
- 	u32 uwk_vers;
-+
-+	/* usb eint wakeup source */
-+	int seal_irq;
-+	enum xhci_mtk_seal seal_status;
-+	struct delayed_work  seal;
-+	char   seal_descr[32];	/* "seal" + driver + bus # */
- };
- 
- static inline struct xhci_hcd_mtk *hcd_to_mtk(struct usb_hcd *hcd)
 diff --git a/drivers/watchdog/mtk_wdt.c b/drivers/watchdog/mtk_wdt.c
 index d6a6393f609d12101ffe61cf04078b60663f45ea..aef0c2db6a112484158f9f9c810029003622871f 100644
 --- a/drivers/watchdog/mtk_wdt.c
@@ -40569,6 +42460,113 @@ index 66989a16221acfdcb8ea3e50f8d8677791cefa0a..7090c57b702e6ac2558c2d60c2297031
  /* Min, Hour, Dom... register offset to RTC_TC_SEC */
  #define RTC_OFFSET_SEC         0
  #define RTC_OFFSET_MIN         1
+diff --git a/include/linux/mtd/spi-nor.h b/include/linux/mtd/spi-nor.h
+index fc0b4b19c900eb7432f906378b037018747df6c8..5e3889e8d9c77e070aea24f8eec808e360832277 100644
+--- a/include/linux/mtd/spi-nor.h
++++ b/include/linux/mtd/spi-nor.h
+@@ -225,14 +225,6 @@ static inline u8 spi_nor_get_protocol_width(enum spi_nor_protocol proto)
+ 	return spi_nor_get_protocol_data_nbits(proto);
+ }
+ 
+-enum spi_nor_ops {
+-	SPI_NOR_OPS_READ = 0,
+-	SPI_NOR_OPS_WRITE,
+-	SPI_NOR_OPS_ERASE,
+-	SPI_NOR_OPS_LOCK,
+-	SPI_NOR_OPS_UNLOCK,
+-};
+-
+ enum spi_nor_option_flags {
+ 	SNOR_F_USE_FSR		= BIT(0),
+ 	SNOR_F_HAS_SR_TB	= BIT(1),
+@@ -465,6 +457,34 @@ enum spi_nor_pp_command_index {
+ /* Forward declaration that will be used in 'struct spi_nor_flash_parameter' */
+ struct spi_nor;
+ 
++/**
++ * struct spi_nor_controller_ops - SPI NOR controller driver specific
++ *                                 operations.
++ * @prepare:		[OPTIONAL] do some preparations for the
++ *			read/write/erase/lock/unlock operations.
++ * @unprepare:		[OPTIONAL] do some post work after the
++ *			read/write/erase/lock/unlock operations.
++ * @read_reg:		read out the register.
++ * @write_reg:		write data to the register.
++ * @read:		read data from the SPI NOR.
++ * @write:		write data to the SPI NOR.
++ * @erase:		erase a sector of the SPI NOR at the offset @offs; if
++ *			not provided by the driver, spi-nor will send the erase
++ *			opcode via write_reg().
++ */
++struct spi_nor_controller_ops {
++	int (*prepare)(struct spi_nor *nor);
++	void (*unprepare)(struct spi_nor *nor);
++	int (*read_reg)(struct spi_nor *nor, u8 opcode, u8 *buf, size_t len);
++	int (*write_reg)(struct spi_nor *nor, u8 opcode, const u8 *buf,
++			 size_t len);
++
++	ssize_t (*read)(struct spi_nor *nor, loff_t from, size_t len, u8 *buf);
++	ssize_t (*write)(struct spi_nor *nor, loff_t to, size_t len,
++			 const u8 *buf);
++	int (*erase)(struct spi_nor *nor, loff_t offs);
++};
++
+ /**
+  * struct spi_nor_locking_ops - SPI NOR locking methods
+  * @lock:	lock a region of the SPI NOR.
+@@ -549,23 +569,14 @@ struct flash_info;
+  * @read_proto:		the SPI protocol for read operations
+  * @write_proto:	the SPI protocol for write operations
+  * @reg_proto		the SPI protocol for read_reg/write_reg/erase operations
+- * @prepare:		[OPTIONAL] do some preparations for the
+- *			read/write/erase/lock/unlock operations
+- * @unprepare:		[OPTIONAL] do some post work after the
+- *			read/write/erase/lock/unlock operations
+- * @read_reg:		[DRIVER-SPECIFIC] read out the register
+- * @write_reg:		[DRIVER-SPECIFIC] write data to the register
+- * @read:		[DRIVER-SPECIFIC] read data from the SPI NOR
+- * @write:		[DRIVER-SPECIFIC] write data to the SPI NOR
+- * @erase:		[DRIVER-SPECIFIC] erase a sector of the SPI NOR
+- *			at the offset @offs; if not provided by the driver,
+- *			spi-nor will send the erase opcode via write_reg()
++ * @controller_ops:	SPI NOR controller driver specific operations.
+  * @clear_sr_bp:	[FLASH-SPECIFIC] clears the Block Protection Bits from
+  *			the SPI NOR Status Register.
+  * @params:		[FLASH-SPECIFIC] SPI-NOR flash parameters and settings.
+  *                      The structure includes legacy flash parameters and
+  *                      settings that can be overwritten by the spi_nor_fixups
+  *                      hooks, or dynamically when parsing the SFDP tables.
++ * @dirmap:		pointers to struct spi_mem_dirmap_desc for reads/writes.
+  * @priv:		the private data
+  */
+ struct spi_nor {
+@@ -588,20 +599,16 @@ struct spi_nor {
+ 	bool			sst_write_second;
+ 	u32			flags;
+ 
+-	int (*prepare)(struct spi_nor *nor, enum spi_nor_ops ops);
+-	void (*unprepare)(struct spi_nor *nor, enum spi_nor_ops ops);
+-	int (*read_reg)(struct spi_nor *nor, u8 opcode, u8 *buf, int len);
+-	int (*write_reg)(struct spi_nor *nor, u8 opcode, u8 *buf, int len);
+-
+-	ssize_t (*read)(struct spi_nor *nor, loff_t from,
+-			size_t len, u_char *read_buf);
+-	ssize_t (*write)(struct spi_nor *nor, loff_t to,
+-			size_t len, const u_char *write_buf);
+-	int (*erase)(struct spi_nor *nor, loff_t offs);
++	const struct spi_nor_controller_ops *controller_ops;
+ 
+ 	int (*clear_sr_bp)(struct spi_nor *nor);
+ 	struct spi_nor_flash_parameter params;
+ 
++	struct {
++		struct spi_mem_dirmap_desc *rdesc;
++		struct spi_mem_dirmap_desc *wdesc;
++	} dirmap;
++
+ 	void *priv;
+ };
+ 
 diff --git a/include/linux/regulator/mt6315-regulator.h b/include/linux/regulator/mt6315-regulator.h
 new file mode 100644
 index 0000000000000000000000000000000000000000..8d1322c664a4713abdaedb55910f77fdee60d0c9
