@@ -48,6 +48,7 @@ RDEPEND="${RDEPEND}
 	net-misc/iputils
 	net-misc/openssh
 	net-misc/rsync
+	net-misc/taylor-uucp
 	net-misc/wget
 	sys-apps/diffutils
 	sys-apps/file
