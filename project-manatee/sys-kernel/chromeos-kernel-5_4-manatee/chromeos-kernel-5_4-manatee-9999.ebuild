@@ -12,7 +12,7 @@ inherit cros-workon cros-kernel2
 
 HOMEPAGE="https://www.chromium.org/chromium-os/chromiumos-design-docs/chromium-os-kernel"
 DESCRIPTION="Chrome OS Linux Kernel 5.4-manatee"
-KEYWORDS="~* ~amd64 ~x86"
+KEYWORDS="~* ~amd64 ~x86 ~arm64"
 
 DEPEND="
 	chromeos-base/chromeos-initramfs

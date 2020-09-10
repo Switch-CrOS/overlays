@@ -8,7 +8,7 @@ or portage actions."
 
 LICENSE="BSD-Google"
 SLOT="0"
-KEYWORDS="-* amd64 x86"
+KEYWORDS="-* amd64 x86 arm64"
 
 IUSE="manatee"
 
