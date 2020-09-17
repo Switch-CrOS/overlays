@@ -28,15 +28,5 @@ src_configure() {
 }
 
 src_install() {
-	if use buildtest ; then
-		ewarn "Skipping install for buildtest"
-		return 0
-	fi
-	local boot_dir=boot/hv
-	dodir /${boot_dir}
-	kmake INSTALL_MOD_PATH="${D}/${boot_dir}/modules" INSTALL_PATH="${D}/${boot_dir}" install
-	local version=$(kernelrelease)
-	if [ ! -e "${D}/${boot_dir}/vmlinuz" ]; then
-		ln -sf "vmlinuz-${version}" "${D}/${boot_dir}/vmlinuz" || die
-	fi
+	cros-kernel2_src_install "/build/manatee"
 }
