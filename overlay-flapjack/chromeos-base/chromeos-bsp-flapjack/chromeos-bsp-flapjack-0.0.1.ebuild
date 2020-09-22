@@ -28,7 +28,7 @@ src_install() {
 	doappid "{B02960B4-54E0-42B7-92DC-F430A3DBDEFB}" "CHROMEBOOK"
 
 	# Install audio config files
-	# unibuild_install_audio_files (TODO: add this to config later).
+	# unibuild_install_files audio-files (TODO: add this to config later).
 	local audio_config_dir="${FILESDIR}/audio-config"
 	install_audio_configs flapjack "${audio_config_dir}"
 }

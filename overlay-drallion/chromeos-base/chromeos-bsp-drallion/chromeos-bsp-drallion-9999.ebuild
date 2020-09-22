@@ -29,6 +29,6 @@ src_install() {
 	# Intall a rule tagging keyboard as having updated layout
 	udev_dorules "${FILESDIR}/81-drallion-keyboard.rules"
 
-	unibuild_install_audio_files
-	unibuild_install_thermal_files
+	unibuild_install_files audio-files
+	unibuild_install_files thermal-files
 }

@@ -27,7 +27,7 @@ DEPEND="
 src_install() {
 	doappid "{107171EC-2166-414E-9F54-56515C0BE944}" "CHROMEBOOK"
 
-	unibuild_install_audio_files
+	unibuild_install_files audio-files
 
-	unibuild_install_autobrightness_files
+	unibuild_install_files autobrightness-files
 }

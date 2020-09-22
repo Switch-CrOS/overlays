@@ -38,7 +38,7 @@ src_install() {
 	udev_dorules "${FILESDIR}/99-hammerd.rules"
 
 	# Install audio config
-	unibuild_install_audio_files
+	unibuild_install_files audio-files
 
 	# In the krane device, we separate the 0E30 to two different PIDs
 	# after the board_rev>=5. To backward compatible with the old devices,

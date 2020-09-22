@@ -37,5 +37,5 @@ src_install() {
 	doins "${FILESDIR}"/powerd/*
 
 	# Install board-specific dptf.
-	unibuild_install_thermal_files
+	unibuild_install_files thermal-files
 }

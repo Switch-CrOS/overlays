@@ -25,8 +25,8 @@ DEPEND="
 src_install() {
 	doappid "{5A3AB642-2A67-470A-8F37-37E737A53CFC}" "CHROMEBOOK"
 
-	unibuild_install_audio_files
-	unibuild_install_thermal_files
+	unibuild_install_files audio-files
+	unibuild_install_files thermal-files
 
 	insinto "/usr/share/power_manager/board_specific"
 	doins "${FILESDIR}"/common/powerd/*

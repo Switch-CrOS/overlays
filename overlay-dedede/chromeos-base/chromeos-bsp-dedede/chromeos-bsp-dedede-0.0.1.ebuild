@@ -27,5 +27,5 @@ src_install() {
 	doappid "{E0DD1258-E890-493E-ADA3-0C755240B89C}" "CHROMEBOOK"
 
 	# Install audio config files
-	unibuild_install_audio_files
+	unibuild_install_files audio-files
 }

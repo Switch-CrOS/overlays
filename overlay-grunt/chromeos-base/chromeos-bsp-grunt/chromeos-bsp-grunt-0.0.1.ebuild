@@ -30,6 +30,6 @@ src_install() {
 		doappid "{9496CDE8-85E6-4118-960F-E26DC0C69FD6}" "CHROMEBOOK"
 	fi
 
-	unibuild_install_audio_files
+	unibuild_install_files audio-files
 	unibuild_install_touch_files
 }

@@ -25,8 +25,8 @@ DEPEND="
 src_install() {
 	doappid "{625849FA-56A0-4E67-9163-B89BE0C2A6AE}" "CHROMEBOOK"
 
-	unibuild_install_audio_files
-	unibuild_install_thermal_files
+	unibuild_install_files audio-files
+	unibuild_install_files thermal-files
 
 	udev_dorules "${FILESDIR}/99-chromeos-rammus-usb-charge-mode.rules"
 }

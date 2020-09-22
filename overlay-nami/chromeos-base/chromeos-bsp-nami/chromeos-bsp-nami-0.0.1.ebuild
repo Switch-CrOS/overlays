@@ -33,8 +33,8 @@ src_install() {
 		doappid "{495DCB07-E19A-4D7D-99B9-4710011A65B1}" "CHROMEBOOK"
 	fi
 
-	unibuild_install_audio_files
-	unibuild_install_thermal_files
+	unibuild_install_files audio-files
+	unibuild_install_files thermal-files
 
 	# Projects might support multiple panels with the same Wacom digitizer
 	# chip but have different firmwares for fine-tuned performance.

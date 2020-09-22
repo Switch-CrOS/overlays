@@ -43,8 +43,8 @@ src_install() {
 	dosbin "${FILESDIR}"/control_usb_charge_mode.sh
 	dosbin "${FILESDIR}"/control_usb_runtime_suspend.sh
 
-	unibuild_install_audio_files
-	unibuild_install_thermal_files
+	unibuild_install_files audio-files
+	unibuild_install_files thermal-files
 
 	# Configure Pen Eject as a wakeup source
 	udev_dorules "${FILESDIR}/93-powerd-overrides.rules"

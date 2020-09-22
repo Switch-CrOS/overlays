@@ -42,7 +42,7 @@ src_install() {
 	insinto "${EPREFIX}/etc/udev/hwdb.d"
 	doins "${FILESDIR}/81-halvor-keyboard.hwdb"
 
-	unibuild_install_audio_files
+	unibuild_install_files audio-files
 
 	udev_dorules "${FILESDIR}"/udev/*.rules
 }

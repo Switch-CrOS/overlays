@@ -40,7 +40,7 @@ src_install() {
 		doappid "{95EE134E-B47F-43FB-9835-32C276865F9A}" "CHROMEBOOK"
 	fi
 
-	unibuild_install_audio_files
+	unibuild_install_files audio-files
 
-	unibuild_install_autobrightness_files
+	unibuild_install_files autobrightness-files
 }

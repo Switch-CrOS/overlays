@@ -29,5 +29,5 @@ src_install() {
 	doins "${FILESDIR}/preload-qcom-network-drivers.conf"
 
 	# Install audio config
-	unibuild_install_audio_files
+	unibuild_install_files audio-files
 }
