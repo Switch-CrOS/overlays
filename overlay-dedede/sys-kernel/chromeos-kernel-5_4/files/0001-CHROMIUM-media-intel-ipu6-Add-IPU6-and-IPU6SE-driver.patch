@@ -1,4 +1,4 @@
-From 1d03e24eabc2165214423817f86b8d73302790d0 Mon Sep 17 00:00:00 2001
+From 6e6b592477b049cfbe59194cf72034ff6e79ea49 Mon Sep 17 00:00:00 2001
 From: Tianshu Qiu <tian.shu.qiu@intel.com>
 Date: Wed, 15 Apr 2020 19:03:03 +0800
 Subject: [PATCH] CHROMIUM: media: intel-ipu6: Add IPU6 and IPU6SE drivers
@@ -49,7 +49,7 @@ Signed-off-by: Bingbu Cao <bingbu.cao@intel.com>
  drivers/media/pci/intel/ipu-mmu.h             |   67 +
  drivers/media/pci/intel/ipu-pdata.h           |  251 +++
  drivers/media/pci/intel/ipu-psys-compat32.c   |  227 +++
- drivers/media/pci/intel/ipu-psys.c            | 1622 ++++++++++++++++
+ drivers/media/pci/intel/ipu-psys.c            | 1623 ++++++++++++++++
  drivers/media/pci/intel/ipu-psys.h            |  216 +++
  drivers/media/pci/intel/ipu-trace.c           |  880 +++++++++
  drivers/media/pci/intel/ipu-trace.h           |  312 +++
@@ -72,19 +72,19 @@ Signed-off-by: Bingbu Cao <bingbu.cao@intel.com>
  drivers/media/pci/intel/ipu6/ipu6-isys-phy.c  |  649 +++++++
  drivers/media/pci/intel/ipu6/ipu6-isys-phy.h  |  161 ++
  drivers/media/pci/intel/ipu6/ipu6-isys.c      |  318 +++
- .../media/pci/intel/ipu6/ipu6-l-scheduler.c   |  624 ++++++
+ .../media/pci/intel/ipu6/ipu6-l-scheduler.c   |  618 ++++++
  .../pci/intel/ipu6/ipu6-platform-resources.h  |  197 ++
  drivers/media/pci/intel/ipu6/ipu6-ppg.c       |  556 ++++++
- drivers/media/pci/intel/ipu6/ipu6-ppg.h       |   32 +
+ drivers/media/pci/intel/ipu6/ipu6-ppg.h       |   38 +
  drivers/media/pci/intel/ipu6/ipu6-psys-gpc.c  |  218 +++
- drivers/media/pci/intel/ipu6/ipu6-psys.c      | 1004 ++++++++++
+ drivers/media/pci/intel/ipu6/ipu6-psys.c      | 1005 ++++++++++
  drivers/media/pci/intel/ipu6/ipu6.c           |  385 ++++
  .../pci/intel/ipu6/ipu6se-fw-resources.c      |  354 ++++
  .../intel/ipu6/ipu6se-platform-resources.h    |  127 ++
  include/media/ipu-isys.h                      |   44 +
  include/uapi/linux/ipu-isys.h                 |   14 +
  include/uapi/linux/ipu-psys.h                 |  121 ++
- 72 files changed, 27033 insertions(+), 1 deletion(-)
+ 72 files changed, 27035 insertions(+), 1 deletion(-)
  create mode 100644 drivers/media/pci/intel/Kconfig
  create mode 100644 drivers/media/pci/intel/ipu-bus.c
  create mode 100644 drivers/media/pci/intel/ipu-bus.h
@@ -15155,10 +15155,10 @@ index 000000000000..5283c85bd57b
 +EXPORT_SYMBOL_GPL(ipu_psys_compat_ioctl32);
 diff --git a/drivers/media/pci/intel/ipu-psys.c b/drivers/media/pci/intel/ipu-psys.c
 new file mode 100644
-index 000000000000..e365f9b4c03e
+index 000000000000..42fb93b9e336
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu-psys.c
-@@ -0,0 +1,1622 @@
+@@ -0,0 +1,1623 @@
 +// SPDX-License-Identifier: GPL-2.0
 +// Copyright (C) 2013 - 2020 Intel Corporation
 +
@@ -15644,6 +15644,7 @@ index 000000000000..e365f9b4c03e
 +				dbuf = kbuf->dbuf;
 +				kbuf->dbuf = NULL;
 +				db_attach = NULL;
++				kbuf->db_attach = NULL;
 +				dma_buf_put(dbuf);
 +			} else {
 +				if (db_attach)
@@ -15657,12 +15658,13 @@ index 000000000000..e365f9b4c03e
 +	mutex_lock(&psys->mutex);
 +	list_del(&fh->list);
 +
++	mutex_unlock(&psys->mutex);
++	ipu_psys_fh_deinit(fh);
++
++	mutex_lock(&psys->mutex);
 +	if (list_empty(&psys->fhs))
 +		psys->power_gating = 0;
-+
 +	mutex_unlock(&psys->mutex);
-+
-+	ipu_psys_fh_deinit(fh);
 +	mutex_destroy(&fh->mutex);
 +	kfree(fh);
 +
@@ -16692,7 +16694,6 @@ index 000000000000..e365f9b4c03e
 +		mutex_unlock(&psys->mutex);
 +		return IRQ_NONE;
 +	}
-+
 +	r = pm_runtime_get_sync(&psys->adev->dev);
 +	if (r < 0) {
 +		pm_runtime_put(&psys->adev->dev);
@@ -23883,10 +23884,10 @@ index 000000000000..e2891606a63d
 +}
 diff --git a/drivers/media/pci/intel/ipu6/ipu6-l-scheduler.c b/drivers/media/pci/intel/ipu6/ipu6-l-scheduler.c
 new file mode 100644
-index 000000000000..fc967e88c5f1
+index 000000000000..2c9cdc1c376b
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu6/ipu6-l-scheduler.c
-@@ -0,0 +1,624 @@
+@@ -0,0 +1,618 @@
 +// SPDX-License-Identifier: GPL-2.0
 +// Copyright (C) 2020 Intel Corporation
 +
@@ -23894,12 +23895,6 @@ index 000000000000..fc967e88c5f1
 +#include "ipu6-ppg.h"
 +
 +extern bool enable_power_gating;
-+
-+enum ipu_psys_power_gating_state {
-+	PSYS_POWER_NORMAL = 0,
-+	PSYS_POWER_GATING,
-+	PSYS_POWER_GATED
-+};
 +
 +struct sched_list {
 +	struct list_head list;
@@ -25278,10 +25273,10 @@ index 000000000000..2f7aab85a535
 +}
 diff --git a/drivers/media/pci/intel/ipu6/ipu6-ppg.h b/drivers/media/pci/intel/ipu6/ipu6-ppg.h
 new file mode 100644
-index 000000000000..410168d3e147
+index 000000000000..9ec1baf78631
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu6/ipu6-ppg.h
-@@ -0,0 +1,32 @@
+@@ -0,0 +1,38 @@
 +/* SPDX-License-Identifier: GPL-2.0 */
 +/*
 + * Copyright (C) 2020 Intel Corporation
@@ -25295,6 +25290,12 @@ index 000000000000..410168d3e147
 +enum SCHED_LIST {
 +	SCHED_START_LIST = 2,
 +	SCHED_STOP_LIST
++};
++
++enum ipu_psys_power_gating_state {
++	PSYS_POWER_NORMAL = 0,
++	PSYS_POWER_GATING,
++	PSYS_POWER_GATED
 +};
 +
 +int ipu_psys_ppg_get_bufset(struct ipu_psys_kcmd *kcmd,
@@ -25540,10 +25541,10 @@ index 000000000000..4d8ef61d8449
 +#endif
 diff --git a/drivers/media/pci/intel/ipu6/ipu6-psys.c b/drivers/media/pci/intel/ipu6/ipu6-psys.c
 new file mode 100644
-index 000000000000..915250966391
+index 000000000000..2b45f0cb7d2f
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu6/ipu6-psys.c
-@@ -0,0 +1,1004 @@
+@@ -0,0 +1,1005 @@
 +// SPDX-License-Identifier: GPL-2.0
 +// Copyright (C) 2020 Intel Corporation
 +
@@ -26438,7 +26439,8 @@ index 000000000000..915250966391
 +				spin_lock_irqsave(&psys->pgs_lock, flags);
 +				kppg->kpg->pg_size = 0;
 +				spin_unlock_irqrestore(&psys->pgs_lock, flags);
-+				pm_runtime_put(&psys->adev->dev);
++				if (psys->power_gating != PSYS_POWER_GATED)
++					pm_runtime_put(&psys->adev->dev);
 +			}
 +			mutex_unlock(&kppg->mutex);
 +
