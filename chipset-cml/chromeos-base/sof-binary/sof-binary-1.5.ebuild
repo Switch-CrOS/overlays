@@ -9,11 +9,17 @@ SRC_URI="gs://chromeos-localmirror/distfiles/${PN}-cml-${PV}.tar.xz"
 LICENSE="SOF"
 SLOT="0"
 KEYWORDS="*"
+IUSE="hatch-kernelnext"
 
 S=${WORKDIR}/${PN}-cml-${PV}
 
 src_install() {
-	insinto /lib/firmware/intel/sof
+	if use hatch-kernelnext; then
+		insinto /lib/firmware/intel/sof/community
+	else
+		insinto /lib/firmware/intel/sof
+	fi
+
 	doins sof-cnl.ri
 	dodoc README
 }
