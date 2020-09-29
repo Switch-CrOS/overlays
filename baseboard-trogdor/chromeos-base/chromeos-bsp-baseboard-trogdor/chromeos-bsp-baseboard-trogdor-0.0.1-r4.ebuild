@@ -44,6 +44,9 @@ src_install() {
 	doins "${FILESDIR}/udev-trigger-codec.conf"
 	udev_dorules "${FILESDIR}/50-media.rules"
 
+	# udev rules to enable USB wakeup
+	udev_dorules "${FILESDIR}/99-usb-wakeup.rules"
+
 	# Install modem FSG verification init script
 	insinto "/etc/init"
 	doins "${FILESDIR}/verify_fsg.conf"
