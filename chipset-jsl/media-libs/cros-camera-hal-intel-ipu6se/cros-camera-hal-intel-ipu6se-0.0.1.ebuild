@@ -11,7 +11,4 @@ KEYWORDS="-* amd64"
 
 # TODO(b/149069716): check in the HAL source codes into platform2 after
 # finishing code review.
-RDEPEND="
-	media-libs/cros-camera-hal-intel-ipu6-squash
-	media-libs/intel-ipu6se-libs-bin
-	"
+RDEPEND="media-libs/cros-camera-hal-intel-ipu6-squash"
