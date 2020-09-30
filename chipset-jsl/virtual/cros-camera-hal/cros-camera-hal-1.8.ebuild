@@ -10,4 +10,4 @@ LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
 
-RDEPEND="media-libs/cros-camera-hal-intel-ipu6"
+RDEPEND=">=media-libs/cros-camera-hal-intel-ipu6-0.0.2"
