@@ -11,6 +11,7 @@ LICENSE="BSD-Google"
 DEPEND="
 	sys-boot/coreboot-private-files-chipset-qc7180
 	sys-firmware/parade-ps8751a3-firmware
+	sys-firmware/parade-ps8755a2-firmware
 	sys-firmware/parade-ps8805a2-firmware
 	"
 RDEPEND="${DEPEND}"
