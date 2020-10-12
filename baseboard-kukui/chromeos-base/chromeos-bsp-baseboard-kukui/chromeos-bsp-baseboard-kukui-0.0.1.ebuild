@@ -13,7 +13,7 @@ LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="-* arm64 arm"
 S="${WORKDIR}"
-IUSE=""
+IUSE="arcvm"
 
 # Add dependencies on other ebuilds from within this board overlay
 RDEPEND=""
@@ -28,7 +28,11 @@ src_install() {
 	insinto "/etc/init"
 	doins "${FILESDIR}/platform-cpusets.conf"
 
-	insinto "/opt/google/containers/android/vendor/etc/init/"
+	if use arcvm; then
+		insinto "/opt/google/vms/android/vendor/etc/init/"
+	else
+		insinto "/opt/google/containers/android/vendor/etc/init/"
+	fi
 	doins "${FILESDIR}/init.cpusets.rc"
 
 	# udev rules for codecs
