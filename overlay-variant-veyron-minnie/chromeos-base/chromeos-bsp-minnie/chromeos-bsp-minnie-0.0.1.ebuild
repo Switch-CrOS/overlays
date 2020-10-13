@@ -12,7 +12,10 @@ SLOT="0"
 KEYWORDS="-* arm"
 IUSE="minnie-cheets"
 
-RDEPEND="!<media-sound/adhd-0.0.6"
+RDEPEND="
+	!<chromeos-base/chromeos-bsp-minnie-private-0.0.1-r38
+	!<media-sound/adhd-0.0.6
+"
 DEPEND=""
 
 
@@ -24,6 +27,10 @@ src_install() {
 	else
 		doappid "{432FF9F1-4D2E-7E74-6F98-32E56E904BFB}" "CHROMEBOOK" # veyron-minnie
 	fi
+
+	# Install Broadcom WiFi NVRAM file.
+	insinto "/lib/firmware/brcm"
+	doins "${FILESDIR}/firmware/brcmfmac4354-sdio.txt"
 
 	# Install audio-config files
 	local audio_config_dir="${FILESDIR}/audio-config"
