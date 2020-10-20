@@ -16,7 +16,12 @@ DEPEND=""
 
 S=${WORKDIR}
 
+pkg_preinst() {
+	usermod -a -G docker $USER
+}
+
 src_install() {
 	insinto /etc/init
-	doins "${FILESDIR}/cgroups.override"
+	doins "${FILESDIR}/"*.conf
+	doins "${FILESDIR}/"cgroups.override
 }
