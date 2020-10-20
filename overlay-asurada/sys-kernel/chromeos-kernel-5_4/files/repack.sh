@@ -45,7 +45,7 @@ generate_new_squash() {
     refs/changes/"${patch_id: -2}"/"${patch_id}"/"${patchset}"
 
   base="$(git merge-base cros/chromeos-5.4 FETCH_HEAD)"
-  tree="$(git cat-file -p "${base}" | sed -n 's/tree //p')"
+  tree="$(git cat-file -p "${base}" | sed -n 's/^tree //p' | head -n 1)"
 
   info "Generating new squash..."
   git diff --full-index "${base}" FETCH_HEAD > \
