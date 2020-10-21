@@ -1,4 +1,4 @@
-From f838338ed285c2424c693d07f6dfb65de7ada084 Mon Sep 17 00:00:00 2001
+From ba5f05914b2360a083d58b274aedcf1149d964b8 Mon Sep 17 00:00:00 2001
 From: Tianshu Qiu <tian.shu.qiu@intel.com>
 Date: Wed, 15 Apr 2020 19:03:03 +0800
 Subject: [PATCH] CHROMIUM: media: intel-ipu6: Add IPU6 and IPU6SE drivers
@@ -13,9 +13,9 @@ Signed-off-by: Tianshu Qiu <tian.shu.qiu@intel.com>
 Signed-off-by: Bingbu Cao <bingbu.cao@intel.com>
 ---
  drivers/media/pci/Kconfig                     |    2 +-
- drivers/media/pci/intel/Kconfig               |   18 +
+ drivers/media/pci/intel/Kconfig               |   28 +
  drivers/media/pci/intel/Makefile              |    1 +
- drivers/media/pci/intel/ipu-bus.c             |  254 +++
+ drivers/media/pci/intel/ipu-bus.c             |  255 +++
  drivers/media/pci/intel/ipu-bus.h             |   67 +
  drivers/media/pci/intel/ipu-buttress.c        | 1518 +++++++++++++++
  drivers/media/pci/intel/ipu-buttress.h        |  126 ++
@@ -35,27 +35,27 @@ Signed-off-by: Bingbu Cao <bingbu.cao@intel.com>
  drivers/media/pci/intel/ipu-isys-csi2.c       |  659 +++++++
  drivers/media/pci/intel/ipu-isys-csi2.h       |  164 ++
  drivers/media/pci/intel/ipu-isys-media.h      |   77 +
- drivers/media/pci/intel/ipu-isys-queue.c      | 1063 +++++++++++
+ drivers/media/pci/intel/ipu-isys-queue.c      | 1066 ++++++++++
  drivers/media/pci/intel/ipu-isys-queue.h      |  142 ++
  drivers/media/pci/intel/ipu-isys-subdev.c     |  657 +++++++
  drivers/media/pci/intel/ipu-isys-subdev.h     |  153 ++
  drivers/media/pci/intel/ipu-isys-tpg.c        |  311 +++
  drivers/media/pci/intel/ipu-isys-tpg.h        |   99 +
- drivers/media/pci/intel/ipu-isys-video.c      | 1698 +++++++++++++++++
- drivers/media/pci/intel/ipu-isys-video.h      |  174 ++
- drivers/media/pci/intel/ipu-isys.c            | 1435 ++++++++++++++
- drivers/media/pci/intel/ipu-isys.h            |  231 +++
+ drivers/media/pci/intel/ipu-isys-video.c      | 1706 +++++++++++++++++
+ drivers/media/pci/intel/ipu-isys-video.h      |  177 ++
+ drivers/media/pci/intel/ipu-isys.c            | 1452 ++++++++++++++
+ drivers/media/pci/intel/ipu-isys.h            |  237 +++
  drivers/media/pci/intel/ipu-mmu.c             |  787 ++++++++
  drivers/media/pci/intel/ipu-mmu.h             |   67 +
- drivers/media/pci/intel/ipu-pdata.h           |  251 +++
+ drivers/media/pci/intel/ipu-pdata.h           |  255 +++
  drivers/media/pci/intel/ipu-psys-compat32.c   |  227 +++
- drivers/media/pci/intel/ipu-psys.c            | 1632 ++++++++++++++++
+ drivers/media/pci/intel/ipu-psys.c            | 1623 ++++++++++++++++
  drivers/media/pci/intel/ipu-psys.h            |  218 +++
  drivers/media/pci/intel/ipu-trace.c           |  880 +++++++++
  drivers/media/pci/intel/ipu-trace.h           |  312 +++
- drivers/media/pci/intel/ipu.c                 |  798 ++++++++
+ drivers/media/pci/intel/ipu.c                 |  807 ++++++++
  drivers/media/pci/intel/ipu.h                 |  106 +
- drivers/media/pci/intel/ipu6/Makefile         |   59 +
+ drivers/media/pci/intel/ipu6/Makefile         |   62 +
  .../media/pci/intel/ipu6/ipu-fw-resources.c   |  103 +
  .../intel/ipu6/ipu-platform-buttress-regs.h   |  315 +++
  .../intel/ipu6/ipu-platform-isys-csi2-reg.h   |  277 +++
@@ -71,20 +71,20 @@ Signed-off-by: Bingbu Cao <bingbu.cao@intel.com>
  drivers/media/pci/intel/ipu6/ipu6-isys-gpc.c  |  211 ++
  drivers/media/pci/intel/ipu6/ipu6-isys-phy.c  |  650 +++++++
  drivers/media/pci/intel/ipu6/ipu6-isys-phy.h  |  161 ++
- drivers/media/pci/intel/ipu6/ipu6-isys.c      |  318 +++
+ drivers/media/pci/intel/ipu6/ipu6-isys.c      |  322 ++++
  .../media/pci/intel/ipu6/ipu6-l-scheduler.c   |  618 ++++++
  .../pci/intel/ipu6/ipu6-platform-resources.h  |  197 ++
  drivers/media/pci/intel/ipu6/ipu6-ppg.c       |  553 ++++++
  drivers/media/pci/intel/ipu6/ipu6-ppg.h       |   38 +
  drivers/media/pci/intel/ipu6/ipu6-psys-gpc.c  |  218 +++
  drivers/media/pci/intel/ipu6/ipu6-psys.c      | 1049 ++++++++++
- drivers/media/pci/intel/ipu6/ipu6.c           |  385 ++++
+ drivers/media/pci/intel/ipu6/ipu6.c           |  391 ++++
  .../pci/intel/ipu6/ipu6se-fw-resources.c      |  354 ++++
  .../intel/ipu6/ipu6se-platform-resources.h    |  127 ++
  include/media/ipu-isys.h                      |   44 +
  include/uapi/linux/ipu-isys.h                 |   14 +
  include/uapi/linux/ipu-psys.h                 |  121 ++
- 72 files changed, 27017 insertions(+), 1 deletion(-)
+ 72 files changed, 27082 insertions(+), 1 deletion(-)
  create mode 100644 drivers/media/pci/intel/Kconfig
  create mode 100644 drivers/media/pci/intel/ipu-bus.c
  create mode 100644 drivers/media/pci/intel/ipu-bus.h
@@ -171,10 +171,10 @@ index dcb3719f440e..a2977453e4a2 100644
  endif #PCI
 diff --git a/drivers/media/pci/intel/Kconfig b/drivers/media/pci/intel/Kconfig
 new file mode 100644
-index 000000000000..7aa64dec0152
+index 000000000000..54388fc09d99
 --- /dev/null
 +++ b/drivers/media/pci/intel/Kconfig
-@@ -0,0 +1,18 @@
+@@ -0,0 +1,28 @@
 +config VIDEO_INTEL_IPU6
 +	tristate "Intel IPU driver"
 +	depends on ACPI
@@ -193,6 +193,16 @@ index 000000000000..7aa64dec0152
 +
 +	  To compile this driver, say Y here! It contains 3 modules -
 +	  intel_ipu6, intel_ipu6_isys and intel_ipu6_psys.
++
++config VIDEO_INTEL_IPU_TPG
++	bool "Compile for TPG driver"
++	help
++	  If selected, TPG device nodes would be created.
++
++	  Recommended for driver developers only.
++
++	  If you want to the TPG devices exposed to user as media entity,
++	  you must select this option, otherwise no.
 diff --git a/drivers/media/pci/intel/Makefile b/drivers/media/pci/intel/Makefile
 index 0b4236c4db49..356363dfe8e4 100644
 --- a/drivers/media/pci/intel/Makefile
@@ -204,10 +214,10 @@ index 0b4236c4db49..356363dfe8e4 100644
 +obj-y	+= ipu6/
 diff --git a/drivers/media/pci/intel/ipu-bus.c b/drivers/media/pci/intel/ipu-bus.c
 new file mode 100644
-index 000000000000..3bc7277ae16b
+index 000000000000..1c671535fe27
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu-bus.c
-@@ -0,0 +1,254 @@
+@@ -0,0 +1,255 @@
 +// SPDX-License-Identifier: GPL-2.0
 +// Copyright (C) 2013 - 2020 Intel Corporation
 +
@@ -406,6 +416,7 @@ index 000000000000..3bc7277ae16b
 +	mutex_lock(&ipu_bus_mutex);
 +
 +	list_for_each_entry_safe(adev, save, &isp->devices, list) {
++		pm_runtime_disable(&adev->dev);
 +		list_del(&adev->list);
 +		device_unregister(&adev->dev);
 +	}
@@ -6786,7 +6797,7 @@ index 000000000000..b90e55446948
 +#endif /* IPU_ISYS_CSI2_BE_H */
 diff --git a/drivers/media/pci/intel/ipu-isys-csi2.c b/drivers/media/pci/intel/ipu-isys-csi2.c
 new file mode 100644
-index 000000000000..4838537b0c40
+index 000000000000..49ef5255a015
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu-isys-csi2.c
 @@ -0,0 +1,659 @@
@@ -7384,14 +7395,14 @@ index 000000000000..4838537b0c40
 +			break;
 +		}
 +	}
++	spin_unlock_irqrestore(&csi2->isys->lock, flags);
 +
 +	if (ip) {
 +		frame_sequence = atomic_read(&ip->sequence);
 +
-+	spin_unlock_irqrestore(&csi2->isys->lock, flags);
-+
-+	dev_dbg(&csi2->isys->adev->dev, "eof_event::csi2-%i sequence: %i\n",
-+		csi2->index, frame_sequence);
++		dev_dbg(&csi2->isys->adev->dev,
++			"eof_event::csi2-%i sequence: %i\n",
++			csi2->index, frame_sequence);
 +	}
 +}
 +
@@ -7704,10 +7715,10 @@ index 000000000000..72b48bcbf7f1
 +#endif /* IPU_ISYS_MEDIA_H */
 diff --git a/drivers/media/pci/intel/ipu-isys-queue.c b/drivers/media/pci/intel/ipu-isys-queue.c
 new file mode 100644
-index 000000000000..46d29d311098
+index 000000000000..69ff41a5fa2c
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu-isys-queue.c
-@@ -0,0 +1,1063 @@
+@@ -0,0 +1,1066 @@
 +// SPDX-License-Identifier: GPL-2.0
 +// Copyright (C) 2013 - 2020 Intel Corporation
 +
@@ -8072,11 +8083,14 @@ index 000000000000..46d29d311098
 +
 +	set->send_irq_eof = 0;
 +	set->send_resp_eof = 0;
++#ifdef CONFIG_VIDEO_INTEL_IPU_TPG
 +	/*
 +	 * In tpg case, the stream start timeout if the capture ack irq
 +	 * disabled. So keep it active while starting the stream, then close
 +	 * it after the stream start succeed.
 +	 */
++#endif
++
 +	if (ip->streaming)
 +		set->send_irq_capture_ack = 0;
 +	else
@@ -10165,10 +10179,10 @@ index 000000000000..332f087ed774
 +#endif /* IPU_ISYS_TPG_H */
 diff --git a/drivers/media/pci/intel/ipu-isys-video.c b/drivers/media/pci/intel/ipu-isys-video.c
 new file mode 100644
-index 000000000000..709f1aa6dfad
+index 000000000000..a4088b30c144
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu-isys-video.c
-@@ -0,0 +1,1698 @@
+@@ -0,0 +1,1706 @@
 +// SPDX-License-Identifier: GPL-2.0
 +// Copyright (C) 2013 - 2020 Intel Corporation
 +
@@ -10679,7 +10693,9 @@ index 000000000000..709f1aa6dfad
 +static bool is_external(struct ipu_isys_video *av, struct media_entity *entity)
 +{
 +	struct v4l2_subdev *sd;
++#ifdef CONFIG_VIDEO_INTEL_IPU_TPG
 +	unsigned int i;
++#endif
 +
 +	/* All video nodes are ours. */
 +	if (!is_media_entity_v4l2_subdev(entity))
@@ -10690,10 +10706,12 @@ index 000000000000..709f1aa6dfad
 +		    strlen(IPU_ISYS_ENTITY_PREFIX)) != 0)
 +		return true;
 +
++#ifdef CONFIG_VIDEO_INTEL_IPU_TPG
 +	for (i = 0; i < av->isys->pdata->ipdata->tpg.ntpgs &&
 +	     av->isys->tpg[i].isys; i++)
 +		if (entity == &av->isys->tpg[i].asd.sd.entity)
 +			return true;
++#endif
 +
 +	return false;
 +}
@@ -11093,9 +11111,11 @@ index 000000000000..709f1aa6dfad
 +	if (ip->csi2 && !v4l2_ctrl_g_ctrl(ip->csi2->store_csi2_header))
 +		stream_cfg->input_pins[0].mipi_store_mode =
 +		    IPU_FW_ISYS_MIPI_STORE_MODE_DISCARD_LONG_HEADER;
++#ifdef CONFIG_VIDEO_INTEL_IPU_TPG
 +	else if (ip->tpg && !v4l2_ctrl_g_ctrl(ip->tpg->store_csi2_header))
 +		stream_cfg->input_pins[0].mipi_store_mode =
 +		    IPU_FW_ISYS_MIPI_STORE_MODE_DISCARD_LONG_HEADER;
++#endif
 +
 +	stream_cfg->src = ip->source;
 +	stream_cfg->vc = 0;
@@ -11409,7 +11429,9 @@ index 000000000000..709f1aa6dfad
 +	ip->csi2_be = NULL;
 +	ip->csi2_be_soc = NULL;
 +	ip->csi2 = NULL;
++#ifdef CONFIG_VIDEO_INTEL_IPU_TPG
 +	ip->tpg = NULL;
++#endif
 +	ip->seq_index = 0;
 +	memset(ip->seq, 0, sizeof(ip->seq));
 +
@@ -11869,10 +11891,10 @@ index 000000000000..709f1aa6dfad
 +}
 diff --git a/drivers/media/pci/intel/ipu-isys-video.h b/drivers/media/pci/intel/ipu-isys-video.h
 new file mode 100644
-index 000000000000..ebfc30a5fae9
+index 000000000000..455b534b41f7
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu-isys-video.h
-@@ -0,0 +1,174 @@
+@@ -0,0 +1,177 @@
 +/* SPDX-License-Identifier: GPL-2.0 */
 +/* Copyright (C) 2013 - 2020 Intel Corporation */
 +
@@ -11929,7 +11951,10 @@ index 000000000000..ebfc30a5fae9
 +	struct ipu_isys_csi2_be *csi2_be;
 +	struct ipu_isys_csi2_be_soc *csi2_be_soc;
 +	struct ipu_isys_csi2 *csi2;
++#ifdef CONFIG_VIDEO_INTEL_IPU_TPG
 +	struct ipu_isys_tpg *tpg;
++#endif
++
 +	/*
 +	 * Number of capture queues, write access serialised using struct
 +	 * ipu_isys.stream_mutex
@@ -12049,10 +12074,10 @@ index 000000000000..ebfc30a5fae9
 +#endif /* IPU_ISYS_VIDEO_H */
 diff --git a/drivers/media/pci/intel/ipu-isys.c b/drivers/media/pci/intel/ipu-isys.c
 new file mode 100644
-index 000000000000..c1657ed95599
+index 000000000000..5b085216f6ae
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu-isys.c
-@@ -0,0 +1,1435 @@
+@@ -0,0 +1,1452 @@
 +// SPDX-License-Identifier: GPL-2.0
 +// Copyright (C) 2013 - 2020 Intel Corporation
 +
@@ -12084,7 +12109,9 @@ index 000000000000..c1657ed95599
 +#include "ipu-dma.h"
 +#include "ipu-isys.h"
 +#include "ipu-isys-csi2.h"
++#ifdef CONFIG_VIDEO_INTEL_IPU_TPG
 +#include "ipu-isys-tpg.h"
++#endif
 +#include "ipu-isys-video.h"
 +#include "ipu-platform-regs.h"
 +#include "ipu-buttress.h"
@@ -12186,8 +12213,10 @@ index 000000000000..c1657ed95599
 +
 +static void isys_unregister_subdevices(struct ipu_isys *isys)
 +{
++#ifdef CONFIG_VIDEO_INTEL_IPU_TPG
 +	const struct ipu_isys_internal_tpg_pdata *tpg =
 +	    &isys->pdata->ipdata->tpg;
++#endif
 +	const struct ipu_isys_internal_csi2_pdata *csi2 =
 +	    &isys->pdata->ipdata->csi2;
 +	unsigned int i;
@@ -12196,8 +12225,10 @@ index 000000000000..c1657ed95599
 +	for (i = 0; i < NR_OF_CSI2_BE_SOC_DEV; i++)
 +		ipu_isys_csi2_be_soc_cleanup(&isys->csi2_be_soc[i]);
 +
++#ifdef CONFIG_VIDEO_INTEL_IPU_TPG
 +	for (i = 0; i < tpg->ntpgs; i++)
 +		ipu_isys_tpg_cleanup(&isys->tpg[i]);
++#endif
 +
 +	for (i = 0; i < csi2->nports; i++)
 +		ipu_isys_csi2_cleanup(&isys->csi2[i]);
@@ -12205,8 +12236,10 @@ index 000000000000..c1657ed95599
 +
 +static int isys_register_subdevices(struct ipu_isys *isys)
 +{
++#ifdef CONFIG_VIDEO_INTEL_IPU_TPG
 +	const struct ipu_isys_internal_tpg_pdata *tpg =
 +	    &isys->pdata->ipdata->tpg;
++#endif
 +	const struct ipu_isys_internal_csi2_pdata *csi2 =
 +	    &isys->pdata->ipdata->csi2;
 +	struct ipu_isys_csi2_be_soc *csi2_be_soc;
@@ -12230,6 +12263,7 @@ index 000000000000..c1657ed95599
 +		isys->isr_csi2_bits |= IPU_ISYS_UNISPART_IRQ_CSI2(i);
 +	}
 +
++#ifdef CONFIG_VIDEO_INTEL_IPU_TPG
 +	isys->tpg = devm_kcalloc(&isys->adev->dev, tpg->ntpgs,
 +				 sizeof(*isys->tpg), GFP_KERNEL);
 +	if (!isys->tpg) {
@@ -12246,6 +12280,7 @@ index 000000000000..c1657ed95599
 +		if (rval)
 +			goto fail;
 +	}
++#endif
 +
 +	for (k = 0; k < NR_OF_CSI2_BE_SOC_DEV; k++) {
 +		rval = ipu_isys_csi2_be_soc_init(&isys->csi2_be_soc[k],
@@ -12289,6 +12324,7 @@ index 000000000000..c1657ed95599
 +		}
 +	}
 +
++#ifdef CONFIG_VIDEO_INTEL_IPU_TPG
 +	for (i = 0; i < tpg->ntpgs; i++) {
 +		rval = media_create_pad_link(&isys->tpg[i].asd.sd.entity,
 +					     TPG_PAD_SOURCE,
@@ -12314,6 +12350,7 @@ index 000000000000..c1657ed95599
 +			}
 +		}
 +	}
++#endif
 +
 +	return 0;
 +
@@ -12829,6 +12866,7 @@ index 000000000000..c1657ed95599
 +	isys_iwake_watermark_cleanup(isys);
 +
 +	ipu_trace_uninit(&adev->dev);
++	v4l2_async_notifier_cleanup(&isys->notifier);
 +	isys_unregister_devices(isys);
 +	pm_qos_remove_request(&isys->pm_qos);
 +
@@ -13381,9 +13419,11 @@ index 000000000000..c1657ed95599
 +		if (pipe->csi2)
 +			ipu_isys_csi2_sof_event(pipe->csi2);
 +
++#ifdef CONFIG_VIDEO_INTEL_IPU_TPG
 +#ifdef IPU_TPG_FRAME_SYNC
 +		if (pipe->tpg)
 +			ipu_isys_tpg_sof_event(pipe->tpg);
++#endif
 +#endif
 +		pipe->seq[pipe->seq_index].sequence =
 +		    atomic_read(&pipe->sequence) - 1;
@@ -13399,9 +13439,11 @@ index 000000000000..c1657ed95599
 +		if (pipe->csi2)
 +			ipu_isys_csi2_eof_event(pipe->csi2);
 +
++#ifdef CONFIG_VIDEO_INTEL_IPU_TPG
 +#ifdef IPU_TPG_FRAME_SYNC
 +		if (pipe->tpg)
 +			ipu_isys_tpg_eof_event(pipe->tpg);
++#endif
 +#endif
 +
 +		dev_dbg(&adev->dev,
@@ -13490,10 +13532,10 @@ index 000000000000..c1657ed95599
 +MODULE_DESCRIPTION("Intel ipu input system driver");
 diff --git a/drivers/media/pci/intel/ipu-isys.h b/drivers/media/pci/intel/ipu-isys.h
 new file mode 100644
-index 000000000000..5d82b934b453
+index 000000000000..343f0d773b9d
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu-isys.h
-@@ -0,0 +1,231 @@
+@@ -0,0 +1,237 @@
 +/* SPDX-License-Identifier: GPL-2.0 */
 +/* Copyright (C) 2013 - 2020 Intel Corporation */
 +
@@ -13512,7 +13554,9 @@ index 000000000000..5d82b934b453
 +#include "ipu-isys-media.h"
 +#include "ipu-isys-csi2.h"
 +#include "ipu-isys-csi2-be.h"
++#ifdef CONFIG_VIDEO_INTEL_IPU_TPG
 +#include "ipu-isys-tpg.h"
++#endif
 +#include "ipu-isys-video.h"
 +#include "ipu-pdata.h"
 +#include "ipu-fw-isys.h"
@@ -13627,7 +13671,9 @@ index 000000000000..5d82b934b453
 + * @lib_mutex: optional external library mutex
 + * @pdata: platform data pointer
 + * @csi2: CSI-2 receivers
++#ifdef CONFIG_VIDEO_INTEL_IPU_TPG
 + * @tpg: test pattern generators
++#endif
 + * @csi2_be: CSI-2 back-ends
 + * @fw: ISYS firmware binary (unsecure firmware)
 + * @fw_sgt: fw scatterlist
@@ -13667,7 +13713,9 @@ index 000000000000..5d82b934b453
 +	struct ipu_isys_pdata *pdata;
 +
 +	struct ipu_isys_csi2 *csi2;
++#ifdef CONFIG_VIDEO_INTEL_IPU_TPG
 +	struct ipu_isys_tpg *tpg;
++#endif
 +	struct ipu_isys_csi2_be csi2_be;
 +	struct ipu_isys_csi2_be_soc csi2_be_soc[NR_OF_CSI2_BE_SOC_DEV];
 +	const struct firmware *fw;
@@ -14593,10 +14641,10 @@ index 000000000000..d810024d37fe
 +#endif
 diff --git a/drivers/media/pci/intel/ipu-pdata.h b/drivers/media/pci/intel/ipu-pdata.h
 new file mode 100644
-index 000000000000..575899746323
+index 000000000000..3dd7205994b4
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu-pdata.h
-@@ -0,0 +1,251 @@
+@@ -0,0 +1,255 @@
 +/* SPDX-License-Identifier: GPL-2.0 */
 +/* Copyright (C) 2013 - 2020 Intel Corporation */
 +
@@ -14806,11 +14854,13 @@ index 000000000000..575899746323
 +	unsigned int *offsets;
 +};
 +
++#ifdef CONFIG_VIDEO_INTEL_IPU_TPG
 +struct ipu_isys_internal_tpg_pdata {
 +	unsigned int ntpgs;
 +	unsigned int *offsets;
 +	unsigned int *sels;
 +};
++#endif
 +
 +/*
 + * One place to handle all the IPU HW variations
@@ -14827,7 +14877,9 @@ index 000000000000..575899746323
 +
 +struct ipu_isys_internal_pdata {
 +	struct ipu_isys_internal_csi2_pdata csi2;
++#ifdef CONFIG_VIDEO_INTEL_IPU_TPG
 +	struct ipu_isys_internal_tpg_pdata tpg;
++#endif
 +	struct ipu_hw_variants hw_variant;
 +	u32 num_parallel_streams;
 +	u32 isys_dma_overshoot;
@@ -15083,10 +15135,10 @@ index 000000000000..5283c85bd57b
 +EXPORT_SYMBOL_GPL(ipu_psys_compat_ioctl32);
 diff --git a/drivers/media/pci/intel/ipu-psys.c b/drivers/media/pci/intel/ipu-psys.c
 new file mode 100644
-index 000000000000..c8370659d61a
+index 000000000000..97e606af2ea8
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu-psys.c
-@@ -0,0 +1,1632 @@
+@@ -0,0 +1,1623 @@
 +// SPDX-License-Identifier: GPL-2.0
 +// Copyright (C) 2013 - 2020 Intel Corporation
 +
@@ -16588,15 +16640,6 @@ index 000000000000..c8370659d61a
 +
 +	if (psys->fwcom && ipu_fw_com_release(psys->fwcom, 1))
 +		dev_err(&adev->dev, "fw com release failed.\n");
-+
-+	isp->pkg_dir = NULL;
-+	isp->pkg_dir_dma_addr = 0;
-+	isp->pkg_dir_size = 0;
-+
-+	ipu_cpd_free_pkg_dir(adev, psys->pkg_dir,
-+			     psys->pkg_dir_dma_addr, psys->pkg_dir_size);
-+
-+	ipu_buttress_unmap_fw_image(adev, &psys->fw_sgt);
 +
 +	kfree(psys->server_init);
 +	kfree(psys->syscom_config);
@@ -18149,10 +18192,10 @@ index 000000000000..f66b63aacc9a
 +#endif
 diff --git a/drivers/media/pci/intel/ipu.c b/drivers/media/pci/intel/ipu.c
 new file mode 100644
-index 000000000000..18b1ba01ebd6
+index 000000000000..84f301c72571
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu.c
-@@ -0,0 +1,798 @@
+@@ -0,0 +1,807 @@
 +// SPDX-License-Identifier: GPL-2.0
 +// Copyright (C) 2013 - 2020 Intel Corporation
 +
@@ -18753,6 +18796,15 @@ index 000000000000..18b1ba01ebd6
 +#endif
 +	ipu_trace_release(isp);
 +
++	ipu_cpd_free_pkg_dir(isp->psys, isp->pkg_dir, isp->pkg_dir_dma_addr,
++			     isp->pkg_dir_size);
++
++	ipu_buttress_unmap_fw_image(isp->psys, &isp->fw_sgt);
++
++	isp->pkg_dir = NULL;
++	isp->pkg_dir_dma_addr = 0;
++	isp->pkg_dir_size = 0;
++
 +	ipu_bus_del_devices(pdev);
 +
 +	pm_runtime_forbid(&pdev->dev);
@@ -19065,10 +19117,10 @@ index 000000000000..67b0561105e2
 +#endif /* IPU_H */
 diff --git a/drivers/media/pci/intel/ipu6/Makefile b/drivers/media/pci/intel/ipu6/Makefile
 new file mode 100644
-index 000000000000..a725fe49b362
+index 000000000000..f2aeade54082
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu6/Makefile
-@@ -0,0 +1,59 @@
+@@ -0,0 +1,62 @@
 +# SPDX-License-Identifier: GPL-2.0
 +# Copyright (c) 2017 - 2020 Intel Corporation.
 +
@@ -19102,8 +19154,11 @@ index 000000000000..a725fe49b362
 +					   ../ipu-fw-isys.o \
 +					   ../ipu-isys-video.o \
 +					   ../ipu-isys-queue.o \
-+					   ../ipu-isys-subdev.o \
-+					   ../ipu-isys-tpg.o
++					   ../ipu-isys-subdev.o
++
++ifdef CONFIG_VIDEO_INTEL_IPU_TPG
++intel-ipu6-isys-objs                    += ../ipu-isys-tpg.o
++endif
 +
 +obj-$(CONFIG_VIDEO_INTEL_IPU6)		+= intel-ipu6-isys.o
 +
@@ -23501,10 +23556,10 @@ index 000000000000..e8c063fcf452
 +#endif
 diff --git a/drivers/media/pci/intel/ipu6/ipu6-isys.c b/drivers/media/pci/intel/ipu6/ipu6-isys.c
 new file mode 100644
-index 000000000000..e2891606a63d
+index 000000000000..28c45f433e2f
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu6/ipu6-isys.c
-@@ -0,0 +1,318 @@
+@@ -0,0 +1,322 @@
 +// SPDX-License-Identifier: GPL-2.0
 +// Copyright (C) 2020 Intel Corporation
 +
@@ -23515,7 +23570,9 @@ index 000000000000..e2891606a63d
 +#include "ipu-platform-regs.h"
 +#include "ipu-trace.h"
 +#include "ipu-isys.h"
++#ifdef CONFIG_VIDEO_INTEL_IPU_TPG
 +#include "ipu-isys-tpg.h"
++#endif
 +#include "ipu-platform-isys-csi2-reg.h"
 +
 +const struct ipu_isys_pixelformat ipu_isys_pfmts[] = {
@@ -23680,6 +23737,7 @@ index 000000000000..e2891606a63d
 +	return IRQ_HANDLED;
 +}
 +
++#ifdef CONFIG_VIDEO_INTEL_IPU_TPG
 +void ipu_isys_tpg_sof_event(struct ipu_isys_tpg *tpg)
 +{
 +	struct ipu_isys_pipeline *ip = NULL;
@@ -23823,6 +23881,7 @@ index 000000000000..e2891606a63d
 +	writel(2, tpg->base + MIPI_GEN_REG_COM_ENABLE);
 +	return 0;
 +}
++#endif
 diff --git a/drivers/media/pci/intel/ipu6/ipu6-l-scheduler.c b/drivers/media/pci/intel/ipu6/ipu6-l-scheduler.c
 new file mode 100644
 index 000000000000..2c9cdc1c376b
@@ -26534,10 +26593,10 @@ index 000000000000..baf208ac1a3f
 +}
 diff --git a/drivers/media/pci/intel/ipu6/ipu6.c b/drivers/media/pci/intel/ipu6/ipu6.c
 new file mode 100644
-index 000000000000..79f4f3db0374
+index 000000000000..a404c2f301d0
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu6/ipu6.c
-@@ -0,0 +1,385 @@
+@@ -0,0 +1,391 @@
 +// SPDX-License-Identifier: GPL-2.0
 +// Copyright (C) 2020 Intel Corporation
 +
@@ -26598,22 +26657,12 @@ index 000000000000..79f4f3db0374
 +	IPU_CSI_PORT_D_ADDR_OFFSET,
 +};
 +
++#ifdef CONFIG_VIDEO_INTEL_IPU_TPG
 +static unsigned int ipu6se_tpg_offsets[] = {
 +	IPU_CSI_PORT_A_PIXGEN_ADDR_OFFSET,
 +	IPU_CSI_PORT_B_PIXGEN_ADDR_OFFSET,
 +	IPU_CSI_PORT_C_PIXGEN_ADDR_OFFSET,
 +	IPU_CSI_PORT_D_PIXGEN_ADDR_OFFSET,
-+};
-+
-+static unsigned int ipu6_csi_offsets[] = {
-+	IPU_CSI_PORT_A_ADDR_OFFSET,
-+	IPU_CSI_PORT_B_ADDR_OFFSET,
-+	IPU_CSI_PORT_C_ADDR_OFFSET,
-+	IPU_CSI_PORT_D_ADDR_OFFSET,
-+	IPU_CSI_PORT_E_ADDR_OFFSET,
-+	IPU_CSI_PORT_F_ADDR_OFFSET,
-+	IPU_CSI_PORT_G_ADDR_OFFSET,
-+	IPU_CSI_PORT_H_ADDR_OFFSET
 +};
 +
 +static unsigned int ipu6_tpg_offsets[] = {
@@ -26625,6 +26674,18 @@ index 000000000000..79f4f3db0374
 +	IPU_CSI_PORT_F_PIXGEN_ADDR_OFFSET,
 +	IPU_CSI_PORT_G_PIXGEN_ADDR_OFFSET,
 +	IPU_CSI_PORT_H_PIXGEN_ADDR_OFFSET
++};
++#endif
++
++static unsigned int ipu6_csi_offsets[] = {
++	IPU_CSI_PORT_A_ADDR_OFFSET,
++	IPU_CSI_PORT_B_ADDR_OFFSET,
++	IPU_CSI_PORT_C_ADDR_OFFSET,
++	IPU_CSI_PORT_D_ADDR_OFFSET,
++	IPU_CSI_PORT_E_ADDR_OFFSET,
++	IPU_CSI_PORT_F_ADDR_OFFSET,
++	IPU_CSI_PORT_G_ADDR_OFFSET,
++	IPU_CSI_PORT_H_ADDR_OFFSET
 +};
 +
 +struct ipu_isys_internal_pdata isys_ipdata = {
@@ -26907,18 +26968,22 @@ index 000000000000..79f4f3db0374
 +	if (ipu_ver == IPU_VER_6) {
 +		isys_ipdata.csi2.nports = ARRAY_SIZE(ipu6_csi_offsets);
 +		isys_ipdata.csi2.offsets = ipu6_csi_offsets;
++#ifdef CONFIG_VIDEO_INTEL_IPU_TPG
 +		isys_ipdata.tpg.ntpgs = ARRAY_SIZE(ipu6_tpg_offsets);
 +		isys_ipdata.tpg.offsets = ipu6_tpg_offsets;
 +		isys_ipdata.tpg.sels = NULL;
++#endif
 +		isys_ipdata.num_parallel_streams = IPU6_ISYS_NUM_STREAMS;
 +		psys_ipdata.hw_variant.spc_offset = IPU6_PSYS_SPC_OFFSET;
 +
 +	} else if (ipu_ver == IPU_VER_6SE) {
 +		isys_ipdata.csi2.nports = ARRAY_SIZE(ipu6se_csi_offsets);
 +		isys_ipdata.csi2.offsets = ipu6se_csi_offsets;
++#ifdef CONFIG_VIDEO_INTEL_IPU_TPG
 +		isys_ipdata.tpg.ntpgs = ARRAY_SIZE(ipu6se_tpg_offsets);
 +		isys_ipdata.tpg.offsets = ipu6se_tpg_offsets;
 +		isys_ipdata.tpg.sels = NULL;
++#endif
 +		isys_ipdata.num_parallel_streams = IPU6SE_ISYS_NUM_STREAMS;
 +		psys_ipdata.hw_variant.spc_offset = IPU6SE_PSYS_SPC_OFFSET;
 +	}
