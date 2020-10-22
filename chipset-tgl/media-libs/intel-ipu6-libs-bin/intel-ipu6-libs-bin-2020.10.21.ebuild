@@ -17,5 +17,5 @@ src_install() {
 	dolib.a usr/"$(get_libdir)"/*.a
 
 	insinto /usr/"$(get_libdir)"/pkgconfig
-	doins usr/"$(get_libdir)"/pkgconfig/*
+	doins usr/"$(get_libdir)"/pkgconfig/*.pc
 }

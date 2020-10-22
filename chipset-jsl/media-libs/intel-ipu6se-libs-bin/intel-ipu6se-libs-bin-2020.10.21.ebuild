@@ -18,7 +18,5 @@ src_install() {
 
 	# Not using wildcard since the package incorrectly included igfxcmrt.pc.
 	insinto /usr/"$(get_libdir)"/pkgconfig
-	doins usr/"$(get_libdir)"/pkgconfig/ia_imaging.pc
-	doins usr/"$(get_libdir)"/pkgconfig/libiacss.pc
-	doins usr/"$(get_libdir)"/pkgconfig/libipu6sepla.pc
+	doins usr/"$(get_libdir)"/pkgconfig/*.pc
 }
