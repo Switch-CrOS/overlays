@@ -20,7 +20,7 @@ CROS_WORKON_DESTDIR=(
 # Prevent automatic uprevs of this package since sarien/arcada FW for ISH
 # is stable, and we don't want to introduce risk by taking the latest ToT
 # image with every Chrome OS release.
-CROS_WORKON_BLACKLIST="1"
+CROS_WORKON_MANUAL_UPREV="1"
 
 inherit cros-workon cros-ish
 
