@@ -1,1 +1,0 @@
-chromeos-bsp-acorn-0.0.1.ebuild

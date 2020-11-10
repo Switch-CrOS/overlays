@@ -1,1 +1,0 @@
-acorn-kernel-3.10.ebuild
