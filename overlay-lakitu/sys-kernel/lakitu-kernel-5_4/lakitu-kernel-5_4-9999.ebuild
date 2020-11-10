@@ -9,7 +9,7 @@ EAPI=7
 CROS_WORKON_REPO="https://cos.googlesource.com"
 CROS_WORKON_PROJECT="third_party/kernel"
 CROS_WORKON_LOCALNAME="cos-kernel"
-CROS_WORKON_BLACKLIST="1"
+CROS_WORKON_MANUAL_UPREV="1"
 
 CHROMEOS_KERNEL_CONFIG="${FILESDIR}/base.config"
 
