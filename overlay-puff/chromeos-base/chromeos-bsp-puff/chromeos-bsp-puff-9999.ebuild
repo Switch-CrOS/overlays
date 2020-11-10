@@ -15,6 +15,7 @@ or portage actions."
 
 LICENSE="BSD-Google"
 KEYWORDS="-* ~amd64 ~x86"
+IUSE="puff-borealis"
 
 # Add dependencies on other ebuilds from within this board overlay
 RDEPEND="
@@ -29,7 +30,11 @@ DEPEND="
 "
 
 src_install() {
-	doappid "{2514829E-8550-4E24-91F2-331AB7A12B03}" "CHROMEBOX"
+	if use puff-borealis; then
+		doappid "{95056F9C-22C7-11EB-91D7-FFB4065ABAAB}" "CHROMEBOX"
+	else
+		doappid "{2514829E-8550-4E24-91F2-331AB7A12B03}" "CHROMEBOX"
+	fi
 
 	unibuild_install_files audio-files
 }
