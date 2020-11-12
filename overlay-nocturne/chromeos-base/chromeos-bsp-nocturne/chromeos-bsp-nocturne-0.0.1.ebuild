@@ -12,7 +12,6 @@ dependencies or portage actions."
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="-* amd64 x86"
-IUSE="nocturne-arm64"
 S="${WORKDIR}"
 
 # Add dependencies on other ebuilds from within this board overlay
@@ -23,11 +22,7 @@ DEPEND="
 RDEPEND="${DEPEND}"
 
 src_install() {
-	if use nocturne-arm64; then
-		doappid "{FD8A90F0-A0D5-4F6B-8945-ACAE41E4A670}" "CHROMEBOOK"
-	else
-		doappid "{BD7F7139-CC18-49C1-A847-33F155CCBCA8}" "CHROMEBOOK"
-	fi
+	doappid "{BD7F7139-CC18-49C1-A847-33F155CCBCA8}" "CHROMEBOOK"
 
 	# Install platform specific config files for power_manager.
 	insinto "/usr/share/power_manager/board_specific"
