@@ -471,6 +471,24 @@ index 6a6a14e15cd7ff30fcd516021a47fe15a2f696b4..d22de01c24ec74aeff8138557c6488b7
  - #clock-cells: Must be 1
  
  The vencsys controller uses the common clk binding from
+diff --git a/Documentation/devicetree/bindings/display/bridge/analogix,anx7625.yaml b/Documentation/devicetree/bindings/display/bridge/analogix,anx7625.yaml
+index 60585a4fc22bc9ff3a753ff60cabf25183c242f6..d62533b057e6064cb8c55ffb7f7a995e33f80747 100644
+--- a/Documentation/devicetree/bindings/display/bridge/analogix,anx7625.yaml
++++ b/Documentation/devicetree/bindings/display/bridge/analogix,anx7625.yaml
+@@ -34,6 +34,13 @@ properties:
+     description: used for reset chip control, RESET_N pin B7.
+     maxItems: 1
+ 
++  anx,tx-rx-to-two-ports:
++    description: |
++      TODO(pihsun) Complete the description
++      If set, output lane selection is based on two typec port status, and
++      there should be two child nodes with "typec-mode-switch" compatible.
++    type: boolean
++
+   ports:
+     type: object
+ 
 diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,disp.txt b/Documentation/devicetree/bindings/display/mediatek/mediatek,disp.txt
 index b91e709db7a4ed3dd5c25495a412cc761b3cc6d7..e6bbe32d571dc0702333f459a5f061679dfbf857 100644
 --- a/Documentation/devicetree/bindings/display/mediatek/mediatek,disp.txt
@@ -1213,6 +1231,100 @@ index 0000000000000000000000000000000000000000..c86aaa986291740ef71b38bee03b926a
 +		};
 +	};
 +
+diff --git a/Documentation/devicetree/bindings/regulator/mtk,mt6315-regulator.yaml b/Documentation/devicetree/bindings/regulator/mtk,mt6315-regulator.yaml
+new file mode 100644
+index 0000000000000000000000000000000000000000..457606800d5b23d493276bb022ff3e552109c021
+--- /dev/null
++++ b/Documentation/devicetree/bindings/regulator/mtk,mt6315-regulator.yaml
+@@ -0,0 +1,88 @@
++# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/regulator/mtk,mt6315-regulator.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Mediatek MT6315 Regulator
++
++maintainers:
++  - Hsin-Hsiung Wang <hsin-hsiung.wang@mediatek.com>
++
++description: |
++  The MT6315 is a power management IC (PMIC) configurable with SPMI.
++  that contains 4 BUCKs output which can combine with each other
++  by different efuse settings.
++
++allOf:
++  - $ref: "regulator.yaml#"
++
++properties:
++  $nodename:
++    pattern: "mt6315@[0-9]"
++  compatible:
++    enum:
++      - mediatek,mt6315_3-regulator
++      - mediatek,mt6315_6-regulator
++      - mediatek,mt6315_7-regulator
++
++  reg:
++    maxItems: 1
++
++  regulators:
++    type: object
++    description: List of regulators and its properties
++
++    patternProperties:
++      "^vbuck[1-4]$":
++        type: object
++
++        properties:
++          regulator-name:
++            pattern: "^vbuck[1-4]$"
++            description:
++              should be "vbuck1", ..., "vbuck4"
++
++          mtk,combined-regulator:
++            $ref: "/schemas/types.yaml#/definitions/uint32-array"
++            description: |
++              defines other bucks combined with this buck, must contain the following
++              values MT6315_VBUCK1, MT6315_VBUCK2, MT6315_VBUCK3, MT6315_VBUCK4
++
++    unevaluatedProperties: false
++
++required:
++  - compatible
++  - reg
++  - regulators
++
++additionalProperties: false
++
++examples:
++  - |
++    /* This example shows that buck2 and buck4 are combined into buck1. */
++    #include <dt-bindings/regulator/mtk,mt6315.h>
++
++    mt6315@6 {
++      compatible = "mediatek,mt6315_6-regulator";
++      reg = <0x6 0 0xb 1>;
++
++      regulators {
++        vbuck1 {
++          regulator-compatible = "vbuck1";
++          regulator-min-microvolt = <300000>;
++          regulator-max-microvolt = <1193750>;
++          regulator-enable-ramp-delay = <256>;
++          regulator-allowed-modes = <0 1 2 4>;
++          mtk,combined-regulator = <MT6315_VBUCK2 MT6315_VBUCK4>;
++        };
++
++        vbuck3 {
++          regulator-compatible = "vbuck3";
++          regulator-min-microvolt = <300000>;
++          regulator-max-microvolt = <1193750>;
++          regulator-enable-ramp-delay = <256>;
++          regulator-allowed-modes = <0 1 2 4>;
++        };
++      };
++    };
 diff --git a/Documentation/devicetree/bindings/reset/ti-syscon-reset.txt b/Documentation/devicetree/bindings/reset/ti-syscon-reset.txt
 index 86945502ccb509279e7d30e719a03a6c160a2038..5a0e9365b51b14dbaa64189958f4cde357558e9e 100644
 --- a/Documentation/devicetree/bindings/reset/ti-syscon-reset.txt
@@ -1473,6 +1585,145 @@ index 2bc367793aec187e9f863ce2b714de3ab70e8fac..68c46c79c6df1a41f0d452e1cfb2d79c
 +			required-opps = <&dvfsrc_vol_max>;
 +		};
  	};
+diff --git a/Documentation/devicetree/bindings/spmi/spmi-mtk-pmif.yaml b/Documentation/devicetree/bindings/spmi/spmi-mtk-pmif.yaml
+new file mode 100644
+index 0000000000000000000000000000000000000000..39459ca2e0dad29307666c05f1c2fbf106b56468
+--- /dev/null
++++ b/Documentation/devicetree/bindings/spmi/spmi-mtk-pmif.yaml
+@@ -0,0 +1,71 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/spmi/spmi-mtk-pmif.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Mediatek SPMI Controller Device Tree Bindings
++
++maintainers:
++  - Stephen Boyd <sboyd@kernel.org>
++  - Matthias Brugger <matthias.bgg@gmail.com>
++
++description: |+
++  On MediaTek SoCs the PMIC is connected via SPMI and the controller allows
++  for multiple SoCs to control a single SPMI master.
++
++properties:
++  compatible:
++    const: mediatek,mt6873-spmi
++
++  reg:
++    minItems: 2
++    maxItems: 2
++
++  reg-names:
++    items:
++      - const: "pmif"
++      - const: "spmimst"
++
++  clocks:
++    minItems: 3
++    maxItems: 3
++
++  clock-names:
++    items:
++      - const: "pmif_sys_ck"
++      - const: "pmif_tmr_ck"
++      - const: "spmimst_clk_mux"
++
++  assigned-clocks:
++    maxItems: 1
++
++  assigned-clock-parents:
++    maxItems: 1
++
++required:
++  - compatible
++  - reg
++  - reg-names
++  - clocks
++  - clock-names
++
++examples:
++  - |
++    #include <dt-bindings/clock/mt8192-clk.h>
++
++    spmi: spmi@10027000 {
++        compatible = "mediatek,mt6873-spmi";
++        reg = <0 0x10027000 0 0x000e00>,
++              <0 0x10029000 0 0x000100>;
++        reg-names = "pmif", "spmimst";
++        clocks = <&infracfg CLK_INFRA_PMIC_AP>,
++                 <&infracfg CLK_INFRA_PMIC_TMR>,
++                 <&topckgen CLK_TOP_SPMI_MST_SEL>;
++        clock-names = "pmif_sys_ck",
++                      "pmif_tmr_ck",
++                      "spmimst_clk_mux";
++        assigned-clocks = <&topckgen CLK_TOP_PWRAP_ULPOSC_SEL>;
++        assigned-clock-parents = <&topckgen CLK_TOP_OSC_D10>;
++    };
++...
+diff --git a/Documentation/devicetree/bindings/usb/typec-mode-switch.yaml b/Documentation/devicetree/bindings/usb/typec-mode-switch.yaml
+new file mode 100644
+index 0000000000000000000000000000000000000000..44b11db8685c10444e1693657ae3596de2a6d2df
+--- /dev/null
++++ b/Documentation/devicetree/bindings/usb/typec-mode-switch.yaml
+@@ -0,0 +1,56 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/usb/typec-mode-switch.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Typec Mode Switch Bindings
++
++maintainers:
++  - Pi-Hsun Shih <pihsun@chromium.org>
++
++description: |-
++  TODO
++
++properties:
++  compatible:
++    const: typec-mode-switch
++
++  port:
++    type: object
++    additionalProperties: false
++    description: -|
++      Connection to the remote endpoint using OF graph bindings that model SS
++      data bus to typec connector.
++
++    properties:
++      endpoint:
++        type: object
++        additionalProperties: false
++
++        properties:
++          remote-endpoint: true
++
++        required:
++          - remote-endpoint
++
++    required:
++      - endpoint
++
++required:
++  - compatible
++  - port
++
++additionalProperties: false
++
++examples:
++  - |
++    usbc_switch {
++        compatible = "typec-mode-switch";
++
++        port {
++                usb3_data_ss: endpoint {
++                        remote-endpoint = <&typec_con_ss>;
++                };
++        };
++    };
 diff --git a/Documentation/devicetree/bindings/watchdog/mtk-wdt.txt b/Documentation/devicetree/bindings/watchdog/mtk-wdt.txt
 index 4dd36bd3f1adc1b5af29c2f236246e36de756160..e36ba60de829f366fba68862fe61c7a3cfeacd47 100644
 --- a/Documentation/devicetree/bindings/watchdog/mtk-wdt.txt
@@ -2480,10 +2731,10 @@ index 0000000000000000000000000000000000000000..33542bc20c77a66884467650933d0c61
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8192-asurada.dtsi b/arch/arm64/boot/dts/mediatek/mt8192-asurada.dtsi
 new file mode 100755
-index 0000000000000000000000000000000000000000..ff188f0af33b9702e238121ed49cf5a5de8ef162
+index 0000000000000000000000000000000000000000..9fd466d960c16626529c2571922271de2b07c206
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt8192-asurada.dtsi
-@@ -0,0 +1,1371 @@
+@@ -0,0 +1,1430 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
 +/*
 + * Copyright (C) 2020 MediaTek Inc.
@@ -2491,6 +2742,7 @@ index 0000000000000000000000000000000000000000..ff188f0af33b9702e238121ed49cf5a5
 + */
 +/dts-v1/;
 +#include <dt-bindings/gpio/gpio.h>
++#include <dt-bindings/regulator/mtk,mt6315.h>
 +#include "mt8192.dtsi"
 +#include "mt6359.dtsi"
 +
@@ -2738,24 +2990,6 @@ index 0000000000000000000000000000000000000000..ff188f0af33b9702e238121ed49cf5a5
 +	regulator-always-on;
 +};
 +
-+/* for APU */
-+&mt6359_vproc1_buck_reg {
-+	regulator-always-on;
-+};
-+
-+/* for EMMC */
-+&mt6359_vufs_ldo_reg {
-+	regulator-always-on;
-+};
-+
-+&mt6359_vemc_1_ldo_reg {
-+	regulator-always-on;
-+};
-+
-+&mt6359_vaud18_ldo_reg {
-+	regulator-always-on;
-+};
-+
 +&mt6359_vrf12_ldo_reg {
 +	regulator-always-on;
 +};
@@ -2765,28 +2999,33 @@ index 0000000000000000000000000000000000000000..ff188f0af33b9702e238121ed49cf5a5
 +	interrupts = <214 IRQ_TYPE_LEVEL_HIGH>;
 +};
 +
-+&spmi_bus {
++&spmi {
 +	grpid = <11>;
 +	mt6315_6: mt6315@6 {
 +		compatible = "mediatek,mt6315_6-regulator";
 +		reg = <0x6 0 0xb 1>;
 +
-+		mt6315_6_vbuck1: 6_vbuck1 {
-+			regulator-name = "6_vbuck1";
-+			regulator-min-microvolt = <300000>;
-+			regulator-max-microvolt = <1193750>;
-+			regulator-enable-ramp-delay = <256>;
-+			regulator-allowed-modes = <0 1 2 4>;
-+			regulator-always-on;
-+		};
++		regulators {
++			mt6315_6_vbuck1: vbuck1 {
++				regulator-compatible = "vbuck1";
++				regulator-name = "Vbcpu";
++				regulator-min-microvolt = <300000>;
++				regulator-max-microvolt = <1193750>;
++				regulator-enable-ramp-delay = <256>;
++				regulator-allowed-modes = <0 1 2 4>;
++				regulator-always-on;
++				mtk,combined-regulator = <MT6315_VBUCK2 MT6315_VBUCK4>;
++			};
 +
-+		mt6315_6_vbuck3: 6_vbuck3 {
-+			regulator-name = "6_vbuck3";
-+			regulator-min-microvolt = <300000>;
-+			regulator-max-microvolt = <1193750>;
-+			regulator-enable-ramp-delay = <256>;
-+			regulator-allowed-modes = <0 1 2 4>;
-+			regulator-always-on;
++			mt6315_6_vbuck3: vbuck3 {
++				regulator-compatible = "vbuck3";
++				regulator-name = "Vlcpu";
++				regulator-min-microvolt = <300000>;
++				regulator-max-microvolt = <1193750>;
++				regulator-enable-ramp-delay = <256>;
++				regulator-allowed-modes = <0 1 2 4>;
++				regulator-always-on;
++			};
 +		};
 +	};
 +
@@ -2794,20 +3033,17 @@ index 0000000000000000000000000000000000000000..ff188f0af33b9702e238121ed49cf5a5
 +		compatible = "mediatek,mt6315_7-regulator";
 +		reg = <0x7 0 0xb 1>;
 +
-+		mt6315_7_vbuck1: 7_vbuck1 {
-+			regulator-name = "7_vbuck1";
-+			regulator-min-microvolt = <300000>;
-+			regulator-max-microvolt = <1193750>;
-+			regulator-enable-ramp-delay = <256>;
-+			regulator-allowed-modes = <0 1 2 4>;
-+			regulator-always-on;
-+		};
-+
-+		mt6315_7_vbuck3: 7_vbuck3 {
-+			regulator-name = "7_vbuck3";
-+			regulator-min-microvolt = <300000>;
-+			regulator-max-microvolt = <1193750>;
-+			regulator-enable-ramp-delay = <256>;
++		regulators {
++			mt6315_7_vbuck1: vbuck1 {
++				regulator-compatible = "vbuck1";
++				regulator-name = "Vgpu";
++				regulator-min-microvolt = <300000>;
++				regulator-max-microvolt = <1193750>;
++				regulator-enable-ramp-delay = <256>;
++				regulator-allowed-modes = <0 1 2 4>;
++				regulator-always-on;
++				mtk,combined-regulator = <MT6315_VBUCK2>;
++			};
 +		};
 +	};
 +};
@@ -3478,7 +3714,7 @@ index 0000000000000000000000000000000000000000..ff188f0af33b9702e238121ed49cf5a5
 +		pins1 {
 +			pinmux = <PINMUX_GPIO8__FUNC_GPIO8>,
 +				 <PINMUX_GPIO9__FUNC_GPIO9>;
-+			output-high;
++			output-low;
 +		};
 +		pins2 {
 +			pinmux = <PINMUX_GPIO7__FUNC_GPIO7>;
@@ -3710,11 +3946,41 @@ index 0000000000000000000000000000000000000000..ff188f0af33b9702e238121ed49cf5a5
 +		vdd18-supply = <&pp1800_dpbrdg>;
 +		vdd33-supply = <&pp3300_dpbrdg>;
 +
++		// TODO(pihsun): Some sort of "operation mode" to indicate that
++		// we're switching between the two ports?
++		// TODO(pihsun): Naming
++		anx,tx-rx-to-two-ports;
++
 +		ports {
++			#address-cells = <1>;
++			#size-cells = <0>;
++
 +			port@0 {
 +				reg = <0>;
 +				anx7625_dp_in: endpoint {
 +					remote-endpoint = <&dpi_out>;
++				};
++			};
++		};
++
++		anx_mux0 {
++			compatible = "typec-mode-switch";
++			reg = <0>;
++
++			port {
++				anx_typec0: endpoint {
++					remote-endpoint = <&typec_port0>;
++				};
++			};
++		};
++
++		anx_mux1 {
++			compatible = "typec-mode-switch";
++			reg = <1>;
++
++			port {
++				anx_typec1: endpoint {
++					remote-endpoint = <&typec_port1>;
 +				};
 +			};
 +		};
@@ -3773,12 +4039,6 @@ index 0000000000000000000000000000000000000000..ff188f0af33b9702e238121ed49cf5a5
 +			compatible = "google,cros-cbas";
 +		};
 +
-+		usbc_extcon: extcon@0 {
-+			compatible = "google,extcon-usbc-cros-ec";
-+			google,usb-port-id = <0>;
-+			#extcon-cells = <0>;
-+		};
-+
 +		mt6360_ldo3_reg: regulator@0 {
 +			compatible = "google,cros-ec-regulator";
 +			regulator-min-microvolt = <1800000>;
@@ -3791,6 +4051,56 @@ index 0000000000000000000000000000000000000000..ff188f0af33b9702e238121ed49cf5a5
 +			regulator-min-microvolt = <3300000>;
 +			regulator-max-microvolt = <3300000>;
 +			reg = <1>;
++		};
++
++		typec {
++			compatible = "google,cros-ec-typec";
++			#address-cells = <1>;
++			#size-cells = <0>;
++
++			usb_c0: connector@0 {
++				compatible = "usb-c-connector";
++				reg = <0>;
++				label = "left";
++				power-role = "dual";
++				data-role = "host";
++				try-power-role = "source";
++
++				ports {
++					#address-cells = <1>;
++					#size-cells = <0>;
++
++					port@1 {
++						reg = <1>;
++
++						typec_port0: endpoint {
++							remote-endpoint = <&anx_typec0>;
++						};
++					};
++				};
++			};
++
++			usb_c1: connector@1 {
++				compatible = "usb-c-connector";
++				reg = <1>;
++				label = "right";
++				power-role = "dual";
++				data-role = "host";
++				try-power-role = "source";
++
++				ports {
++					#address-cells = <1>;
++					#size-cells = <0>;
++
++					port@1 {
++						reg = <1>;
++
++						typec_port1: endpoint {
++							remote-endpoint = <&anx_typec1>;
++						};
++					};
++				};
++			};
 +		};
 +	};
 +};
@@ -3874,10 +4184,10 @@ index 0000000000000000000000000000000000000000..4b33c32a01a9e0f086e3ad6746e263be
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8192.dtsi b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
 new file mode 100755
-index 0000000000000000000000000000000000000000..75cccca715e00594175b53fc92d79ca71ecf65d8
+index 0000000000000000000000000000000000000000..fceab06676083421a517702473d1599f04dd5e7c
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-@@ -0,0 +1,2180 @@
+@@ -0,0 +1,2229 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
 +/*
 + * Copyright (C) 2020 MediaTek Inc.
@@ -3895,6 +4205,7 @@ index 0000000000000000000000000000000000000000..75cccca715e00594175b53fc92d79ca7
 +#include <dt-bindings/power/mt8192-power.h>
 +#include <dt-bindings/reset/ti-syscon.h>
 +#include <dt-bindings/interconnect/mtk,mt6873-emi.h>
++#include <dt-bindings/thermal/thermal.h>
 +
 +/ {
 +	compatible = "mediatek,mt8192";
@@ -3954,6 +4265,7 @@ index 0000000000000000000000000000000000000000..75cccca715e00594175b53fc92d79ca7
 +			cpu-idle-states = <&cpuoff_l &clusteroff_l>;
 +			next-level-cache = <&l2_0>;
 +			capacity-dmips-mhz = <768>;
++			#cooling-cells = <2>;
 +		};
 +
 +		cpu1: cpu@100 {
@@ -3966,6 +4278,7 @@ index 0000000000000000000000000000000000000000..75cccca715e00594175b53fc92d79ca7
 +			cpu-idle-states = <&cpuoff_l &clusteroff_l>;
 +			next-level-cache = <&l2_0>;
 +			capacity-dmips-mhz = <768>;
++			#cooling-cells = <2>;
 +		};
 +
 +		cpu2: cpu@200 {
@@ -3978,6 +4291,7 @@ index 0000000000000000000000000000000000000000..75cccca715e00594175b53fc92d79ca7
 +			cpu-idle-states = <&cpuoff_l &clusteroff_l>;
 +			next-level-cache = <&l2_0>;
 +			capacity-dmips-mhz = <768>;
++			#cooling-cells = <2>;
 +		};
 +
 +		cpu3: cpu@300 {
@@ -3990,6 +4304,7 @@ index 0000000000000000000000000000000000000000..75cccca715e00594175b53fc92d79ca7
 +			cpu-idle-states = <&cpuoff_l &clusteroff_l>;
 +			next-level-cache = <&l2_0>;
 +			capacity-dmips-mhz = <768>;
++			#cooling-cells = <2>;
 +		};
 +
 +		cpu4: cpu@400 {
@@ -4002,6 +4317,7 @@ index 0000000000000000000000000000000000000000..75cccca715e00594175b53fc92d79ca7
 +			cpu-idle-states = <&cpuoff_b &clusteroff_b>;
 +			next-level-cache = <&l2_1>;
 +			capacity-dmips-mhz = <1024>;
++			#cooling-cells = <2>;
 +		};
 +
 +		cpu5: cpu@500 {
@@ -4014,6 +4330,7 @@ index 0000000000000000000000000000000000000000..75cccca715e00594175b53fc92d79ca7
 +			cpu-idle-states = <&cpuoff_b &clusteroff_b>;
 +			next-level-cache = <&l2_1>;
 +			capacity-dmips-mhz = <1024>;
++			#cooling-cells = <2>;
 +		};
 +
 +		cpu6: cpu@600 {
@@ -4026,6 +4343,7 @@ index 0000000000000000000000000000000000000000..75cccca715e00594175b53fc92d79ca7
 +			cpu-idle-states = <&cpuoff_b &clusteroff_b>;
 +			next-level-cache = <&l2_1>;
 +			capacity-dmips-mhz = <1024>;
++			#cooling-cells = <2>;
 +		};
 +
 +		cpu7: cpu@700 {
@@ -4038,6 +4356,7 @@ index 0000000000000000000000000000000000000000..75cccca715e00594175b53fc92d79ca7
 +			cpu-idle-states = <&cpuoff_b &clusteroff_b>;
 +			next-level-cache = <&l2_1>;
 +			capacity-dmips-mhz = <1024>;
++			#cooling-cells = <2>;
 +		};
 +
 +		cpu-map {
@@ -4154,13 +4473,61 @@ index 0000000000000000000000000000000000000000..75cccca715e00594175b53fc92d79ca7
 +		soc_max {
 +			polling-delay = <1000>; /* milliseconds */
 +			polling-delay-passive = <1000>; /* milliseconds */
++			sustainable-power = <1500>;
 +			thermal-sensors = <&lvts 0>;
 +
 +			trips {
-+				soc_max_crit: soc_max_crit@0 {
++				threshold: trip-point@0 {
++					temperature = <68000>;
++					hysteresis = <2000>;
++					type = "passive";
++				};
++
++				target: target@1 {
++					temperature = <85000>;
++					hysteresis = <2000>;
++					type = "passive";
++                                };
++
++				soc_max_crit: soc_max_crit {
 +					temperature = <115000>;
 +					hysteresis = <2000>;
 +					type = "critical";
++				};
++			};
++
++			cooling-maps {
++				map0 {
++					trip = <&target>;
++					cooling-device = <&cpu0
++						THERMAL_NO_LIMIT
++						THERMAL_NO_LIMIT>,
++							 <&cpu1
++						THERMAL_NO_LIMIT
++						THERMAL_NO_LIMIT>,
++							 <&cpu2
++						THERMAL_NO_LIMIT
++						THERMAL_NO_LIMIT>,
++							 <&cpu3
++						THERMAL_NO_LIMIT
++						THERMAL_NO_LIMIT>;
++					contribution = <3072>;
++				};
++				map1 {
++					trip = <&target>;
++					cooling-device = <&cpu4
++						THERMAL_NO_LIMIT
++						THERMAL_NO_LIMIT>,
++							 <&cpu5
++						THERMAL_NO_LIMIT
++						THERMAL_NO_LIMIT>,
++							 <&cpu6
++						THERMAL_NO_LIMIT
++						THERMAL_NO_LIMIT>,
++							 <&cpu7
++						THERMAL_NO_LIMIT
++						THERMAL_NO_LIMIT>;
++					contribution = <1024>;
 +				};
 +			};
 +		};
@@ -4257,12 +4624,10 @@ index 0000000000000000000000000000000000000000..75cccca715e00594175b53fc92d79ca7
 +		compatible = "simple-bus";
 +		ranges;
 +
-+
 +		cpufreq_hw: cpufreq@0011bc00 {
 +			compatible = "mediatek,cpufreq-hw";
-+			reg = <0 0x0011bc10 0 0x8c>, <0 0x0011bca0 0 0x8c>,
-+				<0 0x00115c10 0 0x90>, <0 0x00115d30 0 0x90>;
-+			reg-names = "freq-domain0", "freq-domain1", "em-domain0", "em-domain1";
++			reg = <0 0x0011bc10 0 0x460>, <0 0x0011bca0 0 0x460>;
++			reg-names = "freq-domain0", "freq-domain1";
 +			#freq-domain-cells = <1>;
 +		};
 +
@@ -4639,25 +5004,19 @@ index 0000000000000000000000000000000000000000..75cccca715e00594175b53fc92d79ca7
 +			assigned-clock-parents = <&topckgen CLK_TOP_OSC_D10>;
 +		};
 +
-+		spmi_bus: spmi@10027000 {
-+			compatible = "mediatek,pmif";
++		spmi: spmi@10027000 {
++			compatible = "mediatek,mt6873-spmi";
 +			reg = <0 0x10027000 0 0x000e00>,
-+			      <0 0x10027f00 0 0x00008c>,
 +			      <0 0x10029000 0 0x000100>;
-+			reg-names = "pmif", "pmifmpu", "spmimst";
-+			interrupts = <GIC_SPI 221 IRQ_TYPE_LEVEL_HIGH 0>;
-+			interrupt-names = "pmif_irq";
-+			irq_event_en = <0x0 0x0 0x00300000 0x00000100 0x0>;
++			reg-names = "pmif", "spmimst";
 +			clocks = <&infracfg CLK_INFRA_PMIC_AP>,
-+				<&infracfg CLK_INFRA_PMIC_TMR>,
-+				<&topckgen CLK_TOP_SPMI_MST_SEL>;
++				 <&infracfg CLK_INFRA_PMIC_TMR>,
++				 <&topckgen CLK_TOP_SPMI_MST_SEL>;
 +			clock-names = "pmif_sys_ck",
-+				"pmif_tmr_ck",
-+				"spmimst_clk_mux";
++				      "pmif_tmr_ck",
++				      "spmimst_clk_mux";
 +			assigned-clocks = <&topckgen CLK_TOP_PWRAP_ULPOSC_SEL>;
 +			assigned-clock-parents = <&topckgen CLK_TOP_OSC_D10>;
-+			swinf_ch_start = <4>;
-+			ap_swinf_no = <2>;
 +		};
 +
 +		gce: mailbox@10228000 {
@@ -6059,7 +6418,7 @@ index 0000000000000000000000000000000000000000..75cccca715e00594175b53fc92d79ca7
 +	};
 +};
 diff --git a/chromeos/config/arm64/chromiumos-arm64.flavour.config b/chromeos/config/arm64/chromiumos-arm64.flavour.config
-index f5891dcac92c9e20e10be58020875f0274df380b..22bd99e3a1938e3418697889e832c0b68d4d53d0 100644
+index f5891dcac92c9e20e10be58020875f0274df380b..ec691e0b24188a03f38bdb100a82f5c41c4df006 100644
 --- a/chromeos/config/arm64/chromiumos-arm64.flavour.config
 +++ b/chromeos/config/arm64/chromiumos-arm64.flavour.config
 @@ -6,6 +6,8 @@ CONFIG_ARCH_MEDIATEK=y
@@ -6143,16 +6502,19 @@ index f5891dcac92c9e20e10be58020875f0274df380b..22bd99e3a1938e3418697889e832c0b6
  CONFIG_REGULATOR_MT6397=y
  CONFIG_REGULATOR_PALMAS=y
  CONFIG_REGULATOR_QCOM_RPMH=y
-@@ -238,6 +275,7 @@ CONFIG_SPI_QCOM_GENI=y
+@@ -238,8 +275,10 @@ CONFIG_SPI_QCOM_GENI=y
  CONFIG_SPI_QCOM_QSPI=y
  CONFIG_SPI_ROCKCHIP=y
  CONFIG_SPMI=y
 +CONFIG_SPMI_MTK_PMIF=y
  CONFIG_STMMAC_ETH=m
  CONFIG_SX9310=m
++CONFIG_THERMAL_EMULATION=y
  CONFIG_TOUCHSCREEN_MELFAS_MIP4=y
+ CONFIG_TYPEC=m
+ CONFIG_USB_MTU3=y
 diff --git a/chromeos/config/arm64/chromiumos-mediatek.flavour.config b/chromeos/config/arm64/chromiumos-mediatek.flavour.config
-index 0f8c0e1478c8145ada5a5e1f6813321f503fd9dd..e8e25d08e018aaf3e1fcaca1b8aff9dcf1784cdf 100644
+index 0f8c0e1478c8145ada5a5e1f6813321f503fd9dd..568e3ac4b626ce4853baeaa756a9c325af9191be 100644
 --- a/chromeos/config/arm64/chromiumos-mediatek.flavour.config
 +++ b/chromeos/config/arm64/chromiumos-mediatek.flavour.config
 @@ -3,6 +3,8 @@
@@ -6248,7 +6610,7 @@ index 0f8c0e1478c8145ada5a5e1f6813321f503fd9dd..e8e25d08e018aaf3e1fcaca1b8aff9dc
  CONFIG_REMOTEPROC=y
  CONFIG_RESET_TI_SYSCON=y
  CONFIG_RTC_DRV_MT6397=y
-@@ -95,6 +137,8 @@ CONFIG_SND_SOC_MT8192_MT6359_RT1015_RT5682=y
+@@ -95,11 +137,16 @@ CONFIG_SND_SOC_MT8192_MT6359_RT1015_RT5682=y
  CONFIG_SPI_GPIO=y
  CONFIG_SPI_MT65XX=y
  CONFIG_SPI_MTK_NOR=y
@@ -6256,7 +6618,15 @@ index 0f8c0e1478c8145ada5a5e1f6813321f503fd9dd..e8e25d08e018aaf3e1fcaca1b8aff9dc
 +CONFIG_SPMI_MTK_PMIF=y
  CONFIG_STAGING_MEDIA=y
  CONFIG_TCG_CR50_I2C=y
++CONFIG_THERMAL_EMULATION=y
  CONFIG_TMPFS=y
++CONFIG_TYPEC=y
+ CONFIG_USB_MTU3=y
+ CONFIG_USB_MTU3_HOST=y
++CONFIG_USB_ROLE_SWITCH=y
+ CONFIG_V4L_PLATFORM_DRIVERS=y
+ CONFIG_VIDEO_MEDIATEK_VCODEC=m
+ CONFIG_VIDEO_OV5695=m
 diff --git a/chromeos/config/arm64/common.config b/chromeos/config/arm64/common.config
 index 8b03c30d38f5763370a1434794b2e02c9103cbd5..2545fc3d2b58ab2b213c3b3bfcb68ccdb5a3bb94 100644
 --- a/chromeos/config/arm64/common.config
@@ -6282,6 +6652,53 @@ index 6652af0497d734cce637749c66525419c866b447..8cf89f44ea5553646c5b5278503b70fa
  CONFIG_DMADEVICES=y
  CONFIG_DRM_DW_HDMI_AHB_AUDIO=y
  CONFIG_DRM_DW_HDMI_I2S_AUDIO=y
+diff --git a/drivers/base/property.c b/drivers/base/property.c
+index 5f35c0ccf5e02eb2443fc7d4962e0a3b77df779e..c6cb938f378e4f40c1332d92e041f152a7aa6cc6 100644
+--- a/drivers/base/property.c
++++ b/drivers/base/property.c
+@@ -1175,3 +1175,42 @@ const void *device_get_match_data(struct device *dev)
+ 	return fwnode_call_ptr_op(dev_fwnode(dev), device_get_match_data, dev);
+ }
+ EXPORT_SYMBOL_GPL(device_get_match_data);
++
++/**
++ * fwnode_is_compatible - Check does fwnode have the given compatible string
++ * @fwnode: fwnode with the "compatible" property
++ * @compat: The compatible string
++ *
++ * Match the compatible strings of @fwnode against @compat.
++ *
++ * Returns positive value on match, and 0 when no matching compatible
++ * string is found.
++ */
++int fwnode_is_compatible(struct fwnode_handle *fwnode, const char *compat)
++{
++	int ret;
++
++	if (is_of_node(fwnode))
++		return of_device_is_compatible(to_of_node(fwnode), compat);
++
++	ret = fwnode_property_match_string(fwnode, "compatible", compat);
++
++	return ret < 0 ? 0 : 1;
++}
++EXPORT_SYMBOL_GPL(fwnode_is_compatible);
++
++/**
++ * device_is_compatible - Check does a device have the given compatible string
++ * @dev: Device with the "compatible" property
++ * @compat: The compatible string
++ *
++ * Match the compatible strings of @dev against @compat.
++ *
++ * Returns positive value on match, and 0 when no matching compatible
++ * string is found.
++ */
++int device_is_compatible(struct device *dev, const char *compat)
++{
++	return fwnode_is_compatible(dev_fwnode(dev), compat);
++}
++EXPORT_SYMBOL_GPL(device_is_compatible);
 diff --git a/drivers/clk/mediatek/Kconfig b/drivers/clk/mediatek/Kconfig
 index 2de0147a79c5f5bcd531251bbadcbb9bf1fc2cac..3e3d982cc4a47722360f48f09ed1bf6ed0ba0a0e 100644
 --- a/drivers/clk/mediatek/Kconfig
@@ -8592,10 +9009,10 @@ index 0000000000000000000000000000000000000000..4739354aaea1be3ab5b7dd884d5ab9d2
 +builtin_platform_driver(clk_mt8192_venc_drv);
 diff --git a/drivers/clk/mediatek/clk-mt8192.c b/drivers/clk/mediatek/clk-mt8192.c
 new file mode 100644
-index 0000000000000000000000000000000000000000..d72456b147d0dc596ed7fb1bf8ddca30c196f233
+index 0000000000000000000000000000000000000000..58df667035f436ad7eb879d91534a6adf8b01735
 --- /dev/null
 +++ b/drivers/clk/mediatek/clk-mt8192.c
-@@ -0,0 +1,1348 @@
+@@ -0,0 +1,1333 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +//
 +// Copyright (c) 2020 MediaTek Inc.
@@ -9001,15 +9418,6 @@ index 0000000000000000000000000000000000000000..d72456b147d0dc596ed7fb1bf8ddca30
 +	"mainpll_d5_d2"
 +};
 +
-+static const char * const sspm_parents[] = {
-+	"clk26m",
-+	"mainpll_d5_d2",
-+	"univpll_d5_d2",
-+	"mainpll_d4_d2",
-+	"univpll_d4_d2",
-+	"mainpll_d6"
-+};
-+
 +static const char * const dpi_parents[] = {
 +	"clk26m",
 +	"tvdpll_d2",
@@ -9390,8 +9798,6 @@ index 0000000000000000000000000000000000000000..d72456b147d0dc596ed7fb1bf8ddca30
 +		pwrap_ulposc_parents, 0x090, 0x094, 0x098, 8, 3, 15, 0x008, 2),
 +	MUX_GATE_CLR_SET_UPD(CLK_TOP_ATB_SEL, "atb_sel",
 +		atb_parents, 0x090, 0x094, 0x098, 16, 2, 23, 0x008, 3),
-+	MUX_GATE_CLR_SET_UPD(CLK_TOP_SSPM_SEL, "sspm_sel",
-+		sspm_parents, 0x090, 0x094, 0x098, 24, 3, 31, 0x008, 4),
 +	/* CLK_CFG_9 */
 +	MUX_GATE_CLR_SET_UPD(CLK_TOP_DPI_SEL, "dpi_sel",
 +		dpi_parents, 0x0a0, 0x0a4, 0x0a8, 0, 3, 7, 0x008, 5),
@@ -9644,9 +10050,7 @@ index 0000000000000000000000000000000000000000..d72456b147d0dc596ed7fb1bf8ddca30
 +	GATE_INFRA2(CLK_INFRA_UNIPRO_TICK, "infra_unipro_tick", "clk26m", 12),
 +	GATE_INFRA2(CLK_INFRA_UFS_MP_SAP_B, "infra_ufs_mp_sap_b", "clk26m", 13),
 +	GATE_INFRA2(CLK_INFRA_MD32_B, "infra_md32_b", "axi_sel", 14),
-+	GATE_INFRA2(CLK_INFRA_SSPM, "infra_sspm", "sspm_sel", 15),
 +	GATE_INFRA2(CLK_INFRA_UNIPRO_MBIST, "infra_unipro_mbist", "axi_sel", 16),
-+	GATE_INFRA2(CLK_INFRA_SSPM_BUS_H, "infra_sspm_bus_h", "axi_sel", 17),
 +	GATE_INFRA2(CLK_INFRA_I2C5, "infra_i2c5", "i2c_sel", 18),
 +	GATE_INFRA2(CLK_INFRA_I2C5_ARBITER, "infra_i2c5_arbiter", "i2c_sel", 19),
 +	GATE_INFRA2(CLK_INFRA_I2C5_IMM, "infra_i2c5_imm", "i2c_sel", 20),
@@ -9665,8 +10069,6 @@ index 0000000000000000000000000000000000000000..d72456b147d0dc596ed7fb1bf8ddca30
 +	GATE_INFRA3(CLK_INFRA_MSDC0_SELF, "infra_msdc0_self", "msdc50_0_sel", 0),
 +	GATE_INFRA3(CLK_INFRA_MSDC1_SELF, "infra_msdc1_self", "msdc50_0_sel", 1),
 +	GATE_INFRA3(CLK_INFRA_MSDC2_SELF, "infra_msdc2_self", "msdc50_0_sel", 2),
-+	GATE_INFRA3(CLK_INFRA_SSPM_26M_SELF, "infra_sspm_26m_self", "clk26m", 3),
-+	GATE_INFRA3(CLK_INFRA_SSPM_32K_SELF, "infra_sspm_32k_self", "clk32k", 4),
 +	GATE_INFRA3(CLK_INFRA_UFS_AXI, "infra_ufs_axi", "axi_sel", 5),
 +	GATE_INFRA3(CLK_INFRA_I2C6, "infra_i2c6", "i2c_sel", 6),
 +	GATE_INFRA3(CLK_INFRA_AP_MSDC0, "infra_ap_msdc0", "msdc50_0_sel", 7),
@@ -14444,10 +14846,10 @@ index 50c058fcf737f109aae7ad7f0dbabfb319b6a32b..353febe998186170b5904f630723cc75
  obj-$(CONFIG_ARM_PXA2xx_CPUFREQ)	+= pxa2xx-cpufreq.o
 diff --git a/drivers/cpufreq/mediatek-cpufreq-hw.c b/drivers/cpufreq/mediatek-cpufreq-hw.c
 new file mode 100644
-index 0000000000000000000000000000000000000000..61040b8687e7271374b22f1b3fd6de5c1b7eb696
+index 0000000000000000000000000000000000000000..3160a42db1ad7ebaa623e7f1323d9dbde617fef4
 --- /dev/null
 +++ b/drivers/cpufreq/mediatek-cpufreq-hw.c
-@@ -0,0 +1,294 @@
+@@ -0,0 +1,345 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
 + * Copyright (c) 2020 MediaTek Inc.
@@ -14455,21 +14857,30 @@ index 0000000000000000000000000000000000000000..61040b8687e7271374b22f1b3fd6de5c
 +
 +#include <linux/bitfield.h>
 +#include <linux/cpufreq.h>
++#include <linux/energy_model.h>
 +#include <linux/init.h>
++#include <linux/iopoll.h>
 +#include <linux/kernel.h>
 +#include <linux/module.h>
 +#include <linux/of_address.h>
 +#include <linux/of_platform.h>
++#include <linux/pm_qos.h>
 +#include <linux/slab.h>
 +
 +#define LUT_MAX_ENTRIES			32U
 +#define LUT_FREQ			GENMASK(11, 0)
 +#define LUT_ROW_SIZE			0x4
++#define CPUFREQ_HW_STATUS		BIT(0)
++#define SVS_HW_STATUS			BIT(1)
++#define POLL_USEC			1000
++#define TIMEOUT_USEC			300000
 +
 +enum {
-+	REG_LUT_TABLE,
-+	REG_ENABLE,
-+	REG_PERF_STATE,
++	REG_FREQ_LUT_TABLE,
++	REG_FREQ_ENABLE,
++	REG_FREQ_PERF_STATE,
++	REG_FREQ_HW_STATE,
++	REG_EM_POWER_TBL,
 +
 +	REG_ARRAY_SIZE,
 +};
@@ -14477,26 +14888,45 @@ index 0000000000000000000000000000000000000000..61040b8687e7271374b22f1b3fd6de5c
 +struct cpufreq_mtk {
 +	struct cpufreq_frequency_table *table;
 +	void __iomem *reg_bases[REG_ARRAY_SIZE];
++	int nr_opp;
 +	cpumask_t related_cpus;
 +};
 +
 +static const u16 cpufreq_mtk_offsets[REG_ARRAY_SIZE] = {
-+	[REG_LUT_TABLE]		= 0x0,
-+	[REG_ENABLE]	= 0x84,
-+	[REG_PERF_STATE]	= 0x88,
++	[REG_FREQ_LUT_TABLE]	= 0x0,
++	[REG_FREQ_ENABLE]	= 0x84,
++	[REG_FREQ_PERF_STATE]	= 0x88,
++	[REG_FREQ_HW_STATE]	= 0x8c,
++	[REG_EM_POWER_TBL]	= 0x3D0,
 +};
 +
 +static struct cpufreq_mtk *mtk_freq_domain_map[NR_CPUS];
++
++static int mtk_cpufreq_get_cpu_power(unsigned long *mW,
++				     unsigned long *KHz, int cpu)
++{
++	struct cpufreq_mtk *c = mtk_freq_domain_map[cpu];
++	int i;
++
++	for (i = 0; i < c->nr_opp; i++) {
++		if (c->table[i].frequency < *KHz)
++			break;
++	}
++	i--;
++
++	*KHz = c->table[i].frequency;
++	*mW = readl_relaxed(c->reg_bases[REG_EM_POWER_TBL] +
++			    i * LUT_ROW_SIZE) / 1000;
++
++	return 0;
++}
 +
 +static int mtk_cpufreq_hw_target_index(struct cpufreq_policy *policy,
 +				       unsigned int index)
 +{
 +	struct cpufreq_mtk *c = policy->driver_data;
 +
-+	writel_relaxed(index, c->reg_bases[REG_PERF_STATE]);
-+	arch_set_freq_scale(policy->related_cpus,
-+			    policy->freq_table[index].frequency,
-+			    policy->cpuinfo.max_freq);
++	writel_relaxed(index, c->reg_bases[REG_FREQ_PERF_STATE]);
 +
 +	return 0;
 +}
@@ -14504,30 +14934,31 @@ index 0000000000000000000000000000000000000000..61040b8687e7271374b22f1b3fd6de5c
 +static unsigned int mtk_cpufreq_hw_get(unsigned int cpu)
 +{
 +	struct cpufreq_mtk *c;
-+	struct cpufreq_policy *policy;
 +	unsigned int index;
 +
-+	policy = cpufreq_cpu_get_raw(cpu);
-+	if (!policy)
-+		return 0;
++	c = mtk_freq_domain_map[cpu];
 +
-+	c = policy->driver_data;
-+
-+	index = readl_relaxed(c->reg_bases[REG_PERF_STATE]);
++	index = readl_relaxed(c->reg_bases[REG_FREQ_PERF_STATE]);
 +	index = min(index, LUT_MAX_ENTRIES - 1);
 +
-+	return policy->freq_table[index].frequency;
++	return c->table[index].frequency;
 +}
 +
 +static int mtk_cpufreq_hw_cpu_init(struct cpufreq_policy *policy)
 +{
 +	struct cpufreq_mtk *c;
 +	struct device *cpu_dev;
++	struct em_data_callback em_cb = EM_DATA_CB(mtk_cpufreq_get_cpu_power);
++	struct pm_qos_request *qos_request;
++	int sig, pwr_hw = CPUFREQ_HW_STATUS | SVS_HW_STATUS;
++
++	qos_request = kzalloc(sizeof(*qos_request), GFP_KERNEL);
++	if (!qos_request)
++		return -ENOMEM;
 +
 +	cpu_dev = get_cpu_device(policy->cpu);
 +	if (!cpu_dev) {
-+		pr_err("%s: failed to get cpu%d device\n", __func__,
-+		       policy->cpu);
++		pr_err("failed to get cpu%d device\n", policy->cpu);
 +		return -ENODEV;
 +	}
 +
@@ -14542,29 +14973,62 @@ index 0000000000000000000000000000000000000000..61040b8687e7271374b22f1b3fd6de5c
 +	policy->freq_table = c->table;
 +	policy->driver_data = c;
 +
++	/* Let CPUs leave idle-off state for SVS CPU initializing */
++	cpu_latency_qos_add_request(qos_request, 0);
++
 +	/* HW should be in enabled state to proceed now */
-+	writel_relaxed(0x1, c->reg_bases[REG_ENABLE]);
++	writel_relaxed(0x1, c->reg_bases[REG_FREQ_ENABLE]);
++
++	if (readl_poll_timeout(c->reg_bases[REG_FREQ_HW_STATE], sig,
++			       (sig & pwr_hw) == pwr_hw, POLL_USEC,
++			       TIMEOUT_USEC)) {
++		if (!(sig & CPUFREQ_HW_STATUS)) {
++			pr_info("cpufreq hardware of CPU%d is not enabled\n",
++				policy->cpu);
++			return -ENODEV;
++		}
++
++		pr_info("SVS of CPU%d is not enabled\n", policy->cpu);
++	}
++
++	em_register_perf_domain(policy->cpus, c->nr_opp, &em_cb);
++
++	cpu_latency_qos_remove_request(qos_request);
++	kfree(qos_request);
 +
 +	return 0;
 +}
 +
-+static struct freq_attr *mtk_cpufreq_hw_attr[] = {
-+	&cpufreq_freq_attr_scaling_available_freqs,
-+	NULL
-+};
++static int mtk_cpufreq_hw_cpu_exit(struct cpufreq_policy *policy)
++{
++	struct cpufreq_mtk *c;
++
++	c = mtk_freq_domain_map[policy->cpu];
++	if (!c) {
++		pr_err("No scaling support for CPU%d\n", policy->cpu);
++		return -ENODEV;
++	}
++
++	/* HW should be in paused state now */
++	writel_relaxed(0x0, c->reg_bases[REG_FREQ_ENABLE]);
++
++	return 0;
++}
 +
 +static struct cpufreq_driver cpufreq_mtk_hw_driver = {
 +	.flags		= CPUFREQ_STICKY | CPUFREQ_NEED_INITIAL_FREQ_CHECK |
-+			  CPUFREQ_HAVE_GOVERNOR_PER_POLICY,
++			  CPUFREQ_HAVE_GOVERNOR_PER_POLICY |
++			  CPUFREQ_IS_COOLING_DEV,
 +	.verify		= cpufreq_generic_frequency_table_verify,
 +	.target_index	= mtk_cpufreq_hw_target_index,
 +	.get		= mtk_cpufreq_hw_get,
 +	.init		= mtk_cpufreq_hw_cpu_init,
++	.exit		= mtk_cpufreq_hw_cpu_exit,
 +	.name		= "mtk-cpufreq-hw",
-+	.attr		= mtk_cpufreq_hw_attr,
++	.attr		= cpufreq_generic_attr,
 +};
 +
-+static int mtk_cpufreq_hw_opp_create(struct platform_device *pdev,
++static int mtk_cpu_create_freq_table(struct platform_device *pdev,
 +				     struct cpufreq_mtk *c)
 +{
 +	struct device *dev = &pdev->dev;
@@ -14576,7 +15040,7 @@ index 0000000000000000000000000000000000000000..61040b8687e7271374b22f1b3fd6de5c
 +	if (!c->table)
 +		return -ENOMEM;
 +
-+	base_table = c->reg_bases[REG_LUT_TABLE];
++	base_table = c->reg_bases[REG_FREQ_LUT_TABLE];
 +
 +	for (i = 0; i < LUT_MAX_ENTRIES; i++) {
 +		data = readl_relaxed(base_table + (i * LUT_ROW_SIZE));
@@ -14594,11 +15058,12 @@ index 0000000000000000000000000000000000000000..61040b8687e7271374b22f1b3fd6de5c
 +	}
 +
 +	c->table[i].frequency = CPUFREQ_TABLE_END;
++	c->nr_opp = i;
 +
 +	return 0;
 +}
 +
-+static int mtk_get_related_cpus(int index, struct cpumask *m)
++static int mtk_get_related_cpus(int index, struct cpufreq_mtk *c)
 +{
 +	struct device_node *cpu_np;
 +	struct of_phandle_args args;
@@ -14616,22 +15081,24 @@ index 0000000000000000000000000000000000000000..61040b8687e7271374b22f1b3fd6de5c
 +		if (ret < 0)
 +			continue;
 +
-+		if (index == args.args[0])
-+			cpumask_set_cpu(cpu, m);
++		if (index == args.args[0]) {
++			cpumask_set_cpu(cpu, &c->related_cpus);
++			mtk_freq_domain_map[cpu] = c;
++		}
 +	}
 +
 +	return 0;
 +}
 +
 +static int mtk_cpu_resources_init(struct platform_device *pdev,
-+				  unsigned int cpu, int index)
++				  unsigned int cpu, int index,
++				  const u16 *offsets)
 +{
 +	struct cpufreq_mtk *c;
-+	struct resource *res;
 +	struct device *dev = &pdev->dev;
-+	const u16 *offsets;
-+	int ret, i, cpu_r;
++	int ret, i;
 +	void __iomem *base;
++	struct resource *res;
 +
 +	if (mtk_freq_domain_map[cpu])
 +		return 0;
@@ -14640,59 +15107,24 @@ index 0000000000000000000000000000000000000000..61040b8687e7271374b22f1b3fd6de5c
 +	if (!c)
 +		return -ENOMEM;
 +
-+	offsets = of_device_get_match_data(&pdev->dev);
-+	if (!offsets)
-+		return -EINVAL;
-+
 +	res = platform_get_resource(pdev, IORESOURCE_MEM, index);
-+	base = devm_ioremap_resource(dev, res);
++	base = devm_ioremap(dev, res->start, resource_size(res));
 +	if (IS_ERR(base))
 +		return PTR_ERR(base);
 +
-+	for (i = REG_LUT_TABLE; i < REG_ARRAY_SIZE; i++)
++	for (i = REG_FREQ_LUT_TABLE; i < REG_ARRAY_SIZE; i++)
 +		c->reg_bases[i] = base + offsets[i];
 +
-+	ret = mtk_get_related_cpus(index, &c->related_cpus);
++	ret = mtk_get_related_cpus(index, c);
 +	if (ret) {
 +		dev_err(dev, "Domain-%d failed to get related CPUs\n", index);
 +		return ret;
 +	}
 +
-+	ret = mtk_cpufreq_hw_opp_create(pdev, c);
++	ret = mtk_cpu_create_freq_table(pdev, c);
 +	if (ret) {
-+		dev_err(dev, "Domain-%d failed to create OPP\n", index);
++		dev_err(dev, "Domain-%d failed to create freq table\n", index);
 +		return ret;
-+	}
-+
-+	for_each_cpu(cpu_r, &c->related_cpus)
-+		mtk_freq_domain_map[cpu_r] = c;
-+
-+	return 0;
-+}
-+
-+static int mtk_resources_init(struct platform_device *pdev)
-+{
-+	struct device_node *cpu_np;
-+	struct of_phandle_args args;
-+	unsigned int cpu;
-+	int ret;
-+
-+	for_each_possible_cpu(cpu) {
-+		cpu_np = of_cpu_device_node_get(cpu);
-+		if (!cpu_np) {
-+			dev_dbg(&pdev->dev, "Failed to get cpu %d device\n",
-+				cpu);
-+			continue;
-+		}
-+
-+		ret = of_parse_phandle_with_args(cpu_np, "mtk-freq-domain",
-+						 "#freq-domain-cells", 0, &args);
-+		if (ret < 0)
-+			return ret;
-+
-+		ret = mtk_cpu_resources_init(pdev, cpu, args.args[0]);
-+		if (ret)
-+			return ret;
 +	}
 +
 +	return 0;
@@ -14700,13 +15132,36 @@ index 0000000000000000000000000000000000000000..61040b8687e7271374b22f1b3fd6de5c
 +
 +static int mtk_cpufreq_hw_driver_probe(struct platform_device *pdev)
 +{
++	struct device_node *cpu_np;
++	struct of_phandle_args args;
++	const u16 *offsets;
++	unsigned int cpu;
 +	int ret;
 +
-+	/* Get the bases of cpufreq for domains */
-+	ret = mtk_resources_init(pdev);
-+	if (ret) {
-+		dev_err(&pdev->dev, "CPUFreq resource init failed\n");
-+		return ret;
++	offsets = of_device_get_match_data(&pdev->dev);
++	if (!offsets)
++		return -EINVAL;
++
++	for_each_possible_cpu(cpu) {
++		cpu_np = of_cpu_device_node_get(cpu);
++		if (!cpu_np) {
++			dev_err(&pdev->dev, "Failed to get cpu %d device\n",
++				cpu);
++			return -ENODEV;
++		}
++
++		ret = of_parse_phandle_with_args(cpu_np, "mtk-freq-domain",
++						 "#freq-domain-cells", 0,
++						 &args);
++		if (ret < 0)
++			return ret;
++
++		/* Get the bases of cpufreq for domains */
++		ret = mtk_cpu_resources_init(pdev, cpu, args.args[0], offsets);
++		if (ret) {
++			dev_err(&pdev->dev, "CPUFreq resource init failed\n");
++			return ret;
++		}
 +	}
 +
 +	ret = cpufreq_register_driver(&cpufreq_mtk_hw_driver);
@@ -14715,10 +15170,12 @@ index 0000000000000000000000000000000000000000..61040b8687e7271374b22f1b3fd6de5c
 +		return ret;
 +	}
 +
-+	dev_dbg(&pdev->dev, "Mediatek CPUFreq HW driver initialized\n");
-+	of_platform_populate(pdev->dev.of_node, NULL, NULL, &pdev->dev);
-+
 +	return 0;
++}
++
++static int mtk_cpufreq_hw_driver_remove(struct platform_device *pdev)
++{
++	return cpufreq_unregister_driver(&cpufreq_mtk_hw_driver);
 +}
 +
 +static const struct of_device_id mtk_cpufreq_hw_match[] = {
@@ -14728,19 +15185,15 @@ index 0000000000000000000000000000000000000000..61040b8687e7271374b22f1b3fd6de5c
 +
 +static struct platform_driver mtk_cpufreq_hw_driver = {
 +	.probe = mtk_cpufreq_hw_driver_probe,
++	.remove = mtk_cpufreq_hw_driver_remove,
 +	.driver = {
 +		.name = "mtk-cpufreq-hw",
 +		.of_match_table = mtk_cpufreq_hw_match,
 +	},
 +};
++module_platform_driver(mtk_cpufreq_hw_driver);
 +
-+static int __init mtk_cpufreq_hw_init(void)
-+{
-+	return platform_driver_register(&mtk_cpufreq_hw_driver);
-+}
-+subsys_initcall(mtk_cpufreq_hw_init);
-+
-+MODULE_DESCRIPTION("mtk CPUFREQ HW Driver");
++MODULE_DESCRIPTION("Mediatek cpufreq-hw driver");
 +MODULE_LICENSE("GPL v2");
 diff --git a/drivers/gpu/arm/valhall/device/backend/mali_kbase_device_jm.c b/drivers/gpu/arm/valhall/device/backend/mali_kbase_device_jm.c
 index 4e88686dedd25a039fe39721b792f2e9f76f8154..0562c45c392d8a7058295d3fdf8be998303cea3e 100644
@@ -14805,10 +15258,20 @@ index 188e53bf1abe42cb2bcfbf6f2346cbac7104e661..2dc1bef1ef270821b3e0da56cadf70a5
  		return 0;
  
 diff --git a/drivers/gpu/drm/bridge/analogix/anx7625.c b/drivers/gpu/drm/bridge/analogix/anx7625.c
-index 00947b1beee01f334eaa5cffc490706b13d669f3..76daaba5092e22b5d50df9072b565646710b9284 100644
+index 00947b1beee01f334eaa5cffc490706b13d669f3..f86cdbb5b4a4ec302e09274805c93e13027b96e9 100644
 --- a/drivers/gpu/drm/bridge/analogix/anx7625.c
 +++ b/drivers/gpu/drm/bridge/analogix/anx7625.c
-@@ -164,6 +164,20 @@ static int anx7625_write_and_or(struct anx7625_data *ctx,
+@@ -13,6 +13,9 @@
+ #include <linux/mutex.h>
+ #include <linux/slab.h>
+ #include <linux/types.h>
++#include <linux/usb/typec.h>
++#include <linux/usb/typec_dp.h>
++#include <linux/usb/typec_mux.h>
+ #include <linux/workqueue.h>
+ 
+ #include <linux/of_gpio.h>
+@@ -164,6 +167,20 @@ static int anx7625_write_and_or(struct anx7625_data *ctx,
  				 offset, (val & and_mask) | (or_mask));
  }
  
@@ -14829,7 +15292,7 @@ index 00947b1beee01f334eaa5cffc490706b13d669f3..76daaba5092e22b5d50df9072b565646
  static int anx7625_read_ctrl_status_p0(struct anx7625_data *ctx)
  {
  	return anx7625_reg_read(ctx, ctx->i2c.rx_p0_client, AP_AUX_CTRL_STATUS);
-@@ -189,10 +203,64 @@ static int wait_aux_op_finish(struct anx7625_data *ctx)
+@@ -189,10 +206,64 @@ static int wait_aux_op_finish(struct anx7625_data *ctx)
  			       AP_AUX_CTRL_STATUS);
  	if (val < 0 || (val & 0x0F)) {
  		DRM_DEV_ERROR(dev, "aux status %02x\n", val);
@@ -14896,7 +15359,7 @@ index 00947b1beee01f334eaa5cffc490706b13d669f3..76daaba5092e22b5d50df9072b565646
  }
  
  static int anx7625_video_mute_control(struct anx7625_data *ctx,
-@@ -595,6 +663,101 @@ static int anx7625_dsi_config(struct anx7625_data *ctx)
+@@ -595,6 +666,101 @@ static int anx7625_dsi_config(struct anx7625_data *ctx)
  	return ret;
  }
  
@@ -14998,7 +15461,7 @@ index 00947b1beee01f334eaa5cffc490706b13d669f3..76daaba5092e22b5d50df9072b565646
  static void anx7625_dp_start(struct anx7625_data *ctx)
  {
  	int ret;
-@@ -605,9 +768,15 @@ static void anx7625_dp_start(struct anx7625_data *ctx)
+@@ -605,9 +771,15 @@ static void anx7625_dp_start(struct anx7625_data *ctx)
  		return;
  	}
  
@@ -15015,7 +15478,7 @@ index 00947b1beee01f334eaa5cffc490706b13d669f3..76daaba5092e22b5d50df9072b565646
  
  	if (ret < 0)
  		DRM_DEV_ERROR(dev, "MIPI phy setup error.\n");
-@@ -688,8 +857,53 @@ static int sp_tx_get_edid_block(struct anx7625_data *ctx)
+@@ -688,8 +860,53 @@ static int sp_tx_get_edid_block(struct anx7625_data *ctx)
  	return c;
  }
  
@@ -15071,7 +15534,7 @@ index 00947b1beee01f334eaa5cffc490706b13d669f3..76daaba5092e22b5d50df9072b565646
  {
  	int ret, cnt;
  	struct device *dev = &ctx->client->dev;
-@@ -718,6 +932,15 @@ static int edid_read(struct anx7625_data *ctx,
+@@ -718,6 +935,15 @@ static int edid_read(struct anx7625_data *ctx,
  	return 0;
  }
  
@@ -15087,7 +15550,7 @@ index 00947b1beee01f334eaa5cffc490706b13d669f3..76daaba5092e22b5d50df9072b565646
  static int segments_edid_read(struct anx7625_data *ctx,
  			      u8 segment, u8 *buf, u8 offset)
  {
-@@ -992,8 +1215,10 @@ static void anx7625_chip_control(struct anx7625_data *ctx, int state)
+@@ -992,8 +1218,10 @@ static void anx7625_chip_control(struct anx7625_data *ctx, int state)
  
  	if (state) {
  		atomic_inc(&ctx->power_status);
@@ -15099,7 +15562,7 @@ index 00947b1beee01f334eaa5cffc490706b13d669f3..76daaba5092e22b5d50df9072b565646
  	} else {
  		if (atomic_read(&ctx->power_status)) {
  			atomic_dec(&ctx->power_status);
-@@ -1060,8 +1285,10 @@ static void anx7625_start_dp_work(struct anx7625_data *ctx)
+@@ -1060,8 +1288,10 @@ static void anx7625_start_dp_work(struct anx7625_data *ctx)
  	ret |= anx7625_write_or(ctx, ctx->i2c.rx_p1_client, 0xec, 0x10);
  	/* Interrupt for DRM */
  	ret |= anx7625_write_or(ctx, ctx->i2c.rx_p1_client, 0xff, 0x01);
@@ -15111,7 +15574,7 @@ index 00947b1beee01f334eaa5cffc490706b13d669f3..76daaba5092e22b5d50df9072b565646
  
  	ret = anx7625_reg_read(ctx, ctx->i2c.rx_p1_client, 0x86);
  	if (ret < 0)
-@@ -1080,6 +1307,10 @@ static void anx7625_hpd_polling(struct anx7625_data *ctx)
+@@ -1080,6 +1310,10 @@ static void anx7625_hpd_polling(struct anx7625_data *ctx)
  	int ret, val;
  	struct device *dev = &ctx->client->dev;
  
@@ -15122,7 +15585,7 @@ index 00947b1beee01f334eaa5cffc490706b13d669f3..76daaba5092e22b5d50df9072b565646
  	if (atomic_read(&ctx->power_status) != 1) {
  		DRM_DEV_DEBUG_DRIVER(dev, "No need to poling HPD status.\n");
  		return;
-@@ -1145,9 +1376,8 @@ static void dp_hpd_change_handler(struct anx7625_data *ctx, bool on)
+@@ -1145,9 +1379,8 @@ static void dp_hpd_change_handler(struct anx7625_data *ctx, bool on)
  	} else {
  		DRM_DEV_DEBUG_DRIVER(dev, " HPD high\n");
  		anx7625_start_dp_work(ctx);
@@ -15133,7 +15596,115 @@ index 00947b1beee01f334eaa5cffc490706b13d669f3..76daaba5092e22b5d50df9072b565646
  }
  
  static int anx7625_hpd_change_detect(struct anx7625_data *ctx)
-@@ -1231,13 +1461,21 @@ static int anx7625_parse_dt(struct device *dev,
+@@ -1224,6 +1457,107 @@ static irqreturn_t anx7625_intr_hpd_isr(int irq, void *data)
+ 	return IRQ_HANDLED;
+ }
+ 
++#if IS_ENABLED(CONFIG_TYPEC)
++
++static void anx7625_set_crosspoint_switch(struct anx7625_data *ctx,
++					  enum typec_orientation orientation)
++{
++	if (orientation == TYPEC_ORIENTATION_NORMAL) {
++		anx7625_reg_write(ctx, ctx->i2c.tcpc_client, TCPC_SWITCH_0,
++				  SW_SEL1_SSRX_B10_B11 | SW_SEL1_ML0_A10_A11);
++		anx7625_reg_write(ctx, ctx->i2c.tcpc_client, TCPC_SWITCH_1,
++				  SW_SEL2_SSTX_A2_A3 | SW_SEL2_ML1_B2_B3);
++	} else if (orientation == TYPEC_ORIENTATION_REVERSE) {
++		anx7625_reg_write(ctx, ctx->i2c.tcpc_client, TCPC_SWITCH_0,
++				  SW_SEL1_SSRX_A10_A11 | SW_SEL1_ML0_B10_B11);
++		anx7625_reg_write(ctx, ctx->i2c.tcpc_client, TCPC_SWITCH_1,
++				  SW_SEL2_SSTX_B2_B3 | SW_SEL2_ML1_A2_A3);
++	}
++}
++
++static void anx7625_usb_two_ports_update(struct anx7625_data *ctx)
++{
++	if (ctx->typec_ports[0].has_dp && ctx->typec_ports[1].has_dp)
++		// Both port available, do nothing to retain the current one.
++		return;
++	else if (ctx->typec_ports[0].has_dp)
++		anx7625_set_crosspoint_switch(ctx, TYPEC_ORIENTATION_NORMAL);
++	else if (ctx->typec_ports[1].has_dp)
++		anx7625_set_crosspoint_switch(ctx, TYPEC_ORIENTATION_REVERSE);
++}
++
++static int anx7625_usb_mux_set(struct typec_mux *mux,
++			       struct typec_mux_state *state)
++{
++	struct anx7625_port_data *data = typec_mux_get_drvdata(mux);
++
++	if (state->alt && state->alt->svid == USB_TYPEC_DP_SID &&
++	    state->alt->mode == USB_TYPEC_DP_MODE)
++		data->has_dp = true;
++	else
++		data->has_dp = false;
++
++	anx7625_usb_two_ports_update(data->ctx);
++	return 0;
++}
++
++static int anx7625_register_usb_two_ports(struct device *device,
++					  struct anx7625_data *ctx)
++{
++	struct typec_mux_desc mux_desc = { };
++	struct fwnode_handle *fwnode;
++	struct anx7625_port_data *port_data;
++	u32 port_num;
++	int ret;
++
++	device_for_each_child_node(device, fwnode) {
++		if (fwnode_property_read_u32(fwnode, "reg", &port_num)) {
++			continue;
++		}
++
++		if (port_num >= 2) {
++			DRM_DEV_ERROR(device, "reg too large for ports.");
++			continue;
++		}
++
++		port_data = &ctx->typec_ports[port_num];
++
++		port_data->ctx = ctx;
++		mux_desc.fwnode = fwnode;
++		mux_desc.drvdata = port_data;
++		mux_desc.name = fwnode_get_name(fwnode);
++		mux_desc.set = anx7625_usb_mux_set;
++
++		port_data->typec_mux =
++			typec_mux_register(device, &mux_desc);
++		if (IS_ERR(port_data->typec_mux)) {
++			ret = PTR_ERR(port_data->typec_mux);
++			DRM_DEV_ERROR(device,
++				      "mux register for port %d failed: %d",
++				      port_num, ret);
++			goto err;
++		}
++	}
++
++	return 0;
++
++err:
++	for (port_num = 0; port_num < 2; port_num++) {
++		typec_mux_unregister(ctx->typec_ports[port_num].typec_mux);
++		ctx->typec_ports[port_num].typec_mux = NULL;
++	}
++	return ret;
++}
++
++static void anx7625_unregister_usb_two_ports(struct anx7625_data *ctx) {
++	int i;
++
++	for (i = 0; i < 2; i++)
++		typec_mux_unregister(ctx->typec_ports[i].typec_mux);
++}
++
++#endif  /* IS_ENABLED(CONFIG_TYPEC) */
++
+ static int anx7625_parse_dt(struct device *dev,
+ 			    struct anx7625_platform_data *pdata)
+ {
+@@ -1231,13 +1565,24 @@ static int anx7625_parse_dt(struct device *dev,
  	struct drm_panel *panel;
  	int ret;
  
@@ -15153,26 +15724,29 @@ index 00947b1beee01f334eaa5cffc490706b13d669f3..76daaba5092e22b5d50df9072b565646
  
 -	DRM_DEV_DEBUG_DRIVER(dev, "found dsi host node.\n");
 +	DRM_DEV_DEBUG_DRIVER(dev, "found MIPI host node.\n");
++
++	pdata->tx_rx_to_two_ports =
++		of_property_read_bool(dev->of_node, "anx,tx-rx-to-two-ports");
  
  	ret = drm_of_find_panel_or_bridge(np, 1, 0, &panel, NULL);
  	if (ret < 0) {
-@@ -1300,9 +1538,13 @@ static enum drm_connector_status anx7625_sink_detect(struct anx7625_data *ctx)
+@@ -1300,9 +1645,13 @@ static enum drm_connector_status anx7625_sink_detect(struct anx7625_data *ctx)
  {
  	struct device *dev = &ctx->client->dev;
  
 -	DRM_DEV_DEBUG_DRIVER(dev, "sink detect, return connected\n");
 +	DRM_DEV_DEBUG_DRIVER(dev, "sink detect\n");
- 
--	return connector_status_connected;
++
 +	if (ctx->pdata.panel_bridge)
 +		return connector_status_connected;
-+
+ 
+-	return connector_status_connected;
 +	return ctx->hpd_status ? connector_status_connected :
 +				     connector_status_disconnected;
  }
  
  static int anx7625_attach_dsi(struct anx7625_data *ctx)
-@@ -1376,10 +1618,12 @@ static int anx7625_bridge_attach(struct drm_bridge *bridge,
+@@ -1376,10 +1725,12 @@ static int anx7625_bridge_attach(struct drm_bridge *bridge,
  		return -ENODEV;
  	}
  
@@ -15189,7 +15763,7 @@ index 00947b1beee01f334eaa5cffc490706b13d669f3..76daaba5092e22b5d50df9072b565646
  	}
  
  	if (ctx->pdata.panel_bridge) {
-@@ -1477,6 +1721,10 @@ static bool anx7625_bridge_mode_fixup(struct drm_bridge *bridge,
+@@ -1477,6 +1828,10 @@ static bool anx7625_bridge_mode_fixup(struct drm_bridge *bridge,
  
  	DRM_DEV_DEBUG_DRIVER(dev, "drm mode fixup set\n");
  
@@ -15200,7 +15774,7 @@ index 00947b1beee01f334eaa5cffc490706b13d669f3..76daaba5092e22b5d50df9072b565646
  	hsync = mode->hsync_end - mode->hsync_start;
  	hfp = mode->hsync_start - mode->hdisplay;
  	hbp = mode->htotal - mode->hsync_end;
-@@ -1774,8 +2022,16 @@ static int anx7625_i2c_probe(struct i2c_client *client,
+@@ -1774,8 +2129,16 @@ static int anx7625_i2c_probe(struct i2c_client *client,
  		goto free_wq;
  	}
  
@@ -15217,8 +15791,15 @@ index 00947b1beee01f334eaa5cffc490706b13d669f3..76daaba5092e22b5d50df9072b565646
  		atomic_set(&platform->power_status, 1);
  	}
  
-@@ -1785,8 +2041,13 @@ static int anx7625_i2c_probe(struct i2c_client *client,
+@@ -1783,10 +2146,20 @@ static int anx7625_i2c_probe(struct i2c_client *client,
+ 	if (platform->pdata.intp_irq)
+ 		queue_work(platform->workqueue, &platform->work);
  
++#if IS_ENABLED(CONFIG_TYPEC)
++	if (!platform->pdata.panel_bridge && platform->pdata.tx_rx_to_two_ports)
++		anx7625_register_usb_two_ports(dev, platform);
++#endif  /* IS_ENABLED(CONFIG_TYPEC) */
++
  	platform->bridge.funcs = &anx7625_bridge_funcs;
  	platform->bridge.of_node = client->dev.of_node;
 -	platform->bridge.ops = DRM_BRIDGE_OP_EDID | DRM_BRIDGE_OP_HPD;
@@ -15233,11 +15814,42 @@ index 00947b1beee01f334eaa5cffc490706b13d669f3..76daaba5092e22b5d50df9072b565646
  	drm_bridge_add(&platform->bridge);
  
  	DRM_DEV_DEBUG_DRIVER(dev, "probe done\n");
+@@ -1809,6 +2182,11 @@ static int anx7625_i2c_remove(struct i2c_client *client)
+ 
+ 	drm_bridge_remove(&platform->bridge);
+ 
++#if IS_ENABLED(CONFIG_TYPEC)
++	if (!platform->pdata.panel_bridge && platform->pdata.tx_rx_to_two_ports)
++		anx7625_unregister_usb_two_ports(platform);
++#endif /* IS_ENABLED(CONFIG_TYPEC) */
++
+ 	if (platform->pdata.intp_irq)
+ 		destroy_workqueue(platform->workqueue);
+ 
 diff --git a/drivers/gpu/drm/bridge/analogix/anx7625.h b/drivers/gpu/drm/bridge/analogix/anx7625.h
-index 193ad86c54503d91d614e49d5213bbde62a359a1..b66eb4d176e2654b7cc6570e1759ef36ded1fdf2 100644
+index 193ad86c54503d91d614e49d5213bbde62a359a1..d397f5f6e8e2098f55496fb8ddb8702615ddbe24 100644
 --- a/drivers/gpu/drm/bridge/analogix/anx7625.h
 +++ b/drivers/gpu/drm/bridge/analogix/anx7625.h
-@@ -146,9 +146,19 @@
+@@ -55,6 +55,18 @@
+ #define HPD_STATUS_CHANGE 0x80
+ #define HPD_STATUS 0x80
+ 
++#define TCPC_SWITCH_0 0xB4
++#define SW_SEL1_ML0_A10_A11 BIT(0)
++#define SW_SEL1_ML0_B10_B11 BIT(1)
++#define SW_SEL1_SSRX_A10_A11 BIT(4)
++#define SW_SEL1_SSRX_B10_B11 BIT(5)
++
++#define TCPC_SWITCH_1 0xB5
++#define SW_SEL2_ML1_B2_B3 BIT(0)
++#define SW_SEL2_ML1_A2_A3 BIT(1)
++#define SW_SEL2_SSTX_B2_B3 BIT(4)
++#define SW_SEL2_SSTX_A2_A3 BIT(5)
++
+ /******** END of I2C Address 0x58 ********/
+ 
+ /***************************************************************/
+@@ -146,9 +158,19 @@
  
  #define  I2C_ADDR_7E_FLASH_CONTROLLER  0x7E
  
@@ -15258,15 +15870,31 @@ index 193ad86c54503d91d614e49d5213bbde62a359a1..b66eb4d176e2654b7cc6570e1759ef36
  #define  XTAL_FRQ_SEL    0x3F
  /* bit field positions */
  #define  XTAL_FRQ_SEL_POS    5
-@@ -352,6 +362,7 @@ struct anx7625_platform_data {
+@@ -352,8 +374,10 @@ struct anx7625_platform_data {
  	struct gpio_desc *gpio_reset;
  	struct drm_bridge *panel_bridge;
  	int intp_irq;
 +	int is_dpi;
  	u32 low_power_mode;
  	struct device_node *mipi_host_node;
++	bool tx_rx_to_two_ports;
  };
-@@ -371,6 +382,8 @@ struct anx7625_data {
+ 
+ struct anx7625_i2c_client {
+@@ -366,11 +390,21 @@ struct anx7625_i2c_client {
+ 	struct i2c_client *tcpc_client;
+ };
+ 
++struct anx7625_data;
++
++struct anx7625_port_data {
++	bool has_dp;
++	struct typec_mux *typec_mux;
++	struct anx7625_data *ctx;
++};
++
+ struct anx7625_data {
+ 	struct anx7625_platform_data pdata;
  	atomic_t power_status;
  	int hpd_status;
  	int hpd_high_cnt;
@@ -15275,6 +15903,15 @@ index 193ad86c54503d91d614e49d5213bbde62a359a1..b66eb4d176e2654b7cc6570e1759ef36
  	/* Lock for work queue */
  	struct mutex lock;
  	struct i2c_client *client;
+@@ -385,6 +419,8 @@ struct anx7625_data {
+ 	struct drm_bridge bridge;
+ 	u8 bridge_attached;
+ 	struct mipi_dsi_device *dsi;
++
++	struct anx7625_port_data typec_ports[2];
+ };
+ 
+ #endif  /* __ANX7625_H__ */
 diff --git a/drivers/gpu/drm/mediatek/Makefile b/drivers/gpu/drm/mediatek/Makefile
 index 8067a4be831151d96ed36aba362701f0936fa082..5889e1182fce3badc5b4a200565c4c96c6483871 100644
 --- a/drivers/gpu/drm/mediatek/Makefile
@@ -29701,14 +30338,15 @@ index 91f230df0bb28033a2951ae5d64a098e54ed7556..28f12d1377684bf9c6399e47f3a660de
  obj-$(CONFIG_REGULATOR_QCOM_SMD_RPM) += qcom_smd-regulator.o
 diff --git a/drivers/regulator/mt6315-regulator.c b/drivers/regulator/mt6315-regulator.c
 new file mode 100644
-index 0000000000000000000000000000000000000000..cd2d3c058655d789c028dcce83a414d12df22e2d
+index 0000000000000000000000000000000000000000..5753f4c554755ad7a8aa117137a2a1e2c51826d9
 --- /dev/null
 +++ b/drivers/regulator/mt6315-regulator.c
-@@ -0,0 +1,373 @@
+@@ -0,0 +1,364 @@
 +// SPDX-License-Identifier: GPL-2.0
 +//
 +// Copyright (c) 2020 MediaTek Inc.
 +
++#include <dt-bindings/regulator/mtk,mt6315.h>
 +#include <linux/interrupt.h>
 +#include <linux/module.h>
 +#include <linux/of_device.h>
@@ -29725,60 +30363,55 @@ index 0000000000000000000000000000000000000000..cd2d3c058655d789c028dcce83a414d1
 +
 +#define MT6315_BUCK_MODE_AUTO		0
 +#define MT6315_BUCK_MODE_FORCE_PWM	1
-+#define MT6315_BUCK_MODE_NORMAL		0
 +#define MT6315_BUCK_MODE_LP		2
 +
 +struct mt6315_regulator_info {
 +	struct regulator_desc desc;
 +	u32 da_vsel_reg;
 +	u32 da_reg;
-+	u32 qi;
-+	u32 modeset_reg;
-+	u32 modeset_mask;
 +	u32 lp_mode_reg;
 +	u32 lp_mode_mask;
 +	u32 lp_mode_shift;
++	u32 modeset_reg;
++	u32 qi;
 +};
 +
 +struct mt_regulator_init_data {
-+	u32 id;
-+	u32 size;
-+	struct mt6315_regulator_info *regulator_info;
++	const struct mt6315_regulator_info *regulator_info;
++	u32 modeset_mask[MT6315_VBUCK_MAX];
 +};
 +
 +struct mt6315_chip {
 +	struct device *dev;
 +	struct regmap *regmap;
-+	struct mutex lock;
-+	u32 slave_id;
 +};
 +
-+#define MT_BUCK(match, _name, volt_ranges, _bid, _vsel, _modeset_mask)	\
-+[MT6315_ID_##_name] = {					\
-+	.desc = {					\
-+		.name = #_name,				\
-+		.of_match = of_match_ptr(match),	\
-+		.ops = &mt6315_volt_range_ops,		\
-+		.type = REGULATOR_VOLTAGE,		\
-+		.id = MT6315_ID_##_name,		\
-+		.owner = THIS_MODULE,			\
-+		.n_voltages = 0xbf,			\
-+		.linear_ranges = volt_ranges,		\
-+		.n_linear_ranges = ARRAY_SIZE(volt_ranges),	\
-+		.vsel_reg = _vsel,			\
-+		.vsel_mask = 0xff,			\
-+		.enable_reg = MT6315_BUCK_TOP_CON0,	\
-+		.enable_mask = BIT(_bid - 1),		\
-+		.of_map_mode = mt6315_map_mode,		\
-+	},						\
-+	.da_vsel_reg = MT6315_BUCK_VBUCK##_bid##_DBG0,	\
-+	.da_reg = MT6315_BUCK_VBUCK##_bid##_DBG4,	\
-+	.qi = BIT(0),					\
-+	.lp_mode_reg = MT6315_BUCK_TOP_CON1,		\
-+	.lp_mode_mask = BIT(_bid - 1),			\
-+	.lp_mode_shift = _bid - 1,			\
++#define MT_BUCK(_name, _bid, _vsel)				\
++[_bid] = {							\
++	.desc = {						\
++		.name = _name,					\
++		.of_match = of_match_ptr(_name),		\
++		.regulators_node = "regulators",		\
++		.ops = &mt6315_volt_range_ops,			\
++		.type = REGULATOR_VOLTAGE,			\
++		.id = _bid,					\
++		.owner = THIS_MODULE,				\
++		.n_voltages = 0xbf,				\
++		.linear_ranges = mt_volt_range1,		\
++		.n_linear_ranges = ARRAY_SIZE(mt_volt_range1),	\
++		.vsel_reg = _vsel,				\
++		.vsel_mask = 0xff,				\
++		.enable_reg = MT6315_BUCK_TOP_CON0,		\
++		.enable_mask = BIT(_bid - 1),			\
++		.of_map_mode = mt6315_map_mode,			\
++	},							\
++	.da_vsel_reg = _bid##_DBG0,				\
++	.da_reg = _bid##_DBG4,					\
++	.lp_mode_reg = MT6315_BUCK_TOP_CON1,			\
++	.lp_mode_mask = BIT(_bid - 1),				\
++	.lp_mode_shift = _bid - 1,				\
 +	.modeset_reg = MT6315_BUCK_TOP_4PHASE_ANA_CON42,	\
-+	.modeset_mask = _modeset_mask,			\
++	.qi = BIT(0),						\
 +}
 +
 +static const struct regulator_linear_range mt_volt_range1[] = {
@@ -29801,9 +30434,11 @@ index 0000000000000000000000000000000000000000..cd2d3c058655d789c028dcce83a414d1
 +
 +static int mt6315_regulator_get_voltage_sel(struct regulator_dev *rdev)
 +{
-+	struct mt6315_regulator_info *info = rdev_get_drvdata(rdev);
-+	int ret = 0, reg_addr = 0, reg_val = 0, reg_en = 0;
++	struct mt_regulator_init_data *init = rdev_get_drvdata(rdev);
++	const struct mt6315_regulator_info *info;
++	int ret, reg_addr, reg_val = 0, reg_en = 0;
 +
++	info = &init->regulator_info[rdev_get_id(rdev)];
 +	ret = regmap_read(rdev->regmap, info->da_reg, &reg_en);
 +	if (ret != 0) {
 +		dev_notice(&rdev->dev, "Failed to get enable reg: %d\n", ret);
@@ -29817,8 +30452,7 @@ index 0000000000000000000000000000000000000000..cd2d3c058655d789c028dcce83a414d1
 +
 +	ret = regmap_read(rdev->regmap, reg_addr, &reg_val);
 +	if (ret != 0) {
-+		dev_notice(&rdev->dev,
-+			"Failed to get mt6315 regulator voltage: %d\n", ret);
++		dev_notice(&rdev->dev, "Failed to get voltage: %d\n", ret);
 +		return ret;
 +	}
 +
@@ -29828,23 +30462,25 @@ index 0000000000000000000000000000000000000000..cd2d3c058655d789c028dcce83a414d1
 +
 +static unsigned int mt6315_regulator_get_mode(struct regulator_dev *rdev)
 +{
-+	struct mt6315_regulator_info *info = rdev_get_drvdata(rdev);
++	struct mt_regulator_init_data *init = rdev_get_drvdata(rdev);
++	const struct mt6315_regulator_info *info;
 +	int ret = 0, regval = 0;
++	u32 modeset_mask;
 +
++	info = &init->regulator_info[rdev_get_id(rdev)];
++	modeset_mask = init->modeset_mask[rdev_get_id(rdev)];
 +	ret = regmap_read(rdev->regmap, info->modeset_reg, &regval);
 +	if (ret != 0) {
-+		dev_notice(&rdev->dev,
-+			"Failed to get mt6315 buck mode: %d\n", ret);
++		dev_notice(&rdev->dev, "Failed to get mode: %d\n", ret);
 +		return ret;
 +	}
 +
-+	if ((regval & info->modeset_mask) == info->modeset_mask)
++	if ((regval & modeset_mask) == modeset_mask)
 +		return REGULATOR_MODE_FAST;
 +
 +	ret = regmap_read(rdev->regmap, info->lp_mode_reg, &regval);
 +	if (ret != 0) {
-+		dev_notice(&rdev->dev,
-+			"Failed to get mt6315 buck lp mode: %d\n", ret);
++		dev_notice(&rdev->dev, "Failed to get lp mode: %d\n", ret);
 +		return ret;
 +	}
 +
@@ -29857,23 +30493,26 @@ index 0000000000000000000000000000000000000000..cd2d3c058655d789c028dcce83a414d1
 +static int mt6315_regulator_set_mode(struct regulator_dev *rdev,
 +				     u32 mode)
 +{
-+	struct mt6315_regulator_info *info = rdev_get_drvdata(rdev);
-+	int ret = 0, val;
-+	int curr_mode;
++	struct mt_regulator_init_data *init = rdev_get_drvdata(rdev);
++	const struct mt6315_regulator_info *info;
++	int ret = 0, val, curr_mode;
++	u32 modeset_mask;
 +
++	info = &init->regulator_info[rdev_get_id(rdev)];
++	modeset_mask = init->modeset_mask[rdev_get_id(rdev)];
 +	curr_mode = mt6315_regulator_get_mode(rdev);
 +	switch (mode) {
 +	case REGULATOR_MODE_FAST:
 +		ret = regmap_update_bits(rdev->regmap,
 +					 info->modeset_reg,
-+					 info->modeset_mask,
-+					 info->modeset_mask);
++					 modeset_mask,
++					 modeset_mask);
 +		break;
 +	case REGULATOR_MODE_NORMAL:
 +		if (curr_mode == REGULATOR_MODE_FAST) {
 +			ret = regmap_update_bits(rdev->regmap,
 +						 info->modeset_reg,
-+						 info->modeset_mask,
++						 modeset_mask,
 +						 0);
 +		} else if (curr_mode == REGULATOR_MODE_IDLE) {
 +			ret = regmap_update_bits(rdev->regmap,
@@ -29898,8 +30537,7 @@ index 0000000000000000000000000000000000000000..cd2d3c058655d789c028dcce83a414d1
 +
 +err_mode:
 +	if (ret != 0) {
-+		dev_notice(&rdev->dev,
-+			"Failed to set mt6315 buck mode: %d\n", ret);
++		dev_notice(&rdev->dev, "Failed to set mode: %d\n", ret);
 +		return ret;
 +	}
 +
@@ -29908,10 +30546,12 @@ index 0000000000000000000000000000000000000000..cd2d3c058655d789c028dcce83a414d1
 +
 +static int mt6315_get_status(struct regulator_dev *rdev)
 +{
++	struct mt_regulator_init_data *init = rdev_get_drvdata(rdev);
++	const struct mt6315_regulator_info *info;
 +	int ret = 0;
 +	u32 regval = 0;
-+	struct mt6315_regulator_info *info = rdev_get_drvdata(rdev);
 +
++	info = &init->regulator_info[rdev_get_id(rdev)];
 +	ret = regmap_read(rdev->regmap, info->da_reg, &regval);
 +	if (ret != 0) {
 +		dev_notice(&rdev->dev, "Failed to get enable reg: %d\n", ret);
@@ -29935,45 +30575,11 @@ index 0000000000000000000000000000000000000000..cd2d3c058655d789c028dcce83a414d1
 +	.get_mode = mt6315_regulator_get_mode,
 +};
 +
-+static struct mt6315_regulator_info mt6315_3_regulators[] = {
-+	MT_BUCK("3_vbuck1", 3_VBUCK1, mt_volt_range1, 1,
-+		MT6315_BUCK_TOP_ELR0, 0x3),
-+	MT_BUCK("3_vbuck3", 3_VBUCK3, mt_volt_range1, 3,
-+		MT6315_BUCK_TOP_ELR4, 0x4),
-+	MT_BUCK("3_vbuck4", 3_VBUCK4, mt_volt_range1, 4,
-+		MT6315_BUCK_TOP_ELR6, 0x8),
-+};
-+
-+static struct mt6315_regulator_info mt6315_6_regulators[] = {
-+	MT_BUCK("6_vbuck1", 6_VBUCK1, mt_volt_range1, 1,
-+		MT6315_BUCK_TOP_ELR0, 0xB),
-+	MT_BUCK("6_vbuck3", 6_VBUCK3, mt_volt_range1, 3,
-+		MT6315_BUCK_TOP_ELR4, 0x4),
-+};
-+
-+static struct mt6315_regulator_info mt6315_7_regulators[] = {
-+	MT_BUCK("7_vbuck1", 7_VBUCK1, mt_volt_range1, 1,
-+		MT6315_BUCK_TOP_ELR0, 0x3),
-+	MT_BUCK("7_vbuck3", 7_VBUCK3, mt_volt_range1, 3,
-+		MT6315_BUCK_TOP_ELR4, 0x4),
-+};
-+
-+static const struct mt_regulator_init_data mt6315_3_regulator_init_data = {
-+	.id = MT6315_SLAVE_ID_3,
-+	.size = MT6315_ID_3_MAX,
-+	.regulator_info = &mt6315_3_regulators[0],
-+};
-+
-+static const struct mt_regulator_init_data mt6315_6_regulator_init_data = {
-+	.id = MT6315_SLAVE_ID_6,
-+	.size = MT6315_ID_6_MAX,
-+	.regulator_info = &mt6315_6_regulators[0],
-+};
-+
-+static const struct mt_regulator_init_data mt6315_7_regulator_init_data = {
-+	.id = MT6315_SLAVE_ID_7,
-+	.size = MT6315_ID_7_MAX,
-+	.regulator_info = &mt6315_7_regulators[0],
++static const struct mt6315_regulator_info mt6315_regulators[MT6315_VBUCK_MAX] = {
++	MT_BUCK("vbuck1", MT6315_VBUCK1, MT6315_BUCK_TOP_ELR0),
++	MT_BUCK("vbuck2", MT6315_VBUCK2, MT6315_BUCK_TOP_ELR2),
++	MT_BUCK("vbuck3", MT6315_VBUCK3, MT6315_BUCK_TOP_ELR4),
++	MT_BUCK("vbuck4", MT6315_VBUCK4, MT6315_BUCK_TOP_ELR6),
 +};
 +
 +static const struct regmap_config mt6315_regmap_config = {
@@ -29986,30 +30592,55 @@ index 0000000000000000000000000000000000000000..cd2d3c058655d789c028dcce83a414d1
 +static const struct of_device_id mt6315_of_match[] = {
 +	{
 +		.compatible = "mediatek,mt6315_3-regulator",
-+		.data = &mt6315_3_regulator_init_data,
 +	}, {
 +		.compatible = "mediatek,mt6315_6-regulator",
-+		.data = &mt6315_6_regulator_init_data,
 +	}, {
 +		.compatible = "mediatek,mt6315_7-regulator",
-+		.data = &mt6315_7_regulator_init_data,
 +	}, {
 +		/* sentinel */
 +	},
 +};
 +MODULE_DEVICE_TABLE(of, mt6315_of_match);
 +
++static void mt6315_parsing_dt(struct regulator_dev *rdev, u32 *arr)
++{
++	struct device_node *np;
++	struct mt_regulator_init_data *init = rdev_get_drvdata(rdev);
++	u32 buck_id, *modeset;
++	int i, icount;
++
++	np = rdev->dev.of_node;
++	if (!np)
++		return;
++
++	icount = of_property_count_elems_of_size(np, "mtk,combined-regulator", sizeof(u32));
++	if (icount <= 0)
++		return;
++
++	modeset = &init->modeset_mask[rdev_get_id(rdev)];
++	for (i = 0; i < icount; i++) {
++		if (of_property_read_u32_index(np, "mtk,combined-regulator", i, &buck_id))
++			return;
++
++		if (buck_id < MT6315_VBUCK_MAX) {
++			/* white list */
++			*(arr + buck_id) = 1;
++			/* add modeset bit of combined-regulator */
++			*modeset += BIT(buck_id - 1);
++		}
++	}
++}
++
 +static int mt6315_regulator_probe(struct spmi_device *pdev)
 +{
-+	const struct of_device_id *of_id;
 +	struct device *dev = &pdev->dev;
 +	struct regmap *regmap;
-+	struct mt6315_regulator_info *mt_regulators;
-+	struct mt_regulator_init_data *regulator_init_data;
 +	struct mt6315_chip *chip;
++	struct mt_regulator_init_data *init_data;
 +	struct regulator_config config = {};
 +	struct regulator_dev *rdev;
 +	int i;
++	u32 mt6315_dt_list[MT6315_VBUCK_MAX] = {0};
 +
 +	regmap = devm_regmap_init_spmi_ext(pdev, &mt6315_regmap_config);
 +	if (!regmap)
@@ -30019,31 +30650,30 @@ index 0000000000000000000000000000000000000000..cd2d3c058655d789c028dcce83a414d1
 +	if (!chip)
 +		return -ENOMEM;
 +
-+	of_id = of_match_device(mt6315_of_match, dev);
-+	if (!of_id || !of_id->data)
-+		return -ENODEV;
++	init_data = devm_kzalloc(dev, sizeof(struct mt_regulator_init_data), GFP_KERNEL);
++	if (!init_data)
++		return -ENOMEM;
 +
-+	regulator_init_data = (struct mt_regulator_init_data *)of_id->data;
-+	mt_regulators = regulator_init_data->regulator_info;
-+	chip->slave_id = regulator_init_data->id;
 +	chip->dev = dev;
 +	chip->regmap = regmap;
-+	mutex_init(&chip->lock);
 +	dev_set_drvdata(dev, chip);
 +
-+	for (i = 0; i < regulator_init_data->size; i++) {
-+		config.dev = dev;
-+		config.driver_data = (mt_regulators + i);
-+		config.regmap = regmap;
-+		rdev = devm_regulator_register(dev,
-+				&(mt_regulators + i)->desc, &config);
++	config.dev = dev;
++	config.regmap = regmap;
++	init_data->regulator_info = mt6315_regulators;
++	for (i = MT6315_VBUCK1; i < MT6315_VBUCK_MAX; i++) {
++		if (mt6315_dt_list[i])
++			continue;
++
++		init_data->modeset_mask[i] = 1 << (i - 1);
++		config.driver_data = init_data;
++		rdev = devm_regulator_register(dev, &mt6315_regulators[i].desc, &config);
 +		if (IS_ERR(rdev)) {
-+			dev_notice(dev, "failed to register %s\n",
-+				(mt_regulators + i)->desc.name);
++			dev_notice(dev, "Failed to register %s\n", mt6315_regulators[i].desc.name);
 +			continue;
 +		}
++		mt6315_parsing_dt(rdev, mt6315_dt_list);
 +	}
-+
 +	return 0;
 +}
 +
@@ -30058,10 +30688,8 @@ index 0000000000000000000000000000000000000000..cd2d3c058655d789c028dcce83a414d1
 +	ret |= regmap_write(chip->regmap, MT6315_TOP_TMA_KEY, 0);
 +	ret |= regmap_write(chip->regmap, MT6315_TOP_TMA_KEY_H, 0);
 +	if (ret < 0)
-+		dev_notice(&pdev->dev, "%s: SLV_%d enable power off sequence failed.\n",
-+			__func__, chip->slave_id);
-+
-+	return;
++		dev_notice(&pdev->dev, "[%#x] Failed to enable power off sequence. %d\n",
++			   pdev->usid, ret);
 +}
 +
 +static struct spmi_driver mt6315_regulator_driver = {
@@ -36944,15 +37572,14 @@ index 55a94cadeffe4b0a955b48ef7219f53db3f8e959..91f303b96925a038f4736afc087e125d
 \ No newline at end of file
 diff --git a/drivers/spmi/spmi-mtk-pmif.c b/drivers/spmi/spmi-mtk-pmif.c
 new file mode 100644
-index 0000000000000000000000000000000000000000..84e646431681a7f8f8f5a6075d8f0db9d7ebbdc6
+index 0000000000000000000000000000000000000000..ac71e64a2bda0c2d2354afa0adf5091780290926
 --- /dev/null
 +++ b/drivers/spmi/spmi-mtk-pmif.c
-@@ -0,0 +1,792 @@
+@@ -0,0 +1,474 @@
 +// SPDX-License-Identifier: GPL-2.0
 +//
 +// Copyright (c) 2020 MediaTek Inc.
 +
-+#include <dt-bindings/spmi/spmi.h>
 +#include <linux/clk.h>
 +#include <linux/iopoll.h>
 +#include <linux/module.h>
@@ -36960,9 +37587,7 @@ index 0000000000000000000000000000000000000000..84e646431681a7f8f8f5a6075d8f0db9
 +#include <linux/of_device.h>
 +#include <linux/spmi.h>
 +
-+/* macro for PMIF SWINF FSM */
 +#define SWINF_IDLE	0x00
-+#define SWINF_WFDLE	0x04
 +#define SWINF_WFVLDCLR	0x06
 +
 +#define GET_SWINF(x)	(((x) >> 1) & 0x7)
@@ -36971,14 +37596,11 @@ index 0000000000000000000000000000000000000000..84e646431681a7f8f8f5a6075d8f0db9
 +#define PMIF_CMD_REG		1
 +#define PMIF_CMD_EXT_REG	2
 +#define PMIF_CMD_EXT_REG_LONG	3
-+/* 0: SPI, 1: SPMI */
-+#define PMIF_PMIFID_SPI		0
-+#define PMIF_PMIFID_SPMI0	0
-+#define PMIF_PMIFID_SPMI1	1
 +
 +#define PMIF_DELAY_US   10
-+#define PMIF_TIMEOUT    (10*1000)
-+#define PMIF_SWINF_OFFSET 0x5
++#define PMIF_TIMEOUT    (10 * 1000)
++
++#define PMIF_CHAN_OFFSET 0x5
 +
 +#define SPMI_OP_ST_BUSY 1
 +
@@ -36995,31 +37617,13 @@ index 0000000000000000000000000000000000000000..84e646431681a7f8f8f5a6075d8f0db9
 +	const u32	*regs;
 +	void __iomem	*spmimst_base;
 +	const u32	*spmimst_regs;
-+	void __iomem	*infra_base;
-+	const u32	*infra_regs;
-+	void __iomem	*topckgen_base;
-+	const u32	*topckgen_regs;
-+	u32		swinf_ch_start;
-+	u32		ap_swinf_no;
-+	int		pmifid;
++	u32		soc_chan;
 +	int		grpid;
 +	raw_spinlock_t	lock;
 +	struct clk	*pmif_sys_ck;
 +	struct clk	*pmif_tmr_ck;
 +	struct clk	*spmimst_clk_mux;
 +	struct ch_reg chan;
-+	int (*cmd)(struct spmi_controller *ctrl, u32 opcode);
-+	int (*read_cmd)(struct spmi_controller *ctrl, u8 opc, u8 sid,
-+			u16 addr, u8 *buf, size_t len);
-+	int (*write_cmd)(struct spmi_controller *ctrl, u8 opc, u8 sid,
-+			 u16 addr, const u8 *buf, size_t len);
-+	void (*pmif_enable_clk_set)(struct pmif *arb);
-+	void (*pmif_force_normal_mode)(struct pmif *arb);
-+	void (*pmif_enable_swinf)(struct pmif *arb, u32 chan_no,
-+				  u32 swinf_no);
-+	void (*pmif_enable_cmd_issue)(struct pmif *arb, bool en);
-+	void (*pmif_enable)(struct pmif *arb);
-+	int (*is_pmif_init_done)(struct pmif *arb);
 +};
 +
 +enum pmif_regs {
@@ -37070,7 +37674,7 @@ index 0000000000000000000000000000000000000000..84e646431681a7f8f8f5a6075d8f0db9
 +	PMIF_SWINF_3_VLD_CLR,
 +};
 +
-+static const u32 mt6xxx_regs[] = {
++static const u32 mt6873_regs[] = {
 +	[PMIF_INIT_DONE] =	0x0000,
 +	[PMIF_INF_EN] =		0x0024,
 +	[PMIF_ARB_EN] =		0x0150,
@@ -37133,7 +37737,7 @@ index 0000000000000000000000000000000000000000..84e646431681a7f8f8f5a6075d8f0db9
 +	SPMI_MST_DBG,
 +};
 +
-+static const u32 mt6xxx_spmi_regs[] = {
++static const u32 mt6873_spmi_regs[] = {
 +	[SPMI_OP_ST_CTRL] =	0x0000,
 +	[SPMI_GRP_ID_EN] =	0x0004,
 +	[SPMI_OP_ST_STA] =	0x0008,
@@ -37148,44 +37752,6 @@ index 0000000000000000000000000000000000000000..84e646431681a7f8f8f5a6075d8f0db9
 +	[SPMI_MST_DBG] =	0x00fc,
 +};
 +
-+enum infra_regs {
-+	MODULE_SW_CG_0_SET,
-+	MODULE_SW_CG_0_CLR,
-+	MODULE_SW_CG_2_SET,
-+	MODULE_SW_CG_2_CLR,
-+	PMICW_CLOCK_CTRL,
-+	INFRA_GLOBALCON_RST2_SET,
-+	INFRA_GLOBALCON_RST2_CLR,
-+};
-+
-+static const u32 mt6xxx_infra_regs[] = {
-+	[MODULE_SW_CG_0_SET] =		0x0080,
-+	[MODULE_SW_CG_0_CLR] =		0x0084,
-+	[MODULE_SW_CG_2_SET] =		0x00a4,
-+	[MODULE_SW_CG_2_CLR] =		0x00a8,
-+	[PMICW_CLOCK_CTRL] =		0x0108,
-+	[INFRA_GLOBALCON_RST2_SET] =	0x0140,
-+	[INFRA_GLOBALCON_RST2_CLR] =	0x0144,
-+};
-+
-+enum topckgen_regs {
-+	CLK_CFG_UPDATE1,
-+	CLK_CFG_UPDATE2,
-+	WDT_SWSYSRST2,
-+	CLK_CFG_8_CLR,
-+	CLK_CFG_16,
-+	CLK_CFG_16_CLR,
-+};
-+
-+static const u32 mt6xxx_topckgen_regs[] = {
-+	[CLK_CFG_UPDATE1] =	0x0008,
-+	[CLK_CFG_UPDATE2] =	0x000c,
-+	[WDT_SWSYSRST2] =	0x0090,
-+	[CLK_CFG_8_CLR] =	0x0098,
-+	[CLK_CFG_16] =		0x0110,
-+	[CLK_CFG_16_CLR] =	0x0118,
-+};
-+
 +static u32 pmif_readl(struct pmif *arb, enum pmif_regs reg)
 +{
 +	return readl(arb->base + arb->regs[reg]);
@@ -37196,13 +37762,7 @@ index 0000000000000000000000000000000000000000..84e646431681a7f8f8f5a6075d8f0db9
 +	writel(val, arb->base + arb->regs[reg]);
 +}
 +
-+u32 mtk_spmi_readl(struct pmif *arb, enum spmi_regs reg)
-+{
-+	return readl(arb->spmimst_base + arb->spmimst_regs[reg]);
-+}
-+
-+void mtk_spmi_writel(struct pmif *arb, u32 val,
-+		enum spmi_regs reg)
++static void mtk_spmi_writel(struct pmif *arb, u32 val, enum spmi_regs reg)
 +{
 +	writel(val, arb->spmimst_base + arb->spmimst_regs[reg]);
 +}
@@ -37215,82 +37775,12 @@ index 0000000000000000000000000000000000000000..84e646431681a7f8f8f5a6075d8f0db9
 +	return GET_SWINF(reg_rdata) == SWINF_WFVLDCLR;
 +}
 +
-+static void pmif_enable_soft_reset(struct pmif *arb)
-+{
-+	writel(BIT(14),
-+		arb->infra_base + arb->infra_regs[INFRA_GLOBALCON_RST2_SET]);
-+	writel(BIT(14),
-+		arb->infra_base + arb->infra_regs[INFRA_GLOBALCON_RST2_CLR]);
-+}
-+
-+static void pmif_spmi_enable_clk_set(struct pmif *arb)
-+{
-+	writel(BIT(15) | BIT(12) | (0x7 << 8),
-+		arb->topckgen_base + arb->topckgen_regs[CLK_CFG_8_CLR]);
-+	writel(BIT(2),
-+		arb->topckgen_base + arb->topckgen_regs[CLK_CFG_UPDATE1]);
-+
-+	/* sys_ck cg enable, turn off clock */
-+	writel(0x0000000f,
-+		arb->infra_base + arb->infra_regs[MODULE_SW_CG_0_SET]);
-+	/* turn off clock */
-+	writel(0x00000100,
-+		arb->infra_base + arb->infra_regs[MODULE_SW_CG_2_SET]);
-+
-+	/* toggle SPMI sw reset */
-+	pmif_enable_soft_reset(arb);
-+
-+	/* sys_ck cg enable, turn on clock */
-+	writel(0x0000000f,
-+		arb->infra_base + arb->infra_regs[MODULE_SW_CG_0_CLR]);
-+	/* turn on clock */
-+	writel(0x00000100,
-+		arb->infra_base + arb->infra_regs[MODULE_SW_CG_2_CLR]);
-+}
-+
-+static void pmif_spmi_force_normal_mode(struct pmif *arb)
-+{
-+	/* Force SPMI in normal mode. */
-+	pmif_writel(arb, pmif_readl(arb, PMIF_SPI_MODE_CTRL) & (~(0x3 << 9)),
-+			PMIF_SPI_MODE_CTRL);
-+	pmif_writel(arb, pmif_readl(arb, PMIF_SPI_MODE_CTRL) | BIT(9),
-+			PMIF_SPI_MODE_CTRL);
-+
-+}
-+
-+static void pmif_spmi_enable_swinf(struct pmif *arb, u32 chan_no,
-+	u32 swinf_no)
-+{
-+	/* Enable swinf */
-+	pmif_writel(arb, 0x1 << (chan_no + swinf_no), PMIF_INF_EN);
-+
-+	/* Enable arbitration */
-+	pmif_writel(arb, 0x1 << (chan_no + swinf_no), PMIF_ARB_EN);
-+
-+}
-+
-+static void pmif_spmi_enable_cmd_issue(struct pmif *arb, bool en)
-+{
-+	/* Enable cmdIssue */
-+	pmif_writel(arb, en, PMIF_CMDISSUE_EN);
-+
-+}
-+
-+static void pmif_spmi_enable(struct pmif *arb)
-+{
-+	pmif_writel(arb, 0x2f5, PMIF_INF_EN);
-+	pmif_writel(arb, 0x2f5, PMIF_ARB_EN);
-+	pmif_writel(arb, 0x3, PMIF_TIMER_CTRL);
-+	pmif_writel(arb, 0x1, PMIF_INIT_DONE);
-+
-+}
-+
-+static int mtk_spmi_ctrl_op_st(struct spmi_controller *ctrl,
-+			u8 opc, u8 sid)
++static int pmif_arb_cmd(struct spmi_controller *ctrl, u8 opc, u8 sid)
 +{
 +	struct pmif *arb = spmi_controller_get_drvdata(ctrl);
 +	u32 rdata;
 +	u8 cmd;
++	int ret;
 +
 +	/* Check the opcode */
 +	if (opc == SPMI_CMD_RESET)
@@ -37305,25 +37795,17 @@ index 0000000000000000000000000000000000000000..84e646431681a7f8f8f5a6075d8f0db9
 +		return -EINVAL;
 +
 +	mtk_spmi_writel(arb, (cmd << 0x4) | sid, SPMI_OP_ST_CTRL);
++	ret = readl_poll_timeout_atomic(arb->spmimst_base + arb->spmimst_regs[SPMI_OP_ST_STA],
++					rdata, (rdata & SPMI_OP_ST_BUSY) == SPMI_OP_ST_BUSY,
++					PMIF_DELAY_US, PMIF_TIMEOUT);
++	if (ret < 0)
++		dev_err(&ctrl->dev, "timeout, err = %d\r\n", ret);
 +
-+	rdata = mtk_spmi_readl(arb, SPMI_OP_ST_CTRL);
-+	pr_notice("[SPMIMST]:pmif_ctrl_op_st 0x%x\r\n", rdata);
-+
-+	do {
-+		rdata = mtk_spmi_readl(arb, SPMI_OP_ST_STA);
-+		pr_notice("[SPMIMST]:pmif_ctrl_op_st 0x%x\r\n", rdata);
-+	} while ((rdata & SPMI_OP_ST_BUSY) == SPMI_OP_ST_BUSY);
-+
-+	return 0;
-+}
-+
-+static int pmif_arb_cmd(struct spmi_controller *ctrl, u8 opc, u8 sid)
-+{
-+	return mtk_spmi_ctrl_op_st(ctrl, opc, sid);
++	return ret;
 +}
 +
 +static int pmif_spmi_read_cmd(struct spmi_controller *ctrl, u8 opc, u8 sid,
-+		u16 addr, u8 *buf, size_t len)
++			      u16 addr, u8 *buf, size_t len)
 +{
 +	struct pmif *arb = spmi_controller_get_drvdata(ctrl);
 +	struct ch_reg *inf_reg = NULL;
@@ -37336,9 +37818,6 @@ index 0000000000000000000000000000000000000000..84e646431681a7f8f8f5a6075d8f0db9
 +	if (sid & ~(0xf))
 +		return -EINVAL;
 +
-+	if (bc & ~(0x1))
-+		return -EINVAL;
-+
 +	if (!arb)
 +		return -EINVAL;
 +
@@ -37347,7 +37826,7 @@ index 0000000000000000000000000000000000000000..84e646431681a7f8f8f5a6075d8f0db9
 +	if (opc >= 0x60 && opc <= 0x7f)
 +		opc = PMIF_CMD_REG;
 +	else if (opc >= 0x20 && opc <= 0x2f)
-+		opc = PMIF_CMD_EXT_REG_LONG; /* wk1 opc = PMIF_CMD_EXT_REG; */
++		opc = PMIF_CMD_EXT_REG_LONG;
 +	else if (opc >= 0x38 && opc <= 0x3f)
 +		opc = PMIF_CMD_EXT_REG_LONG;
 +	else
@@ -37392,7 +37871,7 @@ index 0000000000000000000000000000000000000000..84e646431681a7f8f8f5a6075d8f0db9
 +}
 +
 +static int pmif_spmi_write_cmd(struct spmi_controller *ctrl, u8 opc, u8 sid,
-+		u16 addr, const u8 *buf, size_t len)
++			       u16 addr, const u8 *buf, size_t len)
 +{
 +	struct pmif *arb = spmi_controller_get_drvdata(ctrl);
 +	struct ch_reg *inf_reg = NULL;
@@ -37405,9 +37884,6 @@ index 0000000000000000000000000000000000000000..84e646431681a7f8f8f5a6075d8f0db9
 +	if (sid & ~(0xf))
 +		return -EINVAL;
 +
-+	if (bc & ~(0x1))
-+		return -EINVAL;
-+
 +	if (!arb)
 +		return -EINVAL;
 +
@@ -37417,7 +37893,7 @@ index 0000000000000000000000000000000000000000..84e646431681a7f8f8f5a6075d8f0db9
 +	if (opc >= 0x40 && opc <= 0x5F)
 +		opc = PMIF_CMD_REG;
 +	else if (opc <= 0x0F)
-+		opc = PMIF_CMD_EXT_REG_LONG; /* wk1 opc = PMIF_CMD_EXT_REG; */
++		opc = PMIF_CMD_EXT_REG_LONG;
 +	else if (opc >= 0x30 && opc <= 0x37)
 +		opc = PMIF_CMD_EXT_REG_LONG;
 +	else if (opc >= 0x80)
@@ -37451,129 +37927,20 @@ index 0000000000000000000000000000000000000000..84e646431681a7f8f8f5a6075d8f0db9
 +	return 0;
 +}
 +
-+int is_pmif_spmi_init_done(struct pmif *arb)
++static struct pmif mt6873_pmif_arb[] = {
++	{
++		.regs = mt6873_regs,
++		.spmimst_regs = mt6873_spmi_regs,
++		.soc_chan = 2,
++	},
++};
++
++static int mtk_spmi_probe(struct platform_device *pdev)
 +{
-+	int ret;
-+
-+	ret = pmif_readl(arb, PMIF_INIT_DONE);
-+	if (ret & 0x1)
-+		return 0;
-+
-+	return -1;
-+}
-+
-+static int mtk_spmi_config_master(struct pmif *arb, bool en)
-+{
-+	/* Software reset */
-+	writel(0x85 << 24 | 0x1 << 4,
-+		arb->topckgen_base + arb->topckgen_regs[WDT_SWSYSRST2]);
-+
-+	writel(0x7 | (0x1 << 4) | (0x1 << 7),
-+		arb->topckgen_base + arb->topckgen_regs[CLK_CFG_16_CLR]);
-+	writel(0x1 << 2,
-+		arb->topckgen_base + arb->topckgen_regs[CLK_CFG_UPDATE2]);
-+
-+	/* Software reset */
-+	writel(0x85 << 24,
-+		arb->topckgen_base + arb->topckgen_regs[WDT_SWSYSRST2]);
-+
-+	/* Enable SPMI */
-+	mtk_spmi_writel(arb, en, SPMI_MST_REQ_EN);
-+
-+	return 0;
-+}
-+
-+static int mtk_spmi_cali_rd_clock_polarity(struct pmif *arb)
-+{
-+	u32 dly = 1, pol = 1;
-+
-+	/* Indicate sampling clock polarity, 1: Positive 0: Negative  */
-+	mtk_spmi_writel(arb, (dly << 0x1) | pol, SPMI_MST_SAMPL);
-+
-+	return 0;
-+}
-+
-+static int mtk_spmimst_init(struct platform_device *pdev, struct pmif *arb)
-+{
++	struct pmif *arb;
 +	struct resource *res;
-+	int err, i;
-+
-+	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "spmimst");
-+	arb->spmimst_base = devm_ioremap_resource(&pdev->dev, res);
-+	if (IS_ERR(arb->spmimst_base)) {
-+		err = PTR_ERR(arb->spmimst_base);
-+		return err;
-+	}
-+
-+	err = of_property_read_u32(pdev->dev.of_node, "grpid", &arb->grpid);
-+	if (err) {
-+		dev_notice(&pdev->dev, "[SPMIMST]:grpid unspecified.\n");
-+		return -EINVAL;
-+	}
-+	/* set group id */
-+	mtk_spmi_writel(arb, 0x1 << arb->grpid, SPMI_GRP_ID_EN);
-+
-+	/* if spmimst not enabled, enable it */
-+	if ((mtk_spmi_readl(arb, SPMI_MST_REQ_EN) & 0x1) != 0x1) {
-+		dev_info(&pdev->dev, "[SPMIMST]:enable spmimst.\n");
-+		mtk_spmi_config_master(arb, true);
-+		for (i = 0; i < 3; i++)
-+			mtk_spmi_cali_rd_clock_polarity(arb);
-+	}
-+	pr_notice("[SPMIMST]:%s done\n", __func__);
-+
-+	return 0;
-+}
-+
-+static struct pmif mt6xxx_pmif_arb[] = {
-+	{
-+		.base = 0x0,
-+		.regs = mt6xxx_regs,
-+		.spmimst_base = 0x0,
-+		.spmimst_regs = mt6xxx_spmi_regs,
-+		.infra_base = 0x0,
-+		.infra_regs = mt6xxx_infra_regs,
-+		.topckgen_base = 0x0,
-+		.topckgen_regs = mt6xxx_topckgen_regs,
-+		.swinf_ch_start = 0,
-+		.ap_swinf_no = 0,
-+		.pmifid = PMIF_PMIFID_SPMI1,
-+		.read_cmd = pmif_spmi_read_cmd,
-+		.write_cmd = pmif_spmi_write_cmd,
-+		.pmif_enable_clk_set = pmif_spmi_enable_clk_set,
-+		.pmif_force_normal_mode = pmif_spmi_force_normal_mode,
-+		.pmif_enable_swinf = pmif_spmi_enable_swinf,
-+		.pmif_enable_cmd_issue = pmif_spmi_enable_cmd_issue,
-+		.pmif_enable = pmif_spmi_enable,
-+		.is_pmif_init_done = is_pmif_spmi_init_done,
-+	},
-+};
-+
-+static const struct of_device_id pmif_match_table[] = {
-+	{
-+		.compatible = "mediatek,pmif",
-+		.data = &mt6xxx_pmif_arb,
-+	}, {
-+		/* sentinel */
-+	},
-+};
-+MODULE_DEVICE_TABLE(of, pmif_match_table);
-+
-+static int pmif_probe(struct platform_device *pdev)
-+{
-+	struct device_node *node = NULL;
-+	const struct of_device_id *of_id =
-+		of_match_device(pmif_match_table, &pdev->dev);
-+	struct spmi_controller *ctrl = NULL;
-+	struct pmif *arb = NULL;
-+	struct resource *res = NULL;
-+	u32 swinf_ch_start = 0, ap_swinf_no = 0;
++	struct spmi_controller *ctrl;
 +	int err = 0;
-+
-+	if (!of_id) {
-+		dev_notice(&pdev->dev, "[PMIF]:Error: No device match found\n");
-+		return -ENODEV;
-+	}
 +
 +	ctrl = spmi_controller_alloc(&pdev->dev, sizeof(*arb));
 +	if (!ctrl)
@@ -37584,7 +37951,7 @@ index 0000000000000000000000000000000000000000..84e646431681a7f8f8f5a6075d8f0db9
 +	ctrl->write_cmd = pmif_spmi_write_cmd;
 +
 +	/* re-assign of_id->data */
-+	spmi_controller_set_drvdata(ctrl, (void *)of_id->data);
++	spmi_controller_set_drvdata(ctrl, (void *)of_device_get_match_data(&pdev->dev));
 +	arb = spmi_controller_get_drvdata(ctrl);
 +
 +	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "pmif");
@@ -37594,46 +37961,30 @@ index 0000000000000000000000000000000000000000..84e646431681a7f8f8f5a6075d8f0db9
 +		goto err_put_ctrl;
 +	}
 +
-+	/* pmif is not initialized, just init once */
-+	node = of_find_compatible_node(NULL, NULL,
-+			"mediatek,mt8192-infracfg");
-+	arb->infra_base = of_iomap(node, 0);
-+	dev_info(&pdev->dev, "[PMIF]:mtk-pmif arb infra ao base:0x%x\n",
-+			arb->infra_base);
-+	if (IS_ERR(arb->infra_base)) {
-+		err = PTR_ERR(arb->infra_base);
++	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "spmimst");
++	arb->spmimst_base = devm_ioremap_resource(&pdev->dev, res);
++	if (IS_ERR(arb->spmimst_base)) {
++		err = PTR_ERR(arb->spmimst_base);
 +		goto err_put_ctrl;
 +	}
 +
-+	node = of_find_compatible_node(NULL, NULL,
-+			"mediatek,mt8192-topckgen");
-+	arb->topckgen_base = of_iomap(node, 0);
-+	dev_info(&pdev->dev, "[PMIF]:mtk-pmif arb topckgen base:0x%x\n",
-+			arb->topckgen_base);
-+	if (IS_ERR(arb->topckgen_base)) {
-+		err = PTR_ERR(arb->topckgen_base);
-+		goto err_put_ctrl;
-+	}
-+
-+	/* get pmif infracfg_ao clock */
 +	arb->pmif_sys_ck = devm_clk_get(&pdev->dev, "pmif_sys_ck");
 +	if (IS_ERR(arb->pmif_sys_ck)) {
-+		dev_notice(&pdev->dev, "[PMIF]:failed to get ap clock: %ld\n",
++		dev_err(&pdev->dev, "[PMIF]:failed to get ap clock: %ld\n",
 +			PTR_ERR(arb->pmif_sys_ck));
 +		goto err_put_ctrl;
 +	}
 +
 +	arb->pmif_tmr_ck = devm_clk_get(&pdev->dev, "pmif_tmr_ck");
 +	if (IS_ERR(arb->pmif_tmr_ck)) {
-+		dev_notice(&pdev->dev, "[PMIF]:failed to get tmr clock: %ld\n",
++		dev_err(&pdev->dev, "[PMIF]:failed to get tmr clock: %ld\n",
 +			PTR_ERR(arb->pmif_tmr_ck));
 +		goto err_put_ctrl;
 +	}
 +
-+	/* get spmimst topckgen clock */
 +	arb->spmimst_clk_mux = devm_clk_get(&pdev->dev, "spmimst_clk_mux");
 +	if (IS_ERR(arb->spmimst_clk_mux)) {
-+		dev_notice(&pdev->dev, "[SPMIMST]:failed to get clock: %ld\n",
++		dev_err(&pdev->dev, "[SPMIMST]:failed to get clock: %ld\n",
 +			PTR_ERR(arb->spmimst_clk_mux));
 +		goto err_put_ctrl;
 +	}
@@ -37644,54 +37995,13 @@ index 0000000000000000000000000000000000000000..84e646431681a7f8f8f5a6075d8f0db9
 +		goto err_put_ctrl;
 +	}
 +
-+	err = of_property_read_u32(pdev->dev.of_node,
-+			"swinf_ch_start", &swinf_ch_start);
-+	if (err) {
-+		dev_notice(&pdev->dev, "[PMIF]:swinf_ch_start unspecified.\n");
-+		goto err_domain_remove;
-+	}
-+	arb->swinf_ch_start = swinf_ch_start;
-+
-+	err = of_property_read_u32(pdev->dev.of_node,
-+			"ap_swinf_no", &ap_swinf_no);
-+	if (err) {
-+		dev_notice(&pdev->dev, "[PMIF]:ap_swinf_no unspecified.\n");
-+		goto err_domain_remove;
-+	}
-+	arb->ap_swinf_no = ap_swinf_no;
-+
-+	arb->chan.ch_sta = PMIF_SWINF_0_STA +
-+			  (PMIF_SWINF_OFFSET * arb->ap_swinf_no);
-+	arb->chan.wdata = PMIF_SWINF_0_WDATA_31_0 +
-+			  (PMIF_SWINF_OFFSET * arb->ap_swinf_no);
-+	arb->chan.rdata = PMIF_SWINF_0_RDATA_31_0 +
-+			  (PMIF_SWINF_OFFSET * arb->ap_swinf_no);
-+	arb->chan.ch_send = PMIF_SWINF_0_ACC +
-+			  (PMIF_SWINF_OFFSET * arb->ap_swinf_no);
-+	arb->chan.ch_rdy = PMIF_SWINF_0_VLD_CLR +
-+			  (PMIF_SWINF_OFFSET * arb->ap_swinf_no);
-+
-+	if (arb->is_pmif_init_done(arb) != 0) {
-+		/* pmif initialize start */
-+		arb->pmif_enable_clk_set(arb);
-+		arb->pmif_force_normal_mode(arb);
-+		/* Enable SWINF and arbitration for AP. */
-+		arb->pmif_enable_swinf(arb,
-+				arb->swinf_ch_start, arb->ap_swinf_no);
-+		arb->pmif_enable_cmd_issue(arb, true);
-+
-+		arb->pmif_enable(arb);
-+		/* pmif initialize end */
-+	}
++	arb->chan.ch_sta = PMIF_SWINF_0_STA + (PMIF_CHAN_OFFSET * arb->soc_chan);
++	arb->chan.wdata = PMIF_SWINF_0_WDATA_31_0 + (PMIF_CHAN_OFFSET * arb->soc_chan);
++	arb->chan.rdata = PMIF_SWINF_0_RDATA_31_0 + (PMIF_CHAN_OFFSET * arb->soc_chan);
++	arb->chan.ch_send = PMIF_SWINF_0_ACC + (PMIF_CHAN_OFFSET * arb->soc_chan);
++	arb->chan.ch_rdy = PMIF_SWINF_0_VLD_CLR + (PMIF_CHAN_OFFSET * arb->soc_chan);
 +
 +	raw_spin_lock_init(&arb->lock);
-+
-+	if (arb->is_pmif_init_done(arb) == 0) {
-+		/* pmif already done, call spmi master driver init */
-+		err = mtk_spmimst_init(pdev, arb);
-+		if (err)
-+			goto err_domain_remove;
-+	}
 +
 +	platform_set_drvdata(pdev, ctrl);
 +
@@ -37708,7 +38018,7 @@ index 0000000000000000000000000000000000000000..84e646431681a7f8f8f5a6075d8f0db9
 +	return err;
 +}
 +
-+static int pmif_remove(struct platform_device *pdev)
++static int mtk_spmi_remove(struct platform_device *pdev)
 +{
 +	struct spmi_controller *ctrl = platform_get_drvdata(pdev);
 +
@@ -37717,34 +38027,34 @@ index 0000000000000000000000000000000000000000..84e646431681a7f8f8f5a6075d8f0db9
 +	return 0;
 +}
 +
-+static struct platform_driver pmif_driver = {
-+	.probe		= pmif_probe,
-+	.remove		= pmif_remove,
-+	.driver		= {
-+		.name	= "pmif",
-+		.of_match_table = of_match_ptr(pmif_match_table),
++static const struct of_device_id mtk_spmi_match_table[] = {
++	{
++		.compatible = "mediatek,mt6873-spmi",
++		.data = &mt6873_pmif_arb,
++	}, {
++		/* sentinel */
 +	},
 +};
++MODULE_DEVICE_TABLE(of, mtk_spmi_match_table);
 +
-+static int __init mtk_pmif_init(void)
-+{
-+	int ret = 0;
-+
-+	ret = platform_driver_register(&pmif_driver);
-+	if (ret)
-+		return -ENODEV;
-+	return 0;
-+}
-+postcore_initcall(mtk_pmif_init);
++static struct platform_driver mtk_spmi_driver = {
++	.driver		= {
++		.name	= "spmi-mtk",
++		.of_match_table = of_match_ptr(mtk_spmi_match_table),
++	},
++	.probe		= mtk_spmi_probe,
++	.remove		= mtk_spmi_remove,
++};
++module_platform_driver(mtk_spmi_driver);
 +
 +MODULE_AUTHOR("Hsin-Hsiung Wang <hsin-hsiung.wang@mediatek.com>");
-+MODULE_DESCRIPTION("SPMI Driver for MediaTek MT8192");
++MODULE_DESCRIPTION("MediaTek SPMI Driver");
 +MODULE_LICENSE("GPL");
 diff --git a/drivers/spmi/spmi.c b/drivers/spmi/spmi.c
-index c16b60f645a4de6100a043143fb42386cbc65a7a..5fde02450ee89209ba6d1293180e584c5d7e09e3 100644
+index c16b60f645a4de6100a043143fb42386cbc65a7a..161a48ca4acc809b50b979e24824ab6f90378f4f 100644
 --- a/drivers/spmi/spmi.c
 +++ b/drivers/spmi/spmi.c
-@@ -357,6 +357,17 @@ static int spmi_drv_remove(struct device *dev)
+@@ -357,6 +357,14 @@ static int spmi_drv_remove(struct device *dev)
  	return 0;
  }
  
@@ -37752,17 +38062,14 @@ index c16b60f645a4de6100a043143fb42386cbc65a7a..5fde02450ee89209ba6d1293180e584c
 +{
 +	const struct spmi_driver *sdrv = to_spmi_driver(dev->driver);
 +
-+	if (!sdrv)
-+		return;
-+
-+	if (sdrv->shutdown)
++	if (sdrv && sdrv->shutdown)
 +		sdrv->shutdown(to_spmi_device(dev));
 +}
 +
  static int spmi_drv_uevent(struct device *dev, struct kobj_uevent_env *env)
  {
  	int ret;
-@@ -373,6 +384,7 @@ static struct bus_type spmi_bus_type = {
+@@ -373,6 +381,7 @@ static struct bus_type spmi_bus_type = {
  	.match		= spmi_device_match,
  	.probe		= spmi_drv_probe,
  	.remove		= spmi_drv_remove,
@@ -37771,10 +38078,18 @@ index c16b60f645a4de6100a043143fb42386cbc65a7a..5fde02450ee89209ba6d1293180e584c
  };
  
 diff --git a/drivers/thermal/Kconfig b/drivers/thermal/Kconfig
-index 001a21abcc2810a3d5f6ba0f57e5a587faf51efe..f4c98afff1d671bd74b0d28f708571f6f55ba491 100644
+index 001a21abcc2810a3d5f6ba0f57e5a587faf51efe..ff2be4b38ee310fd8185a8f8f877531713da47da 100644
 --- a/drivers/thermal/Kconfig
 +++ b/drivers/thermal/Kconfig
-@@ -337,16 +337,10 @@ config DA9062_THERMAL
+@@ -144,6 +144,7 @@ config THERMAL_GOV_USER_SPACE
+ 
+ config THERMAL_GOV_POWER_ALLOCATOR
+ 	bool "Power allocator thermal governor"
++	depends on ENERGY_MODEL
+ 	help
+ 	  Enable this to manage platform thermals by dynamically
+ 	  allocating and limiting power to devices.
+@@ -337,16 +338,10 @@ config DA9062_THERMAL
  	  zone.
  	  Compatible with the DA9062 and DA9061 PMICs.
  
@@ -37808,6 +38123,613 @@ index 74a37c7f847a6f50e84de4605944c0fa16e2aebf..f6ff181cfebb91b56192631c6668870c
  obj-$(CONFIG_GENERIC_ADC_THERMAL)	+= thermal-generic-adc.o
  obj-$(CONFIG_ZX2967_THERMAL)	+= zx2967_thermal.o
  obj-$(CONFIG_UNIPHIER_THERMAL)	+= uniphier_thermal.o
+diff --git a/drivers/thermal/cpu_cooling.c b/drivers/thermal/cpu_cooling.c
+index 979632e9d739c6bd9c56a7925af8154cefac144e..436cb6a33e2bd934a4f149e171134b4b61d55a5d 100644
+--- a/drivers/thermal/cpu_cooling.c
++++ b/drivers/thermal/cpu_cooling.c
+@@ -21,6 +21,7 @@
+ #include <linux/cpu.h>
+ #include <linux/cpu_cooling.h>
+ #include <linux/ratelimit.h>
++#include <linux/energy_model.h>
+ 
+ #include <trace/events/thermal.h>
+ 
+@@ -45,19 +46,6 @@ static int cpu_cooling_ratelimit(void)
+  *	...
+  */
+ 
+-/**
+- * struct freq_table - frequency table along with power entries
+- * @frequency:	frequency in KHz
+- * @power:	power in mW
+- *
+- * This structure is built when the cooling device registers and helps
+- * in translating frequency to power and vice versa.
+- */
+-struct freq_table {
+-	u32 frequency;
+-	u32 power;
+-};
+-
+ /**
+  * struct time_in_idle - Idle time stats
+  * @time: previous reading of the absolute time that this cpu was idle
+@@ -77,7 +65,7 @@ struct time_in_idle {
+  *	cooling	devices.
+  * @max_level: maximum cooling level. One less than total number of valid
+  *	cpufreq frequencies.
+- * @freq_table: Freq table in descending order of frequencies
++ * @em: Reference on the Energy Model of the device
+  * @cdev: thermal_cooling_device pointer to keep track of the
+  *	registered cooling device.
+  * @policy: cpufreq policy.
+@@ -92,7 +80,7 @@ struct cpufreq_cooling_device {
+ 	u32 last_load;
+ 	unsigned int cpufreq_state;
+ 	unsigned int max_level;
+-	struct freq_table *freq_table;	/* In descending order */
++	struct em_perf_domain *em;
+ 	struct cpufreq_policy *policy;
+ 	struct list_head node;
+ 	struct time_in_idle *idle_time;
+@@ -103,8 +91,7 @@ static DEFINE_IDA(cpufreq_ida);
+ static DEFINE_MUTEX(cooling_list_lock);
+ static LIST_HEAD(cpufreq_cdev_list);
+ 
+-/* Below code defines functions to be used for cpufreq as cooling device */
+-
++#ifdef CONFIG_THERMAL_GOV_POWER_ALLOCATOR
+ /**
+  * get_level: Find the level for a particular frequency
+  * @cpufreq_cdev: cpufreq_cdev for which the property is required
+@@ -115,114 +102,40 @@ static LIST_HEAD(cpufreq_cdev_list);
+ static unsigned long get_level(struct cpufreq_cooling_device *cpufreq_cdev,
+ 			       unsigned int freq)
+ {
+-	struct freq_table *freq_table = cpufreq_cdev->freq_table;
+-	unsigned long level;
++	int i;
+ 
+-	for (level = 1; level <= cpufreq_cdev->max_level; level++)
+-		if (freq > freq_table[level].frequency)
++	for (i = cpufreq_cdev->max_level - 1; i >= 0; i--) {
++		if (freq > cpufreq_cdev->em->table[i].frequency)
+ 			break;
+-
+-	return level - 1;
+-}
+-
+-/**
+- * update_freq_table() - Update the freq table with power numbers
+- * @cpufreq_cdev:	the cpufreq cooling device in which to update the table
+- * @capacitance: dynamic power coefficient for these cpus
+- *
+- * Update the freq table with power numbers.  This table will be used in
+- * cpu_power_to_freq() and cpu_freq_to_power() to convert between power and
+- * frequency efficiently.  Power is stored in mW, frequency in KHz.  The
+- * resulting table is in descending order.
+- *
+- * Return: 0 on success, -EINVAL if there are no OPPs for any CPUs,
+- * or -ENOMEM if we run out of memory.
+- */
+-static int update_freq_table(struct cpufreq_cooling_device *cpufreq_cdev,
+-			     u32 capacitance)
+-{
+-	struct freq_table *freq_table = cpufreq_cdev->freq_table;
+-	struct dev_pm_opp *opp;
+-	struct device *dev = NULL;
+-	int num_opps = 0, cpu = cpufreq_cdev->policy->cpu, i;
+-
+-	dev = get_cpu_device(cpu);
+-	if (unlikely(!dev)) {
+-		pr_warn("No cpu device for cpu %d\n", cpu);
+-		return -ENODEV;
+-	}
+-
+-	num_opps = dev_pm_opp_get_opp_count(dev);
+-	if (num_opps < 0)
+-		return num_opps;
+-
+-	/*
+-	 * The cpufreq table is also built from the OPP table and so the count
+-	 * should match.
+-	 */
+-	if (num_opps != cpufreq_cdev->max_level + 1) {
+-		dev_warn(dev, "Number of OPPs not matching with max_levels\n");
+-		return -EINVAL;
+-	}
+-
+-	for (i = 0; i <= cpufreq_cdev->max_level; i++) {
+-		unsigned long freq = freq_table[i].frequency * 1000;
+-		u32 freq_mhz = freq_table[i].frequency / 1000;
+-		u64 power;
+-		u32 voltage_mv;
+-
+-		/*
+-		 * Find ceil frequency as 'freq' may be slightly lower than OPP
+-		 * freq due to truncation while converting to kHz.
+-		 */
+-		opp = dev_pm_opp_find_freq_ceil(dev, &freq);
+-		if (IS_ERR(opp)) {
+-			dev_err(dev, "failed to get opp for %lu frequency\n",
+-				freq);
+-			return -EINVAL;
+-		}
+-
+-		voltage_mv = dev_pm_opp_get_voltage(opp) / 1000;
+-		dev_pm_opp_put(opp);
+-
+-		/*
+-		 * Do the multiplication with MHz and millivolt so as
+-		 * to not overflow.
+-		 */
+-		power = (u64)capacitance * freq_mhz * voltage_mv * voltage_mv;
+-		do_div(power, 1000000000);
+-
+-		/* power is stored in mW */
+-		freq_table[i].power = power;
+ 	}
+ 
+-	return 0;
++	return cpufreq_cdev->max_level - i - 1;
+ }
+ 
+ static u32 cpu_freq_to_power(struct cpufreq_cooling_device *cpufreq_cdev,
+ 			     u32 freq)
+ {
+ 	int i;
+-	struct freq_table *freq_table = cpufreq_cdev->freq_table;
+ 
+-	for (i = 1; i <= cpufreq_cdev->max_level; i++)
+-		if (freq > freq_table[i].frequency)
++	for (i = cpufreq_cdev->max_level - 1; i >= 0; i--) {
++		if (freq > cpufreq_cdev->em->table[i].frequency)
+ 			break;
++	}
+ 
+-	return freq_table[i - 1].power;
++	return cpufreq_cdev->em->table[i + 1].power;
+ }
+ 
+ static u32 cpu_power_to_freq(struct cpufreq_cooling_device *cpufreq_cdev,
+ 			     u32 power)
+ {
+ 	int i;
+-	struct freq_table *freq_table = cpufreq_cdev->freq_table;
+ 
+-	for (i = 0; i < cpufreq_cdev->max_level; i++)
+-		if (power >= freq_table[i].power)
++	for (i = cpufreq_cdev->max_level - 1; i >= 0; i--) {
++		if (power > cpufreq_cdev->em->table[i].power)
+ 			break;
++	}
+ 
+-	return freq_table[i].frequency;
++	return cpufreq_cdev->em->table[i + 1].frequency;
+ }
+ 
+ /**
+@@ -273,89 +186,6 @@ static u32 get_dynamic_power(struct cpufreq_cooling_device *cpufreq_cdev,
+ 	return (raw_cpu_power * cpufreq_cdev->last_load) / 100;
+ }
+ 
+-/* cpufreq cooling device callback functions are defined below */
+-
+-/**
+- * cpufreq_get_max_state - callback function to get the max cooling state.
+- * @cdev: thermal cooling device pointer.
+- * @state: fill this variable with the max cooling state.
+- *
+- * Callback for the thermal cooling device to return the cpufreq
+- * max cooling state.
+- *
+- * Return: 0 on success, an error code otherwise.
+- */
+-static int cpufreq_get_max_state(struct thermal_cooling_device *cdev,
+-				 unsigned long *state)
+-{
+-	struct cpufreq_cooling_device *cpufreq_cdev = cdev->devdata;
+-
+-	*state = cpufreq_cdev->max_level;
+-	return 0;
+-}
+-
+-/**
+- * cpufreq_get_cur_state - callback function to get the current cooling state.
+- * @cdev: thermal cooling device pointer.
+- * @state: fill this variable with the current cooling state.
+- *
+- * Callback for the thermal cooling device to return the cpufreq
+- * current cooling state.
+- *
+- * Return: 0 on success, an error code otherwise.
+- */
+-static int cpufreq_get_cur_state(struct thermal_cooling_device *cdev,
+-				 unsigned long *state)
+-{
+-	struct cpufreq_cooling_device *cpufreq_cdev = cdev->devdata;
+-
+-	*state = cpufreq_cdev->cpufreq_state;
+-
+-	return 0;
+-}
+-
+-/**
+- * cpufreq_set_cur_state - callback function to set the current cooling state.
+- * @cdev: thermal cooling device pointer.
+- * @state: set this variable to the current cooling state.
+- *
+- * Callback for the thermal cooling device to change the cpufreq
+- * current cooling state.
+- *
+- * Return: 0 on success, an error code otherwise.
+- */
+-static int cpufreq_set_cur_state(struct thermal_cooling_device *cdev,
+-				 unsigned long state)
+-{
+-	struct cpufreq_cooling_device *cpufreq_cdev = cdev->devdata;
+-	struct device *cpu_dev;
+-	int rc;
+-
+-	/* Request state should be less than max_level */
+-	if (WARN_ON(state > cpufreq_cdev->max_level))
+-		return -EINVAL;
+-
+-	/* Check if the old cooling action is same as new cooling action */
+-	if (cpufreq_cdev->cpufreq_state == state)
+-		return 0;
+-
+-	cpufreq_cdev->cpufreq_state = state;
+-
+-	rc = freq_qos_update_request(&cpufreq_cdev->qos_req,
+-				     cpufreq_cdev->freq_table[state].frequency);
+-	if (rc)
+-		return rc;
+-
+-	if (cpu_cooling_ratelimit()) {
+-		cpu_dev = get_cpu_device(cpufreq_cdev->policy->cpu);
+-		dev_info(cpu_dev,
+-			 "Cooling state set to %lu. New max freq = %u\n",
+-			 state, cpufreq_cdev->freq_table[state].frequency);
+-	}
+-
+-	return 0;
+-}
+-
+ /**
+  * cpufreq_get_requested_power() - get the current power
+  * @cdev:	&thermal_cooling_device pointer
+@@ -446,7 +276,7 @@ static int cpufreq_state2power(struct thermal_cooling_device *cdev,
+ 			       struct thermal_zone_device *tz,
+ 			       unsigned long state, u32 *power)
+ {
+-	unsigned int freq, num_cpus;
++	unsigned int freq, num_cpus, idx;
+ 	struct cpufreq_cooling_device *cpufreq_cdev = cdev->devdata;
+ 
+ 	/* Request state should be less than max_level */
+@@ -455,7 +285,8 @@ static int cpufreq_state2power(struct thermal_cooling_device *cdev,
+ 
+ 	num_cpus = cpumask_weight(cpufreq_cdev->policy->cpus);
+ 
+-	freq = cpufreq_cdev->freq_table[state].frequency;
++	idx = cpufreq_cdev->max_level - state;
++	freq = cpufreq_cdev->em->table[idx].frequency;
+ 	*power = cpu_freq_to_power(cpufreq_cdev, freq) * num_cpus;
+ 
+ 	return 0;
+@@ -500,43 +331,155 @@ static int cpufreq_power2state(struct thermal_cooling_device *cdev,
+ 	return 0;
+ }
+ 
+-/* Bind cpufreq callbacks to thermal cooling device ops */
++static inline bool em_is_sane(struct cpufreq_cooling_device *cpufreq_cdev,
++			      struct em_perf_domain *em) {
++	struct cpufreq_policy *policy;
++	unsigned int nr_levels;
+ 
+-static struct thermal_cooling_device_ops cpufreq_cooling_ops = {
+-	.get_max_state = cpufreq_get_max_state,
+-	.get_cur_state = cpufreq_get_cur_state,
+-	.set_cur_state = cpufreq_set_cur_state,
+-};
++	if (!em)
++		return false;
+ 
+-static struct thermal_cooling_device_ops cpufreq_power_cooling_ops = {
+-	.get_max_state		= cpufreq_get_max_state,
+-	.get_cur_state		= cpufreq_get_cur_state,
+-	.set_cur_state		= cpufreq_set_cur_state,
+-	.get_requested_power	= cpufreq_get_requested_power,
+-	.state2power		= cpufreq_state2power,
+-	.power2state		= cpufreq_power2state,
+-};
++	policy = cpufreq_cdev->policy;
++	if (!cpumask_equal(policy->related_cpus, to_cpumask(em->cpus))) {
++		pr_err("The span of pd %*pbl is misaligned with cpufreq policy %*pbl\n",
++			cpumask_pr_args(to_cpumask(em->cpus)),
++			cpumask_pr_args(policy->related_cpus));
++		return false;
++	}
++
++	nr_levels = cpufreq_cdev->max_level + 1;
++	if (em->nr_cap_states != nr_levels) {
++		pr_err("The number of cap states in pd %*pbl (%u) doesn't match the number of cooling levels (%u)\n",
++			cpumask_pr_args(to_cpumask(em->cpus)),
++			em->nr_cap_states, nr_levels);
++		return false;
++	}
+ 
+-static unsigned int find_next_max(struct cpufreq_frequency_table *table,
+-				  unsigned int prev_max)
++	return true;
++}
++#endif /* CONFIG_THERMAL_GOV_POWER_ALLOCATOR */
++
++static unsigned int get_state_freq(struct cpufreq_cooling_device *cpufreq_cdev,
++				   unsigned long state)
+ {
+-	struct cpufreq_frequency_table *pos;
+-	unsigned int max = 0;
++	struct cpufreq_policy *policy;
++	unsigned long idx;
+ 
+-	cpufreq_for_each_valid_entry(pos, table) {
+-		if (pos->frequency > max && pos->frequency < prev_max)
+-			max = pos->frequency;
++#ifdef CONFIG_THERMAL_GOV_POWER_ALLOCATOR
++	/* Use the Energy Model table if available */
++	if (cpufreq_cdev->em) {
++		idx = cpufreq_cdev->max_level - state;
++		return cpufreq_cdev->em->table[idx].frequency;
+ 	}
++#endif
+ 
+-	return max;
++	/* Otherwise, fallback on the CPUFreq table */
++	policy = cpufreq_cdev->policy;
++	if (policy->freq_table_sorted == CPUFREQ_TABLE_SORTED_ASCENDING)
++		idx = cpufreq_cdev->max_level - state;
++	else
++		idx = state;
++
++	return policy->freq_table[idx].frequency;
+ }
+ 
++/* cpufreq cooling device callback functions are defined below */
++
++/**
++ * cpufreq_get_max_state - callback function to get the max cooling state.
++ * @cdev: thermal cooling device pointer.
++ * @state: fill this variable with the max cooling state.
++ *
++ * Callback for the thermal cooling device to return the cpufreq
++ * max cooling state.
++ *
++ * Return: 0 on success, an error code otherwise.
++ */
++static int cpufreq_get_max_state(struct thermal_cooling_device *cdev,
++				 unsigned long *state)
++{
++	struct cpufreq_cooling_device *cpufreq_cdev = cdev->devdata;
++
++	*state = cpufreq_cdev->max_level;
++	return 0;
++}
++
++/**
++ * cpufreq_get_cur_state - callback function to get the current cooling state.
++ * @cdev: thermal cooling device pointer.
++ * @state: fill this variable with the current cooling state.
++ *
++ * Callback for the thermal cooling device to return the cpufreq
++ * current cooling state.
++ *
++ * Return: 0 on success, an error code otherwise.
++ */
++static int cpufreq_get_cur_state(struct thermal_cooling_device *cdev,
++				 unsigned long *state)
++{
++	struct cpufreq_cooling_device *cpufreq_cdev = cdev->devdata;
++
++	*state = cpufreq_cdev->cpufreq_state;
++
++	return 0;
++}
++
++/**
++ * cpufreq_set_cur_state - callback function to set the current cooling state.
++ * @cdev: thermal cooling device pointer.
++ * @state: set this variable to the current cooling state.
++ *
++ * Callback for the thermal cooling device to change the cpufreq
++ * current cooling state.
++ *
++ * Return: 0 on success, an error code otherwise.
++ */
++static int cpufreq_set_cur_state(struct thermal_cooling_device *cdev,
++				 unsigned long state)
++{
++	struct cpufreq_cooling_device *cpufreq_cdev = cdev->devdata;
++	struct device *cpu_dev;
++	int rc;
++
++	/* Request state should be less than max_level */
++	if (WARN_ON(state > cpufreq_cdev->max_level))
++		return -EINVAL;
++
++	/* Check if the old cooling action is same as new cooling action */
++	if (cpufreq_cdev->cpufreq_state == state)
++		return 0;
++
++	cpufreq_cdev->cpufreq_state = state;
++
++	rc = freq_qos_update_request(&cpufreq_cdev->qos_req,
++				get_state_freq(cpufreq_cdev, state));
++	if (rc)
++		return rc;
++
++	if (cpu_cooling_ratelimit()) {
++		cpu_dev = get_cpu_device(cpufreq_cdev->policy->cpu);
++		dev_info(cpu_dev,
++			"Cooling state set to %lu. New max freq = %u\n",
++			state, get_state_freq(cpufreq_cdev, state));
++	}
++
++	return 0;
++}
++
++/* Bind cpufreq callbacks to thermal cooling device ops */
++
++static struct thermal_cooling_device_ops cpufreq_cooling_ops = {
++	.get_max_state		= cpufreq_get_max_state,
++	.get_cur_state		= cpufreq_get_cur_state,
++	.set_cur_state		= cpufreq_set_cur_state,
++};
++
+ /**
+  * __cpufreq_cooling_register - helper function to create cpufreq cooling device
+  * @np: a valid struct device_node to the cooling device device tree node
+  * @policy: cpufreq policy
+  * Normally this should be same as cpufreq policy->related_cpus.
+- * @capacitance: dynamic power coefficient for these cpus
++ * @em: Energy Model of the cpufreq policy
+  *
+  * This interface function registers the cpufreq cooling device with the name
+  * "thermal-cpufreq-%x". This api can support multiple instances of cpufreq
+@@ -548,12 +491,13 @@ static unsigned int find_next_max(struct cpufreq_frequency_table *table,
+  */
+ static struct thermal_cooling_device *
+ __cpufreq_cooling_register(struct device_node *np,
+-			struct cpufreq_policy *policy, u32 capacitance)
++			struct cpufreq_policy *policy,
++			struct em_perf_domain *em)
+ {
+ 	struct thermal_cooling_device *cdev;
+ 	struct cpufreq_cooling_device *cpufreq_cdev;
+ 	char dev_name[THERMAL_NAME_LENGTH];
+-	unsigned int freq, i, num_cpus;
++	unsigned int i, num_cpus;
+ 	struct device *dev;
+ 	int ret;
+ 	struct thermal_cooling_device_ops *cooling_ops;
+@@ -594,51 +538,36 @@ __cpufreq_cooling_register(struct device_node *np,
+ 	/* max_level is an index, not a counter */
+ 	cpufreq_cdev->max_level = i - 1;
+ 
+-	cpufreq_cdev->freq_table = kmalloc_array(i,
+-					sizeof(*cpufreq_cdev->freq_table),
+-					GFP_KERNEL);
+-	if (!cpufreq_cdev->freq_table) {
+-		cdev = ERR_PTR(-ENOMEM);
+-		goto free_idle_time;
+-	}
+-
+ 	ret = ida_simple_get(&cpufreq_ida, 0, 0, GFP_KERNEL);
+ 	if (ret < 0) {
+ 		cdev = ERR_PTR(ret);
+-		goto free_table;
++		goto free_idle_time;
+ 	}
+ 	cpufreq_cdev->id = ret;
+ 
+ 	snprintf(dev_name, sizeof(dev_name), "thermal-cpufreq-%d",
+ 		 cpufreq_cdev->id);
+ 
+-	/* Fill freq-table in descending order of frequencies */
+-	for (i = 0, freq = -1; i <= cpufreq_cdev->max_level; i++) {
+-		freq = find_next_max(policy->freq_table, freq);
+-		cpufreq_cdev->freq_table[i].frequency = freq;
+-
+-		/* Warn for duplicate entries */
+-		if (!freq)
+-			pr_warn("%s: table has duplicate entries\n", __func__);
+-		else
+-			pr_debug("%s: freq:%u KHz\n", __func__, freq);
+-	}
+-
+-	if (capacitance) {
+-		ret = update_freq_table(cpufreq_cdev, capacitance);
+-		if (ret) {
+-			cdev = ERR_PTR(ret);
+-			goto remove_ida;
+-		}
+-
+-		cooling_ops = &cpufreq_power_cooling_ops;
+-	} else {
+-		cooling_ops = &cpufreq_cooling_ops;
++	cooling_ops = &cpufreq_cooling_ops;
++
++#ifdef CONFIG_THERMAL_GOV_POWER_ALLOCATOR
++	if (em_is_sane(cpufreq_cdev, em)) {
++		cpufreq_cdev->em = em;
++		cooling_ops->get_requested_power = cpufreq_get_requested_power;
++		cooling_ops->state2power = cpufreq_state2power;
++		cooling_ops->power2state = cpufreq_power2state;
++	} else
++#endif
++	if (policy->freq_table_sorted == CPUFREQ_TABLE_UNSORTED) {
++		pr_err("%s: unsorted frequency tables are not supported\n",
++		       __func__);
++		cdev = ERR_PTR(-EINVAL);
++		goto remove_ida;
+ 	}
+ 
+ 	ret = freq_qos_add_request(&policy->constraints,
+ 				   &cpufreq_cdev->qos_req, FREQ_QOS_MAX,
+-				   cpufreq_cdev->freq_table[0].frequency);
++				   get_state_freq(cpufreq_cdev, 0));
+ 	if (ret < 0) {
+ 		pr_err("%s: Failed to add freq constraint (%d)\n", __func__,
+ 		       ret);
+@@ -661,8 +590,6 @@ __cpufreq_cooling_register(struct device_node *np,
+ 	freq_qos_remove_request(&cpufreq_cdev->qos_req);
+ remove_ida:
+ 	ida_simple_remove(&cpufreq_ida, cpufreq_cdev->id);
+-free_table:
+-	kfree(cpufreq_cdev->freq_table);
+ free_idle_time:
+ 	kfree(cpufreq_cdev->idle_time);
+ free_cdev:
+@@ -684,7 +611,7 @@ __cpufreq_cooling_register(struct device_node *np,
+ struct thermal_cooling_device *
+ cpufreq_cooling_register(struct cpufreq_policy *policy)
+ {
+-	return __cpufreq_cooling_register(NULL, policy, 0);
++	return __cpufreq_cooling_register(NULL, policy, NULL);
+ }
+ EXPORT_SYMBOL_GPL(cpufreq_cooling_register);
+ 
+@@ -712,7 +639,6 @@ of_cpufreq_cooling_register(struct cpufreq_policy *policy)
+ {
+ 	struct device_node *np = of_get_cpu_node(policy->cpu, NULL);
+ 	struct thermal_cooling_device *cdev = NULL;
+-	u32 capacitance = 0;
+ 
+ 	if (!np) {
+ 		pr_err("cpu_cooling: OF node not available for cpu%d\n",
+@@ -721,10 +647,9 @@ of_cpufreq_cooling_register(struct cpufreq_policy *policy)
+ 	}
+ 
+ 	if (of_find_property(np, "#cooling-cells", NULL)) {
+-		of_property_read_u32(np, "dynamic-power-coefficient",
+-				     &capacitance);
++		struct em_perf_domain *em = em_cpu_get(policy->cpu);
+ 
+-		cdev = __cpufreq_cooling_register(np, policy, capacitance);
++		cdev = __cpufreq_cooling_register(np, policy, em);
+ 		if (IS_ERR(cdev)) {
+ 			pr_err("cpu_cooling: cpu%d failed to register as cooling device: %ld\n",
+ 			       policy->cpu, PTR_ERR(cdev));
+@@ -760,7 +685,6 @@ void cpufreq_cooling_unregister(struct thermal_cooling_device *cdev)
+ 	freq_qos_remove_request(&cpufreq_cdev->qos_req);
+ 	ida_simple_remove(&cpufreq_ida, cpufreq_cdev->id);
+ 	kfree(cpufreq_cdev->idle_time);
+-	kfree(cpufreq_cdev->freq_table);
+ 	kfree(cpufreq_cdev);
+ }
+ EXPORT_SYMBOL_GPL(cpufreq_cooling_unregister);
 diff --git a/drivers/thermal/mediatek/Kconfig b/drivers/thermal/mediatek/Kconfig
 new file mode 100644
 index 0000000000000000000000000000000000000000..ee11bb8f8bf0f30865d3d584357ac05c8ed32428
@@ -41355,6 +42277,31 @@ index 5ac458b7d2e0efa406e5db2ca57dfe3dde59e550..c7f6806704acf35973119fd3898a1f1a
  };
  
  static inline struct xhci_hcd_mtk *hcd_to_mtk(struct usb_hcd *hcd)
+diff --git a/drivers/usb/typec/mux.c b/drivers/usb/typec/mux.c
+index 52ad277e4565b8cce6455802943af4e6159538b9..8ac20510e96d602eef1135ce1bac7aaf4bf93849 100644
+--- a/drivers/usb/typec/mux.c
++++ b/drivers/usb/typec/mux.c
+@@ -202,7 +202,8 @@ static void *typec_mux_match(struct device_connection *con, int ep, void *data)
+ 
+ 	/* Accessory Mode muxes */
+ 	if (!desc) {
+-		match = fwnode_property_present(con->fwnode, "accessory");
++		match = fwnode_property_present(con->fwnode, "accessory") ||
++			fwnode_is_compatible(con->fwnode, con->id);
+ 		if (match)
+ 			goto find_mux;
+ 		return NULL;
+@@ -255,8 +256,8 @@ struct typec_mux *fwnode_typec_mux_get(struct fwnode_handle *fwnode,
+ {
+ 	struct typec_mux *mux;
+ 
+-	mux = fwnode_connection_find_match(fwnode, "mode-switch", (void *)desc,
+-					   typec_mux_match);
++	mux = fwnode_connection_find_match(fwnode, "typec-mode-switch",
++					   (void *)desc, typec_mux_match);
+ 	if (!IS_ERR_OR_NULL(mux))
+ 		WARN_ON(!try_module_get(mux->dev.parent->driver->owner));
+ 
 diff --git a/drivers/watchdog/mtk_wdt.c b/drivers/watchdog/mtk_wdt.c
 index d6a6393f609d12101ffe61cf04078b60663f45ea..aef0c2db6a112484158f9f9c810029003622871f 100644
 --- a/drivers/watchdog/mtk_wdt.c
@@ -42877,6 +43824,29 @@ index 0000000000000000000000000000000000000000..4eaa53d7270ad5824ddd75c4ea6c3524
 +#define MT8192_POWER_DOMAIN_CAM_RAWC	20
 +
 +#endif /* _DT_BINDINGS_POWER_MT8192_POWER_H */
+diff --git a/include/dt-bindings/regulator/mtk,mt6315.h b/include/dt-bindings/regulator/mtk,mt6315.h
+new file mode 100644
+index 0000000000000000000000000000000000000000..6ed9b2b121db69b89e3d3423c42e8372a7c4fc48
+--- /dev/null
++++ b/include/dt-bindings/regulator/mtk,mt6315.h
+@@ -0,0 +1,17 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++/*
++ * Copyright (c) 2020 MediaTek Inc.
++ * Author: Hsin-Hsiung Wang <hsin-hsiung.wang@mediatek.com>
++ */
++
++#ifndef _DT_BINDINGS_REGULATOR_MTK_MT6315_H
++#define _DT_BINDINGS_REGULATOR_MTK_MT6315_H
++
++/* Regulator ID */
++#define MT6315_VBUCK1	1
++#define MT6315_VBUCK2	2
++#define MT6315_VBUCK3	3
++#define MT6315_VBUCK4	4
++#define MT6315_VBUCK_MAX	5
++
++#endif /* _DT_BINDINGS_REGULATOR_MTK_MT6315_H */
 diff --git a/include/dt-bindings/reset-controller/mt8192-resets.h b/include/dt-bindings/reset-controller/mt8192-resets.h
 new file mode 100644
 index 0000000000000000000000000000000000000000..be9a7ca245b946a1b755e5268f05f25dff2f0662
@@ -43948,12 +44918,32 @@ index 1d554b858086b17963141df041b41034e0bbaa7f..29ce614319d9741362c8e0ef47fb22ec
 +#define MMC_PM_PWR_OFF_IN_SUSPEND  (1 << 3)	/* Host power off during suspend */
  
  #endif /* LINUX_MMC_PM_H */
+diff --git a/include/linux/property.h b/include/linux/property.h
+index d2186cc4d65dfb9aa24dbb40bc4e2013e8ddff02..3cc64ba6fa177f827f897b7ef2a269397385c2e8 100644
+--- a/include/linux/property.h
++++ b/include/linux/property.h
+@@ -48,6 +48,7 @@ int device_property_read_string(struct device *dev, const char *propname,
+ 				const char **val);
+ int device_property_match_string(struct device *dev,
+ 				 const char *propname, const char *string);
++int device_is_compatible(struct device *dev, const char *compat);
+ 
+ bool fwnode_device_is_available(const struct fwnode_handle *fwnode);
+ bool fwnode_property_present(const struct fwnode_handle *fwnode,
+@@ -117,6 +118,7 @@ struct fwnode_handle *fwnode_handle_get(struct fwnode_handle *fwnode);
+ void fwnode_handle_put(struct fwnode_handle *fwnode);
+ 
+ int fwnode_irq_get(struct fwnode_handle *fwnode, unsigned int index);
++int fwnode_is_compatible(struct fwnode_handle *fwnode, const char *compat);
+ 
+ unsigned int device_get_child_node_count(struct device *dev);
+ 
 diff --git a/include/linux/regulator/mt6315-regulator.h b/include/linux/regulator/mt6315-regulator.h
 new file mode 100644
-index 0000000000000000000000000000000000000000..8d1322c664a4713abdaedb55910f77fdee60d0c9
+index 0000000000000000000000000000000000000000..4b3bd172cba1a7c993b6910622e4e436a5f6f23b
 --- /dev/null
 +++ b/include/linux/regulator/mt6315-regulator.h
-@@ -0,0 +1,53 @@
+@@ -0,0 +1,37 @@
 +/* SPDX-License-Identifier: GPL-2.0 */
 +/*
 + * Copyright (c) 2020 MediaTek Inc.
@@ -43966,45 +44956,29 @@ index 0000000000000000000000000000000000000000..8d1322c664a4713abdaedb55910f77fd
 +#define MT6315_SLAVE_ID_6	6
 +#define MT6315_SLAVE_ID_7	7
 +
-+enum {
-+	MT6315_ID_6_VBUCK1 = 0,
-+	MT6315_ID_6_VBUCK3,
-+	MT6315_ID_6_MAX,
-+};
-+
-+enum {
-+	MT6315_ID_7_VBUCK1 = 0,
-+	MT6315_ID_7_VBUCK3,
-+	MT6315_ID_7_MAX,
-+};
-+
-+enum {
-+	MT6315_ID_3_VBUCK1 = 0,
-+	MT6315_ID_3_VBUCK3,
-+	MT6315_ID_3_VBUCK4,
-+	MT6315_ID_3_MAX,
-+};
-+
 +/* Register */
-+#define MT6315_SWCID_H	0xb
-+#define MT6315_TOP2_ELR7	0x139
-+#define MT6315_TOP_TMA_KEY	0x39f
-+#define MT6315_TOP_TMA_KEY_H	0x3a0
-+#define MT6315_BUCK_TOP_CON0	0x1440
-+#define MT6315_BUCK_TOP_CON1	0x1443
-+#define MT6315_BUCK_TOP_ELR0	0x1449
-+#define MT6315_BUCK_TOP_ELR4	0x144d
-+#define MT6315_BUCK_TOP_ELR6	0x144f
-+#define MT6315_BUCK_VBUCK1_DBG0	0x1499
-+#define MT6315_BUCK_VBUCK1_DBG4	0x149d
-+#define MT6315_BUCK_VBUCK3_DBG0	0x1599
-+#define MT6315_BUCK_VBUCK3_DBG4	0x159d
-+#define MT6315_BUCK_VBUCK4_DBG0	0x1619
-+#define MT6315_BUCK_VBUCK4_DBG4	0x161d
++#define MT6315_SWCID_H				0xb
++#define MT6315_TOP2_ELR7			0x139
++#define MT6315_TOP_TMA_KEY			0x39f
++#define MT6315_TOP_TMA_KEY_H			0x3a0
++#define MT6315_BUCK_TOP_CON0			0x1440
++#define MT6315_BUCK_TOP_CON1			0x1443
++#define MT6315_BUCK_TOP_ELR0			0x1449
++#define MT6315_BUCK_TOP_ELR2			0x144b
++#define MT6315_BUCK_TOP_ELR4			0x144d
++#define MT6315_BUCK_TOP_ELR6			0x144f
++#define MT6315_VBUCK1_DBG0			0x1499
++#define MT6315_VBUCK1_DBG4			0x149d
++#define MT6315_VBUCK2_DBG0			0x1519
++#define MT6315_VBUCK2_DBG4			0x151d
++#define MT6315_VBUCK3_DBG0			0x1599
++#define MT6315_VBUCK3_DBG4			0x159d
++#define MT6315_VBUCK4_DBG0			0x1619
++#define MT6315_VBUCK4_DBG4			0x161d
 +#define MT6315_BUCK_TOP_4PHASE_ANA_CON42	0x16b1
 +
-+#define PROTECTION_KEY_H 0x9C
-+#define PROTECTION_KEY 0xEA
++#define PROTECTION_KEY_H			0x9C
++#define PROTECTION_KEY				0xEA
 +
 +#endif /* __LINUX_REGULATOR_MT6315_H */
 diff --git a/include/linux/regulator/mt6359-regulator.h b/include/linux/regulator/mt6359-regulator.h
@@ -44836,3 +45810,163 @@ index 8c1cf5ec1e18e68a0f7b9093da5df4224d1864bc..efedc54806f39d706b5c6ce057114b73
  #define V4L2_PIX_FMT_INZI     v4l2_fourcc('I', 'N', 'Z', 'I') /* Intel Planar Greyscale 10-bit and Depth 16-bit */
  #define V4L2_PIX_FMT_SUNXI_TILED_NV12 v4l2_fourcc('S', 'T', '1', '2') /* Sunxi Tiled NV12 Format */
  #define V4L2_PIX_FMT_CNF4     v4l2_fourcc('C', 'N', 'F', '4') /* Intel 4-bit packed depth confidence information */
+diff --git a/sound/soc/codecs/mt6359.c b/sound/soc/codecs/mt6359.c
+index d20c59a8752460edfea4f1a2f95cc480740a1df4..6de0d744fa9eb3611eabbbd35a02f29853e8273a 100644
+--- a/sound/soc/codecs/mt6359.c
++++ b/sound/soc/codecs/mt6359.c
+@@ -1943,9 +1943,6 @@ static const struct snd_soc_dapm_widget mt6359_dapm_widgets[] = {
+ 	SND_SOC_DAPM_SUPPLY_S("CLK_BUF", SUPPLY_SEQ_CLK_BUF,
+ 			      MT6359_DCXO_CW12,
+ 			      RG_XO_AUDIO_EN_M_SFT, 0, NULL, 0),
+-	SND_SOC_DAPM_SUPPLY_S("LDO_VAUD18", SUPPLY_SEQ_LDO_VAUD18,
+-			      MT6359_LDO_VAUD18_CON0,
+-			      RG_LDO_VAUD18_EN_SFT, 0, NULL, 0),
+ 	SND_SOC_DAPM_SUPPLY_S("AUDGLB", SUPPLY_SEQ_AUD_GLB,
+ 			      MT6359_AUDDEC_ANA_CON13,
+ 			      RG_AUDGLB_PWRDN_VA32_SFT, 1, NULL, 0),
+@@ -1965,6 +1962,8 @@ static const struct snd_soc_dapm_widget mt6359_dapm_widgets[] = {
+ 	SND_SOC_DAPM_SUPPLY_S("AUDIF_CK", SUPPLY_SEQ_TOP_CK,
+ 			      MT6359_AUD_TOP_CKPDN_CON0,
+ 			      RG_AUDIF_CK_PDN_SFT, 1, NULL, 0),
++	SND_SOC_DAPM_REGULATOR_SUPPLY("vaud18", 0, 0),
++
+ 	/* Digital Clock */
+ 	SND_SOC_DAPM_SUPPLY_S("AUDIO_TOP_AFE_CTL", SUPPLY_SEQ_AUD_TOP_LAST,
+ 			      MT6359_AUDIO_TOP_CON0,
+@@ -2314,7 +2313,7 @@ static int mt_dcc_clk_connect(struct snd_soc_dapm_widget *source,
+ static const struct snd_soc_dapm_route mt6359_dapm_routes[] = {
+ 	/* Capture */
+ 	{"AIFTX_Supply", NULL, "CLK_BUF"},
+-	{"AIFTX_Supply", NULL, "LDO_VAUD18"},
++	{"AIFTX_Supply", NULL, "vaud18"},
+ 	{"AIFTX_Supply", NULL, "AUDGLB"},
+ 	{"AIFTX_Supply", NULL, "CLKSQ Audio"},
+ 	{"AIFTX_Supply", NULL, "AUD_CK"},
+@@ -2442,7 +2441,7 @@ static const struct snd_soc_dapm_route mt6359_dapm_routes[] = {
+ 
+ 	/* DL Supply */
+ 	{"DL Power Supply", NULL, "CLK_BUF"},
+-	{"DL Power Supply", NULL, "LDO_VAUD18"},
++	{"DL Power Supply", NULL, "vaud18"},
+ 	{"DL Power Supply", NULL, "AUDGLB"},
+ 	{"DL Power Supply", NULL, "CLKSQ Audio"},
+ 	{"DL Power Supply", NULL, "AUDNCP_CK"},
+@@ -2807,20 +2806,6 @@ static int mt6359_platform_driver_probe(struct platform_device *pdev)
+ 	dev_set_drvdata(&pdev->dev, priv);
+ 	priv->dev = &pdev->dev;
+ 
+-	priv->avdd_reg = devm_regulator_get(&pdev->dev, "vaud18");
+-	if (IS_ERR(priv->avdd_reg)) {
+-		dev_err(&pdev->dev, "%s(), have no vaud18 supply: %ld",
+-			__func__, PTR_ERR(priv->avdd_reg));
+-		return PTR_ERR(priv->avdd_reg);
+-	}
+-
+-	ret = regulator_enable(priv->avdd_reg);
+-	if (ret) {
+-		dev_err(&pdev->dev, "%s(), failed to enable regulator!\n",
+-			__func__);
+-		return ret;
+-	}
+-
+ 	ret = mt6359_parse_dt(priv);
+ 	if (ret) {
+ 		dev_warn(&pdev->dev, "%s() failed to parse dts\n", __func__);
+@@ -2833,30 +2818,11 @@ static int mt6359_platform_driver_probe(struct platform_device *pdev)
+ 					       ARRAY_SIZE(mt6359_dai_driver));
+ }
+ 
+-static int mt6359_platform_driver_remove(struct platform_device *pdev)
+-{
+-	struct mt6359_priv *priv = dev_get_drvdata(&pdev->dev);
+-	int ret;
+-
+-	dev_dbg(&pdev->dev, "%s(), dev name %s\n",
+-		__func__, dev_name(&pdev->dev));
+-
+-	ret = regulator_disable(priv->avdd_reg);
+-	if (ret) {
+-		dev_err(&pdev->dev, "%s(), failed to disable regulator!\n",
+-			__func__);
+-		return ret;
+-	}
+-
+-	return 0;
+-}
+-
+ static struct platform_driver mt6359_platform_driver = {
+ 	.driver = {
+ 		.name = "mt6359-sound",
+ 	},
+ 	.probe = mt6359_platform_driver_probe,
+-	.remove = mt6359_platform_driver_remove,
+ };
+ 
+ module_platform_driver(mt6359_platform_driver)
+diff --git a/sound/soc/codecs/mt6359.h b/sound/soc/codecs/mt6359.h
+index af6f07fbc4fd19e80c65398c46de5d65d3b889e9..35f806b7396dd89574e2e2e0dd0049363a8dfcee 100644
+--- a/sound/soc/codecs/mt6359.h
++++ b/sound/soc/codecs/mt6359.h
+@@ -135,11 +135,6 @@
+ /* MT6359_DCXO_CW12 */
+ #define RG_XO_AUDIO_EN_M_SFT				13
+ 
+-/* LDO_VAUD18_CON0 */
+-#define RG_LDO_VAUD18_EN_SFT				0
+-#define RG_LDO_VAUD18_EN_MASK				0x1
+-#define RG_LDO_VAUD18_EN_MASK_SFT			(0x1 << 0)
+-
+ /* AUD_TOP_CKPDN_CON0 */
+ #define RG_VOW13M_CK_PDN_SFT				13
+ #define RG_VOW13M_CK_PDN_MASK				0x1
+@@ -2132,7 +2127,6 @@
+ 
+ #define MT6359_DCXO_CW11				0x7a6
+ #define MT6359_DCXO_CW12				0x7a8
+-#define MT6359_LDO_VAUD18_CON0				0x1c98
+ 
+ #define MT6359_GPIO_MODE0				0xcc
+ #define MT6359_GPIO_MODE0_SET				0xce
+@@ -2469,7 +2463,6 @@ enum {
+ enum {
+ 	/* common */
+ 	SUPPLY_SEQ_CLK_BUF,
+-	SUPPLY_SEQ_LDO_VAUD18,
+ 	SUPPLY_SEQ_AUD_GLB,
+ 	SUPPLY_SEQ_HP_PULL_DOWN,
+ 	SUPPLY_SEQ_CLKSQ,
+@@ -2629,7 +2622,6 @@ struct mt6359_priv {
+ 	int hp_gain_ctl;
+ 	int hp_hifi_mode;
+ 	int mtkaif_protocol;
+-	struct regulator *avdd_reg;
+ };
+ 
+ #define CODEC_MT6359_NAME "mtk-codec-mt6359"
+diff --git a/sound/soc/mediatek/Kconfig b/sound/soc/mediatek/Kconfig
+index dc628fb6c10258297a62492b764b286002a7bf04..31f1431bf57926b76c20e1f247d5516a89879446 100644
+--- a/sound/soc/mediatek/Kconfig
++++ b/sound/soc/mediatek/Kconfig
+@@ -175,6 +175,7 @@ config SND_SOC_MT8192_MT6359_RT1015_RT5682
+ 	select SND_SOC_MT6359
+ 	select SND_SOC_RT1015
+ 	select SND_SOC_RT5682_I2C
++	select SND_SOC_DMIC
+ 	help
+ 	  This adds ASoC driver for Mediatek MT8192 boards
+ 	  with the MT6359 RT1015 RT5682 audio codec.
+diff --git a/sound/soc/mediatek/mt8192/mt8192-mt6359-rt1015-rt5682.c b/sound/soc/mediatek/mt8192/mt8192-mt6359-rt1015-rt5682.c
+index 41d8a8567bb3856172400f57768fb00743024fa8..b7f42a530d069431f0a40ee6dbe271aec5ded485 100644
+--- a/sound/soc/mediatek/mt8192/mt8192-mt6359-rt1015-rt5682.c
++++ b/sound/soc/mediatek/mt8192/mt8192-mt6359-rt1015-rt5682.c
+@@ -540,7 +540,9 @@ SND_SOC_DAILINK_DEFS(playback_hdmi,
+ SND_SOC_DAILINK_DEFS(primary_codec,
+ 		     DAILINK_COMP_ARRAY(COMP_CPU("ADDA")),
+ 		     DAILINK_COMP_ARRAY(COMP_CODEC("mt6359-sound",
+-						   "mt6359-snd-codec-aif1")),
++						   "mt6359-snd-codec-aif1"),
++					COMP_CODEC("dmic-codec",
++						   "dmic-hifi")),
+ 		     DAILINK_COMP_ARRAY(COMP_EMPTY()));
+ 
+ SND_SOC_DAILINK_DEFS(primary_codec_ch34,
