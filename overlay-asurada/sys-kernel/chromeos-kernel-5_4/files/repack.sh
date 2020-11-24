@@ -84,7 +84,7 @@ commit_change() {
 
   tot_commit_id="$(git log FETCH_HEAD -n 1 --pretty=format:"%h")"
   tot_name="$(git log FETCH_HEAD -n 1 --pretty=format:"%s" | \
-    sed -E 's/DO-NOT-SUBMIT: (.*[^\.]).*/\1/')"
+    sed -E 's/DO-NOT-SUBMIT: (.*[^\.]).*/\1/' | tr -d '"')"
 
   popd
 

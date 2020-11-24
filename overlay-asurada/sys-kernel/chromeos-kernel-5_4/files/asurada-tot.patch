@@ -2731,10 +2731,10 @@ index 0000000000000000000000000000000000000000..33542bc20c77a66884467650933d0c61
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8192-asurada.dtsi b/arch/arm64/boot/dts/mediatek/mt8192-asurada.dtsi
 new file mode 100755
-index 0000000000000000000000000000000000000000..9fd466d960c16626529c2571922271de2b07c206
+index 0000000000000000000000000000000000000000..d75da0bf78b16da29ddf2c29249e1eacdc22043e
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt8192-asurada.dtsi
-@@ -0,0 +1,1430 @@
+@@ -0,0 +1,1451 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
 +/*
 + * Copyright (C) 2020 MediaTek Inc.
@@ -2978,6 +2978,10 @@ index 0000000000000000000000000000000000000000..9fd466d960c16626529c2571922271de
 +	};
 +};
 +
++&mfg0 {
++	mfg-supply = <&mt6315_7_vbuck1>;
++};
++
 +/* for Audio */
 +&mt6359codec {
 +	mediatek,dmic-mode = <1>; /* one-wire */
@@ -2987,6 +2991,24 @@ index 0000000000000000000000000000000000000000..9fd466d960c16626529c2571922271de
 +
 +/* for CORE */
 +&mt6359_vgpu11_buck_reg {
++	regulator-always-on;
++};
++
++/* for APU */
++&mt6359_vproc1_buck_reg {
++	regulator-always-on;
++};
++
++/* for EMMC */
++&mt6359_vufs_ldo_reg {
++	regulator-always-on;
++};
++
++&mt6359_vemc_1_ldo_reg {
++	regulator-always-on;
++};
++
++&mt6359_vaud18_ldo_reg {
 +	regulator-always-on;
 +};
 +
@@ -3041,7 +3063,6 @@ index 0000000000000000000000000000000000000000..9fd466d960c16626529c2571922271de
 +				regulator-max-microvolt = <1193750>;
 +				regulator-enable-ramp-delay = <256>;
 +				regulator-allowed-modes = <0 1 2 4>;
-+				regulator-always-on;
 +				mtk,combined-regulator = <MT6315_VBUCK2>;
 +			};
 +		};
@@ -4184,7 +4205,7 @@ index 0000000000000000000000000000000000000000..4b33c32a01a9e0f086e3ad6746e263be
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8192.dtsi b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
 new file mode 100755
-index 0000000000000000000000000000000000000000..fceab06676083421a517702473d1599f04dd5e7c
+index 0000000000000000000000000000000000000000..deae0ef179b9dcaa7335db0b567692b060f1e96c
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
 @@ -0,0 +1,2229 @@
@@ -4845,7 +4866,7 @@ index 0000000000000000000000000000000000000000..fceab06676083421a517702473d1599f
 +				reg = <MT8192_POWER_DOMAIN_CONN>;
 +			};
 +
-+			mfg@MT8192_POWER_DOMAIN_MFG0 {
++			mfg0: mfg@MT8192_POWER_DOMAIN_MFG0 {
 +				reg = <MT8192_POWER_DOMAIN_MFG0>;
 +				#address-cells = <1>;
 +				#size-cells = <0>;
@@ -6628,10 +6649,10 @@ index 0f8c0e1478c8145ada5a5e1f6813321f503fd9dd..568e3ac4b626ce4853baeaa756a9c325
  CONFIG_VIDEO_MEDIATEK_VCODEC=m
  CONFIG_VIDEO_OV5695=m
 diff --git a/chromeos/config/arm64/common.config b/chromeos/config/arm64/common.config
-index 8b03c30d38f5763370a1434794b2e02c9103cbd5..2545fc3d2b58ab2b213c3b3bfcb68ccdb5a3bb94 100644
+index 1b8394f25369ee4eff64843bd369d22ef25ecdce..387baf027f1addbff3f00232969b1be969b2da84 100644
 --- a/chromeos/config/arm64/common.config
 +++ b/chromeos/config/arm64/common.config
-@@ -41,6 +41,7 @@ CONFIG_DEBUG_GPIO=y
+@@ -40,6 +40,7 @@ CONFIG_DEBUG_GPIO=y
  CONFIG_DEVFREQ_GOV_PERFORMANCE=y
  CONFIG_DEVFREQ_GOV_POWERSAVE=y
  CONFIG_DEVFREQ_GOV_USERSPACE=y
@@ -6640,10 +6661,10 @@ index 8b03c30d38f5763370a1434794b2e02c9103cbd5..2545fc3d2b58ab2b213c3b3bfcb68ccd
  CONFIG_DRM_PANEL_SIMPLE=y
  CONFIG_EXTCON_USBC_CROS_EC=y
 diff --git a/chromeos/config/armel/common.config b/chromeos/config/armel/common.config
-index 6652af0497d734cce637749c66525419c866b447..8cf89f44ea5553646c5b5278503b70fa95dfa901 100644
+index 4344316c06d6928ebfbb1cb4e605d3d431b44a6b..302008ee0b31cc03359c8accfa9eaa714286ab82 100644
 --- a/chromeos/config/armel/common.config
 +++ b/chromeos/config/armel/common.config
-@@ -44,7 +44,7 @@ CONFIG_DEVFREQ_GOV_PERFORMANCE=y
+@@ -43,7 +43,7 @@ CONFIG_DEVFREQ_GOV_PERFORMANCE=y
  CONFIG_DEVFREQ_GOV_POWERSAVE=y
  CONFIG_DEVFREQ_GOV_SIMPLE_ONDEMAND=y
  CONFIG_DEVFREQ_GOV_USERSPACE=y
@@ -18483,6 +18504,111 @@ index 0000000000000000000000000000000000000000..7644e3972fc742e35fc8e6bd22f08f6e
 +MODULE_DESCRIPTION("Truly TD-td4330 LCD Panel Driver");
 +MODULE_LICENSE("GPL v2");
 +
+diff --git a/drivers/i2c/busses/i2c-mt65xx.c b/drivers/i2c/busses/i2c-mt65xx.c
+index 33de99b7bc20c0ea215991c43efa1f89529e474e..2ffd2f354d0ae3e3edbcd552e191d72626a21fa4 100755
+--- a/drivers/i2c/busses/i2c-mt65xx.c
++++ b/drivers/i2c/busses/i2c-mt65xx.c
+@@ -38,6 +38,7 @@
+ #define I2C_IO_CONFIG_OPEN_DRAIN	0x0003
+ #define I2C_IO_CONFIG_PUSH_PULL		0x0000
+ #define I2C_SOFT_RST			0x0001
++#define I2C_HANDSHAKE_RST		0x0020
+ #define I2C_FIFO_ADDR_CLR		0x0001
+ #define I2C_DELAY_LEN			0x0002
+ #define I2C_TIME_CLR_VALUE		0x0000
+@@ -45,6 +46,7 @@
+ #define I2C_WRRD_TRANAC_VALUE		0x0002
+ #define I2C_RD_TRANAC_VALUE		0x0001
+ #define I2C_SCL_MIS_COMP_VALUE		0x0000
++#define I2C_CHN_CLR_FLAG		0x0000
+ 
+ #define I2C_DMA_CON_TX			0x0000
+ #define I2C_DMA_CON_RX			0x0001
+@@ -54,7 +56,9 @@
+ #define I2C_DMA_START_EN		0x0001
+ #define I2C_DMA_INT_FLAG_NONE		0x0000
+ #define I2C_DMA_CLR_FLAG		0x0000
++#define I2C_DMA_WARM_RST		0x0001
+ #define I2C_DMA_HARD_RST		0x0002
++#define I2C_DMA_HANDSHAKE_RST		0x0004
+ 
+ #define MAX_SAMPLE_CNT_DIV		8
+ #define MAX_STEP_CNT_DIV		64
+@@ -475,11 +479,24 @@ static void mtk_i2c_init_hw(struct mtk_i2c *i2c)
+ {
+ 	u16 control_reg;
+ 
+-	writel(I2C_DMA_HARD_RST, i2c->pdmabase + OFFSET_RST);
+-	udelay(50);
+-	writel(I2C_DMA_CLR_FLAG, i2c->pdmabase + OFFSET_RST);
+-
+-	mtk_i2c_writew(i2c, I2C_SOFT_RST, OFFSET_SOFTRESET);
++	if (i2c->dev_comp->dma_sync) {
++		writel(I2C_DMA_WARM_RST, i2c->pdmabase + OFFSET_RST);
++		udelay(10);
++		writel(I2C_DMA_CLR_FLAG, i2c->pdmabase + OFFSET_RST);
++		udelay(10);
++		writel(I2C_DMA_HANDSHAKE_RST | I2C_DMA_HARD_RST,
++		       i2c->pdmabase + OFFSET_RST);
++		mtk_i2c_writew(i2c, I2C_HANDSHAKE_RST | I2C_SOFT_RST,
++			       OFFSET_SOFTRESET);
++		udelay(10);
++		writel(I2C_DMA_CLR_FLAG, i2c->pdmabase + OFFSET_RST);
++		mtk_i2c_writew(i2c, I2C_CHN_CLR_FLAG, OFFSET_SOFTRESET);
++	} else {
++		writel(I2C_DMA_HARD_RST, i2c->pdmabase + OFFSET_RST);
++		udelay(50);
++		writel(I2C_DMA_CLR_FLAG, i2c->pdmabase + OFFSET_RST);
++		mtk_i2c_writew(i2c, I2C_SOFT_RST, OFFSET_SOFTRESET);
++	}
+ 
+ 	/* Set ioconfig */
+ 	if (i2c->use_push_pull)
+@@ -1258,7 +1275,8 @@ static int mtk_i2c_probe(struct platform_device *pdev)
+ 	mtk_i2c_clock_disable(i2c);
+ 
+ 	ret = devm_request_irq(&pdev->dev, irq, mtk_i2c_irq,
+-			       IRQF_TRIGGER_NONE, I2C_DRV_NAME, i2c);
++			       IRQF_NO_SUSPEND | IRQF_TRIGGER_NONE,
++			       I2C_DRV_NAME, i2c);
+ 	if (ret < 0) {
+ 		dev_err(&pdev->dev,
+ 			"Request I2C IRQ %d fail\n", irq);
+@@ -1285,7 +1303,16 @@ static int mtk_i2c_remove(struct platform_device *pdev)
+ }
+ 
+ #ifdef CONFIG_PM_SLEEP
+-static int mtk_i2c_resume(struct device *dev)
++static int mtk_i2c_suspend_noirq(struct device *dev)
++{
++	struct mtk_i2c *i2c = dev_get_drvdata(dev);
++
++	i2c_mark_adapter_suspended(&i2c->adap);
++
++	return 0;
++}
++
++static int mtk_i2c_resume_noirq(struct device *dev)
+ {
+ 	int ret;
+ 	struct mtk_i2c *i2c = dev_get_drvdata(dev);
+@@ -1300,12 +1327,15 @@ static int mtk_i2c_resume(struct device *dev)
+ 
+ 	mtk_i2c_clock_disable(i2c);
+ 
++	i2c_mark_adapter_resumed(&i2c->adap);
++
+ 	return 0;
+ }
+ #endif
+ 
+ static const struct dev_pm_ops mtk_i2c_pm = {
+-	SET_SYSTEM_SLEEP_PM_OPS(NULL, mtk_i2c_resume)
++	SET_NOIRQ_SYSTEM_SLEEP_PM_OPS(mtk_i2c_suspend_noirq,
++				      mtk_i2c_resume_noirq)
+ };
+ 
+ static struct platform_driver mtk_i2c_driver = {
 diff --git a/drivers/interconnect/Kconfig b/drivers/interconnect/Kconfig
 index b6ea8f0a612266667a4a3ec6cbba8a1a92983b42..f99636a44fdbfc64318d19e8c955c95d50b21f00 100644
 --- a/drivers/interconnect/Kconfig
@@ -27839,7 +27965,7 @@ index f6cd8a66060286a7192eb162fd2d3f574f5a43cd..07240eaf4055e8fee7a94f8d971446c0
  		.compatible = "mediatek,mt6397",
  		.data = &mt6397_core,
 diff --git a/drivers/mmc/core/host.c b/drivers/mmc/core/host.c
-index f6244ae50660a0fbbcf055c385cc50da6a545190..01b5c6a6388efbfd7947521f1c9e20577fa06f87 100644
+index 8a35084c5ce42fa80dc286d746d1d8e9059d96cb..1a467db486cb7929f5a7481feeb7237d30e4a805 100644
 --- a/drivers/mmc/core/host.c
 +++ b/drivers/mmc/core/host.c
 @@ -294,6 +294,8 @@ int mmc_of_parse(struct mmc_host *host)
@@ -27867,90 +27993,6 @@ index de14b5845f525e0e8279465695eae885f7bd3ff9..b107e451e674c5a414f6315759a8ef29
  		mmc_power_off(host);
  		mmc_card_set_suspended(host->card);
  	}
-diff --git a/drivers/mmc/host/mtk-sd.c b/drivers/mmc/host/mtk-sd.c
-index ae93ad7cd5212d351ff75fd5ae654f7fa17feab8..6f37268e7389b63675d45c77686409f23b60ad0f 100644
---- a/drivers/mmc/host/mtk-sd.c
-+++ b/drivers/mmc/host/mtk-sd.c
-@@ -78,9 +78,12 @@
- #define MSDC_PAD_TUNE0   0xf0
- #define PAD_DS_TUNE      0x188
- #define PAD_CMD_TUNE     0x18c
-+#define EMMC51_CFG0	 0x204
- #define EMMC50_CFG0      0x208
-+#define EMMC50_CFG1      0x20c
- #define EMMC50_CFG3      0x220
- #define SDC_FIFO_CFG     0x228
-+#define CQHCI_SETTING	 0x7fc
- 
- /*--------------------------------------------------------------------------*/
- /* Top Pad Register Offset                                                  */
-@@ -261,15 +264,26 @@
- 
- #define PAD_CMD_TUNE_RX_DLY3	  (0x1f << 1)  /* RW */
- 
-+/* EMMC51_CFG0 mask */
-+#define CMDQ_RDAT_CNT		  (0x3ff << 12)	/* RW */
-+
- #define EMMC50_CFG_PADCMD_LATCHCK (0x1 << 0)   /* RW */
- #define EMMC50_CFG_CRCSTS_EDGE    (0x1 << 3)   /* RW */
- #define EMMC50_CFG_CFCSTS_SEL     (0x1 << 4)   /* RW */
-+#define EMMC50_CFG_CMD_RESP_SEL   (0x1 << 9)   /* RW */
-+
-+/* EMMC50_CFG1 mask */
-+#define EMMC50_CFG1_DS_CFG        (0x1 << 28)  /* RW */
- 
- #define EMMC50_CFG3_OUTS_WR       (0x1f << 0)  /* RW */
- 
- #define SDC_FIFO_CFG_WRVALIDSEL   (0x1 << 24)  /* RW */
- #define SDC_FIFO_CFG_RDVALIDSEL   (0x1 << 25)  /* RW */
- 
-+/* CQHCI_SETTING */
-+#define CQHCI_RD_CMD_WND_SEL	  (0x1 << 14) /* RW */
-+#define CQHCI_WR_CMD_WND_SEL	  (0x1 << 15) /* RW */
-+
- /* EMMC_TOP_CONTROL mask */
- #define PAD_RXDLY_SEL           (0x1 << 0)      /* RW */
- #define DELAY_EN                (0x1 << 1)      /* RW */
-@@ -2272,6 +2286,31 @@ static int msdc_get_cd(struct mmc_host *mmc)
- 		return !val;
- }
- 
-+static void msdc_hs400_enhanced_strobe(struct mmc_host *mmc,
-+				       struct mmc_ios *ios)
-+{
-+	struct msdc_host *host = mmc_priv(mmc);
-+
-+	if (ios->enhanced_strobe) {
-+		msdc_prepare_hs400_tuning(mmc, ios);
-+		sdr_set_field(host->base + EMMC50_CFG0, EMMC50_CFG_PADCMD_LATCHCK, 1);
-+		sdr_set_field(host->base + EMMC50_CFG0, EMMC50_CFG_CMD_RESP_SEL, 1);
-+		sdr_set_field(host->base + EMMC50_CFG1, EMMC50_CFG1_DS_CFG, 1);
-+
-+		sdr_clr_bits(host->base + CQHCI_SETTING, CQHCI_RD_CMD_WND_SEL);
-+		sdr_clr_bits(host->base + CQHCI_SETTING, CQHCI_WR_CMD_WND_SEL);
-+		sdr_clr_bits(host->base + EMMC51_CFG0, CMDQ_RDAT_CNT);
-+	} else {
-+		sdr_set_field(host->base + EMMC50_CFG0, EMMC50_CFG_PADCMD_LATCHCK, 0);
-+		sdr_set_field(host->base + EMMC50_CFG0, EMMC50_CFG_CMD_RESP_SEL, 0);
-+		sdr_set_field(host->base + EMMC50_CFG1, EMMC50_CFG1_DS_CFG, 0);
-+
-+		sdr_set_bits(host->base + CQHCI_SETTING, CQHCI_RD_CMD_WND_SEL);
-+		sdr_set_bits(host->base + CQHCI_SETTING, CQHCI_WR_CMD_WND_SEL);
-+		sdr_set_field(host->base + EMMC51_CFG0, CMDQ_RDAT_CNT, 0xb4);
-+	}
-+}
-+
- static void msdc_cqe_enable(struct mmc_host *mmc)
- {
- 	struct msdc_host *host = mmc_priv(mmc);
-@@ -2329,6 +2368,7 @@ static const struct mmc_host_ops mt_msdc_ops = {
- 	.set_ios = msdc_ops_set_ios,
- 	.get_ro = mmc_gpio_get_ro,
- 	.get_cd = msdc_get_cd,
-+	.hs400_enhanced_strobe = msdc_hs400_enhanced_strobe,
- 	.enable_sdio_irq = msdc_enable_sdio_irq,
- 	.ack_sdio_irq = msdc_ack_sdio_irq,
- 	.start_signal_voltage_switch = msdc_ops_switch_volt,
 diff --git a/drivers/pci/controller/pcie-mediatek.c b/drivers/pci/controller/pcie-mediatek.c
 old mode 100644
 new mode 100755
@@ -45943,30 +45985,3 @@ index af6f07fbc4fd19e80c65398c46de5d65d3b889e9..35f806b7396dd89574e2e2e0dd004936
  };
  
  #define CODEC_MT6359_NAME "mtk-codec-mt6359"
-diff --git a/sound/soc/mediatek/Kconfig b/sound/soc/mediatek/Kconfig
-index dc628fb6c10258297a62492b764b286002a7bf04..31f1431bf57926b76c20e1f247d5516a89879446 100644
---- a/sound/soc/mediatek/Kconfig
-+++ b/sound/soc/mediatek/Kconfig
-@@ -175,6 +175,7 @@ config SND_SOC_MT8192_MT6359_RT1015_RT5682
- 	select SND_SOC_MT6359
- 	select SND_SOC_RT1015
- 	select SND_SOC_RT5682_I2C
-+	select SND_SOC_DMIC
- 	help
- 	  This adds ASoC driver for Mediatek MT8192 boards
- 	  with the MT6359 RT1015 RT5682 audio codec.
-diff --git a/sound/soc/mediatek/mt8192/mt8192-mt6359-rt1015-rt5682.c b/sound/soc/mediatek/mt8192/mt8192-mt6359-rt1015-rt5682.c
-index 41d8a8567bb3856172400f57768fb00743024fa8..b7f42a530d069431f0a40ee6dbe271aec5ded485 100644
---- a/sound/soc/mediatek/mt8192/mt8192-mt6359-rt1015-rt5682.c
-+++ b/sound/soc/mediatek/mt8192/mt8192-mt6359-rt1015-rt5682.c
-@@ -540,7 +540,9 @@ SND_SOC_DAILINK_DEFS(playback_hdmi,
- SND_SOC_DAILINK_DEFS(primary_codec,
- 		     DAILINK_COMP_ARRAY(COMP_CPU("ADDA")),
- 		     DAILINK_COMP_ARRAY(COMP_CODEC("mt6359-sound",
--						   "mt6359-snd-codec-aif1")),
-+						   "mt6359-snd-codec-aif1"),
-+					COMP_CODEC("dmic-codec",
-+						   "dmic-hifi")),
- 		     DAILINK_COMP_ARRAY(COMP_EMPTY()));
- 
- SND_SOC_DAILINK_DEFS(primary_codec_ch34,
