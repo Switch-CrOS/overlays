@@ -10,7 +10,7 @@ or portage actions."
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="-* arm64 arm"
-IUSE=""
+IUSE="bob-arc64"
 S="${WORKDIR}"
 
 # Add dependencies on other ebuilds from within this board overlay
@@ -20,7 +20,11 @@ RDEPEND="
 DEPEND="${RDEPEND}"
 
 src_install() {
-	doappid "{564AC308-CBD5-485D-9EF5-EB97DBB5F264}" "CHROMEBOOK"
+	if use bob-arc64; then
+		doappid "{1EBA9C6B-32D9-4072-91B7-ED12651315CA}" "CHROMEBOOK"
+	else
+		doappid "{564AC308-CBD5-485D-9EF5-EB97DBB5F264}" "CHROMEBOOK"
+	fi
 
 	# Install audio config files
 	local audio_config_dir="${FILESDIR}/audio-config"

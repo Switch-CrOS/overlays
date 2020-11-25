@@ -16,7 +16,7 @@ or portage actions."
 
 LICENSE="BSD-Google"
 KEYWORDS="-* ~arm64 ~arm"
-IUSE="elm-cheets elm-kernelnext"
+IUSE="elm-arc64 elm-cheets elm-kernelnext"
 
 # Add dependencies on other ebuilds from within this board overlay
 DEPEND=""
@@ -27,7 +27,9 @@ RDEPEND="${DEPEND}
 "
 
 src_install() {
-	if use elm-cheets; then
+	if use elm-arc64; then
+		doappid "{AB7C8669-9930-4EE3-BC66-46C7F27CC8FA}" "CHROMEBOOK"
+	elif use elm-cheets; then
 		doappid "{3DFF3394-F97E-4971-83C6-2C5C06A9953D}" "CHROMEBOOK"
 	elif use elm-kernelnext; then
 		doappid "{5C030156-1D45-11EA-871D-230545999E89}" "CHROMEBOOK"

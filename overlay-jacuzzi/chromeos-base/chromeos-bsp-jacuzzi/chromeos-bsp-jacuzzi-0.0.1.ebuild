@@ -12,7 +12,7 @@ or portage actions."
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="-* arm64 arm"
-IUSE=""
+IUSE="jacuzzi-arc64"
 S="${WORKDIR}"
 
 # Add dependencies on other ebuilds from within this board overlay
@@ -23,7 +23,11 @@ RDEPEND="
 DEPEND="${RDEPEND}"
 
 src_install() {
-	doappid "{BA7092E6-2B09-4620-BBB0-FAA34397F3F8}" "CHROMEBOOK"
+	if use jacuzzi-arc64; then
+		doappid "{B39D4D21-4167-4DBE-A4DE-40E192D7FEC4}" "CHROMEBOOK"
+	else
+		doappid "{BA7092E6-2B09-4620-BBB0-FAA34397F3F8}" "CHROMEBOOK"
+	fi
 
 	# Install audio config
 	unibuild_install_files audio-files

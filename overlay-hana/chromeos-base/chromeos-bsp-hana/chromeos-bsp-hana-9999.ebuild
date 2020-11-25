@@ -16,7 +16,7 @@ or portage actions."
 
 LICENSE="BSD-Google"
 KEYWORDS="-* ~arm64 ~arm"
-IUSE="hana-kernelnext"
+IUSE="hana-arc64 hana-kernelnext"
 
 # Add dependencies on other ebuilds from within this board overlay
 DEPEND=""
@@ -27,7 +27,9 @@ RDEPEND="${DEPEND}
 "
 
 src_install() {
-	if use hana-kernelnext; then
+	if use hana-arc64; then
+		doappid "{D9CAAC5F-ABC7-401B-96B5-54F449368ABE}" "CHROMEBOOK"
+	elif use hana-kernelnext; then
 		doappid "{3C72E98C-09C7-11EA-801F-3B16A88ADBE8}" "CHROMEBOOK"
 	else
 		doappid "{AAE972E1-A913-C860-B7AB-BF7F267F199B}" "CHROMEBOOK"

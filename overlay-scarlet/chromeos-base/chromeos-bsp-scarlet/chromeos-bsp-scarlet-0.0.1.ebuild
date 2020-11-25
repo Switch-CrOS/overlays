@@ -10,7 +10,7 @@ or portage actions."
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="-* arm64 arm"
-IUSE="scarlet-arcnext"
+IUSE="scarlet-arc64 scarlet-arcnext"
 S="${WORKDIR}"
 
 # Add dependencies on other ebuilds from within this board overlay
@@ -20,7 +20,9 @@ RDEPEND="
 DEPEND="${RDEPEND}"
 
 src_install() {
-	if use scarlet-arcnext; then
+	if use scarlet-arc64; then
+		doappid "{A8347276-8C7D-40D0-AF27-DFF0122CF932}" "CHROMEBOOK"
+	elif use scarlet-arcnext; then
 		doappid "{8A1450CE-E1AF-DF7B-D242-74AB10A7B1F9}" "CHROMEBOOK"
 	else
 		doappid "{F1C30EB2-8429-4A18-9321-93E224753A98}" "CHROMEBOOK"
