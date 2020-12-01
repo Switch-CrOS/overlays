@@ -18,7 +18,7 @@ or portage actions."
 
 LICENSE="BSD-Google"
 KEYWORDS="-* arm64 arm"
-IUSE="hana-kernelnext"
+IUSE="elm-arc64 elm-cheets elm-kernelnext"
 
 # Add dependencies on other ebuilds from within this board overlay
 DEPEND=""
@@ -29,31 +29,19 @@ RDEPEND="${DEPEND}
 "
 
 src_install() {
-	if use hana-kernelnext; then
-		doappid "{3C72E98C-09C7-11EA-801F-3B16A88ADBE8}" "CHROMEBOOK"
+	if use elm-arc64; then
+		doappid "{AB7C8669-9930-4EE3-BC66-46C7F27CC8FA}" "CHROMEBOOK"
+	elif use elm-cheets; then
+		doappid "{3DFF3394-F97E-4971-83C6-2C5C06A9953D}" "CHROMEBOOK"
+	elif use elm-kernelnext; then
+		doappid "{5C030156-1D45-11EA-871D-230545999E89}" "CHROMEBOOK"
 	else
-		doappid "{AAE972E1-A913-C860-B7AB-BF7F267F199B}" "CHROMEBOOK"
+		doappid "{5BF597B2-ADE3-52C9-1DDA-95719C914AFF}" "CHROMEBOOK"
 	fi
 
 	# Install audio config files.
 	local audio_config_dir="${FILESDIR}/audio-config"
-	install_audio_configs hana "${audio_config_dir}"
-
-	# Install platform specific config files for power_manager.
-	insinto "/usr/share/power_manager/board_specific"
-	doins "${FILESDIR}"/powerd_prefs/*
-	# The 4.19 kernel uses a new non linear backlight scale.
-	# To match the battery default backlight level we change the
-	# target % using file internal_backlight_no_als_battery_brightness.
-	# Note the intention is to have the same resulting real world brightness.
-	# b/149870759
-	# Also the default brightness for level 1/16 is too dim, and on some skus the
-	# backlight is not even on at that level.
-	# So that is also made brighter with min_visible_backlight_level.
-	# This should be moved to the main value after kernelnext is merged back.
-	if use hana-kernelnext; then
-		doins "${FILESDIR}"/powerd_prefs_kernelnext/*
-	fi
+	install_audio_configs elm "${audio_config_dir}"
 
 	# Install rules to enable WoWLAN on startup.
 	udev_dorules "${FILESDIR}/99-mwifiex-wowlan.rules"
