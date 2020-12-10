@@ -10,7 +10,7 @@ KEYWORDS="-* arm"
 IUSE=""
 
 DEPEND="
-    media-libs/mali-drivers-valhall-bin
-    x11-drivers/opengles-headers
+	media-libs/mali-drivers-valhall-bin
+	x11-drivers/opengles-headers
 "
 RDEPEND="${DEPEND}"
