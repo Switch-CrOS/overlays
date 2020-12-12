@@ -15,7 +15,8 @@ or portage actions."
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="-* ~arm64 ~arm"
-IUSE=""
+IUSE="trogdor-kernelnext"
+
 
 RDEPEND="
 	chromeos-base/chromeos-bsp-baseboard-trogdor
@@ -23,7 +24,11 @@ RDEPEND="
 DEPEND="${RDEPEND}"
 
 src_install() {
-	doappid "{9023C063-08D6-4A4F-908C-BCF97DE8BA69}" "CHROMEBOOK"
+	if use trogdor-kernelnext; then
+		doappid "{9F765BCD-AC24-C22B-B39A-467B190B7FEF}" "CHROMEBOOK"
+	else
+		doappid "{9023C063-08D6-4A4F-908C-BCF97DE8BA69}" "CHROMEBOOK"
+	fi
 
 	# Install audio config
 	unibuild_install_files audio-files
