@@ -27,4 +27,7 @@ modify_kernel_command_line() {
 
   # Load GuC and HuC firmware
   echo "i915.enable_guc=2" >> "$1"
+
+  # Disable xDomain protocol on the thunderbolt driver
+  echo "xdomain=0" >> "$1"
 }
