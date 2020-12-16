@@ -1,7 +1,7 @@
 # Copyright 2015 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=4
+EAPI=7
 
 inherit appid cros-audio-configs
 
@@ -11,7 +11,7 @@ or portage actions."
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="-* amd64 x86"
-IUSE="kernelnext"
+IUSE=""
 S="${WORKDIR}"
 
 # Add dependencies on other ebuilds from within this board overlay
@@ -24,11 +24,7 @@ src_install() {
 	doappid "{00599913-5741-F624-6375-E732C4602915}" "CHROMEBOOK"
 
 	# Install audio configs.
-	if use kernelnext; then
-		local audio_config_dir="${FILESDIR}/kernelnext-audio-config"
-	else
-		local audio_config_dir="${FILESDIR}/audio-config"
-	fi
+	local audio_config_dir="${FILESDIR}/audio-config"
 	install_audio_configs reks "${audio_config_dir}"
 
 	# Install platform specific config files for power_manager.
