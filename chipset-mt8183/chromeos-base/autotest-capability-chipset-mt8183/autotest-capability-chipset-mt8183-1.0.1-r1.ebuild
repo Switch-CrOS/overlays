@@ -3,7 +3,7 @@
 
 EAPI=6
 
-DESCRIPTION="Install autotest capabilities for chipset-mt8173"
+DESCRIPTION="Install autotest capabilities for chipset-mt8183"
 
 LICENSE="BSD-Google"
 SLOT="0"
