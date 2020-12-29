@@ -9,3 +9,8 @@ HOMEPAGE="https://www.chromium.org/chromium-os"
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="-* amd64 x86"
+
+DEPEND="
+	chromeos-base/chromeos-config-bsp-puff
+"
+RDEPEND="${DEPEND}"
