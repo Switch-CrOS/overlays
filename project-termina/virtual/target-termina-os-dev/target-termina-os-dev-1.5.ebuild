@@ -41,8 +41,6 @@ RDEPEND="
 	chromeos-base/chromeos-dev-root
 	dev-python/cherrypy
 	dev-python/dbus-python
-	dev-python/elementtree
-	dev-python/pygobject
 	dev-util/mem
 	dev-util/strace
 	net-analyzer/tcpdump
