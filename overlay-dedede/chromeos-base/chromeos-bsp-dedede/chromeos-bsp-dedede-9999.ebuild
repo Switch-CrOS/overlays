@@ -21,7 +21,6 @@ IUSE=""
 RDEPEND="
 	chromeos-base/sof-binary
 	chromeos-base/sof-topology
-	media-libs/ipu6se-firmware
 	chromeos-base/touch_updater
 "
 DEPEND="${RDEPEND}"
