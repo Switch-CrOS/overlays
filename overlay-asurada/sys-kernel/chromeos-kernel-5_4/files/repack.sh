@@ -109,7 +109,7 @@ git diff --full-index ${base} ${tot_commit_id} > asurada-tot.patch
 by running \`sh repack.sh $1\`
 
 BUG=b:153619974
-TEST=cros_workon-asurada stop chromeos-kernel-5_4
+TEST=cros-workon-asurada stop chromeos-kernel-5_4
      emerge-asurada chromeos-kernel-5_4
 "
 END
@@ -137,6 +137,6 @@ generate_new_squash "$1"
 update_ebuild
 commit_change "$1"
 
-info "Please run \`cros_workon-asurada stop chromeos-kernel-5_4 &&"\
+info "Please run \`cros-workon-asurada stop chromeos-kernel-5_4 &&"\
   "emerge-asurada chromeos-kernel-5_4\` in chroot to verify the result."
 
