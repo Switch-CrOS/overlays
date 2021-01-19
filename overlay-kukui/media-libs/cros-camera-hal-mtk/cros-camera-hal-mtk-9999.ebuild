@@ -5,7 +5,8 @@ EAPI=6
 
 CROS_WORKON_PROJECT="chromiumos/platform2"
 CROS_WORKON_LOCALNAME="../platform2"
-CROS_WORKON_SUBTREE=".gn camera/build camera/common camera/hal/mediatek camera/include camera/mojo common-mk metrics chromeos-config"
+# TODO: remove dependency on camera_buffer_handle.h inside camera/common
+CROS_WORKON_SUBTREE=".gn camera/common camera/hal/mediatek common-mk"
 CROS_WORKON_OUTOFTREE_BUILD="1"
 
 PLATFORM_SUBDIR="camera/hal/mediatek"
@@ -20,12 +21,9 @@ KEYWORDS="-* ~arm ~arm64"
 
 RDEPEND="
 	chromeos-base/chromeos-config-tools
-	media-libs/cros-camera-libcab
+	chromeos-base/cros-camera-libs
 	media-libs/cros-camera-libcamera_client
-	media-libs/cros-camera-libcamera_common
 	media-libs/cros-camera-libcamera_metadata
-	media-libs/cros-camera-libcamera_v4l2_device
-	media-libs/cros-camera-libcbm
 	media-libs/libsync
 	media-libs/mtk-hal-config
 	media-libs/mtk-isp-3a-libs-bin
@@ -33,7 +31,6 @@ RDEPEND="
 	media-libs/mtk-tuning-libs-bin"
 
 DEPEND="${RDEPEND}
-	chromeos-base/metrics
 	media-libs/cros-camera-android-headers
 	media-libs/libyuv
 	sys-kernel/linux-headers
