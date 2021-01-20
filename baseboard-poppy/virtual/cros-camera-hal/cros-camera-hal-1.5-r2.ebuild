@@ -1,1 +1,0 @@
-cros-camera-hal-1.5.ebuild
