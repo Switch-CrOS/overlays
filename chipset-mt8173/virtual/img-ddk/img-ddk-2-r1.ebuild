@@ -1,1 +1,0 @@
-img-ddk-2.ebuild
