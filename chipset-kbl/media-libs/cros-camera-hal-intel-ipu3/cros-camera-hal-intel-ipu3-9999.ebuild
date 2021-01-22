@@ -20,16 +20,14 @@ SLOT="0"
 KEYWORDS="-* ~amd64"
 
 RDEPEND="
+	chromeos-base/cros-camera-android-deps
 	chromeos-base/cros-camera-libs
 	dev-libs/expat
-	media-libs/cros-camera-libcamera_client
-	media-libs/cros-camera-libcamera_metadata
 	media-libs/intel-3a-libs-bin
 	media-libs/intel-pvl-libs-bin
 	media-libs/libsync"
 
 DEPEND="${RDEPEND}
-	media-libs/cros-camera-android-headers
 	media-libs/libyuv
 	sys-kernel/linux-headers
 	virtual/jpeg:0

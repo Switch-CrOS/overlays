@@ -21,9 +21,8 @@ KEYWORDS="-* ~arm ~arm64"
 
 RDEPEND="
 	chromeos-base/chromeos-config-tools
+	chromeos-base/cros-camera-android-deps
 	chromeos-base/cros-camera-libs
-	media-libs/cros-camera-libcamera_client
-	media-libs/cros-camera-libcamera_metadata
 	media-libs/libsync
 	media-libs/mtk-hal-config
 	media-libs/mtk-isp-3a-libs-bin
@@ -31,7 +30,6 @@ RDEPEND="
 	media-libs/mtk-tuning-libs-bin"
 
 DEPEND="${RDEPEND}
-	media-libs/cros-camera-android-headers
 	media-libs/libyuv
 	sys-kernel/linux-headers
 	virtual/pkgconfig"
