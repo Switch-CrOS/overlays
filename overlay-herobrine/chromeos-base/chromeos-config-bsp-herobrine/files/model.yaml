@@ -1,0 +1,96 @@
+# Copyright 2021 The Chromium OS Authors. All rights reserved.
+#
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+camera_config_ufc: &camera_config_ufc
+  camera:
+    count: 1
+    devices:
+      - interface: "{{$ufc-interface}}"
+        facing: "front"
+        orientation: 0
+        flags:
+          support-autofocus : "{{$ufc-autofocus}}"
+          support-1080p: "{{$ufc-1080p}}"
+
+camera_config_ufc_wfc: &camera_config_ufc_wfc
+  camera:
+    count: 2
+    devices:
+      - interface: "{{$ufc-interface}}"
+        facing: "front"
+        orientation: 0
+        flags:
+          support-autofocus : "{{$ufc-autofocus}}"
+          support-1080p: "{{$ufc-1080p}}"
+      - interface: "{{$wfc-interface}}"
+        facing: "back"
+        orientation: 0
+        flags:
+          support-autofocus : "{{$wfc-autofocus}}"
+          support-1080p: "{{$wfc-1080p}}"
+
+base-config: &base_config
+  name: "{{$device-name}}"
+  identity:
+    platform-name: "Herobrine"
+    device-tree-compatible-match: "{{$fw-name}}"
+    sku-id: "{{$sku-id}}"
+  firmware:
+    no-firmware: False
+  test-label: "{{$device-name}}"
+  power: &power_common
+    low-battery-shutdown-percent: "4.0"
+    $has-keyboard-backlight: "0"
+    has-keyboard-backlight: "{{$has-keyboard-backlight}}"
+    $internal-backlight-no-als-battery-brightness: "63"
+    internal-backlight-no-als-battery-brightness: "{{$internal-backlight-no-als-battery-brightness}}"
+    internal-backlight-no-als-ac-brightness: "80"
+    disable-dark-resume: "0"
+    $set-cellular-transmit-power-for-tablet-mode: "0"
+    set-cellular-transmit-power-for-tablet-mode: "{{$set-cellular-transmit-power-for-tablet-mode}}"
+    $set-cellular-transmit-power-for-proximity: "0"
+    set-cellular-transmit-power-for-proximity: "{{$set-cellular-transmit-power-for-proximity}}"
+    $set-wifi-transmit-power-for-tablet-mode: "0"
+    set-wifi-transmit-power-for-tablet-mode: "{{$set-wifi-transmit-power-for-tablet-mode}}"
+    suspend-to-idle: "1"
+    wake-on-dp: "1"
+
+convertible-config: &convertible_config
+  <<: *base_config
+  hardware-properties:
+    is-lid-convertible: True
+    has-lid-accelerometer: True
+    has-base-accelerometer: True
+    has-base-gyroscope: True
+    has-lid-magnetometer: False
+    has-base-magnetometer: False
+    has-touchscreen: True
+
+clamshell-config: &clamshell_config
+  <<: *base_config
+  hardware-properties:
+    is-lid-convertible: False
+    has-lid-accelerometer: False
+    has-base-accelerometer: False
+    has-base-gyroscope: False
+    has-lid-magnetometer: False
+    has-base-magnetometer: False
+    $has-touchscreen: False
+    has-touchscreen: "{{$has-touchscreen}}"
+
+chromeos:
+  devices:
+    - $device-name: "herobrine"
+      $fw-name: "google,herobrine"
+      $ufc-interface: "usb"
+      $ufc-autofocus: True
+      $ufc-1080p: False
+      skus:
+        - $sku-id: 0
+          config:
+            <<: [ *convertible_config, *camera_config_ufc ]
+        - $sku-id: 1
+          config:
+            <<: [ *convertible_config, *camera_config_ufc ]

@@ -1,0 +1,36 @@
+# Copyright 2021 The Chromium OS Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Initial value just for style purposes.
+USE=""
+
+USE="${USE} senor"
+
+# Use ext4 crypto
+USE="${USE} direncryption"
+
+# Enable QMI support in ModemManager
+USE="${USE} qmi qrtr"
+
+# Magic sauce for mocktpm (override baseboard-herobrine)
+# TODO: Delete this when enabling tpm2 below
+USE="${USE} tpm -tpm2 mocktpm"
+
+# Disable the encrypted stateful because we didn't have TPM on bubs now.
+# TODO(b/179122725): Switch to TPM simulator after the simulator support encrypted stateful.
+# TODO: Delete this when enabling tmp2 below
+USE="${USE} -encrypted_stateful"
+
+# TODO: Enable this when it is ready
+# Enable the TPM simulator because we didn't have TPM on bubs now
+# USE="${USE} tpm2_simulator tpm2_simulator_manufacturer vtpm_proxy"
+
+# No Cr50 (override baseboard-herobrine)
+USE="${USE} -cr50_onboard"
+
+# No EC (override baseboard-herobrine)
+USE="${USE} -cros_ec -eclog"
+
+# We're not unibuild (even though baseboard-herobrine is)
+USE="${USE} -unibuild"
