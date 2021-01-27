@@ -74,6 +74,15 @@ update_ebuild() {
   popd
 }
 
+update_scmversion() {
+  info "Updating .scmversion..."
+
+  local old="-CL[0-9]*-v[0-9]*$"
+  local new="-CL${patch_id}-v${patchset}"
+
+  sed -i "s/${old}/${new}/g" scmversion.patch
+}
+
 commit_change() {
   info "Committing change..."
 
@@ -117,6 +126,7 @@ END
   git add chromeos-kernel-5_4-0.0."${version}".ebuild
   git add chromeos-kernel-5_4-0.0."$((version + 1))".ebuild
   git add files/asurada-tot.patch
+  git add files/scmversion.patch
   git commit -m "${commit_msg}"
   git commit --amend
 
@@ -135,6 +145,7 @@ version=""
 
 generate_new_squash "$1"
 update_ebuild
+update_scmversion
 commit_change "$1"
 
 info "Please run \`cros-workon-asurada stop chromeos-kernel-5_4 &&"\
