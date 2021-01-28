@@ -39,6 +39,8 @@ src_prepare() {
 }
 
 src_configure() {
+	# Use frozen 4.9.2 GCC, https://crbug.com/1171825
+	cros_use_frozen_gcc
 	# This fails to build with --gc-sections. crbug.com/1026145
 	filter-ldflags -Wl,--gc-sections
 	# This fails to build with ICF, because it's using BFD. crbug.com/1039206
