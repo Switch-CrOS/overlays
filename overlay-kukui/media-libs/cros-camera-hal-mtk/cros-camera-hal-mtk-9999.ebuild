@@ -5,8 +5,7 @@ EAPI=6
 
 CROS_WORKON_PROJECT="chromiumos/platform2"
 CROS_WORKON_LOCALNAME="../platform2"
-# TODO: remove dependency on camera_buffer_handle.h inside camera/common
-CROS_WORKON_SUBTREE=".gn camera/common camera/hal/mediatek common-mk"
+CROS_WORKON_SUBTREE=".gn camera/hal/mediatek common-mk"
 CROS_WORKON_OUTOFTREE_BUILD="1"
 
 PLATFORM_SUBDIR="camera/hal/mediatek"
