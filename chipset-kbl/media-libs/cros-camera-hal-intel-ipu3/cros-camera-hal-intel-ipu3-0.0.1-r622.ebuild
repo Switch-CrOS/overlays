@@ -3,11 +3,11 @@
 
 EAPI=5
 
-CROS_WORKON_COMMIT="373d9cf28928e2ac2cfe4d8c2b69e1001ed26be4"
-CROS_WORKON_TREE=("e7dba8c91c1f3257c34d4a7ffff0ea2537aeb6bb" "c920da127f686c434165b6056b1cd740f228df6b" "5d075966c161953a808cdea35ced4a17f2cb228d" "20b75d86d9d132dc9f1008aab263fe9e16ccd56f" "b321c71344a87bd236ee4d188dc0ab88fa25d8d3" "6fb2e05a1cd872b5f2b18df2a4991d7614e78e13" "039ed44189c17a7037215fc778a6f1fcb96b1433" "8d228c8e702aebee142bcbf0763a15786eb5b3bb")
+CROS_WORKON_COMMIT="aebb47adea7ec4bca325bdbca14e26b6d11b8b45"
+CROS_WORKON_TREE=("e7dba8c91c1f3257c34d4a7ffff0ea2537aeb6bb" "dd6f2706eba2f30451fae448b69e069942ccad3c" "08bf717c71bd677049a8653e2ed1beb823af949d")
 CROS_WORKON_PROJECT="chromiumos/platform2"
 CROS_WORKON_LOCALNAME="../platform2"
-CROS_WORKON_SUBTREE=".gn camera/build camera/common camera/hal/intel/ipu3 camera/include camera/mojo common-mk metrics"
+CROS_WORKON_SUBTREE=".gn camera/hal/intel/ipu3 common-mk"
 CROS_WORKON_OUTOFTREE_BUILD="1"
 CROS_WORKON_INCREMENTAL_BUILD="1"
 
@@ -22,20 +22,15 @@ SLOT="0"
 KEYWORDS="-* amd64"
 
 RDEPEND="
+	chromeos-base/cros-camera-libs
 	dev-libs/expat
-	media-libs/cros-camera-libcab
 	media-libs/cros-camera-libcamera_client
-	media-libs/cros-camera-libcamera_common
-	media-libs/cros-camera-libcamera_exif
 	media-libs/cros-camera-libcamera_metadata
-	media-libs/cros-camera-libcamera_v4l2_device
-	media-libs/cros-camera-libcbm
 	media-libs/intel-3a-libs-bin
 	media-libs/intel-pvl-libs-bin
 	media-libs/libsync"
 
 DEPEND="${RDEPEND}
-	chromeos-base/metrics
 	media-libs/cros-camera-android-headers
 	media-libs/libyuv
 	sys-kernel/linux-headers
