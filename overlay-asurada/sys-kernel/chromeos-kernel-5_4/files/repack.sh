@@ -80,7 +80,7 @@ update_scmversion() {
   local old="-CL[0-9]*-v[0-9]*$"
   local new="-CL${patch_id}-v${patchset}"
 
-  sed -i "s/${old}/${new}/g" scmversion.patch
+  sed -i "s/${old}/${new}/g" "${ebuild_dir}"/files/scmversion.patch
 }
 
 commit_change() {
