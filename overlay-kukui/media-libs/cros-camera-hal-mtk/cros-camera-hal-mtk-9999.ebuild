@@ -24,7 +24,6 @@ RDEPEND="
 	chromeos-base/cros-camera-android-deps
 	chromeos-base/cros-camera-libs
 	media-libs/libsync
-	media-libs/mtk-hal-config
 	media-libs/mtk-isp-3a-libs-bin
 	media-libs/mtk-sensor-metadata
 	media-libs/mtk-tuning-libs-bin"
