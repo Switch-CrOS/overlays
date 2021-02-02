@@ -12,7 +12,7 @@ or portage actions."
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="-* amd64 x86"
-IUSE="zork-borealis zork-kernelnext"
+IUSE="zork-arc-r zork-borealis zork-kernelnext"
 S="${WORKDIR}"
 
 # Add dependencies on other ebuilds from within this board overlay
@@ -26,7 +26,9 @@ DEPEND="
 "
 
 src_install() {
-	if use zork-borealis; then
+	if use zork-arc-r; then
+		doappid "{63ADFE60-D637-416A-A595-E5BA72D185FF}" "CHROMEBOOK"
+	elif use zork-borealis; then
 		doappid "{06A95C4E-E191-11EA-A4BD-770DFD0DD974}" "CHROMEBOOK"
 	elif use zork-kernelnext; then
 		doappid "{D694EA84-A2C3-11EA-98E4-DFA8D65B1A07}" "CHROMEBOOK"
