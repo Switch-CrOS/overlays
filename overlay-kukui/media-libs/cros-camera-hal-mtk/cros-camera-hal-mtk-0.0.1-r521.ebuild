@@ -3,8 +3,8 @@
 
 EAPI=6
 
-CROS_WORKON_COMMIT="aebb47adea7ec4bca325bdbca14e26b6d11b8b45"
-CROS_WORKON_TREE=("e7dba8c91c1f3257c34d4a7ffff0ea2537aeb6bb" "5fbda2ffbd26181d70cab2efbf804ae462029490" "69934a81b678fb974fc4a53196fb63b5dc6426e0" "08bf717c71bd677049a8653e2ed1beb823af949d")
+CROS_WORKON_COMMIT="1815173fdeda08534d0d05005b128e63f54a2014"
+CROS_WORKON_TREE=("e7dba8c91c1f3257c34d4a7ffff0ea2537aeb6bb" "dab7bc0eb28f9a4c834e374de2a147a51cd1a771" "48b0aa391be65296da8e93528c54bc8a9c5ac744" "08bf717c71bd677049a8653e2ed1beb823af949d")
 CROS_WORKON_PROJECT="chromiumos/platform2"
 CROS_WORKON_LOCALNAME="../platform2"
 # TODO: remove dependency on camera_buffer_handle.h inside camera/common
@@ -23,9 +23,8 @@ KEYWORDS="-* arm arm64"
 
 RDEPEND="
 	chromeos-base/chromeos-config-tools
+	chromeos-base/cros-camera-android-deps
 	chromeos-base/cros-camera-libs
-	media-libs/cros-camera-libcamera_client
-	media-libs/cros-camera-libcamera_metadata
 	media-libs/libsync
 	media-libs/mtk-hal-config
 	media-libs/mtk-isp-3a-libs-bin
@@ -33,7 +32,6 @@ RDEPEND="
 	media-libs/mtk-tuning-libs-bin"
 
 DEPEND="${RDEPEND}
-	media-libs/cros-camera-android-headers
 	media-libs/libyuv
 	sys-kernel/linux-headers
 	virtual/pkgconfig"

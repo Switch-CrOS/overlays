@@ -3,8 +3,8 @@
 
 EAPI=5
 
-CROS_WORKON_COMMIT="aebb47adea7ec4bca325bdbca14e26b6d11b8b45"
-CROS_WORKON_TREE=("e7dba8c91c1f3257c34d4a7ffff0ea2537aeb6bb" "dd6f2706eba2f30451fae448b69e069942ccad3c" "08bf717c71bd677049a8653e2ed1beb823af949d")
+CROS_WORKON_COMMIT="1815173fdeda08534d0d05005b128e63f54a2014"
+CROS_WORKON_TREE=("e7dba8c91c1f3257c34d4a7ffff0ea2537aeb6bb" "4f862164e2401c9b7033198de8b74d7c61d7065a" "08bf717c71bd677049a8653e2ed1beb823af949d")
 CROS_WORKON_PROJECT="chromiumos/platform2"
 CROS_WORKON_LOCALNAME="../platform2"
 CROS_WORKON_SUBTREE=".gn camera/hal/intel/ipu3 common-mk"
@@ -22,16 +22,14 @@ SLOT="0"
 KEYWORDS="-* amd64"
 
 RDEPEND="
+	chromeos-base/cros-camera-android-deps
 	chromeos-base/cros-camera-libs
 	dev-libs/expat
-	media-libs/cros-camera-libcamera_client
-	media-libs/cros-camera-libcamera_metadata
 	media-libs/intel-3a-libs-bin
 	media-libs/intel-pvl-libs-bin
 	media-libs/libsync"
 
 DEPEND="${RDEPEND}
-	media-libs/cros-camera-android-headers
 	media-libs/libyuv
 	sys-kernel/linux-headers
 	virtual/jpeg:0
