@@ -3,7 +3,7 @@
 
 EAPI=6
 
-CROS_WORKON_COMMIT="ed925189ccd0386ef1e00d2875ac5c5fd58eb095"
+CROS_WORKON_COMMIT="2807d27f9220618b4129f0c7c4343b2fbbff91eb"
 CROS_WORKON_TREE=("e7dba8c91c1f3257c34d4a7ffff0ea2537aeb6bb" "2c045d9a78590560bd84f5de4cd7a717723a13b3" "48b0aa391be65296da8e93528c54bc8a9c5ac744" "08bf717c71bd677049a8653e2ed1beb823af949d")
 CROS_WORKON_PROJECT="chromiumos/platform2"
 CROS_WORKON_LOCALNAME="../platform2"
@@ -26,7 +26,6 @@ RDEPEND="
 	chromeos-base/cros-camera-android-deps
 	chromeos-base/cros-camera-libs
 	media-libs/libsync
-	media-libs/mtk-hal-config
 	media-libs/mtk-isp-3a-libs-bin
 	media-libs/mtk-sensor-metadata
 	media-libs/mtk-tuning-libs-bin"
