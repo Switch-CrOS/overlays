@@ -31,3 +31,8 @@ HOMEPAGE="https://www.chromium.org/chromium-os/ec-development"
 
 LICENSE="BSD-Google"
 KEYWORDS="*"
+
+# b/179382868 : Remove the patch once chromeos-ish uses newer EC sources.
+PATCHES=(
+	"${FILESDIR}/chromeos-ish-ec-warning-06a82155ef.patch"
+)
