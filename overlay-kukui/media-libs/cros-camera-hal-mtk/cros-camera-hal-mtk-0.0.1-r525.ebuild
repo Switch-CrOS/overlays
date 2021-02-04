@@ -3,12 +3,11 @@
 
 EAPI=6
 
-CROS_WORKON_COMMIT="f94fa4ae6da723e39c479c9414b28f0d2e29d0c4"
-CROS_WORKON_TREE=("e7dba8c91c1f3257c34d4a7ffff0ea2537aeb6bb" "2c045d9a78590560bd84f5de4cd7a717723a13b3" "48b0aa391be65296da8e93528c54bc8a9c5ac744" "6aefce87a7cf5e4abd0f0466c5fa211f685a1193")
+CROS_WORKON_COMMIT="07fe37994717f9ef750e566d7393948eae44c54c"
+CROS_WORKON_TREE=("e7dba8c91c1f3257c34d4a7ffff0ea2537aeb6bb" "e3c1fc45691df66f9d2e22010f5c87a1c7385080" "6aefce87a7cf5e4abd0f0466c5fa211f685a1193")
 CROS_WORKON_PROJECT="chromiumos/platform2"
 CROS_WORKON_LOCALNAME="../platform2"
-# TODO: remove dependency on camera_buffer_handle.h inside camera/common
-CROS_WORKON_SUBTREE=".gn camera/common camera/hal/mediatek common-mk"
+CROS_WORKON_SUBTREE=".gn camera/hal/mediatek common-mk"
 CROS_WORKON_OUTOFTREE_BUILD="1"
 
 PLATFORM_SUBDIR="camera/hal/mediatek"
