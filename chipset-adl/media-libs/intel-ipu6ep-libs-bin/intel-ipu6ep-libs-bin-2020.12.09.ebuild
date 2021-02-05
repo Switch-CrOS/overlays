@@ -13,7 +13,9 @@ KEYWORDS="-* amd64"
 S="${WORKDIR}"
 
 src_install() {
-	dolib.so usr/"$(get_libdir)"/*.so
+	# TODO(kamesan): Restore libia_cca.so when the undefined symbols are
+	# fixed (b/179410682).
+	dolib.so $(printf '%s\n' usr/"$(get_libdir)"/*.so | grep -v libia_cca.so)
 	dolib.a usr/"$(get_libdir)"/*.a
 
 	insinto /usr/"$(get_libdir)"/pkgconfig
