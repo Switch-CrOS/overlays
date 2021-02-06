@@ -3,15 +3,15 @@
 
 EAPI=5
 
-CROS_WORKON_COMMIT="f94fa4ae6da723e39c479c9414b28f0d2e29d0c4"
-CROS_WORKON_TREE=("e7dba8c91c1f3257c34d4a7ffff0ea2537aeb6bb" "4f862164e2401c9b7033198de8b74d7c61d7065a" "6aefce87a7cf5e4abd0f0466c5fa211f685a1193")
-CROS_WORKON_PROJECT="chromiumos/platform2"
-CROS_WORKON_LOCALNAME="../platform2"
-CROS_WORKON_SUBTREE=".gn camera/hal/intel/ipu3 common-mk"
-CROS_WORKON_OUTOFTREE_BUILD="1"
+CROS_WORKON_COMMIT=("cac7753c12629ce7eb4e5d04e8e9323f38820b38" "674fefc8b9bedf8175d9440078555babf561c3ed")
+CROS_WORKON_TREE=("e7dba8c91c1f3257c34d4a7ffff0ea2537aeb6bb" "6aefce87a7cf5e4abd0f0466c5fa211f685a1193" "4f862164e2401c9b7033198de8b74d7c61d7065a")
+CROS_WORKON_PROJECT=("chromiumos/platform2" "chromiumos/platform/camera")
+CROS_WORKON_LOCALNAME=("../platform2" "../platform/camera")
+CROS_WORKON_DESTDIR=("${S}/platform2" "${S}/platform2/platform_camera")
+CROS_WORKON_SUBTREE=(".gn common-mk" "hal/intel/ipu3")
 CROS_WORKON_INCREMENTAL_BUILD="1"
 
-PLATFORM_SUBDIR="camera/hal/intel/ipu3"
+PLATFORM_SUBDIR="platform_camera/hal/intel/ipu3"
 
 inherit cros-camera cros-workon platform
 

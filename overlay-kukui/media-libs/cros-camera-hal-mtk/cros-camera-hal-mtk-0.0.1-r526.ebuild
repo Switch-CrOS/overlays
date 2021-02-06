@@ -3,14 +3,15 @@
 
 EAPI=6
 
-CROS_WORKON_COMMIT="07fe37994717f9ef750e566d7393948eae44c54c"
-CROS_WORKON_TREE=("e7dba8c91c1f3257c34d4a7ffff0ea2537aeb6bb" "e3c1fc45691df66f9d2e22010f5c87a1c7385080" "6aefce87a7cf5e4abd0f0466c5fa211f685a1193")
-CROS_WORKON_PROJECT="chromiumos/platform2"
-CROS_WORKON_LOCALNAME="../platform2"
-CROS_WORKON_SUBTREE=".gn camera/hal/mediatek common-mk"
-CROS_WORKON_OUTOFTREE_BUILD="1"
+CROS_WORKON_COMMIT=("cac7753c12629ce7eb4e5d04e8e9323f38820b38" "674fefc8b9bedf8175d9440078555babf561c3ed")
+CROS_WORKON_TREE=("e7dba8c91c1f3257c34d4a7ffff0ea2537aeb6bb" "6aefce87a7cf5e4abd0f0466c5fa211f685a1193" "31373141b1b836de4a4e0f093b4233c4dbee87e5")
+CROS_WORKON_PROJECT=("chromiumos/platform2" "chromiumos/platform/camera")
+CROS_WORKON_LOCALNAME=("../platform2" "../platform/camera")
+CROS_WORKON_DESTDIR=("${S}/platform2" "${S}/platform2/platform_camera")
+CROS_WORKON_SUBTREE=(".gn common-mk" "hal/mediatek")
+CROS_WORKON_INCREMENTAL_BUILD="1"
 
-PLATFORM_SUBDIR="camera/hal/mediatek"
+PLATFORM_SUBDIR="platform_camera/hal/mediatek"
 
 inherit cros-camera cros-workon platform
 
