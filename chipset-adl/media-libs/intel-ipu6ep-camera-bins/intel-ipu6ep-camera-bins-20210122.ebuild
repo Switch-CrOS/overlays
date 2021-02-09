@@ -18,9 +18,7 @@ RDEPEND="
 S="${WORKDIR}/ipu6-camera-bins-Chrome_adl_${PV}"
 
 src_install() {
-	# TODO(kamesan): Restore libia_cca.so when the undefined symbols are
-	# fixed (b/179410682).
-	dolib.so $(printf '%s\n' usr/"$(get_libdir)"/*.so | grep -v libia_cca.so)
+	dolib.so usr/"$(get_libdir)"/*.so
 	dolib.a usr/"$(get_libdir)"/*.a
 
 	insinto /usr/"$(get_libdir)"/pkgconfig
