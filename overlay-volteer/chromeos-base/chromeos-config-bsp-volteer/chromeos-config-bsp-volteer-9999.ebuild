@@ -4,7 +4,7 @@
 EAPI=6
 
 inherit cros-constants
-CROS_WORKON_REPO="${CROS_GIT_INT_HOST_URL}"
+CROS_WORKON_REPO="${CROS_GIT_HOST_URL}"
 
 PROJECTS=(
 	"collis"
