@@ -25,5 +25,5 @@ RDEPEND="
 "
 
 DEPEND="${RDEPEND}
+	dev-libs/libusb-compat
 "
-
