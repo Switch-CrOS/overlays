@@ -11,7 +11,7 @@ or portage actions."
 LICENSE="BSD-Google"
 SLOT="0" # TODO (b/180408941): convert this to cros-workon
 KEYWORDS="-* amd64 x86"
-IUSE=""
+IUSE="lars-kernelnext"
 S="${WORKDIR}"
 
 # Add dependencies on other ebuilds from within this board overlay
@@ -21,7 +21,11 @@ RDEPEND="
 DEPEND="${RDEPEND}"
 
 src_install() {
-	doappid "{E7507B05-EC5C-437C-9878-E870E20111BC}" "CHROMEBOOK"
+	if use lars-kernelnext; then
+		doappid "{971C0768-7070-11EB-B322-171AAF8A95A8}" "CHROMEBOOK"
+	else
+		doappid "{E7507B05-EC5C-437C-9878-E870E20111BC}" "CHROMEBOOK"
+	fi
 
 	# Install platform specific config files for power_manager.
 	insinto "/usr/share/power_manager/board_specific"
