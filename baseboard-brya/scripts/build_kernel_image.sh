@@ -25,9 +25,20 @@ modify_kernel_command_line() {
   # Check for S0ix failures and show warnings on failures
   echo "intel_pmc_core.warn_on_s0ix_failures=1" >> "$1"
 
-  # Load GuC and HuC firmware
-  echo "i915.enable_guc=2" >> "$1"
+  # Enable Guc and Huc loading. When enable_guc is set to 3,
+  # it supports guc/huc loading and guc submission.
+  echo "i915.enable_guc=3" >> "$1"
 
-  # Force DRM to use PCI device ID 9a49
-  echo "i915.force_probe=9a49" >> "$1"
+  # Enable power-saving display c states. Setting the value of 4
+  # enables up to DC6 with DC3C0.
+  echo "i915.enable_dc=4" >> "$1"
+
+  # TODO: To be remove after PO
+  # necessary settings for serial debugging
+  echo "earlyprintk=serial,ttyS0,115200n8" >> "$1"
+
+  # TODO: To be remove after PO
+  # necessary settings for serial debugging
+  echo "console=ttyS0,115200,keep" >> "$1"
+
 }
