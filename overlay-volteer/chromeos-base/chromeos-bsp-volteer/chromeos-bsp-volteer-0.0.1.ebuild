@@ -12,7 +12,7 @@ LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="-* amd64 x86"
 S="${WORKDIR}"
-IUSE="volteer-kernelnext"
+IUSE="volteer-borealis volteer-kernelnext"
 
 # Add dependencies on other ebuilds from within this board overlay
 RDEPEND="
@@ -29,7 +29,9 @@ DEPEND="
 "
 
 src_install() {
-	if use volteer-kernelnext; then
+	if use volteer-borealis; then
+		doappid "{04EDAC5E-72DF-11EB-A3DD-6F5131EE15CD}" "CHROMEBOOK"
+	elif use volteer-kernelnext; then
 		doappid "{716105F8-A2C3-11EA-A044-33E3EAAD1A23}" "CHROMEBOOK"
 	else
 		doappid "{77BE25D7-AFB8-4E3C-A7D2-1FACE1B186E3}" "CHROMEBOOK"
