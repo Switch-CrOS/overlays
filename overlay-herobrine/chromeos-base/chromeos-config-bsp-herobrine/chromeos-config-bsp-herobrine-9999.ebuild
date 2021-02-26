@@ -3,25 +3,40 @@
 
 EAPI=7
 
+inherit cros-constants
+CROS_WORKON_REPO="${CROS_GIT_HOST_URL}"
+
+PROJECTS=(
+	"herobrine"
+	"senor"
+)
+
+CONFIG_PATH="sw_build_config/platform/chromeos-config"
+
+CROS_WORKON_PROJECT=( "chromiumos/project" )
+CROS_WORKON_LOCALNAME=( "project_public" )
+CROS_WORKON_SUBTREE=( "$(printf "herobrine/%s/${CONFIG_PATH} " "${PROJECTS[@]}")" )
+CROS_WORKON_DESTDIR=( "${PROJECTS[@]/#/${S}/}" )
+CROS_BOARDS=( herobrine )
+
 inherit cros-unibuild cros-workon
 
-# This ebuild only cares about its own FILESDIR and ebuild file, so it tracks
-# the canonical empty project.
-CROS_WORKON_PROJECT="chromiumos/infra/build/empty-project"
-CROS_WORKON_LOCALNAME="empty-project"
-
 DESCRIPTION="Chrome OS Model configuration package for herobrine"
-HOMEPAGE="http://src.chromium.org"
+HOMEPAGE="https://www.chromium.org/chromium-os"
 SRC_URI=""
 
 LICENSE="BSD-Google"
 SLOT="0/${PF}"
 KEYWORDS="~*"
 
-# From an ideological purity perspective, this DEPEND should be there, but
-# it can't be, since otherwise we end up with circular dependencies.
-# DEPEND="virtual/chromeos-bsp"
+DEPEND=""
+RDEPEND="${DEPEND}"
 
-src_install(){
-	install_model_files
+src_compile() {
+	platform_json_compile
+}
+
+
+src_install() {
+	platform_json_install
 }

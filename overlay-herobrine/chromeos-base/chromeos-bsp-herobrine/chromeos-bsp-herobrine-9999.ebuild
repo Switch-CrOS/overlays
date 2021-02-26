@@ -1,5 +1,6 @@
 # Copyright 2021 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
+
 EAPI=7
 
 inherit appid cros-unibuild cros-workon
@@ -20,11 +21,14 @@ IUSE=""
 RDEPEND="
 	chromeos-base/chromeos-bsp-baseboard-herobrine
 "
-DEPEND="${RDEPEND}"
+DEPEND="
+	${RDEPEND}
+	chromeos-base/chromeos-config
+"
 
 src_install() {
 	doappid "{9023C063-08D6-4A4F-908C-BCF97DE8BA69}" "CHROMEBOOK"
 
-	# Install audio config
+	# Install audio config files
 	unibuild_install_files audio-files
 }
