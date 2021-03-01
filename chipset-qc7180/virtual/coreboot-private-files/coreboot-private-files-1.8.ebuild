@@ -10,4 +10,4 @@ KEYWORDS="*"
 RDEPEND="
 	sys-boot/coreboot-private-files-chipset-qc7180
 	"
-DEPEND=${RDEPEND}
+DEPEND="${RDEPEND}"
