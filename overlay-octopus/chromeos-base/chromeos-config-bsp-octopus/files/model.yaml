@@ -122,6 +122,20 @@ audio-two-cards-setting: &audio_two_cards_setting
         - *files_map_HiFi_conf
         - *files_map_HiFi_card2_conf
 
+audio-two-cards-boardini-setting: &audio_two_cards_boardini_setting
+  audio:
+    main:
+      <<: *audio_main_common
+      files:
+        - *files_map_card_settings
+        - *files_map_card2_settings
+        - *files_map_dsp_ini
+        - *files_map_card_conf
+        - *files_map_card2_conf
+        - *files_map_HiFi_conf
+        - *files_map_HiFi_card2_conf
+        - *files_map_board_ini
+
 device-config: &device_config
   <<: *unprovisioned_config
   audio:
@@ -312,16 +326,23 @@ chromeos:
       $hibernate-power-ua: "1150"
       skus:
         - $sku-id-val: 1
-          config: *clamshell_config
+          config:
+            <<: *clamshell_config
+            <<: *audio_boardini_setting
         - $sku-id-val: 2
-          config: *clamshell_config
+          config:
+            <<: *clamshell_config
+            <<: *audio_boardini_setting
         - $sku-id-val: 3
-          config: *clamshell_touchscreen_config
+          config:
+            <<: *clamshell_touchscreen_config
+            <<: *audio_boardini_setting
         - $sku-id-val: 4
           $ucm_src_root: "{{$device-name}}"
           $ucm_extra_suffix: "{{$device-name}}.2mic"
           config:
             <<: *clamshell_config
+            <<: *audio_boardini_setting
             modem:
               firmware-variant: "{{$device-name}}"
         - $sku-id-val: 5
@@ -329,6 +350,7 @@ chromeos:
           $ucm_extra_suffix: "{{$device-name}}.2mic"
           config:
             <<: *clamshell_touchscreen_config
+            <<: *audio_boardini_setting
             modem:
               firmware-variant: "{{$device-name}}"
     - $device-name: "grabbiter"
@@ -383,19 +405,19 @@ chromeos:
         - $sku-id-val: 1
           config:
             <<: *clamshell_wl_config
-            <<: *audio_two_cards_setting
+            <<: *audio_two_cards_boardini_setting
         - $sku-id-val: 2
           config:
             <<: *clamshell_touchscreen_wl_config
-            <<: *audio_two_cards_setting
+            <<: *audio_two_cards_boardini_setting
         - $sku-id-val: 3
           config:
             <<: *clamshell_wl_config
-            <<: *audio_two_cards_setting
+            <<: *audio_two_cards_boardini_setting
         - $sku-id-val: 4
           config:
             <<: *clamshell_touchscreen_wl_config
-            <<: *audio_two_cards_setting
+            <<: *audio_two_cards_boardini_setting
     - $device-name: "bobba360"
       $fw-name: "Bobba"
       $ucm_src_root: "{{$device-name}}"
@@ -410,23 +432,23 @@ chromeos:
           $num-mic-locations: 2
           config:
             <<: *convertible_wl_config
-            <<: *audio_two_cards_setting
+            <<: *audio_two_cards_boardini_setting
         - $sku-id-val: 10
           $num-mic-locations: 2
           config:
             <<: *convertible_wl_config
-            <<: *audio_two_cards_setting
+            <<: *audio_two_cards_boardini_setting
         - $sku-id-val: 11
           $stylus-category: "internal"
           $num-mic-locations: 1
           config:
             <<: *convertible_wl_config
-            <<: *audio_two_cards_setting
+            <<: *audio_two_cards_boardini_setting
         - $sku-id-val: 12
           $num-mic-locations: 1
           config:
             <<: *convertible_wl_config
-            <<: *audio_two_cards_setting
+            <<: *audio_two_cards_boardini_setting
     - $device-name: "sparky"
       $fw-name: "Bobba"
       $ucm_src_root: "{{$device-name}}"
