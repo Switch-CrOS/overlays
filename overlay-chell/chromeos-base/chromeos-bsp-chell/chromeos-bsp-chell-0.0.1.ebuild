@@ -11,7 +11,7 @@ or portage actions."
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="-* amd64 x86"
-IUSE="chell-cheets chell-kernelnext"
+IUSE="chell-cheets"
 
 RDEPEND="
 	chromeos-base/chromeos-bsp-baseboard-glados
@@ -33,10 +33,5 @@ src_install() {
 	doins "${FILESDIR}"/powerd_prefs/*
 
 	# Install audio configs.
-	if use chell-kernelnext; then
-		local audio_config_dir="${FILESDIR}/kernelnext-audio-config"
-	else
-		local audio_config_dir="${FILESDIR}/audio-config"
-	fi
-	install_audio_configs chell "${audio_config_dir}"
+	install_audio_configs chell "${FILESDIR}/audio-config"
 }
