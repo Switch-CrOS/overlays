@@ -29,3 +29,34 @@ USE="${USE} mmc"
 
 # Disable document scanning due to insufficient rootfs.
 USE="${USE} -ondevice_document_scanner"
+
+# Disable unibuild on this legacy board. This is only for existing (as of Jan 2019)
+# boards as all new boards must be unibuild enabled moving forward. Do not copy this
+# to new boards as it will be rejected. See
+# https://chromium.googlesource.com/chromiumos/platform2/+/HEAD/chromeos-config/README.md
+# for further details about chromeos-config, which is the required entry point for
+# unified builds.
+USE="${USE} -unibuild"
+
+# Enable background blur.
+USE="${USE} background_blur"
+
+# All Glados based devices use 4.19. To be removed once we switch chipset-skl to 4_19
+USE="${USE} -kernel-3_18"
+USE="${USE} kernel-4_19"
+
+# Enable VMs
+USE="${USE} kvm_host crosvm-gpu virtio_gpu"
+
+# Disabled as quickfix for b/162500057
+# Use of drm_atomic on Skl chipset shows performance regresion
+#USE="${USE} drm_atomic"
+
+# Use AFDO profiles from big core
+AFDO_PROFILE_SOURCE="bigcore"
+
+# Enable Downloadable Content (DLC)
+USE="${USE} dlc"
+
+# Enable Downloadable Content (DLC) Test
+USE="${USE} dlc_test"
