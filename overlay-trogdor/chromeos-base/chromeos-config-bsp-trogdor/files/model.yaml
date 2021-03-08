@@ -72,8 +72,6 @@ base-config: &base_config
     set-cellular-transmit-power-for-tablet-mode: "{{$set-cellular-transmit-power-for-tablet-mode}}"
     $set-cellular-transmit-power-for-proximity: "0"
     set-cellular-transmit-power-for-proximity: "{{$set-cellular-transmit-power-for-proximity}}"
-    $set-wifi-transmit-power-for-tablet-mode: "0"
-    set-wifi-transmit-power-for-tablet-mode: "{{$set-wifi-transmit-power-for-tablet-mode}}"
     suspend-to-idle: "1"
     wake-on-dp: "1"
   audio: *audio_config
@@ -115,15 +113,6 @@ p-sensor-20mm-lazor-config: &p_sensor_20mm_lazor_config
       thresh-falling-hysteresis: "0"
       thresh-rising-hysteresis: "0"
 
-wifi-sar-table: &wifi_sar_table
-  $set-wifi-transmit-power-for-tablet-mode: "1"
-  non-tablet-mode-power-table-ath10k:
-    limit-2g: 74
-    limit-5g: 74
-  tablet-mode-power-table-ath10k:
-    limit-2g: 74
-    limit-5g: 74
-
 chromeos:
   devices:
     - $device-name: "trogdor"
@@ -152,15 +141,12 @@ chromeos:
           $has-keyboard-backlight: "1"
           config:
             <<: [ *convertible_config, *p_sensor_20mm_lazor_config, *camera_config_ufc ]
-            wifi: *wifi_sar_table
         - $sku-id: 1
           config:
             <<: [ *convertible_config, *camera_config_ufc ]
-            wifi: *wifi_sar_table
         - $sku-id: 2
           config:
             <<: [ *convertible_config, *camera_config_ufc ]
-            wifi: *wifi_sar_table
           $has-keyboard-backlight: "1"
     - $device-name: "limozeen"
       $fw-name: "google,lazor"
@@ -173,15 +159,12 @@ chromeos:
           $has-touchscreen: True
           config:
             <<: [ *clamshell_config, *camera_config_ufc ]
-            wifi: *wifi_sar_table
         - $sku-id: 5
           config:
             <<: [ *clamshell_config, *camera_config_ufc ]
-            wifi: *wifi_sar_table
         - $sku-id: 6
           config:
             <<: [ *clamshell_config, *camera_config_ufc ]
-            wifi: *wifi_sar_table
     - $device-name: "pompom"
       $fw-name: "google,pompom"
       $ufc-interface: "usb"
