@@ -11,7 +11,6 @@ or portage actions."
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="-* amd64 x86"
-IUSE="cave-kernelnext"
 S="${WORKDIR}"
 
 # Add dependencies on other ebuilds from within this board overlay
@@ -24,12 +23,7 @@ src_install() {
 	doappid "{B00DD0BC-D2C9-BAB4-E66C-81AE3F5A7CED}" "CHROMEBOOK"
 
 	# Install audio configs.
-	if use cave-kernelnext; then
-		local audio_config_dir="${FILESDIR}/kernelnext-audio-config"
-	else
-		local audio_config_dir="${FILESDIR}/audio-config"
-	fi
-	install_audio_configs cave "${audio_config_dir}"
+	install_audio_configs cave "${FILESDIR}/audio-config"
 
 	# Install platform specific config files for power_manager.
 	insinto "/usr/share/power_manager/board_specific"
