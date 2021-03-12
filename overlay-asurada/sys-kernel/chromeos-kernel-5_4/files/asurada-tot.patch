@@ -10,6 +10,643 @@ index 8217424fd4bd4426ed1a1681ef94f117b3c7ee5f..30c5888bf2d6a297fb28d2c70aa91c15
  - reg : Physical base address of the video codec registers and length of
    memory mapped region.
  - interrupts : interrupt number to the cpu.
+diff --git a/Documentation/media/uapi/v4l/biblio.rst b/Documentation/media/uapi/v4l/biblio.rst
+index ad2ff258afa89cd7e5ee3ec84027c2feac3e3069..dbe7183deef97f64b13f4ad126d3155abc49bd98 100644
+--- a/Documentation/media/uapi/v4l/biblio.rst
++++ b/Documentation/media/uapi/v4l/biblio.rst
+@@ -405,3 +405,13 @@ VP8
+ :title:     RFC 6386: "VP8 Data Format and Decoding Guide"
+ 
+ :author:    J. Bankoski et al.
++
++.. _vp9:
++
++VP9
++===
++
++
++:title:     VP9 Bitstream & Decoding Process Specification
++
++:author:    Adrian Grange (Google), Peter de Rivaz (Argon Design), Jonathan Hunt (Argon Design)
+diff --git a/Documentation/media/uapi/v4l/dev-mem2mem.rst b/Documentation/media/uapi/v4l/dev-mem2mem.rst
+index caa05f5f638019d5a85e0165c8458dd158749263..c876941f5279993a7e040c61dd2dd86ae1cb6d8c 100644
+--- a/Documentation/media/uapi/v4l/dev-mem2mem.rst
++++ b/Documentation/media/uapi/v4l/dev-mem2mem.rst
+@@ -39,7 +39,7 @@ file handle is visible through another file handle).
+ One of the most common memory-to-memory device is the codec. Codecs
+ are more complicated than most and require additional setup for
+ their codec parameters. This is done through codec controls.
+-See :ref:`mpeg-controls`. More details on how to use codec memory-to-memory
++See :ref:`codec-controls`. More details on how to use codec memory-to-memory
+ devices are given in the following sections.
+ 
+ .. toctree::
+diff --git a/Documentation/media/uapi/v4l/ext-ctrls-codec.rst b/Documentation/media/uapi/v4l/ext-ctrls-codec.rst
+index c1262fab1f40c6e2f7b9a4b9bcfea0e0a58769b7..76d6b677a966bf17d4fda41dd36e332d99a8b872 100644
+--- a/Documentation/media/uapi/v4l/ext-ctrls-codec.rst
++++ b/Documentation/media/uapi/v4l/ext-ctrls-codec.rst
+@@ -7,7 +7,7 @@
+ ..
+ .. TODO: replace it to GFDL-1.1-or-later WITH no-invariant-sections
+ 
+-.. _mpeg-controls:
++.. _codec-controls:
+ 
+ ***********************
+ Codec Control Reference
+@@ -33,7 +33,7 @@ Generic Codec Controls
+ Codec Control IDs
+ -----------------
+ 
+-``V4L2_CID_MPEG_CLASS (class)``
++``V4L2_CID_CODEC_CLASS (class)``
+     The Codec class descriptor. Calling
+     :ref:`VIDIOC_QUERYCTRL` for this control will
+     return a description of this control class. This description can be
+@@ -2701,6 +2701,556 @@ enum v4l2_mpeg_video_h264_hierarchical_coding_type -
+       - ``padding[3]``
+       - Applications and drivers must set this to zero.
+ 
++.. _v4l2-mpeg-vp9:
++
++``V4L2_CID_MPEG_VIDEO_VP9_FRAME_CONTEXT(0..3) (struct)``
++    Stores VP9 probabilities attached to a specific frame context. The VP9
++    specification allows using a maximum of 4 contexts. Each frame being
++    decoded refers to one of those context. See section '7.1.2 Refresh
++    probs semantics' section of :ref:`vp9` for more details about these
++    contexts.
++
++    This control is bi-directional:
++
++    * all 4 contexts must be initialized by userspace just after the
++      stream is started and before the first decoding request is submitted.
++    * the referenced context might be read by the kernel when a decoding
++      request is submitted, and will be updated after the decoder is done
++      decoding the frame if the `V4L2_VP9_FRAME_FLAG_REFRESH_FRAME_CTX` flag
++      is set.
++    * contexts will be read back by user space before each decoding request
++      to retrieve the updated probabilities.
++    * userspace will re-initialize the context to their default values when
++      a reset context is required.
++
++    .. note::
++
++       This compound control is not yet part of the public kernel API and
++       it is expected to change.
++
++.. c:type:: v4l2_ctrl_vp9_frame_ctx
++
++.. cssclass:: longtable
++
++.. tabularcolumns:: |p{5.8cm}|p{4.8cm}|p{6.6cm}|
++
++.. flat-table:: struct v4l2_ctrl_vp9_frame_ctx
++    :header-rows:  0
++    :stub-columns: 0
++    :widths:       1 1 2
++
++    * - struct :c:type:`v4l2_vp9_probabilities`
++      - ``probs``
++      - Structure with VP9 probabilities attached to the context.
++
++.. c:type:: v4l2_vp9_probabilities
++
++.. cssclass:: longtable
++
++.. tabularcolumns:: |p{1.5cm}|p{6.3cm}|p{9.4cm}|
++
++.. flat-table:: struct v4l2_vp9_probabilities
++    :header-rows:  0
++    :stub-columns: 0
++    :widths:       1 1 2
++
++    * - __u8
++      - ``tx8[2][1]``
++      - TX 8x8 probabilities.
++    * - __u8
++      - ``tx16[2][2]``
++      - TX 16x16 probabilities.
++    * - __u8
++      - ``tx32[2][3]``
++      - TX 32x32 probabilities.
++    * - __u8
++      - ``coef[4][2][2][6][6][3]``
++      - Coefficient probabilities.
++    * - __u8
++      - ``skip[3]``
++      - Skip probabilities.
++    * - __u8
++      - ``inter_mode[7][3]``
++      - Inter prediction mode probabilities.
++    * - __u8
++      - ``interp_filter[4][2]``
++      - Interpolation filter probabilities.
++    * - __u8
++      - ``is_inter[4]``
++      - Is inter-block probabilities.
++    * - __u8
++      - ``comp_mode[5]``
++      - Compound prediction mode probabilities.
++    * - __u8
++      - ``single_ref[5][2]``
++      - Single reference probabilities.
++    * - __u8
++      - ``comp_mode[5]``
++      - Compound reference probabilities.
++    * - __u8
++      - ``y_mode[4][9]``
++      - Y prediction mode probabilities.
++    * - __u8
++      - ``uv_mode[10][9]``
++      - UV prediction mode probabilities.
++    * - __u8
++      - ``partition[16][3]``
++      - Partition probabilities.
++    * - __u8
++      - ``mv.joint[3]``
++      - Motion vector joint probabilities.
++    * - __u8
++      - ``mv.sign[2]``
++      - Motion vector sign probabilities.
++    * - __u8
++      - ``mv.class[2][10]``
++      - Motion vector class probabilities.
++    * - __u8
++      - ``mv.class0_bit[2]``
++      - Motion vector class0 bit probabilities.
++    * - __u8
++      - ``mv.bits[2][10]``
++      - Motion vector bits probabilities.
++    * - __u8
++      - ``mv.class0_fr[2][2][3]``
++      - Motion vector class0 fractional bit probabilities.
++    * - __u8
++      - ``mv.fr[2][3]``
++      - Motion vector fractional bit probabilities.
++    * - __u8
++      - ``mv.class0_hp[2]``
++      - Motion vector class0 high precision fractional bit probabilities.
++    * - __u8
++      - ``mv.hp[2]``
++      - Motion vector high precision fractional bit probabilities.
++
++``V4L2_CID_MPEG_VIDEO_VP9_FRAME_DECODE_PARAMS (struct)``
++    Specifies the frame parameters for the associated VP9 frame decode request.
++    This includes the necessary parameters for configuring a stateless hardware
++    decoding pipeline for VP9. The bitstream parameters are defined according
++    to :ref:`vp9`.
++
++    .. note::
++
++       This compound control is not yet part of the public kernel API and
++       it is expected to change.
++
++.. c:type:: v4l2_ctrl_vp9_frame_decode_params
++
++.. cssclass:: longtable
++
++.. tabularcolumns:: |p{1.5cm}|p{6.3cm}|p{9.4cm}|
++
++.. flat-table:: struct v4l2_ctrl_vp9_frame_decode_params
++    :header-rows:  0
++    :stub-columns: 0
++    :widths:       1 1 2
++
++    * - __u32
++      - ``flags``
++      - Combination of V4L2_VP9_FRAME_FLAG_* flags. See
++        :c:type:`v4l2_vp9_frame_flags`.
++    * - __u16
++      - ``compressed_header_size``
++      - Compressed header size in bytes.
++    * - __u16
++      - ``uncompressed_header_size``
++      - Uncompressed header size in bytes.
++    * - __u8
++      - ``profile``
++      - VP9 profile. Can be 0, 1, 2 or 3.
++    * - __u8
++      - ``reset_frame_context``
++      - Frame context that should be used/updated when decoding the frame.
++    * - __u8
++      - ``bit_depth``
++      - Component depth in bits. Must be 8 for profile 0 and 1. Must 10 or 12
++        for profile 2 and 3.
++    * - __u8
++      - ``interpolation_filter``
++      - Specifies the filter selection used for performing inter prediction. See
++        :c:type:`v4l2_vp9_interpolation_filter`.
++    * - __u8
++      - ``tile_cols_log2``
++      - Specifies the base 2 logarithm of the width of each tile (where the
++        width is measured in units of 8x8 blocks). Shall be less than or equal
++        to 6.
++    * - __u8
++      - ``tile_rows_log2``
++      - Specifies the base 2 logarithm of the height of each tile (where the
++        height is measured in units of 8x8 blocks)
++    * - __u8
++      - ``tx_mode``
++      - Specifies the TX mode. See :c:type:`v4l2_vp9_tx_mode`.
++    * - __u8
++      - ``reference_mode``
++      - Specifies the type of inter prediction to be used. See
++        :c:type:`v4l2_vp9_reference_mode`.
++    * - __u8
++      - ``padding``
++      - Needed to make this struct 64 bit aligned. Shall be filled with zeroes.
++    * - __u16
++      - ``frame_width_minus_1``
++      - Add 1 to get the frame width expressed in pixels.
++    * - __u16
++      - ``frame_height_minus_1``
++      - Add 1 to to get the frame height expressed in pixels.
++    * - __u16
++      - ``frame_width_minus_1``
++      - Add 1 to to get the expected render width expressed in pixels. This is
++        not used during the decoding process but might be used by HW scalers to
++        prepare a frame that's ready for scanout.
++    * - __u16
++      - frame_height_minus_1
++      - Add 1 to get the expected render height expressed in pixels. This is
++        not used during the decoding process but might be used by HW scalers to
++        prepare a frame that's ready for scanout.
++    * - __u64
++      - ``refs[3]``
++      - Array of reference frame timestamps.
++    * - struct :c:type:`v4l2_vp9_loop_filter`
++      - ``lf``
++      - Loop filter parameters. See struct :c:type:`v4l2_vp9_loop_filter`.
++    * - struct :c:type:`v4l2_vp9_quantization`
++      - ``quant``
++      - Quantization parameters. See :c:type:`v4l2_vp9_quantization`.
++    * - struct :c:type:`v4l2_vp9_segmentation`
++      - ``seg``
++      - Segmentation parameters. See :c:type:`v4l2_vp9_segmentation`.
++    * - struct :c:type:`v4l2_vp9_probabilities`
++      - ``probs``
++      - Probabilities. See :c:type:`v4l2_vp9_probabilities`.
++
++.. c:type:: v4l2_vp9_frame_flags
++
++.. cssclass:: longtable
++
++.. tabularcolumns:: |p{1.5cm}|p{6.3cm}|p{9.4cm}|
++
++.. flat-table:: enum v4l2_vp9_frame_flags
++    :header-rows:  0
++    :stub-columns: 0
++    :widths:       1 2
++
++    * - ``V4L2_VP9_FRAME_FLAG_KEY_FRAME``
++      - The frame is a key frame.
++    * - ``V4L2_VP9_FRAME_FLAG_SHOW_FRAME``
++      - The frame should be displayed.
++    * - ``V4L2_VP9_FRAME_FLAG_ERROR_RESILIENT``
++      - The decoding should be error resilient.
++    * - ``V4L2_VP9_FRAME_FLAG_INTRA_ONLY``
++      - The frame does not reference other frames.
++    * - ``V4L2_VP9_FRAME_FLAG_ALLOW_HIGH_PREC_MV``
++      - the frame might can high precision motion vectors.
++    * - ``V4L2_VP9_FRAME_FLAG_REFRESH_FRAME_CTX``
++      - Frame context should be updated after decoding.
++    * - ``V4L2_VP9_FRAME_FLAG_PARALLEL_DEC_MODE``
++      - Parallel decoding is used.
++    * - ``V4L2_VP9_FRAME_FLAG_X_SUBSAMPLING``
++      - Vertical subsampling is enabled.
++    * - ``V4L2_VP9_FRAME_FLAG_Y_SUBSAMPLING``
++      - Horizontal subsampling is enabled.
++    * - ``V4L2_VP9_FRAME_FLAG_COLOR_RANGE_FULL_SWING``
++      - The full UV range is used.
++
++.. c:type:: v4l2_vp9_ref_id
++
++.. cssclass:: longtable
++
++.. tabularcolumns:: |p{1.5cm}|p{6.3cm}|p{9.4cm}|
++
++.. flat-table:: enum v4l2_vp9_ref_id
++    :header-rows:  0
++    :stub-columns: 0
++    :widths:       1 2
++
++    * - ``V4L2_REF_ID_LAST``
++      - Last reference frame.
++    * - ``V4L2_REF_ID_GOLDEN``
++      - Golden reference frame.
++    * - ``V4L2_REF_ID_ALTREF``
++      - Alternative reference frame.
++    * - ``V4L2_REF_ID_CNT``
++      - Number of reference frames.
++
++.. c:type:: v4l2_vp9_tx_mode
++
++.. cssclass:: longtable
++
++.. tabularcolumns:: |p{1.5cm}|p{6.3cm}|p{9.4cm}|
++
++.. flat-table:: enum v4l2_vp9_tx_mode
++    :header-rows:  0
++    :stub-columns: 0
++    :widths:       1 2
++
++    * - ``V4L2_VP9_TX_MODE_ONLY_4X4``
++      - Transform size is 4x4.
++    * - ``V4L2_VP9_TX_MODE_ALLOW_8X8``
++      - Transform size can be up to 8x8.
++    * - ``V4L2_VP9_TX_MODE_ALLOW_16X16``
++      - Transform size can be up to 16x16.
++    * - ``V4L2_VP9_TX_MODE_ALLOW_32X32``
++      - transform size can be up to 32x32.
++    * - ``V4L2_VP9_TX_MODE_SELECT``
++      - Bitstream contains transform size for each block.
++
++.. c:type:: v4l2_vp9_reference_mode
++
++.. cssclass:: longtable
++
++.. tabularcolumns:: |p{1.5cm}|p{6.3cm}|p{9.4cm}|
++
++.. flat-table:: enum v4l2_vp9_reference_mode
++    :header-rows:  0
++    :stub-columns: 0
++    :widths:       1 2
++
++    * - ``V4L2_VP9_REF_MODE_SINGLE``
++      - Indicates that all the inter blocks use only a single reference frame
++        to generate motion compensated prediction.
++    * - ``V4L2_VP9_REF_MODE_COMPOUND``
++      - Requires all the inter blocks to use compound mode. Single reference
++        frame prediction is not allowed.
++    * - ``V4L2_VP9_REF_MODE_SELECT``
++      - Allows each individual inter block to select between single and
++        compound prediction modes.
++
++.. c:type:: v4l2_vp9_interpolation_filter
++
++.. cssclass:: longtable
++
++.. tabularcolumns:: |p{1.5cm}|p{6.3cm}|p{9.4cm}|
++
++.. flat-table:: enum v4l2_vp9_interpolation_filter
++    :header-rows:  0
++    :stub-columns: 0
++    :widths:       1 2
++
++    * - ``V4L2_VP9_INTERP_FILTER_8TAP``
++      - Height tap filter.
++    * - ``V4L2_VP9_INTERP_FILTER_8TAP_SMOOTH``
++      - Height tap smooth filter.
++    * - ``V4L2_VP9_INTERP_FILTER_8TAP_SHARP``
++      - Height tap sharp filter.
++    * - ``V4L2_VP9_INTERP_FILTER_BILINEAR``
++      - Bilinear filter.
++    * - ``V4L2_VP9_INTERP_FILTER_SWITCHABLE``
++      - Filter selection is signaled at the block level.
++
++.. c:type:: v4l2_vp9_reset_frame_context
++
++.. cssclass:: longtable
++
++.. tabularcolumns:: |p{1.5cm}|p{6.3cm}|p{9.4cm}|
++
++.. flat-table:: enum v4l2_vp9_reset_frame_context
++    :header-rows:  0
++    :stub-columns: 0
++    :widths:       1 2
++
++    * - ``V4L2_VP9_RESET_FRAME_CTX_NONE``
++      - Do not reset any frame context.
++    * - ``V4L2_VP9_RESET_FRAME_CTX_SPEC``
++      - Reset the frame context pointed by
++        :c:type:`v4l2_ctrl_vp9_frame_decode_params`.frame_context_idx.
++    * - ``V4L2_VP9_RESET_FRAME_CTX_ALL``
++      - Reset all frame contexts.
++
++.. c:type:: v4l2_vp9_intra_prediction_mode
++
++.. cssclass:: longtable
++
++.. tabularcolumns:: |p{1.5cm}|p{6.3cm}|p{9.4cm}|
++
++.. flat-table:: enum v4l2_vp9_intra_prediction_mode
++    :header-rows:  0
++    :stub-columns: 0
++    :widths:       1 2
++
++    * - ``V4L2_VP9_INTRA_PRED_DC``
++      - DC intra prediction.
++    * - ``V4L2_VP9_INTRA_PRED_MODE_V``
++      - Vertical intra prediction.
++    * - ``V4L2_VP9_INTRA_PRED_MODE_H``
++      - Horizontal intra prediction.
++    * - ``V4L2_VP9_INTRA_PRED_MODE_D45``
++      - D45 intra prediction.
++    * - ``V4L2_VP9_INTRA_PRED_MODE_D135``
++      - D135 intra prediction.
++    * - ``V4L2_VP9_INTRA_PRED_MODE_D117``
++      - D117 intra prediction.
++    * - ``V4L2_VP9_INTRA_PRED_MODE_D153``
++      - D153 intra prediction.
++    * - ``V4L2_VP9_INTRA_PRED_MODE_D207``
++      - D207 intra prediction.
++    * - ``V4L2_VP9_INTRA_PRED_MODE_D63``
++      - D63 intra prediction.
++    * - ``V4L2_VP9_INTRA_PRED_MODE_TM``
++      - True motion intra prediction.
++
++.. c:type:: v4l2_vp9_segmentation
++
++.. cssclass:: longtable
++
++.. tabularcolumns:: |p{1.5cm}|p{6.3cm}|p{9.4cm}|
++
++.. flat-table:: struct v4l2_vp9_segmentation
++    :header-rows:  0
++    :stub-columns: 0
++    :widths:       1 1 2
++
++    * - __u8
++      - ``flags``
++      - Combination of V4L2_VP9_SEGMENTATION_FLAG_* flags. See
++        :c:type:`v4l2_vp9_segmentation_flags`.
++    * - __u8
++      - ``tree_probs[7]``
++      - Specifies the probability values to be used when decoding a Segment-ID.
++        See '5.15. Segmentation map' section of :ref:`vp9` for more details.
++    * - __u8
++      - ``pred_prob[3]``
++      - Specifies the probability values to be used when decoding a
++        Predicted-Segment-ID. See '6.4.14. Get segment id syntax'
++        section of :ref:`vp9` for more details.
++    * - __u8
++      - ``padding[5]``
++      - Used to align this struct on 64 bit. Shall be filled with zeroes.
++    * - __u8
++      - ``feature_enabled[8]``
++      - Bitmask defining which features are enabled in each segment.
++    * - __u8
++      - ``feature_data[8][4]``
++      - Data attached to each feature. Data entry is only valid if the feature
++        is enabled.
++
++.. c:type:: v4l2_vp9_segment_feature
++
++.. cssclass:: longtable
++
++.. tabularcolumns:: |p{1.5cm}|p{6.3cm}|p{9.4cm}|
++
++.. flat-table:: enum v4l2_vp9_segment_feature
++    :header-rows:  0
++    :stub-columns: 0
++    :widths:       1 2
++
++    * - ``V4L2_VP9_SEGMENT_FEATURE_QP_DELTA``
++      - QP delta segment feature.
++    * - ``V4L2_VP9_SEGMENT_FEATURE_LF``
++      - Loop filter segment feature.
++    * - ``V4L2_VP9_SEGMENT_FEATURE_REF_FRAME``
++      - Reference frame segment feature.
++    * - ``V4L2_VP9_SEGMENT_FEATURE_SKIP``
++      - Skip segment feature.
++    * - ``V4L2_VP9_SEGMENT_FEATURE_CNT``
++      - Number of segment features.
++
++.. c:type:: v4l2_vp9_segmentation_flags
++
++.. cssclass:: longtable
++
++.. tabularcolumns:: |p{1.5cm}|p{6.3cm}|p{9.4cm}|
++
++.. flat-table:: enum v4l2_vp9_segmentation_flags
++    :header-rows:  0
++    :stub-columns: 0
++    :widths:       1 2
++
++    * - ``V4L2_VP9_SEGMENTATION_FLAG_ENABLED``
++      - Indicates that this frame makes use of the segmentation tool.
++    * - ``V4L2_VP9_SEGMENTATION_FLAG_UPDATE_MAP``
++      - Indicates that the segmentation map should be updated during the
++        decoding of this frame.
++    * - ``V4L2_VP9_SEGMENTATION_FLAG_TEMPORAL_UPDATE``
++      - Indicates that the updates to the segmentation map are coded
++        relative to the existing segmentation map.
++    * - ``V4L2_VP9_SEGMENTATION_FLAG_UPDATE_DATA``
++      - Indicates that new parameters are about to be specified for each
++        segment.
++    * - ``V4L2_VP9_SEGMENTATION_FLAG_ABS_OR_DELTA_UPDATE``
++      - Indicates that the segmentation parameters represent the actual values
++        to be used.
++
++.. c:type:: v4l2_vp9_quantization
++
++.. cssclass:: longtable
++
++.. tabularcolumns:: |p{1.5cm}|p{6.3cm}|p{9.4cm}|
++
++.. flat-table:: struct v4l2_vp9_quantization
++    :header-rows:  0
++    :stub-columns: 0
++    :widths:       1 1 2
++
++    * - __u8
++      - ``base_q_idx``
++      - Indicates the base frame qindex.
++    * - __s8
++      - ``delta_q_y_dc``
++      - Indicates the Y DC quantizer relative to base_q_idx.
++    * - __s8
++      - ``delta_q_uv_dc``
++      - Indicates the UV DC quantizer relative to base_q_idx.
++    * - __s8
++      - ``delta_q_uv_ac``
++      - Indicates the UV AC quantizer relative to base_q_idx.
++    * - __u8
++      - ``padding[4]``
++      - Padding bytes used to align this struct on 64 bit. Must be set to 0.
++
++.. c:type:: v4l2_vp9_loop_filter
++
++.. cssclass:: longtable
++
++.. tabularcolumns:: |p{1.5cm}|p{6.3cm}|p{9.4cm}|
++
++.. flat-table:: struct v4l2_vp9_loop_filter
++    :header-rows:  0
++    :stub-columns: 0
++    :widths:       1 1 2
++
++    * - __u8
++      - ``flags``
++      - Combination of V4L2_VP9_LOOP_FILTER_FLAG_* flags.
++        See :c:type:`v4l2_vp9_loop_filter_flags`.
++    * - __u8
++      - ``level``
++      - Indicates the loop filter strength.
++    * - __u8
++      - ``sharpness``
++      - Indicates the sharpness level.
++    * - __s8
++      - ``ref_deltas[4]``
++      - Contains the adjustment needed for the filter level based on the chosen
++        reference frame.
++    * - __s8
++      - ``mode_deltas[2]``
++      - Contains the adjustment needed for the filter level based on the chosen
++        mode
++    * - __u8
++      - ``level_lookup[8][4][2]``
++      - Level lookup table.
++
++
++.. c:type:: v4l2_vp9_loop_filter_flags
++
++.. cssclass:: longtable
++
++.. tabularcolumns:: |p{1.5cm}|p{6.3cm}|p{9.4cm}|
++
++.. flat-table:: enum v4l2_vp9_loop_filter_flags
++    :header-rows:  0
++    :stub-columns: 0
++    :widths:       1 2
++
++    * - ``V4L2_VP9_LOOP_FILTER_FLAG_DELTA_ENABLED``
++      - When set, the filter level depends on the mode and reference frame used
++        to predict a block.
++    * - ``V4L2_VP9_LOOP_FILTER_FLAG_DELTA_UPDATE``
++      - When set, the bitstream contains additional syntax elements that
++        specify which mode and reference frame deltas are to be updated.
++
+ .. raw:: latex
+ 
+     \normalsize
+diff --git a/Documentation/media/uapi/v4l/extended-controls.rst b/Documentation/media/uapi/v4l/extended-controls.rst
+index 65536248373086a625f362f05fa16b57e4f068a1..d1528cafb65813e335356334e3724b51be2eae11 100644
+--- a/Documentation/media/uapi/v4l/extended-controls.rst
++++ b/Documentation/media/uapi/v4l/extended-controls.rst
+@@ -62,8 +62,8 @@ controls in that array and a control class. Control classes are used to
+ group similar controls into a single class. For example, control class
+ ``V4L2_CTRL_CLASS_USER`` contains all user controls (i. e. all controls
+ that can also be set using the old :ref:`VIDIOC_S_CTRL <VIDIOC_G_CTRL>`
+-ioctl). Control class ``V4L2_CTRL_CLASS_MPEG`` contains all controls
+-relating to MPEG encoding, etc.
++ioctl). Control class ``V4L2_CTRL_CLASS_CODEC`` contains controls
++relating to codecs.
+ 
+ All controls in the control array must belong to the specified control
+ class. An error is returned if this is not the case.
+@@ -137,9 +137,9 @@ control class is found:
+ 
+ .. code-block:: c
+ 
+-    qctrl.id = V4L2_CTRL_CLASS_MPEG | V4L2_CTRL_FLAG_NEXT_CTRL;
++    qctrl.id = V4L2_CTRL_CLASS_CODEC | V4L2_CTRL_FLAG_NEXT_CTRL;
+     while (0 == ioctl(fd, VIDIOC_QUERYCTRL, &qctrl)) {
+-	if (V4L2_CTRL_ID2CLASS(qctrl.id) != V4L2_CTRL_CLASS_MPEG)
++	if (V4L2_CTRL_ID2CLASS(qctrl.id) != V4L2_CTRL_CLASS_CODEC)
+ 	    break;
+ 	/* ... */
+ 	qctrl.id |= V4L2_CTRL_FLAG_NEXT_CTRL;
 diff --git a/Documentation/media/uapi/v4l/pixfmt-reserved.rst b/Documentation/media/uapi/v4l/pixfmt-reserved.rst
 index b2cd155e691bc85961bf3d08c11dbb83bd933c22..4fa74168dc021b7084d342d085f2b7e0c6ab07aa 100644
 --- a/Documentation/media/uapi/v4l/pixfmt-reserved.rst
@@ -28,6 +665,24 @@ index b2cd155e691bc85961bf3d08c11dbb83bd933c22..4fa74168dc021b7084d342d085f2b7e0
      * .. _V4L2-PIX-FMT-SUNXI-TILED-NV12:
  
        - ``V4L2_PIX_FMT_SUNXI_TILED_NV12``
+diff --git a/Documentation/media/uapi/v4l/vidioc-g-ext-ctrls.rst b/Documentation/media/uapi/v4l/vidioc-g-ext-ctrls.rst
+index 13dc1a98624957615c68441694cfeeda427b84e2..254388340ff89b4197a6cce8b3c841800b8253e9 100644
+--- a/Documentation/media/uapi/v4l/vidioc-g-ext-ctrls.rst
++++ b/Documentation/media/uapi/v4l/vidioc-g-ext-ctrls.rst
+@@ -337,10 +337,10 @@ still cause this situation.
+ 	:ref:`VIDIOC_S_CTRL <VIDIOC_G_CTRL>` and
+ 	:ref:`VIDIOC_G_CTRL <VIDIOC_G_CTRL>` ioctl belong to this
+ 	class.
+-    * - ``V4L2_CTRL_CLASS_MPEG``
++    * - ``V4L2_CTRL_CLASS_CODEC``
+       - 0x990000
+-      - The class containing MPEG compression controls. These controls are
+-	described in :ref:`mpeg-controls`.
++      - The class containing stateful codec controls. These controls are
++	described in :ref:`codec-controls`.
+     * - ``V4L2_CTRL_CLASS_CAMERA``
+       - 0x9a0000
+       - The class containing camera controls. These controls are described
 diff --git a/README b/README
 index 669ac7c32292798644b21dbb5a0dc657125f444d..dc0f0ea4da037c7ea336d73d30e6dbfae24f796f 100644
 --- a/README
@@ -157,7 +812,7 @@ index cfa3489bbb6456167b24b22095a0116de6ff5ca8..8b81c4a1fefd9328642633cb7e4f47d0
  			compatible = "mediatek,mt8192-uart",
  				     "mediatek,mt6577-uart";
 diff --git a/chromeos/config/arm64/chromiumos-arm64.flavour.config b/chromeos/config/arm64/chromiumos-arm64.flavour.config
-index 8d65b8cdadb7bd6dc7ada0abbeefbb0d38b19cb5..b3a6ad10040cbdab13a38f360419c11783ff9e30 100644
+index 8d65b8cdadb7bd6dc7ada0abbeefbb0d38b19cb5..55f91308cab36bf598750d3beaa162533b3c78a0 100644
 --- a/chromeos/config/arm64/chromiumos-arm64.flavour.config
 +++ b/chromeos/config/arm64/chromiumos-arm64.flavour.config
 @@ -67,6 +67,7 @@ CONFIG_DRM_PANEL_BOE_TV101WUM_NL6=y
@@ -180,15 +835,7 @@ index 8d65b8cdadb7bd6dc7ada0abbeefbb0d38b19cb5..b3a6ad10040cbdab13a38f360419c117
  CONFIG_MFD_PALMAS=y
  CONFIG_MFD_RK808=y
  CONFIG_MFD_SPMI_PMIC=y
-@@ -113,6 +115,7 @@ CONFIG_MTK_CMDQ=y
- CONFIG_MTK_EFUSE=y
- CONFIG_MTK_IOMMU=y
- CONFIG_MTK_PMIC_WRAP=y
-+CONFIG_MTK_SCP=m
- CONFIG_MTK_SOC_THERMAL_LVTS=y
- CONFIG_MTK_SVS=y
- CONFIG_MTK_THERMAL=y
-@@ -268,6 +271,7 @@ CONFIG_USB_ONBOARD_HUB=y
+@@ -268,6 +270,7 @@ CONFIG_USB_ONBOARD_HUB=y
  CONFIG_USB_ROLE_SWITCH=y
  CONFIG_USB_ULPI=y
  CONFIG_V4L_PLATFORM_DRIVERS=y
@@ -197,7 +844,7 @@ index 8d65b8cdadb7bd6dc7ada0abbeefbb0d38b19cb5..b3a6ad10040cbdab13a38f360419c117
  CONFIG_VIDEO_OV8856=m
  CONFIG_VIDEO_V4L2_SUBDEV_API=y
 diff --git a/chromeos/config/arm64/chromiumos-mediatek.flavour.config b/chromeos/config/arm64/chromiumos-mediatek.flavour.config
-index 96e1792b5dda6d191b1f0c3b54b4fc9bbb847a62..7ba0ad3c19b07b538b0d1191656d9094d172a0da 100644
+index 96e1792b5dda6d191b1f0c3b54b4fc9bbb847a62..a5c830477c4639cf1588a803740488b18dd0aa64 100644
 --- a/chromeos/config/arm64/chromiumos-mediatek.flavour.config
 +++ b/chromeos/config/arm64/chromiumos-mediatek.flavour.config
 @@ -44,6 +44,7 @@ CONFIG_DRM_MEDIATEK=y
@@ -208,7 +855,7 @@ index 96e1792b5dda6d191b1f0c3b54b4fc9bbb847a62..7ba0ad3c19b07b538b0d1191656d9094
  CONFIG_DRM_PARADE_PS8640=y
  CONFIG_DRM_POWERVR_ROGUE_1_10=y
  CONFIG_EEPROM_AT24=y
-@@ -57,15 +58,17 @@ CONFIG_MALI_VALHALL=y
+@@ -57,9 +58,10 @@ CONFIG_MALI_VALHALL=y
  CONFIG_MALI_VALHALL_DMA_FENCE=y
  CONFIG_MALI_VALHALL_EXPERT=y
  CONFIG_MALI_VALHALL_PLATFORM_NAME="mt8192"
@@ -220,14 +867,7 @@ index 96e1792b5dda6d191b1f0c3b54b4fc9bbb847a62..7ba0ad3c19b07b538b0d1191656d9094
  CONFIG_MEDIA_CONTROLLER_REQUEST_API=y
  CONFIG_MMC_MTK=y
  CONFIG_MTK_CMDQ=y
- CONFIG_MTK_EFUSE=y
- CONFIG_MTK_IOMMU=y
- CONFIG_MTK_PMIC_WRAP=y
-+CONFIG_MTK_SCP=m
- CONFIG_MTK_SOC_THERMAL_LVTS=y
- CONFIG_MTK_SVS=y
- CONFIG_MTK_THERMAL=y
-@@ -122,6 +125,8 @@ CONFIG_USB_MTU3=y
+@@ -122,6 +124,8 @@ CONFIG_USB_MTU3=y
  CONFIG_USB_MTU3_HOST=y
  CONFIG_USB_ROLE_SWITCH=y
  CONFIG_V4L_PLATFORM_DRIVERS=y
@@ -5082,6 +5722,28 @@ index 14d649b82676cfd594c6cdf6566d1458d085e38e..f0b6eee41ac5b1b5fe9718fe8c5dcc8c
 diff --git a/drivers/media/asurada-media-tot b/drivers/media/asurada-media-tot
 new file mode 100644
 index 0000000000000000000000000000000000000000..e69de29bb2d1d6434b8b29ae775ad8c2e48c5391
+diff --git a/drivers/media/common/cx2341x.c b/drivers/media/common/cx2341x.c
+index 1f67e021138f6fdb0af05e5a92d89f1caa3e4a99..1392bd6b0026fa3459e23dea0011bd1b942331e7 100644
+--- a/drivers/media/common/cx2341x.c
++++ b/drivers/media/common/cx2341x.c
+@@ -166,7 +166,7 @@ static void cx2341x_ctrl_fill(u32 id, const char **name, enum v4l2_ctrl_type *ty
+ 
+ /* Must be sorted from low to high control ID! */
+ const u32 cx2341x_mpeg_ctrls[] = {
+-	V4L2_CID_MPEG_CLASS,
++	V4L2_CID_CODEC_CLASS,
+ 	V4L2_CID_MPEG_STREAM_TYPE,
+ 	V4L2_CID_MPEG_STREAM_VBI_FMT,
+ 	V4L2_CID_MPEG_AUDIO_SAMPLING_FREQ,
+@@ -574,7 +574,7 @@ int cx2341x_ctrl_query(const struct cx2341x_mpeg_params *params,
+ 	int err;
+ 
+ 	switch (qctrl->id) {
+-	case V4L2_CID_MPEG_CLASS:
++	case V4L2_CID_CODEC_CLASS:
+ 		return v4l2_ctrl_query_fill(qctrl, 0, 0, 0, 0);
+ 	case V4L2_CID_MPEG_STREAM_TYPE:
+ 		return v4l2_ctrl_query_fill(qctrl,
 diff --git a/drivers/media/platform/Kconfig b/drivers/media/platform/Kconfig
 index 61c75e059a1bfe6d8e20c1dc1234806ba6824278..08bbda0a7224f2d310c5a777970447c8346e263e 100644
 --- a/drivers/media/platform/Kconfig
@@ -9526,8 +10188,34 @@ index 11abb191ada51e64800ccd787c8bd35c9e9ca922..8267a9c4fd25b5fe8eb756de0bb9359e
  	mtk_vcodec_debug_leave(inst);
  
  	return ret;
+diff --git a/drivers/media/platform/s5p-mfc/s5p_mfc_dec.c b/drivers/media/platform/s5p-mfc/s5p_mfc_dec.c
+index 61e144a352010180664d1e37bc53ab16f5e2e825..a71753d459baead5624fe6e60645bfcfee0a8310 100644
+--- a/drivers/media/platform/s5p-mfc/s5p_mfc_dec.c
++++ b/drivers/media/platform/s5p-mfc/s5p_mfc_dec.c
+@@ -1109,7 +1109,7 @@ const struct v4l2_ioctl_ops *get_dec_v4l2_ioctl_ops(void)
+ 	return &s5p_mfc_dec_ioctl_ops;
+ }
+ 
+-#define IS_MFC51_PRIV(x) ((V4L2_CTRL_ID2WHICH(x) == V4L2_CTRL_CLASS_MPEG) \
++#define IS_MFC51_PRIV(x) ((V4L2_CTRL_ID2WHICH(x) == V4L2_CTRL_CLASS_CODEC) \
+ 						&& V4L2_CTRL_DRIVER_PRIV(x))
+ 
+ int s5p_mfc_dec_ctrls_setup(struct s5p_mfc_ctx *ctx)
+diff --git a/drivers/media/platform/s5p-mfc/s5p_mfc_enc.c b/drivers/media/platform/s5p-mfc/s5p_mfc_enc.c
+index 912fe0c5ab184ecca059bd0395c53f34853e15a5..c4f081cf1b73db112897d04ea9ffafb5474229cd 100644
+--- a/drivers/media/platform/s5p-mfc/s5p_mfc_enc.c
++++ b/drivers/media/platform/s5p-mfc/s5p_mfc_enc.c
+@@ -2607,7 +2607,7 @@ const struct v4l2_ioctl_ops *get_enc_v4l2_ioctl_ops(void)
+ 	return &s5p_mfc_enc_ioctl_ops;
+ }
+ 
+-#define IS_MFC51_PRIV(x) ((V4L2_CTRL_ID2WHICH(x) == V4L2_CTRL_CLASS_MPEG) \
++#define IS_MFC51_PRIV(x) ((V4L2_CTRL_ID2WHICH(x) == V4L2_CTRL_CLASS_CODEC) \
+ 						&& V4L2_CTRL_DRIVER_PRIV(x))
+ 
+ int s5p_mfc_enc_ctrls_setup(struct s5p_mfc_ctx *ctx)
 diff --git a/drivers/media/v4l2-core/v4l2-ctrls.c b/drivers/media/v4l2-core/v4l2-ctrls.c
-index 5b4be2cc03e6560a9d9cd26eecec3f2fcd742603..3ada127a96dd9b80784aa7a81611fb8b5229d56b 100644
+index 5b4be2cc03e6560a9d9cd26eecec3f2fcd742603..7e9ce3619e2a5bb5941236979bfcdc2308c6a88c 100644
 --- a/drivers/media/v4l2-core/v4l2-ctrls.c
 +++ b/drivers/media/v4l2-core/v4l2-ctrls.c
 @@ -674,9 +674,9 @@ const char * const *v4l2_ctrl_get_menu(u32 id)
@@ -9542,6 +10230,15 @@ index 5b4be2cc03e6560a9d9cd26eecec3f2fcd742603..3ada127a96dd9b80784aa7a81611fb8b
  		return h264_start_code;
  	case V4L2_CID_MPEG_VIDEO_MPEG2_LEVEL:
  		return mpeg_mpeg2_level;
+@@ -806,7 +806,7 @@ const char *v4l2_ctrl_get_name(u32 id)
+ 	/* The MPEG controls are applicable to all codec controls
+ 	 * and the 'MPEG' part of the define is historical */
+ 	/* Keep the order of the 'case's the same as in videodev2.h! */
+-	case V4L2_CID_MPEG_CLASS:		return "Codec Controls";
++	case V4L2_CID_CODEC_CLASS:		return "Codec Controls";
+ 	case V4L2_CID_MPEG_STREAM_TYPE:		return "Stream Type";
+ 	case V4L2_CID_MPEG_STREAM_PID_PMT:	return "Stream PMT Program ID";
+ 	case V4L2_CID_MPEG_STREAM_PID_AUDIO:	return "Stream Audio Program ID";
 @@ -896,13 +896,6 @@ const char *v4l2_ctrl_get_name(u32 id)
  	case V4L2_CID_MPEG_VIDEO_H264_I_FRAME_MAX_QP:		return "H264 I-Frame Maximum QP Value";
  	case V4L2_CID_MPEG_VIDEO_H264_P_FRAME_MIN_QP:		return "H264 P-Frame Minimum QP Value";
@@ -9556,7 +10253,19 @@ index 5b4be2cc03e6560a9d9cd26eecec3f2fcd742603..3ada127a96dd9b80784aa7a81611fb8b
  	case V4L2_CID_MPEG_VIDEO_MPEG2_LEVEL:			return "MPEG2 Level";
  	case V4L2_CID_MPEG_VIDEO_MPEG2_PROFILE:			return "MPEG2 Profile";
  	case V4L2_CID_MPEG_VIDEO_MPEG4_I_FRAME_QP:		return "MPEG4 I-Frame QP Value";
-@@ -1148,6 +1141,18 @@ const char *v4l2_ctrl_get_name(u32 id)
+@@ -946,6 +939,11 @@ const char *v4l2_ctrl_get_name(u32 id)
+ 	case V4L2_CID_MPEG_VIDEO_VP9_PROFILE:			return "VP9 Profile";
+ 	case V4L2_CID_MPEG_VIDEO_VP9_LEVEL:			return "VP9 Level";
+ 	case V4L2_CID_MPEG_VIDEO_VP8_FRAME_HEADER:		return "VP8 Frame Header";
++	case V4L2_CID_MPEG_VIDEO_VP9_FRAME_DECODE_PARAMS:	return "VP9 Frame Decode Parameters";
++	case V4L2_CID_MPEG_VIDEO_VP9_FRAME_CONTEXT(0):		return "VP9 Frame Context 0";
++	case V4L2_CID_MPEG_VIDEO_VP9_FRAME_CONTEXT(1):		return "VP9 Frame Context 1";
++	case V4L2_CID_MPEG_VIDEO_VP9_FRAME_CONTEXT(2):		return "VP9 Frame Context 2";
++	case V4L2_CID_MPEG_VIDEO_VP9_FRAME_CONTEXT(3):		return "VP9 Frame Context 3";
+ 
+ 	/* HEVC controls */
+ 	case V4L2_CID_MPEG_VIDEO_HEVC_I_FRAME_QP:		return "HEVC I-Frame QP Value";
+@@ -1148,6 +1146,18 @@ const char *v4l2_ctrl_get_name(u32 id)
  	case V4L2_CID_DETECT_MD_GLOBAL_THRESHOLD: return "MD Global Threshold";
  	case V4L2_CID_DETECT_MD_THRESHOLD_GRID:	return "MD Threshold Grid";
  	case V4L2_CID_DETECT_MD_REGION_GRID:	return "MD Region Grid";
@@ -9575,7 +10284,7 @@ index 5b4be2cc03e6560a9d9cd26eecec3f2fcd742603..3ada127a96dd9b80784aa7a81611fb8b
  	default:
  		return NULL;
  	}
-@@ -1273,8 +1278,6 @@ void v4l2_ctrl_fill(u32 id, const char **name, enum v4l2_ctrl_type *type,
+@@ -1273,8 +1283,6 @@ void v4l2_ctrl_fill(u32 id, const char **name, enum v4l2_ctrl_type *type,
  	case V4L2_CID_MPEG_VIDEO_H264_VUI_SAR_IDC:
  	case V4L2_CID_MPEG_VIDEO_H264_SEI_FP_ARRANGEMENT_TYPE:
  	case V4L2_CID_MPEG_VIDEO_H264_FMO_MAP_TYPE:
@@ -9584,7 +10293,7 @@ index 5b4be2cc03e6560a9d9cd26eecec3f2fcd742603..3ada127a96dd9b80784aa7a81611fb8b
  	case V4L2_CID_MPEG_VIDEO_MPEG2_LEVEL:
  	case V4L2_CID_MPEG_VIDEO_MPEG2_PROFILE:
  	case V4L2_CID_MPEG_VIDEO_MPEG4_LEVEL:
-@@ -1303,6 +1306,8 @@ void v4l2_ctrl_fill(u32 id, const char **name, enum v4l2_ctrl_type *type,
+@@ -1303,6 +1311,8 @@ void v4l2_ctrl_fill(u32 id, const char **name, enum v4l2_ctrl_type *type,
  	case V4L2_CID_MPEG_VIDEO_HEVC_SIZE_OF_LENGTH_FIELD:
  	case V4L2_CID_MPEG_VIDEO_HEVC_TIER:
  	case V4L2_CID_MPEG_VIDEO_HEVC_LOOP_FILTER_MODE:
@@ -9593,7 +10302,16 @@ index 5b4be2cc03e6560a9d9cd26eecec3f2fcd742603..3ada127a96dd9b80784aa7a81611fb8b
  		*type = V4L2_CTRL_TYPE_MENU;
  		break;
  	case V4L2_CID_LINK_FREQ:
-@@ -1332,6 +1337,7 @@ void v4l2_ctrl_fill(u32 id, const char **name, enum v4l2_ctrl_type *type,
+@@ -1322,7 +1332,7 @@ void v4l2_ctrl_fill(u32 id, const char **name, enum v4l2_ctrl_type *type,
+ 		break;
+ 	case V4L2_CID_USER_CLASS:
+ 	case V4L2_CID_CAMERA_CLASS:
+-	case V4L2_CID_MPEG_CLASS:
++	case V4L2_CID_CODEC_CLASS:
+ 	case V4L2_CID_FM_TX_CLASS:
+ 	case V4L2_CID_FLASH_CLASS:
+ 	case V4L2_CID_JPEG_CLASS:
+@@ -1332,6 +1342,7 @@ void v4l2_ctrl_fill(u32 id, const char **name, enum v4l2_ctrl_type *type,
  	case V4L2_CID_FM_RX_CLASS:
  	case V4L2_CID_RF_TUNER_CLASS:
  	case V4L2_CID_DETECT_CLASS:
@@ -9601,7 +10319,7 @@ index 5b4be2cc03e6560a9d9cd26eecec3f2fcd742603..3ada127a96dd9b80784aa7a81611fb8b
  		*type = V4L2_CTRL_TYPE_CTRL_CLASS;
  		/* You can neither read not write these */
  		*flags |= V4L2_CTRL_FLAG_READ_ONLY | V4L2_CTRL_FLAG_WRITE_ONLY;
-@@ -1395,21 +1401,24 @@ void v4l2_ctrl_fill(u32 id, const char **name, enum v4l2_ctrl_type *type,
+@@ -1395,24 +1406,36 @@ void v4l2_ctrl_fill(u32 id, const char **name, enum v4l2_ctrl_type *type,
  	case V4L2_CID_MPEG_VIDEO_FWHT_PARAMS:
  		*type = V4L2_CTRL_TYPE_FWHT_PARAMS;
  		break;
@@ -9631,7 +10349,19 @@ index 5b4be2cc03e6560a9d9cd26eecec3f2fcd742603..3ada127a96dd9b80784aa7a81611fb8b
  	case V4L2_CID_MPEG_VIDEO_VP8_FRAME_HEADER:
  		*type = V4L2_CTRL_TYPE_VP8_FRAME_HEADER;
  		break;
-@@ -1674,6 +1683,24 @@ static void std_log(const struct v4l2_ctrl *ctrl)
++	case V4L2_CID_MPEG_VIDEO_VP9_FRAME_DECODE_PARAMS:
++		*type = V4L2_CTRL_TYPE_VP9_FRAME_DECODE_PARAMS;
++		break;
++	case V4L2_CID_MPEG_VIDEO_VP9_FRAME_CONTEXT(0):
++	case V4L2_CID_MPEG_VIDEO_VP9_FRAME_CONTEXT(1):
++	case V4L2_CID_MPEG_VIDEO_VP9_FRAME_CONTEXT(2):
++	case V4L2_CID_MPEG_VIDEO_VP9_FRAME_CONTEXT(3):
++		*type = V4L2_CTRL_TYPE_VP9_FRAME_CONTEXT;
++		break;
+ 	default:
+ 		*type = V4L2_CTRL_TYPE_INTEGER;
+ 		break;
+@@ -1674,6 +1697,24 @@ static void std_log(const struct v4l2_ctrl *ctrl)
  	case V4L2_CTRL_TYPE_U32:
  		pr_cont("%u", (unsigned)*ptr.p_u32);
  		break;
@@ -9656,7 +10386,224 @@ index 5b4be2cc03e6560a9d9cd26eecec3f2fcd742603..3ada127a96dd9b80784aa7a81611fb8b
  	default:
  		pr_cont("unknown type %d", ctrl->type);
  		break;
-@@ -1705,6 +1732,8 @@ static void std_log(const struct v4l2_ctrl *ctrl)
+@@ -1701,10 +1742,225 @@ static void std_log(const struct v4l2_ctrl *ctrl)
+ 	0;							\
+ })
+ 
++static int
++validate_vp9_lf_params(struct v4l2_vp9_loop_filter *lf)
++{
++	unsigned int i, j, k;
++
++	if (lf->flags &
++	    ~(V4L2_VP9_LOOP_FILTER_FLAG_DELTA_ENABLED |
++	      V4L2_VP9_LOOP_FILTER_FLAG_DELTA_UPDATE))
++		return -EINVAL;
++
++	/*
++	 * V4L2_VP9_LOOP_FILTER_FLAG_DELTA_ENABLED implies
++	 * V4L2_VP9_LOOP_FILTER_FLAG_DELTA_UPDATE.
++	 */
++	if (lf->flags & V4L2_VP9_LOOP_FILTER_FLAG_DELTA_UPDATE &&
++	    !(lf->flags & V4L2_VP9_LOOP_FILTER_FLAG_DELTA_ENABLED))
++		return -EINVAL;
++
++	/* That all values are in the accepted range. */
++	if (lf->level > GENMASK(5, 0))
++		return -EINVAL;
++
++	if (lf->sharpness > GENMASK(2, 0))
++		return -EINVAL;
++
++	for (i = 0; i < ARRAY_SIZE(lf->ref_deltas); i++) {
++		if (lf->ref_deltas[i] < -63 || lf->ref_deltas[i] > 63)
++			return -EINVAL;
++	}
++
++	for (i = 0; i < ARRAY_SIZE(lf->mode_deltas); i++) {
++		if (lf->mode_deltas[i] < -63 || lf->mode_deltas[i] > 63)
++			return -EINVAL;
++	}
++
++	for (i = 0; i < ARRAY_SIZE(lf->level_lookup); i++) {
++		for (j = 0; j < ARRAY_SIZE(lf->level_lookup[0]); j++) {
++			for (k = 0; k < ARRAY_SIZE(lf->level_lookup[0][0]); k++) {
++				if (lf->level_lookup[i][j][k] > 63)
++					return -EINVAL;
++			}
++		}
++	}
++
++	return 0;
++}
++
++static int
++validate_vp9_quant_params(struct v4l2_vp9_quantization *quant)
++{
++	if (quant->delta_q_y_dc < -15 || quant->delta_q_y_dc > 15 ||
++	    quant->delta_q_uv_dc < -15 || quant->delta_q_uv_dc > 15 ||
++	    quant->delta_q_uv_ac < -15 || quant->delta_q_uv_ac > 15)
++		return -EINVAL;
++
++	memset(quant->padding, 0, sizeof(quant->padding));
++	return 0;
++}
++
++static int
++validate_vp9_seg_params(struct v4l2_vp9_segmentation *seg)
++{
++	unsigned int i, j;
++
++	if (seg->flags &
++	    ~(V4L2_VP9_SEGMENTATION_FLAG_ENABLED |
++	      V4L2_VP9_SEGMENTATION_FLAG_UPDATE_MAP |
++	      V4L2_VP9_SEGMENTATION_FLAG_TEMPORAL_UPDATE |
++	      V4L2_VP9_SEGMENTATION_FLAG_UPDATE_DATA |
++	      V4L2_VP9_SEGMENTATION_FLAG_ABS_OR_DELTA_UPDATE))
++		return -EINVAL;
++
++	/*
++	 * V4L2_VP9_SEGMENTATION_FLAG_UPDATE_MAP and
++	 * V4L2_VP9_SEGMENTATION_FLAG_UPDATE_DATA imply
++	 * V4L2_VP9_SEGMENTATION_FLAG_ENABLED.
++	 */
++	if ((seg->flags &
++	     (V4L2_VP9_SEGMENTATION_FLAG_UPDATE_MAP |
++	      V4L2_VP9_SEGMENTATION_FLAG_UPDATE_DATA)) &&
++	    !(seg->flags & V4L2_VP9_SEGMENTATION_FLAG_ENABLED))
++		return -EINVAL;
++
++	/*
++	 * V4L2_VP9_SEGMENTATION_FLAG_TEMPORAL_UPDATE implies
++	 * V4L2_VP9_SEGMENTATION_FLAG_UPDATE_MAP.
++	 */
++	if (seg->flags & V4L2_VP9_SEGMENTATION_FLAG_TEMPORAL_UPDATE &&
++	    !(seg->flags & V4L2_VP9_SEGMENTATION_FLAG_UPDATE_MAP))
++		return -EINVAL;
++
++	/*
++	 * V4L2_VP9_SEGMENTATION_FLAG_ABS_OR_DELTA_UPDATE implies
++	 * V4L2_VP9_SEGMENTATION_FLAG_UPDATE_DATA.
++	 */
++	if (seg->flags & V4L2_VP9_SEGMENTATION_FLAG_ABS_OR_DELTA_UPDATE &&
++	    !(seg->flags & V4L2_VP9_SEGMENTATION_FLAG_UPDATE_DATA))
++		return -EINVAL;
++
++	for (i = 0; i < ARRAY_SIZE(seg->feature_enabled); i++) {
++		if (seg->feature_enabled[i] &
++		    ~(V4L2_VP9_SEGMENT_FEATURE_QP_DELTA |
++		      V4L2_VP9_SEGMENT_FEATURE_LF |
++		      V4L2_VP9_SEGMENT_FEATURE_REF_FRAME |
++		      V4L2_VP9_SEGMENT_FEATURE_SKIP))
++			return -EINVAL;
++	}
++
++	for (i = 0; i < ARRAY_SIZE(seg->feature_data); i++) {
++		const int range[] = {255, 63, 3, 0};
++
++		for (j = 0; j < ARRAY_SIZE(seg->feature_data[j]); j++) {
++			if (seg->feature_data[i][j] < -range[j] ||
++			    seg->feature_data[i][j] > range[j])
++				return -EINVAL;
++		}
++	}
++
++	memset(seg->padding, 0, sizeof(seg->padding));
++	return 0;
++}
++
++static int
++validate_vp9_frame_decode_params(struct v4l2_ctrl_vp9_frame_decode_params *dec_params)
++{
++	int ret;
++
++	/* Make sure we're not passed invalid flags. */
++	if (dec_params->flags &
++	    ~(V4L2_VP9_FRAME_FLAG_KEY_FRAME |
++	      V4L2_VP9_FRAME_FLAG_SHOW_FRAME |
++	      V4L2_VP9_FRAME_FLAG_ERROR_RESILIENT |
++	      V4L2_VP9_FRAME_FLAG_INTRA_ONLY |
++	      V4L2_VP9_FRAME_FLAG_ALLOW_HIGH_PREC_MV |
++	      V4L2_VP9_FRAME_FLAG_REFRESH_FRAME_CTX |
++	      V4L2_VP9_FRAME_FLAG_PARALLEL_DEC_MODE |
++	      V4L2_VP9_FRAME_FLAG_X_SUBSAMPLING |
++	      V4L2_VP9_FRAME_FLAG_Y_SUBSAMPLING |
++	      V4L2_VP9_FRAME_FLAG_COLOR_RANGE_FULL_SWING))
++		return -EINVAL;
++
++	/*
++	 * The refresh context and error resilient flags are mutually exclusive.
++	 * Same goes for parallel decoding and error resilient modes.
++	 */
++	if (dec_params->flags & V4L2_VP9_FRAME_FLAG_ERROR_RESILIENT &&
++	    dec_params->flags &
++	    (V4L2_VP9_FRAME_FLAG_REFRESH_FRAME_CTX |
++	     V4L2_VP9_FRAME_FLAG_PARALLEL_DEC_MODE))
++		return -EINVAL;
++
++	if (dec_params->profile > V4L2_VP9_PROFILE_MAX)
++		return -EINVAL;
++
++	if (dec_params->reset_frame_context > V4L2_VP9_RESET_FRAME_CTX_ALL)
++		return -EINVAL;
++
++	if (dec_params->frame_context_idx >= V4L2_VP9_NUM_FRAME_CTX)
++		return -EINVAL;
++
++	/*
++	 * Profiles 0 and 1 only support 8-bit depth, profiles 2 and 3 only 10
++	 * and 12 bit depths.
++	 */
++	if ((dec_params->profile < 2 && dec_params->bit_depth != 8) ||
++	    (dec_params->profile >= 2 &&
++	     (dec_params->bit_depth != 10 && dec_params->bit_depth != 12)))
++		return -EINVAL;
++
++	/* Profile 0 and 2 only accept YUV 4:2:0. */
++	if ((dec_params->profile == 0 || dec_params->profile == 2) &&
++	    (!(dec_params->flags & V4L2_VP9_FRAME_FLAG_X_SUBSAMPLING) ||
++	     !(dec_params->flags & V4L2_VP9_FRAME_FLAG_Y_SUBSAMPLING)))
++		return -EINVAL;
++
++	/* Profile 1 and 3 only accept YUV 4:2:2, 4:4:0 and 4:4:4. */
++	if ((dec_params->profile == 1 || dec_params->profile == 3) &&
++	    ((dec_params->flags & V4L2_VP9_FRAME_FLAG_X_SUBSAMPLING) &&
++	     (dec_params->flags & V4L2_VP9_FRAME_FLAG_Y_SUBSAMPLING)))
++		return -EINVAL;
++
++	if (dec_params->interpolation_filter > V4L2_VP9_INTERP_FILTER_SWITCHABLE)
++		return -EINVAL;
++
++	/*
++	 * According to the spec, tile_cols_log2 shall be less than or equal
++	 * to 6.
++	 */
++	if (dec_params->tile_cols_log2 > 6)
++		return -EINVAL;
++
++	if (dec_params->tx_mode > V4L2_VP9_TX_MODE_SELECT)
++		return -EINVAL;
++
++	if (dec_params->reference_mode > V4L2_VP9_REF_MODE_SELECT)
++		return -EINVAL;
++
++	ret = validate_vp9_lf_params(&dec_params->lf);
++	if (ret)
++		return ret;
++
++	ret = validate_vp9_quant_params(&dec_params->quant);
++	if (ret)
++		return ret;
++
++	ret = validate_vp9_seg_params(&dec_params->seg);
++	if (ret)
++		return ret;
++
++	memset(dec_params->padding, 0, sizeof(dec_params->padding));
++	return 0;
++}
++
+ /* Validate a new control */
  
  #define zero_padding(s) \
  	memset(&(s).padding, 0, sizeof((s).padding))
@@ -9665,7 +10612,7 @@ index 5b4be2cc03e6560a9d9cd26eecec3f2fcd742603..3ada127a96dd9b80784aa7a81611fb8b
  
  /*
   * Compound controls validation requires setting unused fields/flags to zero
-@@ -1715,7 +1744,13 @@ static int std_validate_compound(const struct v4l2_ctrl *ctrl, u32 idx,
+@@ -1715,7 +1971,13 @@ static int std_validate_compound(const struct v4l2_ctrl *ctrl, u32 idx,
  {
  	struct v4l2_ctrl_mpeg2_slice_params *p_mpeg2_slice_params;
  	struct v4l2_ctrl_vp8_frame_header *p_vp8_frame_header;
@@ -9679,7 +10626,7 @@ index 5b4be2cc03e6560a9d9cd26eecec3f2fcd742603..3ada127a96dd9b80784aa7a81611fb8b
  
  	switch ((u32)ctrl->type) {
  	case V4L2_CTRL_TYPE_MPEG2_SLICE_PARAMS:
-@@ -1767,10 +1802,158 @@ static int std_validate_compound(const struct v4l2_ctrl *ctrl, u32 idx,
+@@ -1767,10 +2029,158 @@ static int std_validate_compound(const struct v4l2_ctrl *ctrl, u32 idx,
  		break;
  
  	case V4L2_CTRL_TYPE_H264_SPS:
@@ -9838,7 +10785,21 @@ index 5b4be2cc03e6560a9d9cd26eecec3f2fcd742603..3ada127a96dd9b80784aa7a81611fb8b
  		break;
  
  	case V4L2_CTRL_TYPE_VP8_FRAME_HEADER:
-@@ -2461,6 +2644,9 @@ static struct v4l2_ctrl *v4l2_ctrl_new(struct v4l2_ctrl_handler *hdl,
+@@ -1791,6 +2201,13 @@ static int std_validate_compound(const struct v4l2_ctrl *ctrl, u32 idx,
+ 		zero_padding(p_vp8_frame_header->entropy_header);
+ 		zero_padding(p_vp8_frame_header->coder_state);
+ 		break;
++
++	case V4L2_CTRL_TYPE_VP9_FRAME_DECODE_PARAMS:
++		return validate_vp9_frame_decode_params(p);
++
++	case V4L2_CTRL_TYPE_VP9_FRAME_CONTEXT:
++		break;
++
+ 	default:
+ 		return -EINVAL;
+ 	}
+@@ -2461,9 +2878,18 @@ static struct v4l2_ctrl *v4l2_ctrl_new(struct v4l2_ctrl_handler *hdl,
  	case V4L2_CTRL_TYPE_H264_DECODE_PARAMS:
  		elem_size = sizeof(struct v4l2_ctrl_h264_decode_params);
  		break;
@@ -9848,6 +10809,15 @@ index 5b4be2cc03e6560a9d9cd26eecec3f2fcd742603..3ada127a96dd9b80784aa7a81611fb8b
  	case V4L2_CTRL_TYPE_VP8_FRAME_HEADER:
  		elem_size = sizeof(struct v4l2_ctrl_vp8_frame_header);
  		break;
++	case V4L2_CTRL_TYPE_VP9_FRAME_CONTEXT:
++		elem_size = sizeof(struct v4l2_ctrl_vp9_frame_ctx);
++		break;
++	case V4L2_CTRL_TYPE_VP9_FRAME_DECODE_PARAMS:
++		elem_size = sizeof(struct v4l2_ctrl_vp9_frame_decode_params);
++		break;
+ 	default:
+ 		if (type < V4L2_CTRL_COMPOUND_TYPES)
+ 			elem_size = sizeof(s32);
 diff --git a/drivers/media/v4l2-core/v4l2-h264.c b/drivers/media/v4l2-core/v4l2-h264.c
 index edf6225f0522bcdbb4f66d57e4991e8c8d57404c..5633a242520a09a05b4ce84828361bc2663c92cb 100644
 --- a/drivers/media/v4l2-core/v4l2-h264.c
@@ -9898,7 +10868,7 @@ index edf6225f0522bcdbb4f66d57e4991e8c8d57404c..5633a242520a09a05b4ce84828361bc2
  		else
  			pic_order_count = dpb[i].top_field_order_cnt;
 diff --git a/drivers/media/v4l2-core/v4l2-ioctl.c b/drivers/media/v4l2-core/v4l2-ioctl.c
-index 660294eea8c88ba45aa17f803310bb0b044a8f21..9104744beaf2c44faca92824de695293367dc0b9 100644
+index 660294eea8c88ba45aa17f803310bb0b044a8f21..b694a5805cd3d4858af7583e6935d6c676fe5ee8 100644
 --- a/drivers/media/v4l2-core/v4l2-ioctl.c
 +++ b/drivers/media/v4l2-core/v4l2-ioctl.c
 @@ -1313,6 +1313,7 @@ static void v4l_fill_fmtdesc(struct v4l2_fmtdesc *fmt)
@@ -9909,6 +10879,14 @@ index 660294eea8c88ba45aa17f803310bb0b044a8f21..9104744beaf2c44faca92824de695293
  	case V4L2_PIX_FMT_HSV24:	descr = "24-bit HSV 8-8-8"; break;
  	case V4L2_PIX_FMT_HSV32:	descr = "32-bit XHSV 8-8-8-8"; break;
  	case V4L2_SDR_FMT_CU8:		descr = "Complex U8"; break;
+@@ -1356,6 +1357,7 @@ static void v4l_fill_fmtdesc(struct v4l2_fmtdesc *fmt)
+ 		case V4L2_PIX_FMT_VP8:		descr = "VP8"; break;
+ 		case V4L2_PIX_FMT_VP8_FRAME:    descr = "VP8 Frame"; break;
+ 		case V4L2_PIX_FMT_VP9:		descr = "VP9"; break;
++		case V4L2_PIX_FMT_VP9_FRAME:    descr = "VP9 Frame"; break;
+ 		case V4L2_PIX_FMT_HEVC:		descr = "HEVC"; break; /* aka H.265 */
+ 		case V4L2_PIX_FMT_FWHT:		descr = "FWHT"; break; /* used in vicodec */
+ 		case V4L2_PIX_FMT_FWHT_STATELESS:	descr = "FWHT Stateless"; break; /* used in vicodec */
 diff --git a/drivers/memory/Kconfig b/drivers/memory/Kconfig
 index 9bddca292330104a92f7c697ac2d81cfb06f2801..7704e89d274840fccbe6e156c2044e92d6bd4921 100644
 --- a/drivers/memory/Kconfig
@@ -13631,8 +14609,369 @@ index 83b8be0209b74f2801cca403c3cbb61ca6776e43..c1b0ed27f278b2da61c55ab7da1ba959
  }
  
  static const struct mtk_pwm_data mt2701_pwm_data = {
+diff --git a/drivers/soc/mediatek/mt8173-pm-domains.h b/drivers/soc/mediatek/mt8173-pm-domains.h
+index 3e8ee5dabb437290e41679ad2ae1cf69c0d49f1d..654c717e546711e94286e0141b103918ce04d5e0 100644
+--- a/drivers/soc/mediatek/mt8173-pm-domains.h
++++ b/drivers/soc/mediatek/mt8173-pm-domains.h
+@@ -12,24 +12,28 @@
+ 
+ static const struct scpsys_domain_data scpsys_domain_data_mt8173[] = {
+ 	[MT8173_POWER_DOMAIN_VDEC] = {
++		.name = "vdec",
+ 		.sta_mask = PWR_STATUS_VDEC,
+ 		.ctl_offs = SPM_VDE_PWR_CON,
+ 		.sram_pdn_bits = GENMASK(11, 8),
+ 		.sram_pdn_ack_bits = GENMASK(12, 12),
+ 	},
+ 	[MT8173_POWER_DOMAIN_VENC] = {
++		.name = "venc",
+ 		.sta_mask = PWR_STATUS_VENC,
+ 		.ctl_offs = SPM_VEN_PWR_CON,
+ 		.sram_pdn_bits = GENMASK(11, 8),
+ 		.sram_pdn_ack_bits = GENMASK(15, 12),
+ 	},
+ 	[MT8173_POWER_DOMAIN_ISP] = {
++		.name = "isp",
+ 		.sta_mask = PWR_STATUS_ISP,
+ 		.ctl_offs = SPM_ISP_PWR_CON,
+ 		.sram_pdn_bits = GENMASK(11, 8),
+ 		.sram_pdn_ack_bits = GENMASK(13, 12),
+ 	},
+ 	[MT8173_POWER_DOMAIN_MM] = {
++		.name = "mm",
+ 		.sta_mask = PWR_STATUS_DISP,
+ 		.ctl_offs = SPM_DIS_PWR_CON,
+ 		.sram_pdn_bits = GENMASK(11, 8),
+@@ -40,18 +44,21 @@ static const struct scpsys_domain_data scpsys_domain_data_mt8173[] = {
+ 		},
+ 	},
+ 	[MT8173_POWER_DOMAIN_VENC_LT] = {
++		.name = "venc_lt",
+ 		.sta_mask = PWR_STATUS_VENC_LT,
+ 		.ctl_offs = SPM_VEN2_PWR_CON,
+ 		.sram_pdn_bits = GENMASK(11, 8),
+ 		.sram_pdn_ack_bits = GENMASK(15, 12),
+ 	},
+ 	[MT8173_POWER_DOMAIN_AUDIO] = {
++		.name = "audio",
+ 		.sta_mask = PWR_STATUS_AUDIO,
+ 		.ctl_offs = SPM_AUDIO_PWR_CON,
+ 		.sram_pdn_bits = GENMASK(11, 8),
+ 		.sram_pdn_ack_bits = GENMASK(15, 12),
+ 	},
+ 	[MT8173_POWER_DOMAIN_USB] = {
++		.name = "usb",
+ 		.sta_mask = PWR_STATUS_USB,
+ 		.ctl_offs = SPM_USB_PWR_CON,
+ 		.sram_pdn_bits = GENMASK(11, 8),
+@@ -59,18 +66,21 @@ static const struct scpsys_domain_data scpsys_domain_data_mt8173[] = {
+ 		.caps = MTK_SCPD_ACTIVE_WAKEUP,
+ 	},
+ 	[MT8173_POWER_DOMAIN_MFG_ASYNC] = {
++		.name = "mfg_async",
+ 		.sta_mask = PWR_STATUS_MFG_ASYNC,
+ 		.ctl_offs = SPM_MFG_ASYNC_PWR_CON,
+ 		.sram_pdn_bits = GENMASK(11, 8),
+ 		.sram_pdn_ack_bits = 0,
+ 	},
+ 	[MT8173_POWER_DOMAIN_MFG_2D] = {
++		.name = "mfg_2d",
+ 		.sta_mask = PWR_STATUS_MFG_2D,
+ 		.ctl_offs = SPM_MFG_2D_PWR_CON,
+ 		.sram_pdn_bits = GENMASK(11, 8),
+ 		.sram_pdn_ack_bits = GENMASK(13, 12),
+ 	},
+ 	[MT8173_POWER_DOMAIN_MFG] = {
++		.name = "mfg",
+ 		.sta_mask = PWR_STATUS_MFG,
+ 		.ctl_offs = SPM_MFG_PWR_CON,
+ 		.sram_pdn_bits = GENMASK(13, 8),
+diff --git a/drivers/soc/mediatek/mt8183-pm-domains.h b/drivers/soc/mediatek/mt8183-pm-domains.h
+index aa5230e6c12f89188553acfbf51d726a4fb4dc0f..98a9940d05fbbb8e1334eec0dc2536f1e344a5ee 100644
+--- a/drivers/soc/mediatek/mt8183-pm-domains.h
++++ b/drivers/soc/mediatek/mt8183-pm-domains.h
+@@ -12,12 +12,14 @@
+ 
+ static const struct scpsys_domain_data scpsys_domain_data_mt8183[] = {
+ 	[MT8183_POWER_DOMAIN_AUDIO] = {
++		.name = "audio",
+ 		.sta_mask = PWR_STATUS_AUDIO,
+ 		.ctl_offs = 0x0314,
+ 		.sram_pdn_bits = GENMASK(11, 8),
+ 		.sram_pdn_ack_bits = GENMASK(15, 12),
+ 	},
+ 	[MT8183_POWER_DOMAIN_CONN] = {
++		.name = "conn",
+ 		.sta_mask = PWR_STATUS_CONN,
+ 		.ctl_offs = 0x032c,
+ 		.sram_pdn_bits = 0,
+@@ -28,12 +30,14 @@ static const struct scpsys_domain_data scpsys_domain_data_mt8183[] = {
+ 		},
+ 	},
+ 	[MT8183_POWER_DOMAIN_MFG_ASYNC] = {
++		.name = "mfg_async",
+ 		.sta_mask = PWR_STATUS_MFG_ASYNC,
+ 		.ctl_offs = 0x0334,
+ 		.sram_pdn_bits = 0,
+ 		.sram_pdn_ack_bits = 0,
+ 	},
+ 	[MT8183_POWER_DOMAIN_MFG] = {
++		.name = "mfg",
+ 		.sta_mask = PWR_STATUS_MFG,
+ 		.ctl_offs = 0x0338,
+ 		.sram_pdn_bits = GENMASK(8, 8),
+@@ -41,18 +45,21 @@ static const struct scpsys_domain_data scpsys_domain_data_mt8183[] = {
+ 		.caps = MTK_SCPD_DOMAIN_SUPPLY,
+ 	},
+ 	[MT8183_POWER_DOMAIN_MFG_CORE0] = {
++		.name = "mfg_core0",
+ 		.sta_mask = BIT(7),
+ 		.ctl_offs = 0x034c,
+ 		.sram_pdn_bits = GENMASK(8, 8),
+ 		.sram_pdn_ack_bits = GENMASK(12, 12),
+ 	},
+ 	[MT8183_POWER_DOMAIN_MFG_CORE1] = {
++		.name = "mfg_core1",
+ 		.sta_mask = BIT(20),
+ 		.ctl_offs = 0x0310,
+ 		.sram_pdn_bits = GENMASK(8, 8),
+ 		.sram_pdn_ack_bits = GENMASK(12, 12),
+ 	},
+ 	[MT8183_POWER_DOMAIN_MFG_2D] = {
++		.name = "mfg_2d",
+ 		.sta_mask = PWR_STATUS_MFG_2D,
+ 		.ctl_offs = 0x0348,
+ 		.sram_pdn_bits = GENMASK(8, 8),
+@@ -65,6 +72,7 @@ static const struct scpsys_domain_data scpsys_domain_data_mt8183[] = {
+ 		},
+ 	},
+ 	[MT8183_POWER_DOMAIN_DISP] = {
++		.name = "disp",
+ 		.sta_mask = PWR_STATUS_DISP,
+ 		.ctl_offs = 0x030c,
+ 		.sram_pdn_bits = GENMASK(8, 8),
+@@ -83,6 +91,7 @@ static const struct scpsys_domain_data scpsys_domain_data_mt8183[] = {
+ 		},
+ 	},
+ 	[MT8183_POWER_DOMAIN_CAM] = {
++		.name = "cam",
+ 		.sta_mask = BIT(25),
+ 		.ctl_offs = 0x0344,
+ 		.sram_pdn_bits = GENMASK(9, 8),
+@@ -105,6 +114,7 @@ static const struct scpsys_domain_data scpsys_domain_data_mt8183[] = {
+ 		},
+ 	},
+ 	[MT8183_POWER_DOMAIN_ISP] = {
++		.name = "isp",
+ 		.sta_mask = PWR_STATUS_ISP,
+ 		.ctl_offs = 0x0308,
+ 		.sram_pdn_bits = GENMASK(9, 8),
+@@ -127,6 +137,7 @@ static const struct scpsys_domain_data scpsys_domain_data_mt8183[] = {
+ 		},
+ 	},
+ 	[MT8183_POWER_DOMAIN_VDEC] = {
++		.name = "vdec",
+ 		.sta_mask = BIT(31),
+ 		.ctl_offs = 0x0300,
+ 		.sram_pdn_bits = GENMASK(8, 8),
+@@ -139,6 +150,7 @@ static const struct scpsys_domain_data scpsys_domain_data_mt8183[] = {
+ 		},
+ 	},
+ 	[MT8183_POWER_DOMAIN_VENC] = {
++		.name = "venc",
+ 		.sta_mask = PWR_STATUS_VENC,
+ 		.ctl_offs = 0x0304,
+ 		.sram_pdn_bits = GENMASK(11, 8),
+@@ -151,6 +163,7 @@ static const struct scpsys_domain_data scpsys_domain_data_mt8183[] = {
+ 		},
+ 	},
+ 	[MT8183_POWER_DOMAIN_VPU_TOP] = {
++		.name = "vpu_top",
+ 		.sta_mask = BIT(26),
+ 		.ctl_offs = 0x0324,
+ 		.sram_pdn_bits = GENMASK(8, 8),
+@@ -177,6 +190,7 @@ static const struct scpsys_domain_data scpsys_domain_data_mt8183[] = {
+ 		},
+ 	},
+ 	[MT8183_POWER_DOMAIN_VPU_CORE0] = {
++		.name = "vpu_core0",
+ 		.sta_mask = BIT(27),
+ 		.ctl_offs = 0x33c,
+ 		.sram_pdn_bits = GENMASK(11, 8),
+@@ -194,6 +208,7 @@ static const struct scpsys_domain_data scpsys_domain_data_mt8183[] = {
+ 		.caps = MTK_SCPD_SRAM_ISO,
+ 	},
+ 	[MT8183_POWER_DOMAIN_VPU_CORE1] = {
++		.name = "vpu_core1",
+ 		.sta_mask = BIT(28),
+ 		.ctl_offs = 0x0340,
+ 		.sram_pdn_bits = GENMASK(11, 8),
+diff --git a/drivers/soc/mediatek/mt8192-pm-domains.h b/drivers/soc/mediatek/mt8192-pm-domains.h
+index d8ce3238433963be69bb5a72ab75ad9675518d72..de9b854384758911c85b98a58d4df4ea543941aa 100644
+--- a/drivers/soc/mediatek/mt8192-pm-domains.h
++++ b/drivers/soc/mediatek/mt8192-pm-domains.h
+@@ -12,6 +12,7 @@
+ 
+ static const struct scpsys_domain_data scpsys_domain_data_mt8192[] = {
+ 	[MT8192_POWER_DOMAIN_AUDIO] = {
++		.name = "audio",
+ 		.sta_mask = BIT(21),
+ 		.ctl_offs = 0x0354,
+ 		.sram_pdn_bits = GENMASK(8, 8),
+@@ -24,6 +25,7 @@ static const struct scpsys_domain_data scpsys_domain_data_mt8192[] = {
+ 		},
+ 	},
+ 	[MT8192_POWER_DOMAIN_CONN] = {
++		.name = "conn",
+ 		.sta_mask = PWR_STATUS_CONN,
+ 		.ctl_offs = 0x0304,
+ 		.sram_pdn_bits = 0,
+@@ -45,6 +47,7 @@ static const struct scpsys_domain_data scpsys_domain_data_mt8192[] = {
+ 		.caps = MTK_SCPD_KEEP_DEFAULT_OFF,
+ 	},
+ 	[MT8192_POWER_DOMAIN_MFG0] = {
++		.name = "mfg0",
+ 		.sta_mask = BIT(2),
+ 		.ctl_offs = 0x0308,
+ 		.sram_pdn_bits = GENMASK(8, 8),
+@@ -52,6 +55,7 @@ static const struct scpsys_domain_data scpsys_domain_data_mt8192[] = {
+ 		.caps = MTK_SCPD_DOMAIN_SUPPLY,
+ 	},
+ 	[MT8192_POWER_DOMAIN_MFG1] = {
++		.name = "mfg1",
+ 		.sta_mask = BIT(3),
+ 		.ctl_offs = 0x030c,
+ 		.sram_pdn_bits = GENMASK(8, 8),
+@@ -76,36 +80,42 @@ static const struct scpsys_domain_data scpsys_domain_data_mt8192[] = {
+ 		},
+ 	},
+ 	[MT8192_POWER_DOMAIN_MFG2] = {
++		.name = "mfg2",
+ 		.sta_mask = BIT(4),
+ 		.ctl_offs = 0x0310,
+ 		.sram_pdn_bits = GENMASK(8, 8),
+ 		.sram_pdn_ack_bits = GENMASK(12, 12),
+ 	},
+ 	[MT8192_POWER_DOMAIN_MFG3] = {
++		.name = "mfg3",
+ 		.sta_mask = BIT(5),
+ 		.ctl_offs = 0x0314,
+ 		.sram_pdn_bits = GENMASK(8, 8),
+ 		.sram_pdn_ack_bits = GENMASK(12, 12),
+ 	},
+ 	[MT8192_POWER_DOMAIN_MFG4] = {
++		.name = "mfg4",
+ 		.sta_mask = BIT(6),
+ 		.ctl_offs = 0x0318,
+ 		.sram_pdn_bits = GENMASK(8, 8),
+ 		.sram_pdn_ack_bits = GENMASK(12, 12),
+ 	},
+ 	[MT8192_POWER_DOMAIN_MFG5] = {
++		.name = "mfg5",
+ 		.sta_mask = BIT(7),
+ 		.ctl_offs = 0x031c,
+ 		.sram_pdn_bits = GENMASK(8, 8),
+ 		.sram_pdn_ack_bits = GENMASK(12, 12),
+ 	},
+ 	[MT8192_POWER_DOMAIN_MFG6] = {
++		.name = "mfg6",
+ 		.sta_mask = BIT(8),
+ 		.ctl_offs = 0x0320,
+ 		.sram_pdn_bits = GENMASK(8, 8),
+ 		.sram_pdn_ack_bits = GENMASK(12, 12),
+ 	},
+ 	[MT8192_POWER_DOMAIN_DISP] = {
++		.name = "disp",
+ 		.sta_mask = BIT(20),
+ 		.ctl_offs = 0x0350,
+ 		.sram_pdn_bits = GENMASK(8, 8),
+@@ -134,6 +144,7 @@ static const struct scpsys_domain_data scpsys_domain_data_mt8192[] = {
+ 		},
+ 	},
+ 	[MT8192_POWER_DOMAIN_IPE] = {
++		.name = "ipe",
+ 		.sta_mask = BIT(14),
+ 		.ctl_offs = 0x0338,
+ 		.sram_pdn_bits = GENMASK(8, 8),
+@@ -150,6 +161,7 @@ static const struct scpsys_domain_data scpsys_domain_data_mt8192[] = {
+ 		},
+ 	},
+ 	[MT8192_POWER_DOMAIN_ISP] = {
++		.name = "isp",
+ 		.sta_mask = BIT(12),
+ 		.ctl_offs = 0x0330,
+ 		.sram_pdn_bits = GENMASK(8, 8),
+@@ -166,6 +178,7 @@ static const struct scpsys_domain_data scpsys_domain_data_mt8192[] = {
+ 		},
+ 	},
+ 	[MT8192_POWER_DOMAIN_ISP2] = {
++		.name = "isp2",
+ 		.sta_mask = BIT(13),
+ 		.ctl_offs = 0x0334,
+ 		.sram_pdn_bits = GENMASK(8, 8),
+@@ -182,6 +195,7 @@ static const struct scpsys_domain_data scpsys_domain_data_mt8192[] = {
+ 		},
+ 	},
+ 	[MT8192_POWER_DOMAIN_MDP] = {
++		.name = "mdp",
+ 		.sta_mask = BIT(19),
+ 		.ctl_offs = 0x034c,
+ 		.sram_pdn_bits = GENMASK(8, 8),
+@@ -198,6 +212,7 @@ static const struct scpsys_domain_data scpsys_domain_data_mt8192[] = {
+ 		},
+ 	},
+ 	[MT8192_POWER_DOMAIN_VENC] = {
++		.name = "venc",
+ 		.sta_mask = BIT(17),
+ 		.ctl_offs = 0x0344,
+ 		.sram_pdn_bits = GENMASK(8, 8),
+@@ -214,6 +229,7 @@ static const struct scpsys_domain_data scpsys_domain_data_mt8192[] = {
+ 		},
+ 	},
+ 	[MT8192_POWER_DOMAIN_VDEC] = {
++		.name = "vdec",
+ 		.sta_mask = BIT(15),
+ 		.ctl_offs = 0x033c,
+ 		.sram_pdn_bits = GENMASK(8, 8),
+@@ -230,12 +246,14 @@ static const struct scpsys_domain_data scpsys_domain_data_mt8192[] = {
+ 		},
+ 	},
+ 	[MT8192_POWER_DOMAIN_VDEC2] = {
++		.name = "vdec2",
+ 		.sta_mask = BIT(16),
+ 		.ctl_offs = 0x0340,
+ 		.sram_pdn_bits = GENMASK(8, 8),
+ 		.sram_pdn_ack_bits = GENMASK(12, 12),
+ 	},
+ 	[MT8192_POWER_DOMAIN_CAM] = {
++		.name = "cam",
+ 		.sta_mask = BIT(23),
+ 		.ctl_offs = 0x035c,
+ 		.sram_pdn_bits = GENMASK(8, 8),
+@@ -264,18 +282,21 @@ static const struct scpsys_domain_data scpsys_domain_data_mt8192[] = {
+ 		},
+ 	},
+ 	[MT8192_POWER_DOMAIN_CAM_RAWA] = {
++		.name = "cam_rawa",
+ 		.sta_mask = BIT(24),
+ 		.ctl_offs = 0x0360,
+ 		.sram_pdn_bits = GENMASK(8, 8),
+ 		.sram_pdn_ack_bits = GENMASK(12, 12),
+ 	},
+ 	[MT8192_POWER_DOMAIN_CAM_RAWB] = {
++		.name = "cam_rawb",
+ 		.sta_mask = BIT(25),
+ 		.ctl_offs = 0x0364,
+ 		.sram_pdn_bits = GENMASK(8, 8),
+ 		.sram_pdn_ack_bits = GENMASK(12, 12),
+ 	},
+ 	[MT8192_POWER_DOMAIN_CAM_RAWC] = {
++		.name = "cam_rawc",
+ 		.sta_mask = BIT(26),
+ 		.ctl_offs = 0x0368,
+ 		.sram_pdn_bits = GENMASK(8, 8),
 diff --git a/drivers/soc/mediatek/mtk-pm-domains.c b/drivers/soc/mediatek/mtk-pm-domains.c
-index 31b947c5460541efa74af8fd2faf20b0fba96480..8363a7c6fa944b7b0730a36e1a3604beccd8d8e6 100644
+index 31b947c5460541efa74af8fd2faf20b0fba96480..36519964d78cf7698ff178cbf7b0ad8c50763ea3 100644
 --- a/drivers/soc/mediatek/mtk-pm-domains.c
 +++ b/drivers/soc/mediatek/mtk-pm-domains.c
 @@ -210,7 +210,7 @@ static int scpsys_power_on(struct generic_pm_domain *genpd)
@@ -13707,7 +15046,7 @@ index 31b947c5460541efa74af8fd2faf20b0fba96480..8363a7c6fa944b7b0730a36e1a3604be
  		}
  	}
  
-@@ -434,7 +426,7 @@ generic_pm_domain *scpsys_add_one_domain(struct scpsys *scpsys, struct device_no
+@@ -434,10 +426,14 @@ generic_pm_domain *scpsys_add_one_domain(struct scpsys *scpsys, struct device_no
  		ret = -EINVAL;
  		dev_err(scpsys->dev,
  			"power domain with id %d already exists, check your device-tree\n", id);
@@ -13715,8 +15054,16 @@ index 31b947c5460541efa74af8fd2faf20b0fba96480..8363a7c6fa944b7b0730a36e1a3604be
 +		goto err_put_subsys_clocks;
  	}
  
- 	pd->genpd.name = node->name;
-@@ -450,10 +442,6 @@ generic_pm_domain *scpsys_add_one_domain(struct scpsys *scpsys, struct device_no
+-	pd->genpd.name = node->name;
++	if (!pd->data->name)
++		pd->genpd.name = node->name;
++	else
++		pd->genpd.name = pd->data->name;
++
+ 	pd->genpd.power_off = scpsys_power_off;
+ 	pd->genpd.power_on = scpsys_power_on;
+ 
+@@ -450,10 +446,6 @@ generic_pm_domain *scpsys_add_one_domain(struct scpsys *scpsys, struct device_no
  
  	return scpsys->pd_data.domains[id];
  
@@ -13727,7 +15074,7 @@ index 31b947c5460541efa74af8fd2faf20b0fba96480..8363a7c6fa944b7b0730a36e1a3604be
  err_put_subsys_clocks:
  	clk_bulk_put(pd->num_subsys_clks, pd->subsys_clks);
  err_put_clocks:
-@@ -531,10 +519,7 @@ static void scpsys_remove_one_domain(struct scpsys_domain *pd)
+@@ -531,10 +523,7 @@ static void scpsys_remove_one_domain(struct scpsys_domain *pd)
  			"failed to remove domain '%s' : %d - state may be inconsistent\n",
  			pd->genpd.name, ret);
  
@@ -13738,10 +15085,957 @@ index 31b947c5460541efa74af8fd2faf20b0fba96480..8363a7c6fa944b7b0730a36e1a3604be
  	clk_bulk_put(pd->num_subsys_clks, pd->subsys_clks);
  }
  
+diff --git a/drivers/soc/mediatek/mtk-pm-domains.h b/drivers/soc/mediatek/mtk-pm-domains.h
+index b2770b5266dbaa2799046231d8c932943ee76d3d..6f4b0f75be9b204cd98b66e281e501c1e305b160 100644
+--- a/drivers/soc/mediatek/mtk-pm-domains.h
++++ b/drivers/soc/mediatek/mtk-pm-domains.h
+@@ -75,6 +75,7 @@ struct scpsys_bus_prot_data {
+ 
+ /**
+  * struct scpsys_domain_data - scp domain data for power on/off flow
++ * @name: The name of the power domain.
+  * @sta_mask: The mask for power on/off status bit.
+  * @ctl_offs: The offset for main power control register.
+  * @sram_pdn_bits: The mask for sram power control bits.
+@@ -84,6 +85,7 @@ struct scpsys_bus_prot_data {
+  * @bp_smi: bus protection for smi subsystem
+  */
+ struct scpsys_domain_data {
++	const char *name;
+ 	u32 sta_mask;
+ 	int ctl_offs;
+ 	u32 sram_pdn_bits;
+diff --git a/drivers/usb/common/common.c b/drivers/usb/common/common.c
+index 1433260d99b48e5c47eefea74ab9f1f9a179d4f2..a85fbdb63375d616da39ff2446fad17c00c78a87 100644
+--- a/drivers/usb/common/common.c
++++ b/drivers/usb/common/common.c
+@@ -141,6 +141,47 @@ enum usb_dr_mode usb_get_dr_mode(struct device *dev)
+ }
+ EXPORT_SYMBOL_GPL(usb_get_dr_mode);
+ 
++/**
++ * usb_decode_interval - Decode bInterval into the time expressed in 1us unit
++ * @epd: The descriptor of the endpoint
++ * @speed: The speed that the endpoint works as
++ *
++ * Function returns the interval expressed in 1us unit for servicing
++ * endpoint for data transfers.
++ */
++unsigned int usb_decode_interval(const struct usb_endpoint_descriptor *epd,
++				 enum usb_device_speed speed)
++{
++	unsigned int interval = 0;
++
++	switch (usb_endpoint_type(epd)) {
++	case USB_ENDPOINT_XFER_CONTROL:
++		/* uframes per NAK */
++		if (speed == USB_SPEED_HIGH)
++			interval = epd->bInterval;
++		break;
++	case USB_ENDPOINT_XFER_ISOC:
++		interval = 1 << (epd->bInterval - 1);
++		break;
++	case USB_ENDPOINT_XFER_BULK:
++		/* uframes per NAK */
++		if (speed == USB_SPEED_HIGH && usb_endpoint_dir_out(epd))
++			interval = epd->bInterval;
++		break;
++	case USB_ENDPOINT_XFER_INT:
++		if (speed >= USB_SPEED_HIGH)
++			interval = 1 << (epd->bInterval - 1);
++		else
++			interval = epd->bInterval;
++		break;
++	}
++
++	interval *= (speed >= USB_SPEED_HIGH) ? 125 : 1000;
++
++	return interval;
++}
++EXPORT_SYMBOL_GPL(usb_decode_interval);
++
+ #ifdef CONFIG_OF
+ /**
+  * of_usb_get_dr_mode_by_phy - Get dual role mode for the controller device
+diff --git a/drivers/usb/core/devices.c b/drivers/usb/core/devices.c
+index 44f28a114c2b6bb43456b2c67a03b8ec02b7a389..746a3e5b90269a3631bfc7767d9a20b4b9c69598 100644
+--- a/drivers/usb/core/devices.c
++++ b/drivers/usb/core/devices.c
+@@ -176,38 +176,25 @@ static char *usb_dump_endpoint_descriptor(int speed, char *start, char *end,
+ 	switch (usb_endpoint_type(desc)) {
+ 	case USB_ENDPOINT_XFER_CONTROL:
+ 		type = "Ctrl";
+-		if (speed == USB_SPEED_HIGH)	/* uframes per NAK */
+-			interval = desc->bInterval;
+-		else
+-			interval = 0;
+ 		dir = 'B';			/* ctrl is bidirectional */
+ 		break;
+ 	case USB_ENDPOINT_XFER_ISOC:
+ 		type = "Isoc";
+-		interval = 1 << (desc->bInterval - 1);
+ 		break;
+ 	case USB_ENDPOINT_XFER_BULK:
+ 		type = "Bulk";
+-		if (speed == USB_SPEED_HIGH && dir == 'O') /* uframes per NAK */
+-			interval = desc->bInterval;
+-		else
+-			interval = 0;
+ 		break;
+ 	case USB_ENDPOINT_XFER_INT:
+ 		type = "Int.";
+-		if (speed == USB_SPEED_HIGH || speed >= USB_SPEED_SUPER)
+-			interval = 1 << (desc->bInterval - 1);
+-		else
+-			interval = desc->bInterval;
+ 		break;
+ 	default:	/* "can't happen" */
+ 		return start;
+ 	}
+-	interval *= (speed == USB_SPEED_HIGH ||
+-		     speed >= USB_SPEED_SUPER) ? 125 : 1000;
+-	if (interval % 1000)
++
++	interval = usb_decode_interval(desc, speed);
++	if (interval % 1000) {
+ 		unit = 'u';
+-	else {
++	} else {
+ 		unit = 'm';
+ 		interval /= 1000;
+ 	}
+diff --git a/drivers/usb/core/endpoint.c b/drivers/usb/core/endpoint.c
+index 1c2c0407967608548a142d62886632bc1bdc017d..fc3341f2bb61ac1c3b804880406e280111be23d8 100644
+--- a/drivers/usb/core/endpoint.c
++++ b/drivers/usb/core/endpoint.c
+@@ -84,40 +84,13 @@ static ssize_t interval_show(struct device *dev, struct device_attribute *attr,
+ 			     char *buf)
+ {
+ 	struct ep_device *ep = to_ep_device(dev);
++	unsigned int interval;
+ 	char unit;
+-	unsigned interval = 0;
+-	unsigned in;
+ 
+-	in = (ep->desc->bEndpointAddress & USB_DIR_IN);
+-
+-	switch (usb_endpoint_type(ep->desc)) {
+-	case USB_ENDPOINT_XFER_CONTROL:
+-		if (ep->udev->speed == USB_SPEED_HIGH)
+-			/* uframes per NAK */
+-			interval = ep->desc->bInterval;
+-		break;
+-
+-	case USB_ENDPOINT_XFER_ISOC:
+-		interval = 1 << (ep->desc->bInterval - 1);
+-		break;
+-
+-	case USB_ENDPOINT_XFER_BULK:
+-		if (ep->udev->speed == USB_SPEED_HIGH && !in)
+-			/* uframes per NAK */
+-			interval = ep->desc->bInterval;
+-		break;
+-
+-	case USB_ENDPOINT_XFER_INT:
+-		if (ep->udev->speed == USB_SPEED_HIGH)
+-			interval = 1 << (ep->desc->bInterval - 1);
+-		else
+-			interval = ep->desc->bInterval;
+-		break;
+-	}
+-	interval *= (ep->udev->speed == USB_SPEED_HIGH) ? 125 : 1000;
+-	if (interval % 1000)
++	interval = usb_decode_interval(ep->desc, ep->udev->speed);
++	if (interval % 1000) {
+ 		unit = 'u';
+-	else {
++	} else {
+ 		unit = 'm';
+ 		interval /= 1000;
+ 	}
+diff --git a/drivers/usb/host/Makefile b/drivers/usb/host/Makefile
+index b191361257cc5d0d738624edd744a68bcb5d4b3e..81698fd67d9027463e7f6706dffddb0e0ef594b1 100644
+--- a/drivers/usb/host/Makefile
++++ b/drivers/usb/host/Makefile
+@@ -19,9 +19,7 @@ ifneq ($(CONFIG_USB_XHCI_DBGCAP), )
+ 	xhci-hcd-y += xhci-dbgcap.o xhci-dbgtty.o
+ endif
+ 
+-ifneq ($(CONFIG_USB_XHCI_MTK), )
+-	xhci-hcd-y += xhci-mtk-sch.o
+-endif
++xhci-mtk-hcd-y := xhci-mtk.o xhci-mtk-sch.o
+ 
+ xhci-plat-hcd-y := xhci-plat.o
+ ifneq ($(CONFIG_USB_XHCI_MVEBU), )
+@@ -73,7 +71,7 @@ obj-$(CONFIG_USB_XHCI_HCD)	+= xhci-hcd.o
+ obj-$(CONFIG_USB_XHCI_PCI)	+= xhci-pci.o
+ obj-$(CONFIG_USB_XHCI_PLATFORM) += xhci-plat-hcd.o
+ obj-$(CONFIG_USB_XHCI_HISTB)	+= xhci-histb.o
+-obj-$(CONFIG_USB_XHCI_MTK)	+= xhci-mtk.o
++obj-$(CONFIG_USB_XHCI_MTK)	+= xhci-mtk-hcd.o
+ obj-$(CONFIG_USB_XHCI_TEGRA)	+= xhci-tegra.o
+ obj-$(CONFIG_USB_SL811_HCD)	+= sl811-hcd.o
+ obj-$(CONFIG_USB_SL811_CS)	+= sl811_cs.o
+diff --git a/drivers/usb/host/xhci-mem.c b/drivers/usb/host/xhci-mem.c
+index 48aa1eea1a142139a3c8497a61649f9a22a687d5..ef1c66e51617dd20ecf8cc459d9f8ba4523a544a 100644
+--- a/drivers/usb/host/xhci-mem.c
++++ b/drivers/usb/host/xhci-mem.c
+@@ -523,7 +523,7 @@ struct xhci_ep_ctx *xhci_get_ep_ctx(struct xhci_hcd *xhci,
+ 	return (struct xhci_ep_ctx *)
+ 		(ctx->bytes + (ep_index * CTX_SIZE(xhci->hcc_params)));
+ }
+-
++EXPORT_SYMBOL_GPL(xhci_get_ep_ctx);
+ 
+ /***************** Streams structures manipulation *************************/
+ 
+diff --git a/drivers/usb/host/xhci-mtk-sch.c b/drivers/usb/host/xhci-mtk-sch.c
+index f3cdfcf4e5bfe2c3b549d78311a9cc3f64aace2d..a59d1f6d47441f6efb6e20e968248329dce4a4c4 100644
+--- a/drivers/usb/host/xhci-mtk-sch.c
++++ b/drivers/usb/host/xhci-mtk-sch.c
+@@ -25,6 +25,15 @@
+  */
+ #define TT_MICROFRAMES_MAX 9
+ 
++#define DBG_BUF_EN	64
++
++/* schedule error type */
++#define ESCH_SS_Y6		1001
++#define ESCH_SS_OVERLAP		1002
++#define ESCH_CS_OVERFLOW	1003
++#define ESCH_BW_OVERFLOW	1004
++#define ESCH_FIXME		1005
++
+ /* mtk scheduler bitmasks */
+ #define EP_BPKTS(p)	((p) & 0x7f)
+ #define EP_BCSCOUNT(p)	(((p) & 0x7) << 8)
+@@ -32,32 +41,21 @@
+ #define EP_BOFFSET(p)	((p) & 0x3fff)
+ #define EP_BREPEAT(p)	(((p) & 0x7fff) << 16)
+ 
+-enum mtk_sch_err_type {
+-	SCH_SUCCESS = 0,
+-	SCH_ERR_Y6,
+-	SCH_SS_OVERLAP,
+-	SCH_CS_OVERFLOW,
+-	SCH_BW_OVERFLOW,
+-	SCH_FIXME,
+-};
+-
+-static char *sch_error_string(enum mtk_sch_err_type error)
++static char *sch_error_string(int err_num)
+ {
+-	switch (error) {
+-	case SCH_SUCCESS:
+-		return "Success";
+-	case SCH_ERR_Y6:
++	switch (err_num) {
++	case ESCH_SS_Y6:
+ 		return "Can't schedule Start-Split in Y6";
+-	case SCH_SS_OVERLAP:
++	case ESCH_SS_OVERLAP:
+ 		return "Can't find a suitable Start-Split location";
+-	case SCH_CS_OVERFLOW:
++	case ESCH_CS_OVERFLOW:
+ 		return "The last Complete-Split is greater than 7";
+-	case SCH_BW_OVERFLOW:
+-		return "Bandwidth exceeds the max limit";
+-	case SCH_FIXME:
++	case ESCH_BW_OVERFLOW:
++		return "Bandwidth exceeds the maximum limit";
++	case ESCH_FIXME:
+ 		return "FIXME, to be resolved";
+ 	default:
+-		return "Unknown error type";
++		return "Unknown";
+ 	}
+ }
+ 
+@@ -66,8 +64,52 @@ static int is_fs_or_ls(enum usb_device_speed speed)
+ 	return speed == USB_SPEED_FULL || speed == USB_SPEED_LOW;
+ }
+ 
++static const char *
++decode_ep(struct usb_host_endpoint *ep, enum usb_device_speed speed)
++{
++	static char buf[DBG_BUF_EN];
++	struct usb_endpoint_descriptor *epd = &ep->desc;
++	unsigned int interval;
++	const char *unit;
++
++	interval = usb_decode_interval(epd, speed);
++	if (interval % 1000) {
++		unit = "us";
++	} else {
++		unit = "ms";
++		interval /= 1000;
++	}
++
++	snprintf(buf, DBG_BUF_EN, "%s ep%d%s %s, mpkt:%d, interval:%d/%d%s\n",
++		 usb_speed_string(speed), usb_endpoint_num(epd),
++		 usb_endpoint_dir_in(epd) ? "in" : "out",
++		 usb_ep_type_string(usb_endpoint_type(epd)),
++		 usb_endpoint_maxp(epd), epd->bInterval, interval, unit);
++
++	return buf;
++}
++
++static u32 get_bw_boundary(enum usb_device_speed speed)
++{
++	u32 boundary;
++
++	switch (speed) {
++	case USB_SPEED_SUPER_PLUS:
++		boundary = SSP_BW_BOUNDARY;
++		break;
++	case USB_SPEED_SUPER:
++		boundary = SS_BW_BOUNDARY;
++		break;
++	default:
++		boundary = HS_BW_BOUNDARY;
++		break;
++	}
++
++	return boundary;
++}
++
+ /*
+-* get the index of bandwidth domains array which @ep belongs to.
++* get the bandwidth domain which @ep belongs to.
+ *
+ * the bandwidth domain array is saved to @sch_array of struct xhci_hcd_mtk,
+ * each HS root port is treated as a single bandwidth domain,
+@@ -78,9 +120,11 @@ static int is_fs_or_ls(enum usb_device_speed speed)
+ * so the bandwidth domain array is organized as follow for simplification:
+ * SSport0-OUT, SSport0-IN, ..., SSportX-OUT, SSportX-IN, HSport0, ..., HSportY
+ */
+-static int get_bw_index(struct xhci_hcd *xhci, struct usb_device *udev,
+-	struct usb_host_endpoint *ep)
++static struct mu3h_sch_bw_info *
++get_bw_info(struct xhci_hcd_mtk *mtk, struct usb_device *udev,
++	    struct usb_host_endpoint *ep)
+ {
++	struct xhci_hcd *xhci = hcd_to_xhci(mtk->hcd);
+ 	struct xhci_virt_device *virt_dev;
+ 	int bw_index;
+ 
+@@ -96,7 +140,7 @@ static int get_bw_index(struct xhci_hcd *xhci, struct usb_device *udev,
+ 		bw_index = virt_dev->real_port + xhci->usb3_rhub.num_ports - 1;
+ 	}
+ 
+-	return bw_index;
++	return &mtk->sch_array[bw_index];
+ }
+ 
+ static u32 get_esit(struct xhci_ep_ctx *ep_ctx)
+@@ -110,18 +154,6 @@ static u32 get_esit(struct xhci_ep_ctx *ep_ctx)
+ 	return esit;
+ }
+ 
+-static u32 get_bw_boundary(enum usb_device_speed speed)
+-{
+-	switch (speed) {
+-	case USB_SPEED_SUPER_PLUS:
+-		return SSP_BW_BOUNDARY;
+-	case USB_SPEED_SUPER:
+-		return SS_BW_BOUNDARY;
+-	default:
+-		return HS_BW_BOUNDARY;
+-	}
+-}
+-
+ static struct mu3h_sch_tt *find_tt(struct usb_device *udev)
+ {
+ 	struct usb_tt *utt = udev->tt;
+@@ -147,7 +179,6 @@ static struct mu3h_sch_tt *find_tt(struct usb_device *udev)
+ 			utt->hcpriv = tt_index;
+ 			allocated_index = true;
+ 		}
+-
+ 		ptt = &tt_index[udev->ttport - 1];
+ 	} else {
+ 		ptt = (struct mu3h_sch_tt **) &utt->hcpriv;
+@@ -164,7 +195,6 @@ static struct mu3h_sch_tt *find_tt(struct usb_device *udev)
+ 			return ERR_PTR(-ENOMEM);
+ 		}
+ 		INIT_LIST_HEAD(&tt->ep_list);
+-
+ 		*ptt = tt;
+ 	}
+ 
+@@ -238,23 +268,15 @@ static struct mu3h_sch_ep_info *create_sch_ep(struct usb_device *udev,
+ 
+ 	sch_ep->sch_tt = tt;
+ 	sch_ep->ep = ep;
++	sch_ep->speed = udev->speed;
+ 	INIT_LIST_HEAD(&sch_ep->endpoint);
+ 	INIT_LIST_HEAD(&sch_ep->tt_endpoint);
+ 
+ 	return sch_ep;
+ }
+ 
+-static void delete_sch_ep(struct usb_device *udev, struct mu3h_sch_ep_info *sch_ep)
+-{
+-	if (sch_ep->sch_tt)
+-		drop_tt(udev);
+-
+-	list_del(&sch_ep->endpoint);
+-	kfree(sch_ep);
+-}
+-
+-static void setup_sch_info(struct usb_device *udev,
+-		struct xhci_ep_ctx *ep_ctx, struct mu3h_sch_ep_info *sch_ep)
++static void setup_sch_info(struct xhci_ep_ctx *ep_ctx,
++			   struct mu3h_sch_ep_info *sch_ep)
+ {
+ 	u32 ep_type;
+ 	u32 maxpkt;
+@@ -281,7 +303,7 @@ static void setup_sch_info(struct usb_device *udev,
+ 	sch_ep->burst_mode = 0;
+ 	sch_ep->repeat = 0;
+ 
+-	if (udev->speed == USB_SPEED_HIGH) {
++	if (sch_ep->speed == USB_SPEED_HIGH) {
+ 		sch_ep->cs_count = 0;
+ 
+ 		/*
+@@ -299,7 +321,7 @@ static void setup_sch_info(struct usb_device *udev,
+ 		sch_ep->pkts = max_burst + 1;
+ 		sch_ep->bw_cost_per_microframe = maxpkt * sch_ep->pkts;
+ 		bwb_table[0] = sch_ep->bw_cost_per_microframe;
+-	} else if (udev->speed >= USB_SPEED_SUPER) {
++	} else if (sch_ep->speed >= USB_SPEED_SUPER) {
+ 		/* usb3_r1 spec section4.4.7 & 4.4.8 */
+ 		sch_ep->cs_count = 0;
+ 		sch_ep->burst_mode = 1;
+@@ -344,7 +366,7 @@ static void setup_sch_info(struct usb_device *udev,
+ 			/* last one <= bw_cost_per_microframe */
+ 			bwb_table[i] = remainder;
+ 		}
+-	} else if (is_fs_or_ls(udev->speed)) {
++	} else if (is_fs_or_ls(sch_ep->speed)) {
+ 		sch_ep->pkts = 1; /* at most one packet for each microframe */
+ 
+ 		/*
+@@ -427,48 +449,35 @@ static void update_bus_bw(struct mu3h_sch_bw_info *sch_bw,
+ static int check_fs_bus_bw(struct mu3h_sch_ep_info *sch_ep, int offset)
+ {
+ 	struct mu3h_sch_tt *tt = sch_ep->sch_tt;
+-	u32 num_esit, base;
+-	u32 i, j;
+-	u32 tmp;
++	u32 num_esit, tmp;
++	int base;
++	int i, j;
+ 
+ 	num_esit = XHCI_MTK_MAX_ESIT / sch_ep->esit;
+-
+ 	for (i = 0; i < num_esit; i++) {
+ 		base = offset + i * sch_ep->esit;
+ 
+ 		/*
+-		 * Compared with hs bus, no matter what ep type
+-		 * The hub will always delay one uframe to send
+-		 * data for us. As described in the figure below.
++		 * Compared with hs bus, no matter what ep type,
++		 * the hub will always delay one uframe to send data
+ 		 */
+-		if (sch_ep->ep_type == ISOC_OUT_EP) {
+-			for (j = 0; j < sch_ep->num_budget_microframes; j++) {
+-				tmp = tt->fs_bus_bw[base + 1 + j]
+-					+ sch_ep->bw_cost_per_microframe;
+-
+-				if (tmp > FS_PAYLOAD_MAX)
+-					return SCH_BW_OVERFLOW;
+-			}
+-		} else {
+-			for (j = 0; j < sch_ep->cs_count; j++) {
+-				tmp = tt->fs_bus_bw[base + 1 + j]
+-					+ sch_ep->bw_cost_per_microframe;
+-
+-				if (tmp > FS_PAYLOAD_MAX)
+-					return SCH_BW_OVERFLOW;
+-			}
++		for (j = 0; j < sch_ep->cs_count; j++) {
++			tmp = tt->fs_bus_bw[base + j] + sch_ep->bw_cost_per_microframe;
++			if (tmp > FS_PAYLOAD_MAX)
++				return -ESCH_BW_OVERFLOW;
+ 		}
+ 	}
+-	return SCH_SUCCESS;
++
++	return 0;
+ }
+ 
+-static int check_sch_tt(struct mu3h_sch_ep_info *sch_ep, int offset)
++static int check_sch_tt(struct mu3h_sch_ep_info *sch_ep, u32 offset)
+ {
+ 	struct mu3h_sch_tt *tt = sch_ep->sch_tt;
+ 	u32 extra_cs_count;
+ 	u32 start_ss, last_ss;
+ 	u32 start_cs, last_cs;
+-	u32 i;
++	int i;
+ 
+ 	start_ss = offset % 8;
+ 
+@@ -480,12 +489,12 @@ static int check_sch_tt(struct mu3h_sch_ep_info *sch_ep, int offset)
+ 		 * must never schedule Start-Split in Y6
+ 		 */
+ 		if (!(start_ss == 7 || last_ss < 6))
+-			return SCH_ERR_Y6;
++			return -ESCH_SS_Y6;
+ 
+-		for (i = 0; i < sch_ep->cs_count; i++) {
++		for (i = 0; i < sch_ep->cs_count; i++)
+ 			if (test_bit(offset + i, tt->ss_bit_map))
+-				return SCH_SS_OVERLAP;
+-		}
++				return -ESCH_SS_OVERLAP;
++
+ 	} else {
+ 		u32 cs_count = DIV_ROUND_UP(sch_ep->maxpkt, FS_PAYLOAD_MAX);
+ 
+@@ -494,21 +503,15 @@ static int check_sch_tt(struct mu3h_sch_ep_info *sch_ep, int offset)
+ 		 * must never schedule Start-Split in Y6
+ 		 */
+ 		if (start_ss == 6)
+-			return SCH_ERR_Y6;
++			return -ESCH_SS_Y6;
+ 
+ 		/* one uframe for ss + one uframe for idle */
+ 		start_cs = (start_ss + 2) % 8;
+ 		last_cs = start_cs + cs_count - 1;
+ 
+ 		if (last_cs > 7)
+-			return SCH_CS_OVERFLOW;
++			return -ESCH_CS_OVERFLOW;
+ 
+-		/*
+-		 * usb_20 spec section11.18, the bottom of page 378:
+-		 * For interrupt endpoints, the maximum size of the LS/FS
+-		 * transaction guarantees that it can never require more than
+-		 * two complete-split transactions.
+-		 */
+ 		if (sch_ep->ep_type == ISOC_IN_EP)
+ 			extra_cs_count = (last_cs == 7) ? 1 : 2;
+ 		else /*  ep_type : INTR IN / INTR OUT */
+@@ -519,12 +522,7 @@ static int check_sch_tt(struct mu3h_sch_ep_info *sch_ep, int offset)
+ 			cs_count = 7; /* HW limit */
+ 
+ 		if (test_bit(offset, tt->ss_bit_map))
+-			return SCH_SS_OVERLAP;
+-
+-		if (sch_ep->ep_type == INT_OUT_EP) {
+-			if (test_bit(offset, tt->idle_bit_map))
+-				return SCH_FIXME;
+-		}
++			return -ESCH_SS_OVERLAP;
+ 
+ 		sch_ep->cs_count = cs_count;
+ 		/* one for ss, the other for idle */
+@@ -545,78 +543,75 @@ static void update_sch_tt(struct mu3h_sch_ep_info *sch_ep, bool used)
+ {
+ 	struct mu3h_sch_tt *tt = sch_ep->sch_tt;
+ 	u32 base, num_esit;
+-	u32 i, j;
++	int bw_updated;
++	int bits;
++	int i, j;
+ 
+ 	num_esit = XHCI_MTK_MAX_ESIT / sch_ep->esit;
++	bits = (sch_ep->ep_type == ISOC_OUT_EP) ? sch_ep->cs_count : 1;
++
++	if (used)
++		bw_updated = sch_ep->bw_cost_per_microframe;
++	else
++		bw_updated = -sch_ep->bw_cost_per_microframe;
+ 
+ 	for (i = 0; i < num_esit; i++) {
+ 		base = sch_ep->offset + i * sch_ep->esit;
+ 
+-		if (sch_ep->ep_type == ISOC_OUT_EP) {
+-			for (j = 0; j < sch_ep->num_budget_microframes; j++) {
+-				if (used) {
+-					set_bit(base + j, tt->ss_bit_map);
+-					tt->fs_bus_bw[base + 1 + j] +=
+-						sch_ep->bw_cost_per_microframe;
+-				} else {
+-					clear_bit(base + j, tt->ss_bit_map);
+-					tt->fs_bus_bw[base + 1 + j] -=
+-						sch_ep->bw_cost_per_microframe;
+-				}
+-			}
+-		} else {
++		for (j = 0; j < bits; j++) {
+ 			if (used)
+-				set_bit(base, tt->ss_bit_map);
++				set_bit(base + j, tt->ss_bit_map);
+ 			else
+-				clear_bit(base, tt->ss_bit_map);
+-
+-			if (sch_ep->ep_type == INT_OUT_EP) {
+-				if (used)
+-					set_bit(base + 1, tt->idle_bit_map);
+-				else
+-					clear_bit(base + 1, tt->idle_bit_map);
+-			}
+-
+-			for (j = 0; j < sch_ep->cs_count; j++) {
+-				if (used)
+-					tt->fs_bus_bw[base + 1 + j] +=
+-						sch_ep->bw_cost_per_microframe;
+-				else
+-					tt->fs_bus_bw[base + 1 + j] -=
+-						sch_ep->bw_cost_per_microframe;
+-			}
++				clear_bit(base + j, tt->ss_bit_map);
+ 		}
++
++		for (j = 0; j < sch_ep->cs_count; j++)
++			tt->fs_bus_bw[base + j] += bw_updated;
+ 	}
++
++	if (used)
++		list_add_tail(&sch_ep->tt_endpoint, &tt->ep_list);
++	else
++		list_del(&sch_ep->tt_endpoint);
+ }
+ 
+ static int load_ep_bw(struct mu3h_sch_bw_info *sch_bw,
+ 		      struct mu3h_sch_ep_info *sch_ep, bool loaded)
+ {
+-	struct mu3h_sch_tt *tt = sch_ep->sch_tt;
+-
+-	if (sch_ep->sch_tt) {
++	if (sch_ep->sch_tt)
+ 		update_sch_tt(sch_ep, loaded);
+-		if (loaded)
+-			list_add_tail(&sch_ep->tt_endpoint, &tt->ep_list);
+-		else
+-			list_del(&sch_ep->tt_endpoint);
+-	}
+ 
+ 	/* update bus bandwidth info */
+ 	update_bus_bw(sch_bw, sch_ep, loaded);
+ 	sch_ep->allocated = loaded;
++
+ 	return 0;
+ }
+ 
+-static int check_sch_bw(struct usb_device *udev,
+-	struct mu3h_sch_bw_info *sch_bw, struct mu3h_sch_ep_info *sch_ep)
++static u32 get_esit_boundary(struct mu3h_sch_ep_info *sch_ep)
++{
++	u32 boundary = sch_ep->esit;
++
++	if (sch_ep->sch_tt) { /* LS/FS with TT */
++		/* tune for CS */
++		if (sch_ep->ep_type != ISOC_OUT_EP)
++			boundary++;
++		else if (boundary > 1) /* normally esit >= 8 for FS/LS */
++			boundary--;
++	}
++
++	return boundary;
++}
++
++static int check_sch_bw(struct mu3h_sch_bw_info *sch_bw,
++			struct mu3h_sch_ep_info *sch_ep)
+ {
+ 	u32 offset;
+ 	u32 min_bw;
+ 	u32 min_index;
+ 	u32 worst_bw;
+ 	u32 bw_boundary;
+-	u32 boundary;
++	u32 esit_boundary;
+ 	u32 min_num_budget;
+ 	u32 min_cs_count;
+ 	int ret = 0;
+@@ -629,20 +624,15 @@ static int check_sch_bw(struct usb_device *udev,
+ 	min_index = 0;
+ 	min_cs_count = sch_ep->cs_count;
+ 	min_num_budget = sch_ep->num_budget_microframes;
+-
+-	if (is_fs_or_ls(udev->speed) && sch_ep->ep_type != ISOC_OUT_EP)
+-		boundary = sch_ep->esit + 1;
+-	else
+-		boundary = sch_ep->esit;
+-
++	esit_boundary = get_esit_boundary(sch_ep);
+ 	for (offset = 0; offset < sch_ep->esit; offset++) {
+ 		if (sch_ep->sch_tt) {
+ 			ret = check_sch_tt(sch_ep, offset);
+-			if (ret != SCH_SUCCESS)
++			if (ret)
+ 				continue;
+ 		}
+ 
+-		if ((offset + sch_ep->num_budget_microframes) > boundary)
++		if ((offset + sch_ep->num_budget_microframes) > esit_boundary)
+ 			break;
+ 
+ 		worst_bw = get_max_bw(sch_bw, sch_ep, offset);
+@@ -656,21 +646,15 @@ static int check_sch_bw(struct usb_device *udev,
+ 			break;
+ 	}
+ 
+-	bw_boundary = get_bw_boundary(udev->speed);
++	bw_boundary = get_bw_boundary(sch_ep->speed);
+ 	/* check bandwidth */
+-	if (min_bw > bw_boundary) {
+-		if (ret) {
+-			dev_err(&udev->dev, "%s %s\n", __func__,
+-				sch_error_string(ret));
+-			return -ret;
+-		}
+-
+-		return -ERANGE;
+-	}
++	if (min_bw > bw_boundary)
++		return ret ? ret : -ESCH_BW_OVERFLOW;
+ 
+ 	sch_ep->offset = min_index;
+ 	sch_ep->cs_count = min_cs_count;
+ 	sch_ep->num_budget_microframes = min_num_budget;
++
+ 	return load_ep_bw(sch_bw, sch_ep, true);
+ }
+ 
+@@ -681,15 +665,19 @@ static void destroy_sch_ep(struct usb_device *udev,
+ 	if (sch_ep->allocated)
+ 		load_ep_bw(sch_bw, sch_ep, false);
+ 
+-	delete_sch_ep(udev, sch_ep);
++	if (sch_ep->sch_tt)
++		drop_tt(udev);
++
++	list_del(&sch_ep->endpoint);
++	kfree(sch_ep);
+ }
+ 
+ static bool need_bw_sch(struct usb_host_endpoint *ep,
+ 	enum usb_device_speed speed, int has_tt)
+ {
+ 	/* only for periodic endpoints */
+-	if (usb_endpoint_xfer_control(&ep->desc) ||
+-	    usb_endpoint_xfer_bulk(&ep->desc))
++	if (usb_endpoint_xfer_control(&ep->desc)
++		|| usb_endpoint_xfer_bulk(&ep->desc))
+ 		return false;
+ 
+ 	/*
+@@ -730,44 +718,36 @@ int xhci_mtk_sch_init(struct xhci_hcd_mtk *mtk)
+ 
+ 	return 0;
+ }
+-EXPORT_SYMBOL_GPL(xhci_mtk_sch_init);
+ 
+ void xhci_mtk_sch_exit(struct xhci_hcd_mtk *mtk)
+ {
+ 	kfree(mtk->sch_array);
+ }
+-EXPORT_SYMBOL_GPL(xhci_mtk_sch_exit);
+ 
+-int xhci_mtk_add_ep_quirk(struct usb_hcd *hcd, struct usb_device *udev,
+-		struct usb_host_endpoint *ep)
++static int add_ep_quirk(struct usb_hcd *hcd, struct usb_device *udev,
++			struct usb_host_endpoint *ep)
+ {
+ 	struct xhci_hcd_mtk *mtk = hcd_to_mtk(hcd);
+-	struct xhci_hcd *xhci;
++	struct xhci_hcd *xhci = hcd_to_xhci(hcd);
+ 	struct xhci_ep_ctx *ep_ctx;
+-	struct xhci_slot_ctx *slot_ctx;
+ 	struct xhci_virt_device *virt_dev;
+ 	struct mu3h_sch_ep_info *sch_ep;
+ 	unsigned int ep_index;
+ 
+-	xhci = hcd_to_xhci(hcd);
+ 	virt_dev = xhci->devs[udev->slot_id];
+ 	ep_index = xhci_get_endpoint_index(&ep->desc);
+-	slot_ctx = xhci_get_slot_ctx(xhci, virt_dev->in_ctx);
+ 	ep_ctx = xhci_get_ep_ctx(xhci, virt_dev->in_ctx, ep_index);
+ 
+-	xhci_dbg(xhci, "%s() type:%d, speed:%d, mpkt:%d, dir:%d, ep:%p\n",
+-		__func__, usb_endpoint_type(&ep->desc), udev->speed,
+-		usb_endpoint_maxp(&ep->desc),
+-		usb_endpoint_dir_in(&ep->desc), ep);
++	xhci_dbg(xhci, "%s %s\n", __func__, decode_ep(ep, udev->speed));
+ 
+-	if (!need_bw_sch(ep, udev->speed, slot_ctx->tt_info & TT_SLOT)) {
++	if (!need_bw_sch(ep, udev->speed, !!virt_dev->tt_info)) {
+ 		/*
+ 		 * set @bpkts to 1 if it is LS or FS periodic endpoint, and its
+ 		 * device does not connected through an external HS hub
+ 		 */
+ 		if (usb_endpoint_xfer_int(&ep->desc)
+ 			|| usb_endpoint_xfer_isoc(&ep->desc))
+-			ep_ctx->reserved[0] |= cpu_to_le32(EP_BPKTS(1));
++			ep_ctx->reserved[0] = cpu_to_le32(EP_BPKTS(1));
+ 
+ 		return 0;
+ 	}
+@@ -776,41 +756,30 @@ int xhci_mtk_add_ep_quirk(struct usb_hcd *hcd, struct usb_device *udev,
+ 	if (IS_ERR_OR_NULL(sch_ep))
+ 		return -ENOMEM;
+ 
+-	setup_sch_info(udev, ep_ctx, sch_ep);
++	setup_sch_info(ep_ctx, sch_ep);
+ 
+ 	list_add_tail(&sch_ep->endpoint, &mtk->bw_ep_chk_list);
+ 
+ 	return 0;
+ }
+-EXPORT_SYMBOL_GPL(xhci_mtk_add_ep_quirk);
+ 
+-void xhci_mtk_drop_ep_quirk(struct usb_hcd *hcd, struct usb_device *udev,
+-		struct usb_host_endpoint *ep)
++static void drop_ep_quirk(struct usb_hcd *hcd, struct usb_device *udev,
++			  struct usb_host_endpoint *ep)
+ {
+ 	struct xhci_hcd_mtk *mtk = hcd_to_mtk(hcd);
+-	struct xhci_hcd *xhci;
+-	struct xhci_slot_ctx *slot_ctx;
++	struct xhci_hcd *xhci = hcd_to_xhci(hcd);
+ 	struct xhci_virt_device *virt_dev;
+-	struct mu3h_sch_bw_info *sch_array;
+ 	struct mu3h_sch_bw_info *sch_bw;
+ 	struct mu3h_sch_ep_info *sch_ep, *tmp;
+-	int bw_index;
+ 
+-	xhci = hcd_to_xhci(hcd);
+ 	virt_dev = xhci->devs[udev->slot_id];
+-	slot_ctx = xhci_get_slot_ctx(xhci, virt_dev->in_ctx);
+-	sch_array = mtk->sch_array;
+ 
+-	xhci_dbg(xhci, "%s() type:%d, speed:%d, mpks:%d, dir:%d, ep:%p\n",
+-		__func__, usb_endpoint_type(&ep->desc), udev->speed,
+-		usb_endpoint_maxp(&ep->desc),
+-		usb_endpoint_dir_in(&ep->desc), ep);
++	xhci_dbg(xhci, "%s %s\n", __func__, decode_ep(ep, udev->speed));
+ 
+-	if (!need_bw_sch(ep, udev->speed, slot_ctx->tt_info & TT_SLOT))
++	if (!need_bw_sch(ep, udev->speed, !!virt_dev->tt_info))
+ 		return;
+ 
+-	bw_index = get_bw_index(xhci, udev, ep);
+-	sch_bw = &sch_array[bw_index];
++	sch_bw = get_bw_info(mtk, udev, ep);
+ 
+ 	list_for_each_entry_safe(sch_ep, tmp, &sch_bw->bw_ep_list, endpoint) {
+ 		if (sch_ep->ep == ep) {
+@@ -819,7 +788,6 @@ void xhci_mtk_drop_ep_quirk(struct usb_hcd *hcd, struct usb_device *udev,
+ 		}
+ 	}
+ }
+-EXPORT_SYMBOL_GPL(xhci_mtk_drop_ep_quirk);
+ 
+ int xhci_mtk_check_bandwidth(struct usb_hcd *hcd, struct usb_device *udev)
+ {
+@@ -828,17 +796,17 @@ int xhci_mtk_check_bandwidth(struct usb_hcd *hcd, struct usb_device *udev)
+ 	struct xhci_virt_device *virt_dev = xhci->devs[udev->slot_id];
+ 	struct mu3h_sch_bw_info *sch_bw;
+ 	struct mu3h_sch_ep_info *sch_ep, *tmp;
+-	int bw_index, ret;
++	int ret;
+ 
+ 	xhci_dbg(xhci, "%s() udev %s\n", __func__, dev_name(&udev->dev));
+ 
+ 	list_for_each_entry(sch_ep, &mtk->bw_ep_chk_list, endpoint) {
+-		bw_index = get_bw_index(xhci, udev, sch_ep->ep);
+-		sch_bw = &mtk->sch_array[bw_index];
++		sch_bw = get_bw_info(mtk, udev, sch_ep->ep);
+ 
+-		ret = check_sch_bw(udev, sch_bw, sch_ep);
++		ret = check_sch_bw(sch_bw, sch_ep);
+ 		if (ret) {
+-			xhci_err(xhci, "Not enough bandwidth!\n");
++			xhci_err(xhci, "Not enough bandwidth! (%s)\n",
++				 sch_error_string(-ret));
+ 			return -ENOSPC;
+ 		}
+ 	}
+@@ -848,16 +816,14 @@ int xhci_mtk_check_bandwidth(struct usb_hcd *hcd, struct usb_device *udev)
+ 		struct usb_host_endpoint *ep = sch_ep->ep;
+ 		unsigned int ep_index = xhci_get_endpoint_index(&ep->desc);
+ 
+-		bw_index = get_bw_index(xhci, udev, ep);
+-		sch_bw = &mtk->sch_array[bw_index];
+-
++		sch_bw = get_bw_info(mtk, udev, ep);
+ 		list_move_tail(&sch_ep->endpoint, &sch_bw->bw_ep_list);
+ 
+ 		ep_ctx = xhci_get_ep_ctx(xhci, virt_dev->in_ctx, ep_index);
+-		ep_ctx->reserved[0] |= cpu_to_le32(EP_BPKTS(sch_ep->pkts)
++		ep_ctx->reserved[0] = cpu_to_le32(EP_BPKTS(sch_ep->pkts)
+ 			| EP_BCSCOUNT(sch_ep->cs_count)
+ 			| EP_BBM(sch_ep->burst_mode));
+-		ep_ctx->reserved[1] |= cpu_to_le32(EP_BOFFSET(sch_ep->offset)
++		ep_ctx->reserved[1] = cpu_to_le32(EP_BOFFSET(sch_ep->offset)
+ 			| EP_BREPEAT(sch_ep->repeat));
+ 
+ 		xhci_dbg(xhci, " PKTS:%x, CSCOUNT:%x, BM:%x, OFFSET:%x, REPEAT:%x\n",
+@@ -867,7 +833,6 @@ int xhci_mtk_check_bandwidth(struct usb_hcd *hcd, struct usb_device *udev)
+ 
+ 	return xhci_check_bandwidth(hcd, udev);
+ }
+-EXPORT_SYMBOL_GPL(xhci_mtk_check_bandwidth);
+ 
+ void xhci_mtk_reset_bandwidth(struct usb_hcd *hcd, struct usb_device *udev)
+ {
+@@ -875,16 +840,41 @@ void xhci_mtk_reset_bandwidth(struct usb_hcd *hcd, struct usb_device *udev)
+ 	struct xhci_hcd *xhci = hcd_to_xhci(hcd);
+ 	struct mu3h_sch_bw_info *sch_bw;
+ 	struct mu3h_sch_ep_info *sch_ep, *tmp;
+-	int bw_index;
+ 
+ 	xhci_dbg(xhci, "%s() udev %s\n", __func__, dev_name(&udev->dev));
+ 
+ 	list_for_each_entry_safe(sch_ep, tmp, &mtk->bw_ep_chk_list, endpoint) {
+-		bw_index = get_bw_index(xhci, udev, sch_ep->ep);
+-		sch_bw = &mtk->sch_array[bw_index];
++		sch_bw = get_bw_info(mtk, udev, sch_ep->ep);
+ 		destroy_sch_ep(udev, sch_bw, sch_ep);
+ 	}
+ 
+ 	xhci_reset_bandwidth(hcd, udev);
+ }
+-EXPORT_SYMBOL_GPL(xhci_mtk_reset_bandwidth);
++
++int xhci_mtk_add_ep(struct usb_hcd *hcd, struct usb_device *udev,
++		    struct usb_host_endpoint *ep)
++{
++	int ret;
++
++	ret = xhci_add_endpoint(hcd, udev, ep);
++	if (ret)
++		return ret;
++
++	if (ep->hcpriv)
++		ret = add_ep_quirk(hcd, udev, ep);
++
++	return ret;
++}
++
++int xhci_mtk_drop_ep(struct usb_hcd *hcd, struct usb_device *udev,
++		     struct usb_host_endpoint *ep)
++{
++	int ret;
++
++	ret = xhci_drop_endpoint(hcd, udev, ep);
++	if (ret)
++		return ret;
++
++	drop_ep_quirk(hcd, udev, ep);
++	return 0;
++}
 diff --git a/drivers/usb/host/xhci-mtk.c b/drivers/usb/host/xhci-mtk.c
 old mode 100644
 new mode 100755
-index a080b79e1389f3c750eede68dabba9502ce1bf42..7d6823cef723f39e5bb0184bb2e6c3a797f6afb5
+index a080b79e1389f3c750eede68dabba9502ce1bf42..0c94c5f7c267bec2e1c0fa48bb278289dc3bf83e
 --- a/drivers/usb/host/xhci-mtk.c
 +++ b/drivers/usb/host/xhci-mtk.c
 @@ -14,6 +14,7 @@
@@ -13864,7 +16158,40 @@ index a080b79e1389f3c750eede68dabba9502ce1bf42..7d6823cef723f39e5bb0184bb2e6c3a7
  }
  
  static void usb_wakeup_set(struct xhci_hcd_mtk *mtk, bool enable)
-@@ -472,9 +549,11 @@ static int xhci_mtk_probe(struct platform_device *pdev)
+@@ -344,15 +421,6 @@ static void usb_wakeup_set(struct xhci_hcd_mtk *mtk, bool enable)
+ 		usb_wakeup_ip_sleep_set(mtk, enable);
+ }
+ 
+-static int xhci_mtk_setup(struct usb_hcd *hcd);
+-static const struct xhci_driver_overrides xhci_mtk_overrides __initconst = {
+-	.reset = xhci_mtk_setup,
+-	.check_bandwidth = xhci_mtk_check_bandwidth,
+-	.reset_bandwidth = xhci_mtk_reset_bandwidth,
+-};
+-
+-static struct hc_driver __read_mostly xhci_mtk_hc_driver;
+-
+ static int xhci_mtk_ldos_enable(struct xhci_hcd_mtk *mtk)
+ {
+ 	int ret;
+@@ -424,6 +492,16 @@ static int xhci_mtk_setup(struct usb_hcd *hcd)
+ 	return ret;
+ }
+ 
++static const struct xhci_driver_overrides xhci_mtk_overrides __initconst = {
++	.reset = xhci_mtk_setup,
++	.add_endpoint = xhci_mtk_add_ep,
++	.drop_endpoint = xhci_mtk_drop_ep,
++	.check_bandwidth = xhci_mtk_check_bandwidth,
++	.reset_bandwidth = xhci_mtk_reset_bandwidth,
++};
++
++static struct hc_driver __read_mostly xhci_mtk_hc_driver;
++
+ static int xhci_mtk_probe(struct platform_device *pdev)
+ {
+ 	struct device *dev = &pdev->dev;
+@@ -472,9 +550,11 @@ static int xhci_mtk_probe(struct platform_device *pdev)
  		return ret;
  	}
  
@@ -13878,7 +16205,7 @@ index a080b79e1389f3c750eede68dabba9502ce1bf42..7d6823cef723f39e5bb0184bb2e6c3a7
  
  	ret = xhci_mtk_ldos_enable(mtk);
  	if (ret)
-@@ -489,6 +568,14 @@ static int xhci_mtk_probe(struct platform_device *pdev)
+@@ -489,6 +569,14 @@ static int xhci_mtk_probe(struct platform_device *pdev)
  		ret = irq;
  		goto disable_clk;
  	}
@@ -13893,7 +16220,7 @@ index a080b79e1389f3c750eede68dabba9502ce1bf42..7d6823cef723f39e5bb0184bb2e6c3a7
  
  	hcd = usb_create_hcd(driver, dev, dev_name(dev));
  	if (!hcd) {
-@@ -555,6 +642,27 @@ static int xhci_mtk_probe(struct platform_device *pdev)
+@@ -555,6 +643,27 @@ static int xhci_mtk_probe(struct platform_device *pdev)
  	if (ret)
  		goto dealloc_usb2_hcd;
  
@@ -13921,7 +16248,7 @@ index a080b79e1389f3c750eede68dabba9502ce1bf42..7d6823cef723f39e5bb0184bb2e6c3a7
  	return 0;
  
  dealloc_usb2_hcd:
-@@ -577,7 +685,7 @@ static int xhci_mtk_probe(struct platform_device *pdev)
+@@ -577,7 +686,7 @@ static int xhci_mtk_probe(struct platform_device *pdev)
  	xhci_mtk_ldos_disable(mtk);
  
  disable_pm:
@@ -13930,7 +16257,7 @@ index a080b79e1389f3c750eede68dabba9502ce1bf42..7d6823cef723f39e5bb0184bb2e6c3a7
  	pm_runtime_disable(dev);
  	return ret;
  }
-@@ -592,6 +700,7 @@ static int xhci_mtk_remove(struct platform_device *dev)
+@@ -592,6 +701,7 @@ static int xhci_mtk_remove(struct platform_device *dev)
  	pm_runtime_put_noidle(&dev->dev);
  	pm_runtime_disable(&dev->dev);
  
@@ -13938,7 +16265,7 @@ index a080b79e1389f3c750eede68dabba9502ce1bf42..7d6823cef723f39e5bb0184bb2e6c3a7
  	usb_remove_hcd(shared_hcd);
  	xhci->shared_hcd = NULL;
  	device_init_wakeup(&dev->dev, false);
-@@ -628,6 +737,7 @@ static int __maybe_unused xhci_mtk_suspend(struct device *dev)
+@@ -628,6 +738,7 @@ static int __maybe_unused xhci_mtk_suspend(struct device *dev)
  	xhci_mtk_host_disable(mtk);
  	xhci_mtk_clks_disable(mtk);
  	usb_wakeup_set(mtk, true);
@@ -13946,7 +16273,7 @@ index a080b79e1389f3c750eede68dabba9502ce1bf42..7d6823cef723f39e5bb0184bb2e6c3a7
  	return 0;
  }
  
-@@ -649,10 +759,185 @@ static int __maybe_unused xhci_mtk_resume(struct device *dev)
+@@ -649,10 +760,185 @@ static int __maybe_unused xhci_mtk_resume(struct device *dev)
  	return 0;
  }
  
@@ -14133,7 +16460,7 @@ index a080b79e1389f3c750eede68dabba9502ce1bf42..7d6823cef723f39e5bb0184bb2e6c3a7
  
  #ifdef CONFIG_OF
  static const struct of_device_id mtk_xhci_of_match[] = {
-@@ -676,6 +961,7 @@ MODULE_ALIAS("platform:xhci-mtk");
+@@ -676,6 +962,7 @@ MODULE_ALIAS("platform:xhci-mtk");
  
  static int __init xhci_mtk_init(void)
  {
@@ -14142,10 +16469,41 @@ index a080b79e1389f3c750eede68dabba9502ce1bf42..7d6823cef723f39e5bb0184bb2e6c3a7
  	return platform_driver_register(&mtk_xhci_driver);
  }
 diff --git a/drivers/usb/host/xhci-mtk.h b/drivers/usb/host/xhci-mtk.h
-index f386ce2fb159fb03fa8fe036c300b988a338fed9..bc2e6cc0f6e6f6597efb08cb0013cbd53aeb5af5 100644
+index f386ce2fb159fb03fa8fe036c300b988a338fed9..daa02aedf6b58153332d819fc1b192da2ce54c24 100644
 --- a/drivers/usb/host/xhci-mtk.h
 +++ b/drivers/usb/host/xhci-mtk.h
-@@ -129,6 +129,14 @@ struct mu3c_ippc_regs {
+@@ -20,15 +20,13 @@
+ #define XHCI_MTK_MAX_ESIT	64
+ 
+ /**
+- * @split_bit_map: used to avoid split microframes overlay
++ * @ss_bit_map: used to avoid start split microframes overlay
++ * @fs_bus_bw: array to keep track of bandwidth already used for FS
+  * @ep_list: Endpoints using this TT
+- * @usb_tt: usb TT related
+- * @tt_port: TT port number
+  */
+ struct mu3h_sch_tt {
+ 	DECLARE_BITMAP(ss_bit_map, XHCI_MTK_MAX_ESIT);
+-	DECLARE_BITMAP(idle_bit_map, XHCI_MTK_MAX_ESIT);
+-	u32 fs_bus_bw[XHCI_MTK_MAX_ESIT + 1];
++	u32 fs_bus_bw[XHCI_MTK_MAX_ESIT];
+ 	struct list_head ep_list;
+ };
+ 
+@@ -84,9 +82,10 @@ struct mu3h_sch_ep_info {
+ 	struct list_head endpoint;
+ 	struct list_head tt_endpoint;
+ 	struct mu3h_sch_tt *sch_tt;
+-	struct usb_host_endpoint *ep;
+ 	u32 ep_type;
+ 	u32 maxpkt;
++	struct usb_host_endpoint *ep;
++	enum usb_device_speed speed;
+ 	bool allocated;
+ 	/*
+ 	 * mtk xHCI scheduling information put into reserved DWs
+@@ -129,6 +128,14 @@ struct mu3c_ippc_regs {
  	__le32 reserved3[33]; /* 0x80 ~ 0xff */
  };
  
@@ -14160,7 +16518,7 @@ index f386ce2fb159fb03fa8fe036c300b988a338fed9..bc2e6cc0f6e6f6597efb08cb0013cbd5
  struct xhci_hcd_mtk {
  	struct device *dev;
  	struct usb_hcd *hcd;
-@@ -155,6 +163,12 @@ struct xhci_hcd_mtk {
+@@ -155,6 +162,12 @@ struct xhci_hcd_mtk {
  	struct regmap *uwk;
  	u32 uwk_reg_base;
  	u32 uwk_vers;
@@ -14173,6 +16531,225 @@ index f386ce2fb159fb03fa8fe036c300b988a338fed9..bc2e6cc0f6e6f6597efb08cb0013cbd5
  };
  
  static inline struct xhci_hcd_mtk *hcd_to_mtk(struct usb_hcd *hcd)
+@@ -162,38 +175,13 @@ static inline struct xhci_hcd_mtk *hcd_to_mtk(struct usb_hcd *hcd)
+ 	return dev_get_drvdata(hcd->self.controller);
+ }
+ 
+-#if IS_ENABLED(CONFIG_USB_XHCI_MTK)
+ int xhci_mtk_sch_init(struct xhci_hcd_mtk *mtk);
+ void xhci_mtk_sch_exit(struct xhci_hcd_mtk *mtk);
+-int xhci_mtk_add_ep_quirk(struct usb_hcd *hcd, struct usb_device *udev,
+-		struct usb_host_endpoint *ep);
+-void xhci_mtk_drop_ep_quirk(struct usb_hcd *hcd, struct usb_device *udev,
+-		struct usb_host_endpoint *ep);
++int xhci_mtk_add_ep(struct usb_hcd *hcd, struct usb_device *udev,
++		    struct usb_host_endpoint *ep);
++int xhci_mtk_drop_ep(struct usb_hcd *hcd, struct usb_device *udev,
++		     struct usb_host_endpoint *ep);
+ int xhci_mtk_check_bandwidth(struct usb_hcd *hcd, struct usb_device *udev);
+ void xhci_mtk_reset_bandwidth(struct usb_hcd *hcd, struct usb_device *udev);
+ 
+-#else
+-static inline int xhci_mtk_add_ep_quirk(struct usb_hcd *hcd,
+-	struct usb_device *udev, struct usb_host_endpoint *ep)
+-{
+-	return 0;
+-}
+-
+-static inline void xhci_mtk_drop_ep_quirk(struct usb_hcd *hcd,
+-	struct usb_device *udev, struct usb_host_endpoint *ep)
+-{
+-}
+-
+-static inline int xhci_mtk_check_bandwidth(struct usb_hcd *hcd,
+-		struct usb_device *udev)
+-{
+-	return 0;
+-}
+-
+-static inline void xhci_mtk_reset_bandwidth(struct usb_hcd *hcd,
+-		struct usb_device *udev)
+-{
+-}
+-#endif
+-
+ #endif		/* _XHCI_MTK_H_ */
+diff --git a/drivers/usb/host/xhci-ring.c b/drivers/usb/host/xhci-ring.c
+index f4ccb606f1ade4b60366f60d3c8c688c89ddbfa4..0b8972bd0ba0d731e60dec22e638d75c3c09615c 100644
+--- a/drivers/usb/host/xhci-ring.c
++++ b/drivers/usb/host/xhci-ring.c
+@@ -57,7 +57,6 @@
+ #include <linux/dma-mapping.h>
+ #include "xhci.h"
+ #include "xhci-trace.h"
+-#include "xhci-mtk.h"
+ 
+ /*
+  * Returns zero if the TRB isn't in this segment, otherwise it returns the DMA
+diff --git a/drivers/usb/host/xhci.c b/drivers/usb/host/xhci.c
+index d2eb82eaa9318e002ad899a03158c5eec75f63e0..d198460418d47223f92f72824901977f86a0b28e 100644
+--- a/drivers/usb/host/xhci.c
++++ b/drivers/usb/host/xhci.c
+@@ -20,7 +20,6 @@
+ 
+ #include "xhci.h"
+ #include "xhci-trace.h"
+-#include "xhci-mtk.h"
+ #include "xhci-debugfs.h"
+ #include "xhci-dbgcap.h"
+ 
+@@ -1294,6 +1293,7 @@ unsigned int xhci_get_endpoint_index(struct usb_endpoint_descriptor *desc)
+ 			(usb_endpoint_dir_in(desc) ? 1 : 0) - 1;
+ 	return index;
+ }
++EXPORT_SYMBOL_GPL(xhci_get_endpoint_index);
+ 
+ /* The reverse operation to xhci_get_endpoint_index. Calculate the USB endpoint
+  * address from the XHCI endpoint index.
+@@ -1732,8 +1732,8 @@ static int xhci_urb_dequeue(struct usb_hcd *hcd, struct urb *urb, int status)
+  * disabled, so there's no need for mutual exclusion to protect
+  * the xhci->devs[slot_id] structure.
+  */
+-static int xhci_drop_endpoint(struct usb_hcd *hcd, struct usb_device *udev,
+-		struct usb_host_endpoint *ep)
++int xhci_drop_endpoint(struct usb_hcd *hcd, struct usb_device *udev,
++		       struct usb_host_endpoint *ep)
+ {
+ 	struct xhci_hcd *xhci;
+ 	struct xhci_container_ctx *in_ctx, *out_ctx;
+@@ -1793,9 +1793,6 @@ static int xhci_drop_endpoint(struct usb_hcd *hcd, struct usb_device *udev,
+ 
+ 	xhci_endpoint_zero(xhci, xhci->devs[udev->slot_id], ep);
+ 
+-	if (xhci->quirks & XHCI_MTK_HOST)
+-		xhci_mtk_drop_ep_quirk(hcd, udev, ep);
+-
+ 	xhci_dbg(xhci, "drop ep 0x%x, slot id %d, new drop flags = %#x, new add flags = %#x\n",
+ 			(unsigned int) ep->desc.bEndpointAddress,
+ 			udev->slot_id,
+@@ -1803,6 +1800,7 @@ static int xhci_drop_endpoint(struct usb_hcd *hcd, struct usb_device *udev,
+ 			(unsigned int) new_add_flags);
+ 	return 0;
+ }
++EXPORT_SYMBOL_GPL(xhci_drop_endpoint);
+ 
+ /* Add an endpoint to a new possible bandwidth configuration for this device.
+  * Only one call to this function is allowed per endpoint before
+@@ -1817,8 +1815,8 @@ static int xhci_drop_endpoint(struct usb_hcd *hcd, struct usb_device *udev,
+  * configuration or alt setting is installed in the device, so there's no need
+  * for mutual exclusion to protect the xhci->devs[slot_id] structure.
+  */
+-static int xhci_add_endpoint(struct usb_hcd *hcd, struct usb_device *udev,
+-		struct usb_host_endpoint *ep)
++int xhci_add_endpoint(struct usb_hcd *hcd, struct usb_device *udev,
++		      struct usb_host_endpoint *ep)
+ {
+ 	struct xhci_hcd *xhci;
+ 	struct xhci_container_ctx *in_ctx;
+@@ -1892,15 +1890,6 @@ static int xhci_add_endpoint(struct usb_hcd *hcd, struct usb_device *udev,
+ 		return -ENOMEM;
+ 	}
+ 
+-	if (xhci->quirks & XHCI_MTK_HOST) {
+-		ret = xhci_mtk_add_ep_quirk(hcd, udev, ep);
+-		if (ret < 0) {
+-			xhci_ring_free(xhci, virt_dev->eps[ep_index].new_ring);
+-			virt_dev->eps[ep_index].new_ring = NULL;
+-			return ret;
+-		}
+-	}
+-
+ 	ctrl_ctx->add_flags |= cpu_to_le32(added_ctxs);
+ 	new_add_flags = le32_to_cpu(ctrl_ctx->add_flags);
+ 
+@@ -1925,6 +1914,7 @@ static int xhci_add_endpoint(struct usb_hcd *hcd, struct usb_device *udev,
+ 			(unsigned int) new_add_flags);
+ 	return 0;
+ }
++EXPORT_SYMBOL_GPL(xhci_add_endpoint);
+ 
+ static void xhci_zero_in_ctx(struct xhci_hcd *xhci, struct xhci_virt_device *virt_dev)
+ {
+@@ -2958,6 +2948,7 @@ int xhci_check_bandwidth(struct usb_hcd *hcd, struct usb_device *udev)
+ 
+ 	return ret;
+ }
++EXPORT_SYMBOL_GPL(xhci_check_bandwidth);
+ 
+ void xhci_reset_bandwidth(struct usb_hcd *hcd, struct usb_device *udev)
+ {
+@@ -2982,6 +2973,7 @@ void xhci_reset_bandwidth(struct usb_hcd *hcd, struct usb_device *udev)
+ 	}
+ 	xhci_zero_in_ctx(xhci, virt_dev);
+ }
++EXPORT_SYMBOL_GPL(xhci_reset_bandwidth);
+ 
+ static void xhci_setup_input_ctx_for_config_ep(struct xhci_hcd *xhci,
+ 		struct xhci_container_ctx *in_ctx,
+@@ -5380,6 +5372,10 @@ void xhci_init_driver(struct hc_driver *drv,
+ 			drv->reset = over->reset;
+ 		if (over->start)
+ 			drv->start = over->start;
++		if (over->add_endpoint)
++			drv->add_endpoint = over->add_endpoint;
++		if (over->drop_endpoint)
++			drv->drop_endpoint = over->drop_endpoint;
+ 		if (over->check_bandwidth)
+ 			drv->check_bandwidth = over->check_bandwidth;
+ 		if (over->reset_bandwidth)
+diff --git a/drivers/usb/host/xhci.h b/drivers/usb/host/xhci.h
+index 94c11a38fa544c74af229c081f7889be55155ef7..1e7dc956955cbfeb8dea3ee8c7b7cafbaf894301 100644
+--- a/drivers/usb/host/xhci.h
++++ b/drivers/usb/host/xhci.h
+@@ -1918,6 +1918,10 @@ struct xhci_driver_overrides {
+ 	size_t extra_priv_size;
+ 	int (*reset)(struct usb_hcd *hcd);
+ 	int (*start)(struct usb_hcd *hcd);
++	int (*add_endpoint)(struct usb_hcd *hcd, struct usb_device *udev,
++			    struct usb_host_endpoint *ep);
++	int (*drop_endpoint)(struct usb_hcd *hcd, struct usb_device *udev,
++			     struct usb_host_endpoint *ep);
+ 	int (*check_bandwidth)(struct usb_hcd *, struct usb_device *);
+ 	void (*reset_bandwidth)(struct usb_hcd *, struct usb_device *);
+ };
+@@ -2068,6 +2072,10 @@ int xhci_gen_setup(struct usb_hcd *hcd, xhci_get_quirks_t get_quirks);
+ void xhci_shutdown(struct usb_hcd *hcd);
+ void xhci_init_driver(struct hc_driver *drv,
+ 		      const struct xhci_driver_overrides *over);
++int xhci_add_endpoint(struct usb_hcd *hcd, struct usb_device *udev,
++		      struct usb_host_endpoint *ep);
++int xhci_drop_endpoint(struct usb_hcd *hcd, struct usb_device *udev,
++		       struct usb_host_endpoint *ep);
+ int xhci_check_bandwidth(struct usb_hcd *hcd, struct usb_device *udev);
+ void xhci_reset_bandwidth(struct usb_hcd *hcd, struct usb_device *udev);
+ int xhci_disable_slot(struct xhci_hcd *xhci, u32 slot_id);
+diff --git a/include/linux/usb/ch9.h b/include/linux/usb/ch9.h
+index 58b83066bea4671721b6be040f0486fa9ef79240..11dc91cf1c032f58a3f14b4bb46bc0db1ffe1a8c 100644
+--- a/include/linux/usb/ch9.h
++++ b/include/linux/usb/ch9.h
+@@ -70,6 +70,9 @@ extern enum usb_device_speed usb_get_maximum_speed(struct device *dev);
+  */
+ extern const char *usb_state_string(enum usb_device_state state);
+ 
++unsigned int usb_decode_interval(const struct usb_endpoint_descriptor *epd,
++				 enum usb_device_speed speed);
++
+ #ifdef CONFIG_TRACING
+ /**
+  * usb_decode_ctrl - Returns human readable representation of control request.
+diff --git a/include/media/fwht-ctrls.h b/include/media/fwht-ctrls.h
+index 615027410e47611641a6c3b251f13f6a982c34fa..a918b49609e1d7fa4a722ee78060561b673d0fc9 100644
+--- a/include/media/fwht-ctrls.h
++++ b/include/media/fwht-ctrls.h
+@@ -13,7 +13,7 @@
+ 
+ #define V4L2_CTRL_TYPE_FWHT_PARAMS 0x0105
+ 
+-#define V4L2_CID_MPEG_VIDEO_FWHT_PARAMS	(V4L2_CID_MPEG_BASE + 292)
++#define V4L2_CID_MPEG_VIDEO_FWHT_PARAMS	(V4L2_CID_CODEC_BASE + 292)
+ 
+ struct v4l2_ctrl_fwht_params {
+ 	__u64 backward_ref_ts;
 diff --git a/include/media/h264-ctrls.h b/include/media/h264-ctrls.h
 deleted file mode 100644
 index 3b29d8ce70de36ee0f055c2ad36c8f99ae3173b6..0000000000000000000000000000000000000000
@@ -14401,18 +16978,51 @@ index 3b29d8ce70de36ee0f055c2ad36c8f99ae3173b6..00000000000000000000000000000000
 -};
 -
 -#endif
+diff --git a/include/media/mpeg2-ctrls.h b/include/media/mpeg2-ctrls.h
+index 6601455b3d5e18e5898b63dcc330a8c1dbb27bd9..2a4ae6701166ec55b5e455bd99df0d67697c9f96 100644
+--- a/include/media/mpeg2-ctrls.h
++++ b/include/media/mpeg2-ctrls.h
+@@ -11,8 +11,8 @@
+ #ifndef _MPEG2_CTRLS_H_
+ #define _MPEG2_CTRLS_H_
+ 
+-#define V4L2_CID_MPEG_VIDEO_MPEG2_SLICE_PARAMS		(V4L2_CID_MPEG_BASE+250)
+-#define V4L2_CID_MPEG_VIDEO_MPEG2_QUANTIZATION		(V4L2_CID_MPEG_BASE+251)
++#define V4L2_CID_MPEG_VIDEO_MPEG2_SLICE_PARAMS		(V4L2_CID_CODEC_BASE+250)
++#define V4L2_CID_MPEG_VIDEO_MPEG2_QUANTIZATION		(V4L2_CID_CODEC_BASE+251)
+ 
+ /* enum v4l2_ctrl_type type values */
+ #define V4L2_CTRL_TYPE_MPEG2_SLICE_PARAMS 0x0103
 diff --git a/include/media/v4l2-ctrls.h b/include/media/v4l2-ctrls.h
-index 570ff4b0205a9f25b882b3bc096f3c5dd145f216..b76cceef347c2dde1117e5b5bad04ca9cc1d274c 100644
+index 570ff4b0205a9f25b882b3bc096f3c5dd145f216..390c181cf8dee74976b137b1561f1fd6dcb456ac 100644
 --- a/include/media/v4l2-ctrls.h
 +++ b/include/media/v4l2-ctrls.h
-@@ -19,7 +19,6 @@
+@@ -19,8 +19,8 @@
   */
  #include <media/mpeg2-ctrls.h>
  #include <media/fwht-ctrls.h>
 -#include <media/h264-ctrls.h>
  #include <media/vp8-ctrls.h>
++#include <media/vp9-ctrls.h>
  
  /* forward references */
+ struct file;
+@@ -49,6 +49,7 @@ struct poll_table_struct;
+  * @p_h264_scaling_matrix:	Pointer to a struct v4l2_ctrl_h264_scaling_matrix.
+  * @p_h264_slice_params:	Pointer to a struct v4l2_ctrl_h264_slice_params.
+  * @p_h264_decode_params:	Pointer to a struct v4l2_ctrl_h264_decode_params.
++ * @p_h264_pred_weights:	Pointer to a struct v4l2_ctrl_h264_pred_weights.
+  * @p_vp8_frame_header:		Pointer to a VP8 frame header structure.
+  * @p:				Pointer to a compound value.
+  */
+@@ -67,6 +68,7 @@ union v4l2_ctrl_ptr {
+ 	struct v4l2_ctrl_h264_scaling_matrix *p_h264_scaling_matrix;
+ 	struct v4l2_ctrl_h264_slice_params *p_h264_slice_params;
+ 	struct v4l2_ctrl_h264_decode_params *p_h264_decode_params;
++	struct v4l2_ctrl_h264_pred_weights *p_h264_pred_weights;
+ 	struct v4l2_ctrl_vp8_frame_header *p_vp8_frame_header;
+ 	void *p;
+ };
 diff --git a/include/media/v4l2-h264.h b/include/media/v4l2-h264.h
 index bc9ebb560ccfdb60b4ca658027162e62592a6b50..d2314f4d4490540be96a0f22d71c9366c5159c97 100644
 --- a/include/media/v4l2-h264.h
@@ -14443,10 +17053,546 @@ index bc9ebb560ccfdb60b4ca658027162e62592a6b50..d2314f4d4490540be96a0f22d71c9366
  		const struct v4l2_ctrl_h264_sps *sps,
  		const struct v4l2_h264_dpb_entry dpb[V4L2_H264_NUM_DPB_ENTRIES]);
  
+diff --git a/include/media/vp8-ctrls.h b/include/media/vp8-ctrls.h
+index 53cba826e482fb017b80ff3013a7ad132330689d..3969550df1481b1be911d5c368e8f0c385572c6c 100644
+--- a/include/media/vp8-ctrls.h
++++ b/include/media/vp8-ctrls.h
+@@ -15,7 +15,7 @@
+ 
+ #define V4L2_PIX_FMT_VP8_FRAME v4l2_fourcc('V', 'P', '8', 'F')
+ 
+-#define V4L2_CID_MPEG_VIDEO_VP8_FRAME_HEADER (V4L2_CID_MPEG_BASE + 2000)
++#define V4L2_CID_MPEG_VIDEO_VP8_FRAME_HEADER (V4L2_CID_CODEC_BASE + 2000)
+ #define V4L2_CTRL_TYPE_VP8_FRAME_HEADER 0x301
+ 
+ #define V4L2_VP8_SEGMENT_HEADER_FLAG_ENABLED              0x01
+@@ -53,11 +53,13 @@ struct v4l2_vp8_quantization_header {
+ 	__u16 padding;
+ };
+ 
++#define V4L2_VP8_COEFF_PROB_CNT 11
++#define V4L2_VP8_MV_PROB_CNT 19
+ struct v4l2_vp8_entropy_header {
+-	__u8 coeff_probs[4][8][3][11];
++	__u8 coeff_probs[4][8][3][V4L2_VP8_COEFF_PROB_CNT];
+ 	__u8 y_mode_probs[4];
+ 	__u8 uv_mode_probs[3];
+-	__u8 mv_probs[2][19];
++	__u8 mv_probs[2][V4L2_VP8_MV_PROB_CNT];
+ 	__u8 padding[3];
+ };
+ 
+diff --git a/include/media/vp9-ctrls.h b/include/media/vp9-ctrls.h
+new file mode 100644
+index 0000000000000000000000000000000000000000..7b3170f2ba0f966211f7d6b5dd28e3a20802d45b
+--- /dev/null
++++ b/include/media/vp9-ctrls.h
+@@ -0,0 +1,492 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/*
++ * These are the VP9 state controls for use with stateless VP9
++ * codec drivers.
++ *
++ * It turns out that these structs are not stable yet and will undergo
++ * more changes. So keep them private until they are stable and ready to
++ * become part of the official public API.
++ */
++
++#ifndef _VP9_CTRLS_H_
++#define _VP9_CTRLS_H_
++
++#include <linux/types.h>
++
++#define V4L2_PIX_FMT_VP9_FRAME v4l2_fourcc('V', 'P', '9', 'F')
++
++#define V4L2_CID_MPEG_VIDEO_VP9_FRAME_CONTEXT(i)	(V4L2_CID_CODEC_BASE + 4000 + (i))
++#define V4L2_CID_MPEG_VIDEO_VP9_FRAME_DECODE_PARAMS	(V4L2_CID_CODEC_BASE + 4004)
++#define V4L2_CTRL_TYPE_VP9_FRAME_CONTEXT		0x400
++#define V4L2_CTRL_TYPE_VP9_FRAME_DECODE_PARAMS		0x404
++
++/**
++ * enum v4l2_vp9_loop_filter_flags - VP9 loop filter flags
++ *
++ * @V4L2_VP9_LOOP_FILTER_FLAG_DELTA_ENABLED: the filter level depends on
++ *					     the mode and reference frame used
++ *					     to predict a block
++ * @V4L2_VP9_LOOP_FILTER_FLAG_DELTA_UPDATE: the bitstream contains additional
++ *					    syntax elements that specify which
++ *					    mode and reference frame deltas
++ *					    are to be updated
++ *
++ * Those are the flags you should pass to &v4l2_vp9_loop_filter.flags. See
++ * section '7.2.8 Loop filter semantics' of the VP9 specification for more
++ * details.
++ */
++enum v4l2_vp9_loop_filter_flags {
++	V4L2_VP9_LOOP_FILTER_FLAG_DELTA_ENABLED = 1 << 0,
++	V4L2_VP9_LOOP_FILTER_FLAG_DELTA_UPDATE = 1 << 1,
++};
++
++/**
++ * struct v4l2_vp9_loop_filter - VP9 loop filter parameters
++ *
++ * @flags: combination of V4L2_VP9_LOOP_FILTER_FLAG_* flags
++ * @level: indicates the loop filter strength
++ * @sharpness: indicates the sharpness level
++ * @ref_deltas: contains the adjustment needed for the filter level based on
++ *		the chosen reference frame
++ * @mode_deltas: contains the adjustment needed for the filter level based on
++ *		 the chosen mode
++ * @level_lookup: level lookup table
++ *
++ * This structure contains all loop filter related parameters. See sections
++ * '7.2.8 Loop filter semantics' and '8.8.1 Loop filter frame init process'
++ * of the VP9 specification for more details.
++ */
++struct v4l2_vp9_loop_filter {
++	__u8 flags;
++	__u8 level;
++	__u8 sharpness;
++	__s8 ref_deltas[4];
++	__s8 mode_deltas[2];
++	__u8 level_lookup[8][4][2];
++};
++
++/**
++ * struct v4l2_vp9_quantization - VP9 quantization parameters
++ *
++ * @base_q_idx: indicates the base frame qindex
++ * @delta_q_y_dc: indicates the Y DC quantizer relative to base_q_idx
++ * @delta_q_uv_dc: indicates the UV DC quantizer relative to base_q_idx
++ * @delta_q_uv_ac indicates the UV AC quantizer relative to base_q_idx
++ * @padding: padding bytes to align things on 64 bits. Must be set to 0
++ *
++ * Encodes the quantization parameters. See section '7.2.9 Quantization params
++ * syntax' of the VP9 specification for more details.
++ */
++struct v4l2_vp9_quantization {
++	/* TODO LOSSLESS flag missing? */
++	__u8 base_q_idx;
++	__s8 delta_q_y_dc;
++	__s8 delta_q_uv_dc;
++	__s8 delta_q_uv_ac;
++	__u8 padding[4];
++};
++
++/**
++ * enum v4l2_vp9_segmentation_flags - VP9 segmentation flags
++ *
++ * @V4L2_VP9_SEGMENTATION_FLAG_ENABLED: indicates that this frame makes use of
++ *					the segmentation tool
++ * @V4L2_VP9_SEGMENTATION_FLAG_UPDATE_MAP: indicates that the segmentation map
++ *					   should be updated during the
++ *					   decoding of this frame
++ * @V4L2_VP9_SEGMENTATION_FLAG_TEMPORAL_UPDATE: indicates that the updates to
++ *						the segmentation map are coded
++ *						relative to the existing
++ *						segmentation map
++ * @V4L2_VP9_SEGMENTATION_FLAG_UPDATE_DATA: indicates that new parameters are
++ *					    about to be specified for each
++ *					    segment
++ * @V4L2_VP9_SEGMENTATION_FLAG_ABS_OR_DELTA_UPDATE: indicates that the
++ *						    segmentation parameters
++ *						    represent the actual values
++ *						    to be used
++ *
++ * Those are the flags you should pass to &v4l2_vp9_segmentation.flags. See
++ * section '7.2.10 Segmentation params syntax' of the VP9 specification for
++ * more details.
++ */
++enum v4l2_vp9_segmentation_flags {
++	V4L2_VP9_SEGMENTATION_FLAG_ENABLED = 1 << 0,
++	V4L2_VP9_SEGMENTATION_FLAG_UPDATE_MAP = 1 << 1,
++	V4L2_VP9_SEGMENTATION_FLAG_TEMPORAL_UPDATE = 1 << 2,
++	V4L2_VP9_SEGMENTATION_FLAG_UPDATE_DATA = 1 << 3,
++	V4L2_VP9_SEGMENTATION_FLAG_ABS_OR_DELTA_UPDATE = 1 << 4,
++};
++
++#define V4L2_VP9_SEGMENT_FEATURE_ENABLED(id)	(1 << (id))
++#define V4L2_VP9_SEGMENT_FEATURE_ENABLED_MASK	0xf
++
++/**
++ * enum v4l2_vp9_segment_feature - VP9 segment feature IDs
++ *
++ * @V4L2_VP9_SEGMENT_FEATURE_QP_DELTA: QP delta segment feature
++ * @V4L2_VP9_SEGMENT_FEATURE_LF: loop filter segment feature
++ * @V4L2_VP9_SEGMENT_FEATURE_REF_FRAME: reference frame segment feature
++ * @V4L2_VP9_SEGMENT_FEATURE_SKIP: skip segment feature
++ * @V4L2_VP9_SEGMENT_FEATURE_CNT: number of segment features
++ *
++ * Segment feature IDs. See section '7.2.10 Segmentation params syntax' of the
++ * VP9 specification for more details.
++ */
++enum v4l2_vp9_segment_feature {
++	V4L2_VP9_SEGMENT_FEATURE_QP_DELTA,
++	V4L2_VP9_SEGMENT_FEATURE_LF,
++	V4L2_VP9_SEGMENT_FEATURE_REF_FRAME,
++	V4L2_VP9_SEGMENT_FEATURE_SKIP,
++	V4L2_VP9_SEGMENT_FEATURE_CNT,
++};
++
++/**
++ * struct v4l2_vp9_segmentation - VP9 segmentation parameters
++ *
++ * @flags: combination of V4L2_VP9_SEGMENTATION_FLAG_* flags
++ * @tree_probs: specifies the probability values to be used when
++ *              decoding a Segment-ID. See '5.15. Segmentation map'
++ *              section of the VP9 specification for more details.
++ * @pred_prob: specifies the probability values to be used when decoding a
++ *	       Predicted-Segment-ID. See '6.4.14. Get segment id syntax'
++ *	       section of :ref:`vp9` for more details..
++ * @padding: padding used to make things aligned on 64 bits. Shall be zero
++ *	     filled
++ * @feature_enabled: bitmask defining which features are enabled in each
++ *		     segment
++ * @feature_data: data attached to each feature. Data entry is only valid if
++ *		  the feature is enabled
++ *
++ * Encodes the quantization parameters. See section '7.2.10 Segmentation
++ * params syntax' of the VP9 specification for more details.
++ */
++struct v4l2_vp9_segmentation {
++	__u8 flags;
++	__u8 tree_probs[7];
++	__u8 pred_probs[3];
++	__u8 padding[5];
++	__u8 feature_enabled[8];
++	__s16 feature_data[8][4];
++};
++
++/**
++ * enum v4l2_vp9_intra_prediction_mode - VP9 Intra prediction modes
++ *
++ * @V4L2_VP9_INTRA_PRED_DC: DC intra prediction
++ * @V4L2_VP9_INTRA_PRED_MODE_V: vertical intra prediction
++ * @V4L2_VP9_INTRA_PRED_MODE_H: horizontal intra prediction
++ * @V4L2_VP9_INTRA_PRED_MODE_D45: D45 intra prediction
++ * @V4L2_VP9_INTRA_PRED_MODE_D135: D135 intra prediction
++ * @V4L2_VP9_INTRA_PRED_MODE_D117: D117 intra prediction
++ * @V4L2_VP9_INTRA_PRED_MODE_D153: D153 intra prediction
++ * @V4L2_VP9_INTRA_PRED_MODE_D207: D207 intra prediction
++ * @V4L2_VP9_INTRA_PRED_MODE_D63: D63 intra prediction
++ * @V4L2_VP9_INTRA_PRED_MODE_TM: True Motion intra prediction
++ *
++ * See section '7.4.5 Intra frame mode info semantics' for more details.
++ */
++// TODO where is this used??
++enum v4l2_vp9_intra_prediction_mode {
++	V4L2_VP9_INTRA_PRED_MODE_DC,
++	V4L2_VP9_INTRA_PRED_MODE_V,
++	V4L2_VP9_INTRA_PRED_MODE_H,
++	V4L2_VP9_INTRA_PRED_MODE_D45,
++	V4L2_VP9_INTRA_PRED_MODE_D135,
++	V4L2_VP9_INTRA_PRED_MODE_D117,
++	V4L2_VP9_INTRA_PRED_MODE_D153,
++	V4L2_VP9_INTRA_PRED_MODE_D207,
++	V4L2_VP9_INTRA_PRED_MODE_D63,
++	V4L2_VP9_INTRA_PRED_MODE_TM,
++};
++
++/**
++ * struct v4l2_vp9_mv_probabilities - VP9 Motion vector probabilities
++ * @joint: motion vector joint probabilities
++ * @sign: motion vector sign probabilities
++ * @class_: motion vector class probabilities
++ * @class0_bit: motion vector class0 bit probabilities
++ * @bits: motion vector bits probabilities
++ * @class0_fr: motion vector class0 fractional bit probabilities
++ * @fr: motion vector fractional bit probabilities
++ * @class0_hp: motion vector class0 high precision fractional bit probabilities
++ * @hp: motion vector high precision fractional bit probabilities
++ */
++struct v4l2_vp9_mv_probabilities {
++	__u8 joint[3];
++	__u8 sign[2];
++	__u8 class_[2][10];
++	__u8 class0_bit[2];
++	__u8 bits[2][10];
++	__u8 class0_fr[2][2][3];
++	__u8 fr[2][3];
++	__u8 class0_hp[2];
++	__u8 hp[2];
++};
++
++/**
++ * struct v4l2_vp9_probabilities - VP9 Probabilities
++ *
++ * @tx8: TX 8x8 probabilities
++ * @tx16: TX 16x16 probabilities
++ * @tx32: TX 32x32 probabilities
++ * @coef: coefficient probabilities
++ * @skip: skip probabilities
++ * @inter_mode: inter mode probabilities
++ * @interp_filter: interpolation filter probabilities
++ * @is_inter: is inter-block probabilities
++ * @comp_mode: compound prediction mode probabilities
++ * @single_ref: single ref probabilities
++ * @comp_ref: compound ref probabilities
++ * @y_mode: Y prediction mode probabilities
++ * @uv_mode: UV prediction mode probabilities
++ * @partition: partition probabilities
++ * @mv: motion vector probabilities
++ *
++ * Structure containing most VP9 probabilities. See the VP9 specification
++ * for more details.
++ */
++struct v4l2_vp9_probabilities {
++	__u8 tx8[2][1];
++	__u8 tx16[2][2];
++	__u8 tx32[2][3];
++	__u8 coef[4][2][2][6][6][3];
++	__u8 skip[3];
++	__u8 inter_mode[7][3];
++	__u8 interp_filter[4][2];
++	__u8 is_inter[4];
++	__u8 comp_mode[5];
++	__u8 single_ref[5][2];
++	__u8 comp_ref[5];
++	__u8 y_mode[4][9];
++	__u8 uv_mode[10][9];
++	__u8 partition[16][3];
++
++	struct v4l2_vp9_mv_probabilities mv;
++};
++
++/**
++ * enum v4l2_vp9_reset_frame_context - Valid values for
++ *			&v4l2_ctrl_vp9_frame_decode_params->reset_frame_context
++ *
++ * @V4L2_VP9_RESET_FRAME_CTX_NONE: don't reset any frame context
++ * @V4L2_VP9_RESET_FRAME_CTX_SPEC: reset the frame context pointed by
++ *			&v4l2_ctrl_vp9_frame_decode_params.frame_context_idx
++ * @V4L2_VP9_RESET_FRAME_CTX_ALL: reset all frame contexts
++ *
++ * See section '7.2 Uncompressed header semantics' of the VP9 specification
++ * for more details.
++ */
++enum v4l2_vp9_reset_frame_context {
++	V4L2_VP9_RESET_FRAME_CTX_NONE,
++	V4L2_VP9_RESET_FRAME_CTX_SPEC,
++	V4L2_VP9_RESET_FRAME_CTX_ALL,
++};
++
++/**
++ * enum v4l2_vp9_interpolation_filter - VP9 interpolation filter types
++ *
++ * @V4L2_VP9_INTERP_FILTER_8TAP: height tap filter
++ * @V4L2_VP9_INTERP_FILTER_8TAP_SMOOTH: height tap smooth filter
++ * @V4L2_VP9_INTERP_FILTER_8TAP_SHARP: height tap sharp filter
++ * @V4L2_VP9_INTERP_FILTER_BILINEAR: bilinear filter
++ * @V4L2_VP9_INTERP_FILTER_SWITCHABLE: filter selection is signaled at the
++ *				       block level
++ *
++ * See section '7.2.7 Interpolation filter semantics' of the VP9 specification
++ * for more details.
++ */
++enum v4l2_vp9_interpolation_filter {
++	V4L2_VP9_INTERP_FILTER_8TAP,
++	V4L2_VP9_INTERP_FILTER_8TAP_SMOOTH,
++	V4L2_VP9_INTERP_FILTER_8TAP_SHARP,
++	V4L2_VP9_INTERP_FILTER_BILINEAR,
++	V4L2_VP9_INTERP_FILTER_SWITCHABLE,
++};
++
++/**
++ * enum v4l2_vp9_reference_mode - VP9 reference modes
++ *
++ * @V4L2_VP9_REF_MODE_SINGLE: indicates that all the inter blocks use only a
++ *			      single reference frame to generate motion
++ *			      compensated prediction
++ * @V4L2_VP9_REF_MODE_COMPOUND: requires all the inter blocks to use compound
++ *				mode. Single reference frame prediction is not
++ *				allowed
++ * @V4L2_VP9_REF_MODE_SELECT: allows each individual inter block to select
++ *			      between single and compound prediction modes
++ *
++ * See section '7.3.6 Frame reference mode semantics' of the VP9 specification
++ * for more details.
++ */
++enum v4l2_vp9_reference_mode {
++	V4L2_VP9_REF_MODE_SINGLE,
++	V4L2_VP9_REF_MODE_COMPOUND,
++	V4L2_VP9_REF_MODE_SELECT,
++};
++
++/**
++ * enum v4l2_vp9_tx_mode - VP9 TX modes
++ *
++ * @V4L2_VP9_TX_MODE_ONLY_4X4: transform size is 4x4
++ * @V4L2_VP9_TX_MODE_ALLOW_8X8: transform size can be up to 8x8
++ * @V4L2_VP9_TX_MODE_ALLOW_16X16: transform size can be up to 16x16
++ * @V4L2_VP9_TX_MODE_ALLOW_32X32: transform size can be up to 32x32
++ * @V4L2_VP9_TX_MODE_SELECT: bitstream contains transform size for each block
++ *
++ * See section '7.3.1 Tx mode semantics' of the VP9 specification for more
++ * details.
++ */
++enum v4l2_vp9_tx_mode {
++	V4L2_VP9_TX_MODE_ONLY_4X4,
++	V4L2_VP9_TX_MODE_ALLOW_8X8,
++	V4L2_VP9_TX_MODE_ALLOW_16X16,
++	V4L2_VP9_TX_MODE_ALLOW_32X32,
++	V4L2_VP9_TX_MODE_SELECT,
++};
++
++/**
++ * enum v4l2_vp9_ref_id - VP9 Reference frame IDs
++ *
++ * @V4L2_REF_ID_LAST: last reference frame
++ * @V4L2_REF_ID_GOLDEN: golden reference frame
++ * @V4L2_REF_ID_ALTREF: alternative reference frame
++ * @V4L2_REF_ID_CNT: number of reference frames
++ *
++ * See section '7.4.12 Ref frames semantics' of the VP9 specification for more
++ * details.
++ */
++enum v4l2_vp9_ref_id {
++	V4L2_REF_ID_LAST,
++	V4L2_REF_ID_GOLDEN,
++	V4L2_REF_ID_ALTREF,
++	V4L2_REF_ID_CNT,
++};
++
++/**
++ * enum v4l2_vp9_frame_flags - VP9 frame flags
++ * @V4L2_VP9_FRAME_FLAG_KEY_FRAME: the frame is a key frame
++ * @V4L2_VP9_FRAME_FLAG_SHOW_FRAME: the frame should be displayed
++ * @V4L2_VP9_FRAME_FLAG_ERROR_RESILIENT: the decoding should be error resilient
++ * @V4L2_VP9_FRAME_FLAG_INTRA_ONLY: the frame does not reference other frames
++ * @V4L2_VP9_FRAME_FLAG_ALLOW_HIGH_PREC_MV: the frame might can high precision
++ *					    motion vectors
++ * @V4L2_VP9_FRAME_FLAG_REFRESH_FRAME_CTX: frame context should be updated
++ *					   after decoding
++ * @V4L2_VP9_FRAME_FLAG_PARALLEL_DEC_MODE: parallel decoding is used
++ * @V4L2_VP9_FRAME_FLAG_X_SUBSAMPLING: vertical subsampling is enabled
++ * @V4L2_VP9_FRAME_FLAG_Y_SUBSAMPLING: horizontal subsampling is enabled
++ * @V4L2_VP9_FRAME_FLAG_COLOR_RANGE_FULL_SWING: full UV range is used
++ *
++ * Check the VP9 specification for more details.
++ */
++enum v4l2_vp9_frame_flags {
++	V4L2_VP9_FRAME_FLAG_KEY_FRAME = 1 << 0,
++	V4L2_VP9_FRAME_FLAG_SHOW_FRAME = 1 << 1,
++	V4L2_VP9_FRAME_FLAG_ERROR_RESILIENT = 1 << 2,
++	V4L2_VP9_FRAME_FLAG_INTRA_ONLY = 1 << 3,
++	V4L2_VP9_FRAME_FLAG_ALLOW_HIGH_PREC_MV = 1 << 4,
++	V4L2_VP9_FRAME_FLAG_REFRESH_FRAME_CTX = 1 << 5,
++	V4L2_VP9_FRAME_FLAG_PARALLEL_DEC_MODE = 1 << 6,
++	V4L2_VP9_FRAME_FLAG_X_SUBSAMPLING = 1 << 7,
++	V4L2_VP9_FRAME_FLAG_Y_SUBSAMPLING = 1 << 8,
++	V4L2_VP9_FRAME_FLAG_COLOR_RANGE_FULL_SWING = 1 << 9,
++};
++
++#define V4L2_VP9_PROFILE_MAX		3
++
++/**
++ * struct v4l2_ctrl_vp9_frame_decode_params - VP9 frame decoding control
++ *
++ * @flags: combination of V4L2_VP9_FRAME_FLAG_* flags
++ * @compressed_header_size: compressed header size in bytes
++ * @uncompressed_header_size: uncompressed header size in bytes
++ * @profile: VP9 profile. Can be 0, 1, 2 or 3
++ * @reset_frame_context: specifies whether the frame context should be reset
++ *			 to default values. See &v4l2_vp9_reset_frame_context
++ *			 for more details
++ * @frame_context_idx: frame context that should be used/updated
++ * @bit_depth: bits per components. Can be 8, 10 or 12. Note that not all
++ *	       profiles support 10 and/or 12 bits depths
++ * @interpolation_filter: specifies the filter selection used for performing
++ *			  inter prediction. See &v4l2_vp9_interpolation_filter
++ *			  for more details
++ * @tile_cols_log2: specifies the base 2 logarithm of the width of each tile
++ *		    (where the width is measured in units of 8x8 blocks).
++ *		    Shall be less than or equal to 6
++ * @tile_rows_log2: specifies the base 2 logarithm of the height of each tile
++ *		    (where the height is measured in units of 8x8 blocks)
++ * @tx_mode: specifies the TX mode. See &v4l2_vp9_tx_mode for more details
++ * @reference_mode: specifies the type of inter prediction to be used. See
++ *		    &v4l2_vp9_reference_mode for more details
++ * @ref_frame_sign_biases: intended direction in time of the motion vector for
++ *                         each reference frame (0: backward, 1: forward).
++ *                         Only the first V4L2_REF_ID_CNT are used.
++ * @padding: needed to make this struct 64 bit aligned. Shall be filled with
++ *	     zeros
++ * @frame_width_minus_1: add 1 to it and you'll get the frame width expressed
++ *			 in pixels
++ * @frame_height_minus_1: add 1 to it and you'll get the frame height expressed
++ *			  in pixels
++ * @frame_width_minus_1: add 1 to it and you'll get the expected render width
++ *			 expressed in pixels. This is not used during the
++ *			 decoding process but might be used by HW scalers to
++ *			 prepare a frame that's ready for scanout
++ * @frame_height_minus_1: add 1 to it and you'll get the expected render height
++ *			 expressed in pixels. This is not used during the
++ *			 decoding process but might be used by HW scalers to
++ *			 prepare a frame that's ready for scanout
++ * @refs: array of reference frames, identified by timestamp. See
++          &v4l2_vp9_ref_id for more details
++ * @lf: loop filter parameters. See &v4l2_vp9_loop_filter for more details
++ * @quant: quantization parameters. See &v4l2_vp9_quantization for more details
++ * @seg: segmentation parameters. See &v4l2_vp9_segmentation for more details
++ * @probs: probabilities. See &v4l2_vp9_probabilities for more details
++ */
++struct v4l2_ctrl_vp9_frame_decode_params {
++	__u32 flags;
++	__u16 compressed_header_size;
++	__u16 uncompressed_header_size;
++	__u8 profile;
++	__u8 reset_frame_context;
++	__u8 frame_context_idx;
++	__u8 bit_depth;
++	__u8 interpolation_filter;
++	__u8 tile_cols_log2;
++	__u8 tile_rows_log2;
++	__u8 tx_mode;
++	__u8 reference_mode;
++	__u8 ref_frame_sign_biases;
++	__u8 padding[5];
++	__u16 frame_width_minus_1;
++	__u16 frame_height_minus_1;
++	__u16 render_width_minus_1;
++	__u16 render_height_minus_1;
++	__u64 refs[V4L2_REF_ID_CNT];
++	struct v4l2_vp9_loop_filter lf;
++	struct v4l2_vp9_quantization quant;
++	struct v4l2_vp9_segmentation seg;
++	struct v4l2_vp9_probabilities probs;
++};
++
++#define V4L2_VP9_NUM_FRAME_CTX	4
++
++/**
++ * struct v4l2_ctrl_vp9_frame_ctx - VP9 frame context control
++ *
++ * @probs: VP9 probabilities
++ *
++ * This control is accessed in both direction. The user should initialize the
++ * 4 contexts with default values just after starting the stream. Then before
++ * decoding a frame it should query the current frame context (the one passed
++ * through &v4l2_ctrl_vp9_frame_decode_params.frame_context_idx) to initialize
++ * &v4l2_ctrl_vp9_frame_decode_params.probs. The probs are then adjusted based
++ * on the bitstream info and passed to the kernel. The codec should update
++ * the frame context after the frame has been decoded, so that next time
++ * userspace query this context it contains the updated probabilities.
++ */
++struct v4l2_ctrl_vp9_frame_ctx {
++	struct v4l2_vp9_probabilities probs;
++};
++
++#endif /* _VP9_CTRLS_H_ */
 diff --git a/include/uapi/linux/v4l2-controls.h b/include/uapi/linux/v4l2-controls.h
-index 468fb1915792057d073cc86ac207e51fdd5c3dc5..ed8988d1f871f666f65ff885dc887cf071148a0e 100644
+index 468fb1915792057d073cc86ac207e51fdd5c3dc5..227c0e81f928158a46390068320072ddc1f987d5 100644
 --- a/include/uapi/linux/v4l2-controls.h
 +++ b/include/uapi/linux/v4l2-controls.h
+@@ -54,7 +54,7 @@
+ 
+ /* Control classes */
+ #define V4L2_CTRL_CLASS_USER		0x00980000	/* Old-style 'user' controls */
+-#define V4L2_CTRL_CLASS_MPEG		0x00990000	/* MPEG-compression controls */
++#define V4L2_CTRL_CLASS_CODEC		0x00990000	/* Stateful codec controls */
+ #define V4L2_CTRL_CLASS_CAMERA		0x009a0000	/* Camera class controls */
+ #define V4L2_CTRL_CLASS_FM_TX		0x009b0000	/* FM Modulator controls */
+ #define V4L2_CTRL_CLASS_FLASH		0x009c0000	/* Camera flash controls */
 @@ -65,6 +65,7 @@
  #define V4L2_CTRL_CLASS_FM_RX		0x00a10000	/* FM Receiver controls */
  #define V4L2_CTRL_CLASS_RF_TUNER	0x00a20000	/* RF tuner controls */
@@ -14455,10 +17601,740 @@ index 468fb1915792057d073cc86ac207e51fdd5c3dc5..ed8988d1f871f666f65ff885dc887cf0
  
  /* User-class control IDs */
  
-@@ -1157,4 +1158,390 @@ enum v4l2_detect_md_mode {
+@@ -196,11 +197,11 @@ enum v4l2_colorfx {
+ /* The MPEG controls are applicable to all codec controls
+  * and the 'MPEG' part of the define is historical */
+ 
+-#define V4L2_CID_MPEG_BASE			(V4L2_CTRL_CLASS_MPEG | 0x900)
+-#define V4L2_CID_MPEG_CLASS			(V4L2_CTRL_CLASS_MPEG | 1)
++#define V4L2_CID_CODEC_BASE			(V4L2_CTRL_CLASS_CODEC | 0x900)
++#define V4L2_CID_CODEC_CLASS			(V4L2_CTRL_CLASS_CODEC | 1)
+ 
+ /*  MPEG streams, specific to multiplexed streams */
+-#define V4L2_CID_MPEG_STREAM_TYPE		(V4L2_CID_MPEG_BASE+0)
++#define V4L2_CID_MPEG_STREAM_TYPE		(V4L2_CID_CODEC_BASE+0)
+ enum v4l2_mpeg_stream_type {
+ 	V4L2_MPEG_STREAM_TYPE_MPEG2_PS   = 0, /* MPEG-2 program stream */
+ 	V4L2_MPEG_STREAM_TYPE_MPEG2_TS   = 1, /* MPEG-2 transport stream */
+@@ -209,26 +210,26 @@ enum v4l2_mpeg_stream_type {
+ 	V4L2_MPEG_STREAM_TYPE_MPEG1_VCD  = 4, /* MPEG-1 VCD-compatible stream */
+ 	V4L2_MPEG_STREAM_TYPE_MPEG2_SVCD = 5, /* MPEG-2 SVCD-compatible stream */
+ };
+-#define V4L2_CID_MPEG_STREAM_PID_PMT		(V4L2_CID_MPEG_BASE+1)
+-#define V4L2_CID_MPEG_STREAM_PID_AUDIO		(V4L2_CID_MPEG_BASE+2)
+-#define V4L2_CID_MPEG_STREAM_PID_VIDEO		(V4L2_CID_MPEG_BASE+3)
+-#define V4L2_CID_MPEG_STREAM_PID_PCR		(V4L2_CID_MPEG_BASE+4)
+-#define V4L2_CID_MPEG_STREAM_PES_ID_AUDIO	(V4L2_CID_MPEG_BASE+5)
+-#define V4L2_CID_MPEG_STREAM_PES_ID_VIDEO	(V4L2_CID_MPEG_BASE+6)
+-#define V4L2_CID_MPEG_STREAM_VBI_FMT		(V4L2_CID_MPEG_BASE+7)
++#define V4L2_CID_MPEG_STREAM_PID_PMT		(V4L2_CID_CODEC_BASE+1)
++#define V4L2_CID_MPEG_STREAM_PID_AUDIO		(V4L2_CID_CODEC_BASE+2)
++#define V4L2_CID_MPEG_STREAM_PID_VIDEO		(V4L2_CID_CODEC_BASE+3)
++#define V4L2_CID_MPEG_STREAM_PID_PCR		(V4L2_CID_CODEC_BASE+4)
++#define V4L2_CID_MPEG_STREAM_PES_ID_AUDIO	(V4L2_CID_CODEC_BASE+5)
++#define V4L2_CID_MPEG_STREAM_PES_ID_VIDEO	(V4L2_CID_CODEC_BASE+6)
++#define V4L2_CID_MPEG_STREAM_VBI_FMT		(V4L2_CID_CODEC_BASE+7)
+ enum v4l2_mpeg_stream_vbi_fmt {
+ 	V4L2_MPEG_STREAM_VBI_FMT_NONE = 0,  /* No VBI in the MPEG stream */
+ 	V4L2_MPEG_STREAM_VBI_FMT_IVTV = 1,  /* VBI in private packets, IVTV format */
+ };
+ 
+ /*  MPEG audio controls specific to multiplexed streams  */
+-#define V4L2_CID_MPEG_AUDIO_SAMPLING_FREQ	(V4L2_CID_MPEG_BASE+100)
++#define V4L2_CID_MPEG_AUDIO_SAMPLING_FREQ	(V4L2_CID_CODEC_BASE+100)
+ enum v4l2_mpeg_audio_sampling_freq {
+ 	V4L2_MPEG_AUDIO_SAMPLING_FREQ_44100 = 0,
+ 	V4L2_MPEG_AUDIO_SAMPLING_FREQ_48000 = 1,
+ 	V4L2_MPEG_AUDIO_SAMPLING_FREQ_32000 = 2,
+ };
+-#define V4L2_CID_MPEG_AUDIO_ENCODING		(V4L2_CID_MPEG_BASE+101)
++#define V4L2_CID_MPEG_AUDIO_ENCODING		(V4L2_CID_CODEC_BASE+101)
+ enum v4l2_mpeg_audio_encoding {
+ 	V4L2_MPEG_AUDIO_ENCODING_LAYER_1 = 0,
+ 	V4L2_MPEG_AUDIO_ENCODING_LAYER_2 = 1,
+@@ -236,7 +237,7 @@ enum v4l2_mpeg_audio_encoding {
+ 	V4L2_MPEG_AUDIO_ENCODING_AAC     = 3,
+ 	V4L2_MPEG_AUDIO_ENCODING_AC3     = 4,
+ };
+-#define V4L2_CID_MPEG_AUDIO_L1_BITRATE		(V4L2_CID_MPEG_BASE+102)
++#define V4L2_CID_MPEG_AUDIO_L1_BITRATE		(V4L2_CID_CODEC_BASE+102)
+ enum v4l2_mpeg_audio_l1_bitrate {
+ 	V4L2_MPEG_AUDIO_L1_BITRATE_32K  = 0,
+ 	V4L2_MPEG_AUDIO_L1_BITRATE_64K  = 1,
+@@ -253,7 +254,7 @@ enum v4l2_mpeg_audio_l1_bitrate {
+ 	V4L2_MPEG_AUDIO_L1_BITRATE_416K = 12,
+ 	V4L2_MPEG_AUDIO_L1_BITRATE_448K = 13,
+ };
+-#define V4L2_CID_MPEG_AUDIO_L2_BITRATE		(V4L2_CID_MPEG_BASE+103)
++#define V4L2_CID_MPEG_AUDIO_L2_BITRATE		(V4L2_CID_CODEC_BASE+103)
+ enum v4l2_mpeg_audio_l2_bitrate {
+ 	V4L2_MPEG_AUDIO_L2_BITRATE_32K  = 0,
+ 	V4L2_MPEG_AUDIO_L2_BITRATE_48K  = 1,
+@@ -270,7 +271,7 @@ enum v4l2_mpeg_audio_l2_bitrate {
+ 	V4L2_MPEG_AUDIO_L2_BITRATE_320K = 12,
+ 	V4L2_MPEG_AUDIO_L2_BITRATE_384K = 13,
+ };
+-#define V4L2_CID_MPEG_AUDIO_L3_BITRATE		(V4L2_CID_MPEG_BASE+104)
++#define V4L2_CID_MPEG_AUDIO_L3_BITRATE		(V4L2_CID_CODEC_BASE+104)
+ enum v4l2_mpeg_audio_l3_bitrate {
+ 	V4L2_MPEG_AUDIO_L3_BITRATE_32K  = 0,
+ 	V4L2_MPEG_AUDIO_L3_BITRATE_40K  = 1,
+@@ -287,34 +288,34 @@ enum v4l2_mpeg_audio_l3_bitrate {
+ 	V4L2_MPEG_AUDIO_L3_BITRATE_256K = 12,
+ 	V4L2_MPEG_AUDIO_L3_BITRATE_320K = 13,
+ };
+-#define V4L2_CID_MPEG_AUDIO_MODE		(V4L2_CID_MPEG_BASE+105)
++#define V4L2_CID_MPEG_AUDIO_MODE		(V4L2_CID_CODEC_BASE+105)
+ enum v4l2_mpeg_audio_mode {
+ 	V4L2_MPEG_AUDIO_MODE_STEREO       = 0,
+ 	V4L2_MPEG_AUDIO_MODE_JOINT_STEREO = 1,
+ 	V4L2_MPEG_AUDIO_MODE_DUAL         = 2,
+ 	V4L2_MPEG_AUDIO_MODE_MONO         = 3,
+ };
+-#define V4L2_CID_MPEG_AUDIO_MODE_EXTENSION	(V4L2_CID_MPEG_BASE+106)
++#define V4L2_CID_MPEG_AUDIO_MODE_EXTENSION	(V4L2_CID_CODEC_BASE+106)
+ enum v4l2_mpeg_audio_mode_extension {
+ 	V4L2_MPEG_AUDIO_MODE_EXTENSION_BOUND_4  = 0,
+ 	V4L2_MPEG_AUDIO_MODE_EXTENSION_BOUND_8  = 1,
+ 	V4L2_MPEG_AUDIO_MODE_EXTENSION_BOUND_12 = 2,
+ 	V4L2_MPEG_AUDIO_MODE_EXTENSION_BOUND_16 = 3,
+ };
+-#define V4L2_CID_MPEG_AUDIO_EMPHASIS		(V4L2_CID_MPEG_BASE+107)
++#define V4L2_CID_MPEG_AUDIO_EMPHASIS		(V4L2_CID_CODEC_BASE+107)
+ enum v4l2_mpeg_audio_emphasis {
+ 	V4L2_MPEG_AUDIO_EMPHASIS_NONE         = 0,
+ 	V4L2_MPEG_AUDIO_EMPHASIS_50_DIV_15_uS = 1,
+ 	V4L2_MPEG_AUDIO_EMPHASIS_CCITT_J17    = 2,
+ };
+-#define V4L2_CID_MPEG_AUDIO_CRC			(V4L2_CID_MPEG_BASE+108)
++#define V4L2_CID_MPEG_AUDIO_CRC			(V4L2_CID_CODEC_BASE+108)
+ enum v4l2_mpeg_audio_crc {
+ 	V4L2_MPEG_AUDIO_CRC_NONE  = 0,
+ 	V4L2_MPEG_AUDIO_CRC_CRC16 = 1,
+ };
+-#define V4L2_CID_MPEG_AUDIO_MUTE		(V4L2_CID_MPEG_BASE+109)
+-#define V4L2_CID_MPEG_AUDIO_AAC_BITRATE		(V4L2_CID_MPEG_BASE+110)
+-#define V4L2_CID_MPEG_AUDIO_AC3_BITRATE		(V4L2_CID_MPEG_BASE+111)
++#define V4L2_CID_MPEG_AUDIO_MUTE		(V4L2_CID_CODEC_BASE+109)
++#define V4L2_CID_MPEG_AUDIO_AAC_BITRATE		(V4L2_CID_CODEC_BASE+110)
++#define V4L2_CID_MPEG_AUDIO_AC3_BITRATE		(V4L2_CID_CODEC_BASE+111)
+ enum v4l2_mpeg_audio_ac3_bitrate {
+ 	V4L2_MPEG_AUDIO_AC3_BITRATE_32K  = 0,
+ 	V4L2_MPEG_AUDIO_AC3_BITRATE_40K  = 1,
+@@ -336,7 +337,7 @@ enum v4l2_mpeg_audio_ac3_bitrate {
+ 	V4L2_MPEG_AUDIO_AC3_BITRATE_576K = 17,
+ 	V4L2_MPEG_AUDIO_AC3_BITRATE_640K = 18,
+ };
+-#define V4L2_CID_MPEG_AUDIO_DEC_PLAYBACK	(V4L2_CID_MPEG_BASE+112)
++#define V4L2_CID_MPEG_AUDIO_DEC_PLAYBACK	(V4L2_CID_CODEC_BASE+112)
+ enum v4l2_mpeg_audio_dec_playback {
+ 	V4L2_MPEG_AUDIO_DEC_PLAYBACK_AUTO	    = 0,
+ 	V4L2_MPEG_AUDIO_DEC_PLAYBACK_STEREO	    = 1,
+@@ -345,52 +346,52 @@ enum v4l2_mpeg_audio_dec_playback {
+ 	V4L2_MPEG_AUDIO_DEC_PLAYBACK_MONO	    = 4,
+ 	V4L2_MPEG_AUDIO_DEC_PLAYBACK_SWAPPED_STEREO = 5,
+ };
+-#define V4L2_CID_MPEG_AUDIO_DEC_MULTILINGUAL_PLAYBACK (V4L2_CID_MPEG_BASE+113)
++#define V4L2_CID_MPEG_AUDIO_DEC_MULTILINGUAL_PLAYBACK (V4L2_CID_CODEC_BASE+113)
+ 
+ /*  MPEG video controls specific to multiplexed streams */
+-#define V4L2_CID_MPEG_VIDEO_ENCODING		(V4L2_CID_MPEG_BASE+200)
++#define V4L2_CID_MPEG_VIDEO_ENCODING		(V4L2_CID_CODEC_BASE+200)
+ enum v4l2_mpeg_video_encoding {
+ 	V4L2_MPEG_VIDEO_ENCODING_MPEG_1     = 0,
+ 	V4L2_MPEG_VIDEO_ENCODING_MPEG_2     = 1,
+ 	V4L2_MPEG_VIDEO_ENCODING_MPEG_4_AVC = 2,
+ };
+-#define V4L2_CID_MPEG_VIDEO_ASPECT		(V4L2_CID_MPEG_BASE+201)
++#define V4L2_CID_MPEG_VIDEO_ASPECT		(V4L2_CID_CODEC_BASE+201)
+ enum v4l2_mpeg_video_aspect {
+ 	V4L2_MPEG_VIDEO_ASPECT_1x1     = 0,
+ 	V4L2_MPEG_VIDEO_ASPECT_4x3     = 1,
+ 	V4L2_MPEG_VIDEO_ASPECT_16x9    = 2,
+ 	V4L2_MPEG_VIDEO_ASPECT_221x100 = 3,
+ };
+-#define V4L2_CID_MPEG_VIDEO_B_FRAMES		(V4L2_CID_MPEG_BASE+202)
+-#define V4L2_CID_MPEG_VIDEO_GOP_SIZE		(V4L2_CID_MPEG_BASE+203)
+-#define V4L2_CID_MPEG_VIDEO_GOP_CLOSURE		(V4L2_CID_MPEG_BASE+204)
+-#define V4L2_CID_MPEG_VIDEO_PULLDOWN		(V4L2_CID_MPEG_BASE+205)
+-#define V4L2_CID_MPEG_VIDEO_BITRATE_MODE	(V4L2_CID_MPEG_BASE+206)
++#define V4L2_CID_MPEG_VIDEO_B_FRAMES		(V4L2_CID_CODEC_BASE+202)
++#define V4L2_CID_MPEG_VIDEO_GOP_SIZE		(V4L2_CID_CODEC_BASE+203)
++#define V4L2_CID_MPEG_VIDEO_GOP_CLOSURE		(V4L2_CID_CODEC_BASE+204)
++#define V4L2_CID_MPEG_VIDEO_PULLDOWN		(V4L2_CID_CODEC_BASE+205)
++#define V4L2_CID_MPEG_VIDEO_BITRATE_MODE	(V4L2_CID_CODEC_BASE+206)
+ enum v4l2_mpeg_video_bitrate_mode {
+ 	V4L2_MPEG_VIDEO_BITRATE_MODE_VBR = 0,
+ 	V4L2_MPEG_VIDEO_BITRATE_MODE_CBR = 1,
+ 	V4L2_MPEG_VIDEO_BITRATE_MODE_CQ  = 2,
+ };
+-#define V4L2_CID_MPEG_VIDEO_BITRATE		(V4L2_CID_MPEG_BASE+207)
+-#define V4L2_CID_MPEG_VIDEO_BITRATE_PEAK	(V4L2_CID_MPEG_BASE+208)
+-#define V4L2_CID_MPEG_VIDEO_TEMPORAL_DECIMATION (V4L2_CID_MPEG_BASE+209)
+-#define V4L2_CID_MPEG_VIDEO_MUTE		(V4L2_CID_MPEG_BASE+210)
+-#define V4L2_CID_MPEG_VIDEO_MUTE_YUV		(V4L2_CID_MPEG_BASE+211)
+-#define V4L2_CID_MPEG_VIDEO_DECODER_SLICE_INTERFACE		(V4L2_CID_MPEG_BASE+212)
+-#define V4L2_CID_MPEG_VIDEO_DECODER_MPEG4_DEBLOCK_FILTER	(V4L2_CID_MPEG_BASE+213)
+-#define V4L2_CID_MPEG_VIDEO_CYCLIC_INTRA_REFRESH_MB		(V4L2_CID_MPEG_BASE+214)
+-#define V4L2_CID_MPEG_VIDEO_FRAME_RC_ENABLE			(V4L2_CID_MPEG_BASE+215)
+-#define V4L2_CID_MPEG_VIDEO_HEADER_MODE				(V4L2_CID_MPEG_BASE+216)
++#define V4L2_CID_MPEG_VIDEO_BITRATE		(V4L2_CID_CODEC_BASE+207)
++#define V4L2_CID_MPEG_VIDEO_BITRATE_PEAK	(V4L2_CID_CODEC_BASE+208)
++#define V4L2_CID_MPEG_VIDEO_TEMPORAL_DECIMATION (V4L2_CID_CODEC_BASE+209)
++#define V4L2_CID_MPEG_VIDEO_MUTE		(V4L2_CID_CODEC_BASE+210)
++#define V4L2_CID_MPEG_VIDEO_MUTE_YUV		(V4L2_CID_CODEC_BASE+211)
++#define V4L2_CID_MPEG_VIDEO_DECODER_SLICE_INTERFACE		(V4L2_CID_CODEC_BASE+212)
++#define V4L2_CID_MPEG_VIDEO_DECODER_MPEG4_DEBLOCK_FILTER	(V4L2_CID_CODEC_BASE+213)
++#define V4L2_CID_MPEG_VIDEO_CYCLIC_INTRA_REFRESH_MB		(V4L2_CID_CODEC_BASE+214)
++#define V4L2_CID_MPEG_VIDEO_FRAME_RC_ENABLE			(V4L2_CID_CODEC_BASE+215)
++#define V4L2_CID_MPEG_VIDEO_HEADER_MODE				(V4L2_CID_CODEC_BASE+216)
+ enum v4l2_mpeg_video_header_mode {
+ 	V4L2_MPEG_VIDEO_HEADER_MODE_SEPARATE			= 0,
+ 	V4L2_MPEG_VIDEO_HEADER_MODE_JOINED_WITH_1ST_FRAME	= 1,
+ 
+ };
+-#define V4L2_CID_MPEG_VIDEO_MAX_REF_PIC			(V4L2_CID_MPEG_BASE+217)
+-#define V4L2_CID_MPEG_VIDEO_MB_RC_ENABLE		(V4L2_CID_MPEG_BASE+218)
+-#define V4L2_CID_MPEG_VIDEO_MULTI_SLICE_MAX_BYTES	(V4L2_CID_MPEG_BASE+219)
+-#define V4L2_CID_MPEG_VIDEO_MULTI_SLICE_MAX_MB		(V4L2_CID_MPEG_BASE+220)
+-#define V4L2_CID_MPEG_VIDEO_MULTI_SLICE_MODE		(V4L2_CID_MPEG_BASE+221)
++#define V4L2_CID_MPEG_VIDEO_MAX_REF_PIC			(V4L2_CID_CODEC_BASE+217)
++#define V4L2_CID_MPEG_VIDEO_MB_RC_ENABLE		(V4L2_CID_CODEC_BASE+218)
++#define V4L2_CID_MPEG_VIDEO_MULTI_SLICE_MAX_BYTES	(V4L2_CID_CODEC_BASE+219)
++#define V4L2_CID_MPEG_VIDEO_MULTI_SLICE_MAX_MB		(V4L2_CID_CODEC_BASE+220)
++#define V4L2_CID_MPEG_VIDEO_MULTI_SLICE_MODE		(V4L2_CID_CODEC_BASE+221)
+ enum v4l2_mpeg_video_multi_slice_mode {
+ 	V4L2_MPEG_VIDEO_MULTI_SLICE_MODE_SINGLE		= 0,
+ 	V4L2_MPEG_VIDEO_MULTI_SLICE_MODE_MAX_MB		= 1,
+@@ -401,24 +402,24 @@ enum v4l2_mpeg_video_multi_slice_mode {
+ 	V4L2_MPEG_VIDEO_MULTI_SICE_MODE_MAX_BYTES	= 2,
+ #endif
+ };
+-#define V4L2_CID_MPEG_VIDEO_VBV_SIZE			(V4L2_CID_MPEG_BASE+222)
+-#define V4L2_CID_MPEG_VIDEO_DEC_PTS			(V4L2_CID_MPEG_BASE+223)
+-#define V4L2_CID_MPEG_VIDEO_DEC_FRAME			(V4L2_CID_MPEG_BASE+224)
+-#define V4L2_CID_MPEG_VIDEO_VBV_DELAY			(V4L2_CID_MPEG_BASE+225)
+-#define V4L2_CID_MPEG_VIDEO_REPEAT_SEQ_HEADER		(V4L2_CID_MPEG_BASE+226)
+-#define V4L2_CID_MPEG_VIDEO_MV_H_SEARCH_RANGE		(V4L2_CID_MPEG_BASE+227)
+-#define V4L2_CID_MPEG_VIDEO_MV_V_SEARCH_RANGE		(V4L2_CID_MPEG_BASE+228)
+-#define V4L2_CID_MPEG_VIDEO_FORCE_KEY_FRAME		(V4L2_CID_MPEG_BASE+229)
++#define V4L2_CID_MPEG_VIDEO_VBV_SIZE			(V4L2_CID_CODEC_BASE+222)
++#define V4L2_CID_MPEG_VIDEO_DEC_PTS			(V4L2_CID_CODEC_BASE+223)
++#define V4L2_CID_MPEG_VIDEO_DEC_FRAME			(V4L2_CID_CODEC_BASE+224)
++#define V4L2_CID_MPEG_VIDEO_VBV_DELAY			(V4L2_CID_CODEC_BASE+225)
++#define V4L2_CID_MPEG_VIDEO_REPEAT_SEQ_HEADER		(V4L2_CID_CODEC_BASE+226)
++#define V4L2_CID_MPEG_VIDEO_MV_H_SEARCH_RANGE		(V4L2_CID_CODEC_BASE+227)
++#define V4L2_CID_MPEG_VIDEO_MV_V_SEARCH_RANGE		(V4L2_CID_CODEC_BASE+228)
++#define V4L2_CID_MPEG_VIDEO_FORCE_KEY_FRAME		(V4L2_CID_CODEC_BASE+229)
+ 
+ /* CIDs for the MPEG-2 Part 2 (H.262) codec */
+-#define V4L2_CID_MPEG_VIDEO_MPEG2_LEVEL			(V4L2_CID_MPEG_BASE+270)
++#define V4L2_CID_MPEG_VIDEO_MPEG2_LEVEL			(V4L2_CID_CODEC_BASE+270)
+ enum v4l2_mpeg_video_mpeg2_level {
+ 	V4L2_MPEG_VIDEO_MPEG2_LEVEL_LOW		= 0,
+ 	V4L2_MPEG_VIDEO_MPEG2_LEVEL_MAIN	= 1,
+ 	V4L2_MPEG_VIDEO_MPEG2_LEVEL_HIGH_1440	= 2,
+ 	V4L2_MPEG_VIDEO_MPEG2_LEVEL_HIGH	= 3,
+ };
+-#define V4L2_CID_MPEG_VIDEO_MPEG2_PROFILE		(V4L2_CID_MPEG_BASE+271)
++#define V4L2_CID_MPEG_VIDEO_MPEG2_PROFILE		(V4L2_CID_CODEC_BASE+271)
+ enum v4l2_mpeg_video_mpeg2_profile {
+ 	V4L2_MPEG_VIDEO_MPEG2_PROFILE_SIMPLE				= 0,
+ 	V4L2_MPEG_VIDEO_MPEG2_PROFILE_MAIN				= 1,
+@@ -429,28 +430,28 @@ enum v4l2_mpeg_video_mpeg2_profile {
+ };
+ 
+ /* CIDs for the FWHT codec as used by the vicodec driver. */
+-#define V4L2_CID_FWHT_I_FRAME_QP             (V4L2_CID_MPEG_BASE + 290)
+-#define V4L2_CID_FWHT_P_FRAME_QP             (V4L2_CID_MPEG_BASE + 291)
+-
+-#define V4L2_CID_MPEG_VIDEO_H263_I_FRAME_QP		(V4L2_CID_MPEG_BASE+300)
+-#define V4L2_CID_MPEG_VIDEO_H263_P_FRAME_QP		(V4L2_CID_MPEG_BASE+301)
+-#define V4L2_CID_MPEG_VIDEO_H263_B_FRAME_QP		(V4L2_CID_MPEG_BASE+302)
+-#define V4L2_CID_MPEG_VIDEO_H263_MIN_QP			(V4L2_CID_MPEG_BASE+303)
+-#define V4L2_CID_MPEG_VIDEO_H263_MAX_QP			(V4L2_CID_MPEG_BASE+304)
+-#define V4L2_CID_MPEG_VIDEO_H264_I_FRAME_QP		(V4L2_CID_MPEG_BASE+350)
+-#define V4L2_CID_MPEG_VIDEO_H264_P_FRAME_QP		(V4L2_CID_MPEG_BASE+351)
+-#define V4L2_CID_MPEG_VIDEO_H264_B_FRAME_QP		(V4L2_CID_MPEG_BASE+352)
+-#define V4L2_CID_MPEG_VIDEO_H264_MIN_QP			(V4L2_CID_MPEG_BASE+353)
+-#define V4L2_CID_MPEG_VIDEO_H264_MAX_QP			(V4L2_CID_MPEG_BASE+354)
+-#define V4L2_CID_MPEG_VIDEO_H264_8X8_TRANSFORM		(V4L2_CID_MPEG_BASE+355)
+-#define V4L2_CID_MPEG_VIDEO_H264_CPB_SIZE		(V4L2_CID_MPEG_BASE+356)
+-#define V4L2_CID_MPEG_VIDEO_H264_ENTROPY_MODE		(V4L2_CID_MPEG_BASE+357)
++#define V4L2_CID_FWHT_I_FRAME_QP             (V4L2_CID_CODEC_BASE + 290)
++#define V4L2_CID_FWHT_P_FRAME_QP             (V4L2_CID_CODEC_BASE + 291)
++
++#define V4L2_CID_MPEG_VIDEO_H263_I_FRAME_QP		(V4L2_CID_CODEC_BASE+300)
++#define V4L2_CID_MPEG_VIDEO_H263_P_FRAME_QP		(V4L2_CID_CODEC_BASE+301)
++#define V4L2_CID_MPEG_VIDEO_H263_B_FRAME_QP		(V4L2_CID_CODEC_BASE+302)
++#define V4L2_CID_MPEG_VIDEO_H263_MIN_QP			(V4L2_CID_CODEC_BASE+303)
++#define V4L2_CID_MPEG_VIDEO_H263_MAX_QP			(V4L2_CID_CODEC_BASE+304)
++#define V4L2_CID_MPEG_VIDEO_H264_I_FRAME_QP		(V4L2_CID_CODEC_BASE+350)
++#define V4L2_CID_MPEG_VIDEO_H264_P_FRAME_QP		(V4L2_CID_CODEC_BASE+351)
++#define V4L2_CID_MPEG_VIDEO_H264_B_FRAME_QP		(V4L2_CID_CODEC_BASE+352)
++#define V4L2_CID_MPEG_VIDEO_H264_MIN_QP			(V4L2_CID_CODEC_BASE+353)
++#define V4L2_CID_MPEG_VIDEO_H264_MAX_QP			(V4L2_CID_CODEC_BASE+354)
++#define V4L2_CID_MPEG_VIDEO_H264_8X8_TRANSFORM		(V4L2_CID_CODEC_BASE+355)
++#define V4L2_CID_MPEG_VIDEO_H264_CPB_SIZE		(V4L2_CID_CODEC_BASE+356)
++#define V4L2_CID_MPEG_VIDEO_H264_ENTROPY_MODE		(V4L2_CID_CODEC_BASE+357)
+ enum v4l2_mpeg_video_h264_entropy_mode {
+ 	V4L2_MPEG_VIDEO_H264_ENTROPY_MODE_CAVLC	= 0,
+ 	V4L2_MPEG_VIDEO_H264_ENTROPY_MODE_CABAC	= 1,
+ };
+-#define V4L2_CID_MPEG_VIDEO_H264_I_PERIOD		(V4L2_CID_MPEG_BASE+358)
+-#define V4L2_CID_MPEG_VIDEO_H264_LEVEL			(V4L2_CID_MPEG_BASE+359)
++#define V4L2_CID_MPEG_VIDEO_H264_I_PERIOD		(V4L2_CID_CODEC_BASE+358)
++#define V4L2_CID_MPEG_VIDEO_H264_LEVEL			(V4L2_CID_CODEC_BASE+359)
+ enum v4l2_mpeg_video_h264_level {
+ 	V4L2_MPEG_VIDEO_H264_LEVEL_1_0	= 0,
+ 	V4L2_MPEG_VIDEO_H264_LEVEL_1B	= 1,
+@@ -473,15 +474,15 @@ enum v4l2_mpeg_video_h264_level {
+ 	V4L2_MPEG_VIDEO_H264_LEVEL_6_1	= 18,
+ 	V4L2_MPEG_VIDEO_H264_LEVEL_6_2	= 19,
+ };
+-#define V4L2_CID_MPEG_VIDEO_H264_LOOP_FILTER_ALPHA	(V4L2_CID_MPEG_BASE+360)
+-#define V4L2_CID_MPEG_VIDEO_H264_LOOP_FILTER_BETA	(V4L2_CID_MPEG_BASE+361)
+-#define V4L2_CID_MPEG_VIDEO_H264_LOOP_FILTER_MODE	(V4L2_CID_MPEG_BASE+362)
++#define V4L2_CID_MPEG_VIDEO_H264_LOOP_FILTER_ALPHA	(V4L2_CID_CODEC_BASE+360)
++#define V4L2_CID_MPEG_VIDEO_H264_LOOP_FILTER_BETA	(V4L2_CID_CODEC_BASE+361)
++#define V4L2_CID_MPEG_VIDEO_H264_LOOP_FILTER_MODE	(V4L2_CID_CODEC_BASE+362)
+ enum v4l2_mpeg_video_h264_loop_filter_mode {
+ 	V4L2_MPEG_VIDEO_H264_LOOP_FILTER_MODE_ENABLED				= 0,
+ 	V4L2_MPEG_VIDEO_H264_LOOP_FILTER_MODE_DISABLED				= 1,
+ 	V4L2_MPEG_VIDEO_H264_LOOP_FILTER_MODE_DISABLED_AT_SLICE_BOUNDARY	= 2,
+ };
+-#define V4L2_CID_MPEG_VIDEO_H264_PROFILE		(V4L2_CID_MPEG_BASE+363)
++#define V4L2_CID_MPEG_VIDEO_H264_PROFILE		(V4L2_CID_CODEC_BASE+363)
+ enum v4l2_mpeg_video_h264_profile {
+ 	V4L2_MPEG_VIDEO_H264_PROFILE_BASELINE			= 0,
+ 	V4L2_MPEG_VIDEO_H264_PROFILE_CONSTRAINED_BASELINE	= 1,
+@@ -502,10 +503,10 @@ enum v4l2_mpeg_video_h264_profile {
+ 	V4L2_MPEG_VIDEO_H264_PROFILE_MULTIVIEW_HIGH		= 16,
+ 	V4L2_MPEG_VIDEO_H264_PROFILE_CONSTRAINED_HIGH		= 17,
+ };
+-#define V4L2_CID_MPEG_VIDEO_H264_VUI_EXT_SAR_HEIGHT	(V4L2_CID_MPEG_BASE+364)
+-#define V4L2_CID_MPEG_VIDEO_H264_VUI_EXT_SAR_WIDTH	(V4L2_CID_MPEG_BASE+365)
+-#define V4L2_CID_MPEG_VIDEO_H264_VUI_SAR_ENABLE		(V4L2_CID_MPEG_BASE+366)
+-#define V4L2_CID_MPEG_VIDEO_H264_VUI_SAR_IDC		(V4L2_CID_MPEG_BASE+367)
++#define V4L2_CID_MPEG_VIDEO_H264_VUI_EXT_SAR_HEIGHT	(V4L2_CID_CODEC_BASE+364)
++#define V4L2_CID_MPEG_VIDEO_H264_VUI_EXT_SAR_WIDTH	(V4L2_CID_CODEC_BASE+365)
++#define V4L2_CID_MPEG_VIDEO_H264_VUI_SAR_ENABLE		(V4L2_CID_CODEC_BASE+366)
++#define V4L2_CID_MPEG_VIDEO_H264_VUI_SAR_IDC		(V4L2_CID_CODEC_BASE+367)
+ enum v4l2_mpeg_video_h264_vui_sar_idc {
+ 	V4L2_MPEG_VIDEO_H264_VUI_SAR_IDC_UNSPECIFIED	= 0,
+ 	V4L2_MPEG_VIDEO_H264_VUI_SAR_IDC_1x1		= 1,
+@@ -526,9 +527,9 @@ enum v4l2_mpeg_video_h264_vui_sar_idc {
+ 	V4L2_MPEG_VIDEO_H264_VUI_SAR_IDC_2x1		= 16,
+ 	V4L2_MPEG_VIDEO_H264_VUI_SAR_IDC_EXTENDED	= 17,
+ };
+-#define V4L2_CID_MPEG_VIDEO_H264_SEI_FRAME_PACKING		(V4L2_CID_MPEG_BASE+368)
+-#define V4L2_CID_MPEG_VIDEO_H264_SEI_FP_CURRENT_FRAME_0		(V4L2_CID_MPEG_BASE+369)
+-#define V4L2_CID_MPEG_VIDEO_H264_SEI_FP_ARRANGEMENT_TYPE	(V4L2_CID_MPEG_BASE+370)
++#define V4L2_CID_MPEG_VIDEO_H264_SEI_FRAME_PACKING		(V4L2_CID_CODEC_BASE+368)
++#define V4L2_CID_MPEG_VIDEO_H264_SEI_FP_CURRENT_FRAME_0		(V4L2_CID_CODEC_BASE+369)
++#define V4L2_CID_MPEG_VIDEO_H264_SEI_FP_ARRANGEMENT_TYPE	(V4L2_CID_CODEC_BASE+370)
+ enum v4l2_mpeg_video_h264_sei_fp_arrangement_type {
+ 	V4L2_MPEG_VIDEO_H264_SEI_FP_ARRANGEMENT_TYPE_CHECKERBOARD	= 0,
+ 	V4L2_MPEG_VIDEO_H264_SEI_FP_ARRANGEMENT_TYPE_COLUMN		= 1,
+@@ -537,8 +538,8 @@ enum v4l2_mpeg_video_h264_sei_fp_arrangement_type {
+ 	V4L2_MPEG_VIDEO_H264_SEI_FP_ARRANGEMENT_TYPE_TOP_BOTTOM		= 4,
+ 	V4L2_MPEG_VIDEO_H264_SEI_FP_ARRANGEMENT_TYPE_TEMPORAL		= 5,
+ };
+-#define V4L2_CID_MPEG_VIDEO_H264_FMO			(V4L2_CID_MPEG_BASE+371)
+-#define V4L2_CID_MPEG_VIDEO_H264_FMO_MAP_TYPE		(V4L2_CID_MPEG_BASE+372)
++#define V4L2_CID_MPEG_VIDEO_H264_FMO			(V4L2_CID_CODEC_BASE+371)
++#define V4L2_CID_MPEG_VIDEO_H264_FMO_MAP_TYPE		(V4L2_CID_CODEC_BASE+372)
+ enum v4l2_mpeg_video_h264_fmo_map_type {
+ 	V4L2_MPEG_VIDEO_H264_FMO_MAP_TYPE_INTERLEAVED_SLICES		= 0,
+ 	V4L2_MPEG_VIDEO_H264_FMO_MAP_TYPE_SCATTERED_SLICES		= 1,
+@@ -548,36 +549,36 @@ enum v4l2_mpeg_video_h264_fmo_map_type {
+ 	V4L2_MPEG_VIDEO_H264_FMO_MAP_TYPE_WIPE_SCAN			= 5,
+ 	V4L2_MPEG_VIDEO_H264_FMO_MAP_TYPE_EXPLICIT			= 6,
+ };
+-#define V4L2_CID_MPEG_VIDEO_H264_FMO_SLICE_GROUP	(V4L2_CID_MPEG_BASE+373)
+-#define V4L2_CID_MPEG_VIDEO_H264_FMO_CHANGE_DIRECTION	(V4L2_CID_MPEG_BASE+374)
++#define V4L2_CID_MPEG_VIDEO_H264_FMO_SLICE_GROUP	(V4L2_CID_CODEC_BASE+373)
++#define V4L2_CID_MPEG_VIDEO_H264_FMO_CHANGE_DIRECTION	(V4L2_CID_CODEC_BASE+374)
+ enum v4l2_mpeg_video_h264_fmo_change_dir {
+ 	V4L2_MPEG_VIDEO_H264_FMO_CHANGE_DIR_RIGHT	= 0,
+ 	V4L2_MPEG_VIDEO_H264_FMO_CHANGE_DIR_LEFT	= 1,
+ };
+-#define V4L2_CID_MPEG_VIDEO_H264_FMO_CHANGE_RATE	(V4L2_CID_MPEG_BASE+375)
+-#define V4L2_CID_MPEG_VIDEO_H264_FMO_RUN_LENGTH		(V4L2_CID_MPEG_BASE+376)
+-#define V4L2_CID_MPEG_VIDEO_H264_ASO			(V4L2_CID_MPEG_BASE+377)
+-#define V4L2_CID_MPEG_VIDEO_H264_ASO_SLICE_ORDER	(V4L2_CID_MPEG_BASE+378)
+-#define V4L2_CID_MPEG_VIDEO_H264_HIERARCHICAL_CODING		(V4L2_CID_MPEG_BASE+379)
+-#define V4L2_CID_MPEG_VIDEO_H264_HIERARCHICAL_CODING_TYPE	(V4L2_CID_MPEG_BASE+380)
++#define V4L2_CID_MPEG_VIDEO_H264_FMO_CHANGE_RATE	(V4L2_CID_CODEC_BASE+375)
++#define V4L2_CID_MPEG_VIDEO_H264_FMO_RUN_LENGTH		(V4L2_CID_CODEC_BASE+376)
++#define V4L2_CID_MPEG_VIDEO_H264_ASO			(V4L2_CID_CODEC_BASE+377)
++#define V4L2_CID_MPEG_VIDEO_H264_ASO_SLICE_ORDER	(V4L2_CID_CODEC_BASE+378)
++#define V4L2_CID_MPEG_VIDEO_H264_HIERARCHICAL_CODING		(V4L2_CID_CODEC_BASE+379)
++#define V4L2_CID_MPEG_VIDEO_H264_HIERARCHICAL_CODING_TYPE	(V4L2_CID_CODEC_BASE+380)
+ enum v4l2_mpeg_video_h264_hierarchical_coding_type {
+ 	V4L2_MPEG_VIDEO_H264_HIERARCHICAL_CODING_B	= 0,
+ 	V4L2_MPEG_VIDEO_H264_HIERARCHICAL_CODING_P	= 1,
+ };
+-#define V4L2_CID_MPEG_VIDEO_H264_HIERARCHICAL_CODING_LAYER	(V4L2_CID_MPEG_BASE+381)
+-#define V4L2_CID_MPEG_VIDEO_H264_HIERARCHICAL_CODING_LAYER_QP	(V4L2_CID_MPEG_BASE+382)
+-#define V4L2_CID_MPEG_VIDEO_H264_CONSTRAINED_INTRA_PREDICTION	(V4L2_CID_MPEG_BASE+383)
+-#define V4L2_CID_MPEG_VIDEO_H264_CHROMA_QP_INDEX_OFFSET		(V4L2_CID_MPEG_BASE+384)
+-#define V4L2_CID_MPEG_VIDEO_H264_I_FRAME_MIN_QP	(V4L2_CID_MPEG_BASE+385)
+-#define V4L2_CID_MPEG_VIDEO_H264_I_FRAME_MAX_QP	(V4L2_CID_MPEG_BASE+386)
+-#define V4L2_CID_MPEG_VIDEO_H264_P_FRAME_MIN_QP	(V4L2_CID_MPEG_BASE+387)
+-#define V4L2_CID_MPEG_VIDEO_H264_P_FRAME_MAX_QP	(V4L2_CID_MPEG_BASE+388)
+-#define V4L2_CID_MPEG_VIDEO_MPEG4_I_FRAME_QP	(V4L2_CID_MPEG_BASE+400)
+-#define V4L2_CID_MPEG_VIDEO_MPEG4_P_FRAME_QP	(V4L2_CID_MPEG_BASE+401)
+-#define V4L2_CID_MPEG_VIDEO_MPEG4_B_FRAME_QP	(V4L2_CID_MPEG_BASE+402)
+-#define V4L2_CID_MPEG_VIDEO_MPEG4_MIN_QP	(V4L2_CID_MPEG_BASE+403)
+-#define V4L2_CID_MPEG_VIDEO_MPEG4_MAX_QP	(V4L2_CID_MPEG_BASE+404)
+-#define V4L2_CID_MPEG_VIDEO_MPEG4_LEVEL		(V4L2_CID_MPEG_BASE+405)
++#define V4L2_CID_MPEG_VIDEO_H264_HIERARCHICAL_CODING_LAYER	(V4L2_CID_CODEC_BASE+381)
++#define V4L2_CID_MPEG_VIDEO_H264_HIERARCHICAL_CODING_LAYER_QP	(V4L2_CID_CODEC_BASE+382)
++#define V4L2_CID_MPEG_VIDEO_H264_CONSTRAINED_INTRA_PREDICTION	(V4L2_CID_CODEC_BASE+383)
++#define V4L2_CID_MPEG_VIDEO_H264_CHROMA_QP_INDEX_OFFSET		(V4L2_CID_CODEC_BASE+384)
++#define V4L2_CID_MPEG_VIDEO_H264_I_FRAME_MIN_QP	(V4L2_CID_CODEC_BASE+385)
++#define V4L2_CID_MPEG_VIDEO_H264_I_FRAME_MAX_QP	(V4L2_CID_CODEC_BASE+386)
++#define V4L2_CID_MPEG_VIDEO_H264_P_FRAME_MIN_QP	(V4L2_CID_CODEC_BASE+387)
++#define V4L2_CID_MPEG_VIDEO_H264_P_FRAME_MAX_QP	(V4L2_CID_CODEC_BASE+388)
++#define V4L2_CID_MPEG_VIDEO_MPEG4_I_FRAME_QP	(V4L2_CID_CODEC_BASE+400)
++#define V4L2_CID_MPEG_VIDEO_MPEG4_P_FRAME_QP	(V4L2_CID_CODEC_BASE+401)
++#define V4L2_CID_MPEG_VIDEO_MPEG4_B_FRAME_QP	(V4L2_CID_CODEC_BASE+402)
++#define V4L2_CID_MPEG_VIDEO_MPEG4_MIN_QP	(V4L2_CID_CODEC_BASE+403)
++#define V4L2_CID_MPEG_VIDEO_MPEG4_MAX_QP	(V4L2_CID_CODEC_BASE+404)
++#define V4L2_CID_MPEG_VIDEO_MPEG4_LEVEL		(V4L2_CID_CODEC_BASE+405)
+ enum v4l2_mpeg_video_mpeg4_level {
+ 	V4L2_MPEG_VIDEO_MPEG4_LEVEL_0	= 0,
+ 	V4L2_MPEG_VIDEO_MPEG4_LEVEL_0B	= 1,
+@@ -588,7 +589,7 @@ enum v4l2_mpeg_video_mpeg4_level {
+ 	V4L2_MPEG_VIDEO_MPEG4_LEVEL_4	= 6,
+ 	V4L2_MPEG_VIDEO_MPEG4_LEVEL_5	= 7,
+ };
+-#define V4L2_CID_MPEG_VIDEO_MPEG4_PROFILE	(V4L2_CID_MPEG_BASE+406)
++#define V4L2_CID_MPEG_VIDEO_MPEG4_PROFILE	(V4L2_CID_CODEC_BASE+406)
+ enum v4l2_mpeg_video_mpeg4_profile {
+ 	V4L2_MPEG_VIDEO_MPEG4_PROFILE_SIMPLE				= 0,
+ 	V4L2_MPEG_VIDEO_MPEG4_PROFILE_ADVANCED_SIMPLE			= 1,
+@@ -596,40 +597,40 @@ enum v4l2_mpeg_video_mpeg4_profile {
+ 	V4L2_MPEG_VIDEO_MPEG4_PROFILE_SIMPLE_SCALABLE			= 3,
+ 	V4L2_MPEG_VIDEO_MPEG4_PROFILE_ADVANCED_CODING_EFFICIENCY	= 4,
+ };
+-#define V4L2_CID_MPEG_VIDEO_MPEG4_QPEL		(V4L2_CID_MPEG_BASE+407)
++#define V4L2_CID_MPEG_VIDEO_MPEG4_QPEL		(V4L2_CID_CODEC_BASE+407)
+ 
+ /*  Control IDs for VP8 streams
+  *  Although VP8 is not part of MPEG we add these controls to the MPEG class
+  *  as that class is already handling other video compression standards
+  */
+-#define V4L2_CID_MPEG_VIDEO_VPX_NUM_PARTITIONS		(V4L2_CID_MPEG_BASE+500)
++#define V4L2_CID_MPEG_VIDEO_VPX_NUM_PARTITIONS		(V4L2_CID_CODEC_BASE+500)
+ enum v4l2_vp8_num_partitions {
+ 	V4L2_CID_MPEG_VIDEO_VPX_1_PARTITION	= 0,
+ 	V4L2_CID_MPEG_VIDEO_VPX_2_PARTITIONS	= 1,
+ 	V4L2_CID_MPEG_VIDEO_VPX_4_PARTITIONS	= 2,
+ 	V4L2_CID_MPEG_VIDEO_VPX_8_PARTITIONS	= 3,
+ };
+-#define V4L2_CID_MPEG_VIDEO_VPX_IMD_DISABLE_4X4		(V4L2_CID_MPEG_BASE+501)
+-#define V4L2_CID_MPEG_VIDEO_VPX_NUM_REF_FRAMES		(V4L2_CID_MPEG_BASE+502)
++#define V4L2_CID_MPEG_VIDEO_VPX_IMD_DISABLE_4X4		(V4L2_CID_CODEC_BASE+501)
++#define V4L2_CID_MPEG_VIDEO_VPX_NUM_REF_FRAMES		(V4L2_CID_CODEC_BASE+502)
+ enum v4l2_vp8_num_ref_frames {
+ 	V4L2_CID_MPEG_VIDEO_VPX_1_REF_FRAME	= 0,
+ 	V4L2_CID_MPEG_VIDEO_VPX_2_REF_FRAME	= 1,
+ 	V4L2_CID_MPEG_VIDEO_VPX_3_REF_FRAME	= 2,
+ };
+-#define V4L2_CID_MPEG_VIDEO_VPX_FILTER_LEVEL		(V4L2_CID_MPEG_BASE+503)
+-#define V4L2_CID_MPEG_VIDEO_VPX_FILTER_SHARPNESS	(V4L2_CID_MPEG_BASE+504)
+-#define V4L2_CID_MPEG_VIDEO_VPX_GOLDEN_FRAME_REF_PERIOD	(V4L2_CID_MPEG_BASE+505)
+-#define V4L2_CID_MPEG_VIDEO_VPX_GOLDEN_FRAME_SEL	(V4L2_CID_MPEG_BASE+506)
++#define V4L2_CID_MPEG_VIDEO_VPX_FILTER_LEVEL		(V4L2_CID_CODEC_BASE+503)
++#define V4L2_CID_MPEG_VIDEO_VPX_FILTER_SHARPNESS	(V4L2_CID_CODEC_BASE+504)
++#define V4L2_CID_MPEG_VIDEO_VPX_GOLDEN_FRAME_REF_PERIOD	(V4L2_CID_CODEC_BASE+505)
++#define V4L2_CID_MPEG_VIDEO_VPX_GOLDEN_FRAME_SEL	(V4L2_CID_CODEC_BASE+506)
+ enum v4l2_vp8_golden_frame_sel {
+ 	V4L2_CID_MPEG_VIDEO_VPX_GOLDEN_FRAME_USE_PREV		= 0,
+ 	V4L2_CID_MPEG_VIDEO_VPX_GOLDEN_FRAME_USE_REF_PERIOD	= 1,
+ };
+-#define V4L2_CID_MPEG_VIDEO_VPX_MIN_QP			(V4L2_CID_MPEG_BASE+507)
+-#define V4L2_CID_MPEG_VIDEO_VPX_MAX_QP			(V4L2_CID_MPEG_BASE+508)
+-#define V4L2_CID_MPEG_VIDEO_VPX_I_FRAME_QP		(V4L2_CID_MPEG_BASE+509)
+-#define V4L2_CID_MPEG_VIDEO_VPX_P_FRAME_QP		(V4L2_CID_MPEG_BASE+510)
++#define V4L2_CID_MPEG_VIDEO_VPX_MIN_QP			(V4L2_CID_CODEC_BASE+507)
++#define V4L2_CID_MPEG_VIDEO_VPX_MAX_QP			(V4L2_CID_CODEC_BASE+508)
++#define V4L2_CID_MPEG_VIDEO_VPX_I_FRAME_QP		(V4L2_CID_CODEC_BASE+509)
++#define V4L2_CID_MPEG_VIDEO_VPX_P_FRAME_QP		(V4L2_CID_CODEC_BASE+510)
+ 
+-#define V4L2_CID_MPEG_VIDEO_VP8_PROFILE			(V4L2_CID_MPEG_BASE+511)
++#define V4L2_CID_MPEG_VIDEO_VP8_PROFILE			(V4L2_CID_CODEC_BASE+511)
+ enum v4l2_mpeg_video_vp8_profile {
+ 	V4L2_MPEG_VIDEO_VP8_PROFILE_0				= 0,
+ 	V4L2_MPEG_VIDEO_VP8_PROFILE_1				= 1,
+@@ -638,14 +639,14 @@ enum v4l2_mpeg_video_vp8_profile {
+ };
+ /* Deprecated alias for compatibility reasons. */
+ #define V4L2_CID_MPEG_VIDEO_VPX_PROFILE	V4L2_CID_MPEG_VIDEO_VP8_PROFILE
+-#define V4L2_CID_MPEG_VIDEO_VP9_PROFILE			(V4L2_CID_MPEG_BASE+512)
++#define V4L2_CID_MPEG_VIDEO_VP9_PROFILE			(V4L2_CID_CODEC_BASE+512)
+ enum v4l2_mpeg_video_vp9_profile {
+ 	V4L2_MPEG_VIDEO_VP9_PROFILE_0				= 0,
+ 	V4L2_MPEG_VIDEO_VP9_PROFILE_1				= 1,
+ 	V4L2_MPEG_VIDEO_VP9_PROFILE_2				= 2,
+ 	V4L2_MPEG_VIDEO_VP9_PROFILE_3				= 3,
+ };
+-#define V4L2_CID_MPEG_VIDEO_VP9_LEVEL			(V4L2_CID_MPEG_BASE+513)
++#define V4L2_CID_MPEG_VIDEO_VP9_LEVEL			(V4L2_CID_CODEC_BASE+513)
+ enum v4l2_mpeg_video_vp9_level {
+ 	V4L2_MPEG_VIDEO_VP9_LEVEL_1_0	= 0,
+ 	V4L2_MPEG_VIDEO_VP9_LEVEL_1_1	= 1,
+@@ -665,32 +666,32 @@ enum v4l2_mpeg_video_vp9_level {
+ 
+ /* CIDs for HEVC encoding. */
+ 
+-#define V4L2_CID_MPEG_VIDEO_HEVC_MIN_QP		(V4L2_CID_MPEG_BASE + 600)
+-#define V4L2_CID_MPEG_VIDEO_HEVC_MAX_QP		(V4L2_CID_MPEG_BASE + 601)
+-#define V4L2_CID_MPEG_VIDEO_HEVC_I_FRAME_QP	(V4L2_CID_MPEG_BASE + 602)
+-#define V4L2_CID_MPEG_VIDEO_HEVC_P_FRAME_QP	(V4L2_CID_MPEG_BASE + 603)
+-#define V4L2_CID_MPEG_VIDEO_HEVC_B_FRAME_QP	(V4L2_CID_MPEG_BASE + 604)
+-#define V4L2_CID_MPEG_VIDEO_HEVC_HIER_QP	(V4L2_CID_MPEG_BASE + 605)
+-#define V4L2_CID_MPEG_VIDEO_HEVC_HIER_CODING_TYPE (V4L2_CID_MPEG_BASE + 606)
++#define V4L2_CID_MPEG_VIDEO_HEVC_MIN_QP		(V4L2_CID_CODEC_BASE + 600)
++#define V4L2_CID_MPEG_VIDEO_HEVC_MAX_QP		(V4L2_CID_CODEC_BASE + 601)
++#define V4L2_CID_MPEG_VIDEO_HEVC_I_FRAME_QP	(V4L2_CID_CODEC_BASE + 602)
++#define V4L2_CID_MPEG_VIDEO_HEVC_P_FRAME_QP	(V4L2_CID_CODEC_BASE + 603)
++#define V4L2_CID_MPEG_VIDEO_HEVC_B_FRAME_QP	(V4L2_CID_CODEC_BASE + 604)
++#define V4L2_CID_MPEG_VIDEO_HEVC_HIER_QP	(V4L2_CID_CODEC_BASE + 605)
++#define V4L2_CID_MPEG_VIDEO_HEVC_HIER_CODING_TYPE (V4L2_CID_CODEC_BASE + 606)
+ enum v4l2_mpeg_video_hevc_hier_coding_type {
+ 	V4L2_MPEG_VIDEO_HEVC_HIERARCHICAL_CODING_B	= 0,
+ 	V4L2_MPEG_VIDEO_HEVC_HIERARCHICAL_CODING_P	= 1,
+ };
+-#define V4L2_CID_MPEG_VIDEO_HEVC_HIER_CODING_LAYER	(V4L2_CID_MPEG_BASE + 607)
+-#define V4L2_CID_MPEG_VIDEO_HEVC_HIER_CODING_L0_QP	(V4L2_CID_MPEG_BASE + 608)
+-#define V4L2_CID_MPEG_VIDEO_HEVC_HIER_CODING_L1_QP	(V4L2_CID_MPEG_BASE + 609)
+-#define V4L2_CID_MPEG_VIDEO_HEVC_HIER_CODING_L2_QP	(V4L2_CID_MPEG_BASE + 610)
+-#define V4L2_CID_MPEG_VIDEO_HEVC_HIER_CODING_L3_QP	(V4L2_CID_MPEG_BASE + 611)
+-#define V4L2_CID_MPEG_VIDEO_HEVC_HIER_CODING_L4_QP	(V4L2_CID_MPEG_BASE + 612)
+-#define V4L2_CID_MPEG_VIDEO_HEVC_HIER_CODING_L5_QP	(V4L2_CID_MPEG_BASE + 613)
+-#define V4L2_CID_MPEG_VIDEO_HEVC_HIER_CODING_L6_QP	(V4L2_CID_MPEG_BASE + 614)
+-#define V4L2_CID_MPEG_VIDEO_HEVC_PROFILE	(V4L2_CID_MPEG_BASE + 615)
++#define V4L2_CID_MPEG_VIDEO_HEVC_HIER_CODING_LAYER	(V4L2_CID_CODEC_BASE + 607)
++#define V4L2_CID_MPEG_VIDEO_HEVC_HIER_CODING_L0_QP	(V4L2_CID_CODEC_BASE + 608)
++#define V4L2_CID_MPEG_VIDEO_HEVC_HIER_CODING_L1_QP	(V4L2_CID_CODEC_BASE + 609)
++#define V4L2_CID_MPEG_VIDEO_HEVC_HIER_CODING_L2_QP	(V4L2_CID_CODEC_BASE + 610)
++#define V4L2_CID_MPEG_VIDEO_HEVC_HIER_CODING_L3_QP	(V4L2_CID_CODEC_BASE + 611)
++#define V4L2_CID_MPEG_VIDEO_HEVC_HIER_CODING_L4_QP	(V4L2_CID_CODEC_BASE + 612)
++#define V4L2_CID_MPEG_VIDEO_HEVC_HIER_CODING_L5_QP	(V4L2_CID_CODEC_BASE + 613)
++#define V4L2_CID_MPEG_VIDEO_HEVC_HIER_CODING_L6_QP	(V4L2_CID_CODEC_BASE + 614)
++#define V4L2_CID_MPEG_VIDEO_HEVC_PROFILE	(V4L2_CID_CODEC_BASE + 615)
+ enum v4l2_mpeg_video_hevc_profile {
+ 	V4L2_MPEG_VIDEO_HEVC_PROFILE_MAIN = 0,
+ 	V4L2_MPEG_VIDEO_HEVC_PROFILE_MAIN_STILL_PICTURE = 1,
+ 	V4L2_MPEG_VIDEO_HEVC_PROFILE_MAIN_10 = 2,
+ };
+-#define V4L2_CID_MPEG_VIDEO_HEVC_LEVEL		(V4L2_CID_MPEG_BASE + 616)
++#define V4L2_CID_MPEG_VIDEO_HEVC_LEVEL		(V4L2_CID_CODEC_BASE + 616)
+ enum v4l2_mpeg_video_hevc_level {
+ 	V4L2_MPEG_VIDEO_HEVC_LEVEL_1	= 0,
+ 	V4L2_MPEG_VIDEO_HEVC_LEVEL_2	= 1,
+@@ -706,56 +707,56 @@ enum v4l2_mpeg_video_hevc_level {
+ 	V4L2_MPEG_VIDEO_HEVC_LEVEL_6_1	= 11,
+ 	V4L2_MPEG_VIDEO_HEVC_LEVEL_6_2	= 12,
+ };
+-#define V4L2_CID_MPEG_VIDEO_HEVC_FRAME_RATE_RESOLUTION	(V4L2_CID_MPEG_BASE + 617)
+-#define V4L2_CID_MPEG_VIDEO_HEVC_TIER			(V4L2_CID_MPEG_BASE + 618)
++#define V4L2_CID_MPEG_VIDEO_HEVC_FRAME_RATE_RESOLUTION	(V4L2_CID_CODEC_BASE + 617)
++#define V4L2_CID_MPEG_VIDEO_HEVC_TIER			(V4L2_CID_CODEC_BASE + 618)
+ enum v4l2_mpeg_video_hevc_tier {
+ 	V4L2_MPEG_VIDEO_HEVC_TIER_MAIN = 0,
+ 	V4L2_MPEG_VIDEO_HEVC_TIER_HIGH = 1,
+ };
+-#define V4L2_CID_MPEG_VIDEO_HEVC_MAX_PARTITION_DEPTH	(V4L2_CID_MPEG_BASE + 619)
+-#define V4L2_CID_MPEG_VIDEO_HEVC_LOOP_FILTER_MODE	(V4L2_CID_MPEG_BASE + 620)
++#define V4L2_CID_MPEG_VIDEO_HEVC_MAX_PARTITION_DEPTH	(V4L2_CID_CODEC_BASE + 619)
++#define V4L2_CID_MPEG_VIDEO_HEVC_LOOP_FILTER_MODE	(V4L2_CID_CODEC_BASE + 620)
+ enum v4l2_cid_mpeg_video_hevc_loop_filter_mode {
+ 	V4L2_MPEG_VIDEO_HEVC_LOOP_FILTER_MODE_DISABLED			 = 0,
+ 	V4L2_MPEG_VIDEO_HEVC_LOOP_FILTER_MODE_ENABLED			 = 1,
+ 	V4L2_MPEG_VIDEO_HEVC_LOOP_FILTER_MODE_DISABLED_AT_SLICE_BOUNDARY = 2,
+ };
+-#define V4L2_CID_MPEG_VIDEO_HEVC_LF_BETA_OFFSET_DIV2	(V4L2_CID_MPEG_BASE + 621)
+-#define V4L2_CID_MPEG_VIDEO_HEVC_LF_TC_OFFSET_DIV2	(V4L2_CID_MPEG_BASE + 622)
+-#define V4L2_CID_MPEG_VIDEO_HEVC_REFRESH_TYPE		(V4L2_CID_MPEG_BASE + 623)
++#define V4L2_CID_MPEG_VIDEO_HEVC_LF_BETA_OFFSET_DIV2	(V4L2_CID_CODEC_BASE + 621)
++#define V4L2_CID_MPEG_VIDEO_HEVC_LF_TC_OFFSET_DIV2	(V4L2_CID_CODEC_BASE + 622)
++#define V4L2_CID_MPEG_VIDEO_HEVC_REFRESH_TYPE		(V4L2_CID_CODEC_BASE + 623)
+ enum v4l2_cid_mpeg_video_hevc_refresh_type {
+ 	V4L2_MPEG_VIDEO_HEVC_REFRESH_NONE		= 0,
+ 	V4L2_MPEG_VIDEO_HEVC_REFRESH_CRA		= 1,
+ 	V4L2_MPEG_VIDEO_HEVC_REFRESH_IDR		= 2,
+ };
+-#define V4L2_CID_MPEG_VIDEO_HEVC_REFRESH_PERIOD		(V4L2_CID_MPEG_BASE + 624)
+-#define V4L2_CID_MPEG_VIDEO_HEVC_LOSSLESS_CU		(V4L2_CID_MPEG_BASE + 625)
+-#define V4L2_CID_MPEG_VIDEO_HEVC_CONST_INTRA_PRED	(V4L2_CID_MPEG_BASE + 626)
+-#define V4L2_CID_MPEG_VIDEO_HEVC_WAVEFRONT		(V4L2_CID_MPEG_BASE + 627)
+-#define V4L2_CID_MPEG_VIDEO_HEVC_GENERAL_PB		(V4L2_CID_MPEG_BASE + 628)
+-#define V4L2_CID_MPEG_VIDEO_HEVC_TEMPORAL_ID		(V4L2_CID_MPEG_BASE + 629)
+-#define V4L2_CID_MPEG_VIDEO_HEVC_STRONG_SMOOTHING	(V4L2_CID_MPEG_BASE + 630)
+-#define V4L2_CID_MPEG_VIDEO_HEVC_MAX_NUM_MERGE_MV_MINUS1	(V4L2_CID_MPEG_BASE + 631)
+-#define V4L2_CID_MPEG_VIDEO_HEVC_INTRA_PU_SPLIT		(V4L2_CID_MPEG_BASE + 632)
+-#define V4L2_CID_MPEG_VIDEO_HEVC_TMV_PREDICTION		(V4L2_CID_MPEG_BASE + 633)
+-#define V4L2_CID_MPEG_VIDEO_HEVC_WITHOUT_STARTCODE	(V4L2_CID_MPEG_BASE + 634)
+-#define V4L2_CID_MPEG_VIDEO_HEVC_SIZE_OF_LENGTH_FIELD	(V4L2_CID_MPEG_BASE + 635)
++#define V4L2_CID_MPEG_VIDEO_HEVC_REFRESH_PERIOD		(V4L2_CID_CODEC_BASE + 624)
++#define V4L2_CID_MPEG_VIDEO_HEVC_LOSSLESS_CU		(V4L2_CID_CODEC_BASE + 625)
++#define V4L2_CID_MPEG_VIDEO_HEVC_CONST_INTRA_PRED	(V4L2_CID_CODEC_BASE + 626)
++#define V4L2_CID_MPEG_VIDEO_HEVC_WAVEFRONT		(V4L2_CID_CODEC_BASE + 627)
++#define V4L2_CID_MPEG_VIDEO_HEVC_GENERAL_PB		(V4L2_CID_CODEC_BASE + 628)
++#define V4L2_CID_MPEG_VIDEO_HEVC_TEMPORAL_ID		(V4L2_CID_CODEC_BASE + 629)
++#define V4L2_CID_MPEG_VIDEO_HEVC_STRONG_SMOOTHING	(V4L2_CID_CODEC_BASE + 630)
++#define V4L2_CID_MPEG_VIDEO_HEVC_MAX_NUM_MERGE_MV_MINUS1	(V4L2_CID_CODEC_BASE + 631)
++#define V4L2_CID_MPEG_VIDEO_HEVC_INTRA_PU_SPLIT		(V4L2_CID_CODEC_BASE + 632)
++#define V4L2_CID_MPEG_VIDEO_HEVC_TMV_PREDICTION		(V4L2_CID_CODEC_BASE + 633)
++#define V4L2_CID_MPEG_VIDEO_HEVC_WITHOUT_STARTCODE	(V4L2_CID_CODEC_BASE + 634)
++#define V4L2_CID_MPEG_VIDEO_HEVC_SIZE_OF_LENGTH_FIELD	(V4L2_CID_CODEC_BASE + 635)
+ enum v4l2_cid_mpeg_video_hevc_size_of_length_field {
+ 	V4L2_MPEG_VIDEO_HEVC_SIZE_0		= 0,
+ 	V4L2_MPEG_VIDEO_HEVC_SIZE_1		= 1,
+ 	V4L2_MPEG_VIDEO_HEVC_SIZE_2		= 2,
+ 	V4L2_MPEG_VIDEO_HEVC_SIZE_4		= 3,
+ };
+-#define V4L2_CID_MPEG_VIDEO_HEVC_HIER_CODING_L0_BR	(V4L2_CID_MPEG_BASE + 636)
+-#define V4L2_CID_MPEG_VIDEO_HEVC_HIER_CODING_L1_BR	(V4L2_CID_MPEG_BASE + 637)
+-#define V4L2_CID_MPEG_VIDEO_HEVC_HIER_CODING_L2_BR	(V4L2_CID_MPEG_BASE + 638)
+-#define V4L2_CID_MPEG_VIDEO_HEVC_HIER_CODING_L3_BR	(V4L2_CID_MPEG_BASE + 639)
+-#define V4L2_CID_MPEG_VIDEO_HEVC_HIER_CODING_L4_BR	(V4L2_CID_MPEG_BASE + 640)
+-#define V4L2_CID_MPEG_VIDEO_HEVC_HIER_CODING_L5_BR	(V4L2_CID_MPEG_BASE + 641)
+-#define V4L2_CID_MPEG_VIDEO_HEVC_HIER_CODING_L6_BR	(V4L2_CID_MPEG_BASE + 642)
+-#define V4L2_CID_MPEG_VIDEO_REF_NUMBER_FOR_PFRAMES	(V4L2_CID_MPEG_BASE + 643)
+-#define V4L2_CID_MPEG_VIDEO_PREPEND_SPSPPS_TO_IDR	(V4L2_CID_MPEG_BASE + 644)
+-#define V4L2_CID_MPEG_VIDEO_CONSTANT_QUALITY		(V4L2_CID_MPEG_BASE + 645)
+-#define V4L2_CID_MPEG_VIDEO_FRAME_SKIP_MODE		(V4L2_CID_MPEG_BASE + 646)
++#define V4L2_CID_MPEG_VIDEO_HEVC_HIER_CODING_L0_BR	(V4L2_CID_CODEC_BASE + 636)
++#define V4L2_CID_MPEG_VIDEO_HEVC_HIER_CODING_L1_BR	(V4L2_CID_CODEC_BASE + 637)
++#define V4L2_CID_MPEG_VIDEO_HEVC_HIER_CODING_L2_BR	(V4L2_CID_CODEC_BASE + 638)
++#define V4L2_CID_MPEG_VIDEO_HEVC_HIER_CODING_L3_BR	(V4L2_CID_CODEC_BASE + 639)
++#define V4L2_CID_MPEG_VIDEO_HEVC_HIER_CODING_L4_BR	(V4L2_CID_CODEC_BASE + 640)
++#define V4L2_CID_MPEG_VIDEO_HEVC_HIER_CODING_L5_BR	(V4L2_CID_CODEC_BASE + 641)
++#define V4L2_CID_MPEG_VIDEO_HEVC_HIER_CODING_L6_BR	(V4L2_CID_CODEC_BASE + 642)
++#define V4L2_CID_MPEG_VIDEO_REF_NUMBER_FOR_PFRAMES	(V4L2_CID_CODEC_BASE + 643)
++#define V4L2_CID_MPEG_VIDEO_PREPEND_SPSPPS_TO_IDR	(V4L2_CID_CODEC_BASE + 644)
++#define V4L2_CID_MPEG_VIDEO_CONSTANT_QUALITY		(V4L2_CID_CODEC_BASE + 645)
++#define V4L2_CID_MPEG_VIDEO_FRAME_SKIP_MODE		(V4L2_CID_CODEC_BASE + 646)
+ enum v4l2_mpeg_video_frame_skip_mode {
+ 	V4L2_MPEG_VIDEO_FRAME_SKIP_MODE_DISABLED	= 0,
+ 	V4L2_MPEG_VIDEO_FRAME_SKIP_MODE_LEVEL_LIMIT	= 1,
+@@ -763,14 +764,14 @@ enum v4l2_mpeg_video_frame_skip_mode {
+ };
+ 
+ /*  MPEG-class control IDs specific to the CX2341x driver as defined by V4L2 */
+-#define V4L2_CID_MPEG_CX2341X_BASE				(V4L2_CTRL_CLASS_MPEG | 0x1000)
+-#define V4L2_CID_MPEG_CX2341X_VIDEO_SPATIAL_FILTER_MODE		(V4L2_CID_MPEG_CX2341X_BASE+0)
++#define V4L2_CID_CODEC_CX2341X_BASE				(V4L2_CTRL_CLASS_CODEC | 0x1000)
++#define V4L2_CID_MPEG_CX2341X_VIDEO_SPATIAL_FILTER_MODE		(V4L2_CID_CODEC_CX2341X_BASE+0)
+ enum v4l2_mpeg_cx2341x_video_spatial_filter_mode {
+ 	V4L2_MPEG_CX2341X_VIDEO_SPATIAL_FILTER_MODE_MANUAL = 0,
+ 	V4L2_MPEG_CX2341X_VIDEO_SPATIAL_FILTER_MODE_AUTO   = 1,
+ };
+-#define V4L2_CID_MPEG_CX2341X_VIDEO_SPATIAL_FILTER		(V4L2_CID_MPEG_CX2341X_BASE+1)
+-#define V4L2_CID_MPEG_CX2341X_VIDEO_LUMA_SPATIAL_FILTER_TYPE	(V4L2_CID_MPEG_CX2341X_BASE+2)
++#define V4L2_CID_MPEG_CX2341X_VIDEO_SPATIAL_FILTER		(V4L2_CID_CODEC_CX2341X_BASE+1)
++#define V4L2_CID_MPEG_CX2341X_VIDEO_LUMA_SPATIAL_FILTER_TYPE	(V4L2_CID_CODEC_CX2341X_BASE+2)
+ enum v4l2_mpeg_cx2341x_video_luma_spatial_filter_type {
+ 	V4L2_MPEG_CX2341X_VIDEO_LUMA_SPATIAL_FILTER_TYPE_OFF                  = 0,
+ 	V4L2_MPEG_CX2341X_VIDEO_LUMA_SPATIAL_FILTER_TYPE_1D_HOR               = 1,
+@@ -778,18 +779,18 @@ enum v4l2_mpeg_cx2341x_video_luma_spatial_filter_type {
+ 	V4L2_MPEG_CX2341X_VIDEO_LUMA_SPATIAL_FILTER_TYPE_2D_HV_SEPARABLE      = 3,
+ 	V4L2_MPEG_CX2341X_VIDEO_LUMA_SPATIAL_FILTER_TYPE_2D_SYM_NON_SEPARABLE = 4,
+ };
+-#define V4L2_CID_MPEG_CX2341X_VIDEO_CHROMA_SPATIAL_FILTER_TYPE	(V4L2_CID_MPEG_CX2341X_BASE+3)
++#define V4L2_CID_MPEG_CX2341X_VIDEO_CHROMA_SPATIAL_FILTER_TYPE	(V4L2_CID_CODEC_CX2341X_BASE+3)
+ enum v4l2_mpeg_cx2341x_video_chroma_spatial_filter_type {
+ 	V4L2_MPEG_CX2341X_VIDEO_CHROMA_SPATIAL_FILTER_TYPE_OFF    = 0,
+ 	V4L2_MPEG_CX2341X_VIDEO_CHROMA_SPATIAL_FILTER_TYPE_1D_HOR = 1,
+ };
+-#define V4L2_CID_MPEG_CX2341X_VIDEO_TEMPORAL_FILTER_MODE	(V4L2_CID_MPEG_CX2341X_BASE+4)
++#define V4L2_CID_MPEG_CX2341X_VIDEO_TEMPORAL_FILTER_MODE	(V4L2_CID_CODEC_CX2341X_BASE+4)
+ enum v4l2_mpeg_cx2341x_video_temporal_filter_mode {
+ 	V4L2_MPEG_CX2341X_VIDEO_TEMPORAL_FILTER_MODE_MANUAL = 0,
+ 	V4L2_MPEG_CX2341X_VIDEO_TEMPORAL_FILTER_MODE_AUTO   = 1,
+ };
+-#define V4L2_CID_MPEG_CX2341X_VIDEO_TEMPORAL_FILTER		(V4L2_CID_MPEG_CX2341X_BASE+5)
+-#define V4L2_CID_MPEG_CX2341X_VIDEO_MEDIAN_FILTER_TYPE		(V4L2_CID_MPEG_CX2341X_BASE+6)
++#define V4L2_CID_MPEG_CX2341X_VIDEO_TEMPORAL_FILTER		(V4L2_CID_CODEC_CX2341X_BASE+5)
++#define V4L2_CID_MPEG_CX2341X_VIDEO_MEDIAN_FILTER_TYPE		(V4L2_CID_CODEC_CX2341X_BASE+6)
+ enum v4l2_mpeg_cx2341x_video_median_filter_type {
+ 	V4L2_MPEG_CX2341X_VIDEO_MEDIAN_FILTER_TYPE_OFF      = 0,
+ 	V4L2_MPEG_CX2341X_VIDEO_MEDIAN_FILTER_TYPE_HOR      = 1,
+@@ -797,38 +798,38 @@ enum v4l2_mpeg_cx2341x_video_median_filter_type {
+ 	V4L2_MPEG_CX2341X_VIDEO_MEDIAN_FILTER_TYPE_HOR_VERT = 3,
+ 	V4L2_MPEG_CX2341X_VIDEO_MEDIAN_FILTER_TYPE_DIAG     = 4,
+ };
+-#define V4L2_CID_MPEG_CX2341X_VIDEO_LUMA_MEDIAN_FILTER_BOTTOM	(V4L2_CID_MPEG_CX2341X_BASE+7)
+-#define V4L2_CID_MPEG_CX2341X_VIDEO_LUMA_MEDIAN_FILTER_TOP	(V4L2_CID_MPEG_CX2341X_BASE+8)
+-#define V4L2_CID_MPEG_CX2341X_VIDEO_CHROMA_MEDIAN_FILTER_BOTTOM	(V4L2_CID_MPEG_CX2341X_BASE+9)
+-#define V4L2_CID_MPEG_CX2341X_VIDEO_CHROMA_MEDIAN_FILTER_TOP	(V4L2_CID_MPEG_CX2341X_BASE+10)
+-#define V4L2_CID_MPEG_CX2341X_STREAM_INSERT_NAV_PACKETS		(V4L2_CID_MPEG_CX2341X_BASE+11)
++#define V4L2_CID_MPEG_CX2341X_VIDEO_LUMA_MEDIAN_FILTER_BOTTOM	(V4L2_CID_CODEC_CX2341X_BASE+7)
++#define V4L2_CID_MPEG_CX2341X_VIDEO_LUMA_MEDIAN_FILTER_TOP	(V4L2_CID_CODEC_CX2341X_BASE+8)
++#define V4L2_CID_MPEG_CX2341X_VIDEO_CHROMA_MEDIAN_FILTER_BOTTOM	(V4L2_CID_CODEC_CX2341X_BASE+9)
++#define V4L2_CID_MPEG_CX2341X_VIDEO_CHROMA_MEDIAN_FILTER_TOP	(V4L2_CID_CODEC_CX2341X_BASE+10)
++#define V4L2_CID_MPEG_CX2341X_STREAM_INSERT_NAV_PACKETS		(V4L2_CID_CODEC_CX2341X_BASE+11)
+ 
+ /*  MPEG-class control IDs specific to the Samsung MFC 5.1 driver as defined by V4L2 */
+-#define V4L2_CID_MPEG_MFC51_BASE				(V4L2_CTRL_CLASS_MPEG | 0x1100)
++#define V4L2_CID_CODEC_MFC51_BASE				(V4L2_CTRL_CLASS_CODEC | 0x1100)
+ 
+-#define V4L2_CID_MPEG_MFC51_VIDEO_DECODER_H264_DISPLAY_DELAY		(V4L2_CID_MPEG_MFC51_BASE+0)
+-#define V4L2_CID_MPEG_MFC51_VIDEO_DECODER_H264_DISPLAY_DELAY_ENABLE	(V4L2_CID_MPEG_MFC51_BASE+1)
+-#define V4L2_CID_MPEG_MFC51_VIDEO_FRAME_SKIP_MODE			(V4L2_CID_MPEG_MFC51_BASE+2)
++#define V4L2_CID_MPEG_MFC51_VIDEO_DECODER_H264_DISPLAY_DELAY		(V4L2_CID_CODEC_MFC51_BASE+0)
++#define V4L2_CID_MPEG_MFC51_VIDEO_DECODER_H264_DISPLAY_DELAY_ENABLE	(V4L2_CID_CODEC_MFC51_BASE+1)
++#define V4L2_CID_MPEG_MFC51_VIDEO_FRAME_SKIP_MODE			(V4L2_CID_CODEC_MFC51_BASE+2)
+ enum v4l2_mpeg_mfc51_video_frame_skip_mode {
+ 	V4L2_MPEG_MFC51_VIDEO_FRAME_SKIP_MODE_DISABLED		= 0,
+ 	V4L2_MPEG_MFC51_VIDEO_FRAME_SKIP_MODE_LEVEL_LIMIT	= 1,
+ 	V4L2_MPEG_MFC51_VIDEO_FRAME_SKIP_MODE_BUF_LIMIT		= 2,
+ };
+-#define V4L2_CID_MPEG_MFC51_VIDEO_FORCE_FRAME_TYPE			(V4L2_CID_MPEG_MFC51_BASE+3)
++#define V4L2_CID_MPEG_MFC51_VIDEO_FORCE_FRAME_TYPE			(V4L2_CID_CODEC_MFC51_BASE+3)
+ enum v4l2_mpeg_mfc51_video_force_frame_type {
+ 	V4L2_MPEG_MFC51_VIDEO_FORCE_FRAME_TYPE_DISABLED		= 0,
+ 	V4L2_MPEG_MFC51_VIDEO_FORCE_FRAME_TYPE_I_FRAME		= 1,
+ 	V4L2_MPEG_MFC51_VIDEO_FORCE_FRAME_TYPE_NOT_CODED	= 2,
+ };
+-#define V4L2_CID_MPEG_MFC51_VIDEO_PADDING				(V4L2_CID_MPEG_MFC51_BASE+4)
+-#define V4L2_CID_MPEG_MFC51_VIDEO_PADDING_YUV				(V4L2_CID_MPEG_MFC51_BASE+5)
+-#define V4L2_CID_MPEG_MFC51_VIDEO_RC_FIXED_TARGET_BIT			(V4L2_CID_MPEG_MFC51_BASE+6)
+-#define V4L2_CID_MPEG_MFC51_VIDEO_RC_REACTION_COEFF			(V4L2_CID_MPEG_MFC51_BASE+7)
+-#define V4L2_CID_MPEG_MFC51_VIDEO_H264_ADAPTIVE_RC_ACTIVITY		(V4L2_CID_MPEG_MFC51_BASE+50)
+-#define V4L2_CID_MPEG_MFC51_VIDEO_H264_ADAPTIVE_RC_DARK			(V4L2_CID_MPEG_MFC51_BASE+51)
+-#define V4L2_CID_MPEG_MFC51_VIDEO_H264_ADAPTIVE_RC_SMOOTH		(V4L2_CID_MPEG_MFC51_BASE+52)
+-#define V4L2_CID_MPEG_MFC51_VIDEO_H264_ADAPTIVE_RC_STATIC		(V4L2_CID_MPEG_MFC51_BASE+53)
+-#define V4L2_CID_MPEG_MFC51_VIDEO_H264_NUM_REF_PIC_FOR_P		(V4L2_CID_MPEG_MFC51_BASE+54)
++#define V4L2_CID_MPEG_MFC51_VIDEO_PADDING				(V4L2_CID_CODEC_MFC51_BASE+4)
++#define V4L2_CID_MPEG_MFC51_VIDEO_PADDING_YUV				(V4L2_CID_CODEC_MFC51_BASE+5)
++#define V4L2_CID_MPEG_MFC51_VIDEO_RC_FIXED_TARGET_BIT			(V4L2_CID_CODEC_MFC51_BASE+6)
++#define V4L2_CID_MPEG_MFC51_VIDEO_RC_REACTION_COEFF			(V4L2_CID_CODEC_MFC51_BASE+7)
++#define V4L2_CID_MPEG_MFC51_VIDEO_H264_ADAPTIVE_RC_ACTIVITY		(V4L2_CID_CODEC_MFC51_BASE+50)
++#define V4L2_CID_MPEG_MFC51_VIDEO_H264_ADAPTIVE_RC_DARK			(V4L2_CID_CODEC_MFC51_BASE+51)
++#define V4L2_CID_MPEG_MFC51_VIDEO_H264_ADAPTIVE_RC_SMOOTH		(V4L2_CID_CODEC_MFC51_BASE+52)
++#define V4L2_CID_MPEG_MFC51_VIDEO_H264_ADAPTIVE_RC_STATIC		(V4L2_CID_CODEC_MFC51_BASE+53)
++#define V4L2_CID_MPEG_MFC51_VIDEO_H264_NUM_REF_PIC_FOR_P		(V4L2_CID_CODEC_MFC51_BASE+54)
+ 
+ /*  Camera class control IDs */
+ 
+@@ -1157,4 +1158,398 @@ enum v4l2_detect_md_mode {
  #define V4L2_CID_DETECT_MD_THRESHOLD_GRID	(V4L2_CID_DETECT_CLASS_BASE + 3)
  #define V4L2_CID_DETECT_MD_REGION_GRID		(V4L2_CID_DETECT_CLASS_BASE + 4)
  
++/* MPEG-compression definitions kept for backwards compatibility */
++#ifndef __KERNEL__
++#define V4L2_CTRL_CLASS_MPEG            V4L2_CTRL_CLASS_CODEC
++#define V4L2_CID_MPEG_CLASS             V4L2_CID_CODEC_CLASS
++#define V4L2_CID_MPEG_BASE              V4L2_CID_CODEC_BASE
++#define V4L2_CID_MPEG_CX2341X_BASE      V4L2_CID_CODEC_CX2341X_BASE
++#define V4L2_CID_MPEG_MFC51_BASE        V4L2_CID_CODEC_MFC51_BASE
++#endif
 +
 +/*  Stateless CODECs controls */
 +#define V4L2_CID_CODEC_STATELESS_BASE          (V4L2_CTRL_CLASS_CODEC_STATELESS | 0x900)
@@ -14847,7 +18723,7 @@ index 468fb1915792057d073cc86ac207e51fdd5c3dc5..ed8988d1f871f666f65ff885dc887cf0
 +
  #endif
 diff --git a/include/uapi/linux/videodev2.h b/include/uapi/linux/videodev2.h
-index 8c1cf5ec1e18e68a0f7b9093da5df4224d1864bc..b40f6261d29f60298182d74c9043ea7e4ecde1c8 100644
+index 8c1cf5ec1e18e68a0f7b9093da5df4224d1864bc..87dbb22e3d52f33275c215f903052369ead8a222 100644
 --- a/include/uapi/linux/videodev2.h
 +++ b/include/uapi/linux/videodev2.h
 @@ -696,6 +696,7 @@ struct v4l2_pix_format {
@@ -14866,7 +18742,20 @@ index 8c1cf5ec1e18e68a0f7b9093da5df4224d1864bc..b40f6261d29f60298182d74c9043ea7e
  #define V4L2_PIX_FMT_INZI     v4l2_fourcc('I', 'N', 'Z', 'I') /* Intel Planar Greyscale 10-bit and Depth 16-bit */
  #define V4L2_PIX_FMT_SUNXI_TILED_NV12 v4l2_fourcc('S', 'T', '1', '2') /* Sunxi Tiled NV12 Format */
  #define V4L2_PIX_FMT_CNF4     v4l2_fourcc('C', 'N', 'F', '4') /* Intel 4-bit packed depth confidence information */
-@@ -1732,6 +1734,13 @@ enum v4l2_ctrl_type {
+@@ -1687,6 +1689,12 @@ struct v4l2_ext_control {
+ 		__u8 __user *p_u8;
+ 		__u16 __user *p_u16;
+ 		__u32 __user *p_u32;
++		struct v4l2_ctrl_h264_sps __user *p_h264_sps;
++		struct v4l2_ctrl_h264_pps *p_h264_pps;
++		struct v4l2_ctrl_h264_scaling_matrix __user *p_h264_scaling_matrix;
++		struct v4l2_ctrl_h264_pred_weights __user *p_h264_pred_weights;
++		struct v4l2_ctrl_h264_slice_params __user *p_h264_slice_params;
++		struct v4l2_ctrl_h264_decode_params __user *p_h264_decode_params;
+ 		void __user *ptr;
+ 	};
+ } __attribute__ ((packed));
+@@ -1732,6 +1740,13 @@ enum v4l2_ctrl_type {
  	V4L2_CTRL_TYPE_U8	     = 0x0100,
  	V4L2_CTRL_TYPE_U16	     = 0x0101,
  	V4L2_CTRL_TYPE_U32	     = 0x0102,
