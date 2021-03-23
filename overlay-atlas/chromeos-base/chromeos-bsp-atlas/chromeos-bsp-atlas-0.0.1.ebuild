@@ -14,7 +14,7 @@ dependencies or portage actions."
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="-* amd64 x86"
-IUSE="atlas-kvm atlas-blueznext"
+IUSE="atlas-kvm atlas-blueznext atlas-kernelnext"
 S="${WORKDIR}"
 
 # Add dependencies on other ebuilds from within this board overlay
@@ -31,6 +31,8 @@ src_install() {
 		doappid "{ED3D806C-3D7A-46E2-9604-13382FC1D55B}" "CHROMEBOOK"
 	elif use atlas-blueznext; then
 		doappid "{31A53FCC-241C-4439-8735-0A89AD9FB7A5}" "CHROMEBOOK"
+	elif use atlas-kernelnext; then
+		doappid "{DA55FC40-8B29-11EB-A477-BB6BC4E5094A}" "CHROMEBOOK"
 	else
 		doappid "{DB5199C7-358B-4E1F-B4F6-AF6D2DD01A38}" "CHROMEBOOK"
 	fi
