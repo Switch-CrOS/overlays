@@ -1,1 +1,0 @@
-chromeos-touch-config-nyan-0.0.2.ebuild

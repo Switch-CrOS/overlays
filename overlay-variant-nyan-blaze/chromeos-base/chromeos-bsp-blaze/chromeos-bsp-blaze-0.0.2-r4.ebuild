@@ -1,1 +1,0 @@
-chromeos-bsp-blaze-0.0.2.ebuild
