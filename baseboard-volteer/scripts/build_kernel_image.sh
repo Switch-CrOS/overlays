@@ -30,4 +30,8 @@ modify_kernel_command_line() {
 
   # Disable xDomain protocol on the thunderbolt driver
   echo "xdomain=0" >> "$1"
+
+  # Ensure internal devices are also in their own DMA domain,
+  # isolated from other devices, just like external devices.
+  echo "intel_iommu=on" >> "$1"
 }
