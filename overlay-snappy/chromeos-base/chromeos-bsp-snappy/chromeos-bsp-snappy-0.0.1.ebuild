@@ -11,7 +11,7 @@ or portage actions."
 LICENSE="BSD-Google"
 SLOT="0" # TODO (b/185804190): convert this to cros-workon
 KEYWORDS="-* amd64 x86"
-IUSE="unibuild"
+IUSE="unibuild snappy-kernelnext"
 S="${WORKDIR}"
 
 # Add dependencies on other ebuilds from within this board overlay
@@ -21,7 +21,11 @@ RDEPEND="
 DEPEND="${RDEPEND}"
 
 src_install() {
-	doappid "{F8834CDD-B93C-4C2A-BEB9-5432EA99430D}" "CHROMEBOOK"
+	if use snappy-kernelnext; then
+		doappid "{6C77510C-923F-11EB-B7C0-4323D910C0BE}" "CHROMEBOOK"
+	else
+		doappid "{F8834CDD-B93C-4C2A-BEB9-5432EA99430D}" "CHROMEBOOK"
+	fi
 
 	exeinto /usr/share/cros
 	doexe "${FILESDIR}"/oemdata.sh
