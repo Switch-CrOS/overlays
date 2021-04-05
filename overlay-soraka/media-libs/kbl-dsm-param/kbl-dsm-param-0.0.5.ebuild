@@ -4,9 +4,9 @@
 EAPI=5
 
 DESCRIPTION="kbl tuning DSM Param"
-SRC_URI="gs://chromeos-localmirror/distfiles/kbl-dsm-param-soraka-${PVR}.tbz2"
+SRC_URI="gs://chromeos-localmirror/distfiles/kbl-dsm-param-soraka-${PV}.tbz2"
 
-LICENSE="LICENCE.adsp_sst"		#FIXME: Need DSM license
+LICENSE="LICENSE.dsm"
 SLOT="0"
 KEYWORDS="-* x86 amd64"
 
