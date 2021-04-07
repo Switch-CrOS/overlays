@@ -6,7 +6,7 @@ EAPI=5
 DESCRIPTION="Packages for the Termina base image"
 HOMEPAGE="http://dev.chromium.org/"
 
-LICENSE="BSD-Google"
+LICENSE="metapackage"
 SLOT="0"
 KEYWORDS="*"
 IUSE="vm-containers"
@@ -17,7 +17,6 @@ RDEPEND="
 	app-arch/tar
 	app-arch/xz-utils
 	vm-containers? (
-		app-emulation/lxd
 		chromeos-base/termina_container_tools
 		chromeos-base/tremplin
 		chromeos-base/termina-lxd-scripts
