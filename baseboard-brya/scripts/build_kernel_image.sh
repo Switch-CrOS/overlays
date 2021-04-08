@@ -19,9 +19,6 @@ modify_kernel_command_line() {
   sed -i -e '/tpm_tis.force/d' "$1"
   echo "tpm_tis.force=0" >> "$1"
 
-  # Enable S0ix logging using GSMI
-  echo "gsmi.s0ix_logging_enable=1" >> "$1"
-
   # Check for S0ix failures and show warnings on failures
   echo "intel_pmc_core.warn_on_s0ix_failures=1" >> "$1"
 
