@@ -8,21 +8,18 @@
 The CAB file, or Cabinet, is the archive format used by fwupd
 program to perform auto firmware update.
 
-This program is expected to be used for fwupd update with flashrom
-command line workaround only. It accepts multiple binary files and
-a configuration file, compress binaries into a tar file and put it
-together with configuration file into the cab archive.
+This program is expected to be used for fwupd update with libflashrom.
+It accepts multiple binary files and a configuration file, compress
+binaries together with configuration file into the cab archive.
 """
 
 from __future__ import division
 
 import argparse
-import io
 from pathlib import Path
 import re
 import subprocess
 import sys
-import tarfile
 import tempfile
 import uuid
 
@@ -53,14 +50,7 @@ FIRMWARE_METAINFO_TEMPLATE = """
 </component>
 """
 
-PS175_GUID_SOURCE = r'FLASHROM-I2C\VEN_1AF8&amp;DEV_0175'
-LAYOUT_NAME = 'layout'
-FLAG1_NAME = 'flag1.bin'
-FLAG2_NAME = 'flag2.bin'
-LAYOUT_DATA = ('10000:1ffff PARTITION1\n20000:2ffff PARTITION2\n'
-               '00002:00003 FLAG')
-FLAG1_BYTES = b'\x01\x00'
-FLAG2_BYTES = b'\x02\xff'
+PS175_GUID_SOURCE = r'FLASHROM-LSPCON-I2C-SPI\VEN_1AF8&DEV_0175'
 
 # Subject to change depends on the real version format.
 VERSION_RE = re.compile(r'V(?P<major>\d+)\.(?P<minor>\d+)$')
@@ -86,37 +76,18 @@ def firmware_version_from_name(firmware_name: str) -> str:
     raise ValueError('Version number must present in firmware name.')
 
 
-def tar_add_from_bytesio(tar: tarfile.TarFile, data: str, name: str) -> None:
-  """Add data to a TarFile using BytesIO.
-
-  Using the input to construct BytesIO object and add it as a single file into
-  the tar file.
-
-  Args:
-    tar: An TarFile object, shuold be opened properly.
-    data: A serials of binary data or properly encoded string.
-    name: A string that the new file going to be named with.
-  """
-  target_io = io.BytesIO(data)
-  tar_info = tarfile.TarInfo(name=name)
-  tar_info.size = len(data)
-  tar.addfile(tarinfo=tar_info, fileobj=target_io)
-
-
 def write_cab(opts: argparse.Namespace) -> None:
   """Extract the information and write a cab file.
 
-  Gathering information from user input options, write metadata,
-  firmware tarball that includes the layout file. Put them together into
-  a cab file.
+  Gathering information from user input options, write metadata and
+  firmware binary file. Put them together into a cab file.
 
   Args:
-    opts: An option parsed by ArgumentParser, includes layout and the firmware
+    opts: An option parsed by ArgumentParser, includes the firmware
         blob path.
   """
-  firmware_archive_name = f'{opts.firmware.stem}.tar.gz'
   firmware_metainfo = FIRMWARE_METAINFO_TEMPLATE % {
-      'file_name': firmware_archive_name,
+      'file_name': opts.firmware.name,
       'device_guid': uuid.uuid5(uuid.NAMESPACE_DNS, PS175_GUID_SOURCE),
       'release_version': firmware_version_from_name(opts.firmware.stem),
   }
@@ -124,21 +95,14 @@ def write_cab(opts: argparse.Namespace) -> None:
   with tempfile.TemporaryDirectory() as tmp_dir:
     tmp_dir_path = Path(tmp_dir)
     firmware_metainfo_path = tmp_dir_path / '.metainfo.xml'
-    firmware_arch_path = tmp_dir_path / firmware_archive_name
     firmware_metainfo_path.write_text(firmware_metainfo, encoding='utf-8')
-
-    with tarfile.open(firmware_arch_path, 'w:gz') as tar:
-      tar.add(opts.firmware, opts.firmware.name)
-      tar_add_from_bytesio(tar, LAYOUT_DATA.encode('utf-8'), LAYOUT_NAME)
-      tar_add_from_bytesio(tar, FLAG1_BYTES, FLAG1_NAME)
-      tar_add_from_bytesio(tar, FLAG2_BYTES, FLAG2_NAME)
 
     subprocess.check_call([
         'gcab',
         '--create',
         '--nopath',
         opts.output / opts.firmware.with_suffix('.cab').name,
-        firmware_arch_path,
+        opts.firmware,
         firmware_metainfo_path,
     ])
 
