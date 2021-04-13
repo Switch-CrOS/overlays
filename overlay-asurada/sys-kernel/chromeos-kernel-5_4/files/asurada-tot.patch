@@ -187,10 +187,18 @@ index dd87fa07a0b10c9b17a899f3c88aeae1aae6c7a4..059ba1001a1dfa3d277e2c8d364a245e
  CONFIG_MTK_EFUSE=y
  CONFIG_MTK_IOMMU=y
 diff --git a/drivers/bluetooth/btusb.c b/drivers/bluetooth/btusb.c
-index 6196ba05ed0e91a6d2c0bf46f785744a401806f8..a0cde68f830c26aa06dac18dfbe062daf6d0e210 100644
+index 6196ba05ed0e91a6d2c0bf46f785744a401806f8..9ab828c08c6d81a8a9e73fd7d82fea4203b9e11f 100644
 --- a/drivers/bluetooth/btusb.c
 +++ b/drivers/bluetooth/btusb.c
-@@ -2753,6 +2753,12 @@ static int btusb_shutdown_intel_new(struct hci_dev *hdev)
+@@ -375,6 +375,7 @@ static const struct usb_device_id blacklist_table[] = {
+ 	/* MediaTek Bluetooth devices */
+ 	{ USB_VENDOR_AND_INTERFACE_INFO(0x0e8d, 0xe0, 0x01, 0x01),
+ 	  .driver_info = BTUSB_MEDIATEK },
++	{ USB_DEVICE(0x04ca, 0x3802), .driver_info = BTUSB_MEDIATEK },
+ 
+ 	/* Additional Realtek 8723AE Bluetooth devices */
+ 	{ USB_DEVICE(0x0930, 0x021d), .driver_info = BTUSB_REALTEK },
+@@ -2753,6 +2754,12 @@ static int btusb_shutdown_intel_new(struct hci_dev *hdev)
  #define FIRMWARE_MT7668		"mediatek/mt7668pr2h.bin"
  
  #define HCI_WMT_MAX_EVENT_SIZE		64
@@ -203,7 +211,7 @@ index 6196ba05ed0e91a6d2c0bf46f785744a401806f8..a0cde68f830c26aa06dac18dfbe062da
  
  enum {
  	BTMTK_WMT_PATCH_DWNLD = 0x1,
-@@ -2764,6 +2770,7 @@ enum {
+@@ -2764,6 +2771,7 @@ enum {
  enum {
  	BTMTK_WMT_INVALID,
  	BTMTK_WMT_PATCH_UNDONE,
@@ -211,7 +219,7 @@ index 6196ba05ed0e91a6d2c0bf46f785744a401806f8..a0cde68f830c26aa06dac18dfbe062da
  	BTMTK_WMT_PATCH_DONE,
  	BTMTK_WMT_ON_UNDONE,
  	BTMTK_WMT_ON_DONE,
-@@ -2779,7 +2786,7 @@ struct btmtk_wmt_hdr {
+@@ -2779,7 +2787,7 @@ struct btmtk_wmt_hdr {
  
  struct btmtk_hci_wmt_cmd {
  	struct btmtk_wmt_hdr hdr;
@@ -220,7 +228,7 @@ index 6196ba05ed0e91a6d2c0bf46f785744a401806f8..a0cde68f830c26aa06dac18dfbe062da
  } __packed;
  
  struct btmtk_hci_wmt_evt {
-@@ -2808,6 +2815,40 @@ struct btmtk_hci_wmt_params {
+@@ -2808,6 +2816,40 @@ struct btmtk_hci_wmt_params {
  	u32 *status;
  };
  
@@ -261,7 +269,7 @@ index 6196ba05ed0e91a6d2c0bf46f785744a401806f8..a0cde68f830c26aa06dac18dfbe062da
  static void btusb_mtk_wmt_recv(struct urb *urb)
  {
  	struct hci_dev *hdev = urb->context;
-@@ -2878,7 +2919,7 @@ static void btusb_mtk_wmt_recv(struct urb *urb)
+@@ -2878,7 +2920,7 @@ static void btusb_mtk_wmt_recv(struct urb *urb)
  	 * to generate the event. Otherwise, the WMT event cannot return from
  	 * the device successfully.
  	 */
@@ -270,7 +278,7 @@ index 6196ba05ed0e91a6d2c0bf46f785744a401806f8..a0cde68f830c26aa06dac18dfbe062da
  
  	usb_anchor_urb(urb, &data->ctrl_anchor);
  	err = usb_submit_urb(urb, GFP_ATOMIC);
-@@ -2953,7 +2994,7 @@ static int btusb_mtk_hci_wmt_sync(struct hci_dev *hdev,
+@@ -2953,7 +2995,7 @@ static int btusb_mtk_hci_wmt_sync(struct hci_dev *hdev,
  	struct btmtk_hci_wmt_evt_funcc *wmt_evt_funcc;
  	u32 hlen, status = BTMTK_WMT_INVALID;
  	struct btmtk_hci_wmt_evt *wmt_evt;
@@ -279,7 +287,7 @@ index 6196ba05ed0e91a6d2c0bf46f785744a401806f8..a0cde68f830c26aa06dac18dfbe062da
  	struct btmtk_wmt_hdr *hdr;
  	int err;
  
-@@ -2967,20 +3008,24 @@ static int btusb_mtk_hci_wmt_sync(struct hci_dev *hdev,
+@@ -2967,20 +3009,24 @@ static int btusb_mtk_hci_wmt_sync(struct hci_dev *hdev,
  	if (hlen > 255)
  		return -EINVAL;
  
@@ -308,7 +316,7 @@ index 6196ba05ed0e91a6d2c0bf46f785744a401806f8..a0cde68f830c26aa06dac18dfbe062da
  	}
  
  	/* The vendor specific WMT commands are all answered by a vendor
-@@ -2997,13 +3042,14 @@ static int btusb_mtk_hci_wmt_sync(struct hci_dev *hdev,
+@@ -2997,13 +3043,14 @@ static int btusb_mtk_hci_wmt_sync(struct hci_dev *hdev,
  	if (err == -EINTR) {
  		bt_dev_err(hdev, "Execution of wmt command interrupted");
  		clear_bit(BTUSB_TX_WAIT_VND_EVT, &data->flags);
@@ -325,7 +333,7 @@ index 6196ba05ed0e91a6d2c0bf46f785744a401806f8..a0cde68f830c26aa06dac18dfbe062da
  	}
  
  	/* Parse and handle the return WMT event */
-@@ -3031,6 +3077,14 @@ static int btusb_mtk_hci_wmt_sync(struct hci_dev *hdev,
+@@ -3031,6 +3078,14 @@ static int btusb_mtk_hci_wmt_sync(struct hci_dev *hdev,
  		else
  			status = BTMTK_WMT_ON_UNDONE;
  		break;
@@ -340,7 +348,7 @@ index 6196ba05ed0e91a6d2c0bf46f785744a401806f8..a0cde68f830c26aa06dac18dfbe062da
  	}
  
  	if (wmt_params->status)
-@@ -3039,6 +3093,119 @@ static int btusb_mtk_hci_wmt_sync(struct hci_dev *hdev,
+@@ -3039,6 +3094,119 @@ static int btusb_mtk_hci_wmt_sync(struct hci_dev *hdev,
  err_free_skb:
  	kfree_skb(data->evt_skb);
  	data->evt_skb = NULL;
@@ -460,7 +468,7 @@ index 6196ba05ed0e91a6d2c0bf46f785744a401806f8..a0cde68f830c26aa06dac18dfbe062da
  
  	return err;
  }
-@@ -3091,7 +3258,7 @@ static int btusb_mtk_setup_firmware(struct hci_dev *hdev, const char *fwname)
+@@ -3091,7 +3259,7 @@ static int btusb_mtk_setup_firmware(struct hci_dev *hdev, const char *fwname)
  	while (fw_size > 0) {
  		dlen = min_t(int, 250, fw_size);
  
@@ -469,7 +477,7 @@ index 6196ba05ed0e91a6d2c0bf46f785744a401806f8..a0cde68f830c26aa06dac18dfbe062da
  		if (fw_size - dlen <= 0)
  			flag = 3;
  		else if (fw_size < fw->size - 30)
-@@ -3181,9 +3348,9 @@ static int btusb_mtk_reg_read(struct btusb_data *data, u32 reg, u32 *val)
+@@ -3181,9 +3349,9 @@ static int btusb_mtk_reg_read(struct btusb_data *data, u32 reg, u32 *val)
  	return err;
  }
  
@@ -481,7 +489,7 @@ index 6196ba05ed0e91a6d2c0bf46f785744a401806f8..a0cde68f830c26aa06dac18dfbe062da
  }
  
  static int btusb_mtk_setup(struct hci_dev *hdev)
-@@ -3197,16 +3364,31 @@ static int btusb_mtk_setup(struct hci_dev *hdev)
+@@ -3197,16 +3365,31 @@ static int btusb_mtk_setup(struct hci_dev *hdev)
  	const char *fwname;
  	int err, status;
  	u32 dev_id;
@@ -514,7 +522,7 @@ index 6196ba05ed0e91a6d2c0bf46f785744a401806f8..a0cde68f830c26aa06dac18dfbe062da
  	switch (dev_id) {
  	case 0x7663:
  		fwname = FIRMWARE_MT7663;
-@@ -3214,8 +3396,28 @@ static int btusb_mtk_setup(struct hci_dev *hdev)
+@@ -3214,8 +3397,28 @@ static int btusb_mtk_setup(struct hci_dev *hdev)
  	case 0x7668:
  		fwname = FIRMWARE_MT7668;
  		break;
@@ -544,7 +552,7 @@ index 6196ba05ed0e91a6d2c0bf46f785744a401806f8..a0cde68f830c26aa06dac18dfbe062da
  			   dev_id);
  		return -ENODEV;
  	}
-@@ -3291,6 +3493,7 @@ static int btusb_mtk_setup(struct hci_dev *hdev)
+@@ -3291,6 +3494,7 @@ static int btusb_mtk_setup(struct hci_dev *hdev)
  	}
  	kfree_skb(skb);
  
@@ -552,7 +560,7 @@ index 6196ba05ed0e91a6d2c0bf46f785744a401806f8..a0cde68f830c26aa06dac18dfbe062da
  	rettime = ktime_get();
  	delta = ktime_sub(rettime, calltime);
  	duration = (unsigned long long)ktime_to_ns(delta) >> 10;
-@@ -4217,8 +4420,8 @@ static int btusb_probe(struct usb_interface *intf,
+@@ -4217,8 +4421,8 @@ static int btusb_probe(struct usb_interface *intf,
  	}
  #endif
  
@@ -563,7 +571,7 @@ index 6196ba05ed0e91a6d2c0bf46f785744a401806f8..a0cde68f830c26aa06dac18dfbe062da
  
  	err = hci_register_dev(hdev);
  	if (err < 0)
-@@ -4278,6 +4481,9 @@ static void btusb_disconnect(struct usb_interface *intf)
+@@ -4278,6 +4482,9 @@ static void btusb_disconnect(struct usb_interface *intf)
  		gpiod_put(data->reset_gpio);
  
  	hci_free_dev(hdev);
@@ -133597,6 +133605,21 @@ index d9a0f421f2bcb85485bed6a24d29d60005245491..c483fa225f5e63d73c5653c780c56e9b
  
  	return 0;
  }
+diff --git a/drivers/platform/chrome/cros_usbpd_notify.c b/drivers/platform/chrome/cros_usbpd_notify.c
+index 7f36142ab12a8d1c729bfb6da038d74934168f36..9bdf45ba253ed87194ded29ca7e20fca37499b1e 100644
+--- a/drivers/platform/chrome/cros_usbpd_notify.c
++++ b/drivers/platform/chrome/cros_usbpd_notify.c
+@@ -220,7 +220,9 @@ static int cros_usbpd_notify_plat(struct notifier_block *nb,
+ 	if (!host_event)
+ 		return NOTIFY_DONE;
+ 
+-	if (host_event & EC_HOST_EVENT_MASK(EC_HOST_EVENT_PD_MCU)) {
++	/* TODO(pihsun): Check what to do on ACPI system for EC_HOST_EVENT_USB_MUX */
++	if (host_event & (EC_HOST_EVENT_MASK(EC_HOST_EVENT_PD_MCU) |
++			  EC_HOST_EVENT_MASK(EC_HOST_EVENT_USB_MUX))) {
+ 		cros_usbpd_get_event_and_notify(pdnotify->dev, ec_dev);
+ 		return NOTIFY_OK;
+ 	}
 diff --git a/drivers/pwm/pwm-mtk-disp.c b/drivers/pwm/pwm-mtk-disp.c
 index 83b8be0209b74f2801cca403c3cbb61ca6776e43..c1b0ed27f278b2da61c55ab7da1ba959f0c65930 100644
 --- a/drivers/pwm/pwm-mtk-disp.c
