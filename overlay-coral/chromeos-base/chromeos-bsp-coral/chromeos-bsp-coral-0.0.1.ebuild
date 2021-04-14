@@ -12,7 +12,7 @@ or portage actions."
 LICENSE="BSD-Google"
 SLOT="0" # TODO (b/185804190): convert this to cros-workon
 KEYWORDS="-* amd64 x86"
-IUSE=""
+IUSE="coral-kernelnext"
 S="${WORKDIR}"
 
 # Add dependencies on other ebuilds from within this board overlay
@@ -23,7 +23,11 @@ DEPEND="
 "
 
 src_install() {
-	doappid "{5A3AB642-2A67-470A-8F37-37E737A53CFC}" "CHROMEBOOK"
+	if use coral-kernelnext; then
+		doappid "{79A287C6-9BC1-11EB-9537-63CE10F4C525}" "CHROMEBOOK"
+	else
+		doappid "{5A3AB642-2A67-470A-8F37-37E737A53CFC}" "CHROMEBOOK"
+	fi
 
 	unibuild_install_files audio-files
 	unibuild_install_files thermal-files
