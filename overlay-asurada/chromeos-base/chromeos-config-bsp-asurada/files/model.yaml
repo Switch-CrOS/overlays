@@ -66,6 +66,10 @@ hayato-config: &hayato_config
     <<: *identity
   audio: *audio_config
 
+identity-sku-config: &identity_sku_config
+  <<: *identity
+  sku-id: "{{$sku-id}}"
+
 spherion-config: &spherion_config
   <<: *common_config
   $fw-name: "google,spherion"
@@ -73,7 +77,7 @@ spherion-config: &spherion_config
   $key-id: "DEFAULT"
   $card: "mt8192_mt6359_rt1015p_rt5682"
   identity:
-    <<: *identity
+    <<: *identity_sku_config
   audio: *audio_config
 
 chromeos:
@@ -85,6 +89,12 @@ chromeos:
       skus:
         - config: *hayato_config
     - $device-name: "spherion"
-      $has-keyboard-backlight: "1"
       skus:
-        - config: *spherion_config
+        - $sku-id: 0
+          $has-keyboard-backlight: "1"
+          config: *spherion_config
+        - $sku-id: 1
+          $has-keyboard-backlight: "1"
+          config: *spherion_config
+        - $sku-id: 6
+          config: *spherion_config
