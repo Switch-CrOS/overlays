@@ -8,6 +8,7 @@ SLOT="0"
 KEYWORDS="*"
 LICENSE="BSD-Google"
 
-DEPEND=""
-
+DEPEND="
+	sys-boot/sc7280-qc_blobs
+	"
 RDEPEND="${DEPEND}"
