@@ -3,11 +3,7 @@
 
 EAPI=7
 
-# b/185932408: this is a copy of the SC7180 blobs.  We need these to
-# get the builder to build.  Will replace them with the SC7280 blobs
-# when they are ready.
-
-DESCRIPTION="Ebuild to mirror Qualcomm SC7180 firmware blobs hosted on coreboot.org"
+DESCRIPTION="Ebuild to mirror Qualcomm SC7280 firmware blobs hosted on coreboot.org"
 
 # HOW TO UPDATE:
 #
@@ -17,7 +13,7 @@ DESCRIPTION="Ebuild to mirror Qualcomm SC7180 firmware blobs hosted on coreboot.
 # 3. Recompress with xz and rename:
 #    `gunzip HEAD.tar.gz`
 #    `xz HEAD.tar`
-#    `mv HEAD.tar.xz sc7180-qc_blobs-<new ebuild version>.tar.xz`
+#    `mv HEAD.tar.xz sc7280-qc_blobs-<new ebuild version>.tar.xz`
 # 4. Upload file to
 #    https://pantheon.corp.google.com/storage/browser/chromeos-localmirror/distfiles/
 # 5. Click three dots next to file, choose Edit Permissions, Add Entry, make the
@@ -28,7 +24,7 @@ SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/
 
 LICENSE="Qualcomm-FW-Blob"
 
-S="${WORKDIR}/sc7180"
+S="${WORKDIR}/sc7280"
 SLOT="0"
 KEYWORDS="*"
 IUSE="internal"
