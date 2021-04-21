@@ -2135,10 +2135,10 @@ index e12e024de122fa4fed064c11543da8a7d45de5db..5a0739734a344391a98f2ae1cb3a51db
  };
 diff --git a/arch/arm64/boot/dts/mediatek/mt8195-evb.dts b/arch/arm64/boot/dts/mediatek/mt8195-evb.dts
 new file mode 100755
-index 0000000000000000000000000000000000000000..94281241d57b83ab30d1cdecc015a13cd0ae66a3
+index 0000000000000000000000000000000000000000..7e8e9b9ca48345188666a8a766b61f0bad1de36e
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt8195-evb.dts
-@@ -0,0 +1,630 @@
+@@ -0,0 +1,651 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
 +/*
 + * Copyright (C) 2021 MediaTek Inc.
@@ -2239,6 +2239,10 @@ index 0000000000000000000000000000000000000000..94281241d57b83ab30d1cdecc015a13c
 +	interrupts = <222 IRQ_TYPE_LEVEL_HIGH>;
 +};
 +
++&mfg0 {
++	domain-supply = <&mt6315_7_vbuck1>;
++};
++
 +/* for CORE */
 +&mt6359_vgpu11_buck_reg {
 +	regulator-always-on;
@@ -2260,6 +2264,24 @@ index 0000000000000000000000000000000000000000..94281241d57b83ab30d1cdecc015a13c
 +
 +&mt6359_vrf12_ldo_reg {
 +	regulator-always-on;
++};
++
++&gpu {
++        supply-names = "mali","mali_sram";
++        mali-supply = <&mt6315_7_vbuck1>;
++        mali_sram-supply = <&mt6359_vsram_others_ldo_reg>;
++        operating-points-v2 = <&gpu_opp_table>;
++        power_model@0 {
++                compatible = "arm,mali-simple-power-model";
++                static-coefficient = <162868>;
++                dynamic-coefficient = <2649>;
++                ts = <(-199560) 37873 (-665) 9>;
++                thermal-zone = "soc_max";
++        };
++        power_model@1 {
++                compatible = "arm,mali-tnax-power-model";
++                scale = <5>;
++        };
 +};
 +
 +&spmi {
@@ -2293,7 +2315,6 @@ index 0000000000000000000000000000000000000000..94281241d57b83ab30d1cdecc015a13c
 +				regulator-max-microvolt = <1193750>;
 +				regulator-enable-ramp-delay = <256>;
 +				regulator-allowed-modes = <0 1 2 4>;
-+				regulator-always-on;
 +			};
 +		};
 +	};
@@ -2771,10 +2792,10 @@ index 0000000000000000000000000000000000000000..94281241d57b83ab30d1cdecc015a13c
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8195.dtsi b/arch/arm64/boot/dts/mediatek/mt8195.dtsi
 new file mode 100755
-index 0000000000000000000000000000000000000000..f5981c483a0549cfdd5418c9ce700e2ac247a1d1
+index 0000000000000000000000000000000000000000..4cd079f4bd5ff81cc4af233f16da6e2e9454d35b
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt8195.dtsi
-@@ -0,0 +1,2053 @@
+@@ -0,0 +1,2239 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
 +/*
 + * Copyright (C) 2021 MediaTek Inc.
@@ -3189,7 +3210,7 @@ index 0000000000000000000000000000000000000000..f5981c483a0549cfdd5418c9ce700e2a
 +					};
 +				};
 +
-+				power-domain@MT8195_POWER_DOMAIN_MFG0 {
++				mfg0: power-domain@MT8195_POWER_DOMAIN_MFG0 {
 +					reg = <MT8195_POWER_DOMAIN_MFG0>;
 +					#address-cells = <1>;
 +					#size-cells = <0>;
@@ -4101,6 +4122,193 @@ index 0000000000000000000000000000000000000000..f5981c483a0549cfdd5418c9ce700e2a
 +			status = "disabled";
 +		};
 +
++		gpu: mali@13000000 {
++                        compatible = "mediatek,mali", "arm,mali-valhall";
++                        reg = <0 0x13000000 0 0x4000>;
++                        interrupts =
++                                <GIC_SPI 395 IRQ_TYPE_LEVEL_HIGH 0>,
++                                <GIC_SPI 396 IRQ_TYPE_LEVEL_HIGH 0>,
++                                <GIC_SPI 397 IRQ_TYPE_LEVEL_HIGH 0>,
++                                <GIC_SPI 398 IRQ_TYPE_LEVEL_HIGH 0>,
++                                <GIC_SPI 399 IRQ_TYPE_LEVEL_HIGH 0>;
++                        interrupt-names =
++                                "GPU",
++                                "MMU",
++                                "JOB",
++                                "EVENT",
++                                "PWR";
++
++                        /*
++                         * Note: the properties below are not part of the
++                         * upstream binding.
++                         */
++                        clocks =
++				<&topckgen CLK_TOP_MFG_FAST_SEL>,
++				<&apmixedsys CLK_APMIXED_MFGPLL>,
++				<&topckgen CLK_TOP_MFGPLL_OPP>,
++				<&topckgen CLK_TOP_MFG_SEL>,
++				<&mfgcfg CLK_MFG_BG3D>;
++
++			clock-names =
++	                        "clk_mux",
++	                        "clk_pll_src",
++	                        "clk_main_parent",
++	                        "clk_sub_parent",
++	                        "subsys_bg3d";
++
++                        power-domains =
++                                <&spm MT8195_POWER_DOMAIN_MFG2>,
++                                <&spm MT8195_POWER_DOMAIN_MFG3>,
++                                <&spm MT8195_POWER_DOMAIN_MFG4>,
++                                <&spm MT8195_POWER_DOMAIN_MFG5>,
++                                <&spm MT8195_POWER_DOMAIN_MFG6>;
++                        power-domain-names = "core0",
++                                             "core1",
++                                             "core2",
++                                             "core3",
++                                             "core4";
++                };
++
++		gpu_opp_table: opp_table0 {
++                        /*
++                         * Note: "operating-points-v2-mali" compatible and the
++                         * opp-core-mask properties are not part of upstream
++                         * binding.
++                         */
++
++                        compatible = "operating-points-v2", "operating-points-v2-mali";
++                        opp-shared;
++
++                        opp-390000000 {
++                                opp-hz = /bits/ 64 <390000000>;
++                                opp-hz-real = /bits/ 64 <390000000>,
++                                              /bits/ 64 <390000000>;
++                                opp-microvolt = <625000>,
++                                                <750000>;
++                        };
++
++                        opp-410000000 {
++                                opp-hz = /bits/ 64 <410000000>;
++                                opp-hz-real = /bits/ 64 <410000000>,
++                                              /bits/ 64 <410000000>;
++                                opp-microvolt = <631250>,
++                                                <750000>;
++                        };
++
++                        opp-431000000 {
++                                opp-hz = /bits/ 64 <431000000>;
++                                opp-hz-real = /bits/ 64 <431000000>,
++                                              /bits/ 64 <431000000>;
++                                opp-microvolt = <631250>,
++                                                <750000>;
++                        };
++
++                        opp-473000000 {
++                                opp-hz = /bits/ 64 <473000000>;
++                                opp-hz-real = /bits/ 64 <473000000>,
++                                              /bits/ 64 <473000000>;
++                                opp-microvolt = <637500>,
++                                                <750000>;
++                        };
++
++			opp-515000000 {
++                                opp-hz = /bits/ 64 <515000000>;
++                                opp-hz-real = /bits/ 64 <515000000>,
++                                              /bits/ 64 <515000000>;
++                                opp-microvolt = <637500>,
++                                                <750000>;
++                        };
++
++                        opp-556000000 {
++                                opp-hz = /bits/ 64 <556000000>;
++                                opp-hz-real = /bits/ 64 <556000000>,
++                                              /bits/ 64 <556000000>;
++                                opp-microvolt = <643750>,
++                                                <750000>;
++                        };
++
++                        opp-598000000 {
++                                opp-hz = /bits/ 64 <598000000>;
++                                opp-hz-real = /bits/ 64 <598000000>,
++                                              /bits/ 64 <598000000>;
++                                opp-microvolt = <650000>,
++                                                <750000>;
++                        };
++
++                        opp-640000000 {
++                                opp-hz = /bits/ 64 <640000000>;
++                                opp-hz-real = /bits/ 64 <640000000>,
++                                              /bits/ 64 <640000000>;
++                                opp-microvolt = <650000>,
++                                                <750000>;
++                        };
++
++                        opp-670000000 {
++                                opp-hz = /bits/ 64 <670000000>;
++                                opp-hz-real = /bits/ 64 <670000000>,
++                                                /bits/ 64 <670000000>;
++                                opp-microvolt = <662500>,
++                                                <750000>;
++                        };
++
++                        opp-700000000 {
++                                opp-hz = /bits/ 64 <700000000>;
++                                opp-hz-real = /bits/ 64 <700000000>,
++                                              /bits/ 64 <700000000>;
++                                opp-microvolt = <675000>,
++                                                <750000>;
++                        };
++
++                        opp-730000000 {
++                                opp-hz = /bits/ 64 <730000000>;
++                                opp-hz-real = /bits/ 64 <730000000>,
++                                              /bits/ 64 <730000000>;
++                                opp-microvolt = <687500>,
++                                                <750000>;
++                        };
++
++			opp-760000000 {
++                                opp-hz = /bits/ 64 <760000000>;
++                                opp-hz-real = /bits/ 64 <760000000>,
++                                              /bits/ 64 <760000000>;
++                                opp-microvolt = <700000>,
++                                                <750000>;
++                        };
++
++                        opp-790000000 {
++                                opp-hz = /bits/ 64 <790000000>;
++                                opp-hz-real = /bits/ 64 <790000000>,
++                                              /bits/ 64 <790000000>;
++                                opp-microvolt = <712500>,
++                                                <750000>;
++                        };
++
++                        opp-820000000 {
++                                opp-hz = /bits/ 64 <820000000>;
++                                opp-hz-real = /bits/ 64 <820000000>,
++                                              /bits/ 64 <820000000>;
++                                opp-microvolt = <725000>,
++                                                <750000>;
++                        };
++
++                        opp-850000000 {
++                                opp-hz = /bits/ 64 <850000000>;
++                                opp-hz-real = /bits/ 64 <850000000>,
++                                              /bits/ 64 <850000000>;
++                                opp-microvolt = <737500>,
++                                                <750000>;
++                        };
++
++                        opp-880000000 {
++                                opp-hz = /bits/ 64 <880000000>;
++                                opp-hz-real = /bits/ 64 <880000000>,
++                                              /bits/ 64 <880000000>;
++                                opp-microvolt = <750000>,
++                                                <750000>;
++                        };
++                };
++
++
 +		mfgcfg: syscon@13fbf000 {
 +			compatible = "mediatek,mt8195-mfgcfg", "syscon";
 +			reg = <0 0x13fbf000 0 0x1000>;
@@ -4823,8 +5031,7 @@ index 0000000000000000000000000000000000000000..f5981c483a0549cfdd5418c9ce700e2a
 +
 +	bring-up {
 +		compatible = "mediatek,clk-bring-up";
-+		clocks = <&mfgcfg CLK_MFG_BG3D>,
-+			 <&infracfg_ao CLK_INFRA_AO_DEBUGSYS>,
++		clocks = <&infracfg_ao CLK_INFRA_AO_DEBUGSYS>,
 +			 <&infracfg_ao CLK_INFRA_AO_UART0>;
 +	};
 +};
@@ -5195,7 +5402,7 @@ index 92986994fea6d2047d001bcaeeebf0603a7b1e35..691e51791c110490daab8a60a293d73d
 +CONFIG_COMMON_CLK_MT8195_APUSYS_PLL=y
 +
 diff --git a/chromeos/config/arm64/chromiumos-mediatek.flavour.config b/chromeos/config/arm64/chromiumos-mediatek.flavour.config
-index a82a3a35a550993f57680241d5b5d219f26090ba..377b355fe6c7623a2e387e7341fbbc048024a743 100644
+index a82a3a35a550993f57680241d5b5d219f26090ba..525e12848d8b5d0e7c082641a7b7a177abc4400a 100644
 --- a/chromeos/config/arm64/chromiumos-mediatek.flavour.config
 +++ b/chromeos/config/arm64/chromiumos-mediatek.flavour.config
 @@ -31,6 +31,7 @@ CONFIG_DRM_ANALOGIX_ANX7625=y
@@ -5206,7 +5413,16 @@ index a82a3a35a550993f57680241d5b5d219f26090ba..377b355fe6c7623a2e387e7341fbbc04
  CONFIG_DRM_PANEL_BOE_TV101WUM_NL6=y
  CONFIG_DRM_PANEL_INNOLUX_P079ZCA=y
  CONFIG_DRM_PARADE_PS8640=y
-@@ -104,3 +105,31 @@ CONFIG_VIDEO_MEDIATEK_VCODEC=m
+@@ -44,7 +45,7 @@ CONFIG_I2C_MT65XX=y
+ CONFIG_MALI_VALHALL=y
+ CONFIG_MALI_VALHALL_DMA_FENCE=y
+ CONFIG_MALI_VALHALL_EXPERT=y
+-CONFIG_MALI_VALHALL_PLATFORM_NAME="mt8183"
++CONFIG_MALI_VALHALL_PLATFORM_NAME="mt8195"
+ CONFIG_MEDIATEK_MT6577_AUXADC=y
+ CONFIG_MEDIATEK_WATCHDOG=y
+ CONFIG_MMC_MTK=y
+@@ -104,3 +105,32 @@ CONFIG_VIDEO_MEDIATEK_VCODEC=m
  CONFIG_VIDEO_MEDIATEK_VPU=m
  CONFIG_VIDEO_OV5695=m
  CONFIG_VIDEO_OV8856=m
@@ -5231,6 +5447,7 @@ index a82a3a35a550993f57680241d5b5d219f26090ba..377b355fe6c7623a2e387e7341fbbc04
 +CONFIG_COMMON_CLK_MT8195_WPESYS=y
 +CONFIG_COMMON_CLK_MT8195_IMP_IIC_WRAP=y
 +CONFIG_COMMON_CLK_MT8195_APUSYS_PLL=y
++CONFIG_SPMI=y
 +CONFIG_SPMI_MTK_PMIF=y
 +CONFIG_MFD_MT6360=y
 +CONFIG_MFD_MT6397=y
@@ -5238,6 +5455,19 @@ index a82a3a35a550993f57680241d5b5d219f26090ba..377b355fe6c7623a2e387e7341fbbc04
 +CONFIG_REGULATOR_MT6359=y
 +CONFIG_REGULATOR_MT6360=y
 +CONFIG_REGULATOR_FIXED_VOLTAGE=y
+diff --git a/chromeos/config/arm64/common.config b/chromeos/config/arm64/common.config
+index 9c424433560c7b7d3f561eeca18ab0c1d29e4e96..a41f2bb0398ef6b7c6133cdaeae4ff58a4eaedbb 100644
+--- a/chromeos/config/arm64/common.config
++++ b/chromeos/config/arm64/common.config
+@@ -41,7 +41,7 @@ CONFIG_DEBUG_GPIO=y
+ CONFIG_DEVFREQ_GOV_PERFORMANCE=y
+ CONFIG_DEVFREQ_GOV_POWERSAVE=y
+ CONFIG_DEVFREQ_GOV_USERSPACE=y
+-CONFIG_DEVFREQ_THERMAL=y
++CONFIG_DEVFREQ_THERMAL=n
+ CONFIG_DMADEVICES=y
+ CONFIG_DRM_PANEL_SIMPLE=y
+ CONFIG_ENERGY_MODEL=y
 diff --git a/drivers/clk/clk.c b/drivers/clk/clk.c
 index 4ebc912686d966b9123b183b29e6d74b11acf130..38963b8aadc0b87b213e4754f303e90b0c0f6566 100644
 --- a/drivers/clk/clk.c
@@ -18146,6 +18376,692 @@ index 0000000000000000000000000000000000000000..9fec97f9b9f87b0eac50067f75414b1e
 +
 +void print_regs(void);
 +void print_fmeter_all(void);
+diff --git a/drivers/gpu/arm/valhall/backend/gpu/mali_kbase_gpuprops_backend.c b/drivers/gpu/arm/valhall/backend/gpu/mali_kbase_gpuprops_backend.c
+index 9ad7068e3afb6f84b03e75e4da148878edc2a6b8..1e6d198bbb3a105ba3dd3a7435769c7c8dbe0bdf 100644
+--- a/drivers/gpu/arm/valhall/backend/gpu/mali_kbase_gpuprops_backend.c
++++ b/drivers/gpu/arm/valhall/backend/gpu/mali_kbase_gpuprops_backend.c
+@@ -41,11 +41,14 @@ int kbase_backend_gpuprops_get(struct kbase_device *kbdev,
+ 	registers.orig_gpu_id = registers.gpu_id;
+ 
+ 	/* Mali-G57 on MT8192 has a different GPU ID 0x90930000.
++	 * Mali-G57 on MT8195 has a different GPU ID 0x90930010.
+ 	 * Pretending it's a normal G57 to minimize the impact, but people can
+ 	 * still tell the difference from orig_gpu_id when needed.
+ 	 */
+-	if (registers.gpu_id == GPU_ID2_PRODUCT_MAKE(9, 0, 9, 3)) {
+-		registers.gpu_id = GPU_ID2_PRODUCT_MAKE(9, 0, 9, 1);
++	if ((registers.gpu_id & GPU_ID_VERSION_PRODUCT_ID) \
++		== GPU_ID2_PRODUCT_MAKE(9, 0, 9, 3)) {
++		registers.gpu_id = GPU_ID2_PRODUCT_MAKE(9, 0, 9, 1) + \
++			GPU_ID_VERSION_ID & registers.gpu_id;
+ 		dev_info(kbdev->dev,
+ 			"Detected G-57 variant with GPU ID %08x. "
+ 			"Changing the ID to %08x.",
+diff --git a/drivers/gpu/arm/valhall/gpu/mali_kbase_gpu_id.h b/drivers/gpu/arm/valhall/gpu/mali_kbase_gpu_id.h
+index e4124f2e6182e7e65edde7e46caf1c8e955f61c9..ebd7f606076012df01a5ed2a0de97d28915cb584 100644
+--- a/drivers/gpu/arm/valhall/gpu/mali_kbase_gpu_id.h
++++ b/drivers/gpu/arm/valhall/gpu/mali_kbase_gpu_id.h
+@@ -32,6 +32,7 @@
+ #define GPU_ID_VERSION_MINOR              (0xFFu << GPU_ID_VERSION_MINOR_SHIFT)
+ #define GPU_ID_VERSION_MAJOR              (0xFu  << GPU_ID_VERSION_MAJOR_SHIFT)
+ #define GPU_ID_VERSION_PRODUCT_ID  (0xFFFFu << GPU_ID_VERSION_PRODUCT_ID_SHIFT)
++#define GPU_ID_VERSION_ID                 0xFFFFu
+ 
+ #define GPU_ID2_VERSION_STATUS_SHIFT      0
+ #define GPU_ID2_VERSION_MINOR_SHIFT       4
+@@ -97,7 +98,7 @@
+ #define GPU_ID2_PRODUCT_TTRX              GPU_ID2_MODEL_MAKE(9, 0)
+ #define GPU_ID2_PRODUCT_TNAX              GPU_ID2_MODEL_MAKE(9, 1)
+ #define GPU_ID2_PRODUCT_TBEX              GPU_ID2_MODEL_MAKE(9, 2)
+-#define GPU_ID2_PRODUCT_TNAX_MT8192       GPU_ID2_MODEL_MAKE(9, 3)
++#define GPU_ID2_PRODUCT_TNAX_MT819X       GPU_ID2_MODEL_MAKE(9, 3)
+ #define GPU_ID2_PRODUCT_LBEX              GPU_ID2_MODEL_MAKE(9, 4)
+ #define GPU_ID2_PRODUCT_TDUX              GPU_ID2_MODEL_MAKE(10, 1)
+ #define GPU_ID2_PRODUCT_TODX              GPU_ID2_MODEL_MAKE(10, 2)
+diff --git a/drivers/gpu/arm/valhall/mali_kbase_hw.c b/drivers/gpu/arm/valhall/mali_kbase_hw.c
+index 37a2e94f85d4e8d366d6a9a03ed060f30b0024e4..429fc93276ec4a897ba705da15e725f0d595f34f 100644
+--- a/drivers/gpu/arm/valhall/mali_kbase_hw.c
++++ b/drivers/gpu/arm/valhall/mali_kbase_hw.c
+@@ -199,9 +199,10 @@ static const enum base_hw_issue *kbase_hw_get_issues_for_new_id(
+ 		  {GPU_ID2_VERSION_MAKE(1, 1, 0), base_hw_issues_lBEx_r1p1},
+ 		  {U32_MAX, NULL} } },
+ 
+-		/* Workaround for G-57 on MT8192 */
+-		{GPU_ID2_PRODUCT_TNAX_MT8192,
++		/* Workaround for G-57 on MT819X */
++		{GPU_ID2_PRODUCT_TNAX_MT819X,
+ 		 {{GPU_ID2_VERSION_MAKE(0, 0, 0), base_hw_issues_tNAx_r0p0},
++		  {GPU_ID2_VERSION_MAKE(0, 1, 0), base_hw_issues_tNAx_r0p1},
+ 		  {U32_MAX, NULL} } },
+ 
+ 		{GPU_ID2_PRODUCT_TBEX,
+@@ -245,7 +246,7 @@ static const enum base_hw_issue *kbase_hw_get_issues_for_new_id(
+ 	};
+ 
+ 	/* Replacing gpu_id with orig_gpu_id to identify the special G-57 on
+-	 * MT8192, and reconfigure its base hw issues.
++	 * MT819X, and reconfigure its base hw issues.
+ 	 */
+ 	u32 gpu_id = kbdev->gpu_props.props.raw_props.orig_gpu_id;
+ 	const u32 product_model = gpu_id & GPU_ID2_PRODUCT_MODEL;
+diff --git a/drivers/gpu/arm/valhall/platform/mt8195/Kbuild b/drivers/gpu/arm/valhall/platform/mt8195/Kbuild
+new file mode 100644
+index 0000000000000000000000000000000000000000..461b1c7bbd56bc37563e1e9e42c95f1ddb954146
+--- /dev/null
++++ b/drivers/gpu/arm/valhall/platform/mt8195/Kbuild
+@@ -0,0 +1,14 @@
++# Copyright (C) 2021 MediaTek Inc.
++#
++# This program is free software; you can redistribute it and/or modify
++# it under the terms of the GNU General Public License version 2 as
++# published by the Free Software Foundation.
++#
++# This program is distributed in the hope that it will be useful,
++# but WITHOUT ANY WARRANTY; without even the implied warranty of
++# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
++# See http://www.gnu.org/licenses/gpl-2.0.html for more details.
++
++mali_kbase-y += \
++	$(MALI_PLATFORM_DIR)/mali_kbase_config_devicetree.o \
++	$(MALI_PLATFORM_DIR)/mali_kbase_runtime_pm.o
+diff --git a/drivers/gpu/arm/valhall/platform/mt8195/mali_kbase_config_devicetree.c b/drivers/gpu/arm/valhall/platform/mt8195/mali_kbase_config_devicetree.c
+new file mode 100644
+index 0000000000000000000000000000000000000000..c99609f763e9a8b2f6dd28244641d94a6011eef4
+--- /dev/null
++++ b/drivers/gpu/arm/valhall/platform/mt8195/mali_kbase_config_devicetree.c
+@@ -0,0 +1,37 @@
++/*
++ * Copyright (C) 2021 MediaTek Inc.
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
++ * See http://www.gnu.org/licenses/gpl-2.0.html for more details.
++ */
++
++
++#include <mali_kbase_config.h>
++
++int kbase_platform_early_init(void)
++{
++	/* Nothing needed at this stage */
++	return 0;
++}
++
++static struct kbase_platform_config dummy_platform_config;
++
++struct kbase_platform_config *kbase_get_platform_config(void)
++{
++	return &dummy_platform_config;
++}
++
++int kbase_platform_register(void)
++{
++	return 0;
++}
++
++void kbase_platform_unregister(void)
++{
++}
+diff --git a/drivers/gpu/arm/valhall/platform/mt8195/mali_kbase_config_platform.h b/drivers/gpu/arm/valhall/platform/mt8195/mali_kbase_config_platform.h
+new file mode 100644
+index 0000000000000000000000000000000000000000..5fa6f6590bd175d9db599c7c04b974732644484e
+--- /dev/null
++++ b/drivers/gpu/arm/valhall/platform/mt8195/mali_kbase_config_platform.h
+@@ -0,0 +1,104 @@
++/*
++ * Copyright (C) 2021 MediaTek Inc.
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
++ * See http://www.gnu.org/licenses/gpl-2.0.html for more details.
++ */
++
++struct mfg_base {
++	struct clk_bulk_data *clks;
++	int num_clks;
++	void __iomem *g_mfg_base;
++	bool is_powered;
++};
++
++/* Definition for PMIC regulators */
++#define VSRAM_GPU_MAX_VOLT (750000)	/* uV */
++#define VSRAM_GPU_MIN_VOLT (750000)	/* uV */
++#define VGPU_MAX_VOLT (750000)	/* uV */
++#define VGPU_MIN_VOLT (625000)	/* uV */
++
++#define MIN_VOLT_BIAS (0)	/* uV */
++#define MAX_VOLT_BIAS (250000)	/* uV */
++#define VOLT_TOL (125)	/* uV */
++
++#define GPU_CORE_NUM 5
++
++/* Definition for MFG registers */
++#define MFG_QCHANNEL_CON 0xb4
++#define MFG_DEBUG_SEL 0x170
++#define MFG_DEBUG_TOP 0x178
++#define BUS_IDLE_BIT 0x4
++#define MFG_TIMESTAMP 0x130
++#define TOP_TSVALUEB_EN 0x00000001
++
++/**
++ * Maximum frequency GPU will be clocked at. Given in kHz.
++ * This must be specified as there is no default value.
++ *
++ * Attached value: number in kHz
++ * Default value: NA
++ */
++#define GPU_FREQ_KHZ_MAX (880000)
++/**
++ * Minimum frequency GPU will be clocked at. Given in kHz.
++ * This must be specified as there is no default value.
++ *
++ * Attached value: number in kHz
++ * Default value: NA
++ */
++#define GPU_FREQ_KHZ_MIN (390000)
++
++/**
++ * CPU_SPEED_FUNC - A pointer to a function that calculates the CPU clock
++ *
++ * CPU clock speed of the platform is in MHz - see kbase_cpu_clk_speed_func
++ * for the function prototype.
++ *
++ * Attached value: A kbase_cpu_clk_speed_func.
++ * Default Value:  NA
++ */
++#define CPU_SPEED_FUNC (NULL)
++
++/**
++ * GPU_SPEED_FUNC - A pointer to a function that calculates the GPU clock
++ *
++ * GPU clock speed of the platform in MHz - see kbase_gpu_clk_speed_func
++ * for the function prototype.
++ *
++ * Attached value: A kbase_gpu_clk_speed_func.
++ * Default Value:  NA
++ */
++#define GPU_SPEED_FUNC (NULL)
++
++/**
++ * Power management configuration
++ *
++ * Attached value: pointer to @ref kbase_pm_callback_conf
++ * Default value: See @ref kbase_pm_callback_conf
++ */
++#define POWER_MANAGEMENT_CALLBACKS (&pm_callbacks)
++
++/**
++ * Platform specific configuration functions
++ *
++ * Attached value: pointer to @ref kbase_platform_funcs_conf
++ * Default value: See @ref kbase_platform_funcs_conf
++ */
++#define PLATFORM_FUNCS (&platform_funcs)
++
++extern struct kbase_pm_callback_conf pm_callbacks;
++extern struct kbase_platform_funcs_conf platform_funcs;
++
++/**
++ * Autosuspend delay
++ *
++ * The delay time (in milliseconds) to be used for autosuspend
++ */
++#define AUTO_SUSPEND_DELAY (50)
+diff --git a/drivers/gpu/arm/valhall/platform/mt8195/mali_kbase_runtime_pm.c b/drivers/gpu/arm/valhall/platform/mt8195/mali_kbase_runtime_pm.c
+new file mode 100644
+index 0000000000000000000000000000000000000000..abe68d37d449b4c0094073977df94146feff3aa9
+--- /dev/null
++++ b/drivers/gpu/arm/valhall/platform/mt8195/mali_kbase_runtime_pm.c
+@@ -0,0 +1,439 @@
++/*
++ * Copyright (C) 2021 MediaTek Inc.
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
++ * See http://www.gnu.org/licenses/gpl-2.0.html for more details.
++ */
++
++#include <linux/of_address.h>
++#include <linux/of_device.h>
++#include <linux/pm_domain.h>
++#include <linux/pm_runtime.h>
++#include <linux/regulator/consumer.h>
++#include <mali_kbase.h>
++#include "mali_kbase_config_platform.h"
++#include <mali_kbase_defs.h>
++
++enum gpu_clk_idx {mux, pll, main, sub, cg};
++/* list of clocks required by GPU */
++static const char * const gpu_clocks[] = {
++	"clk_mux",
++	"clk_pll_src",
++	"clk_main_parent",
++	"clk_sub_parent",
++	"subsys_bg3d",
++};
++
++static void pm_domain_term(struct kbase_device *kbdev)
++{
++	int i;
++
++	for (i = 0; i < ARRAY_SIZE(kbdev->pm_domain_devs); i++) {
++		if (kbdev->pm_domain_devs[i])
++			dev_pm_domain_detach(kbdev->pm_domain_devs[i], true);
++	}
++}
++
++static int pm_domain_init(struct kbase_device *kbdev)
++{
++	int err;
++	int i, num_domains, num_domain_names;
++	const char *pd_names[GPU_CORE_NUM];
++
++	num_domains = of_count_phandle_with_args(kbdev->dev->of_node,
++						 "power-domains",
++						 "#power-domain-cells");
++
++	num_domain_names = of_property_count_strings(kbdev->dev->of_node,
++					"power-domain-names");
++
++	/*
++	 * Single domain is handled by the core, and, if only a single power
++	 * the power domain is requested, the property is optional.
++	 */
++	if (num_domains < 2 && kbdev->num_pm_domains < 2)
++		return 0;
++
++	if (num_domains != num_domain_names) {
++		dev_err(kbdev->dev,
++			"Device tree power domains are not match: PD %d, PD names %d\n",
++			num_domains, num_domain_names);
++		return -EINVAL;
++	}
++
++	if (num_domains != kbdev->num_pm_domains) {
++		dev_err(kbdev->dev,
++			"Incorrect number of power domains: %d provided, %d needed\n",
++			num_domains, kbdev->num_pm_domains);
++		return -EINVAL;
++	}
++
++	if (WARN(num_domains > ARRAY_SIZE(kbdev->pm_domain_devs),
++			"Too many supplies in compatible structure.\n"))
++		return -EINVAL;
++
++	err = of_property_read_string_array(kbdev->dev->of_node,
++					    "power-domain-names",
++					    pd_names,
++					    num_domain_names);
++
++	if (err < 0) {
++		dev_err(kbdev->dev, "Error reading supply-names: %d\n", err);
++		return err;
++	}
++
++	for (i = 0; i < num_domains; i++) {
++		kbdev->pm_domain_devs[i] =
++			dev_pm_domain_attach_by_name(kbdev->dev,
++					pd_names[i]);
++		if (IS_ERR_OR_NULL(kbdev->pm_domain_devs[i])) {
++			err = PTR_ERR(kbdev->pm_domain_devs[i]) ? : -ENODATA;
++			kbdev->pm_domain_devs[i] = NULL;
++			if (err == -EPROBE_DEFER) {
++				dev_dbg(kbdev->dev,
++					"Probe deferral for pm-domain %s(%d)\n",
++					pd_names[i], i);
++			} else {
++				dev_err(kbdev->dev,
++					"failed to get pm-domain %s(%d): %d\n",
++					pd_names[i], i, err);
++			}
++			goto err;
++		}
++	}
++
++	return 0;
++
++err:
++	pm_domain_term(kbdev);
++	return err;
++}
++
++static void check_bus_idle(struct kbase_device *kbdev)
++{
++	struct mfg_base *mfg = kbdev->platform_context;
++	u32 val;
++
++	/* MFG_QCHANNEL_CON (0x13fb_f0b4) bit [1:0] = 0x1 */
++	writel(0x00000001, mfg->g_mfg_base + MFG_QCHANNEL_CON);
++
++	/* set register MFG_DEBUG_SEL (0x13fb_f170) bit [7:0] = 0x03 */
++	writel(0x00000003, mfg->g_mfg_base + MFG_DEBUG_SEL);
++
++	/* polling register MFG_DEBUG_TOP (0x13fb_f178) bit 2 = 0x1 */
++	/* => 1 for bus idle, 0 for bus non-idle */
++	do {
++		val = readl(mfg->g_mfg_base + MFG_DEBUG_TOP);
++	} while ((val & BUS_IDLE_BIT) != BUS_IDLE_BIT);
++}
++
++static void enable_timestamp_register(struct kbase_device *kbdev)
++{
++	struct mfg_base *mfg = kbdev->platform_context;
++
++	/* MFG_TIMESTAMP (0x13fb_f130) bit [0:0]: TOP_TSVALUEB_EN,
++	 * write 1 into 0x13fb_f130 bit 0 to enable timestamp register
++	 */
++	writel(TOP_TSVALUEB_EN, mfg->g_mfg_base + MFG_TIMESTAMP);
++}
++
++static void *get_mfg_base(const char *node_name)
++{
++	struct device_node *node;
++
++	node = of_find_compatible_node(NULL, NULL, node_name);
++
++	if (node)
++		return of_iomap(node, 0);
++
++	return NULL;
++}
++
++static int pm_callback_power_on(struct kbase_device *kbdev)
++{
++	int error, i;
++	struct mfg_base *mfg = kbdev->platform_context;
++
++	if (mfg->is_powered) {
++		dev_dbg(kbdev->dev, "mali_device is already powered\n");
++		return 0;
++	}
++
++	mfg->is_powered = true;
++
++	for (i = 0; i < kbdev->nr_regulators; i++) {
++		error = regulator_enable(kbdev->regulators[i]);
++		if (error < 0) {
++			dev_err(kbdev->dev,
++				"Power on reg %d failed error = %d\n",
++				i, error);
++			return error;
++		}
++	}
++
++	for (i = 0; i < kbdev->num_pm_domains; i++) {
++		error = pm_runtime_get_sync(kbdev->pm_domain_devs[i]);
++		if (error < 0) {
++			dev_err(kbdev->dev,
++				"Power on core %d failed (err: %d)\n",
++				i+1, error);
++			return error;
++		}
++	}
++
++	error = clk_bulk_prepare_enable(mfg->num_clks, mfg->clks);
++	if (error < 0) {
++		dev_err(kbdev->dev,
++			"gpu clock enable failed (err: %d)\n",
++			error);
++		return error;
++	}
++
++	enable_timestamp_register(kbdev);
++
++	return 1;
++}
++
++static void pm_callback_power_off(struct kbase_device *kbdev)
++{
++	struct mfg_base *mfg = kbdev->platform_context;
++	int error, i;
++
++	if (!mfg->is_powered) {
++		dev_dbg(kbdev->dev, "mali_device is already powered off\n");
++		return;
++	}
++
++	mfg->is_powered = false;
++
++	check_bus_idle(kbdev);
++
++	clk_bulk_disable_unprepare(mfg->num_clks, mfg->clks);
++
++	for (i = kbdev->num_pm_domains - 1; i >= 0; i--) {
++		pm_runtime_mark_last_busy(kbdev->pm_domain_devs[i]);
++		error = pm_runtime_put_autosuspend(kbdev->pm_domain_devs[i]);
++		if (error < 0)
++			dev_err(kbdev->dev,
++				"Power off core %d failed (err: %d)\n",
++				i+1, error);
++	}
++
++	for (i = kbdev->nr_regulators - 1; i >= 0; i--) {
++		error = regulator_disable(kbdev->regulators[i]);
++		if (error < 0)
++			dev_err(kbdev->dev,
++				"Power off reg %d failed error = %d\n",
++				i, error);
++	}
++}
++
++static int kbase_device_runtime_init(struct kbase_device *kbdev)
++{
++	dev_dbg(kbdev->dev, "%s\n", __func__);
++
++	return 0;
++}
++
++static void kbase_device_runtime_disable(struct kbase_device *kbdev)
++{
++	dev_dbg(kbdev->dev, "%s\n", __func__);
++}
++
++static int pm_callback_runtime_on(struct kbase_device *kbdev)
++{
++	return 0;
++}
++
++static void pm_callback_runtime_off(struct kbase_device *kbdev)
++{
++}
++
++static void pm_callback_resume(struct kbase_device *kbdev)
++{
++	pm_callback_power_on(kbdev);
++}
++
++static void pm_callback_suspend(struct kbase_device *kbdev)
++{
++	pm_callback_power_off(kbdev);
++}
++
++struct kbase_pm_callback_conf pm_callbacks = {
++	.power_on_callback = pm_callback_power_on,
++	.power_off_callback = pm_callback_power_off,
++	.power_suspend_callback = pm_callback_suspend,
++	.power_resume_callback = pm_callback_resume,
++#ifdef KBASE_PM_RUNTIME
++	.power_runtime_init_callback = kbase_device_runtime_init,
++	.power_runtime_term_callback = kbase_device_runtime_disable,
++	.power_runtime_on_callback = pm_callback_runtime_on,
++	.power_runtime_off_callback = pm_callback_runtime_off,
++#else				/* KBASE_PM_RUNTIME */
++	.power_runtime_init_callback = NULL,
++	.power_runtime_term_callback = NULL,
++	.power_runtime_on_callback = NULL,
++	.power_runtime_off_callback = NULL,
++#endif				/* KBASE_PM_RUNTIME */
++};
++
++
++int mali_mfgsys_init(struct kbase_device *kbdev, struct mfg_base *mfg)
++{
++	int err, i;
++	unsigned long volt;
++
++	kbdev->num_pm_domains = GPU_CORE_NUM;
++
++	err = pm_domain_init(kbdev);
++	if (err < 0)
++		return err;
++
++	for (i = 0; i < kbdev->nr_regulators; i++)
++		if (kbdev->regulators[i] == NULL)
++			return -EINVAL;
++
++	mfg->num_clks = ARRAY_SIZE(gpu_clocks);
++	mfg->clks = devm_kcalloc(kbdev->dev, mfg->num_clks,
++				     sizeof(*mfg->clks), GFP_KERNEL);
++
++	if (!mfg->clks)
++		return -ENOMEM;
++
++	for (i = 0; i < mfg->num_clks; ++i)
++		mfg->clks[i].id = gpu_clocks[i];
++
++	err = devm_clk_bulk_get(kbdev->dev, mfg->num_clks, mfg->clks);
++	if (err != 0) {
++		dev_err(kbdev->dev,
++			"clk_bulk_get error: %d\n",
++			err);
++		return err;
++	}
++
++	for (i = 0; i < kbdev->nr_regulators; i++) {
++		volt = (i == 0) ? VGPU_MAX_VOLT : VSRAM_GPU_MAX_VOLT;
++		err = regulator_set_voltage(kbdev->regulators[i],
++			volt, volt + VOLT_TOL);
++		if (err < 0) {
++			dev_err(kbdev->dev,
++				"Regulator %d set voltage failed: %d\n",
++				i, err);
++			return err;
++		}
++		kbdev->current_voltages[i] = volt;
++	}
++
++	mfg->g_mfg_base = get_mfg_base("mediatek,mt8195-mfgcfg");
++	if (!mfg->g_mfg_base) {
++		dev_err(kbdev->dev, "Cannot find mfgcfg node\n");
++		return -ENODEV;
++	}
++
++	mfg->is_powered = false;
++
++	return 0;
++}
++
++static void voltage_range_check(struct kbase_device *kbdev,
++				unsigned long *voltages)
++{
++	if (voltages[1] - voltages[0] < MIN_VOLT_BIAS ||
++	    voltages[1] - voltages[0] > MAX_VOLT_BIAS)
++		voltages[1] = voltages[0] + MIN_VOLT_BIAS;
++	voltages[1] = clamp_t(unsigned long, voltages[1], VSRAM_GPU_MIN_VOLT,
++			      VSRAM_GPU_MAX_VOLT);
++}
++
++static int set_frequency(struct kbase_device *kbdev, unsigned long freq)
++{
++	int err;
++	struct mfg_base *mfg = kbdev->platform_context;
++
++	if (kbdev->current_freqs[0] != freq) {
++		err = clk_set_parent(mfg->clks[mux].clk, mfg->clks[sub].clk);
++		if (err) {
++			dev_err(kbdev->dev, "Failed to select sub clock src\n");
++			return err;
++		}
++
++		err = clk_set_rate(mfg->clks[pll].clk, freq);
++		if (err) {
++			dev_err(kbdev->dev,
++				"Failed to set clock rate: %lu (err: %d)\n",
++				freq, err);
++			return err;
++		}
++		kbdev->current_freqs[0] = freq;
++
++		err = clk_set_parent(mfg->clks[mux].clk, mfg->clks[main].clk);
++		if (err) {
++			dev_err(kbdev->dev, "Failed to select main clock src\n");
++			return err;
++		}
++	}
++
++	return 0;
++}
++
++static int platform_init(struct kbase_device *kbdev)
++{
++	int err, i;
++	struct mfg_base *mfg;
++
++	mfg = devm_kzalloc(kbdev->dev, sizeof(*mfg), GFP_KERNEL);
++	if (!mfg)
++		return -ENOMEM;
++
++	err = mali_mfgsys_init(kbdev, mfg);
++	if (err)
++		return err;
++
++	kbdev->platform_context = mfg;
++	for (i = 0; i < kbdev->num_pm_domains; i++) {
++		pm_runtime_set_autosuspend_delay(kbdev->pm_domain_devs[i],
++						AUTO_SUSPEND_DELAY);
++		pm_runtime_use_autosuspend(kbdev->pm_domain_devs[i]);
++	}
++
++	err = clk_set_parent(mfg->clks[mux].clk, mfg->clks[sub].clk);
++	if (err) {
++		dev_err(kbdev->dev, "Failed to select sub clock src\n");
++		return err;
++	}
++
++	err = clk_set_rate(mfg->clks[pll].clk, GPU_FREQ_KHZ_MAX * 1000);
++	if (err) {
++		dev_err(kbdev->dev, "Failed to set clock %d kHz\n",
++			GPU_FREQ_KHZ_MAX);
++		return err;
++	}
++
++	err = clk_set_parent(mfg->clks[mux].clk, mfg->clks[main].clk);
++	if (err) {
++		dev_err(kbdev->dev, "Failed to select main clock src\n");
++		return err;
++	}
++
++	kbdev->devfreq_ops.set_frequency = set_frequency;
++	kbdev->devfreq_ops.voltage_range_check = voltage_range_check;
++
++	return 0;
++}
++
++static void platform_term(struct kbase_device *kbdev)
++{
++	kbdev->platform_context = NULL;
++	pm_domain_term(kbdev);
++}
++
++struct kbase_platform_funcs_conf platform_funcs = {
++	.platform_init_func = platform_init,
++	.platform_term_func = platform_term
++};
 diff --git a/drivers/gpu/drm/mediatek/Kconfig b/drivers/gpu/drm/mediatek/Kconfig
 index 2976d21e9a34a3e77563bb4d9291e8b0935f34a5..14403b2c1475806608d9a616f009796240021e3f 100644
 --- a/drivers/gpu/drm/mediatek/Kconfig
@@ -47878,10 +48794,19 @@ index 7815426e7aeaaf6fc0842f44ab6e56c301ea6964..d1526d0c6248dbea9e93dff4acef32af
 diff --git a/drivers/pinctrl/mediatek/pinctrl-mtk-common-v2.h b/drivers/pinctrl/mediatek/pinctrl-mtk-common-v2.h
 old mode 100644
 new mode 100755
-index e2aae285b5fc9bbbca3c8efdbb877509435a7848..570e8da7bf38d633842c3d118d40f1d96ccdf67a
+index e2aae285b5fc9bbbca3c8efdbb877509435a7848..44511fc4735900c7473d1523918347d244954af9
 --- a/drivers/pinctrl/mediatek/pinctrl-mtk-common-v2.h
 +++ b/drivers/pinctrl/mediatek/pinctrl-mtk-common-v2.h
-@@ -66,6 +66,8 @@ enum {
+@@ -11,6 +11,8 @@
+ 
+ #include <linux/gpio/driver.h>
+ 
++#define CONFIG_PINCTRL_MTK_DEBUG
++
+ #define MTK_INPUT      0
+ #define MTK_OUTPUT     1
+ #define MTK_DISABLE    0
+@@ -66,6 +68,8 @@ enum {
  	PINCTRL_PIN_REG_DRV_EN,
  	PINCTRL_PIN_REG_DRV_E0,
  	PINCTRL_PIN_REG_DRV_E1,
@@ -47890,7 +48815,7 @@ index e2aae285b5fc9bbbca3c8efdbb877509435a7848..570e8da7bf38d633842c3d118d40f1d9
  	PINCTRL_PIN_REG_MAX,
  };
  
-@@ -236,6 +238,10 @@ struct mtk_pin_soc {
+@@ -236,6 +240,10 @@ struct mtk_pin_soc {
  			     const struct mtk_pin_desc *desc, u32 arg);
  	int (*adv_drive_get)(struct mtk_pinctrl *hw,
  			     const struct mtk_pin_desc *desc, u32 *val);
@@ -47901,7 +48826,17 @@ index e2aae285b5fc9bbbca3c8efdbb877509435a7848..570e8da7bf38d633842c3d118d40f1d9
  
  	/* Specific driver data */
  	void				*driver_data;
-@@ -314,6 +320,15 @@ int mtk_pinconf_adv_drive_set(struct mtk_pinctrl *hw,
+@@ -251,6 +259,9 @@ struct mtk_pinctrl {
+ 	struct mtk_eint			*eint;
+ 	struct mtk_pinctrl_group	*groups;
+ 	const char          **grp_names;
++#if defined(CONFIG_PINCTRL_MTK_DEBUG)
++	u32 dbg_start;
++#endif
+ };
+ 
+ void mtk_rmw(struct mtk_pinctrl *pctl, u8 i, u32 reg, u32 mask, u32 set);
+@@ -314,6 +325,15 @@ int mtk_pinconf_adv_drive_set(struct mtk_pinctrl *hw,
  			      const struct mtk_pin_desc *desc, u32 arg);
  int mtk_pinconf_adv_drive_get(struct mtk_pinctrl *hw,
  			      const struct mtk_pin_desc *desc, u32 *val);
@@ -49595,7 +50530,7 @@ index 0000000000000000000000000000000000000000..de4a8a80bf1dc6e6f8eef4cdb153f19c
 diff --git a/drivers/pinctrl/mediatek/pinctrl-paris.c b/drivers/pinctrl/mediatek/pinctrl-paris.c
 old mode 100644
 new mode 100755
-index 039ce9be19c5b38bab9b357dccbf71761b24e791..967288c282325a079f5d5e83bbfc99554a60af5a
+index 039ce9be19c5b38bab9b357dccbf71761b24e791..e7b4911d52b9ddb8dcf8f48b6f7208d2963616d4
 --- a/drivers/pinctrl/mediatek/pinctrl-paris.c
 +++ b/drivers/pinctrl/mediatek/pinctrl-paris.c
 @@ -22,6 +22,8 @@
@@ -49623,7 +50558,15 @@ index 039ce9be19c5b38bab9b357dccbf71761b24e791..967288c282325a079f5d5e83bbfc9955
  };
  #endif
  
-@@ -176,6 +180,12 @@ static int mtk_pinconf_get(struct pinctrl_dev *pctldev,
+@@ -48,6 +52,7 @@ static const char * const mtk_gpio_functions[] = {
+ 	"func12", "func13", "func14", "func15",
+ };
+ 
++
+ static int mtk_pinmux_gpio_request_enable(struct pinctrl_dev *pctldev,
+ 					  struct pinctrl_gpio_range *range,
+ 					  unsigned int pin)
+@@ -176,6 +181,12 @@ static int mtk_pinconf_get(struct pinctrl_dev *pctldev,
  		else
  			err = -ENOTSUPP;
  		break;
@@ -49636,7 +50579,7 @@ index 039ce9be19c5b38bab9b357dccbf71761b24e791..967288c282325a079f5d5e83bbfc9955
  	default:
  		err = -ENOTSUPP;
  	}
-@@ -295,6 +305,12 @@ static int mtk_pinconf_set(struct pinctrl_dev *pctldev, unsigned int pin,
+@@ -295,6 +306,12 @@ static int mtk_pinconf_set(struct pinctrl_dev *pctldev, unsigned int pin,
  		else
  			err = -ENOTSUPP;
  		break;
@@ -49649,7 +50592,7 @@ index 039ce9be19c5b38bab9b357dccbf71761b24e791..967288c282325a079f5d5e83bbfc9955
  	default:
  		err = -ENOTSUPP;
  	}
-@@ -891,8 +907,8 @@ static int mtk_build_gpiochip(struct mtk_pinctrl *hw, struct device_node *np)
+@@ -891,8 +908,8 @@ static int mtk_build_gpiochip(struct mtk_pinctrl *hw, struct device_node *np)
  	chip->direction_output	= mtk_gpio_direction_output;
  	chip->get		= mtk_gpio_get;
  	chip->set		= mtk_gpio_set;
@@ -49660,6 +50603,754 @@ index 039ce9be19c5b38bab9b357dccbf71761b24e791..967288c282325a079f5d5e83bbfc9955
  	chip->base		= -1;
  	chip->ngpio		= hw->soc->npins;
  	chip->of_node		= np;
+@@ -935,6 +952,734 @@ static int mtk_pctrl_build_state(struct platform_device *pdev)
+ 	return 0;
+ }
+ 
++#if defined(CONFIG_PINCTRL_MTK_DEBUG)
++#define MT8192 1
++#define MT8183 0
++static int mtk_gpio_get_out(struct gpio_chip *chip, unsigned int gpio)
++{
++	struct mtk_pinctrl *hw = gpiochip_get_data(chip);
++	const struct mtk_pin_desc *desc;
++	int value, err;
++
++	desc = (const struct mtk_pin_desc *)&hw->soc->pins[gpio];
++
++	err = mtk_hw_get_value(hw, desc, PINCTRL_PIN_REG_DO, &value);
++	if (err)
++		return err;
++
++	return !!value;
++}
++
++static int mtk_pullen_get(struct gpio_chip *chip, unsigned int gpio)
++{
++	struct mtk_pinctrl *hw = gpiochip_get_data(chip);
++	const struct mtk_pin_desc *desc;
++	int value, err;
++
++	desc = (const struct mtk_pin_desc *)&hw->soc->pins[gpio];
++
++	err = mtk_hw_get_value(hw, desc, PINCTRL_PIN_REG_PULLEN, &value);
++	if (err)
++		return err;
++
++	return !!value;
++}
++
++static int mtk_ies_get(struct gpio_chip *chip, unsigned int gpio)
++{
++	struct mtk_pinctrl *hw = gpiochip_get_data(chip);
++	const struct mtk_pin_desc *desc;
++	int value, err;
++
++	desc = (const struct mtk_pin_desc *)&hw->soc->pins[gpio];
++
++	err = mtk_hw_get_value(hw, desc, PINCTRL_PIN_REG_IES, &value);
++	if (err)
++		return err;
++
++	return !!value;
++}
++
++static int mtk_smt_get(struct gpio_chip *chip, unsigned int gpio)
++{
++	struct mtk_pinctrl *hw = gpiochip_get_data(chip);
++	const struct mtk_pin_desc *desc;
++	int value, err;
++
++	desc = (const struct mtk_pin_desc *)&hw->soc->pins[gpio];
++
++	err = mtk_hw_get_value(hw, desc, PINCTRL_PIN_REG_SMT, &value);
++	if (err)
++		return err;
++
++	return !!value;
++}
++
++static int mtk_driving_get(struct gpio_chip *chip, unsigned int gpio)
++{
++	struct mtk_pinctrl *hw = gpiochip_get_data(chip);
++	const struct mtk_pin_desc *desc;
++	int value, err;
++
++	desc = (const struct mtk_pin_desc *)&hw->soc->pins[gpio];
++
++	err = mtk_hw_get_value(hw, desc, PINCTRL_PIN_REG_DRV, &value);
++	if (err)
++		return err;
++
++	return value;
++}
++
++static int mtk_pinmux_get(struct gpio_chip *chip, unsigned int gpio)
++{
++	struct mtk_pinctrl *hw = gpiochip_get_data(chip);
++	const struct mtk_pin_desc *desc;
++	int value, err;
++
++	desc = (const struct mtk_pin_desc *)&hw->soc->pins[gpio];
++
++	err = mtk_hw_get_value(hw, desc, PINCTRL_PIN_REG_MODE, &value);
++	if (err)
++		return err;
++
++	return value;
++}
++
++static int mtk_pullsel_get(struct gpio_chip *chip, unsigned int gpio)
++{
++	struct mtk_pinctrl *hw = gpiochip_get_data(chip);
++	const struct mtk_pin_desc *desc;
++	int value, err;
++
++	desc = (const struct mtk_pin_desc *)&hw->soc->pins[gpio];
++
++	err = mtk_hw_get_value(hw, desc, PINCTRL_PIN_REG_PULLSEL, &value);
++	if (err)
++		return err;
++
++	return !!value;
++}
++
++static int mtk_pullup_get(struct gpio_chip *chip, unsigned int gpio)
++{
++	struct mtk_pinctrl *hw = gpiochip_get_data(chip);
++	const struct mtk_pin_desc *desc;
++	int value, err;
++
++	desc = (const struct mtk_pin_desc *)&hw->soc->pins[gpio];
++
++	err = mtk_hw_get_value(hw, desc, PINCTRL_PIN_REG_PU, &value);
++	if (err)
++		return err;
++
++	return !!value;
++}
++
++static int mtk_pulldown_get(struct gpio_chip *chip, unsigned int gpio)
++{
++	struct mtk_pinctrl *hw = gpiochip_get_data(chip);
++	const struct mtk_pin_desc *desc;
++	int value, err;
++
++	desc = (const struct mtk_pin_desc *)&hw->soc->pins[gpio];
++
++	err = mtk_hw_get_value(hw, desc, PINCTRL_PIN_REG_PD, &value);
++	if (err)
++		return err;
++
++	return !!value;
++}
++
++
++static int mtk_pupd_get(struct gpio_chip *chip, unsigned int gpio)
++{
++	struct mtk_pinctrl *hw = gpiochip_get_data(chip);
++	const struct mtk_pin_desc *desc;
++	int value, err;
++
++	desc = (const struct mtk_pin_desc *)&hw->soc->pins[gpio];
++
++	err = mtk_hw_get_value(hw, desc, PINCTRL_PIN_REG_PUPD, &value);
++	if (err)
++		return err;
++
++	return !!value;
++}
++
++static int mtk_r0_get(struct gpio_chip *chip, unsigned int gpio)
++{
++	struct mtk_pinctrl *hw = gpiochip_get_data(chip);
++	const struct mtk_pin_desc *desc;
++	int value, err;
++
++	desc = (const struct mtk_pin_desc *)&hw->soc->pins[gpio];
++
++	err = mtk_hw_get_value(hw, desc, PINCTRL_PIN_REG_R0, &value);
++	if (err)
++		return err;
++
++	return !!value;
++}
++
++static int mtk_r1_get(struct gpio_chip *chip, unsigned int gpio)
++{
++	struct mtk_pinctrl *hw = gpiochip_get_data(chip);
++	const struct mtk_pin_desc *desc;
++	int value, err;
++
++	desc = (const struct mtk_pin_desc *)&hw->soc->pins[gpio];
++
++	err = mtk_hw_get_value(hw, desc, PINCTRL_PIN_REG_R1, &value);
++	if (err)
++		return err;
++
++	return !!value;
++}
++
++static int mtk_i2c_r0_get(struct gpio_chip *chip, unsigned int gpio)
++{
++	struct mtk_pinctrl *hw = gpiochip_get_data(chip);
++	const struct mtk_pin_desc *desc;
++	int value, err;
++
++	desc = (const struct mtk_pin_desc *)&hw->soc->pins[gpio];
++
++	err = mtk_hw_get_value(hw, desc, PINCTRL_PIN_REG_R0, &value);
++	if (err)
++		return err;
++
++	return !!value;
++}
++
++static int mtk_i2c_r1_get(struct gpio_chip *chip, unsigned int gpio)
++{
++	struct mtk_pinctrl *hw = gpiochip_get_data(chip);
++	const struct mtk_pin_desc *desc;
++	int value, err;
++
++	desc = (const struct mtk_pin_desc *)&hw->soc->pins[gpio];
++
++	err = mtk_hw_get_value(hw, desc, PINCTRL_PIN_REG_R1, &value);
++	if (err)
++		return err;
++
++	return !!value;
++}
++
++static int mtk_i2c_drv_e0_get(struct gpio_chip *chip, unsigned int gpio)
++{
++	struct mtk_pinctrl *hw = gpiochip_get_data(chip);
++	const struct mtk_pin_desc *desc;
++	int value, err;
++
++	desc = (const struct mtk_pin_desc *)&hw->soc->pins[gpio];
++
++	err = mtk_hw_get_value(hw, desc, PINCTRL_PIN_REG_DRV_E0, &value);
++	if (err)
++		return err;
++
++	return !!value;
++}
++
++static int mtk_i2c_drv_e1_get(struct gpio_chip *chip, unsigned int gpio)
++{
++	struct mtk_pinctrl *hw = gpiochip_get_data(chip);
++	const struct mtk_pin_desc *desc;
++	int value, err;
++
++	desc = (const struct mtk_pin_desc *)&hw->soc->pins[gpio];
++
++	err = mtk_hw_get_value(hw, desc, PINCTRL_PIN_REG_DRV_E1, &value);
++	if (err)
++		return err;
++
++	return !!value;
++}
++
++static int mtk_i2c_drv_en_dis_get(struct gpio_chip *chip, unsigned int gpio)
++{
++	struct mtk_pinctrl *hw = gpiochip_get_data(chip);
++	const struct mtk_pin_desc *desc;
++	int value, err;
++
++	desc = (const struct mtk_pin_desc *)&hw->soc->pins[gpio];
++
++	err = mtk_hw_get_value(hw, desc, PINCTRL_PIN_REG_DRV_EN, &value);
++	if (err)
++		return err;
++
++	return !!value;
++}
++
++static ssize_t mtk_gpio_show_pin(struct device *dev,
++		struct device_attribute *attr, char *buf)
++{
++	int len = 0;
++	int bufLen = (int)PAGE_SIZE;
++	struct mtk_pinctrl *hw = dev_get_drvdata(dev);
++	struct gpio_chip *chip = &(hw->chip);
++	unsigned int i;
++	int pull_sel, pull_en, pull_up, pull_down;
++
++	len += snprintf(buf+len, bufLen-len,
++			"regmap[index]:[base register]\n");
++
++	len += snprintf(buf+len, bufLen-len, "[%d]:[%x]\n", 0, 0x10005000);
++	len += snprintf(buf+len, bufLen-len, "[%d]:[%x]\n", 1, 0x11f20000);
++	len += snprintf(buf+len, bufLen-len, "[%d]:[%x]\n", 2, 0x11e80000);
++	len += snprintf(buf+len, bufLen-len, "[%d]:[%x]\n", 3, 0x11e70000);
++	len += snprintf(buf+len, bufLen-len, "[%d]:[%x]\n", 4, 0x11e90000);
++	len += snprintf(buf+len, bufLen-len, "[%d]:[%x]\n", 5, 0x11d30000);
++	len += snprintf(buf+len, bufLen-len, "[%d]:[%x]\n", 6, 0x11d20000);
++	len += snprintf(buf+len, bufLen-len, "[%d]:[%x]\n", 7, 0x11c50000);
++	len += snprintf(buf+len, bufLen-len, "[%d]:[%x]\n", 8, 0x11f30000);
++
++	len += snprintf(buf+len, bufLen-len,
++		"sample cmd: echo wr index offset val > mt_gpio .\n");
++	len += snprintf(buf+len, bufLen-len,
++		"sample cmd: echo rr index offset > mt_gpio .\n");
++
++
++	len += snprintf(buf+len, bufLen-len,
++		"gpio base is %d, total num is %d\n",
++		chip->base, chip->ngpio);
++
++	len += snprintf(buf+len, bufLen-len,
++		"PIN: [MODE] [DIR] [DOUT] [DIN] [PULL_EN] [PULL_SEL] [PULL_UP] [PULL_DOWN] [IES] [SMT] [DRIVE] ( [PUPD] [R1] [R0] ) ([E1] [E0] [EN])\n");
++
++	if (hw->dbg_start >= chip->ngpio) {
++		len += snprintf(buf+len, bufLen-len,
++		"wrong gpio-range: start should less than %d!\n",
++		chip->ngpio);
++		return len;
++	}
++
++	for (i = hw->dbg_start; i < chip->ngpio; i++) {
++		pull_sel = mtk_pullsel_get(chip, i);
++		pull_en = mtk_pullen_get(chip, i);
++		pull_up = mtk_pullup_get(chip, i);
++		pull_down = mtk_pulldown_get(chip, i);
++		if ((len+32) >= bufLen)
++			break;
++
++		len += snprintf(buf+len, bufLen-len,
++				"%4d:% d% d% d% d% d% d% d% d% d",
++				i,
++				mtk_pinmux_get(chip, i),
++				!mtk_gpio_get_direction(chip, i),
++				mtk_gpio_get_out(chip, i),
++				mtk_gpio_get(chip, i),
++#if MT8183
++				(pull_en >= 0) ? (pull_en & 1) : -1,
++				(pull_sel >= 0) ? (pull_sel & 1) : -1,
++#elif MT8192
++				(pull_up >= 0) ? (pull_up & 1) : -1,
++				(pull_down >= 0) ? (pull_down & 1) : -1,
++#endif
++				mtk_ies_get(chip, i),
++				mtk_smt_get(chip, i),
++				mtk_driving_get(chip, i));
++		if (((pull_sel & 8) != 0) && (pull_sel >= 0))
++			len += snprintf(buf+len, bufLen-len, " %d %d",
++					!!(pull_sel & 4), !!(pull_sel & 2));
++		if (pull_sel < 0)
++			len += snprintf(buf+len, bufLen-len, "(%d %d %d)",
++				(mtk_pupd_get(chip, i) >= 0)? (mtk_pupd_get(chip, i) & 1) : -1,
++				(mtk_r1_get(chip, i) >= 0)? (mtk_r1_get(chip, i) & 1) : -1,
++				(mtk_r0_get(chip, i) >= 0)? (mtk_r0_get(chip, i) & 1) : -1);
++#if MT8183
++		if (((i >= 48) && (i <= 51)) || ((i >= 81) && (i <= 84))
++			|| ((i >= 103) && (i <= 106))) {
++			len += snprintf(buf+len, bufLen-len, "(%d %d %d)",
++				-1, mtk_i2c_r1_get(chip, i),
++				mtk_i2c_r0_get(chip, i));
++			len += snprintf(buf+len, bufLen-len, "(%d %d %d)",
++				mtk_i2c_drv_e1_get(chip, i),
++				mtk_i2c_drv_e0_get(chip, i),
++				mtk_i2c_drv_en_dis_get(chip, i));
++		}
++#elif MT8192
++		if (((i >= 118) && (i <= 125)) || ((i >= 139) && (i <= 142))
++			|| ((i >= 160) && (i <= 161)) || ((i >= 200) && (i <= 205))) {
++			len += snprintf(buf+len, bufLen-len, "(%d %d %d)",
++				-1, mtk_i2c_r1_get(chip, i),
++				mtk_i2c_r0_get(chip, i));
++			len += snprintf(buf+len, bufLen-len, "(%d %d %d)",
++				mtk_i2c_drv_e1_get(chip, i),
++				mtk_i2c_drv_e0_get(chip, i),
++				mtk_i2c_drv_en_dis_get(chip, i));
++		}
++#endif
++		len += snprintf(buf+len, bufLen-len, "\n");
++	}
++
++	return len;
++}
++
++static int mtk_mode_set(struct gpio_chip *chip, unsigned int gpio,
++	unsigned int value)
++{
++	struct mtk_pinctrl *hw = gpiochip_get_data(chip);
++	const struct mtk_pin_desc *desc;
++	int err;
++
++	desc = (const struct mtk_pin_desc *)&hw->soc->pins[gpio];
++
++	err = mtk_hw_set_value(hw, desc, PINCTRL_PIN_REG_MODE, value);
++	if (err)
++		return err;
++
++	return 0;
++}
++
++static int mtk_ies_set(struct gpio_chip *chip, unsigned int gpio,
++	unsigned int value)
++{
++	struct mtk_pinctrl *hw = gpiochip_get_data(chip);
++	const struct mtk_pin_desc *desc;
++	int err;
++
++	desc = (const struct mtk_pin_desc *)&hw->soc->pins[gpio];
++
++	err = mtk_hw_set_value(hw, desc, PINCTRL_PIN_REG_IES, value);
++	if (err)
++		return err;
++
++	return 0;
++}
++
++static int mtk_smt_set(struct gpio_chip *chip, unsigned int gpio,
++	unsigned int value)
++{
++	struct mtk_pinctrl *hw = gpiochip_get_data(chip);
++	const struct mtk_pin_desc *desc;
++	int err;
++
++	desc = (const struct mtk_pin_desc *)&hw->soc->pins[gpio];
++
++	err = mtk_hw_set_value(hw, desc, PINCTRL_PIN_REG_SMT, value);
++	if (err)
++		return err;
++
++	return 0;
++}
++
++static int mtk_pullen_set(struct gpio_chip *chip, unsigned int gpio,
++	unsigned int value)
++{
++	struct mtk_pinctrl *hw = gpiochip_get_data(chip);
++	const struct mtk_pin_desc *desc;
++	int err;
++
++	desc = (const struct mtk_pin_desc *)&hw->soc->pins[gpio];
++
++	err = mtk_hw_set_value(hw, desc, PINCTRL_PIN_REG_PULLEN, value);
++	if (err)
++		return err;
++
++	return 0;
++}
++
++static int mtk_pullsel_set(struct gpio_chip *chip, unsigned int gpio,
++	unsigned int value)
++{
++	struct mtk_pinctrl *hw = gpiochip_get_data(chip);
++	const struct mtk_pin_desc *desc;
++	int err;
++
++	desc = (const struct mtk_pin_desc *)&hw->soc->pins[gpio];
++
++	err = mtk_hw_set_value(hw, desc, PINCTRL_PIN_REG_PULLSEL, value);
++	if (err)
++		return err;
++
++	return 0;
++}
++
++static int mtk_pullup_set(struct gpio_chip *chip, unsigned int gpio,
++	unsigned int value)
++{
++	struct mtk_pinctrl *hw = gpiochip_get_data(chip);
++	const struct mtk_pin_desc *desc;
++	int err;
++
++	desc = (const struct mtk_pin_desc *)&hw->soc->pins[gpio];
++
++	err = mtk_hw_set_value(hw, desc, PINCTRL_PIN_REG_PU, value);
++	if (err)
++		return err;
++
++	return 0;
++}
++
++static int mtk_pulldown_set(struct gpio_chip *chip, unsigned int gpio,
++	unsigned int value)
++{
++	struct mtk_pinctrl *hw = gpiochip_get_data(chip);
++	const struct mtk_pin_desc *desc;
++	int err;
++
++	desc = (const struct mtk_pin_desc *)&hw->soc->pins[gpio];
++
++	err = mtk_hw_set_value(hw, desc, PINCTRL_PIN_REG_PD, value);
++	if (err)
++		return err;
++
++	return 0;
++}
++
++static int mtk_drv_set(struct gpio_chip *chip, unsigned int gpio,
++	unsigned int value)
++{
++	struct mtk_pinctrl *hw = gpiochip_get_data(chip);
++	const struct mtk_pin_desc *desc;
++	int err;
++
++	desc = (const struct mtk_pin_desc *)&hw->soc->pins[gpio];
++
++	err = mtk_hw_set_value(hw, desc, PINCTRL_PIN_REG_DRV, value);
++	if (err)
++		return err;
++
++	return 0;
++}
++
++static int mtk_pupd_set(struct gpio_chip *chip, unsigned int gpio,
++	unsigned int pupd, unsigned int r1, unsigned int r0)
++{
++	struct mtk_pinctrl *hw = gpiochip_get_data(chip);
++	const struct mtk_pin_desc *desc;
++	int err;
++
++	desc = (const struct mtk_pin_desc *)&hw->soc->pins[gpio];
++
++	err = mtk_hw_set_value(hw, desc, PINCTRL_PIN_REG_R1, r1);
++	if (err)
++		return err;
++
++	err = mtk_hw_set_value(hw, desc, PINCTRL_PIN_REG_R0, r0);
++	if (err)
++		return err;
++
++	err = mtk_hw_set_value(hw, desc, PINCTRL_PIN_REG_PUPD, pupd);
++	if (err)
++		return err;
++
++	return 0;
++}
++
++static int mtk_drv_adv_set(struct gpio_chip *chip, unsigned int gpio,
++	unsigned int en, unsigned int e1, unsigned int e0)
++{
++	struct mtk_pinctrl *hw = gpiochip_get_data(chip);
++	const struct mtk_pin_desc *desc;
++	int err;
++
++	desc = (const struct mtk_pin_desc *)&hw->soc->pins[gpio];
++
++	err = mtk_hw_set_value(hw, desc, PINCTRL_PIN_REG_DRV_EN, en);
++	if (err)
++		return err;
++
++	err = mtk_hw_set_value(hw, desc, PINCTRL_PIN_REG_DRV_E1, e1);
++	if (err)
++		return err;
++
++	err = mtk_hw_set_value(hw, desc, PINCTRL_PIN_REG_DRV_E0, e0);
++	if (err)
++		return err;
++
++	return 0;
++}
++
++static ssize_t mtk_gpio_store_pin(struct device *dev,
++		struct device_attribute *attr, const char *buf, size_t count)
++{
++	u32 index, offset, old_val, val, new_val, pin, pupd, r1, r0, en, e1, e0;
++	int val_set;
++
++	struct mtk_pinctrl *hw = dev_get_drvdata(dev);
++	struct pinctrl_dev *pctldev = hw->pctrl;
++	struct gpio_chip *chip = &(hw->chip);
++
++	if ((strncmp(buf, "wr", 2) == 0)
++	    && (sscanf(buf+2, "%d %x %x", &index, &offset, &val) == 3)) {
++		if ((index == 0) && (offset > 0xf60)) {
++			pr_err("index(%d),offset(0x%x) invalid.\n",
++				index, offset);
++			goto err_return;
++		} else if ((index == 1) && (offset > 0xf0)) {
++			pr_err("index(%d),offset(0x%x) invalid.\n",
++				index, offset);
++			goto err_return;
++		} else if ((index == 2) && (offset > 0xf0)) {
++			pr_err("index(%d),offset(0x%x) invalid.\n",
++				index, offset);
++			goto err_return;
++		} else if ((index == 3) && (offset > 0xf0)) {
++			pr_err("index(%d),offset(0x%x) invalid.\n",
++				index, offset);
++			goto err_return;
++		} else if ((index == 4) && (offset > 0xf0)) {
++			pr_err("index(%d),offset(0x%x) invalid.\n",
++				index, offset);
++			goto err_return;
++		} else if ((index == 5) && (offset > 0xf0)) {
++			pr_err("index(%d),offset(0x%x) invalid.\n",
++				index, offset);
++			goto err_return;
++		} else if ((index == 6) && (offset > 0xf0)) {
++			pr_err("index(%d),offset(0x%x) invalid.\n",
++				index, offset);
++			goto err_return;
++		} else if ((index == 7) && (offset > 0xf0)) {
++			pr_err("index(%d),offset(0x%x) invalid.\n",
++				index, offset);
++			goto err_return;
++		} else if ((index == 8) && (offset > 0xf0)) {
++			pr_err("index(%d),offset(0x%x) invalid.\n",
++				index, offset);
++			goto err_return;
++		} else if ((index == 9) && (offset > 0xf0)) {
++			pr_err("index(%d),offset(0x%x) invalid.\n",
++				index, offset);
++			goto err_return;
++		} else if ((index == 10) && (offset > 0xf0)) {
++			pr_err("index(%d),offset(0x%x) invalid.\n",
++				index, offset);
++			goto err_return;
++		}
++
++		old_val = readl_relaxed(hw->base[index] + offset);
++		writel_relaxed(val, hw->base[index] + offset);
++		new_val = readl_relaxed(hw->base[index] + offset);
++		pr_err("old_val(0x%x)->new_val(0x%x).\n", old_val, new_val);
++	} else if ((strncmp(buf, "rr", 2) == 0)
++	    && (sscanf(buf+2, "%d %x", &index, &offset) == 2)) {
++		if ((index == 0) && (offset > 0xf60)) {
++			pr_err("index(%d),offset(0x%x) invalid.\n",
++				index, offset);
++			goto err_return;
++		} else if ((index == 1) && (offset > 0xf0)) {
++			pr_err("index(%d),offset(0x%x) invalid.\n",
++				index, offset);
++			goto err_return;
++		} else if ((index == 2) && (offset > 0xf0)) {
++			pr_err("index(%d),offset(0x%x) invalid.\n",
++				index, offset);
++			goto err_return;
++		} else if ((index == 3) && (offset > 0xf0)) {
++			pr_err("index(%d),offset(0x%x) invalid.\n",
++				index, offset);
++			goto err_return;
++		} else if ((index == 4) && (offset > 0xf0)) {
++			pr_err("index(%d),offset(0x%x) invalid.\n",
++				index, offset);
++			goto err_return;
++		} else if ((index == 5) && (offset > 0xf0)) {
++			pr_err("index(%d),offset(0x%x) invalid.\n",
++				index, offset);
++			goto err_return;
++		} else if ((index == 6) && (offset > 0xf0)) {
++			pr_err("index(%d),offset(0x%x) invalid.\n",
++				index, offset);
++			goto err_return;
++		} else if ((index == 7) && (offset > 0xf0)) {
++			pr_err("index(%d),offset(0x%x) invalid.\n",
++				index, offset);
++			goto err_return;
++		} else if ((index == 8) && (offset > 0xf0)) {
++			pr_err("index(%d),offset(0x%x) invalid.\n",
++				index, offset);
++			goto err_return;
++		} else if ((index == 9) && (offset > 0xf0)) {
++			pr_err("index(%d),offset(0x%x) invalid.\n",
++				index, offset);
++			goto err_return;
++		} else if ((index == 10) && (offset > 0xf0)) {
++			pr_err("index(%d),offset(0x%x) invalid.\n",
++				index, offset);
++			goto err_return;
++		}
++		val = readl_relaxed(hw->base[index] + offset);
++		pr_err("regmap[%d]+offset(%x)=0x%x.\n", index, offset, val);
++	} else if ((strncmp(buf, "mode", 4) == 0)
++	    && (sscanf(buf+4, "%d %d", &pin, &val) == 2)) {
++		val_set = mtk_mode_set(chip, pin, val);
++	} else if ((strncmp(buf, "dir", 3) == 0)
++		   && (sscanf(buf+3, "%d %d", &pin, &val) == 2)) {
++		val_set  = mtk_pinmux_gpio_set_direction(pctldev,
++			NULL, pin, !(bool)val);
++	} else if ((strncmp(buf, "out", 3) == 0)
++		   && (sscanf(buf+3, "%d %d", &pin, &val) == 2)) {
++		val_set  = mtk_pinmux_gpio_set_direction(pctldev,
++			NULL, pin, false);
++		mtk_gpio_set(chip, pin, val);
++	} else if ((strncmp(buf, "pullen", 6) == 0)
++		   && (sscanf(buf+6, "%d %d", &pin, &val) == 2)) {
++		val_set = mtk_pullen_set(chip, pin, val);
++	} else if ((strncmp(buf, "pullsel", 7) == 0)
++		   && (sscanf(buf+7, "%d %d", &pin, &val) == 2)) {
++		val_set = mtk_pullsel_set(chip, pin, val);
++	} else if ((strncmp(buf, "pullup", 6) == 0)
++		   && (sscanf(buf+6, "%d %d", &pin, &val) == 2)) {
++		val_set = mtk_pullup_set(chip, pin, val);
++	} else if ((strncmp(buf, "pulldn", 6) == 0)
++		   && (sscanf(buf+6, "%d %d", &pin, &val) == 2)) {
++		val_set = mtk_pulldown_set(chip, pin, val);
++	} else if ((strncmp(buf, "ies", 3) == 0)
++		   && (sscanf(buf+3, "%d %d", &pin, &val) == 2)) {
++		val_set = mtk_ies_set(chip, pin, val);
++	} else if ((strncmp(buf, "smt", 3) == 0)
++		   && (sscanf(buf+3, "%d %d", &pin, &val) == 2)) {
++		val_set = mtk_smt_set(chip, pin, val);
++	} else if ((strncmp(buf, "drv", 3) == 0)
++		   && (sscanf(buf+3, "%d %d", &pin, &val) == 2)) {
++		val_set = mtk_drv_set(chip, pin, val);
++	} else if ((strncmp(buf, "pupd", 4) == 0)
++		   && (sscanf(buf+4, "%d %d %d %d", &pin, &pupd, &r1, &r0) == 4)) {
++		val_set = mtk_pupd_set(chip, pin, pupd, r1, r0);
++	} else if ((strncmp(buf, "drv_adv", 7) == 0)
++		   && (sscanf(buf+7, "%d %d %d %d", &pin, &en, &e1, &e0) == 4)) {
++		val_set = mtk_drv_adv_set(chip, pin, en, e1, e0);
++	} else if ((strncmp(buf, "start", 5) == 0)
++		   && (sscanf(buf+5, "%d", &val) == 1)) {
++		hw->dbg_start = (u32)val;
++	} else {
++	}
++
++	return (ssize_t)count;
++
++err_return:
++
++	return (ssize_t)0;
++}
++
++static DEVICE_ATTR(mt_gpio, 0664, mtk_gpio_show_pin, mtk_gpio_store_pin);
++
++static struct device_attribute *gpio_attr_list[] = {
++	&dev_attr_mt_gpio,
++};
++
++static int mtk_gpio_create_attr(struct device *dev)
++{
++	int idx, err = 0;
++	int num = (int)ARRAY_SIZE(gpio_attr_list);
++
++	if (dev == NULL)
++		return -EINVAL;
++
++	for (idx = 0; idx < num; idx++) {
++		err = device_create_file(dev, gpio_attr_list[idx]);
++		if (err > 0)
++			break;
++	}
++
++	return err;
++}
++
++#endif
++
+ int mtk_paris_pinctrl_probe(struct platform_device *pdev,
+ 			    const struct mtk_pin_soc *soc)
+ {
+@@ -1019,6 +1764,12 @@ int mtk_paris_pinctrl_probe(struct platform_device *pdev,
+ 
+ 	platform_set_drvdata(pdev, hw);
+ 
++#if defined(CONFIG_PINCTRL_MTK_DEBUG)
++		err = mtk_gpio_create_attr(&pdev->dev);
++		if (err < 0)
++			pr_warn("mtk_gpio create attribute error\n");
++#endif
++
+ 	return 0;
+ }
+ EXPORT_SYMBOL_GPL(mtk_paris_pinctrl_probe);
 diff --git a/drivers/pinctrl/mediatek/pinctrl-paris.h b/drivers/pinctrl/mediatek/pinctrl-paris.h
 old mode 100644
 new mode 100755
@@ -52332,7 +54023,7 @@ index 0fdf6dc6231f4fc3b03ab52af5235d9b2c8cce4d..ed40fb38694d7387b80f01dec2e3fe35
  #endif /* __SOC_MEDIATEK_MT8192_PM_DOMAINS_H */
 diff --git a/drivers/soc/mediatek/mt8195-pm-domains.h b/drivers/soc/mediatek/mt8195-pm-domains.h
 new file mode 100644
-index 0000000000000000000000000000000000000000..be9e3321874cb9a06c42f076f37016c5876dee12
+index 0000000000000000000000000000000000000000..5e807d73ce85ef39003317cad7c4c012816fd942
 --- /dev/null
 +++ b/drivers/soc/mediatek/mt8195-pm-domains.h
 @@ -0,0 +1,732 @@
@@ -52557,7 +54248,7 @@ index 0000000000000000000000000000000000000000..be9e3321874cb9a06c42f076f37016c5
 +		.pwr_sta2nd_offs = 0x178,
 +		.sram_pdn_bits = GENMASK(8, 8),
 +		.sram_pdn_ack_bits = GENMASK(12, 12),
-+		.caps = MTK_SCPD_KEEP_DEFAULT_OFF,
++		.caps = MTK_SCPD_KEEP_DEFAULT_OFF | MTK_SCPD_DOMAIN_SUPPLY,
 +	},
 +	[MT8195_POWER_DOMAIN_MFG1] = {
 +		.name = "mfg1",
@@ -53236,7 +54927,7 @@ index f531b119da7a9840406cd7508968b7d754bd60b4..91d7f35a7b60de3908ec397252bd2622
  };
  MODULE_DEVICE_TABLE(of, mutex_driver_dt_match);
 diff --git a/drivers/soc/mediatek/mtk-pm-domains.c b/drivers/soc/mediatek/mtk-pm-domains.c
-index 31b947c5460541efa74af8fd2faf20b0fba96480..571374378994755443d7b8de0f0df75026eb4e01 100644
+index 31b947c5460541efa74af8fd2faf20b0fba96480..2c926c7725713deff5ce10ed4033a5a6c4d02e30 100644
 --- a/drivers/soc/mediatek/mtk-pm-domains.c
 +++ b/drivers/soc/mediatek/mtk-pm-domains.c
 @@ -19,6 +19,7 @@
@@ -53308,24 +54999,7 @@ index 31b947c5460541efa74af8fd2faf20b0fba96480..571374378994755443d7b8de0f0df750
  
  	scpsys_regulator_disable(pd->supply);
  
-@@ -355,6 +356,16 @@ generic_pm_domain *scpsys_add_one_domain(struct scpsys *scpsys, struct device_no
- 	if (IS_ERR(pd->smi))
- 		return ERR_CAST(pd->smi);
- 
-+	if (pd->data->name) {
-+		pd->supply = devm_regulator_get_optional(scpsys->dev, pd->data->name);
-+		if (IS_ERR(pd->supply)) {
-+			if (PTR_ERR(pd->supply) == -ENODEV)
-+				pd->supply = NULL;
-+			else
-+				return ERR_CAST(pd->supply);
-+		}
-+	}
-+
- 	num_clks = of_clk_get_parent_count(node);
- 	if (num_clks > 0) {
- 		/* Calculate number of subsys_clks */
-@@ -404,14 +415,6 @@ generic_pm_domain *scpsys_add_one_domain(struct scpsys *scpsys, struct device_no
+@@ -404,14 +405,6 @@ generic_pm_domain *scpsys_add_one_domain(struct scpsys *scpsys, struct device_no
  		pd->subsys_clks[i].clk = clk;
  	}
  
@@ -53340,7 +55014,7 @@ index 31b947c5460541efa74af8fd2faf20b0fba96480..571374378994755443d7b8de0f0df750
  	/*
  	 * Initially turn on all domains to make the domains usable
  	 * with !CONFIG_PM and to get the hardware in sync with the
-@@ -426,7 +429,7 @@ generic_pm_domain *scpsys_add_one_domain(struct scpsys *scpsys, struct device_no
+@@ -426,7 +419,7 @@ generic_pm_domain *scpsys_add_one_domain(struct scpsys *scpsys, struct device_no
  		ret = scpsys_power_on(&pd->genpd);
  		if (ret < 0) {
  			dev_err(scpsys->dev, "%pOF: failed to power on domain: %d\n", node, ret);
@@ -53349,7 +55023,7 @@ index 31b947c5460541efa74af8fd2faf20b0fba96480..571374378994755443d7b8de0f0df750
  		}
  	}
  
-@@ -434,13 +437,16 @@ generic_pm_domain *scpsys_add_one_domain(struct scpsys *scpsys, struct device_no
+@@ -434,13 +427,16 @@ generic_pm_domain *scpsys_add_one_domain(struct scpsys *scpsys, struct device_no
  		ret = -EINVAL;
  		dev_err(scpsys->dev,
  			"power domain with id %d already exists, check your device-tree\n", id);
@@ -53368,7 +55042,7 @@ index 31b947c5460541efa74af8fd2faf20b0fba96480..571374378994755443d7b8de0f0df750
  	if (MTK_SCPD_CAPS(pd, MTK_SCPD_KEEP_DEFAULT_OFF))
  		pm_genpd_init(&pd->genpd, NULL, true);
  	else
-@@ -450,10 +456,6 @@ generic_pm_domain *scpsys_add_one_domain(struct scpsys *scpsys, struct device_no
+@@ -450,10 +446,6 @@ generic_pm_domain *scpsys_add_one_domain(struct scpsys *scpsys, struct device_no
  
  	return scpsys->pd_data.domains[id];
  
@@ -53379,7 +55053,7 @@ index 31b947c5460541efa74af8fd2faf20b0fba96480..571374378994755443d7b8de0f0df750
  err_put_subsys_clocks:
  	clk_bulk_put(pd->num_subsys_clks, pd->subsys_clks);
  err_put_clocks:
-@@ -531,10 +533,7 @@ static void scpsys_remove_one_domain(struct scpsys_domain *pd)
+@@ -531,10 +523,7 @@ static void scpsys_remove_one_domain(struct scpsys_domain *pd)
  			"failed to remove domain '%s' : %d - state may be inconsistent\n",
  			pd->genpd.name, ret);
  
@@ -53390,7 +55064,7 @@ index 31b947c5460541efa74af8fd2faf20b0fba96480..571374378994755443d7b8de0f0df750
  	clk_bulk_put(pd->num_subsys_clks, pd->subsys_clks);
  }
  
-@@ -566,6 +565,10 @@ static const struct of_device_id scpsys_of_match[] = {
+@@ -566,6 +555,10 @@ static const struct of_device_id scpsys_of_match[] = {
  		.compatible = "mediatek,mt8192-power-controller",
  		.data = &mt8192_scpsys_data,
  	},
@@ -53757,7 +55431,7 @@ index 55a94cadeffe4b0a955b48ef7219f53db3f8e959..91f303b96925a038f4736afc087e125d
 \ No newline at end of file
 diff --git a/drivers/spmi/spmi-mtk-pmif.c b/drivers/spmi/spmi-mtk-pmif.c
 new file mode 100644
-index 0000000000000000000000000000000000000000..3caf006afad914856e2ca8359533dbce234b35b0
+index 0000000000000000000000000000000000000000..57610a6c03eab9646c15397cdca8971dd97eda16
 --- /dev/null
 +++ b/drivers/spmi/spmi-mtk-pmif.c
 @@ -0,0 +1,594 @@
@@ -54232,7 +55906,7 @@ index 0000000000000000000000000000000000000000..3caf006afad914856e2ca8359533dbce
 +	ctrl->write_cmd = pmif_spmi_write_cmd;
 +
 +	/* re-assign of_id->data */
-+	spmi_controller_set_drvdata(ctrl, of_device_get_match_data(&pdev->dev));
++	spmi_controller_set_drvdata(ctrl, (void *)of_device_get_match_data(&pdev->dev));
 +	arb = spmi_controller_get_drvdata(ctrl);
 +	if (!arb) {
 +		err = -EINVAL;
