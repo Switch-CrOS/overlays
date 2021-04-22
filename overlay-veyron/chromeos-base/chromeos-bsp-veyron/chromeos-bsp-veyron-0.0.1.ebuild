@@ -15,13 +15,8 @@ IUSE="
 	bluetooth
 	cheets
 	cros_ec
-	kernel-3_14
-	kernel-4_19
 	+veyron-brcmfmac-nvram
 "
-
-# Must specify one of 3.14 or 4.19, but not both
-REQUIRED_USE="^^ ( kernel-3_14 kernel-4_19 )"
 
 # Add dependencies on other ebuilds from within this board overlay
 DEPEND="
@@ -40,19 +35,14 @@ src_install() {
 	doins "${FILESDIR}"/powerd_prefs/*
 
 	# Override default CPU clock speed governor
-	if use kernel-3_14; then
-		insinto "/etc"
-		doins "${FILESDIR}/cpufreq-314/cpufreq.conf"
-	else
-		insinto "/etc"
-		doins "${FILESDIR}/cpufreq-419/cpufreq.conf"
-		insinto "/etc/init"
-		doins "${FILESDIR}/cpufreq-419/platform-cpusets.conf"
+	insinto "/etc"
+	doins "${FILESDIR}/cpufreq/cpufreq.conf"
+	insinto "/etc/init"
+	doins "${FILESDIR}/cpufreq/platform-cpusets.conf"
 
-		if use cheets; then
-			insinto "/opt/google/containers/android/vendor/etc/init/"
-			doins "${FILESDIR}/cpufreq-419/init.cpusets.rc"
-		fi
+	if use cheets; then
+		insinto "/opt/google/containers/android/vendor/etc/init/"
+		doins "${FILESDIR}/cpufreq/init.cpusets.rc"
 	fi
 
 	# Install platform specific files for bcm4354 bluetooth.
