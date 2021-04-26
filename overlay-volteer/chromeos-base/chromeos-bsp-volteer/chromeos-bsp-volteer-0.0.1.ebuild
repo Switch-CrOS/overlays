@@ -12,7 +12,7 @@ LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="-* amd64 x86"
 S="${WORKDIR}"
-IUSE="volteer-borealis volteer-kernelnext volteer-manatee"
+IUSE="volteer-borealis volteer-kernelnext volteer-manatee zephyr_ec"
 
 # Add dependencies on other ebuilds from within this board overlay
 RDEPEND="
@@ -29,7 +29,9 @@ DEPEND="
 "
 
 src_install() {
-	if use volteer-borealis; then
+	if use zephyr_ec; then
+		doappid "{19D32B09-8ECB-4020-AAB1-BA88AB8CE028}" "CHROMEBOOK"
+	elif use volteer-borealis; then
 		doappid "{04EDAC5E-72DF-11EB-A3DD-6F5131EE15CD}" "CHROMEBOOK"
 	elif use volteer-kernelnext; then
 		doappid "{716105F8-A2C3-11EA-A044-33E3EAAD1A23}" "CHROMEBOOK"
