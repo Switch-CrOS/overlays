@@ -6,6 +6,7 @@ EAPI=7
 DESCRIPTION="Virtual for OpenGLES implementations"
 
 LICENSE="metapackage"
+SLOT="0"
 KEYWORDS="-* arm64 arm"
 IUSE=""
 
