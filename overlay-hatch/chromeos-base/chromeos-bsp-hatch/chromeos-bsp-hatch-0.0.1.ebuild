@@ -11,7 +11,7 @@ or portage actions."
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="-* amd64 x86"
-IUSE="hatch-arc-r hatch-borealis hatch-diskswap hatch-kvm hatch-kernelnext hatch-blueznext hatch-manatee"
+IUSE="hatch-arc-r hatch-borealis hatch-diskswap hatch-kvm hatch-kernelnext hatch-blueznext hatch-manatee aurora aurora-borealis"
 S="${WORKDIR}"
 
 # Add dependencies on other ebuilds from within this board overlay
@@ -26,7 +26,11 @@ DEPEND="
 "
 
 src_install() {
-	if use hatch-arc-r; then
+	if use aurora-borealis; then
+		doappid "{567CE7C6-688F-897C-6C1A-0F4C15CC24E7}" "CHROMEBOOK"
+	elif use aurora; then
+		doappid "{DD70ECA8-C39D-2BAA-055C-9094D3A78BE1}" "CHROMEBOOK"
+	elif use hatch-arc-r; then
 		doappid "{CB69812A-95B6-4A60-A5D1-AE50E1FC5882}" "CHROMEBOOK"
 	elif use hatch-borealis; then
 		doappid "{8CD2059E-B678-11EA-BEA0-BFD4C54FEC76}" "CHROMEBOOK"
