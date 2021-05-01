@@ -22,5 +22,6 @@ DEPEND="
 
 src_install() {
 	doappid "{BAEFD150-0AC7-4FC9-A044-8C3F317F7CD9}" "REFERENCE"
-}
 
+	unibuild_install_files audio-files
+}
