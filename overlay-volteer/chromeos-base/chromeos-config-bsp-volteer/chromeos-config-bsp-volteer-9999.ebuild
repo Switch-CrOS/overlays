@@ -21,6 +21,7 @@ PROJECTS=(
 	"terrador"
 	"trondo"
 	"voema"
+	"volet"
 	"volteer"
 	"voxel"
 	"zantor"
