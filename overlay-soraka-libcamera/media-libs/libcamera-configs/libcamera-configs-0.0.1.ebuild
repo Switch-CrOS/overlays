@@ -1,0 +1,18 @@
+# Copyright 2017 The Chromium OS Authors. All rights reserved.
+# Distributed under the terms of the GNU General Public License v2
+
+EAPI=6
+
+DESCRIPTION="Libcamera Config files for soraka"
+
+LICENSE="BSD-Google"
+SLOT="0"
+KEYWORDS="-* amd64"
+
+S="${WORKDIR}"
+
+src_install() {
+	local CONFIG_DIR="/etc/camera"
+	insinto "${CONFIG_DIR}"
+	doins "${FILESDIR}"/*
+}
