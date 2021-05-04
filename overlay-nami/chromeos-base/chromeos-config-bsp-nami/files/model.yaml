@@ -4,26 +4,52 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+audio-main-common: &audio_main_common
+  $cras_root: "/etc/cras"
+  $ucm_root: "/usr/share/alsa/ucm"
+  $card: "kblda7219max"
+  cras-config-dir: "{{$cras}}"
+  ucm-suffix: "{{$ucm}}"
+  $cras-source: "{{cras-config-dir}}/audio/cras-config"
+  $cras-dest: "{{$cras_root}}/{{cras-config-dir}}"
+  $ucm-source: "{{cras-config-dir}}/audio/ucm-config{{$ucm-source-suffix}}"
+  $ucm-dest: "{{$ucm_root}}/{{$card}}.{{ucm-suffix}}"
+
+audio-main-files: &audio_main_files
+  files-map-card-settings: &files_map_card_settings
+    source: "{{$cras-source}}/{{$card}}"
+    destination: "{{$cras-dest}}/{{$card}}"
+  files-map-dsp-ini: &files_map_dsp_ini
+    source: "{{$cras-source}}/dsp.ini"
+    destination: "{{$cras-dest}}/dsp.ini"
+  files-map-HiFi-conf: &files_map_HiFi_conf
+    source: "{{$ucm-source}}/HiFi.conf"
+    destination: "{{$ucm-dest}}/HiFi.conf"
+  files-map-card-conf: &files_map_card_conf
+    source: "{{$ucm-source}}/{{$card}}.conf"
+    destination: "{{$ucm-dest}}/{{$card}}.{{ucm-suffix}}.conf"
+  files-map-board-ini: &files_map_board_ini
+    source: "{{$cras-source}}/board.ini"
+    destination: "{{$cras-dest}}/board.ini"
+
 audio-common: &audio_common
   main:
-    $cras_root: "/etc/cras"
-    $ucm_root: "/usr/share/alsa/ucm"
-    $card: "kblda7219max"
-    cras-config-dir: "{{$cras}}"
-    ucm-suffix: "{{$ucm}}"
-    $cras-source: "{{cras-config-dir}}/audio/cras-config"
-    $cras-dest: "{{$cras_root}}/{{cras-config-dir}}"
-    $ucm-source: "{{cras-config-dir}}/audio/ucm-config{{$ucm-source-suffix}}"
-    $ucm-dest: "{{$ucm_root}}/{{$card}}.{{ucm-suffix}}"
+    <<: *audio_main_common
     files:
-      - source: "{{$cras-source}}/{{$card}}"
-        destination: "{{$cras-dest}}/{{$card}}"
-      - source: "{{$cras-source}}/dsp.ini"
-        destination: "{{$cras-dest}}/dsp.ini"
-      - source: "{{$ucm-source}}/HiFi.conf"
-        destination: "{{$ucm-dest}}/HiFi.conf"
-      - source: "{{$ucm-source}}/{{$card}}.conf"
-        destination: "{{$ucm-dest}}/{{$card}}.{{ucm-suffix}}.conf"
+      - *files_map_card_settings
+      - *files_map_dsp_ini
+      - *files_map_HiFi_conf
+      - *files_map_card_conf
+
+audio-boardini-setting: &audio_boardini_setting
+  main:
+    <<: *audio_main_common
+    files:
+      - *files_map_card_settings
+      - *files_map_dsp_ini
+      - *files_map_HiFi_conf
+      - *files_map_card_conf
+      - *files_map_board_ini
 
 common-config: &common_config
   name: "{{$device-name}}"
@@ -74,6 +100,14 @@ device-specific-audio-device-config: &device_specific_audio_device_config
   <<: *common_config
   audio:
     <<: *audio_common
+    $cras: "{{$device-name}}"
+    $ucm: "{{$device-name}}"
+    $ucm-source-suffix: ""
+
+device-specific-audio-config-boardini: &device_specific_audio_config_boardini
+  <<: *common_config
+  audio:
+    <<: *audio_boardini_setting
     $cras: "{{$device-name}}"
     $ucm: "{{$device-name}}"
     $ucm-source-suffix: ""
@@ -144,11 +178,13 @@ chromeos:
         - $sku-id: 0x3ae2
           config:
             <<: *convertible_device_config
+            <<: *device_specific_audio_config_boardini
             $set-wifi-transmit-power-for-tablet-mode: "0"
             $has-keyboard-backlight: "0"
         - $sku-id: 0x3ae3
           config:
             <<: *convertible_device_config
+            <<: *device_specific_audio_config_boardini
             $set-wifi-transmit-power-for-tablet-mode: "0"
     - $device-name: "syndra"
       $touchpad-wakeup: "1"
