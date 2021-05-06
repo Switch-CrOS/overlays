@@ -12,7 +12,7 @@ or portage actions."
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="-* arm64 arm"
-IUSE="kukui-arc-r kukui-tablet kukui-arc64 kukui-kernelnext"
+IUSE="kukui-arc-r kukui-tablet kukui-kernelnext"
 S="${WORKDIR}"
 
 # Add dependencies on other ebuilds from within this board overlay
@@ -27,8 +27,6 @@ src_install() {
 		doappid "{D67CDE4D-0AA7-4550-BCBC-B43F61F2966E}" "CHROMEBOOK"
 	elif use kukui-tablet; then
 		doappid "{8748A652-A3D9-4EA6-9E3D-4B97795DBF5B}" "CHROMEBOOK"
-	elif use kukui-arc64; then
-		doappid "{77ED0248-24EC-4DF5-B5DE-90BBED94F0CC}" "CHROMEBOOK"
 	elif use kukui-kernelnext; then
 		doappid "{58840B5E-8164-11EB-8633-DBDBCDFF2C4B}" "CHROMEBOOK"
 	else
