@@ -11,6 +11,7 @@ or portage actions."
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="-* amd64 x86"
+IUSE="brya-manatee"
 S="${WORKDIR}"
 
 # Add dependencies on other ebuilds from within this board overlay
@@ -23,5 +24,9 @@ DEPEND="
 "
 
 src_install() {
-	doappid "{DEB6CEFD-4EEE-462F-AC21-52DF1E17B52F}" "REFERENCE"
+	if use brya-manatee; then
+		doappid "{8C4F1DCA-AC34-11EB-8FD3-7B09B37DFAB3}" "REFERENCE"
+	else
+		doappid "{DEB6CEFD-4EEE-462F-AC21-52DF1E17B52F}" "REFERENCE"
+	fi
 }
