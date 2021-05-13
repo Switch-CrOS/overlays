@@ -87,8 +87,14 @@ common-config: &common_config
       - source: "{{dptf-dv}}"
         destination: "/etc/dptf/{{dptf-dv}}"
   test-label: "{{$device-name}}"
-  hardware-properties:
-    form-factor: CHROMEBOOK
+
+device-config: &device_config
+  <<: *common_config
+  audio:
+    <<: *audio_common
+    $cras: "common"
+    $ucm: "1mic" # Default
+    $ucm-source-suffix: "/{{$ucm}}"
 
 device-specific-audio-device-config: &device_specific_audio_device_config
   <<: *common_config
@@ -109,7 +115,6 @@ device-specific-audio-config-boardini: &device_specific_audio_config_boardini
 convertible-device-config: &convertible_device_config
   <<: *device_specific_audio_device_config
   hardware-properties:
-    form-factor: CHROMEBOOK
     is-lid-convertible: True
     has-lid-accelerometer: True
     has-base-accelerometer: True
