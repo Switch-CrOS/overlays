@@ -13,27 +13,29 @@ LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="-* arm64 arm"
 S="${WORKDIR}"
-IUSE="arcvm"
+IUSE="arcvm kernel-5_10"
 
 # Add dependencies on other ebuilds from within this board overlay
 RDEPEND=""
 DEPEND="${RDEPEND}"
 
 src_install() {
+	local kernel=$(usex kernel-5_10 5_10 4_19)
+
 	# Override default CPU clock speed governor.
 	insinto "/etc"
 	doins "${FILESDIR}/cpufreq.conf"
 
 	# Install cpuset adjustments.
 	insinto "/etc/init"
-	doins "${FILESDIR}/platform-cpusets.conf"
+	newins "${FILESDIR}/platform-cpusets-${kernel}.conf" platform-cpusets.conf
 
 	if use arcvm; then
 		insinto "/opt/google/vms/android/vendor/etc/init/"
 	else
 		insinto "/opt/google/containers/android/vendor/etc/init/"
 	fi
-	doins "${FILESDIR}/init.cpusets.rc"
+	newins "${FILESDIR}/init.cpusets-${kernel}.rc" init.cpusets.rc
 
 	# udev rules for codecs
 	insinto "/etc/init"
