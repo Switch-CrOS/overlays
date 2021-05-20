@@ -19,6 +19,7 @@ RDEPEND="
 # Chromium OS Autotest Server and Devserver Deps.
 RDEPEND="${RDEPEND}
 	sys-apps/moblab
+	sys-apps/satlab
 "
 
 DEPEND=""
