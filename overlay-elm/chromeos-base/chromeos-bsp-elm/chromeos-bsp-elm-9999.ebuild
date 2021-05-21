@@ -21,7 +21,6 @@ IUSE="elm-arc64 elm-cheets elm-kernelnext"
 # Add dependencies on other ebuilds from within this board overlay
 DEPEND=""
 RDEPEND="${DEPEND}
-	chromeos-base/chromeos-accelerometer-init:=
 	chromeos-base/chromeos-bsp-baseboard-oak:=
 	sys-apps/ethtool
 "
