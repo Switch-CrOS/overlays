@@ -38,4 +38,6 @@ modify_kernel_command_line() {
   # necessary settings for serial debugging
   echo "console=ttyS0,115200,keep" >> "$1"
 
+  # Disable xDomain protocol on the thunderbolt driver
+  echo "xdomain=0" >> "$1"
 }
