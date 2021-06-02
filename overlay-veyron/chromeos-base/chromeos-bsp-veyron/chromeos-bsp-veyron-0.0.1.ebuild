@@ -37,8 +37,6 @@ src_install() {
 	# Override default CPU clock speed governor
 	insinto "/etc"
 	doins "${FILESDIR}/cpufreq/cpufreq.conf"
-	insinto "/etc/init"
-	doins "${FILESDIR}/cpufreq/platform-cpusets.conf"
 
 	if use cheets; then
 		insinto "/opt/google/containers/android/vendor/etc/init/"

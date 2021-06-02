@@ -32,8 +32,6 @@ src_install() {
 	doins "${FILESDIR}/thermal_zone.conf"
 
 	# Install cpuset adjustments.
-	insinto "/etc/init"
-	doins "${FILESDIR}/platform-cpusets.conf"
 	if use cheets; then
 		insinto "/opt/google/containers/android/vendor/etc/init/"
 		doins "${FILESDIR}/init.cpusets.rc"
