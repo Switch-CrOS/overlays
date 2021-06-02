@@ -36,10 +36,14 @@ BDEPEND=""
 src_install() {
 	# Internal builds install QcLib and qtiseclib via the private chipset
 	# overlay's sys-boot/qclib and sys-boot/qtiseclib, respectively.
-	if use internal; then
-		rm "${S}/boot/QcLib.elf"
-		rm "${S}/qtiseclib/libqtisec.a"
-	fi
+
+	# NOTE: We don't have source code for the below libraries yet, so
+	#       using the blobs from chromeos-localmirror for now.  Will uncomment
+	#       when figure out source code (b/190120222).
+	#if use internal; then
+	#	rm "${S}/boot/QcLib.elf"
+	#	rm "${S}/qtiseclib/libqtisec.a"
+	#fi
 
 	insinto /firmware/coreboot-private/3rdparty/qc_blobs
 	doins -r "${S}"
