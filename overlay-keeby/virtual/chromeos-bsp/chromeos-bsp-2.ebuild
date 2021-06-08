@@ -1,7 +1,7 @@
 # Copyright 2021 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=5
+EAPI="7"
 
 DESCRIPTION="Keeby board-specific ebuild to override
 Chrome OS BSP virtual package"

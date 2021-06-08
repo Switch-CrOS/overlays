@@ -2,13 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-EAPI=5
+EAPI="7"
 
 DESCRIPTION="Virtual package for environment specific network initialization."
-HOMEPAGE=""
-SRC_URI=""
 
-LICENSE=""
+LICENSE="metapackage"
 SLOT="0"
 KEYWORDS="*"
 IUSE=""

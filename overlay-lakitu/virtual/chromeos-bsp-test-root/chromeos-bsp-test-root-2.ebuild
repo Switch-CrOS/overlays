@@ -2,12 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-EAPI=6
+EAPI="7"
 
 DESCRIPTION="Board specific packages/files to be installed on rootfs in test images"
 HOMEPAGE=""
 
-LICENSE="BSD-Google"
+LICENSE="metapackage"
 SLOT="0"
 KEYWORDS="*"
 IUSE=""

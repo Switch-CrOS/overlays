@@ -3,12 +3,12 @@
 # This overrides the virtual/linux-sources package in chromiumos-overlay to
 # include the custom Lakitu kernel.
 
-EAPI="5"
+EAPI="7"
 
 DESCRIPTION="Lakitu Kernel virtual package"
 HOMEPAGE="http://src.chromium.org"
 
-LICENSE="GPL-2"
+LICENSE="metapackage"
 SLOT="0"
 KEYWORDS="*"
 

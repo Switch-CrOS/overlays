@@ -2,13 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-EAPI=6
+EAPI="7"
 
 DESCRIPTION="Virtual package for environment specific cloud-init configuration."
-HOMEPAGE=""
-SRC_URI=""
 
-LICENSE=""
+LICENSE="metapackage"
 SLOT="0"
 KEYWORDS="*"
 IUSE=""

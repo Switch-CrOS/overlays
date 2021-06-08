@@ -1,13 +1,13 @@
 # Copyright 2015 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=4
+EAPI="7"
 
 DESCRIPTION="Virtual for img-ddk packages (source or prebuilt binaries)"
-SRC_URI=""
 
+LICENSE="metapackage"
 SLOT="0"
-KEYWORDS="-* arm"
+KEYWORDS="*"
 
 DEPEND="
 	media-libs/img-ddk-bin
