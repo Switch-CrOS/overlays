@@ -12,6 +12,7 @@ PROJECTS=(
 	"gimble"
 	"primus"
 	"redrix"
+	"vyhar"
 )
 
 CONFIG_PATH="sw_build_config/platform/chromeos-config"
