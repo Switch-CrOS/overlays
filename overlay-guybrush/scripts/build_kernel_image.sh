@@ -12,5 +12,5 @@
 # See crrev.com/i/216896 as an example.
 
 modify_kernel_command_line() {
-  echo "earlycon=uart,mmio32,0xfedc9000 console=ttyS0,115200" >> "$1"
+        return
 }
