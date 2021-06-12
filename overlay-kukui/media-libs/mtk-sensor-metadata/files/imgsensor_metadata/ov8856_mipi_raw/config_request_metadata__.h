@@ -183,7 +183,7 @@ CONFIG_METADATA_END()
 //------------------------------------------------------------------------------
 //==========================================================================
 CONFIG_METADATA_BEGIN(MTK_LENS_APERTURE)//not null
-CONFIG_ENTRY_VALUE(2.8f, MFLOAT)
+CONFIG_ENTRY_VALUE(2.0f, MFLOAT)
 CONFIG_METADATA_END()
 //==========================================================================
 CONFIG_METADATA_BEGIN(MTK_LENS_FILTER_DENSITY)//not null
@@ -191,7 +191,7 @@ CONFIG_ENTRY_VALUE(0.0f, MFLOAT)
 CONFIG_METADATA_END()
 //==========================================================================
 CONFIG_METADATA_BEGIN(MTK_LENS_FOCAL_LENGTH)//not null
-CONFIG_ENTRY_VALUE(5.0f, MFLOAT)
+CONFIG_ENTRY_VALUE(2.48f, MFLOAT)
 CONFIG_METADATA_END()
 //==========================================================================//none
 CONFIG_METADATA_BEGIN(MTK_LENS_FOCUS_DISTANCE)
