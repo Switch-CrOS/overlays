@@ -12,5 +12,5 @@
 # See crrev.com/i/216896 as an example.
 
 modify_kernel_command_line() {
-        return
+	echo "amdgpu.abmlevel=0x4" >> "$1"
 }
