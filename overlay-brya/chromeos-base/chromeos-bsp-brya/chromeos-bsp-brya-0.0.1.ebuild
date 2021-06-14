@@ -31,4 +31,7 @@ src_install() {
 	else
 		doappid "{DEB6CEFD-4EEE-462F-AC21-52DF1E17B52F}" "REFERENCE"
 	fi
+
+	# Install audio config files
+	unibuild_install_files audio-files
 }
