@@ -1945,7 +1945,7 @@ index 0000000000000000000000000000000000000000..4bd85e33a4c9098904dfd4b7b171ba6b
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8195-cherry.dts b/arch/arm64/boot/dts/mediatek/mt8195-cherry.dts
 new file mode 100644
-index 0000000000000000000000000000000000000000..f1dfe692b3a3c255719fac979a786ad130d3bf2c
+index 0000000000000000000000000000000000000000..e6a5b3520b1343d7ad1f0f6f9cbe0dba1a6d38a6
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt8195-cherry.dts
 @@ -0,0 +1,1011 @@
@@ -1992,10 +1992,10 @@ index 0000000000000000000000000000000000000000..f1dfe692b3a3c255719fac979a786ad1
 +		reg = <0 0x40000000 0 0x80000000>;
 +	};
 +
-+	rt1015p {
++	rt1019p {
++		compatible = "realtek,rt1019p";
 +		pinctrl-names = "default";
 +		pinctrl-0 = <&rt1019p_pins_default>;
-+		compatible = "realtek,rt1019p";
 +		sdb-gpios = <&pio 100 GPIO_ACTIVE_HIGH>;
 +	};
 +
@@ -8482,10 +8482,10 @@ index 0000000000000000000000000000000000000000..f2c5cb1574bfdc6dbb808c99caf9fb9d
 +builtin_platform_driver(clk_mt8195_wpe_drv);
 diff --git a/drivers/clk/mediatek/clk-mt8195.c b/drivers/clk/mediatek/clk-mt8195.c
 new file mode 100644
-index 0000000000000000000000000000000000000000..bffc416af6c352d75c6f3d1f33fed20f87370542
+index 0000000000000000000000000000000000000000..2259324056bfea0ad2e03e71c202f0ddf202da79
 --- /dev/null
 +++ b/drivers/clk/mediatek/clk-mt8195.c
-@@ -0,0 +1,1975 @@
+@@ -0,0 +1,1962 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +//
 +// Copyright (c) 2020 MediaTek Inc.
@@ -9014,15 +9014,6 @@ index 0000000000000000000000000000000000000000..bffc416af6c352d75c6f3d1f33fed20f
 +	"clk26m",
 +	"mainpll_d4_d2",
 +	"mainpll_d5_d2"
-+};
-+
-+static const char * const pwrmcu_parents[] = {
-+	"clk26m",
-+	"mainpll_d7_d2",
-+	"mainpll_d6_d2",
-+	"mainpll_d5_d2",
-+	"mainpll_d9",
-+	"mainpll_d4_d2"
 +};
 +
 +static const char * const dp_parents[] = {
@@ -9772,8 +9763,6 @@ index 0000000000000000000000000000000000000000..bffc416af6c352d75c6f3d1f33fed20f
 +		pwrap_ulposc_parents, 0x08C, 0x090, 0x094, 0, 3, 7, 0x08, 4),
 +	MUX_GATE_CLR_SET_UPD(CLK_TOP_ATB_SEL, "atb_sel",
 +		atb_parents, 0x08C, 0x090, 0x094, 8, 2, 15, 0x08, 5),
-+	MUX_GATE_CLR_SET_UPD(CLK_TOP_PWRMCU_SEL, "pwrmcu_sel",
-+		pwrmcu_parents, 0x08C, 0x090, 0x094, 16, 3, 23, 0x08, 6),
 +	MUX_GATE_CLR_SET_UPD(CLK_TOP_DP_SEL, "dp_sel",
 +		dp_parents, 0x08C, 0x090, 0x094, 24, 4, 31, 0x08, 7),
 +	/* CLK_CFG_10 */
@@ -10087,8 +10076,6 @@ index 0000000000000000000000000000000000000000..bffc416af6c352d75c6f3d1f33fed20f
 +	GATE_INFRA_AO2(CLK_INFRA_AO_UNIPRO_SYS, "infra_ao_unipro_sys", "ufs_sel", 11),
 +	GATE_INFRA_AO2(CLK_INFRA_AO_UNIPRO_TICK, "infra_ao_unipro_tick", "ufs_tick1us_sel", 12),
 +	GATE_INFRA_AO2(CLK_INFRA_AO_UFS_MP_SAP_B, "infra_ao_ufs_mp_sap_b", "ufs_mp_sap_sel", 13),
-+	GATE_INFRA_AO2(CLK_INFRA_AO_PWRMCU, "infra_ao_pwrmcu", "pwrmcu_sel", 15),
-+	GATE_INFRA_AO2(CLK_INFRA_AO_PWRMCU_BUS_H, "infra_ao_pwrmcu_bus_h", "axi_sel", 17),
 +	GATE_INFRA_AO2(CLK_INFRA_AO_APDMA_B, "infra_ao_apdma_b", "axi_sel", 18),
 +	GATE_INFRA_AO2(CLK_INFRA_AO_SPI4, "infra_ao_spi4", "spi_sel", 25),
 +	GATE_INFRA_AO2(CLK_INFRA_AO_SPI5, "infra_ao_spi5", "spi_sel", 26),
@@ -15385,7 +15372,7 @@ index 8286205c7165dc61a490ecd52df0e9bed6b8ffd6..dfd87752f054c04555fb78e71d0da4b5
  	return 0;
  
 diff --git a/drivers/gpu/arm/valhall/backend/gpu/mali_kbase_gpuprops_backend.c b/drivers/gpu/arm/valhall/backend/gpu/mali_kbase_gpuprops_backend.c
-index 9ad7068e3afb6f84b03e75e4da148878edc2a6b8..1e6d198bbb3a105ba3dd3a7435769c7c8dbe0bdf 100644
+index 9ad7068e3afb6f84b03e75e4da148878edc2a6b8..bc858e73e9d8aa7e50c14c687ca8935defa94eea 100644
 --- a/drivers/gpu/arm/valhall/backend/gpu/mali_kbase_gpuprops_backend.c
 +++ b/drivers/gpu/arm/valhall/backend/gpu/mali_kbase_gpuprops_backend.c
 @@ -41,11 +41,14 @@ int kbase_backend_gpuprops_get(struct kbase_device *kbdev,
@@ -15398,26 +15385,18 @@ index 9ad7068e3afb6f84b03e75e4da148878edc2a6b8..1e6d198bbb3a105ba3dd3a7435769c7c
  	 */
 -	if (registers.gpu_id == GPU_ID2_PRODUCT_MAKE(9, 0, 9, 3)) {
 -		registers.gpu_id = GPU_ID2_PRODUCT_MAKE(9, 0, 9, 1);
-+	if ((registers.gpu_id & GPU_ID_VERSION_PRODUCT_ID) \
++	if ((registers.gpu_id & GPU_ID_VERSION_PRODUCT_ID)
 +		== GPU_ID2_PRODUCT_MAKE(9, 0, 9, 3)) {
-+		registers.gpu_id = GPU_ID2_PRODUCT_MAKE(9, 0, 9, 1) + \
-+			GPU_ID_VERSION_ID & registers.gpu_id;
++		registers.gpu_id = GPU_ID2_PRODUCT_MAKE(9, 0, 9, 1) +
++			(GPU_ID2_VERSION & registers.gpu_id);
  		dev_info(kbdev->dev,
  			"Detected G-57 variant with GPU ID %08x. "
  			"Changing the ID to %08x.",
 diff --git a/drivers/gpu/arm/valhall/gpu/mali_kbase_gpu_id.h b/drivers/gpu/arm/valhall/gpu/mali_kbase_gpu_id.h
-index e4124f2e6182e7e65edde7e46caf1c8e955f61c9..ebd7f606076012df01a5ed2a0de97d28915cb584 100644
+index e4124f2e6182e7e65edde7e46caf1c8e955f61c9..0a9236fcd4e002c57eb264e28d0e54d4cf322652 100644
 --- a/drivers/gpu/arm/valhall/gpu/mali_kbase_gpu_id.h
 +++ b/drivers/gpu/arm/valhall/gpu/mali_kbase_gpu_id.h
-@@ -32,6 +32,7 @@
- #define GPU_ID_VERSION_MINOR              (0xFFu << GPU_ID_VERSION_MINOR_SHIFT)
- #define GPU_ID_VERSION_MAJOR              (0xFu  << GPU_ID_VERSION_MAJOR_SHIFT)
- #define GPU_ID_VERSION_PRODUCT_ID  (0xFFFFu << GPU_ID_VERSION_PRODUCT_ID_SHIFT)
-+#define GPU_ID_VERSION_ID                 0xFFFFu
- 
- #define GPU_ID2_VERSION_STATUS_SHIFT      0
- #define GPU_ID2_VERSION_MINOR_SHIFT       4
-@@ -97,7 +98,7 @@
+@@ -97,7 +97,7 @@
  #define GPU_ID2_PRODUCT_TTRX              GPU_ID2_MODEL_MAKE(9, 0)
  #define GPU_ID2_PRODUCT_TNAX              GPU_ID2_MODEL_MAKE(9, 1)
  #define GPU_ID2_PRODUCT_TBEX              GPU_ID2_MODEL_MAKE(9, 2)
@@ -41545,6 +41524,75 @@ index 637f5669e895452029b2eee4350f480309e0aa35..80959c26d9ea603a6f11d5a427e984fe
 +extern struct platform_driver mtk_ethdr_driver;
  
  #endif /* MTK_DRM_DRV_H */
+diff --git a/drivers/gpu/drm/mediatek/mtk_drm_plane.c b/drivers/gpu/drm/mediatek/mtk_drm_plane.c
+old mode 100644
+new mode 100755
+index b5582dcf564cebca0db196196737f234d6a21b29..27ab307aa0c378df0211e9c01294c0219ba3f9b0
+--- a/drivers/gpu/drm/mediatek/mtk_drm_plane.c
++++ b/drivers/gpu/drm/mediatek/mtk_drm_plane.c
+@@ -184,13 +184,11 @@ static void mtk_plane_atomic_disable(struct drm_plane *plane,
+ }
+ 
+ static void mtk_plane_atomic_update(struct drm_plane *plane,
+-				    struct drm_atomic_state *state)
++				    struct drm_atomic_state *old_state)
+ {
+-	struct drm_plane_state *new_state = drm_atomic_get_new_plane_state(state,
+-									   plane);
+-	struct mtk_plane_state *mtk_plane_state = to_mtk_plane_state(new_state);
+-	struct drm_crtc *crtc = new_state->crtc;
+-	struct drm_framebuffer *fb = new_state->fb;
++	struct mtk_plane_state *state = to_mtk_plane_state(plane->state);
++	struct drm_crtc *crtc = plane->state->crtc;
++	struct drm_framebuffer *fb = plane->state->fb;
+ 	struct drm_gem_object *gem;
+ 	struct mtk_drm_gem_obj *mtk_gem;
+ 	unsigned int pitch, format;
+@@ -199,8 +197,8 @@ static void mtk_plane_atomic_update(struct drm_plane *plane,
+ 	if (!crtc || WARN_ON(!fb))
+ 		return;
+ 
+-	if (!new_state->visible) {
+-		mtk_plane_atomic_disable(plane, state);
++	if (!plane->state->visible) {
++		mtk_plane_atomic_disable(plane, old_state);
+ 		return;
+ 	}
+ 
+@@ -210,20 +208,20 @@ static void mtk_plane_atomic_update(struct drm_plane *plane,
+ 	pitch = fb->pitches[0];
+ 	format = fb->format->format;
+ 
+-	addr += (new_state->src.x1 >> 16) * fb->format->cpp[0];
+-	addr += (new_state->src.y1 >> 16) * pitch;
+-
+-	mtk_plane_state->pending.enable = true;
+-	mtk_plane_state->pending.pitch = pitch;
+-	mtk_plane_state->pending.format = format;
+-	mtk_plane_state->pending.addr = addr;
+-	mtk_plane_state->pending.x = new_state->dst.x1;
+-	mtk_plane_state->pending.y = new_state->dst.y1;
+-	mtk_plane_state->pending.width = drm_rect_width(&new_state->dst);
+-	mtk_plane_state->pending.height = drm_rect_height(&new_state->dst);
+-	mtk_plane_state->pending.rotation = new_state->rotation;
++	addr += (plane->state->src.x1 >> 16) * fb->format->cpp[0];
++	addr += (plane->state->src.y1 >> 16) * pitch;
++
++	state->pending.enable = true;
++	state->pending.pitch = pitch;
++	state->pending.format = format;
++	state->pending.addr = addr;
++	state->pending.x = plane->state->dst.x1;
++	state->pending.y = plane->state->dst.y1;
++	state->pending.width = drm_rect_width(&plane->state->dst);
++	state->pending.height = drm_rect_height(&plane->state->dst);
++	state->pending.rotation = plane->state->rotation;
+ 	wmb(); /* Make sure the above parameters are set before update */
+-	mtk_plane_state->pending.dirty = true;
++	state->pending.dirty = true;
+ }
+ 
+ static const struct drm_plane_helper_funcs mtk_plane_helper_funcs = {
 diff --git a/drivers/gpu/drm/mediatek/mtk_ethdr.c b/drivers/gpu/drm/mediatek/mtk_ethdr.c
 new file mode 100755
 index 0000000000000000000000000000000000000000..ebc643d9c556c89471d4ae2347cb01c784792e3e
@@ -89821,30 +89869,42 @@ index f6cb6b8508e3f8c3729ac99513b0e9f38c1a6096..34778ca12106fe5a38c0a77b0c9e9995
 diff --git a/sound/soc/mediatek/common/mtk-afe-fe-dai.c b/sound/soc/mediatek/common/mtk-afe-fe-dai.c
 old mode 100644
 new mode 100755
-index 3cb2adf420bbf783a936cca05620ea07dd9f33f7..9dcbeaef1bdbb108b1ae33e1afd874e6c3783116
+index 3cb2adf420bbf783a936cca05620ea07dd9f33f7..cdede0172534ee3609a87681a88f8271664e16b8
 --- a/sound/soc/mediatek/common/mtk-afe-fe-dai.c
 +++ b/sound/soc/mediatek/common/mtk-afe-fe-dai.c
-@@ -434,9 +434,12 @@ int mtk_memif_set_addr(struct mtk_base_afe *afe, int id,
+@@ -433,11 +433,20 @@ int mtk_memif_set_addr(struct mtk_base_afe *afe, int id,
+ 				 phys_buf_addr_upper_32);
  	}
  
- 	/* set MSB to 33-bit */
+-	/* set MSB to 33-bit */
 -	if (memif->data->msb_reg >= 0)
++	/*
++	 * set MSB to 33-bit, for memif address
++	 * only for memif base address, if msb_end_reg exists
++	 */
 +	if (memif->data->msb_reg)
  		mtk_regmap_update_bits(afe->regmap, memif->data->msb_reg,
  				       1, msb_at_bit33, memif->data->msb_shift);
-+	if (memif->data->msb2_reg)
-+		mtk_regmap_update_bits(afe->regmap, memif->data->msb2_reg,
-+				       1, msb_at_bit33, memif->data->msb2_shift);
  
++	/* set MSB to 33-bit, for memif end address */
++	if (memif->data->msb_end_reg)
++		mtk_regmap_update_bits(afe->regmap, memif->data->msb_end_reg,
++				       1, msb_at_bit33,
++				       memif->data->msb_end_shift);
++
  	return 0;
  }
-@@ -464,6 +467,10 @@ int mtk_memif_set_channel(struct mtk_base_afe *afe,
+ EXPORT_SYMBOL_GPL(mtk_memif_set_addr);
+@@ -464,6 +473,13 @@ int mtk_memif_set_channel(struct mtk_base_afe *afe,
  	else
  		mono = (channel == 1) ? 1 : 0;
  
++	/* for specific configuration of memif mono mode */
 +	if (memif->data->int_odd_flag_reg)
-+		mtk_regmap_update_bits(afe->regmap, memif->data->int_odd_flag_reg,
-+				       1, mono, memif->data->int_odd_flag_shift);
++		mtk_regmap_update_bits(afe->regmap,
++				       memif->data->int_odd_flag_reg,
++				       1, mono,
++				       memif->data->int_odd_flag_shift);
 +
  	return mtk_regmap_update_bits(afe->regmap, memif->data->mono_reg,
  				      1, mono, memif->data->mono_shift);
@@ -89852,7 +89912,7 @@ index 3cb2adf420bbf783a936cca05620ea07dd9f33f7..9dcbeaef1bdbb108b1ae33e1afd874e6
 diff --git a/sound/soc/mediatek/common/mtk-base-afe.h b/sound/soc/mediatek/common/mtk-base-afe.h
 old mode 100644
 new mode 100755
-index a6f68c68581cccd0895fec8dd04e02270117c4fd..a04749a1d707721fba9e446506e501e869b8460c
+index a6f68c68581cccd0895fec8dd04e02270117c4fd..ef83e78c22a84c0e71f33d293ed9b65eb0bbb2d9
 --- a/sound/soc/mediatek/common/mtk-base-afe.h
 +++ b/sound/soc/mediatek/common/mtk-base-afe.h
 @@ -29,6 +29,8 @@ struct mtk_base_memif_data {
@@ -89864,8 +89924,14 @@ index a6f68c68581cccd0895fec8dd04e02270117c4fd..a04749a1d707721fba9e446506e501e8
  	int enable_reg;
  	int enable_shift;
  	int hd_reg;
-@@ -41,6 +43,9 @@ struct mtk_base_memif_data {
- 	int msb2_shift;
+@@ -37,10 +39,13 @@ struct mtk_base_memif_data {
+ 	int hd_align_mshift;
+ 	int msb_reg;
+ 	int msb_shift;
+-	int msb2_reg;
+-	int msb2_shift;
++	int msb_end_reg;
++	int msb_end_shift;
  	int agent_disable_reg;
  	int agent_disable_shift;
 +	int ch_num_reg;
@@ -91220,10 +91286,10 @@ index 0000000000000000000000000000000000000000..6394c614145e74bb339c1196d7c89111
 +#endif
 diff --git a/sound/soc/mediatek/mt8195/mt8195-afe-pcm.c b/sound/soc/mediatek/mt8195/mt8195-afe-pcm.c
 new file mode 100755
-index 0000000000000000000000000000000000000000..4e836443bfcb240c7183bfec4d6272d4aeb2cf97
+index 0000000000000000000000000000000000000000..9448d50f7f72df2c66533d54f44f38ace7274634
 --- /dev/null
 +++ b/sound/soc/mediatek/mt8195/mt8195-afe-pcm.c
-@@ -0,0 +1,3256 @@
+@@ -0,0 +1,3272 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
 + * Mediatek ALSA SoC AFE platform driver for 8195
@@ -91452,7 +91518,7 @@ index 0000000000000000000000000000000000000000..4e836443bfcb240c7183bfec4d6272d4
 +	}
 +
 +	if (id < 0) {
-+		dev_info(afe->dev, "%s, memif %d cannot find CM!\n",
++		dev_dbg(afe->dev, "%s, memif %d cannot find CM!\n",
 +			 __func__, dai->id);
 +		return NULL;
 +	}
@@ -92089,8 +92155,10 @@ index 0000000000000000000000000000000000000000..4e836443bfcb240c7183bfec4d6272d4
 +static const struct snd_kcontrol_new o034_mix[] = {
 +	SOC_DAPM_SINGLE_AUTODISABLE("I000 Switch", AFE_CONN34, 0, 1, 0),
 +	SOC_DAPM_SINGLE_AUTODISABLE("I002 Switch", AFE_CONN34, 2, 1, 0),
++	SOC_DAPM_SINGLE_AUTODISABLE("I012 Switch", AFE_CONN34, 12, 1, 0),
 +	SOC_DAPM_SINGLE_AUTODISABLE("I020 Switch", AFE_CONN34, 20, 1, 0),
 +	SOC_DAPM_SINGLE_AUTODISABLE("I070 Switch", AFE_CONN34_2, 6, 1, 0),
++	SOC_DAPM_SINGLE_AUTODISABLE("I072 Switch", AFE_CONN34_2, 8, 1, 0),
 +	SOC_DAPM_SINGLE_AUTODISABLE("I168 Switch", AFE_CONN34_5, 8, 1, 0),
 +	SOC_DAPM_SINGLE_AUTODISABLE("I170 Switch", AFE_CONN34_5, 10, 1, 0),
 +};
@@ -92098,8 +92166,10 @@ index 0000000000000000000000000000000000000000..4e836443bfcb240c7183bfec4d6272d4
 +static const struct snd_kcontrol_new o035_mix[] = {
 +	SOC_DAPM_SINGLE_AUTODISABLE("I001 Switch", AFE_CONN35, 1, 1, 0),
 +	SOC_DAPM_SINGLE_AUTODISABLE("I003 Switch", AFE_CONN35, 3, 1, 0),
++	SOC_DAPM_SINGLE_AUTODISABLE("I013 Switch", AFE_CONN35, 13, 1, 0),
 +	SOC_DAPM_SINGLE_AUTODISABLE("I021 Switch", AFE_CONN35, 21, 1, 0),
 +	SOC_DAPM_SINGLE_AUTODISABLE("I071 Switch", AFE_CONN35_2, 7, 1, 0),
++	SOC_DAPM_SINGLE_AUTODISABLE("I073 Switch", AFE_CONN35_2, 9, 1, 0),
 +	SOC_DAPM_SINGLE_AUTODISABLE("I137 Switch", AFE_CONN35_4, 9, 1, 0),
 +	SOC_DAPM_SINGLE_AUTODISABLE("I139 Switch", AFE_CONN35_4, 11, 1, 0),
 +	SOC_DAPM_SINGLE_AUTODISABLE("I168 Switch", AFE_CONN35_5, 8, 1, 0),
@@ -92110,14 +92180,18 @@ index 0000000000000000000000000000000000000000..4e836443bfcb240c7183bfec4d6272d4
 +
 +static const struct snd_kcontrol_new o036_mix[] = {
 +	SOC_DAPM_SINGLE_AUTODISABLE("I000 Switch", AFE_CONN36, 0, 1, 0),
++	SOC_DAPM_SINGLE_AUTODISABLE("I012 Switch", AFE_CONN36, 12, 1, 0),
 +	SOC_DAPM_SINGLE_AUTODISABLE("I020 Switch", AFE_CONN36, 20, 1, 0),
 +	SOC_DAPM_SINGLE_AUTODISABLE("I070 Switch", AFE_CONN36_2, 6, 1, 0),
++	SOC_DAPM_SINGLE_AUTODISABLE("I168 Switch", AFE_CONN36_5, 8, 1, 0),
 +};
 +
 +static const struct snd_kcontrol_new o037_mix[] = {
 +	SOC_DAPM_SINGLE_AUTODISABLE("I001 Switch", AFE_CONN37, 1, 1, 0),
++	SOC_DAPM_SINGLE_AUTODISABLE("I013 Switch", AFE_CONN37, 13, 1, 0),
 +	SOC_DAPM_SINGLE_AUTODISABLE("I021 Switch", AFE_CONN37, 21, 1, 0),
 +	SOC_DAPM_SINGLE_AUTODISABLE("I071 Switch", AFE_CONN37_2, 7, 1, 0),
++	SOC_DAPM_SINGLE_AUTODISABLE("I169 Switch", AFE_CONN37_5, 9, 1, 0),
 +};
 +
 +static const struct snd_kcontrol_new o038_mix[] = {
@@ -92551,17 +92625,25 @@ index 0000000000000000000000000000000000000000..4e836443bfcb240c7183bfec4d6272d4
 +	{"O035", "I001 Switch", "I001"},
 +	{"O034", "I002 Switch", "I002"},
 +	{"O035", "I003 Switch", "I003"},
++	{"O034", "I012 Switch", "I012"},
++	{"O035", "I013 Switch", "I013"},
 +	{"O034", "I020 Switch", "I020"},
 +	{"O035", "I021 Switch", "I021"},
 +	{"O034", "I070 Switch", "I070"},
 +	{"O035", "I071 Switch", "I071"},
++	{"O034", "I072 Switch", "I072"},
++	{"O035", "I073 Switch", "I073"},
 +
 +	{"O036", "I000 Switch", "I000"},
 +	{"O037", "I001 Switch", "I001"},
++	{"O036", "I012 Switch", "I012"},
++	{"O037", "I013 Switch", "I013"},
 +	{"O036", "I020 Switch", "I020"},
 +	{"O037", "I021 Switch", "I021"},
 +	{"O036", "I070 Switch", "I070"},
 +	{"O037", "I071 Switch", "I071"},
++	{"O036", "I168 Switch", "I168"},
++	{"O037", "I169 Switch", "I169"},
 +
 +	{"O038", "I022 Switch", "I022"},
 +	{"O039", "I023 Switch", "I023"},
@@ -93027,8 +93109,8 @@ index 0000000000000000000000000000000000000000..4e836443bfcb240c7183bfec4d6272d4
 +		.ch_num_maskbit = 0x1f,
 +		.msb_reg = AFE_NORMAL_BASE_ADR_MSB,
 +		.msb_shift = 18,
-+		.msb2_reg = AFE_NORMAL_END_ADR_MSB,
-+		.msb2_shift = 18,
++		.msb_end_reg = AFE_NORMAL_END_ADR_MSB,
++		.msb_end_shift = 18,
 +	},
 +	[MT8195_AFE_MEMIF_DL3] = {
 +		.name = "DL3",
@@ -93054,8 +93136,8 @@ index 0000000000000000000000000000000000000000..4e836443bfcb240c7183bfec4d6272d4
 +		.ch_num_maskbit = 0x1f,
 +		.msb_reg = AFE_NORMAL_BASE_ADR_MSB,
 +		.msb_shift = 19,
-+		.msb2_reg = AFE_NORMAL_END_ADR_MSB,
-+		.msb2_shift = 19,
++		.msb_end_reg = AFE_NORMAL_END_ADR_MSB,
++		.msb_end_shift = 19,
 +	},
 +	[MT8195_AFE_MEMIF_DL6] = {
 +		.name = "DL6",
@@ -93081,8 +93163,8 @@ index 0000000000000000000000000000000000000000..4e836443bfcb240c7183bfec4d6272d4
 +		.ch_num_maskbit = 0x1f,
 +		.msb_reg = AFE_NORMAL_BASE_ADR_MSB,
 +		.msb_shift = 22,
-+		.msb2_reg = AFE_NORMAL_END_ADR_MSB,
-+		.msb2_shift = 22,
++		.msb_end_reg = AFE_NORMAL_END_ADR_MSB,
++		.msb_end_shift = 22,
 +	},
 +	[MT8195_AFE_MEMIF_DL7] = {
 +		.name = "DL7",
@@ -93108,8 +93190,8 @@ index 0000000000000000000000000000000000000000..4e836443bfcb240c7183bfec4d6272d4
 +		.ch_num_maskbit = 0x1f,
 +		.msb_reg = AFE_NORMAL_BASE_ADR_MSB,
 +		.msb_shift = 23,
-+		.msb2_reg = AFE_NORMAL_END_ADR_MSB,
-+		.msb2_shift = 23,
++		.msb_end_reg = AFE_NORMAL_END_ADR_MSB,
++		.msb_end_shift = 23,
 +	},
 +	[MT8195_AFE_MEMIF_DL8] = {
 +		.name = "DL8",
@@ -93135,8 +93217,8 @@ index 0000000000000000000000000000000000000000..4e836443bfcb240c7183bfec4d6272d4
 +		.ch_num_maskbit = 0x3f,
 +		.msb_reg = AFE_NORMAL_BASE_ADR_MSB,
 +		.msb_shift = 24,
-+		.msb2_reg = AFE_NORMAL_END_ADR_MSB,
-+		.msb2_shift = 24,
++		.msb_end_reg = AFE_NORMAL_END_ADR_MSB,
++		.msb_end_shift = 24,
 +	},
 +	[MT8195_AFE_MEMIF_DL10] = {
 +		.name = "DL10",
@@ -93162,8 +93244,8 @@ index 0000000000000000000000000000000000000000..4e836443bfcb240c7183bfec4d6272d4
 +		.ch_num_maskbit = 0x1f,
 +		.msb_reg = AFE_NORMAL_BASE_ADR_MSB,
 +		.msb_shift = 26,
-+		.msb2_reg = AFE_NORMAL_END_ADR_MSB,
-+		.msb2_shift = 26,
++		.msb_end_reg = AFE_NORMAL_END_ADR_MSB,
++		.msb_end_shift = 26,
 +	},
 +	[MT8195_AFE_MEMIF_DL11] = {
 +		.name = "DL11",
@@ -93189,8 +93271,8 @@ index 0000000000000000000000000000000000000000..4e836443bfcb240c7183bfec4d6272d4
 +		.ch_num_maskbit = 0x7f,
 +		.msb_reg = AFE_NORMAL_BASE_ADR_MSB,
 +		.msb_shift = 27,
-+		.msb2_reg = AFE_NORMAL_END_ADR_MSB,
-+		.msb2_shift = 27,
++		.msb_end_reg = AFE_NORMAL_END_ADR_MSB,
++		.msb_end_shift = 27,
 +	},
 +	[MT8195_AFE_MEMIF_UL1] = {
 +		.name = "UL1",
@@ -93216,8 +93298,8 @@ index 0000000000000000000000000000000000000000..4e836443bfcb240c7183bfec4d6272d4
 +		.ch_num_maskbit = 0,
 +		.msb_reg = AFE_NORMAL_BASE_ADR_MSB,
 +		.msb_shift = 0,
-+		.msb2_reg = AFE_NORMAL_END_ADR_MSB,
-+		.msb2_shift = 0,
++		.msb_end_reg = AFE_NORMAL_END_ADR_MSB,
++		.msb_end_shift = 0,
 +	},
 +	[MT8195_AFE_MEMIF_UL2] = {
 +		.name = "UL2",
@@ -93243,8 +93325,8 @@ index 0000000000000000000000000000000000000000..4e836443bfcb240c7183bfec4d6272d4
 +		.ch_num_maskbit = 0,
 +		.msb_reg = AFE_NORMAL_BASE_ADR_MSB,
 +		.msb_shift = 1,
-+		.msb2_reg = AFE_NORMAL_END_ADR_MSB,
-+		.msb2_shift = 1,
++		.msb_end_reg = AFE_NORMAL_END_ADR_MSB,
++		.msb_end_shift = 1,
 +	},
 +	[MT8195_AFE_MEMIF_UL3] = {
 +		.name = "UL3",
@@ -93270,8 +93352,8 @@ index 0000000000000000000000000000000000000000..4e836443bfcb240c7183bfec4d6272d4
 +		.ch_num_maskbit = 0,
 +		.msb_reg = AFE_NORMAL_BASE_ADR_MSB,
 +		.msb_shift = 2,
-+		.msb2_reg = AFE_NORMAL_END_ADR_MSB,
-+		.msb2_shift = 2,
++		.msb_end_reg = AFE_NORMAL_END_ADR_MSB,
++		.msb_end_shift = 2,
 +	},
 +	[MT8195_AFE_MEMIF_UL4] = {
 +		.name = "UL4",
@@ -93297,8 +93379,8 @@ index 0000000000000000000000000000000000000000..4e836443bfcb240c7183bfec4d6272d4
 +		.ch_num_maskbit = 0,
 +		.msb_reg = AFE_NORMAL_BASE_ADR_MSB,
 +		.msb_shift = 3,
-+		.msb2_reg = AFE_NORMAL_END_ADR_MSB,
-+		.msb2_shift = 3,
++		.msb_end_reg = AFE_NORMAL_END_ADR_MSB,
++		.msb_end_shift = 3,
 +	},
 +	[MT8195_AFE_MEMIF_UL5] = {
 +		.name = "UL5",
@@ -93324,8 +93406,8 @@ index 0000000000000000000000000000000000000000..4e836443bfcb240c7183bfec4d6272d4
 +		.ch_num_maskbit = 0,
 +		.msb_reg = AFE_NORMAL_BASE_ADR_MSB,
 +		.msb_shift = 4,
-+		.msb2_reg = AFE_NORMAL_END_ADR_MSB,
-+		.msb2_shift = 4,
++		.msb_end_reg = AFE_NORMAL_END_ADR_MSB,
++		.msb_end_shift = 4,
 +	},
 +	[MT8195_AFE_MEMIF_UL6] = {
 +		.name = "UL6",
@@ -93351,8 +93433,8 @@ index 0000000000000000000000000000000000000000..4e836443bfcb240c7183bfec4d6272d4
 +		.ch_num_maskbit = 0,
 +		.msb_reg = AFE_NORMAL_BASE_ADR_MSB,
 +		.msb_shift = 5,
-+		.msb2_reg = AFE_NORMAL_END_ADR_MSB,
-+		.msb2_shift = 5,
++		.msb_end_reg = AFE_NORMAL_END_ADR_MSB,
++		.msb_end_shift = 5,
 +	},
 +	[MT8195_AFE_MEMIF_UL8] = {
 +		.name = "UL8",
@@ -93378,8 +93460,8 @@ index 0000000000000000000000000000000000000000..4e836443bfcb240c7183bfec4d6272d4
 +		.ch_num_maskbit = 0,
 +		.msb_reg = AFE_NORMAL_BASE_ADR_MSB,
 +		.msb_shift = 7,
-+		.msb2_reg = AFE_NORMAL_END_ADR_MSB,
-+		.msb2_shift = 7,
++		.msb_end_reg = AFE_NORMAL_END_ADR_MSB,
++		.msb_end_shift = 7,
 +	},
 +	[MT8195_AFE_MEMIF_UL9] = {
 +		.name = "UL9",
@@ -93405,8 +93487,8 @@ index 0000000000000000000000000000000000000000..4e836443bfcb240c7183bfec4d6272d4
 +		.ch_num_maskbit = 0,
 +		.msb_reg = AFE_NORMAL_BASE_ADR_MSB,
 +		.msb_shift = 8,
-+		.msb2_reg = AFE_NORMAL_END_ADR_MSB,
-+		.msb2_shift = 8,
++		.msb_end_reg = AFE_NORMAL_END_ADR_MSB,
++		.msb_end_shift = 8,
 +	},
 +	[MT8195_AFE_MEMIF_UL10] = {
 +		.name = "UL10",
@@ -93432,8 +93514,8 @@ index 0000000000000000000000000000000000000000..4e836443bfcb240c7183bfec4d6272d4
 +		.ch_num_maskbit = 0,
 +		.msb_reg = AFE_NORMAL_BASE_ADR_MSB,
 +		.msb_shift = 9,
-+		.msb2_reg = AFE_NORMAL_END_ADR_MSB,
-+		.msb2_shift = 9,
++		.msb_end_reg = AFE_NORMAL_END_ADR_MSB,
++		.msb_end_shift = 9,
 +	},
 +};
 +
@@ -94482,10 +94564,10 @@ index 0000000000000000000000000000000000000000..4e836443bfcb240c7183bfec4d6272d4
 +MODULE_LICENSE("GPL v2");
 diff --git a/sound/soc/mediatek/mt8195/mt8195-dai-adda.c b/sound/soc/mediatek/mt8195/mt8195-dai-adda.c
 new file mode 100755
-index 0000000000000000000000000000000000000000..cc149d0f6b295b037d9eb57528667b881bd1866d
+index 0000000000000000000000000000000000000000..6794fb40ef6ca0aaf5c7e15731f39e359e078133
 --- /dev/null
 +++ b/sound/soc/mediatek/mt8195/mt8195-dai-adda.c
-@@ -0,0 +1,1002 @@
+@@ -0,0 +1,927 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
 + * MediaTek ALSA SoC Audio DAI ADDA Control
@@ -95068,70 +95150,6 @@ index 0000000000000000000000000000000000000000..cc149d0f6b295b037d9eb57528667b88
 +	{"ADDA_OUTPUT", NULL, "ADDA Playback"},
 +};
 +
-+static int mt8195_adda_loopback_put(struct snd_kcontrol *kcontrol,
-+				     struct snd_ctl_elem_value *ucontrol)
-+{
-+	struct snd_soc_component *component = snd_kcontrol_chip(kcontrol);
-+	struct mtk_base_afe *afe = snd_soc_component_get_drvdata(component);
-+	long enable = ucontrol->value.integer.value[0];
-+	unsigned int reg = 0;
-+	unsigned int mask = 0;
-+	unsigned int value;
-+
-+	if (!strcmp(kcontrol->id.name, "ADDA_Loopback1_Switch")) {
-+		reg = AFE_ADDA_MTKAIF_CFG0;
-+		mask = (MTKAIF_IF_LOOPBACK1 |
-+			MTKAIF_TXIF_PROTOCOL2 |
-+			MTKAIF_TXIF_8TO5);
-+	} else if (!strcmp(kcontrol->id.name, "ADDA_Loopback3_Switch")) {
-+		reg = AFE_ADDA_UL_SRC_CON0;
-+		mask = UL_LOOPBACK_MODE_CTL;
-+	} else if (!strcmp(kcontrol->id.name, "ADDA6_Loopback1_Switch")) {
-+		reg = AFE_ADDA6_MTKAIF_CFG0;
-+		mask = MTKAIF_IF_LOOPBACK1;
-+	} else if (!strcmp(kcontrol->id.name, "ADDA6_Loopback3_Switch")) {
-+		reg = AFE_ADDA6_UL_SRC_CON0;
-+		mask = UL_LOOPBACK_MODE_CTL;
-+	}
-+
-+	value = (enable ? mask : 0);
-+
-+	if (reg)
-+		regmap_update_bits(afe->regmap, reg, mask, value);
-+
-+	return 0;
-+}
-+
-+static int mt8195_adda_loopback_get(struct snd_kcontrol *kcontrol,
-+				     struct snd_ctl_elem_value *ucontrol)
-+{
-+	struct snd_soc_component *component = snd_kcontrol_chip(kcontrol);
-+	struct mtk_base_afe *afe = snd_soc_component_get_drvdata(component);
-+	unsigned int reg = 0;
-+	unsigned int mask = 0;
-+	unsigned int value = 0;
-+
-+	if (!strcmp(kcontrol->id.name, "ADDA_Loopback1_Switch")) {
-+		reg = AFE_ADDA_MTKAIF_CFG0;
-+		mask = MTKAIF_IF_LOOPBACK1;
-+	} else if (!strcmp(kcontrol->id.name, "ADDA_Loopback3_Switch")) {
-+		reg = AFE_ADDA_UL_SRC_CON0;
-+		mask = UL_LOOPBACK_MODE_CTL;
-+	} else if (!strcmp(kcontrol->id.name, "ADDA6_Loopback1_Switch")) {
-+		reg = AFE_ADDA6_MTKAIF_CFG0;
-+		mask = MTKAIF_IF_LOOPBACK1;
-+	} else if (!strcmp(kcontrol->id.name, "ADDA6_Loopback3_Switch")) {
-+		reg = AFE_ADDA6_UL_SRC_CON0;
-+		mask = UL_LOOPBACK_MODE_CTL;
-+	}
-+
-+	if (reg)
-+		regmap_read(afe->regmap, reg, &value);
-+
-+	ucontrol->value.integer.value[0] = ((value & mask) ? 1 : 0);
-+	return 0;
-+}
-+
 +static int mt8195_adda_dl_gain_put(struct snd_kcontrol *kcontrol,
 +				     struct snd_ctl_elem_value *ucontrol)
 +{
@@ -95223,18 +95241,6 @@ index 0000000000000000000000000000000000000000..cc149d0f6b295b037d9eb57528667b88
 +}
 +
 +static const struct snd_kcontrol_new mtk_dai_adda_controls[] = {
-+	SOC_SINGLE_BOOL_EXT("ADDA_Loopback1_Switch", 0,
-+			    mt8195_adda_loopback_get,
-+			    mt8195_adda_loopback_put),
-+	SOC_SINGLE_BOOL_EXT("ADDA_Loopback3_Switch", 0,
-+			    mt8195_adda_loopback_get,
-+			    mt8195_adda_loopback_put),
-+	SOC_SINGLE_BOOL_EXT("ADDA6_Loopback1_Switch", 0,
-+			    mt8195_adda_loopback_get,
-+			    mt8195_adda_loopback_put),
-+	SOC_SINGLE_BOOL_EXT("ADDA6_Loopback3_Switch", 0,
-+			    mt8195_adda_loopback_get,
-+			    mt8195_adda_loopback_put),
 +	SOC_SINGLE_EXT("ADDA_DL_Gain", SND_SOC_NOPM, 0, 65535, 0,
 +			    mt8195_adda_dl_gain_get,
 +			    mt8195_adda_dl_gain_put),
@@ -95403,6 +95409,7 @@ index 0000000000000000000000000000000000000000..cc149d0f6b295b037d9eb57528667b88
 +				SNDRV_PCM_RATE_192000)
 +
 +#define MTK_ADDA_FORMATS (SNDRV_PCM_FMTBIT_S16_LE |\
++			  SNDRV_PCM_FMTBIT_S24_LE |\
 +			  SNDRV_PCM_FMTBIT_S32_LE)
 +
 +static struct snd_soc_dai_driver mtk_dai_adda_driver[] = {
@@ -95490,10 +95497,10 @@ index 0000000000000000000000000000000000000000..cc149d0f6b295b037d9eb57528667b88
 +}
 diff --git a/sound/soc/mediatek/mt8195/mt8195-dai-etdm.c b/sound/soc/mediatek/mt8195/mt8195-dai-etdm.c
 new file mode 100755
-index 0000000000000000000000000000000000000000..401044638d44c63620286615b68af9d22b7a63f0
+index 0000000000000000000000000000000000000000..70b9811bf32ca975601e0f5a335a2434658b8210
 --- /dev/null
 +++ b/sound/soc/mediatek/mt8195/mt8195-dai-etdm.c
-@@ -0,0 +1,2862 @@
+@@ -0,0 +1,2627 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
 + * MediaTek ALSA SoC Audio DAI eTDM Control
@@ -95770,12 +95777,14 @@ index 0000000000000000000000000000000000000000..401044638d44c63620286615b68af9d2
 +}
 +
 +static const struct snd_kcontrol_new mtk_dai_etdm_o048_mix[] = {
++	SOC_DAPM_SINGLE_AUTODISABLE("I020 Switch", AFE_CONN48, 20, 1, 0),
 +	SOC_DAPM_SINGLE_AUTODISABLE("I022 Switch", AFE_CONN48, 22, 1, 0),
 +	SOC_DAPM_SINGLE_AUTODISABLE("I046 Switch", AFE_CONN48_1, 14, 1, 0),
 +	SOC_DAPM_SINGLE_AUTODISABLE("I070 Switch", AFE_CONN48_2, 6, 1, 0),
 +};
 +
 +static const struct snd_kcontrol_new mtk_dai_etdm_o049_mix[] = {
++	SOC_DAPM_SINGLE_AUTODISABLE("I021 Switch", AFE_CONN49, 21, 1, 0),
 +	SOC_DAPM_SINGLE_AUTODISABLE("I023 Switch", AFE_CONN49, 23, 1, 0),
 +	SOC_DAPM_SINGLE_AUTODISABLE("I047 Switch", AFE_CONN49_1, 15, 1, 0),
 +	SOC_DAPM_SINGLE_AUTODISABLE("I071 Switch", AFE_CONN49_2, 7, 1, 0),
@@ -95892,13 +95901,17 @@ index 0000000000000000000000000000000000000000..401044638d44c63620286615b68af9d2
 +};
 +
 +static const struct snd_kcontrol_new mtk_dai_etdm_o072_mix[] = {
++	SOC_DAPM_SINGLE_AUTODISABLE("I020 Switch", AFE_CONN72, 20, 1, 0),
 +	SOC_DAPM_SINGLE_AUTODISABLE("I022 Switch", AFE_CONN72, 22, 1, 0),
 +	SOC_DAPM_SINGLE_AUTODISABLE("I046 Switch", AFE_CONN72_1, 14, 1, 0),
++	SOC_DAPM_SINGLE_AUTODISABLE("I070 Switch", AFE_CONN72_2, 6, 1, 0),
 +};
 +
 +static const struct snd_kcontrol_new mtk_dai_etdm_o073_mix[] = {
++	SOC_DAPM_SINGLE_AUTODISABLE("I021 Switch", AFE_CONN73, 21, 1, 0),
 +	SOC_DAPM_SINGLE_AUTODISABLE("I023 Switch", AFE_CONN73, 23, 1, 0),
 +	SOC_DAPM_SINGLE_AUTODISABLE("I047 Switch", AFE_CONN73_1, 15, 1, 0),
++	SOC_DAPM_SINGLE_AUTODISABLE("I071 Switch", AFE_CONN73_2, 7, 1, 0),
 +};
 +
 +static const struct snd_kcontrol_new mtk_dai_etdm_o074_mix[] = {
@@ -96252,235 +96265,6 @@ index 0000000000000000000000000000000000000000..401044638d44c63620286615b68af9d2
 +	return 0;
 +}
 +
-+static int mt8195_etdmin_lpbk_src_put(struct snd_kcontrol *kcontrol,
-+	struct snd_ctl_elem_value *ucontrol)
-+{
-+	struct snd_soc_component *component = snd_kcontrol_chip(kcontrol);
-+	struct mtk_base_afe *afe = snd_soc_component_get_drvdata(component);
-+	unsigned int source = ucontrol->value.enumerated.item[0];
-+	unsigned int value = 0;
-+	unsigned int reg = 0;
-+	unsigned int val;
-+	unsigned int mask;
-+
-+	if (!strcmp(kcontrol->id.name, "ETDM_IN1_Loopback_Source")) {
-+		if (source == ETDM_IN_FROM_PAD)
-+			value = COWORK_ETDM_IN1_M;
-+		else if (source == ETDM_IN_FROM_ETDM_OUT1)
-+			value = COWORK_ETDM_OUT1_M;
-+		else if (source == ETDM_IN_FROM_ETDM_OUT2)
-+			value = COWORK_ETDM_OUT2_M;
-+		reg = ETDM_COWORK_CON1;
-+		mask = (ETDM_IN1_SDATA0_SEL_MASK | ETDM_IN1_SDATA_SEL_MASK);
-+		val = ((ETDM_IN1_SDATA0_SEL_MASK & ETDM_IN1_SDATA0_SEL(value)) |
-+			(ETDM_IN1_SDATA_SEL_MASK & ETDM_IN1_SDATA_SEL(value)));
-+	} else if (!strcmp(kcontrol->id.name, "ETDM_IN2_Loopback_Source"))  {
-+		if (source == ETDM_IN_FROM_PAD)
-+			value = COWORK_ETDM_IN2_M;
-+		else if (source == ETDM_IN_FROM_ETDM_OUT1)
-+			value = COWORK_ETDM_OUT1_M;
-+		else if (source == ETDM_IN_FROM_ETDM_OUT2)
-+			value = COWORK_ETDM_OUT2_M;
-+		reg = ETDM_COWORK_CON3;
-+		mask = (ETDM_IN2_SDATA0_SEL_MASK | ETDM_IN2_SDATA_SEL_MASK);
-+		val = ((ETDM_IN2_SDATA0_SEL_MASK & ETDM_IN2_SDATA0_SEL(value)) |
-+			(ETDM_IN2_SDATA_SEL_MASK & ETDM_IN2_SDATA_SEL(value)));
-+	}
-+	if (reg)
-+		regmap_update_bits(afe->regmap, reg, mask, val);
-+
-+	return 0;
-+}
-+
-+static int mt8195_etdmin_lpbk_src_get(struct snd_kcontrol *kcontrol,
-+	struct snd_ctl_elem_value *ucontrol)
-+{
-+	struct snd_soc_component *component = snd_kcontrol_chip(kcontrol);
-+	struct mtk_base_afe *afe = snd_soc_component_get_drvdata(component);
-+	unsigned int reg = 0;
-+	unsigned int value = 0;
-+	unsigned int mask = 0;
-+	unsigned int shift = 0;
-+
-+	if (!strcmp(kcontrol->id.name, "ETDM_IN1_Loopback_Source")) {
-+		reg = ETDM_COWORK_CON1;
-+		mask = ETDM_IN1_SDATA0_SEL_MASK;
-+		shift = ETDM_IN1_SDATA0_SEL_SHIFT;
-+	} else if (!strcmp(kcontrol->id.name, "ETDM_IN2_Loopback_Source")) {
-+		reg = ETDM_COWORK_CON3;
-+		mask = ETDM_IN2_SDATA0_SEL_MASK;
-+		shift = ETDM_IN2_SDATA0_SEL_SHIFT;
-+	}
-+
-+	if (reg)
-+		regmap_read(afe->regmap, reg, &value);
-+
-+	value &= mask;
-+	value >>= shift;
-+
-+	if (value == COWORK_ETDM_OUT1_M)
-+		ucontrol->value.enumerated.item[0] = ETDM_IN_FROM_ETDM_OUT1;
-+	else if (value == COWORK_ETDM_OUT2_M)
-+		ucontrol->value.enumerated.item[0] = ETDM_IN_FROM_ETDM_OUT2;
-+	else
-+		ucontrol->value.enumerated.item[0] = ETDM_IN_FROM_PAD;
-+	return 0;
-+}
-+
-+static int mt8195_etdmin_slv_clk_put(struct snd_kcontrol *kcontrol,
-+	struct snd_ctl_elem_value *ucontrol)
-+{
-+	struct snd_soc_component *component = snd_kcontrol_chip(kcontrol);
-+	struct mtk_base_afe *afe = snd_soc_component_get_drvdata(component);
-+	unsigned int source = ucontrol->value.enumerated.item[0];
-+	unsigned int value = 0;
-+	unsigned int reg = 0;
-+	unsigned int val;
-+	unsigned int mask;
-+
-+	if (!strcmp(kcontrol->id.name, "ETDM_IN1_Slave_Clock_Source")) {
-+		if (source == ETDM_IN_SLAVE_FROM_PAD)
-+			value = COWORK_ETDM_IN1_S;
-+		else if (source == ETDM_IN_SLAVE_FROM_ETDM_OUT1)
-+			value = COWORK_ETDM_OUT1_M;
-+		else if (source == ETDM_IN_SLAVE_FROM_ETDM_OUT2)
-+			value = COWORK_ETDM_OUT2_M;
-+		reg = ETDM_COWORK_CON1;
-+		mask = ETDM_IN1_SLAVE_SEL_MASK;
-+		val = ETDM_IN1_SLAVE_SEL(value);
-+	} else if (!strcmp(kcontrol->id.name, "ETDM_IN2_Slave_Clock_Source")) {
-+		if (source == ETDM_IN_SLAVE_FROM_PAD)
-+			value = COWORK_ETDM_IN2_S;
-+		else if (source == ETDM_IN_SLAVE_FROM_ETDM_OUT1)
-+			value = COWORK_ETDM_OUT1_M;
-+		else if (source == ETDM_IN_SLAVE_FROM_ETDM_OUT2)
-+			value = COWORK_ETDM_OUT2_M;
-+		reg = ETDM_COWORK_CON2;
-+		mask = ETDM_IN2_SLAVE_SEL_MASK;
-+		val = ETDM_IN2_SLAVE_SEL(value);
-+	}
-+
-+	if (reg)
-+		regmap_update_bits(afe->regmap, reg, mask, val);
-+
-+	return 0;
-+}
-+
-+static int mt8195_etdmin_slv_clk_get(struct snd_kcontrol *kcontrol,
-+	struct snd_ctl_elem_value *ucontrol)
-+{
-+	struct snd_soc_component *component = snd_kcontrol_chip(kcontrol);
-+	struct mtk_base_afe *afe = snd_soc_component_get_drvdata(component);
-+	unsigned int reg = 0;
-+	unsigned int value = 0;
-+	unsigned int mask = 0;
-+	unsigned int shift = 0;
-+
-+	if (!strcmp(kcontrol->id.name, "ETDM_IN1_Slave_Clock_Source")) {
-+		reg = ETDM_COWORK_CON1;
-+		mask = ETDM_IN1_SLAVE_SEL_MASK;
-+		shift = ETDM_IN1_SLAVE_SEL_SHIFT;
-+	} else if (!strcmp(kcontrol->id.name, "ETDM_IN2_Slave_Clock_Source")) {
-+		reg = ETDM_COWORK_CON2;
-+		mask = ETDM_IN2_SLAVE_SEL_MASK;
-+		shift = ETDM_IN2_SLAVE_SEL_SHIFT;
-+	}
-+
-+	if (reg)
-+		regmap_read(afe->regmap, reg, &value);
-+
-+	value &= mask;
-+	value >>= shift;
-+
-+	if (value == COWORK_ETDM_OUT1_M)
-+		ucontrol->value.enumerated.item[0] =
-+			ETDM_IN_SLAVE_FROM_ETDM_OUT1;
-+	else if (value == COWORK_ETDM_OUT2_M)
-+		ucontrol->value.enumerated.item[0] =
-+			ETDM_IN_SLAVE_FROM_ETDM_OUT2;
-+	else
-+		ucontrol->value.enumerated.item[0] =
-+			ETDM_IN_SLAVE_FROM_PAD;
-+	return 0;
-+}
-+
-+static int mt8195_etdmout_slv_clk_put(struct snd_kcontrol *kcontrol,
-+	struct snd_ctl_elem_value *ucontrol)
-+{
-+	struct snd_soc_component *component = snd_kcontrol_chip(kcontrol);
-+	struct mtk_base_afe *afe = snd_soc_component_get_drvdata(component);
-+	unsigned int source = ucontrol->value.enumerated.item[0];
-+	unsigned int value = 0;
-+	unsigned int reg = 0;
-+	unsigned int val;
-+	unsigned int mask;
-+
-+	if (!strcmp(kcontrol->id.name, "ETDM_OUT1_Slave_Clock_Source")) {
-+		if (source == ETDM_OUT_SLAVE_FROM_PAD)
-+			value = COWORK_ETDM_OUT1_S;
-+		else if (source == ETDM_OUT_SLAVE_FROM_ETDM_IN1)
-+			value = COWORK_ETDM_IN1_M;
-+		else if (source == ETDM_OUT_SLAVE_FROM_ETDM_IN2)
-+			value = COWORK_ETDM_IN2_M;
-+		reg = ETDM_COWORK_CON0;
-+		mask = ETDM_OUT1_SLAVE_SEL_MASK;
-+		val = ETDM_OUT1_SLAVE_SEL(value);
-+	} else if (!strcmp(kcontrol->id.name, "ETDM_OUT2_Slave_Clock_Source")) {
-+		if (source == ETDM_OUT_SLAVE_FROM_PAD)
-+			value = COWORK_ETDM_OUT2_S;
-+		else if (source == ETDM_OUT_SLAVE_FROM_ETDM_IN1)
-+			value = COWORK_ETDM_IN1_M;
-+		else if (source == ETDM_OUT_SLAVE_FROM_ETDM_IN2)
-+			value = COWORK_ETDM_IN2_M;
-+		reg = ETDM_COWORK_CON2;
-+		mask = ETDM_OUT2_SLAVE_SEL_MASK;
-+		val = ETDM_OUT2_SLAVE_SEL(value);
-+	}
-+
-+	if (reg)
-+		regmap_update_bits(afe->regmap, reg, mask, val);
-+
-+	return 0;
-+}
-+
-+static int mt8195_etdmout_slv_clk_get(struct snd_kcontrol *kcontrol,
-+	struct snd_ctl_elem_value *ucontrol)
-+{
-+	struct snd_soc_component *component = snd_kcontrol_chip(kcontrol);
-+	struct mtk_base_afe *afe = snd_soc_component_get_drvdata(component);
-+	unsigned int reg = 0;
-+	unsigned int value = 0;
-+	unsigned int mask = 0;
-+	unsigned int shift = 0;
-+
-+	if (!strcmp(kcontrol->id.name, "ETDM_IN1_Slave_Clock_Source")) {
-+		reg = ETDM_COWORK_CON0;
-+		mask = ETDM_OUT1_SLAVE_SEL_MASK;
-+		shift = ETDM_OUT1_SLAVE_SEL_SHIFT;
-+	} else if (!strcmp(kcontrol->id.name, "ETDM_IN2_Slave_Clock_Source")) {
-+		reg = ETDM_COWORK_CON2;
-+		mask = ETDM_OUT2_SLAVE_SEL_MASK;
-+		shift = ETDM_OUT2_SLAVE_SEL_SHIFT;
-+	}
-+
-+	if (reg)
-+		regmap_read(afe->regmap, reg, &value);
-+
-+	value &= mask;
-+	value >>= shift;
-+
-+	if (value == COWORK_ETDM_IN1_M)
-+		ucontrol->value.enumerated.item[0] =
-+			ETDM_OUT_SLAVE_FROM_ETDM_IN1;
-+	else if (value == COWORK_ETDM_IN2_M)
-+		ucontrol->value.enumerated.item[0] =
-+			ETDM_OUT_SLAVE_FROM_ETDM_IN2;
-+	else
-+		ucontrol->value.enumerated.item[0] =
-+			ETDM_OUT_SLAVE_FROM_PAD;
-+	return 0;
-+}
-+
 +static const struct snd_kcontrol_new mtk_dai_etdm_controls[] = {
 +	SOC_ENUM_EXT("ETDM_OUT1_Clock_Source", etdmout_clk_src_enum,
 +		mt8195_etdm_clk_src_sel_get,
@@ -96497,27 +96281,6 @@ index 0000000000000000000000000000000000000000..401044638d44c63620286615b68af9d2
 +	SOC_ENUM_EXT("ETDM_IN2_Clock_Source", etdmout_clk_src_enum,
 +		mt8195_etdm_clk_src_sel_get,
 +		mt8195_etdm_clk_src_sel_put),
-+
-+	SOC_ENUM_EXT("ETDM_IN1_Loopback_Source", etdmin_loopback_src_enum,
-+		mt8195_etdmin_lpbk_src_get,
-+		mt8195_etdmin_lpbk_src_put),
-+	SOC_ENUM_EXT("ETDM_IN2_Loopback_Source", etdmin_loopback_src_enum,
-+		mt8195_etdmin_lpbk_src_get,
-+		mt8195_etdmin_lpbk_src_put),
-+
-+	SOC_ENUM_EXT("ETDM_IN1_Slave_Clock_Source", etdmin_slv_clk_enum,
-+		mt8195_etdmin_slv_clk_get,
-+		mt8195_etdmin_slv_clk_put),
-+	SOC_ENUM_EXT("ETDM_IN2_Slave_Clock_Source", etdmin_slv_clk_enum,
-+		mt8195_etdmin_slv_clk_get,
-+		mt8195_etdmin_slv_clk_put),
-+
-+	SOC_ENUM_EXT("ETDM_OUT1_Slave_Clock_Source", etdmout_slv_clk_enum,
-+		mt8195_etdmout_slv_clk_get,
-+		mt8195_etdmout_slv_clk_put),
-+	SOC_ENUM_EXT("ETDM_OUT2_Slave_Clock_Source", etdmout_slv_clk_enum,
-+		mt8195_etdmout_slv_clk_get,
-+		mt8195_etdmout_slv_clk_put),
 +};
 +
 +static const struct snd_soc_dapm_widget mtk_dai_etdm_widgets[] = {
@@ -96772,6 +96535,9 @@ index 0000000000000000000000000000000000000000..401044638d44c63620286615b68af9d2
 +	{"ETDM1 Playback", NULL, "O094"},
 +	{"ETDM1 Playback", NULL, "O095"},
 +
++	{"O048", "I020 Switch", "I020"},
++	{"O049", "I021 Switch", "I021"},
++
 +	{"O048", "I022 Switch", "I022"},
 +	{"O049", "I023 Switch", "I023"},
 +	{"O050", "I024 Switch", "I024"},
@@ -96825,6 +96591,9 @@ index 0000000000000000000000000000000000000000..401044638d44c63620286615b68af9d2
 +	{"O048", "I070 Switch", "I070"},
 +	{"O049", "I071 Switch", "I071"},
 +
++	{"O072", "I020 Switch", "I020"},
++	{"O073", "I021 Switch", "I021"},
++
 +	{"O072", "I022 Switch", "I022"},
 +	{"O073", "I023 Switch", "I023"},
 +	{"O074", "I024 Switch", "I024"},
@@ -96874,6 +96643,9 @@ index 0000000000000000000000000000000000000000..401044638d44c63620286615b68af9d2
 +	{"O093", "I067 Switch", "I067"},
 +	{"O094", "I068 Switch", "I068"},
 +	{"O095", "I069 Switch", "I069"},
++
++	{"O072", "I070 Switch", "I070"},
++	{"O073", "I071 Switch", "I071"},
 +
 +	{"HDMI_CH0_MUX", "CH0", "DL10"},
 +	{"HDMI_CH0_MUX", "CH1", "DL10"},
@@ -98358,10 +98130,10 @@ index 0000000000000000000000000000000000000000..401044638d44c63620286615b68af9d2
 +}
 diff --git a/sound/soc/mediatek/mt8195/mt8195-dai-pcm.c b/sound/soc/mediatek/mt8195/mt8195-dai-pcm.c
 new file mode 100755
-index 0000000000000000000000000000000000000000..10f8d3be1087f50520fbce44f34262d00a7097e8
+index 0000000000000000000000000000000000000000..934a271f5cf16a6875265978107db275f6546be7
 --- /dev/null
 +++ b/sound/soc/mediatek/mt8195/mt8195-dai-pcm.c
-@@ -0,0 +1,438 @@
+@@ -0,0 +1,394 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
 + * MediaTek ALSA SoC Audio DAI PCM I/F Control
@@ -98461,49 +98233,6 @@ index 0000000000000000000000000000000000000000..10f8d3be1087f50520fbce44f34262d0
 +
 +	{"PCM1_OUTPUT", NULL, "PCM1 Playback"},
 +	{"PCM1 Capture", NULL, "PCM1_INPUT"},
-+};
-+
-+static int pcm_tx_rx_lpbk_en_get(
-+	struct snd_kcontrol *kcontrol,
-+	struct snd_ctl_elem_value *ucontrol)
-+{
-+	struct snd_soc_component *component =
-+		snd_soc_kcontrol_component(kcontrol);
-+	struct mtk_base_afe *afe = snd_soc_component_get_drvdata(component);
-+	unsigned int value = 0;
-+
-+	regmap_read(afe->regmap, PCM_INTF_CON2, &value);
-+
-+	value &= PCM_INTF_CON2_PCM_TX2RX_LPBK;
-+	value = !!value;
-+
-+	ucontrol->value.integer.value[0] = value;
-+
-+	return 0;
-+}
-+
-+static int pcm_tx_rx_lpbk_en_put(
-+	struct snd_kcontrol *kcontrol,
-+	struct snd_ctl_elem_value *ucontrol)
-+{
-+	struct snd_soc_component *component =
-+		snd_soc_kcontrol_component(kcontrol);
-+	struct mtk_base_afe *afe = snd_soc_component_get_drvdata(component);
-+	long val = 0;
-+
-+	if (ucontrol->value.integer.value[0])
-+		val |= PCM_INTF_CON2_PCM_TX2RX_LPBK;
-+
-+	regmap_update_bits(afe->regmap, PCM_INTF_CON2,
-+		PCM_INTF_CON2_PCM_TX2RX_LPBK, val);
-+
-+	return 0;
-+}
-+
-+static const struct snd_kcontrol_new mtk_dai_pcm_controls[] = {
-+	SOC_SINGLE_BOOL_EXT("pcm_tx_rx_lpbk_en", 0,
-+		pcm_tx_rx_lpbk_en_get,
-+		pcm_tx_rx_lpbk_en_put),
 +};
 +
 +static void mtk_dai_pcm_enable(struct mtk_base_afe *afe)
@@ -98738,6 +98467,7 @@ index 0000000000000000000000000000000000000000..10f8d3be1087f50520fbce44f34262d0
 +#define MTK_PCM_RATES (SNDRV_PCM_RATE_8000_48000)
 +
 +#define MTK_PCM_FORMATS (SNDRV_PCM_FMTBIT_S16_LE |\
++			 SNDRV_PCM_FMTBIT_S24_LE |\
 +			 SNDRV_PCM_FMTBIT_S32_LE)
 +
 +static struct snd_soc_dai_driver mtk_dai_pcm_driver[] = {
@@ -98795,17 +98525,15 @@ index 0000000000000000000000000000000000000000..10f8d3be1087f50520fbce44f34262d0
 +	dai->num_dapm_widgets = ARRAY_SIZE(mtk_dai_pcm_widgets);
 +	dai->dapm_routes = mtk_dai_pcm_routes;
 +	dai->num_dapm_routes = ARRAY_SIZE(mtk_dai_pcm_routes);
-+	dai->controls = mtk_dai_pcm_controls;
-+	dai->num_controls = ARRAY_SIZE(mtk_dai_pcm_controls);
 +
 +	return init_pcmif_priv_data(afe);
 +}
 diff --git a/sound/soc/mediatek/mt8195/mt8195-mt6359-rt1019-rt5682.c b/sound/soc/mediatek/mt8195/mt8195-mt6359-rt1019-rt5682.c
 new file mode 100755
-index 0000000000000000000000000000000000000000..e5ed00e88508e9c7e0f410272f57da67f996955c
+index 0000000000000000000000000000000000000000..05e46f2cc5c99403145db60b9be315d7c6c06da6
 --- /dev/null
 +++ b/sound/soc/mediatek/mt8195/mt8195-mt6359-rt1019-rt5682.c
-@@ -0,0 +1,858 @@
+@@ -0,0 +1,959 @@
 +// SPDX-License-Identifier: GPL-2.0
 +//
 +// mt8195-mt6359-rt1019-rt5682.c  --
@@ -98815,22 +98543,19 @@ index 0000000000000000000000000000000000000000..e5ed00e88508e9c7e0f410272f57da67
 +// Author: Trevor Wu <trevor.wu@mediatek.com>
 +//
 +
-+#include <linux/gpio/consumer.h>
 +#include <linux/input.h>
 +#include <linux/module.h>
-+#include <linux/pm_runtime.h>
 +#include <sound/jack.h>
 +#include <sound/pcm_params.h>
 +#include <sound/rt5682.h>
 +#include <sound/soc.h>
-+
 +#include "../../codecs/mt6359.h"
 +#include "../../codecs/rt5682.h"
 +#include "../common/mtk-afe-platform-driver.h"
 +#include "mt8195-afe-common.h"
 +
 +#define RT1019_CODEC_DAI	"HiFi"
-+#define RT1019_DEV0_NAME	"rt1015p"
++#define RT1019_DEV0_NAME	"rt1019p"
 +
 +#define RT5682_CODEC_DAI	"rt5682-aif1"
 +#define RT5682_DEV0_NAME	"rt5682.2-001a"
@@ -98840,7 +98565,7 @@ index 0000000000000000000000000000000000000000..e5ed00e88508e9c7e0f410272f57da67
 +};
 +
 +static const struct snd_soc_dapm_widget
-+mt8195_mt6359_rt1019_rt5682_widgets[] = {
++	mt8195_mt6359_rt1019_rt5682_widgets[] = {
 +	SND_SOC_DAPM_SPK("Speakers", NULL),
 +	SND_SOC_DAPM_HP("Headphone Jack", NULL),
 +	SND_SOC_DAPM_MIC("Headset Mic", NULL),
@@ -98862,7 +98587,7 @@ index 0000000000000000000000000000000000000000..e5ed00e88508e9c7e0f410272f57da67
 +};
 +
 +static int mt8195_rt5682_etdm_hw_params(struct snd_pcm_substream *substream,
-+				       struct snd_pcm_hw_params *params)
++					struct snd_pcm_hw_params *params)
 +{
 +	struct snd_soc_pcm_runtime *rtd = substream->private_data;
 +	struct snd_soc_card *card = rtd->card;
@@ -99109,7 +98834,7 @@ index 0000000000000000000000000000000000000000..e5ed00e88508e9c7e0f410272f57da67
 +};
 +
 +static int mt8195_etdm_hw_params_fixup(struct snd_soc_pcm_runtime *rtd,
-+				      struct snd_pcm_hw_params *params)
++				       struct snd_pcm_hw_params *params)
 +{
 +	/* fix BE i2s format to 32bit, clean param mask first */
 +	snd_mask_reset_range(hw_param_mask(params, SNDRV_PCM_HW_PARAM_FORMAT),
@@ -99121,7 +98846,7 @@ index 0000000000000000000000000000000000000000..e5ed00e88508e9c7e0f410272f57da67
 +}
 +
 +static int mt8195_dptx_hw_params(struct snd_pcm_substream *substream,
-+	struct snd_pcm_hw_params *params)
++				 struct snd_pcm_hw_params *params)
 +{
 +	struct snd_soc_pcm_runtime *rtd = substream->private_data;
 +	struct snd_soc_dai *cpu_dai = asoc_rtd_to_cpu(rtd, 0);
@@ -99138,7 +98863,7 @@ index 0000000000000000000000000000000000000000..e5ed00e88508e9c7e0f410272f57da67
 +};
 +
 +static int mt8195_dptx_hw_params_fixup(struct snd_soc_pcm_runtime *rtd,
-+					   struct snd_pcm_hw_params *params)
++				       struct snd_pcm_hw_params *params)
 +{
 +	/* fix BE i2s format to 32bit, clean param mask first */
 +	snd_mask_reset_range(hw_param_mask(params, SNDRV_PCM_HW_PARAM_FORMAT),
@@ -99148,6 +98873,98 @@ index 0000000000000000000000000000000000000000..e5ed00e88508e9c7e0f410272f57da67
 +
 +	return 0;
 +}
++
++static int mt8195_playback_startup(struct snd_pcm_substream *substream)
++{
++	static const unsigned int rates[] = {
++		48000
++	};
++	static const unsigned int channels[] = {
++		2
++	};
++	static const struct snd_pcm_hw_constraint_list constraints_rates = {
++		.count = ARRAY_SIZE(rates),
++		.list  = rates,
++		.mask = 0,
++	};
++	static const struct snd_pcm_hw_constraint_list constraints_channels = {
++		.count = ARRAY_SIZE(channels),
++		.list  = channels,
++		.mask = 0,
++	};
++
++	struct snd_soc_pcm_runtime *rtd = asoc_substream_to_rtd(substream);
++	struct snd_pcm_runtime *runtime = substream->runtime;
++	int ret;
++
++	ret = snd_pcm_hw_constraint_list(runtime, 0,
++					 SNDRV_PCM_HW_PARAM_RATE,
++					 &constraints_rates);
++	if (ret < 0) {
++		dev_err(rtd->dev, "hw_constraint_list rate failed\n");
++		return ret;
++	}
++
++	ret = snd_pcm_hw_constraint_list(runtime, 0,
++					 SNDRV_PCM_HW_PARAM_CHANNELS,
++					 &constraints_channels);
++	if (ret < 0) {
++		dev_err(rtd->dev, "hw_constraint_list channel failed\n");
++		return ret;
++	}
++
++	return 0;
++}
++
++static const struct snd_soc_ops mt8195_playback_ops = {
++	.startup = mt8195_playback_startup,
++};
++
++static int mt8195_capture_startup(struct snd_pcm_substream *substream)
++{
++	static const unsigned int rates[] = {
++		48000
++	};
++	static const unsigned int channels[] = {
++		1, 2
++	};
++	static const struct snd_pcm_hw_constraint_list constraints_rates = {
++		.count = ARRAY_SIZE(rates),
++		.list  = rates,
++		.mask = 0,
++	};
++	static const struct snd_pcm_hw_constraint_list constraints_channels = {
++		.count = ARRAY_SIZE(channels),
++		.list  = channels,
++		.mask = 0,
++	};
++
++	struct snd_soc_pcm_runtime *rtd = asoc_substream_to_rtd(substream);
++	struct snd_pcm_runtime *runtime = substream->runtime;
++	int ret;
++
++	ret = snd_pcm_hw_constraint_list(runtime, 0,
++					 SNDRV_PCM_HW_PARAM_RATE,
++					 &constraints_rates);
++	if (ret < 0) {
++		dev_err(rtd->dev, "hw_constraint_list rate failed\n");
++		return ret;
++	}
++
++	ret = snd_pcm_hw_constraint_list(runtime, 0,
++					 SNDRV_PCM_HW_PARAM_CHANNELS,
++					 &constraints_channels);
++	if (ret < 0) {
++		dev_err(rtd->dev, "hw_constraint_list channel failed\n");
++		return ret;
++	}
++
++	return 0;
++}
++
++static const struct snd_soc_ops mt8195_capture_ops = {
++	.startup = mt8195_capture_startup,
++};
 +
 +enum {
 +	DAI_LINK_DL2_FE,
@@ -99329,6 +99146,7 @@ index 0000000000000000000000000000000000000000..e5ed00e88508e9c7e0f410272f57da67
 +		},
 +		.dynamic = 1,
 +		.dpcm_playback = 1,
++		.ops = &mt8195_playback_ops,
 +		SND_SOC_DAILINK_REG(DL2_FE),
 +	},
 +	[DAI_LINK_DL3_FE] = {
@@ -99340,6 +99158,7 @@ index 0000000000000000000000000000000000000000..e5ed00e88508e9c7e0f410272f57da67
 +		},
 +		.dynamic = 1,
 +		.dpcm_playback = 1,
++		.ops = &mt8195_playback_ops,
 +		SND_SOC_DAILINK_REG(DL3_FE),
 +	},
 +	[DAI_LINK_DL6_FE] = {
@@ -99351,6 +99170,7 @@ index 0000000000000000000000000000000000000000..e5ed00e88508e9c7e0f410272f57da67
 +		},
 +		.dynamic = 1,
 +		.dpcm_playback = 1,
++		.ops = &mt8195_playback_ops,
 +		SND_SOC_DAILINK_REG(DL6_FE),
 +	},
 +	[DAI_LINK_DL7_FE] = {
@@ -99373,6 +99193,7 @@ index 0000000000000000000000000000000000000000..e5ed00e88508e9c7e0f410272f57da67
 +		},
 +		.dynamic = 1,
 +		.dpcm_playback = 1,
++		.ops = &mt8195_playback_ops,
 +		SND_SOC_DAILINK_REG(DL8_FE),
 +	},
 +	[DAI_LINK_DL10_FE] = {
@@ -99395,6 +99216,7 @@ index 0000000000000000000000000000000000000000..e5ed00e88508e9c7e0f410272f57da67
 +		},
 +		.dynamic = 1,
 +		.dpcm_playback = 1,
++		.ops = &mt8195_playback_ops,
 +		SND_SOC_DAILINK_REG(DL11_FE),
 +	},
 +	[DAI_LINK_UL1_FE] = {
@@ -99417,6 +99239,7 @@ index 0000000000000000000000000000000000000000..e5ed00e88508e9c7e0f410272f57da67
 +		},
 +		.dynamic = 1,
 +		.dpcm_capture = 1,
++		.ops = &mt8195_capture_ops,
 +		SND_SOC_DAILINK_REG(UL2_FE),
 +	},
 +	[DAI_LINK_UL3_FE] = {
@@ -99428,6 +99251,7 @@ index 0000000000000000000000000000000000000000..e5ed00e88508e9c7e0f410272f57da67
 +		},
 +		.dynamic = 1,
 +		.dpcm_capture = 1,
++		.ops = &mt8195_capture_ops,
 +		SND_SOC_DAILINK_REG(UL3_FE),
 +	},
 +	[DAI_LINK_UL4_FE] = {
@@ -99439,6 +99263,7 @@ index 0000000000000000000000000000000000000000..e5ed00e88508e9c7e0f410272f57da67
 +		},
 +		.dynamic = 1,
 +		.dpcm_capture = 1,
++		.ops = &mt8195_capture_ops,
 +		SND_SOC_DAILINK_REG(UL4_FE),
 +	},
 +	[DAI_LINK_UL5_FE] = {
@@ -99450,6 +99275,7 @@ index 0000000000000000000000000000000000000000..e5ed00e88508e9c7e0f410272f57da67
 +		},
 +		.dynamic = 1,
 +		.dpcm_capture = 1,
++		.ops = &mt8195_capture_ops,
 +		SND_SOC_DAILINK_REG(UL5_FE),
 +	},
 +	[DAI_LINK_UL6_FE] = {
@@ -99472,6 +99298,7 @@ index 0000000000000000000000000000000000000000..e5ed00e88508e9c7e0f410272f57da67
 +		},
 +		.dynamic = 1,
 +		.dpcm_capture = 1,
++		.ops = &mt8195_capture_ops,
 +		SND_SOC_DAILINK_REG(UL8_FE),
 +	},
 +	[DAI_LINK_UL9_FE] = {
@@ -99483,6 +99310,7 @@ index 0000000000000000000000000000000000000000..e5ed00e88508e9c7e0f410272f57da67
 +		},
 +		.dynamic = 1,
 +		.dpcm_capture = 1,
++		.ops = &mt8195_capture_ops,
 +		SND_SOC_DAILINK_REG(UL9_FE),
 +	},
 +	[DAI_LINK_UL10_FE] = {
@@ -99494,6 +99322,7 @@ index 0000000000000000000000000000000000000000..e5ed00e88508e9c7e0f410272f57da67
 +		},
 +		.dynamic = 1,
 +		.dpcm_capture = 1,
++		.ops = &mt8195_capture_ops,
 +		SND_SOC_DAILINK_REG(UL10_FE),
 +	},
 +	/* BE */
