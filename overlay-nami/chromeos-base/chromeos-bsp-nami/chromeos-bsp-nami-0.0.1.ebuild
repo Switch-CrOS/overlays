@@ -12,7 +12,7 @@ or portage actions."
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="-* amd64 x86"
-IUSE="nami-kvm"
+IUSE="nami-kvm nami-kernelnext"
 S="${WORKDIR}"
 
 # Add dependencies on other ebuilds from within this board overlay
@@ -29,6 +29,8 @@ src_install() {
 
 	if use nami-kvm; then
 		doappid "{DB6012BC-8758-4280-B40D-41F2792F46B9}" "CHROMEBOOK"
+	elif use nami-kernelnext; then
+		doappid "{F21A7EB6-CB05-11EB-B572-CF4C2D968CF6}" "CHROMEBOOK"
 	else
 		doappid "{495DCB07-E19A-4D7D-99B9-4710011A65B1}" "CHROMEBOOK"
 	fi
