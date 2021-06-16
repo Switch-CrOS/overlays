@@ -11,14 +11,14 @@ or portage actions."
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="-* amd64 x86"
-IUSE="samus-cheets"
+IUSE="iioservice samus-cheets"
 
 # Add dependencies on other ebuilds from within this board overlay
 RDEPEND="
-	chromeos-base/chromeos-accelerometer-init
 	chromeos-base/chromeos-touch-config-samus
 	chromeos-base/ec-utils
 	chromeos-base/genius-app-data-samus
+	!iioservice? ( chromeos-base/chromeos-accelerometer-init )
 "
 DEPEND="${RDEPEND}"
 
