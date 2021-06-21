@@ -27,9 +27,6 @@ src_install() {
 	doins "${FILESDIR}/cpufreq.conf"
 
 	# Install cpuset adjustments.
-	insinto "/etc/init"
-	newins "${FILESDIR}/platform-cpusets-${kernel}.conf" platform-cpusets.conf
-
 	if use arcvm; then
 		insinto "/opt/google/vms/android/vendor/etc/init/"
 	else
