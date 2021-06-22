@@ -57,12 +57,8 @@ base-config: &base_config
     platform-name: "Trogdor"
     device-tree-compatible-match: "{{$fw-name}}"
     sku-id: "{{$sku-id}}"
-  firmware: &firmware_common
-    build-targets: &firmware_build_targets_common
-      coreboot: "{{$coreboot-build-name}}"
-      ec: "{{$ec-build-name}}"
-      depthcharge: "trogdor"
-      libpayload: "trogdor"
+  firmware:
+    no-firmware: True
   test-label: "{{$device-name}}"
   power: &power_common
     low-battery-shutdown-percent: "4.0"
@@ -87,12 +83,6 @@ base-config: &base_config
     boost-urgent: 20
     cpuset-nonurgent: 0-5
     input-boost: 75
-
-zephyr-firmware-common: &zephyr_firmware_common
-  <<: *firmware_common
-  build-targets:
-    <<: *firmware_build_targets_common
-    zephyr-ec: "projects/trogdor/{{$ec-build-name}}"
 
 convertible-config: &convertible_config
   <<: *base_config
@@ -137,70 +127,58 @@ chromeos:
   devices:
     - $device-name: "trogdor"
       $fw-name: "google,trogdor"
-      $coreboot-build-name: "trogdor"
-      $ec-build-name: "trogdor"
       $card: "sc7180-rt5682-max98357a-1mic"
       $ufc-interface: "usb"
       $ufc-autofocus: True
       $ufc-1080p: False
       skus:
-        - $sku-id: 0 # LTE+Wifi
+        - $sku-id: 0
           config:
             <<: [ *convertible_config, *camera_config_ufc ]
-        - $sku-id: 1 # Wifi-only
+        - $sku-id: 1
           config:
             <<: [ *convertible_config, *camera_config_ufc ]
     - $device-name: "lazor"
       $fw-name: "google,lazor"
-      $coreboot-build-name: "lazor"
-      $ec-build-name: "lazor"
       $internal-backlight-no-als-battery-brightness: "43"
       $card: "sc7180-rt5682-max98357a-1mic"
       $ufc-interface: "usb"
       $ufc-autofocus: True
       $ufc-1080p: False
-      firmware:
-        <<: *zephyr_firmware_common
       skus:
-        - $sku-id: 0 # LTE+Wifi
+        - $sku-id: 0
           $set-cellular-transmit-power-for-tablet-mode: "1"
           $use-modemmanager-for-dynamic-sar: "1"
           $use-multi-power-level-dynamic-sar: "1"
           $has-keyboard-backlight: "1"
           config:
             <<: [ *convertible_config, *p_sensor_20mm_lazor_config, *camera_config_ufc ]
-        - $sku-id: 1 # Wifi-only
+        - $sku-id: 1
           config:
             <<: [ *convertible_config, *camera_config_ufc ]
-        - $sku-id: 2 # Wifi-only
+        - $sku-id: 2
           config:
             <<: [ *convertible_config, *camera_config_ufc ]
           $has-keyboard-backlight: "1"
     - $device-name: "limozeen"
       $fw-name: "google,lazor"
-      $coreboot-build-name: "lazor"
-      $ec-build-name: "lazor"
       $card: "sc7180-rt5682-max98357a-1mic"
       $ufc-interface: "usb"
       $ufc-autofocus: True
       $ufc-1080p: False
-      firmware:
-        <<: *zephyr_firmware_common
       skus:
-        - $sku-id: 4 # LTE+Wifi
+        - $sku-id: 4
           $has-touchscreen: True
           config:
             <<: [ *clamshell_config, *camera_config_ufc ]
-        - $sku-id: 5 # TODO(philipchen) Deprecate sku5 when no one uses it.
+        - $sku-id: 5
           config:
             <<: [ *clamshell_config, *camera_config_ufc ]
-        - $sku-id: 6 # LTE+Wifi
+        - $sku-id: 6
           config:
             <<: [ *clamshell_config, *camera_config_ufc ]
     - $device-name: "marzipan"
       $fw-name: "google,marzipan"
-      $coreboot-build-name: "marzipan"
-      $ec-build-name: "marzipan"
       $card: "sc7180-adau7002-max98357a"
       $ufc-interface: "usb"
       $ufc-autofocus: True
@@ -212,8 +190,6 @@ chromeos:
             <<: [ *convertible_config, *camera_config_ufc ]
     - $device-name: "pompom"
       $fw-name: "google,pompom"
-      $coreboot-build-name: "pompom"
-      $ec-build-name: "pompom"
       $ufc-interface: "usb"
       $ufc-autofocus: True
       $ufc-1080p: False
@@ -222,10 +198,10 @@ chromeos:
       $wfc-1080p: True
       $card: "sc7180-rt5682-max98357a-2mic"
       skus:
-        - $sku-id: 0 # LTE+Wifi
+        - $sku-id: 0
           config:
             <<: [ *convertible_config, *camera_config_ufc_wfc ]
-        - $sku-id: 1 # Wifi-only
+        - $sku-id: 1
           config:
             <<: [ *convertible_config, *camera_config_ufc_wfc ]
     - $device-name: "pazquel"
