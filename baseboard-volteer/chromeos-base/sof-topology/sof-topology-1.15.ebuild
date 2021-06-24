@@ -23,5 +23,7 @@ src_install() {
 	doins *.tplg
 	insinto /lib/firmware/intel/sof-tplg/pdm1
 	doins pdm1/*.tplg
+	insinto /lib/firmware/intel/sof-tplg/pdm1-drceq
+	doins pdm1-drceq/*.tplg
 	dodoc README
 }
