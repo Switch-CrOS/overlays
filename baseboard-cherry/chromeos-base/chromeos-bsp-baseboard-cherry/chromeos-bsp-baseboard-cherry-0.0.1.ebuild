@@ -4,6 +4,8 @@
 
 EAPI=7
 
+inherit udev
+
 DESCRIPTION="Ebuild which pulls in any necessary ebuilds as dependencies
 or portage actions."
 
@@ -21,4 +23,9 @@ src_install() {
 	# Override default CPU clock speed governor.
 	insinto "/etc"
 	doins "${FILESDIR}/cpufreq.conf"
+
+	# udev rules for codecs
+	insinto "/etc/init"
+	doins "${FILESDIR}/udev-trigger-codec.conf"
+	udev_dorules "${FILESDIR}/50-media.rules"
 }
