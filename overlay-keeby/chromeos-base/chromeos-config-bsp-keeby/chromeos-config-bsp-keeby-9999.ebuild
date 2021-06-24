@@ -8,6 +8,7 @@ CROS_WORKON_REPO="${CROS_GIT_HOST_URL}"
 
 PROJECTS=(
 	"lalala"
+	"cappy2"
 )
 
 CONFIG_PATH="sw_build_config/platform/chromeos-config"
