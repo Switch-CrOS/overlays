@@ -7,11 +7,14 @@ inherit cros-constants
 CROS_WORKON_REPO="${CROS_GIT_HOST_URL}"
 
 PROJECTS=(
-	"brya"
 	"adlrvp"
+	"brya"
 	"gimble"
+	"kano"
 	"primus"
 	"redrix"
+	"taeko"
+	"vell"
 	"vyhar"
 )
 
