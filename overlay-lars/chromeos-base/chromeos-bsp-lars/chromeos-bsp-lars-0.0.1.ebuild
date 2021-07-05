@@ -32,9 +32,5 @@ src_install() {
 	doins "${FILESDIR}"/powerd_prefs/*
 
 	# Install audio config files
-	if use lars-kernelnext; then
-		install_audio_configs lars "${FILESDIR}/kernelnext-audio-config"
-	else
-		install_audio_configs lars "${FILESDIR}/audio-config"
-	fi
+	install_audio_configs lars "${FILESDIR}/audio-config"
 }
