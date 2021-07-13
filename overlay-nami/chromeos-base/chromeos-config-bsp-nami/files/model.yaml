@@ -4,15 +4,20 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+imports:
+  - "include/kernel-info.yaml"
+
 audio-main-common: &audio_main_common
+  <<: *kernel-info
   $cras_root: "/etc/cras"
   $ucm_root: "/usr/share/alsa/ucm"
   $card: "kblda7219max"
   cras-config-dir: "{{$cras}}"
   ucm-suffix: "{{$ucm}}"
-  $cras-source: "{{cras-config-dir}}/audio/cras-config"
+  $audio-source: "{{cras-config-dir}}/audio-{{$kernel-version}}"
+  $cras-source: "{{$audio-source}}/cras-config"
   $cras-dest: "{{$cras_root}}/{{cras-config-dir}}"
-  $ucm-source: "{{cras-config-dir}}/audio/ucm-config{{$ucm-source-suffix}}"
+  $ucm-source: "{{$audio-source}}/ucm-config{{$ucm-source-suffix}}"
   $ucm-dest: "{{$ucm_root}}/{{$card}}.{{ucm-suffix}}"
 
 audio-main-files: &audio_main_files

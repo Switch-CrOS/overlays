@@ -9,6 +9,7 @@ HOMEPAGE="http://src.chromium.org"
 LICENSE="BSD-Google"
 SLOT="0/${PF}"
 KEYWORDS="-* amd64 x86"
+IUSE="kernel-5_4"
 
 inherit cros-unibuild
 
@@ -19,5 +20,13 @@ S=${WORKDIR}
 # DEPEND="virtual/chromeos-bsp"
 
 src_install(){
-	install_model_files
+	insinto "${UNIBOARD_YAML_DIR}"
+	doins "${FILESDIR}/model.yaml"
+
+	insinto "${UNIBOARD_YAML_DIR}/include"
+	if use kernel-5_4; then
+		newins "${FILESDIR}/include/kernelnext.yaml" "kernel-info.yaml"
+	else
+		newins "${FILESDIR}/include/kernelold.yaml" "kernel-info.yaml"
+	fi
 }
