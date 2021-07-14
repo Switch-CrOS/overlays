@@ -9,6 +9,7 @@ CROS_WORKON_REPO="${CROS_GIT_HOST_URL}"
 PROJECTS=(
 	"adlrvp"
 	"brya"
+	"felwinter"
 	"gimble"
 	"kano"
 	"primus"
