@@ -1,1 +1,0 @@
-parade-ps175-firmware-9.69.ebuild
