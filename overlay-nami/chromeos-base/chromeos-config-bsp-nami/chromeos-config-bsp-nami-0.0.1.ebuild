@@ -27,6 +27,6 @@ src_install(){
 	if use kernel-5_4; then
 		newins "${FILESDIR}/include/kernelnext.yaml" "kernel-info.yaml"
 	else
-		newins "${FILESDIR}/include/kernelold.yaml" "kernel-info.yaml"
+		newins "${FILESDIR}/include/kernel-info.yaml" "kernel-info.yaml"
 	fi
 }
