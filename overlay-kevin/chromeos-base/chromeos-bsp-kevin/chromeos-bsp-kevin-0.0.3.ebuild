@@ -11,7 +11,7 @@ or portage actions."
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="-* arm64 arm"
-IUSE="kevin-arcnext"
+IUSE="kevin-arcnext kevin-kernelnext"
 S="${WORKDIR}"
 
 # Add dependencies on other ebuilds from within this board overlay
@@ -24,6 +24,8 @@ DEPEND="${RDEPEND}"
 src_install() {
 	if use kevin-arcnext; then
 		doappid "{35EF2A87-CD2B-62EE-E83C-F6E0F71C7FEE}" "CHROMEBOOK"
+	elif use kevin-kernelnext; then
+		doappid "{0D52E43D-2385-4F7C-8EAF-F995EE47C5CB}" "CHROMEBOOK"
 	else
 		doappid "{92A7272A-834A-47A3-9112-E8FD55831660}" "CHROMEBOOK" # kevin
 	fi
