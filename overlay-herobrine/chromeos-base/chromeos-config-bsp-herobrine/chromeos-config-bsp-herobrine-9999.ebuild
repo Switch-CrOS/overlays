@@ -8,7 +8,7 @@ CROS_WORKON_REPO="${CROS_GIT_HOST_URL}"
 
 PROJECTS=(
 	"herobrine"
-	"senor"
+	"piglin"
 )
 
 CONFIG_PATH="sw_build_config/platform/chromeos-config"
