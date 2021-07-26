@@ -13,4 +13,7 @@
 
 modify_kernel_command_line() {
 	echo "amdgpu.abmlevel=0x4" >> "$1"
+
+	# See b/189856884 - enable PSR
+	echo "amdgpu.dcfeaturemask=0x8" >> "$1"
 }
