@@ -29,8 +29,8 @@ common_config: &common_config
   identity: &identity
     platform-name: "Asurada"
     device-tree-compatible-match: "{{$fw-name}}"
-  firmware:
-    build-targets:
+  firmware: &firmware_common
+    build-targets: &firmware_build_targets_common
       coreboot: "{{$fw-build-name}}"
       ec: "{{$fw-build-name}}"
       depthcharge: "asurada"
@@ -48,6 +48,14 @@ common_config: &common_config
   hardware-properties:
     form-factor: CHROMEBOOK
 
+base-zephyr-firmware: &common_config_with_zephyr
+  <<: *common_config
+  firmware:
+    <<: *firmware_common
+    build-targets:
+      <<: *firmware_build_targets_common
+      zephyr-ec: "projects/asurada/{{$fw-build-name}}"
+
 asurada-config: &asurada_config
   <<: *common_config
   $fw-name: "google,asurada"
@@ -59,7 +67,7 @@ asurada-config: &asurada_config
   audio: *audio_config
 
 hayato-config: &hayato_config
-  <<: *common_config
+  <<: *common_config_with_zephyr
   $fw-name: "google,hayato"
   $fw-build-name: "hayato"
   $key-id: "ASURADAA"
