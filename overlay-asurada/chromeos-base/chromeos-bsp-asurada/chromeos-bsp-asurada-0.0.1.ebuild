@@ -12,7 +12,7 @@ or portage actions."
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="-* arm64 arm"
-IUSE=""
+IUSE="zephyr_ec"
 S="${WORKDIR}"
 
 # Add dependencies on other ebuilds from within this board overlay
@@ -23,7 +23,11 @@ RDEPEND="
 DEPEND="${RDEPEND}"
 
 src_install() {
-	doappid "{08F65CC8-BCFB-414F-9B49-DAB2996D2E71}" "CHROMEBOOK"
+	if use zephyr_ec; then
+		doappid "{72518E73-3453-4856-90DA-0E9D809323EC}" "CHROMEBOOK"
+	else
+		doappid "{08F65CC8-BCFB-414F-9B49-DAB2996D2E71}" "CHROMEBOOK"
+	fi
 
 	# Install audio config
 	unibuild_install_files audio-files
