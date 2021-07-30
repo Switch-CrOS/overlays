@@ -3,42 +3,12 @@
 # found in the LICENSE file.
 #
 
-on early-init
-    ######################################################################
-    # For ARC on 5.4 devices, schedtune does not exist. Instead uclamp
-    # mechanism is used from upstream. To avoid requiring Android changes,
-    # Just mount the CPU control group in the stune path so Android can add
-    # tasks to it. If the device does have schedtune, the mount of that will
-    # take over.
-    # TODO: Temporary moved from ARC to here, See b/157022340#comment32
-    mkdir /dev/stune
-    mount cgroup none /dev/stune nodev noexec nosuid cpu
-
-    write /dev/stune/cpu.uclamp.min 20
-    write /dev/stune/cpu.rt_period_us 1000000
-    write /dev/stune/cpu.rt_runtime_us 200000
-
-    mkdir /dev/stune/rt
-    write /dev/stune/rt/cpu.rt_period_us 1000000
-    write /dev/stune/rt/cpu.rt_runtime_us 20000
-
-    mkdir /dev/stune/top-app
-    write /dev/stune/top-app/cpu.rt_period_us 1000000
-    write /dev/stune/top-app/cpu.rt_runtime_us 20000
-
-    write /dev/stune/top-app/cpu.uclamp.min 20
-    write /dev/stune/top-app/cpu.uclamp.latency_sensitive 1
-
-    write /dev/stune/top-app/schedtune.boost 20
-    write /dev/stune/top-app/schedtune.prefer_idle 1
-
-    mkdir /dev/stune/foreground
-    write /dev/stune/foreground/cpu.rt_period_us 1000000
-    write /dev/stune/foreground/cpu.rt_runtime_us 150000
-
-    mkdir /dev/stune/background
-    write /dev/stune/background/cpu.rt_period_us 1000000
-    write /dev/stune/background/cpu.rt_runtime_us 10000
+on post-stune
+    # cheets inits /dev/stune/top-app with uclamp=20 by default
+    # herobrine overrides it to 40% here as it showed better performance
+    # at Android game app (b/171080151).
+    write /dev/stune/cpu.uclamp.min 40
+    write /dev/stune/top-app/cpu.uclamp.min 40
 
 on property:sys.boot_completed=1
     # Allow foreground apps to have all CPUs.  Restrict background apps to
