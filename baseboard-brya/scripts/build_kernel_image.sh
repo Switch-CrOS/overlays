@@ -30,14 +30,6 @@ modify_kernel_command_line() {
   # enables up to DC6 with DC3C0.
   echo "i915.enable_dc=0" >> "$1"
 
-  # TODO: To be remove after PO
-  # necessary settings for serial debugging
-  echo "earlyprintk=serial,ttyS0,115200n8" >> "$1"
-
-  # TODO: To be remove after PO
-  # necessary settings for serial debugging
-  echo "console=ttyS0,115200,keep" >> "$1"
-
   # Disable xDomain protocol on the thunderbolt driver
   echo "xdomain=0" >> "$1"
 
