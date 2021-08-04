@@ -14,7 +14,6 @@ PROJECTS=(
     "magolor"
     "waddledee"
     "waddledoo"
-    "wheelie"
 )
 
 CONFIG_PATH="sw_build_config/platform/chromeos-config"
