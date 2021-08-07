@@ -14,7 +14,7 @@ dependencies or portage actions."
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="-* amd64 x86"
-IUSE="atlas-kvm atlas-blueznext atlas-kernelnext has_private_audio_topology kernel-5_4"
+IUSE="atlas-kvm atlas-connectivitynext atlas-kernelnext has_private_audio_topology kernel-5_4"
 S="${WORKDIR}"
 
 # Add dependencies on other ebuilds from within this board overlay
@@ -29,7 +29,7 @@ RDEPEND="${DEPEND}
 src_install() {
 	if use atlas-kvm; then
 		doappid "{ED3D806C-3D7A-46E2-9604-13382FC1D55B}" "CHROMEBOOK"
-	elif use atlas-blueznext; then
+	elif use atlas-connectivitynext; then
 		doappid "{31A53FCC-241C-4439-8735-0A89AD9FB7A5}" "CHROMEBOOK"
 	elif use atlas-kernelnext; then
 		doappid "{DA55FC40-8B29-11EB-A477-BB6BC4E5094A}" "CHROMEBOOK"
