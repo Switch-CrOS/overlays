@@ -17,7 +17,7 @@ dependencies or portage actions."
 
 LICENSE="BSD-Google"
 KEYWORDS="-* ~amd64 ~x86"
-IUSE=""
+IUSE="octopus-kernelnext"
 
 # Add dependencies on other ebuilds from within this board overlay
 RDEPEND="
@@ -29,7 +29,11 @@ DEPEND="
 "
 
 src_install() {
-	doappid "{9A3BE5D2-C3DC-4AE6-9943-E2C113895DC5}" "CHROMEBOOK"
+	if use octopus-kernelnext; then
+		doappid "{37D471DD-3774-4DA2-AF6D-6BA7F5A3B255}" "CHROMEBOOK"
+	else
+		doappid "{9A3BE5D2-C3DC-4AE6-9943-E2C113895DC5}" "CHROMEBOOK"
+	fi
 
 	# Projects might support multiple panels with the same Wacom/Emright digitizer
 	# chip but have different firmwares for fine-tuned performance.
