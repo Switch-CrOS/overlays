@@ -22,10 +22,6 @@ DEPEND="
 	chromeos-base/chromeos-bsp-baseboard-herobrine
 "
 
-# Remove herobrine BSP since we are giving senor its own bsp
-DEPEND="${DEPEND} !!chromeos-base/chromeos-bsp-herobrine"
-DEPEND="${DEPEND} !!chromeos-base/chromeos-config-bsp-herobrine"
-
 RDEPEND="
 	${DEPEND}
 "
