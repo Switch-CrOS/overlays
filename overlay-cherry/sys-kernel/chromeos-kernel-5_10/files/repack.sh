@@ -34,7 +34,6 @@ patch_id=""
 patchset=""
 base=""
 tree=""
-version=""
 
 info() {
   echo -e "\e[1;32m$*\e[0m"
@@ -76,19 +75,27 @@ generate_new_squash() {
 update_ebuild() {
   info "Updating and upreving ebuild..."
 
+  local ebuild
+  local symlink
   local old_base
   local old_tree
+  local ver
+  local rev
 
   pushd "${ebuild_dir}"
 
-  old_base="$(grep CROS_WORKON_COMMIT ./*.ebuild | cut -d \" -f 2)"
-  old_tree="$(grep CROS_WORKON_TREE ./*.ebuild | cut -d \" -f 2)"
-  version="$(find ./*.ebuild | sed -Ee 's/.*\.([0-9]*).ebuild/\1/')"
+  ebuild="$(find ./*.ebuild -type f)"
+  symlink="$(find ./*-r*.ebuild -type l)"
+  old_base="$(grep CROS_WORKON_COMMIT "${ebuild}" | cut -d \" -f 2)"
+  old_tree="$(grep CROS_WORKON_TREE "${ebuild}" | cut -d \" -f 2)"
+  ver="$(echo "${symlink}" | sed -Ee 's/.*\.([0-9]+)-r([0-9]+).ebuild/\1/')"
+  rev="$(echo "${symlink}" | sed -Ee 's/.*\.([0-9]+)-r([0-9]+).ebuild/\2/')"
 
-  sed -i s/"${old_base}"/"${base}"/g "chromeos-kernel-${MAJOR_VER}_${MINOR_VER}-0.0.${version}.ebuild"
-  sed -i s/"${old_tree}"/"${tree}"/g "chromeos-kernel-${MAJOR_VER}_${MINOR_VER}-0.0.${version}.ebuild"
-  mv "chromeos-kernel-${MAJOR_VER}_${MINOR_VER}-0.0.${version}.ebuild" \
-    "chromeos-kernel-${MAJOR_VER}_${MINOR_VER}-0.0.$((version + 1)).ebuild"
+  sed -i s/"${old_base}"/"${base}"/g "${ebuild}"
+  sed -i s/"${old_tree}"/"${tree}"/g "${ebuild}"
+  # Uprev ebuild symlink to make pre-upload checks happy.
+  git mv "${symlink}" \
+    "chromeos-kernel-${MAJOR_VER}_${MINOR_VER}-0.0.${ver}-r$((rev + 1)).ebuild"
 
   popd
 }
@@ -144,8 +151,6 @@ TEST=cros-workon-${BOARD} stop chromeos-kernel-${MAJOR_VER}_${MINOR_VER}
 "
 END
 
-  git add "chromeos-kernel-${MAJOR_VER}_${MINOR_VER}-0.0.${version}.ebuild"
-  git add "chromeos-kernel-${MAJOR_VER}_${MINOR_VER}-0.0.$((version + 1)).ebuild"
   git add files/"${BOARD}"-tot.patch
   git add files/scmversion.patch
   git commit -m "${commit_msg}"
