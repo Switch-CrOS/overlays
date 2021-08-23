@@ -3,12 +3,14 @@
 
 EAPI=7
 
+inherit cros-constants
+
 # This ebuild only cares about its own FILESDIR and ebuild file, so it tracks
 # the canonical empty project.
 CROS_WORKON_PROJECT="chromiumos/infra/build/empty-project"
 CROS_WORKON_LOCALNAME="empty-project"
 
-inherit cros-constants cros-unibuild cros-workon
+inherit cros-unibuild cros-workon
 
 DESCRIPTION="Chrome OS Model configuration package for deltaur."
 
