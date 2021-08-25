@@ -11,7 +11,7 @@ or portage actions."
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="-* arm64 arm"
-IUSE="cheets"
+IUSE="cheets kernel-4_4"
 S="${WORKDIR}"
 
 RDEPEND="
@@ -25,7 +25,11 @@ DEPEND="${RDEPEND}"
 src_install() {
 	# Override default CPU clock speed governor.
 	insinto "/etc"
-	doins "${FILESDIR}/cpufreq.conf"
+	if use kernel-4_4; then
+		doins "${FILESDIR}/4.4/cpufreq.conf"
+	else
+		doins "${FILESDIR}/5.10/cpufreq.conf"
+	fi
 
 	# Install cpuset adjustments.
 	if use cheets; then
