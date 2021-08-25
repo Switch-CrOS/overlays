@@ -252,6 +252,11 @@ convertible-wl-config: &convertible_wl_config
     <<: *unprovisioned_identity
     whitelabel-tag: "{{$whitelabel-tag}}"
 
+cros-healthd-sku-number-enabled: &cros_healthd_sku_number_enabled
+  cros-healthd:
+    cached-vpd:
+      has-sku-number: True
+
 chromeos:
   devices:
     - $device-name: "yorp"
@@ -615,23 +620,33 @@ chromeos:
       skus:
         - $sku-id-val: 255
           $fw-name: "Meep"
-          config: *unprovisioned_convertible_config
+          config:
+            <<: *unprovisioned_convertible_config
+            <<: *cros_healthd_sku_number_enabled
     - $device-name: "meep"
       $fw-name: "Meep"
       skus:
         - $sku-id-val: 1
           $stylus-category: "external"
           $num-mic-locations: 2
-          config: *convertible_config
+          config:
+            <<: *convertible_config
+            <<: *cros_healthd_sku_number_enabled
         - $sku-id-val: 2
           $num-mic-locations: 2
-          config: *convertible_config
+          config:
+            <<: *convertible_config
+            <<: *cros_healthd_sku_number_enabled
         - $sku-id-val: 3
           $num-mic-locations: 1
-          config: *convertible_config
+          config:
+            <<: *convertible_config
+            <<: *cros_healthd_sku_number_enabled
         - $sku-id-val: 4
           $num-mic-locations: 1
-          config: *convertible_config
+          config:
+            <<: *convertible_config
+            <<: *cros_healthd_sku_number_enabled
     - $device-name: "mimrock"
       $fw-name: "Meep"
       $num-mic-locations: 1
