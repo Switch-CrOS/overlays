@@ -3,6 +3,12 @@
 # found in the LICENSE file.
 #
 
+on post-stune
+    # Increase uclamp to 20 and sets latency sensitive to have better
+    # performance when running sw decoder/encoder. (b/196024298)
+    write /dev/stune/foreground/cpu.uclamp.min 20
+    write /dev/stune/foreground/cpu.uclamp.latency_sensitive 1
+
 on property:sys.boot_completed=1
     # Adjust cpusets in container to better split work between
     # little and big cores.
