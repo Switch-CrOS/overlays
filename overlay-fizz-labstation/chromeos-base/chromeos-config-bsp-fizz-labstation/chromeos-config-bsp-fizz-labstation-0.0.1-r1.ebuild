@@ -1,1 +1,0 @@
-chromeos-config-bsp-fizz-labstation-0.0.1.ebuild
