@@ -118568,7 +118568,7 @@ index 21af4933fb8cdeba886026e810c594e92257c3ae..e35c8cea8111de19144881317d6f5ae5
 diff --git a/drivers/media/platform/mtk-mdp3/mtk-mdp3-core.c b/drivers/media/platform/mtk-mdp3/mtk-mdp3-core.c
 old mode 100644
 new mode 100755
-index 7f0a6be3a3a21543f480f7845e1366f7d522b613..6549b84d2e1314bdda6570162314f6a9d1373c33
+index 7f0a6be3a3a21543f480f7845e1366f7d522b613..74fb63309c07e3b957287efb843a196a195f73ab
 --- a/drivers/media/platform/mtk-mdp3/mtk-mdp3-core.c
 +++ b/drivers/media/platform/mtk-mdp3/mtk-mdp3-core.c
 @@ -9,20 +9,21 @@
@@ -118619,7 +118619,7 @@ index 7f0a6be3a3a21543f480f7845e1366f7d522b613..6549b84d2e1314bdda6570162314f6a9
 +	}
 +
 +	if (id == MDP_RDMA1_NODE) {
-+		/* Do nothing */
++		platform_set_drvdata(pdev, mdp);
 +		goto err_return;
 +	}
 +
@@ -127489,10 +127489,10 @@ index a0e773ae3ab3414a81ea331ac8599ff4fb12b63c..0408dbe47aa3d7e60eb6f5f51c51c4b6
  #endif
 diff --git a/drivers/media/platform/mtk-vcodec/vdec_msg_queue.c b/drivers/media/platform/mtk-vcodec/vdec_msg_queue.c
 new file mode 100644
-index 0000000000000000000000000000000000000000..733cb1420232830a42a7df84302620c9d6acca6d
+index 0000000000000000000000000000000000000000..b011ba4c85125416fc93c6f6cfe30660dfc99b7d
 --- /dev/null
 +++ b/drivers/media/platform/mtk-vcodec/vdec_msg_queue.c
-@@ -0,0 +1,278 @@
+@@ -0,0 +1,284 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
 + * Copyright (c) 2021 MediaTek Inc.
@@ -127730,6 +127730,12 @@ index 0000000000000000000000000000000000000000..733cb1420232830a42a7df84302620c9
 +		mem = &lat_buf->slice_bc_addr;
 +		if (mem->va)
 +			mtk_vcodec_mem_free(ctx, mem);
++
++		if (ctx->dev->vdec_pdata->hw_arch == MTK_VDEC_LAT_DUAL_CORE) {
++			mem = &lat_buf->roy_buf_addr;
++			if (mem->va)
++				mtk_vcodec_mem_free(ctx, mem);
++		}
 +
 +		if (lat_buf->private_data)
 +			kfree(lat_buf->private_data);
