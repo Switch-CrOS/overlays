@@ -93,6 +93,7 @@ update_ebuild() {
 
   sed -i s/"${old_base}"/"${base}"/g "${ebuild}"
   sed -i s/"${old_tree}"/"${tree}"/g "${ebuild}"
+  git add "${ebuild}"
   # Uprev ebuild symlink to make pre-upload checks happy.
   git mv "${symlink}" \
     "chromeos-kernel-${MAJOR_VER}_${MINOR_VER}-0.0.${ver}-r$((rev + 1)).ebuild"
