@@ -133,6 +133,11 @@ chromeos-board-sand: &sand_board_config
       skus:
         - config: *sand_config
 
+cros-healthd-sku-number-enabled: &cros_healthd_sku_number_enabled
+  cros-healthd:
+    cached-vpd:
+      has-sku-number: True
+
 chromeos-board-snappy: &snappy_board_config
   devices:
     - $device-name: alan
@@ -141,23 +146,30 @@ chromeos-board-snappy: &snappy_board_config
           $chassis: ALAN
           $loem: DOLPHIN
       skus:
-        - config: *snappy_config
+        - config:
+          <<: *snappy_config
+          <<: *cros_healthd_sku_number_enabled
     - $device-name: bigdaddy
       products:
         - $brand-code: FQZI
           $chassis: BIGDADDY
           $loem: BENTLEY
       skus:
-        - config: *snappy_config
+        - config:
+          <<: *snappy_config
+          <<: *cros_healthd_sku_number_enabled
     - $device-name: snappy
       products:
         - $brand-code: HPZO
           $chassis: SNAPPY
           $loem: MORGAN
       skus:
-        - config: *snappy_config
+        - config:
+          <<: *snappy_config
+          <<: *cros_healthd_sku_number_enabled
         # Devices pre-DVT2 were not provisioned with a
         # customization_id.  Tolerate these devices.
         - config:
             <<: *snappy_config
+            <<: *cros_healthd_sku_number_enabled
             identity: *identity_common
