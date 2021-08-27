@@ -149,6 +149,11 @@ autobrightness: &autobrightness
     build-path: "{{$device-name}}/autobrightness/model_params.json"
     system-path: "/usr/share/chromeos-assets/autobrightness/{{$device-name}}/model_params.json"
 
+cros-healthd-sku-number-enabled: &cros_healthd_sku_number_enabled
+  cros-healthd:
+    cached-vpd:
+      has-sku-number: True
+
 chromeos:
   devices:
     - $device-name: "unprovisioned_hatch"
@@ -307,7 +312,9 @@ chromeos:
       skus:
         - $sku-id: 255
           $fw-name: "Dratini"
-          config: *base_config
+          config:
+            <<: *base_config
+            <<: *cros_healthd_sku_number_enabled
     - $device-name: "dratini"
       $fw-name: "Dratini"
       $charging-ports: |
@@ -319,24 +326,40 @@ chromeos:
       skus:
         - $sku-id: 1
           $has-keyboard-backlight: "0"
-          config: *base_config
+          config:
+            <<: *base_config
+            <<: *cros_healthd_sku_number_enabled
         - $sku-id: 2
-          config: *base_config
+          config:
+            <<: *base_config
+            <<: *cros_healthd_sku_number_enabled
         - $sku-id: 3
-          config: *base_config
+          config:
+            <<: *base_config
+            <<: *cros_healthd_sku_number_enabled
         - $sku-id: 4
           $has-keyboard-backlight: "0"
-          config: *base_config
+          config:
+            <<: *base_config
+            <<: *cros_healthd_sku_number_enabled
         - $sku-id: 5
-          config: *base_config
+          config:
+            <<: *base_config
+            <<: *cros_healthd_sku_number_enabled
         - $sku-id: 6
           $has-keyboard-backlight: "0"
-          config: *base_config
+          config:
+            <<: *base_config
+            <<: *cros_healthd_sku_number_enabled
         - $sku-id: 7
           $has-keyboard-backlight: "0"
-          config: *base_config
+          config:
+            <<: *base_config
+            <<: *cros_healthd_sku_number_enabled
         - $sku-id: 8
-          config: *base_config
+          config:
+            <<: *base_config
+            <<: *cros_healthd_sku_number_enabled
     - $device-name: "dragonair"
       $fw-name: "Dratini"
       $charging-ports: |
@@ -349,21 +372,31 @@ chromeos:
       skus:
         - $sku-id: 21
           $has-keyboard-backlight: "0"
-          config: *base_config
+          config:
+            <<: *base_config
+            <<: *cros_healthd_sku_number_enabled
         - $sku-id: 22
-          config: *base_config
+          config:
+            <<: *base_config
+            <<: *cros_healthd_sku_number_enabled
         - $sku-id: 23
           $has-keyboard-backlight: "0"
-          config: *base_config
+          config:
+            <<: *base_config
+            <<: *cros_healthd_sku_number_enabled
         - $sku-id: 24
-          config: *base_config
+          config:
+            <<: *base_config
+            <<: *cros_healthd_sku_number_enabled
     - $device-name: "unprovisioned_jinlon"
       $set-cellular-transmit-power-for-tablet-mode: "1"
       $set-cellular-transmit-power-dpr-gpio: "471"
       skus:
         - $sku-id: 255
           $fw-name: "Jinlon"
-          config: *base_config
+          config:
+            <<: *base_config
+            <<: *cros_healthd_sku_number_enabled
     - $device-name: "jinlon"
       $fw-name: "Jinlon"
       $charging-ports: |
@@ -376,15 +409,20 @@ chromeos:
       $cras_card_config: "jinlon"
       skus:
         - $sku-id: 1
-          config: *base_config
+          config:
+            <<: *base_config
+            <<: *cros_healthd_sku_number_enabled
         - $sku-id: 2
           $internal-backlight-no-als-battery-brightness: "52.0"
-          config: *base_config
+          config:
+            <<: *base_config
+            <<: *cros_healthd_sku_number_enabled
         - $sku-id: 21
           $set-cellular-transmit-power-for-tablet-mode: "1"
           $set-cellular-transmit-power-dpr-gpio: "471"
           config:
             <<: *base_config
+            <<: *cros_healthd_sku_number_enabled
             modem:
               firmware-variant: "{{$device-name}}"
               wedge-reboot-delay-ms: "20000"
@@ -394,6 +432,7 @@ chromeos:
           $internal-backlight-no-als-battery-brightness: "52.0"
           config:
             <<: *base_config
+            <<: *cros_healthd_sku_number_enabled
             modem:
               firmware-variant: "{{$device-name}}"
               wedge-reboot-delay-ms: "20000"
