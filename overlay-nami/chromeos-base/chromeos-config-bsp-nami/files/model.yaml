@@ -124,6 +124,11 @@ convertible-device-config: &convertible_device_config
     $set-wifi-transmit-power-for-tablet-mode: "1"
     set-wifi-transmit-power-for-tablet-mode: "{{$set-wifi-transmit-power-for-tablet-mode}}"
 
+cros-healthd-sku-number-enabled: &cros_healthd_sku_number_enabled
+  cros-healthd:
+    cached-vpd:
+      has-sku-number: True
+
 chromeos:
   devices:
     - $device-name: "akali"
@@ -145,7 +150,9 @@ chromeos:
       $has-ambient-light-sensor: "1"
       skus:
         - $sku-id: 0x3a7b
-          config: *device_specific_audio_device_config
+          config:
+            <<: *device_specific_audio_device_config
+            <<: *cros_healthd_sku_number_enabled
     - $device-name: "pantheon"
       $internal-backlight-no-als-battery-brightness: "51.0"
       skus:
@@ -179,46 +186,60 @@ chromeos:
           config:
             <<: *convertible_device_config
             <<: *device_specific_audio_config_boardini
+            <<: *cros_healthd_sku_number_enabled
             $set-wifi-transmit-power-for-tablet-mode: "0"
             $has-keyboard-backlight: "0"
         - $sku-id: 0x3ae3
           config:
             <<: *convertible_device_config
             <<: *device_specific_audio_config_boardini
+            <<: *cros_healthd_sku_number_enabled
             $set-wifi-transmit-power-for-tablet-mode: "0"
     - $device-name: "syndra"
       $touchpad-wakeup: "1"
       $internal-backlight-no-als-battery-brightness: "63.0"
       skus:
         - $sku-id: 0x2bc63
-          config: *device_specific_audio_device_config
+          config:
+            <<: *device_specific_audio_device_config
+            <<: *cros_healthd_sku_number_enabled
         - $sku-id: 0x2bc62
           config:
             <<: *device_specific_audio_device_config
+            <<: *cros_healthd_sku_number_enabled
             power:
               <<: *power_common
               $has-keyboard-backlight: "0"
         - $sku-id: 0x2bc61
-          config: *device_specific_audio_device_config
+          config:
+            <<: *device_specific_audio_device_config
+            <<: *cros_healthd_sku_number_enabled
         - $sku-id: 0x2bc60
           config:
             <<: *device_specific_audio_device_config
+            <<: *cros_healthd_sku_number_enabled
             power:
               <<: *power_common
               $has-keyboard-backlight: "0"
         - $sku-id: 0x6bc63
-          config: *device_specific_audio_device_config
+          config:
+            <<: *device_specific_audio_device_config
+            <<: *cros_healthd_sku_number_enabled
         - $sku-id: 0x6bc62
           config:
             <<: *device_specific_audio_device_config
+            <<: *cros_healthd_sku_number_enabled
             power:
               <<: *power_common
               $has-keyboard-backlight: "0"
         - $sku-id: 0x6bc61
-          config: *device_specific_audio_device_config
+          config:
+            <<: *device_specific_audio_device_config
+            <<: *cros_healthd_sku_number_enabled
         - $sku-id: 0x6bc60
           config:
             <<: *device_specific_audio_device_config
+            <<: *cros_healthd_sku_number_enabled
             power:
               <<: *power_common
               $has-keyboard-backlight: "0"
