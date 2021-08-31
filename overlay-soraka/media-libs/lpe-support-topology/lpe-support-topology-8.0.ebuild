@@ -6,7 +6,7 @@ EAPI=5
 DESCRIPTION="Topology binary files used to support/configure LPE Audio"
 LICENSE="LICENCE.adsp_sst"
 SLOT="0"
-SRC_URI="gs://chromeos-localmirror/distfiles/lpe-support-topology-soraka-${PV}.tbz2"
+SRC_URI="gs://chromeos-localmirror/distfiles/${PN}-soraka-${PV}.tbz2"
 KEYWORDS="-* x86 amd64"
 
 RDEPEND="
