@@ -243,6 +243,11 @@ pico-config: &pico_config
     <<: *identity_sku_config
   audio: *ts3a227e_audio_config
 
+cros-healthd-sku-number-enabled: &cros_healthd_sku_number_enabled
+  cros-healthd:
+    cached-vpd:
+      has-sku-number: True
+
 chromeos:
   devices:
     - $device-name: "jacuzzi"
@@ -257,7 +262,9 @@ chromeos:
         - $whitelabel-tag: ""
         - $whitelabel-tag: "giygas"
       skus:
-        - config: *kappa_config
+        - config:
+            <<: *kappa_config
+            <<: *cros_healthd_sku_number_enabled
     - $device-name: "damu"
       skus:
         - config: *damu_config
@@ -265,12 +272,16 @@ chromeos:
       skus:
         - $sku-id: 17
           $key-id: "JACUZZID"
-          config: *burnet_config
+          config:
+            <<: *burnet_config
+            <<: *cros_healthd_sku_number_enabled
     - $device-name: "esche"
       skus:
         - $sku-id: 16
           $key-id: "JACUZZIE"
-          config: *burnet_config
+          config:
+            <<: *burnet_config
+            <<: *cros_healthd_sku_number_enabled
     - $device-name: "cerise"
       skus:
         - $sku-id: 0
