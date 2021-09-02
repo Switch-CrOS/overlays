@@ -10,5 +10,7 @@ LICENSE="BSD-Google"
 
 DEPEND="
 	sys-boot/coreboot-private-files-chipset-sc7280
+	sys-firmware/parade-ps8805a2-firmware
+	sys-firmware/parade-ps8805a3-firmware
 	"
 RDEPEND="${DEPEND}"
