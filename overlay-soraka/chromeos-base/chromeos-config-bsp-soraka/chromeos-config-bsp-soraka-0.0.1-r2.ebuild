@@ -1,1 +1,0 @@
-chromeos-config-bsp-soraka-0.0.1.ebuild
