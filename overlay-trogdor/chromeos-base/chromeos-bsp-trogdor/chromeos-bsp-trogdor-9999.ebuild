@@ -7,7 +7,7 @@ inherit appid cros-unibuild cros-workon
 # This ebuild only cares about its own FILESDIR and ebuild file, so it tracks
 # the canonical empty project.
 CROS_WORKON_PROJECT="chromiumos/infra/build/empty-project"
-CROS_WORKON_LOCALNAME="empty-project"
+CROS_WORKON_LOCALNAME="platform/empty-project"
 
 DESCRIPTION="Ebuild which pulls in any necessary ebuilds as dependencies
 or portage actions."
