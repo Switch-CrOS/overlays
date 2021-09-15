@@ -14,7 +14,7 @@ dependencies or portage actions."
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="-* amd64 x86"
-IUSE="atlas-kvm atlas-blueznext atlas-kernelnext"
+IUSE="atlas-kvm atlas-blueznext atlas-kernelnext has_private_audio_topology"
 S="${WORKDIR}"
 
 # Add dependencies on other ebuilds from within this board overlay
@@ -45,6 +45,15 @@ src_install() {
 	local audio_config_dir="${FILESDIR}/audio-config"
 	install_audio_configs atlas "${audio_config_dir}"
 
+	local waves_dir=/usr/share/alsa/ucm/waves
+	dodir "${waves_dir}"
+	insinto "${waves_dir}"
+	local waves_enable_config="${audio_config_dir}/waves"
+	if use has_private_audio_topology; then
+		doins "${waves_enable_config}/EnableSeq.conf"
+	else
+		newins "${waves_enable_config}/EnableSeq.conf.empty" EnableSeq.conf
+	fi
 	# Install platform-specific internal keyboard keymap.
 	# It should probably go into /lib/udev/hwdb.d but
 	# unfortunately udevadm on 64 bit boxes does not check
