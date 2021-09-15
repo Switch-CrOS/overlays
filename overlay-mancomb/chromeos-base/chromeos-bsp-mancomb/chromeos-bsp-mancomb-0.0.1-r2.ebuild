@@ -1,1 +1,0 @@
-chromeos-bsp-mancomb-0.0.1.ebuild
