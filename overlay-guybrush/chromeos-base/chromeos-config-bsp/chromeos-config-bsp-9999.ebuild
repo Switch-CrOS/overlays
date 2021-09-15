@@ -3,8 +3,6 @@
 
 EAPI=6
 
-CROS_WORKON_COMMIT="0cc976984e9b7ae0dfd391818550f003acd2273e"
-CROS_WORKON_TREE="618b59684f703e54456e27deaf16758083ab6bcf"
 inherit cros-constants
 CROS_WORKON_REPO="${CROS_GIT_HOST_URL}"
 
@@ -28,10 +26,9 @@ SRC_URI=""
 
 LICENSE="BSD-Google"
 SLOT="0/${PF}"
-KEYWORDS="* amd64 x86"
+KEYWORDS="~* ~amd64 ~x86"
 
-DEPEND=""
-RDEPEND="${DEPEND}"
+RDEPEND="!chromeos-base/chromeos-config-bsp-guybrush"
 
 src_compile() {
 	platform_json_compile
