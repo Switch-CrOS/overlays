@@ -45,9 +45,8 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0/${PF}"
 KEYWORDS="~* ~amd64 ~x86"
+RDEPEND="!chromeos-base/chromeos-config-bsp-volteer"
 
-DEPEND=""
-RDEPEND="${DEPEND}"
 
 src_compile() {
 	platform_json_compile
