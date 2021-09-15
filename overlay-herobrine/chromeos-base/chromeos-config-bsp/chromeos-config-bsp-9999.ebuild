@@ -28,9 +28,8 @@ SRC_URI=""
 LICENSE="BSD-Google"
 SLOT="0/${PF}"
 KEYWORDS="~*"
+RDEPEND="!chromeos-base/chromeos-config-bsp-herobrine"
 
-DEPEND=""
-RDEPEND="${DEPEND}"
 
 src_compile() {
 	platform_json_compile
