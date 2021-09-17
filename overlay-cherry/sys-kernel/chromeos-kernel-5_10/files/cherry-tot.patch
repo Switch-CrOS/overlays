@@ -1986,18 +1986,6 @@ index 0000000000000000000000000000000000000000..ecf9549e0e07475966a36d24d69c4af2
 +        mediatek,larb = <&larb0>;
 +        mediatek,gce-client-reg = <&gce SUBSYS_1401XXXX 0x1000 0x1000>;
 +    };
-diff --git a/Documentation/devicetree/bindings/i2c/i2c-mt65xx.txt b/Documentation/devicetree/bindings/i2c/i2c-mt65xx.txt
-index e6491d4f0f01f0f142258f1c1cde07be5bfca386..176d172af0d727b898265f0b5810570e2eb525b4 100644
---- a/Documentation/devicetree/bindings/i2c/i2c-mt65xx.txt
-+++ b/Documentation/devicetree/bindings/i2c/i2c-mt65xx.txt
-@@ -15,6 +15,7 @@ Required properties:
-       "mediatek,mt8173-i2c": for MediaTek MT8173
-       "mediatek,mt8183-i2c": for MediaTek MT8183
-       "mediatek,mt8192-i2c": for MediaTek MT8192
-+      "mediatek,mt8195-i2c", "mediatek,mt8192-i2c": for MediaTek MT8195
-       "mediatek,mt8516-i2c", "mediatek,mt2712-i2c": for MediaTek MT8516
-   - reg: physical base address of the controller and dma base, length of memory
-     mapped region.
 diff --git a/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml b/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
 index 0f26fe14c8e21761a8de9f37ae6377fa9e0eb96c..c528a299afa915630a7b9b8ccbfd3c29370a767a 100644
 --- a/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
@@ -2062,33 +2050,6 @@ index 0f26fe14c8e21761a8de9f37ae6377fa9e0eb96c..c528a299afa915630a7b9b8ccbfd3c29
  additionalProperties: false
  
  examples:
-diff --git a/Documentation/devicetree/bindings/mailbox/mtk-gce.txt b/Documentation/devicetree/bindings/mailbox/mtk-gce.txt
-index 7771ecaac58683a68bd2a6bb03deb1b6b4b486e4..8e81916556a30f6e19791354714b62d3ffad1451 100644
---- a/Documentation/devicetree/bindings/mailbox/mtk-gce.txt
-+++ b/Documentation/devicetree/bindings/mailbox/mtk-gce.txt
-@@ -9,8 +9,8 @@ CMDQ driver uses mailbox framework for communication. Please refer to
- mailbox.txt for generic information about mailbox device-tree bindings.
- 
- Required properties:
--- compatible: can be "mediatek,mt8173-gce", "mediatek,mt8183-gce" or
--  "mediatek,mt6779-gce".
-+- compatible: can be "mediatek,mt8173-gce", "mediatek,mt8183-gce",
-+  "mediatek,mt8192-gce", "mediatek,mt8195-gce" or "mediatek,mt6779-gce".
- - reg: Address range of the GCE unit
- - interrupts: The interrupt signal from the GCE block
- - clock: Clocks according to the common clock binding
-@@ -36,8 +36,9 @@ Optional properties for a client device:
-   size: the total size of register address that GCE can access.
- 
- Some vaules of properties are defined in 'dt-bindings/gce/mt8173-gce.h',
--'dt-binding/gce/mt8183-gce.h' or 'dt-bindings/gce/mt6779-gce.h'. Such as
--sub-system ids, thread priority, event ids.
-+'dt-binding/gce/mt8183-gce.h', 'dt-binding/gce/mt8192-gce.h',
-+'dt-binding/gce/mt8195-gce.h' or 'dt-bindings/gce/mt6779-gce.h'.
-+Such as sub-system ids, thread priority, event ids.
- 
- Example:
- 
 diff --git a/Documentation/devicetree/bindings/media/mediatek,mdp3-ccorr.yaml b/Documentation/devicetree/bindings/media/mediatek,mdp3-ccorr.yaml
 new file mode 100644
 index 0000000000000000000000000000000000000000..205b91b55806633b9bdb24bbe508380f30202768
@@ -3263,10 +3224,10 @@ index 669ac7c32292798644b21dbb5a0dc657125f444d..9e61c76d91a3e5f62f116865497a9d69
 +mt8195-cherry.dtsi
 +cherry TOT
 diff --git a/arch/arm64/boot/dts/mediatek/Makefile b/arch/arm64/boot/dts/mediatek/Makefile
-index 8e3b7d1a525a5ec858a3b9bc4caf17eab3e0e953..163863b541dcd8ec0dede0f68f7e8d7cf90adc4d 100644
+index 103adebcc4376194a971d7fb49370578b61728ba..72a240b88c16ac66ef04ad3e86a1e3fbd1570fce 100644
 --- a/arch/arm64/boot/dts/mediatek/Makefile
 +++ b/arch/arm64/boot/dts/mediatek/Makefile
-@@ -45,3 +45,6 @@ dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-kukui-krane-sku0.dtb
+@@ -46,3 +46,6 @@ dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-kukui-krane-sku0.dtb
  dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-kukui-krane-sku176.dtb
  dtb-$(CONFIG_ARCH_MEDIATEK) += mt8516-pumpkin.dtb
  dtb-$(CONFIG_ARCH_MEDIATEK) += mt8192-evb.dtb
@@ -5060,10 +5021,10 @@ index 0000000000000000000000000000000000000000..4d1a34bb27631d68799766de8ef953a4
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8195.dtsi b/arch/arm64/boot/dts/mediatek/mt8195.dtsi
 new file mode 100644
-index 0000000000000000000000000000000000000000..5de1e41f75906c03f31f3b7c6909ec96ee2fa86c
+index 0000000000000000000000000000000000000000..22cad8cbab756b994ceccd70308a63f321e1f5f7
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt8195.dtsi
-@@ -0,0 +1,3816 @@
+@@ -0,0 +1,3826 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
 +/*
 + * Copyright (c) 2021 MediaTek Inc.
@@ -6192,7 +6153,9 @@ index 0000000000000000000000000000000000000000..5de1e41f75906c03f31f3b7c6909ec96
 +			reg = <0 0x11200000 0 0x1000>,
 +			      <0 0x11203e00 0 0x0100>;
 +			reg-names = "mac", "ippc";
-+			interrupts = <GIC_SPI 129 IRQ_TYPE_LEVEL_HIGH 0>;
++			interrupts-extended = <&gic GIC_SPI 129 IRQ_TYPE_LEVEL_HIGH 0>,
++					      <&pio 219 IRQ_TYPE_LEVEL_LOW>;
++			interrupt-names = "host", "wakeup";
 +			phys = <&u2port0 PHY_TYPE_USB2>,
 +			       <&u3port0 PHY_TYPE_USB3>;
 +			assigned-clocks = <&topckgen CLK_TOP_USB_SEL>,
@@ -6247,7 +6210,9 @@ index 0000000000000000000000000000000000000000..5de1e41f75906c03f31f3b7c6909ec96
 +			reg = <0 0x11290000 0 0x1000>,
 +			      <0 0x11293e00 0 0x0100>;
 +			reg-names = "mac", "ippc";
-+			interrupts = <GIC_SPI 530 IRQ_TYPE_LEVEL_HIGH 0>;
++			interrupts-extended = <&gic GIC_SPI 530 IRQ_TYPE_LEVEL_HIGH 0>,
++					     <&pio 218 IRQ_TYPE_LEVEL_LOW>;
++			interrupt-names = "host", "wakeup";
 +			phys = <&u2port1 PHY_TYPE_USB2>;
 +			assigned-clocks = <&topckgen CLK_TOP_USB_1P_SEL>,
 +					  <&topckgen CLK_TOP_SSUSB_XHCI_1P_SEL>;
@@ -6258,6 +6223,9 @@ index 0000000000000000000000000000000000000000..5de1e41f75906c03f31f3b7c6909ec96
 +				 <&topckgen CLK_TOP_SSUSB_P1_REF>,
 +				 <&apmixedsys CLK_APMIXED_USB1PLL>;
 +			clock-names = "sys_ck", "xhci_ck", "ref_ck", "mcu_ck";
++			mediatek,syscon-wakeup = <&pericfg 0x400 104>;
++			wakeup-source;
++			mediatek,u3p-dis-msk = <0x1>;
 +			#address-cells = <2>;
 +			#size-cells = <2>;
 +			status = "disabled";
@@ -6290,7 +6258,9 @@ index 0000000000000000000000000000000000000000..5de1e41f75906c03f31f3b7c6909ec96
 +			reg = <0 0x112b0000 0 0x1000>,
 +			      <0 0x112b3e00 0 0x0100>;
 +			reg-names = "mac", "ippc";
-+			interrupts = <GIC_SPI 536 IRQ_TYPE_LEVEL_HIGH 0>;
++			interrupts-extended = <&gic GIC_SPI 536 IRQ_TYPE_LEVEL_HIGH 0>,
++					      <&pio 221 IRQ_TYPE_LEVEL_LOW>;
++			interrupts-names = "host", "wakeup";
 +			phys = <&u2port3 PHY_TYPE_USB2>;
 +			assigned-clocks = <&topckgen CLK_TOP_USB_3P_SEL>,
 +					  <&topckgen CLK_TOP_SSUSB_XHCI_3P_SEL>;
@@ -6300,6 +6270,8 @@ index 0000000000000000000000000000000000000000..5de1e41f75906c03f31f3b7c6909ec96
 +				 <&pericfg_ao CLK_PERI_AO_SSUSB_3P_XHCI>,
 +				 <&topckgen CLK_TOP_SSUSB_P3_REF>;
 +			clock-names = "sys_ck", "xhci_ck", "ref_ck";
++			mediatek,syscon-wakeup = <&pericfg 0x400 106>;
++			wakeup-source;
 +			usb2-lpm-disable;
 +			#address-cells = <2>;
 +			#size-cells = <2>;
@@ -8876,8 +8848,7 @@ index 0000000000000000000000000000000000000000..5de1e41f75906c03f31f3b7c6909ec96
 +
 +	bring-up {
 +		compatible = "mediatek,clk-bring-up";
-+		clocks = <&infracfg_ao CLK_INFRA_AO_DEBUGSYS>,
-+			 <&infracfg_ao CLK_INFRA_AO_UART0>;
++		clocks = <&infracfg_ao CLK_INFRA_AO_UART0>;
 +	};
 +};
 diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
@@ -8898,7 +8869,7 @@ index 5cfe3cf6f2acb2db8020bbf8821aba0a9c787538..b806aa771c3e5579998ef99cb0752a41
  CONFIG_MEMTEST=y
 +CONFIG_RESET_TI_SYSCON=y
 diff --git a/chromeos/config/arm64/chromiumos-arm64.flavour.config b/chromeos/config/arm64/chromiumos-arm64.flavour.config
-index 7c7423e42e5f5f5e073ffbb87c4410a23755de80..22afb02497aebcccc2163349831c8b09efb33f63 100644
+index 615f804feb26c2e95191bdb3964b5cb612fcc3ac..5430507da5d5eab47abf8e88646388c981dffe39 100644
 --- a/chromeos/config/arm64/chromiumos-arm64.flavour.config
 +++ b/chromeos/config/arm64/chromiumos-arm64.flavour.config
 @@ -6,7 +6,7 @@ CONFIG_ARCH_MEDIATEK=y
@@ -8941,7 +8912,7 @@ index 7c7423e42e5f5f5e073ffbb87c4410a23755de80..22afb02497aebcccc2163349831c8b09
  CONFIG_COMMON_CLK_PALMAS=y
  CONFIG_COMMON_CLK_QCOM=y
  CONFIG_COMMON_CLK_RK808=y
-@@ -46,16 +63,19 @@ CONFIG_CORESIGHT=y
+@@ -48,16 +65,19 @@ CONFIG_CORESIGHT_CPU_DEBUG_DEFAULT_ON=y
  CONFIG_CORESIGHT_LINK_AND_SINK_TMC=y
  CONFIG_CORESIGHT_SOURCE_ETM4X=y
  CONFIG_CPUFREQ_DT=y
@@ -8961,7 +8932,7 @@ index 7c7423e42e5f5f5e073ffbb87c4410a23755de80..22afb02497aebcccc2163349831c8b09
  CONFIG_DRM_MSM=y
  # CONFIG_DRM_MSM_HDMI_HDCP is not set
  CONFIG_DRM_PANEL_BOE_TV101WUM_NL6=y
-@@ -97,6 +117,7 @@ CONFIG_INTERCONNECT_QCOM_SDM845=y
+@@ -99,6 +119,7 @@ CONFIG_INTERCONNECT_QCOM_SDM845=y
  CONFIG_LEDS_PWM=y
  CONFIG_MEDIATEK_MT6577_AUXADC=y
  CONFIG_MEDIATEK_WATCHDOG=y
@@ -8969,7 +8940,7 @@ index 7c7423e42e5f5f5e073ffbb87c4410a23755de80..22afb02497aebcccc2163349831c8b09
  CONFIG_MFD_MT6397=y
  CONFIG_MFD_PALMAS=y
  CONFIG_MFD_RK808=y
-@@ -112,13 +133,17 @@ CONFIG_MTK_CMDQ=y
+@@ -114,13 +135,17 @@ CONFIG_MTK_CMDQ=y
  CONFIG_MTK_EFUSE=y
  CONFIG_MTK_IOMMU=y
  CONFIG_MTK_PMIC_WRAP=y
@@ -8988,7 +8959,7 @@ index 7c7423e42e5f5f5e073ffbb87c4410a23755de80..22afb02497aebcccc2163349831c8b09
  CONFIG_PCIE_QCOM=y
  CONFIG_PCIE_ROCKCHIP_HOST=y
  CONFIG_PHY_MTK_TPHY=y
-@@ -176,7 +201,10 @@ CONFIG_REGULATOR_CROS_EC=y
+@@ -178,7 +203,10 @@ CONFIG_REGULATOR_CROS_EC=y
  CONFIG_REGULATOR_DA9211=y
  CONFIG_REGULATOR_MAX8973=y
  CONFIG_REGULATOR_MT6311=y
@@ -8999,7 +8970,7 @@ index 7c7423e42e5f5f5e073ffbb87c4410a23755de80..22afb02497aebcccc2163349831c8b09
  CONFIG_REGULATOR_MT6397=y
  CONFIG_REGULATOR_PALMAS=y
  CONFIG_REGULATOR_QCOM_RPMH=y
-@@ -245,6 +273,9 @@ CONFIG_SND_SOC_MT8183_DA7219_MAX98357A=y
+@@ -247,6 +275,9 @@ CONFIG_SND_SOC_MT8183_DA7219_MAX98357A=y
  CONFIG_SND_SOC_MT8183_MT6358_TS3A227E_MAX98357A=y
  CONFIG_SND_SOC_MT8192=y
  CONFIG_SND_SOC_MT8192_MT6359_RT1015_RT5682=y
@@ -9009,7 +8980,7 @@ index 7c7423e42e5f5f5e073ffbb87c4410a23755de80..22afb02497aebcccc2163349831c8b09
  CONFIG_SND_SOC_QCOM=y
  CONFIG_SND_SOC_RK3399_GRU_SOUND=y
  CONFIG_SND_SOC_ROCKCHIP=y
-@@ -259,11 +290,14 @@ CONFIG_SPI_QCOM_GENI=y
+@@ -261,11 +292,14 @@ CONFIG_SPI_QCOM_GENI=y
  CONFIG_SPI_QCOM_QSPI=y
  CONFIG_SPI_ROCKCHIP=y
  CONFIG_SPMI=y
@@ -9024,7 +8995,7 @@ index 7c7423e42e5f5f5e073ffbb87c4410a23755de80..22afb02497aebcccc2163349831c8b09
  CONFIG_TOUCHSCREEN_MELFAS_MIP4=y
  CONFIG_TYPEC=m
  CONFIG_USB_MTU3=y
-@@ -288,3 +322,4 @@ CONFIG_VIRTIO_CONSOLE=y
+@@ -290,3 +324,4 @@ CONFIG_VIRTIO_CONSOLE=y
  CONFIG_VIRTIO_INPUT=y
  CONFIG_VIRTIO_MMIO=y
  CONFIG_VIRTIO_NET=y
@@ -9158,6 +9129,24 @@ index 960449f01179a420238849ecfdff9cdde74bb0d9..ff74c1b0cd42a7dc6742fab248bb330f
  		elif [[ "${arch}" == "armel" ]]; then
  			prefix=armv7a
  			compiler=clang
+diff --git a/drivers/base/power/runtime.c b/drivers/base/power/runtime.c
+index bc649da4899a0b873884226c40af571c6cfed8a2..aef716e3b2c1a6dc7082c37bb808c8f1c840d224 100644
+--- a/drivers/base/power/runtime.c
++++ b/drivers/base/power/runtime.c
+@@ -642,11 +642,12 @@ static int rpm_suspend(struct device *dev, int rpmflags)
+ 
+ 	callback = RPM_GET_CALLBACK(dev, runtime_suspend);
+ 
+-	dev_pm_enable_wake_irq_check(dev, true);
++	//dev_pm_enable_wake_irq_check(dev, true);
+ 	retval = rpm_callback(callback, dev);
+ 	if (retval)
+ 		goto fail;
+ 
++	dev_pm_enable_wake_irq_check(dev, true);
+  no_callback:
+ 	__update_runtime_status(dev, RPM_SUSPENDED);
+ 	pm_runtime_deactivate_timer(dev);
 diff --git a/drivers/clk/clk.c b/drivers/clk/clk.c
 index 2dc4d2306b74d53332856edb8f30062df46d8016..899defab2bd504349ee4c8103900ba2af04c4d07 100644
 --- a/drivers/clk/clk.c
@@ -88085,7 +88074,7 @@ index f46d4ab73d6a681feb200a066daa93339fae09b4..dadd1afed0764a134bf43c77f68665c5
  	bool has_gamma;
  };
 diff --git a/drivers/gpu/drm/mediatek/mtk_disp_ccorr.c b/drivers/gpu/drm/mediatek/mtk_disp_ccorr.c
-index 141cb36b9c07b7407cc3e907f08ed2e96a66d2ce..ea1d568bdbe7e46b6273e74e2eaf6fb96cf5452f 100644
+index 141cb36b9c07b7407cc3e907f08ed2e96a66d2ce..f8e7ee221d688e5d0afb6d0e09b974b764969b57 100644
 --- a/drivers/gpu/drm/mediatek/mtk_disp_ccorr.c
 +++ b/drivers/gpu/drm/mediatek/mtk_disp_ccorr.c
 @@ -205,9 +205,15 @@ static const struct mtk_disp_ccorr_data mt8183_ccorr_driver_data = {
@@ -88100,7 +88089,7 @@ index 141cb36b9c07b7407cc3e907f08ed2e96a66d2ce..ea1d568bdbe7e46b6273e74e2eaf6fb9
  	{ .compatible = "mediatek,mt8183-disp-ccorr",
  	  .data = &mt8183_ccorr_driver_data},
 +	{ .compatible = "mediatek,mt8195-disp-ccorr",
-+	  .data = &mt8183_ccorr_driver_data},
++	  .data = &mt8195_ccorr_driver_data},
  	{},
  };
  MODULE_DEVICE_TABLE(of, mtk_disp_ccorr_driver_dt_match);
@@ -88494,10 +88483,33 @@ index 0000000000000000000000000000000000000000..13c788f67cedb1000da30bf45108fa3e
 +	},
 +};
 diff --git a/drivers/gpu/drm/mediatek/mtk_disp_ovl.c b/drivers/gpu/drm/mediatek/mtk_disp_ovl.c
-index ea5760f856ec6d0c085326de4e97f719306ac05d..c315e19db8198876e7f6a41723001bfc8e3c816f 100644
+index ea5760f856ec6d0c085326de4e97f719306ac05d..3c8da4df5b07ce73a4b9fd98948b592016a4012e 100644
 --- a/drivers/gpu/drm/mediatek/mtk_disp_ovl.c
 +++ b/drivers/gpu/drm/mediatek/mtk_disp_ovl.c
-@@ -430,6 +430,8 @@ static int mtk_disp_ovl_remove(struct platform_device *pdev)
+@@ -27,6 +27,11 @@
+ #define DISP_REG_OVL_DATAPATH_CON		0x0024
+ #define OVL_LAYER_SMI_ID_EN				BIT(0)
+ #define OVL_BGCLR_SEL_IN				BIT(2)
++#define OVL_GCLAST_EN					BIT(24)
++#define OVL_HDR_GCLAST_EN				BIT(25)
++#define OVL_OUTPUT_CLAMP				BIT(26)
++#define OVL_DATAPATH_CON				(OVL_LAYER_SMI_ID_EN | \
++					OVL_GCLAST_EN | OVL_HDR_GCLAST_EN | OVL_OUTPUT_CLAMP)
+ #define DISP_REG_OVL_ROI_BGCLR			0x0028
+ #define DISP_REG_OVL_SRC_CON			0x002c
+ #define DISP_REG_OVL_CON(n)			(0x0030 + 0x20 * (n))
+@@ -238,6 +243,10 @@ void mtk_ovl_layer_on(struct device *dev, unsigned int idx,
+ 			    gmc_thrshd_h << 16 | gmc_thrshd_h << 24;
+ 	mtk_ddp_write(cmdq_pkt, gmc_value,
+ 		      &ovl->cmdq_reg, ovl->regs, DISP_REG_OVL_RDMA_GMC(idx));
++
++	mtk_ddp_write_mask(cmdq_pkt, OVL_DATAPATH_CON, &ovl->cmdq_reg, ovl->regs,
++				 DISP_REG_OVL_DATAPATH_CON, OVL_DATAPATH_CON);
++
+ 	mtk_ddp_write_mask(cmdq_pkt, BIT(idx), &ovl->cmdq_reg, ovl->regs,
+ 			   DISP_REG_OVL_SRC_CON, BIT(idx));
+ }
+@@ -430,6 +439,8 @@ static int mtk_disp_ovl_remove(struct platform_device *pdev)
  {
  	pm_runtime_disable(&pdev->dev);
  
@@ -88941,10 +88953,10 @@ index 251f034acb09e2bde0f701c82f38b87f1fa2d721..c865337bb8946e8258152f675b4ec271
  MODULE_DEVICE_TABLE(of, mtk_disp_rdma_driver_dt_match);
 diff --git a/drivers/gpu/drm/mediatek/mtk_dp.c b/drivers/gpu/drm/mediatek/mtk_dp.c
 new file mode 100644
-index 0000000000000000000000000000000000000000..3706b928d240718fc822f9bf7901333062be743e
+index 0000000000000000000000000000000000000000..0e331374a15a96d6f0f0cb4ec0b0c8a06916e785
 --- /dev/null
 +++ b/drivers/gpu/drm/mediatek/mtk_dp.c
-@@ -0,0 +1,2602 @@
+@@ -0,0 +1,2578 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
 + * Copyright (c) 2019 MediaTek Inc.
@@ -90248,24 +90260,7 @@ index 0000000000000000000000000000000000000000..3706b928d240718fc822f9bf79013330
 +		break;
 +
 +	case DPTX_NTSTATE_CHECKEDID:
-+		mtk_dp->edid = mtk_dp_handle_edid(mtk_dp);
 +		if (mtk_dp->edid) {
-+			dev_info(mtk_dp->dev, "READ EDID done!\n");
-+			if (0){//mtk_dp_debug_get()) {
-+				u8 *raw_edid = (u8 *)mtk_dp->edid;
-+
-+				dev_info(mtk_dp->dev, "Raw EDID:\n");
-+				print_hex_dump(KERN_NOTICE,
-+						"\t", DUMP_PREFIX_NONE, 16, 1,
-+						raw_edid, EDID_LENGTH, false);
-+				if ((raw_edid[0x7E] & 0x01) == 0x01) {
-+					print_hex_dump(KERN_NOTICE,
-+						"\t", DUMP_PREFIX_NONE, 16, 1,
-+						(raw_edid + 128), EDID_LENGTH,
-+						false);
-+				}
-+			}
-+
 +			mtk_dp->info.audio_caps
 +				= mdrv_DPTx_getAudioCaps(mtk_dp);
 +		} else
@@ -90795,7 +90790,7 @@ index 0000000000000000000000000000000000000000..3706b928d240718fc822f9bf79013330
 +		connector_status_disconnected);
 +}
 +
-+static void mtk_hdmi_update_plugged_status(struct mtk_dp *mtk_dp)
++static void mtk_dp_update_plugged_status(struct mtk_dp *mtk_dp)
 +{
 +	bool connected;
 +
@@ -90816,12 +90811,10 @@ index 0000000000000000000000000000000000000000..3706b928d240718fc822f9bf79013330
 +
 +	dev_info(mtk_dp->dev, "%s \n", __func__, (ret == 1) ? "connected" : "disconnected");
 +
-+	if (mtk_dp->driver_data && mtk_dp->driver_data->is_edp) {
++	if (mtk_dp->driver_data && mtk_dp->driver_data->is_edp)
 +		return connector_status_connected;
-+	} else {
-+		mtk_hdmi_update_plugged_status(mtk_dp);
++	else
 +		return ret;
-+	}
 +}
 +
 +static void mtk_dp_conn_destroy(struct drm_connector *conn)
@@ -90929,11 +90922,14 @@ index 0000000000000000000000000000000000000000..3706b928d240718fc822f9bf79013330
 +{
 +	struct mtk_dp *mtk_dp = dp_from_bridge(bridge);
 +	bool poweroff = !mtk_dp->powered;
-+	struct edid *edid;
 +
 +	drm_bridge_chain_pre_enable(bridge);
 +
-+	edid = drm_get_edid(connector, &mtk_dp->aux.ddc);
++	kfree(mtk_dp->edid);
++
++	mtk_dp->edid = drm_get_edid(connector, &mtk_dp->aux.ddc);
++
++	mtk_dp->curr_conn = connector;
 +
 +	/*
 +	 * If we call the get_edid() function without having enabled the chip
@@ -90942,11 +90938,10 @@ index 0000000000000000000000000000000000000000..3706b928d240718fc822f9bf79013330
 +	if (poweroff)
 +		drm_bridge_chain_post_disable(bridge);
 +
-+	mtk_dp->edid = edid;
-+
-+	if (edid == NULL)
++	if (mtk_dp->edid == NULL)
 +		return NULL;
-+	return drm_edid_duplicate(edid);
++
++	return drm_edid_duplicate(mtk_dp->edid);
 +}
 +
 +
@@ -91180,8 +91175,10 @@ index 0000000000000000000000000000000000000000..3706b928d240718fc822f9bf79013330
 +
 +	dev_info(mtk_dp->dev, "%s\n", __func__);
 +
++	mtk_dp->enabled = true;
++	mtk_dp_update_plugged_status(mtk_dp);
++
 +	mdrv_DPTx_CheckSinkCap(mtk_dp);
-+	mtk_dp->edid = mtk_dp_handle_edid(mtk_dp);
 +	//training
 +	for (i = 0; i < 50; i++) {
 +		ret = mdrv_DPTx_Training_Handler(mtk_dp);
@@ -91204,8 +91201,6 @@ index 0000000000000000000000000000000000000000..3706b928d240718fc822f9bf79013330
 +		mdrv_DPTx_I2S_Audio_Config(mtk_dp);
 +		mdrv_DPTx_I2S_Audio_Enable(mtk_dp, true);
 +	}
-+
-+	mtk_dp->enabled = true;
 +}
 +
 +static const struct drm_bridge_funcs mtk_dp_bridge_funcs = {
@@ -91318,9 +91313,10 @@ index 0000000000000000000000000000000000000000..3706b928d240718fc822f9bf79013330
 +	struct mtk_dp *mtk_dp = dev_get_drvdata(dev);
 +
 +	if (mtk_dp->enabled)
-+		memcpy(buf, mtk_dp->conn.eld, min(sizeof(mtk_dp->conn.eld), len));
++		memcpy(buf, mtk_dp->curr_conn->eld, min(sizeof(mtk_dp->curr_conn->eld), len));
 +	else
 +		memset(buf, 0, len);
++
 +	return 0;
 +}
 +
@@ -91335,7 +91331,7 @@ index 0000000000000000000000000000000000000000..3706b928d240718fc822f9bf79013330
 +	mtk_dp->codec_dev = codec_dev;
 +	mutex_unlock(&mtk_dp->update_plugged_status_lock);
 +
-+	mtk_hdmi_update_plugged_status(mtk_dp);
++	mtk_dp_update_plugged_status(mtk_dp);
 +
 +	return 0;
 +}
@@ -91476,17 +91472,9 @@ index 0000000000000000000000000000000000000000..3706b928d240718fc822f9bf79013330
 +static int mtk_drm_dp_remove(struct platform_device *pdev)
 +{
 +	struct mtk_dp *mtk_dp = platform_get_drvdata(pdev);
-+	int ret;
 +
 +	mdrv_DPTx_VideoMute(mtk_dp, true);
 +	mdrv_DPTx_AudioMute(mtk_dp, true);
-+
-+	drm_connector_cleanup(&mtk_dp->conn);
-+
-+	if (!IS_ERR(mtk_dp->task)) {
-+		ret = kthread_stop(mtk_dp->task);
-+		dev_info(mtk_dp->dev,  "=====thread function has stop %ds======\n", ret);
-+	}
 +
 +	pm_runtime_disable(&pdev->dev);
 +
@@ -92423,10 +92411,10 @@ index 0000000000000000000000000000000000000000..87760a294c671ff2e0296f429f41a363
 +
 diff --git a/drivers/gpu/drm/mediatek/mtk_dp_common.h b/drivers/gpu/drm/mediatek/mtk_dp_common.h
 new file mode 100644
-index 0000000000000000000000000000000000000000..b05e5143db6676c486fde34606626ee9f4699bd5
+index 0000000000000000000000000000000000000000..8d4ce50c5e5e1979311bc963c35ca4f4e0a45629
 --- /dev/null
 +++ b/drivers/gpu/drm/mediatek/mtk_dp_common.h
-@@ -0,0 +1,219 @@
+@@ -0,0 +1,220 @@
 +/* SPDX-License-Identifier: GPL-2.0 */
 +/*
 + * Copyright (c) 2019 MediaTek Inc.
@@ -92594,6 +92582,7 @@ index 0000000000000000000000000000000000000000..b05e5143db6676c486fde34606626ee9
 +	struct drm_bridge bridge;
 +	struct drm_bridge *next_bridge;
 +	struct drm_connector conn;
++	struct drm_connector *curr_conn;
 +	struct drm_encoder enc;
 +	struct work_struct work;
 +	struct workqueue_struct *workqueue;
@@ -102782,7 +102771,7 @@ index 1b582262b682b19cbff28a626943939512531293..38fd27a85d7a400712357f4c6516da46
  			enum mtk_ddp_comp_type comp_type);
  unsigned int mtk_drm_find_possible_crtc_by_comp(struct drm_device *drm,
 diff --git a/drivers/gpu/drm/mediatek/mtk_drm_drv.c b/drivers/gpu/drm/mediatek/mtk_drm_drv.c
-index c0e56a89951832985efcb335fec2322db59d9db4..d1e2308209fa013649d3480e3c364e6259cb3d25 100644
+index c0e56a89951832985efcb335fec2322db59d9db4..be47a581cb9bddc07a3990c6ae8657f8335253d2 100644
 --- a/drivers/gpu/drm/mediatek/mtk_drm_drv.c
 +++ b/drivers/gpu/drm/mediatek/mtk_drm_drv.c
 @@ -149,12 +149,45 @@ static const enum mtk_ddp_comp_id mt8183_mtk_ddp_ext[] = {
@@ -103209,7 +103198,7 @@ index c0e56a89951832985efcb335fec2322db59d9db4..d1e2308209fa013649d3480e3c364e62
  	return ret;
  }
  
-@@ -368,12 +647,21 @@ static int mtk_drm_bind(struct device *dev)
+@@ -368,12 +647,22 @@ static int mtk_drm_bind(struct device *dev)
  	struct drm_device *drm;
  	int ret;
  
@@ -103220,6 +103209,7 @@ index c0e56a89951832985efcb335fec2322db59d9db4..d1e2308209fa013649d3480e3c364e62
 +		drm = drm_dev_alloc(&mtk_drm_driver, dev);
 +		if (IS_ERR(drm))
 +			return PTR_ERR(drm);
++		private->drm_master = true;
 +		drm->dev_private = private;
 +	}
  
@@ -103235,7 +103225,7 @@ index c0e56a89951832985efcb335fec2322db59d9db4..d1e2308209fa013649d3480e3c364e62
  
  	ret = mtk_drm_kms_init(drm);
  	if (ret < 0)
-@@ -398,10 +686,13 @@ static void mtk_drm_unbind(struct device *dev)
+@@ -398,10 +687,13 @@ static void mtk_drm_unbind(struct device *dev)
  {
  	struct mtk_drm_private *private = dev_get_drvdata(dev);
  
@@ -103253,7 +103243,7 @@ index c0e56a89951832985efcb335fec2322db59d9db4..d1e2308209fa013649d3480e3c364e62
  	private->drm = NULL;
  }
  
-@@ -411,52 +702,26 @@ static const struct component_master_ops mtk_drm_ops = {
+@@ -411,52 +703,26 @@ static const struct component_master_ops mtk_drm_ops = {
  };
  
  static const struct of_device_id mtk_ddp_comp_dt_ids[] = {
@@ -103316,7 +103306,7 @@ index c0e56a89951832985efcb335fec2322db59d9db4..d1e2308209fa013649d3480e3c364e62
  	{ .compatible = "mediatek,mt2701-disp-mutex",
  	  .data = (void *)MTK_DISP_MUTEX },
  	{ .compatible = "mediatek,mt2712-disp-mutex",
-@@ -465,57 +730,89 @@ static const struct of_device_id mtk_ddp_comp_dt_ids[] = {
+@@ -465,57 +731,89 @@ static const struct of_device_id mtk_ddp_comp_dt_ids[] = {
  	  .data = (void *)MTK_DISP_MUTEX },
  	{ .compatible = "mediatek,mt8183-disp-mutex",
  	  .data = (void *)MTK_DISP_MUTEX },
@@ -103429,7 +103419,7 @@ index c0e56a89951832985efcb335fec2322db59d9db4..d1e2308209fa013649d3480e3c364e62
  	/* Iterate over sibling DISP function blocks */
  	for_each_child_of_node(phandle->parent, node) {
  		const struct of_device_id *of_id;
-@@ -535,7 +832,13 @@ static int mtk_drm_probe(struct platform_device *pdev)
+@@ -535,7 +833,13 @@ static int mtk_drm_probe(struct platform_device *pdev)
  		comp_type = (enum mtk_ddp_comp_type)of_id->data;
  
  		if (comp_type == MTK_DISP_MUTEX) {
@@ -103444,7 +103434,7 @@ index c0e56a89951832985efcb335fec2322db59d9db4..d1e2308209fa013649d3480e3c364e62
  			continue;
  		}
  
-@@ -546,22 +849,29 @@ static int mtk_drm_probe(struct platform_device *pdev)
+@@ -546,22 +850,29 @@ static int mtk_drm_probe(struct platform_device *pdev)
  			continue;
  		}
  
@@ -103477,7 +103467,33 @@ index c0e56a89951832985efcb335fec2322db59d9db4..d1e2308209fa013649d3480e3c364e62
  			dev_info(dev, "Adding component match for %pOF\n",
  				 node);
  			drm_of_component_match_add(dev, &match, compare_of,
-@@ -655,9 +965,13 @@ static struct platform_driver * const mtk_drm_drivers[] = {
+@@ -619,9 +930,10 @@ static int mtk_drm_sys_suspend(struct device *dev)
+ {
+ 	struct mtk_drm_private *private = dev_get_drvdata(dev);
+ 	struct drm_device *drm = private->drm;
+-	int ret;
++	int ret = 0;
+ 
+-	ret = drm_mode_config_helper_suspend(drm);
++	if (private->drm_master)
++		ret = drm_mode_config_helper_suspend(drm);
+ 
+ 	return ret;
+ }
+@@ -630,9 +942,10 @@ static int mtk_drm_sys_resume(struct device *dev)
+ {
+ 	struct mtk_drm_private *private = dev_get_drvdata(dev);
+ 	struct drm_device *drm = private->drm;
+-	int ret;
++	int ret = 0;
+ 
+-	ret = drm_mode_config_helper_resume(drm);
++	if (private->drm_master)
++		ret = drm_mode_config_helper_resume(drm);
+ 
+ 	return ret;
+ }
+@@ -655,9 +968,13 @@ static struct platform_driver * const mtk_drm_drivers[] = {
  	&mtk_disp_ccorr_driver,
  	&mtk_disp_color_driver,
  	&mtk_disp_gamma_driver,
@@ -103492,10 +103508,10 @@ index c0e56a89951832985efcb335fec2322db59d9db4..d1e2308209fa013649d3480e3c364e62
  	&mtk_dsi_driver,
  };
 diff --git a/drivers/gpu/drm/mediatek/mtk_drm_drv.h b/drivers/gpu/drm/mediatek/mtk_drm_drv.h
-index 3e7d1e6fbe010e0852b1fa2e8a088ef02a7f746c..d470164d640e7ad25b18063a1c0b9113c7f50415 100644
+index 3e7d1e6fbe010e0852b1fa2e8a088ef02a7f746c..7f4c825238dccdba8f5b6549aadec28bfbfbffe5 100644
 --- a/drivers/gpu/drm/mediatek/mtk_drm_drv.h
 +++ b/drivers/gpu/drm/mediatek/mtk_drm_drv.h
-@@ -20,23 +20,31 @@ struct drm_fb_helper;
+@@ -20,23 +20,32 @@ struct drm_fb_helper;
  struct drm_property;
  struct regmap;
  
@@ -103526,11 +103542,12 @@ index 3e7d1e6fbe010e0852b1fa2e8a088ef02a7f746c..d470164d640e7ad25b18063a1c0b9113
 -	unsigned int num_pipes;
 -
 +	bool mtk_drm_bound;
++	bool drm_master;
 +	struct device *dev;
  	struct device_node *mutex_node;
  	struct device *mutex_dev;
  	struct device *mmsys_dev;
-@@ -44,15 +52,20 @@ struct mtk_drm_private {
+@@ -44,15 +53,20 @@ struct mtk_drm_private {
  	struct mtk_ddp_comp ddp_comp[DDP_COMPONENT_ID_MAX];
  	const struct mtk_mmsys_driver_data *data;
  	struct drm_atomic_state *suspend_state;
@@ -104396,7 +104413,7 @@ index 96db18d46fedbf1a83c260a1babbda5ea1fa1555..95395c1ec1161d6708a55f7bae93d2db
  };
  
 diff --git a/drivers/i2c/busses/i2c-mt65xx.c b/drivers/i2c/busses/i2c-mt65xx.c
-index 72dd22dd20e7abf54b96917519bd08fce6220b23..902a31fd90e8acd4fd5585843f43a7b4883f51a0 100644
+index 835bffb5f74b3bdee59b28bffa76f60c631d9377..3b50f19190df9dfadceabbcfb69e61f1b7e8614c 100644
 --- a/drivers/i2c/busses/i2c-mt65xx.c
 +++ b/drivers/i2c/busses/i2c-mt65xx.c
 @@ -15,6 +15,7 @@
@@ -105954,253 +105971,6 @@ index f81fa8862ed04b22f997bf45700e58dd90fc068b..279c6c3ee56fad52a87d3e65be16715a
  	struct list_head		list;
  	struct mtk_smi_larb_iommu	larb_imu[MTK_LARB_NR_MAX];
  };
-diff --git a/drivers/mailbox/mtk-cmdq-mailbox.c b/drivers/mailbox/mtk-cmdq-mailbox.c
-index 4e55e4780b63ac0b36ecae8cdbf30a54192cf272..89137f9bc569a7fb446a4c95ec6d23a0180af6af 100644
---- a/drivers/mailbox/mtk-cmdq-mailbox.c
-+++ b/drivers/mailbox/mtk-cmdq-mailbox.c
-@@ -19,6 +19,7 @@
- 
- #define CMDQ_OP_CODE_MASK		(0xff << CMDQ_OP_CODE_SHIFT)
- #define CMDQ_NUM_CMD(t)			(t->cmd_buf_size / CMDQ_INST_SIZE)
-+#define CMDQ_GCE_NUM_MAX		(2)
- 
- #define CMDQ_CURR_IRQ_STATUS		0x10
- #define CMDQ_SYNC_TOKEN_UPDATE		0x68
-@@ -37,6 +38,8 @@
- #define CMDQ_THR_PRIORITY		0x40
- #define CMDQ_THR_INSTN_TIMEOUT_CYCLES	0x50
- 
-+#define GCE_GCTL_VALUE			0x48
-+
- #define CMDQ_THR_ACTIVE_SLOT_CYCLES	0x3200
- #define CMDQ_THR_ENABLED		0x1
- #define CMDQ_THR_DISABLED		0x0
-@@ -83,14 +86,18 @@ struct cmdq {
- 	u32			thread_nr;
- 	u32			irq_mask;
- 	struct cmdq_thread	*thread;
--	struct clk		*clock;
-+	struct clk_bulk_data	clocks[CMDQ_GCE_NUM_MAX];
- 	bool			suspended;
- 	u8			shift_pa;
-+	bool			control_by_sw;
-+	u32			gce_num;
- };
- 
- struct gce_plat {
- 	u32 thread_nr;
- 	u8 shift;
-+	bool control_by_sw;
-+	u32 gce_num;
- };
- 
- u8 cmdq_get_shift_pa(struct mbox_chan *chan)
-@@ -130,11 +137,13 @@ static void cmdq_init(struct cmdq *cmdq)
- {
- 	int i;
- 
--	WARN_ON(clk_enable(cmdq->clock) < 0);
-+	WARN_ON(clk_bulk_enable(cmdq->gce_num, cmdq->clocks));
-+	if (cmdq->control_by_sw)
-+		writel(0x7, cmdq->base + GCE_GCTL_VALUE);
- 	writel(CMDQ_THR_ACTIVE_SLOT_CYCLES, cmdq->base + CMDQ_THR_SLOT_CYCLES);
- 	for (i = 0; i <= CMDQ_MAX_EVENT; i++)
- 		writel(i, cmdq->base + CMDQ_SYNC_TOKEN_UPDATE);
--	clk_disable(cmdq->clock);
-+	clk_bulk_disable(cmdq->gce_num, cmdq->clocks);
- }
- 
- static int cmdq_thread_reset(struct cmdq *cmdq, struct cmdq_thread *thread)
-@@ -178,7 +187,8 @@ static void cmdq_task_insert_into_thread(struct cmdq_task *task)
- 	dma_sync_single_for_cpu(dev, prev_task->pa_base,
- 				prev_task->pkt->cmd_buf_size, DMA_TO_DEVICE);
- 	prev_task_base[CMDQ_NUM_CMD(prev_task->pkt) - 1] =
--		(u64)CMDQ_JUMP_BY_PA << 32 | task->pa_base;
-+		(u64)CMDQ_JUMP_BY_PA << 32 |
-+		(task->pa_base >> task->cmdq->shift_pa);
- 	dma_sync_single_for_device(dev, prev_task->pa_base,
- 				   prev_task->pkt->cmd_buf_size, DMA_TO_DEVICE);
- 
-@@ -268,7 +278,7 @@ static void cmdq_thread_irq_handler(struct cmdq *cmdq,
- 
- 	if (list_empty(&thread->task_busy_list)) {
- 		cmdq_thread_disable(cmdq, thread);
--		clk_disable(cmdq->clock);
-+		clk_bulk_disable(cmdq->gce_num, cmdq->clocks);
- 	}
- }
- 
-@@ -313,7 +323,7 @@ static int cmdq_suspend(struct device *dev)
- 	if (task_running)
- 		dev_warn(dev, "exist running task(s) in suspend\n");
- 
--	clk_unprepare(cmdq->clock);
-+	clk_bulk_unprepare(cmdq->gce_num, cmdq->clocks);
- 
- 	return 0;
- }
-@@ -322,7 +332,7 @@ static int cmdq_resume(struct device *dev)
- {
- 	struct cmdq *cmdq = dev_get_drvdata(dev);
- 
--	WARN_ON(clk_prepare(cmdq->clock) < 0);
-+	WARN_ON(clk_bulk_prepare(cmdq->gce_num, cmdq->clocks));
- 	cmdq->suspended = false;
- 	return 0;
- }
-@@ -331,8 +341,7 @@ static int cmdq_remove(struct platform_device *pdev)
- {
- 	struct cmdq *cmdq = platform_get_drvdata(pdev);
- 
--	clk_unprepare(cmdq->clock);
--
-+	clk_bulk_unprepare(cmdq->gce_num, cmdq->clocks);
- 	return 0;
- }
- 
-@@ -358,7 +367,8 @@ static int cmdq_mbox_send_data(struct mbox_chan *chan, void *data)
- 	task->pkt = pkt;
- 
- 	if (list_empty(&thread->task_busy_list)) {
--		WARN_ON(clk_enable(cmdq->clock) < 0);
-+		WARN_ON(clk_bulk_enable(cmdq->gce_num, cmdq->clocks));
-+
- 		/*
- 		 * The thread reset will clear thread related register to 0,
- 		 * including pc, end, priority, irq, suspend and enable. Thus
-@@ -431,7 +441,8 @@ static void cmdq_mbox_shutdown(struct mbox_chan *chan)
- 	}
- 
- 	cmdq_thread_disable(cmdq, thread);
--	clk_disable(cmdq->clock);
-+	clk_bulk_disable(cmdq->gce_num, cmdq->clocks);
-+
- done:
- 	/*
- 	 * The thread->task_busy_list empty means thread already disable. The
-@@ -474,7 +485,7 @@ static int cmdq_mbox_flush(struct mbox_chan *chan, unsigned long timeout)
- 
- 	cmdq_thread_resume(thread);
- 	cmdq_thread_disable(cmdq, thread);
--	clk_disable(cmdq->clock);
-+	clk_bulk_disable(cmdq->gce_num, cmdq->clocks);
- 
- out:
- 	spin_unlock_irqrestore(&thread->chan->lock, flags);
-@@ -523,6 +534,10 @@ static int cmdq_probe(struct platform_device *pdev)
- 	struct cmdq *cmdq;
- 	int err, i;
- 	struct gce_plat *plat_data;
-+	struct device_node *phandle = dev->of_node;
-+	struct device_node *node;
-+	int alias_id = 0;
-+	char clk_name[4] = "gce";
- 
- 	cmdq = devm_kzalloc(dev, sizeof(*cmdq), GFP_KERNEL);
- 	if (!cmdq)
-@@ -547,6 +562,8 @@ static int cmdq_probe(struct platform_device *pdev)
- 
- 	cmdq->thread_nr = plat_data->thread_nr;
- 	cmdq->shift_pa = plat_data->shift;
-+	cmdq->control_by_sw = plat_data->control_by_sw;
-+	cmdq->gce_num = plat_data->gce_num;
- 	cmdq->irq_mask = GENMASK(cmdq->thread_nr - 1, 0);
- 	err = devm_request_irq(dev, cmdq->irq, cmdq_irq_handler, IRQF_SHARED,
- 			       "mtk_cmdq", cmdq);
-@@ -558,10 +575,28 @@ static int cmdq_probe(struct platform_device *pdev)
- 	dev_dbg(dev, "cmdq device: addr:0x%p, va:0x%p, irq:%d\n",
- 		dev, cmdq->base, cmdq->irq);
- 
--	cmdq->clock = devm_clk_get(dev, "gce");
--	if (IS_ERR(cmdq->clock)) {
--		dev_err(dev, "failed to get gce clk\n");
--		return PTR_ERR(cmdq->clock);
-+	if (cmdq->gce_num > 1) {
-+		for_each_child_of_node(phandle->parent, node) {
-+			char clk_id[8];
-+
-+			alias_id = of_alias_get_id(node, clk_name);
-+			if (alias_id < cmdq->gce_num) {
-+				snprintf(clk_id, sizeof(clk_id), "%s%d", clk_name, alias_id);
-+				cmdq->clocks[alias_id].id = clk_id;
-+				cmdq->clocks[alias_id].clk = of_clk_get(node, 0);
-+				if (IS_ERR(cmdq->clocks[alias_id].clk)) {
-+					dev_err(dev, "failed to get gce clk: %d\n", alias_id);
-+					return PTR_ERR(cmdq->clocks[alias_id].clk);
-+				}
-+			}
-+		}
-+	} else {
-+		cmdq->clocks[alias_id].id = clk_name;
-+		cmdq->clocks[alias_id].clk = devm_clk_get(&pdev->dev, clk_name);
-+		if (IS_ERR(cmdq->clocks[alias_id].clk)) {
-+			dev_err(dev, "failed to get gce clk\n");
-+			return PTR_ERR(cmdq->clocks[alias_id].clk);
-+		}
- 	}
- 
- 	cmdq->mbox.dev = dev;
-@@ -597,7 +632,8 @@ static int cmdq_probe(struct platform_device *pdev)
- 	}
- 
- 	platform_set_drvdata(pdev, cmdq);
--	WARN_ON(clk_prepare(cmdq->clock) < 0);
-+
-+	WARN_ON(clk_bulk_prepare(cmdq->gce_num, cmdq->clocks));
- 
- 	cmdq_init(cmdq);
- 
-@@ -609,14 +645,47 @@ static const struct dev_pm_ops cmdq_pm_ops = {
- 	.resume = cmdq_resume,
- };
- 
--static const struct gce_plat gce_plat_v2 = {.thread_nr = 16};
--static const struct gce_plat gce_plat_v3 = {.thread_nr = 24};
--static const struct gce_plat gce_plat_v4 = {.thread_nr = 24, .shift = 3};
-+static const struct gce_plat gce_plat_v2 = {
-+	.thread_nr = 16,
-+	.shift = 0,
-+	.control_by_sw = false,
-+	.gce_num = 1
-+};
-+
-+static const struct gce_plat gce_plat_v3 = {
-+	.thread_nr = 24,
-+	.shift = 0,
-+	.control_by_sw = false,
-+	.gce_num = 1
-+};
-+
-+static const struct gce_plat gce_plat_v4 = {
-+	.thread_nr = 24,
-+	.shift = 3,
-+	.control_by_sw = false,
-+	.gce_num = 1
-+};
-+
-+static const struct gce_plat gce_plat_v5 = {
-+	.thread_nr = 24,
-+	.shift = 3,
-+	.control_by_sw = true,
-+	.gce_num = 2
-+};
-+
-+static const struct gce_plat gce_plat_v6 = {
-+	.thread_nr = 24,
-+	.shift = 3,
-+	.control_by_sw = false,
-+	.gce_num = 2
-+};
- 
- static const struct of_device_id cmdq_of_ids[] = {
- 	{.compatible = "mediatek,mt8173-gce", .data = (void *)&gce_plat_v2},
- 	{.compatible = "mediatek,mt8183-gce", .data = (void *)&gce_plat_v3},
- 	{.compatible = "mediatek,mt6779-gce", .data = (void *)&gce_plat_v4},
-+	{.compatible = "mediatek,mt8192-gce", .data = (void *)&gce_plat_v5},
-+	{.compatible = "mediatek,mt8195-gce", .data = (void *)&gce_plat_v6},
- 	{}
- };
- 
 diff --git a/drivers/media/platform/mtk-isp/isp_50/dip/mtk_dip-sys.c b/drivers/media/platform/mtk-isp/isp_50/dip/mtk_dip-sys.c
 index 34e9d5be3b050afe955a09f86ab706159d84c785..49cfec89ed8cedb73fa5730454c3a8f248f9e5c3 100644
 --- a/drivers/media/platform/mtk-isp/isp_50/dip/mtk_dip-sys.c
@@ -126689,10 +126459,10 @@ index da1f19288aa6d428d3e50261a70679db55aa434b..e7b4911d52b9ddb8dcf8f48b6f7208d2
  }
  EXPORT_SYMBOL_GPL(mtk_paris_pinctrl_probe);
 diff --git a/drivers/regulator/core.c b/drivers/regulator/core.c
-index 043b5f63b94a167b8641dfbc92699b23cd89a1b0..af1844489bc7b39a040f8a9b69a1a646d92375d3 100644
+index 0db7490d4d00f020909d38b473d0670fa47f43ba..eeb046503d79b1d3ab81261b4d02a6586a67784a 100644
 --- a/drivers/regulator/core.c
 +++ b/drivers/regulator/core.c
-@@ -2713,6 +2713,9 @@ int regulator_enable(struct regulator *regulator)
+@@ -2714,6 +2714,9 @@ int regulator_enable(struct regulator *regulator)
  	ret = _regulator_enable(regulator);
  	regulator_unlock_dependent(rdev, &ww_ctx);
  
@@ -133646,20 +133416,24 @@ index ef16cd12434356698418a6cf699b7008a2d602cf..134f4789bd89780e27be7459c2cd26b9
  	return 0;
  }
 diff --git a/drivers/usb/host/xhci-mtk.c b/drivers/usb/host/xhci-mtk.c
-index 2548976bcf05ca9714d5738809af4c41ea7d9b98..66c27b4832e1d1a49ab67b3437c4a9b8eac26590 100644
+index 2548976bcf05ca9714d5738809af4c41ea7d9b98..a9c1a41ba2b3f378c994d5ce1b821f7174878870 100644
 --- a/drivers/usb/host/xhci-mtk.c
 +++ b/drivers/usb/host/xhci-mtk.c
-@@ -70,6 +70,9 @@
+@@ -70,6 +70,13 @@
  #define WC0_IS_P	BIT(12)	/* polarity */
  #define WC0_IS_EN	BIT(6)
  
 +/* mt8195 */
 +#define PERI_WK_CTRL2	0x20
++#define WC1_IS_EN_P1	BIT(24)
++#define WC1_IS_EN_P3	BIT(26)
++#define WC2_IS_C(x)	((u32)(((x) & 0x7) << 27))  /* cycle debounce */
++#define WC2_IS_P	BIT(30)	/* polarity */
 +
  /* mt8192 */
  #define WC0_SSUSB0_CDEN		BIT(6)
  #define WC0_IS_SPM_EN		BIT(1)
-@@ -79,13 +82,70 @@
+@@ -79,13 +86,73 @@
  #define SSC_IP_SLEEP_EN	BIT(4)
  #define SSC_SPM_INT_EN		BIT(1)
  
@@ -133689,6 +133463,9 @@ index 2548976bcf05ca9714d5738809af4c41ea7d9b98..66c27b4832e1d1a49ab67b3437c4a9b8
  	SSUSB_UWK_V1_1 = 101,	/* specific revision 1.01 */
  	SSUSB_UWK_V1_2,		/* specific revision 1.2 */
 +	SSUSB_UWK_V1_3,
++	SSUSB_UWK_V1_4,
++	SSUSB_UWK_V1_5,
++	SSUSB_UWK_V1_6,
  };
  
 +void xhci_quirks_set(struct xhci_hcd_mtk *mtk)
@@ -133730,7 +133507,7 @@ index 2548976bcf05ca9714d5738809af4c41ea7d9b98..66c27b4832e1d1a49ab67b3437c4a9b8
  static int xhci_mtk_host_enable(struct xhci_hcd_mtk *mtk)
  {
  	struct mu3c_ippc_regs __iomem *ippc = mtk->ippc_regs;
-@@ -139,6 +199,8 @@ static int xhci_mtk_host_enable(struct xhci_hcd_mtk *mtk)
+@@ -139,6 +206,8 @@ static int xhci_mtk_host_enable(struct xhci_hcd_mtk *mtk)
  		dev_err(mtk->dev, "clocks are not stable (0x%x)\n", value);
  		return ret;
  	}
@@ -133739,7 +133516,7 @@ index 2548976bcf05ca9714d5738809af4c41ea7d9b98..66c27b4832e1d1a49ab67b3437c4a9b8
  
  	return 0;
  }
-@@ -181,7 +243,9 @@ static int xhci_mtk_host_disable(struct xhci_hcd_mtk *mtk)
+@@ -181,7 +250,9 @@ static int xhci_mtk_host_disable(struct xhci_hcd_mtk *mtk)
  	if (ret) {
  		dev_err(mtk->dev, "ip sleep failed!!!\n");
  		return ret;
@@ -133750,7 +133527,7 @@ index 2548976bcf05ca9714d5738809af4c41ea7d9b98..66c27b4832e1d1a49ab67b3437c4a9b8
  	return 0;
  }
  
-@@ -240,6 +304,12 @@ static void usb_wakeup_ip_sleep_set(struct xhci_hcd_mtk *mtk, bool enable)
+@@ -240,6 +311,25 @@ static void usb_wakeup_ip_sleep_set(struct xhci_hcd_mtk *mtk, bool enable)
  		msk = WC0_SSUSB0_CDEN | WC0_IS_SPM_EN;
  		val = enable ? msk : 0;
  		break;
@@ -133759,11 +133536,24 @@ index 2548976bcf05ca9714d5738809af4c41ea7d9b98..66c27b4832e1d1a49ab67b3437c4a9b8
 +		msk = WC0_IS_EN | WC0_IS_C(0xf) | WC0_IS_P;
 +		val = enable ? (WC0_IS_EN | WC0_IS_C(0x8)) : 0;
 +		break;
-+
++	case SSUSB_UWK_V1_4:
++		reg = mtk->uwk_reg_base + PERI_WK_CTRL1;
++		msk = WC1_IS_EN_P1 | WC2_IS_C(0x7) | WC2_IS_P;
++		val = enable ? (WC1_IS_EN_P1 | WC2_IS_C(0x4)) : 0;
++		break;
++	case SSUSB_UWK_V1_5:
++		reg = mtk->uwk_reg_base + PERI_WK_CTRL1;
++		msk = WC1_IS_EN | WC2_IS_C(0x7) | WC2_IS_P;
++		val = enable ? (WC1_IS_EN | WC2_IS_C(0x4)) : 0;
++	case SSUSB_UWK_V1_6:
++		reg = mtk->uwk_reg_base + PERI_WK_CTRL1;
++		msk = WC1_IS_EN_P3 | WC2_IS_C(0x7) | WC2_IS_P;
++		val = enable ? (WC1_IS_EN_P3 | WC2_IS_C(0x4)) : 0;
++		break;
  	case SSUSB_UWK_V2:
  		reg = mtk->uwk_reg_base + PERI_SSUSB_SPM_CTRL;
  		msk = SSC_IP_SLEEP_EN | SSC_SPM_INT_EN;
-@@ -509,6 +579,7 @@ static int xhci_mtk_probe(struct platform_device *pdev)
+@@ -509,6 +599,7 @@ static int xhci_mtk_probe(struct platform_device *pdev)
  	 */
  	xhci->imod_interval = 5000;
  	device_property_read_u32(dev, "imod-interval-ns", &xhci->imod_interval);
@@ -133771,7 +133561,7 @@ index 2548976bcf05ca9714d5738809af4c41ea7d9b98..66c27b4832e1d1a49ab67b3437c4a9b8
  
  	xhci->shared_hcd = usb_create_shared_hcd(driver, dev,
  			dev_name(dev), hcd);
-@@ -569,7 +640,7 @@ static int xhci_mtk_probe(struct platform_device *pdev)
+@@ -569,7 +660,7 @@ static int xhci_mtk_probe(struct platform_device *pdev)
  	xhci_mtk_ldos_disable(mtk);
  
  disable_pm:
@@ -134931,1165 +134721,6 @@ index 0000000000000000000000000000000000000000..7b92912211a436a15602a23d629cdf3e
 +
 +#endif /* _DT_BINDINGS_CLK_MT8195_H */
 +
-diff --git a/include/dt-bindings/gce/mt8192-gce.h b/include/dt-bindings/gce/mt8192-gce.h
-new file mode 100644
-index 0000000000000000000000000000000000000000..9e5a0eb040a0d01e2bbf6b9166dc3aa91caacdc0
---- /dev/null
-+++ b/include/dt-bindings/gce/mt8192-gce.h
-@@ -0,0 +1,335 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/*
-+ * Copyright (c) 2020 MediaTek Inc.
-+ * Author: Yongqiang Niu <yongqiang.niu@mediatek.com>
-+ */
-+
-+#ifndef _DT_BINDINGS_GCE_MT8192_H
-+#define _DT_BINDINGS_GCE_MT8192_H
-+
-+/* assign timeout 0 also means default */
-+#define CMDQ_NO_TIMEOUT		0xffffffff
-+#define CMDQ_TIMEOUT_DEFAULT	1000
-+
-+/* GCE thread priority */
-+#define CMDQ_THR_PRIO_LOWEST	0
-+#define CMDQ_THR_PRIO_1		1
-+#define CMDQ_THR_PRIO_2		2
-+#define CMDQ_THR_PRIO_3		3
-+#define CMDQ_THR_PRIO_4		4
-+#define CMDQ_THR_PRIO_5		5
-+#define CMDQ_THR_PRIO_6		6
-+#define CMDQ_THR_PRIO_HIGHEST	7
-+
-+/* CPR count in 32bit register */
-+#define GCE_CPR_COUNT		1312
-+
-+/* GCE subsys table */
-+#define SUBSYS_1300XXXX		0
-+#define SUBSYS_1400XXXX		1
-+#define SUBSYS_1401XXXX		2
-+#define SUBSYS_1402XXXX		3
-+#define SUBSYS_1502XXXX		4
-+#define SUBSYS_1880XXXX		5
-+#define SUBSYS_1881XXXX		6
-+#define SUBSYS_1882XXXX		7
-+#define SUBSYS_1883XXXX		8
-+#define SUBSYS_1884XXXX		9
-+#define SUBSYS_1000XXXX		10
-+#define SUBSYS_1001XXXX		11
-+#define SUBSYS_1002XXXX		12
-+#define SUBSYS_1003XXXX		13
-+#define SUBSYS_1004XXXX		14
-+#define SUBSYS_1005XXXX		15
-+#define SUBSYS_1020XXXX		16
-+#define SUBSYS_1028XXXX		17
-+#define SUBSYS_1700XXXX		18
-+#define SUBSYS_1701XXXX		19
-+#define SUBSYS_1702XXXX		20
-+#define SUBSYS_1703XXXX		21
-+#define SUBSYS_1800XXXX		22
-+#define SUBSYS_1801XXXX		23
-+#define SUBSYS_1802XXXX		24
-+#define SUBSYS_1804XXXX		25
-+#define SUBSYS_1805XXXX		26
-+#define SUBSYS_1808XXXX		27
-+#define SUBSYS_180aXXXX		28
-+#define SUBSYS_180bXXXX		29
-+
-+#define CMDQ_EVENT_VDEC_LAT_SOF_0			0
-+#define CMDQ_EVENT_VDEC_LAT_FRAME_DONE_0		1
-+#define CMDQ_EVENT_VDEC_LAT_FRAME_DONE_1		2
-+#define CMDQ_EVENT_VDEC_LAT_FRAME_DONE_2		3
-+#define CMDQ_EVENT_VDEC_LAT_FRAME_DONE_3		4
-+#define CMDQ_EVENT_VDEC_LAT_FRAME_DONE_4		5
-+#define CMDQ_EVENT_VDEC_LAT_FRAME_DONE_5		6
-+#define CMDQ_EVENT_VDEC_LAT_FRAME_DONE_6		7
-+#define CMDQ_EVENT_VDEC_LAT_ENG_EVENT_0			8
-+#define CMDQ_EVENT_VDEC_LAT_ENG_EVENT_1			9
-+#define CMDQ_EVENT_VDEC_LAT_ENG_EVENT_2			10
-+#define CMDQ_EVENT_VDEC_LAT_ENG_EVENT_3			11
-+#define CMDQ_EVENT_VDEC_LAT_ENG_EVENT_4			12
-+#define CMDQ_EVENT_VDEC_LAT_ENG_EVENT_5			13
-+#define CMDQ_EVENT_VDEC_LAT_ENG_EVENT_6			14
-+#define CMDQ_EVENT_VDEC_LAT_ENG_EVENT_7			15
-+
-+#define CMDQ_EVENT_ISP_FRAME_DONE_A			65
-+#define CMDQ_EVENT_ISP_FRAME_DONE_B			66
-+#define CMDQ_EVENT_ISP_FRAME_DONE_C			67
-+#define CMDQ_EVENT_CAMSV0_PASS1_DONE			68
-+#define CMDQ_EVENT_CAMSV02_PASS1_DONE			69
-+#define CMDQ_EVENT_CAMSV1_PASS1_DONE			70
-+#define CMDQ_EVENT_CAMSV2_PASS1_DONE			71
-+#define CMDQ_EVENT_CAMSV3_PASS1_DONE			72
-+#define CMDQ_EVENT_MRAW_0_PASS1_DONE			73
-+#define CMDQ_EVENT_MRAW_1_PASS1_DONE			74
-+#define CMDQ_EVENT_SENINF_CAM0_FIFO_FULL		75
-+#define CMDQ_EVENT_SENINF_CAM1_FIFO_FULL		76
-+#define CMDQ_EVENT_SENINF_CAM2_FIFO_FULL		77
-+#define CMDQ_EVENT_SENINF_CAM3_FIFO_FULL		78
-+#define CMDQ_EVENT_SENINF_CAM4_FIFO_FULL		79
-+#define CMDQ_EVENT_SENINF_CAM5_FIFO_FULL		80
-+#define CMDQ_EVENT_SENINF_CAM6_FIFO_FULL		81
-+#define CMDQ_EVENT_SENINF_CAM7_FIFO_FULL		82
-+#define CMDQ_EVENT_SENINF_CAM8_FIFO_FULL		83
-+#define CMDQ_EVENT_SENINF_CAM9_FIFO_FULL		84
-+#define CMDQ_EVENT_SENINF_CAM10_FIFO_FULL		85
-+#define CMDQ_EVENT_SENINF_CAM11_FIFO_FULL		86
-+#define CMDQ_EVENT_SENINF_CAM12_FIFO_FULL		87
-+#define CMDQ_EVENT_TG_OVRUN_A_INT			88
-+#define CMDQ_EVENT_DMA_R1_ERROR_A_INT			89
-+#define CMDQ_EVENT_TG_OVRUN_B_INT			90
-+#define CMDQ_EVENT_DMA_R1_ERROR_B_INT			91
-+#define CMDQ_EVENT_TG_OVRUN_C_INT			92
-+#define CMDQ_EVENT_DMA_R1_ERROR_C_INT			93
-+#define CMDQ_EVENT_TG_OVRUN_M0_INT			94
-+#define CMDQ_EVENT_DMA_R1_ERROR_M0_INT			95
-+#define CMDQ_EVENT_TG_GRABERR_M0_INT			96
-+#define CMDQ_EVENT_TG_GRABERR_M1_INT			97
-+#define CMDQ_EVENT_TG_GRABERR_A_INT			98
-+#define CMDQ_EVENT_CQ_VR_SNAP_A_INT			99
-+#define CMDQ_EVENT_TG_GRABERR_B_INT			100
-+#define CMDQ_EVENT_CQ_VR_SNAP_B_INT			101
-+#define CMDQ_EVENT_TG_GRABERR_C_INT			102
-+#define CMDQ_EVENT_CQ_VR_SNAP_C_INT			103
-+
-+#define CMDQ_EVENT_VENC_CMDQ_FRAME_DONE			129
-+#define CMDQ_EVENT_VENC_CMDQ_PAUSE_DONE			130
-+#define CMDQ_EVENT_JPGENC_CMDQ_DONE			131
-+#define CMDQ_EVENT_VENC_CMDQ_MB_DONE			132
-+#define CMDQ_EVENT_VENC_CMDQ_128BYTE_CNT_DONE		133
-+#define CMDQ_EVENT_VENC_C0_CMDQ_WP_2ND_STAGE_DONE	134
-+#define CMDQ_EVENT_VENC_C0_CMDQ_WP_3RD_STAGE_DONE	135
-+#define CMDQ_EVENT_VENC_CMDQ_PPS_DONE			136
-+#define CMDQ_EVENT_VENC_CMDQ_SPS_DONE			137
-+#define CMDQ_EVENT_VENC_CMDQ_VPS_DONE			138
-+
-+#define CMDQ_EVENT_VDEC_CORE0_SOF_0			160
-+#define CMDQ_EVENT_VDEC_CORE0_FRAME_DONE_0		161
-+#define CMDQ_EVENT_VDEC_CORE0_FRAME_DONE_1		162
-+#define CMDQ_EVENT_VDEC_CORE0_FRAME_DONE_2		163
-+#define CMDQ_EVENT_VDEC_CORE0_FRAME_DONE_3		164
-+#define CMDQ_EVENT_VDEC_CORE0_FRAME_DONE_4		165
-+#define CMDQ_EVENT_VDEC_CORE0_FRAME_DONE_5		166
-+#define CMDQ_EVENT_VDEC_CORE0_FRAME_DONE_6		167
-+#define CMDQ_EVENT_VDEC_CORE0_ENG_EVENT_0		168
-+#define CMDQ_EVENT_VDEC_CORE0_ENG_EVENT_1		169
-+#define CMDQ_EVENT_VDEC_CORE0_ENG_EVENT_2		170
-+#define CMDQ_EVENT_VDEC_CORE0_ENG_EVENT_3		171
-+#define CMDQ_EVENT_VDEC_CORE0_ENG_EVENT_4		172
-+#define CMDQ_EVENT_VDEC_CORE0_ENG_EVENT_5		173
-+#define CMDQ_EVENT_VDEC_CORE0_ENG_EVENT_6		174
-+#define CMDQ_EVENT_VDEC_CORE0_ENG_EVENT_7		175
-+#define CMDQ_EVENT_FDVT_DONE				177
-+#define CMDQ_EVENT_FE_DONE				178
-+#define CMDQ_EVENT_RSC_DONE				179
-+#define CMDQ_EVENT_DVS_DONE_ASYNC_SHOT			180
-+#define CMDQ_EVENT_DVP_DONE_ASYNC_SHOT			181
-+
-+#define CMDQ_EVENT_IMG2_DIP_FRAME_DONE_P2_0		193
-+#define CMDQ_EVENT_IMG2_DIP_FRAME_DONE_P2_1		194
-+#define CMDQ_EVENT_IMG2_DIP_FRAME_DONE_P2_2		195
-+#define CMDQ_EVENT_IMG2_DIP_FRAME_DONE_P2_3		196
-+#define CMDQ_EVENT_IMG2_DIP_FRAME_DONE_P2_4		197
-+#define CMDQ_EVENT_IMG2_DIP_FRAME_DONE_P2_5		198
-+#define CMDQ_EVENT_IMG2_DIP_FRAME_DONE_P2_6		199
-+#define CMDQ_EVENT_IMG2_DIP_FRAME_DONE_P2_7		200
-+#define CMDQ_EVENT_IMG2_DIP_FRAME_DONE_P2_8		201
-+#define CMDQ_EVENT_IMG2_DIP_FRAME_DONE_P2_9		202
-+#define CMDQ_EVENT_IMG2_DIP_FRAME_DONE_P2_10		203
-+#define CMDQ_EVENT_IMG2_DIP_FRAME_DONE_P2_11		204
-+#define CMDQ_EVENT_IMG2_DIP_FRAME_DONE_P2_12		205
-+#define CMDQ_EVENT_IMG2_DIP_FRAME_DONE_P2_13		206
-+#define CMDQ_EVENT_IMG2_DIP_FRAME_DONE_P2_14		207
-+#define CMDQ_EVENT_IMG2_DIP_FRAME_DONE_P2_15		208
-+#define CMDQ_EVENT_IMG2_DIP_FRAME_DONE_P2_16		209
-+#define CMDQ_EVENT_IMG2_DIP_FRAME_DONE_P2_17		210
-+#define CMDQ_EVENT_IMG2_DIP_FRAME_DONE_P2_18		211
-+#define CMDQ_EVENT_IMG2_DIP_DMA_ERR_EVENT		212
-+#define CMDQ_EVENT_IMG2_AMD_FRAME_DONE			213
-+#define CMDQ_EVENT_IMG2_MFB_DONE_LINK_MISC		214
-+#define CMDQ_EVENT_IMG2_WPE_A_DONE_LINK_MISC		215
-+#define CMDQ_EVENT_IMG2_MSS_DONE_LINK_MISC		216
-+
-+#define CMDQ_EVENT_IMG1_DIP_FRAME_DONE_P2_0		225
-+#define CMDQ_EVENT_IMG1_DIP_FRAME_DONE_P2_1		226
-+#define CMDQ_EVENT_IMG1_DIP_FRAME_DONE_P2_2		227
-+#define CMDQ_EVENT_IMG1_DIP_FRAME_DONE_P2_3		228
-+#define CMDQ_EVENT_IMG1_DIP_FRAME_DONE_P2_4		229
-+#define CMDQ_EVENT_IMG1_DIP_FRAME_DONE_P2_5		230
-+#define CMDQ_EVENT_IMG1_DIP_FRAME_DONE_P2_6		231
-+#define CMDQ_EVENT_IMG1_DIP_FRAME_DONE_P2_7		232
-+#define CMDQ_EVENT_IMG1_DIP_FRAME_DONE_P2_8		233
-+#define CMDQ_EVENT_IMG1_DIP_FRAME_DONE_P2_9		234
-+#define CMDQ_EVENT_IMG1_DIP_FRAME_DONE_P2_10		235
-+#define CMDQ_EVENT_IMG1_DIP_FRAME_DONE_P2_11		236
-+#define CMDQ_EVENT_IMG1_DIP_FRAME_DONE_P2_12		237
-+#define CMDQ_EVENT_IMG1_DIP_FRAME_DONE_P2_13		238
-+#define CMDQ_EVENT_IMG1_DIP_FRAME_DONE_P2_14		239
-+#define CMDQ_EVENT_IMG1_DIP_FRAME_DONE_P2_15		240
-+#define CMDQ_EVENT_IMG1_DIP_FRAME_DONE_P2_16		241
-+#define CMDQ_EVENT_IMG1_DIP_FRAME_DONE_P2_17		242
-+#define CMDQ_EVENT_IMG1_DIP_FRAME_DONE_P2_18		243
-+#define CMDQ_EVENT_IMG1_DIP_DMA_ERR_EVENT		244
-+#define CMDQ_EVENT_IMG1_AMD_FRAME_DONE			245
-+#define CMDQ_EVENT_IMG1_MFB_DONE_LINK_MISC		246
-+#define CMDQ_EVENT_IMG1_WPE_A_DONE_LINK_MISC		247
-+#define CMDQ_EVENT_IMG1_MSS_DONE_LINK_MISC		248
-+
-+#define CMDQ_EVENT_MDP_RDMA0_SOF			256
-+#define CMDQ_EVENT_MDP_RDMA1_SOF			257
-+#define CMDQ_EVENT_MDP_AAL0_SOF				258
-+#define CMDQ_EVENT_MDP_AAL1_SOF				259
-+#define CMDQ_EVENT_MDP_HDR0_SOF				260
-+#define CMDQ_EVENT_MDP_HDR1_SOF				261
-+#define CMDQ_EVENT_MDP_RSZ0_SOF				262
-+#define CMDQ_EVENT_MDP_RSZ1_SOF				263
-+#define CMDQ_EVENT_MDP_WROT0_SOF			264
-+#define CMDQ_EVENT_MDP_WROT1_SOF			265
-+#define CMDQ_EVENT_MDP_TDSHP0_SOF			266
-+#define CMDQ_EVENT_MDP_TDSHP1_SOF			267
-+#define CMDQ_EVENT_IMG_DL_RELAY0_SOF			268
-+#define CMDQ_EVENT_IMG_DL_RELAY1_SOF			269
-+#define CMDQ_EVENT_MDP_COLOR0_SOF			270
-+#define CMDQ_EVENT_MDP_COLOR1_SOF			271
-+#define CMDQ_EVENT_MDP_WROT1_FRAME_DONE			290
-+#define CMDQ_EVENT_MDP_WROT0_FRAME_DONE			291
-+#define CMDQ_EVENT_MDP_TDSHP1_FRAME_DONE		294
-+#define CMDQ_EVENT_MDP_TDSHP0_FRAME_DONE		295
-+#define CMDQ_EVENT_MDP_RSZ1_FRAME_DONE			302
-+#define CMDQ_EVENT_MDP_RSZ0_FRAME_DONE			303
-+#define CMDQ_EVENT_MDP_RDMA1_FRAME_DONE			306
-+#define CMDQ_EVENT_MDP_RDMA0_FRAME_DONE			307
-+#define CMDQ_EVENT_MDP_HDR1_FRAME_DONE			308
-+#define CMDQ_EVENT_MDP_HDR0_FRAME_DONE			309
-+#define CMDQ_EVENT_MDP_COLOR1_FRAME_DONE		312
-+#define CMDQ_EVENT_MDP_COLOR0_FRAME_DONE		313
-+#define CMDQ_EVENT_MDP_AAL1_FRAME_DONE			316
-+#define CMDQ_EVENT_MDP_AAL0_FRAME_DONE			317
-+#define CMDQ_EVENT_MDP_STREAM_DONE_ENG_EVENT_0		320
-+#define CMDQ_EVENT_MDP_STREAM_DONE_ENG_EVENT_1		321
-+#define CMDQ_EVENT_MDP_STREAM_DONE_ENG_EVENT_2		322
-+#define CMDQ_EVENT_MDP_STREAM_DONE_ENG_EVENT_3		323
-+#define CMDQ_EVENT_MDP_STREAM_DONE_ENG_EVENT_4		324
-+#define CMDQ_EVENT_MDP_STREAM_DONE_ENG_EVENT_5		325
-+#define CMDQ_EVENT_MDP_STREAM_DONE_ENG_EVENT_6		326
-+#define CMDQ_EVENT_MDP_STREAM_DONE_ENG_EVENT_7		327
-+#define CMDQ_EVENT_MDP_STREAM_DONE_ENG_EVENT_8		328
-+#define CMDQ_EVENT_MDP_STREAM_DONE_ENG_EVENT_9		329
-+#define CMDQ_EVENT_MDP_STREAM_DONE_ENG_EVENT_10		330
-+#define CMDQ_EVENT_MDP_STREAM_DONE_ENG_EVENT_11		331
-+#define CMDQ_EVENT_MDP_STREAM_DONE_ENG_EVENT_12		332
-+#define CMDQ_EVENT_MDP_STREAM_DONE_ENG_EVENT_13		333
-+#define CMDQ_EVENT_MDP_STREAM_DONE_ENG_EVENT_14		334
-+#define CMDQ_EVENT_MDP_STREAM_DONE_ENG_EVENT_15		335
-+#define CMDQ_EVENT_MDP_WROT1_SW_RST_DONE_ENG_EVENT	338
-+#define CMDQ_EVENT_MDP_WROT0_SW_RST_DONE_ENG_EVENT	339
-+#define CMDQ_EVENT_MDP_RDMA1_SW_RST_DONE_ENG_EVENT	342
-+#define CMDQ_EVENT_MDP_RDMA0_SW_RST_DONE_ENG_EVENT	343
-+
-+#define CMDQ_EVENT_DISP_OVL0_SOF			384
-+#define CMDQ_EVENT_DISP_OVL0_2L_SOF			385
-+#define CMDQ_EVENT_DISP_RDMA0_SOF			386
-+#define CMDQ_EVENT_DISP_RSZ0_SOF			387
-+#define CMDQ_EVENT_DISP_COLOR0_SOF			388
-+#define CMDQ_EVENT_DISP_CCORR0_SOF			389
-+#define CMDQ_EVENT_DISP_AAL0_SOF			390
-+#define CMDQ_EVENT_DISP_GAMMA0_SOF			391
-+#define CMDQ_EVENT_DISP_POSTMASK0_SOF			392
-+#define CMDQ_EVENT_DISP_DITHER0_SOF			393
-+#define CMDQ_EVENT_DISP_DSC_WRAP0_CORE0_SOF		394
-+#define CMDQ_EVENT_DISP_DSC_WRAP0_CORE1_SOF		395
-+#define CMDQ_EVENT_DSI0_SOF				396
-+#define CMDQ_EVENT_DISP_WDMA0_SOF			397
-+#define CMDQ_EVENT_DISP_UFBC_WDMA0_SOF			398
-+#define CMDQ_EVENT_DISP_PWM0_SOF			399
-+#define CMDQ_EVENT_DISP_OVL2_2L_SOF			400
-+#define CMDQ_EVENT_DISP_RDMA4_SOF			401
-+#define CMDQ_EVENT_DISP_DPI0_SOF			402
-+#define CMDQ_EVENT_MDP_RDMA4_SOF			403
-+#define CMDQ_EVENT_MDP_HDR4_SOF				404
-+#define CMDQ_EVENT_MDP_RSZ4_SOF				405
-+#define CMDQ_EVENT_MDP_AAL4_SOF				406
-+#define CMDQ_EVENT_MDP_TDSHP4_SOF			407
-+#define CMDQ_EVENT_MDP_COLOR4_SOF			408
-+#define CMDQ_EVENT_DISP_Y2R0_SOF			409
-+#define CMDQ_EVENT_MDP_TDSHP4_FRAME_DONE		410
-+#define CMDQ_EVENT_MDP_RSZ4_FRAME_DONE			411
-+#define CMDQ_EVENT_MDP_RDMA4_FRAME_DONE			412
-+#define CMDQ_EVENT_MDP_HDR4_FRAME_DONE			413
-+#define CMDQ_EVENT_MDP_COLOR4_FRAME_DONE		414
-+#define CMDQ_EVENT_MDP_AAL4_FRAME_DONE			415
-+#define CMDQ_EVENT_DSI0_FRAME_DONE			416
-+#define CMDQ_EVENT_DISP_WDMA0_FRAME_DONE		417
-+#define CMDQ_EVENT_DISP_UFBC_WDMA0_FRAME_DONE		418
-+#define CMDQ_EVENT_DISP_RSZ0_FRAME_DONE			419
-+#define CMDQ_EVENT_DISP_RDMA4_FRAME_DONE		420
-+#define CMDQ_EVENT_DISP_RDMA0_FRAME_DONE		421
-+#define CMDQ_EVENT_DISP_POSTMASK0_FRAME_DONE		422
-+#define CMDQ_EVENT_DISP_OVL2_2L_FRAME_DONE		423
-+#define CMDQ_EVENT_DISP_OVL0_FRAME_DONE			424
-+#define CMDQ_EVENT_DISP_OVL0_2L_FRAME_DONE		425
-+#define CMDQ_EVENT_DISP_GAMMA0_FRAME_DONE		426
-+#define CMDQ_EVENT_DISP_DSC_WRAP0_CORE1_FRAME_DONE	427
-+#define CMDQ_EVENT_DISP_DSC_WRAP0_CORE0_FRAME_DONE	428
-+#define CMDQ_EVENT_DISP_DPI0_FRAME_DONE			429
-+#define CMDQ_EVENT_DISP_DITHER0_FRAME_DONE		430
-+#define CMDQ_EVENT_DISP_COLOR0_FRAME_DONE		431
-+#define CMDQ_EVENT_DISP_CCORR0_FRAME_DONE		432
-+#define CMDQ_EVENT_DISP_AAL0_FRAME_DONE			433
-+#define CMDQ_EVENT_DISP_STREAM_DONE_ENG_EVENT_0		434
-+#define CMDQ_EVENT_DISP_STREAM_DONE_ENG_EVENT_1		435
-+#define CMDQ_EVENT_DISP_STREAM_DONE_ENG_EVENT_2		436
-+#define CMDQ_EVENT_DISP_STREAM_DONE_ENG_EVENT_3		437
-+#define CMDQ_EVENT_DISP_STREAM_DONE_ENG_EVENT_4		438
-+#define CMDQ_EVENT_DISP_STREAM_DONE_ENG_EVENT_5		439
-+#define CMDQ_EVENT_DISP_STREAM_DONE_ENG_EVENT_6		440
-+#define CMDQ_EVENT_DISP_STREAM_DONE_ENG_EVENT_7		441
-+#define CMDQ_EVENT_DISP_STREAM_DONE_ENG_EVENT_8		442
-+#define CMDQ_EVENT_DISP_STREAM_DONE_ENG_EVENT_9		443
-+#define CMDQ_EVENT_DISP_STREAM_DONE_ENG_EVENT_10	444
-+#define CMDQ_EVENT_DISP_STREAM_DONE_ENG_EVENT_11	445
-+#define CMDQ_EVENT_DISP_STREAM_DONE_ENG_EVENT_12	446
-+#define CMDQ_EVENT_DISP_STREAM_DONE_ENG_EVENT_13	447
-+#define CMDQ_EVENT_DISP_STREAM_DONE_ENG_EVENT_14	448
-+#define CMDQ_EVENT_DISP_STREAM_DONE_ENG_EVENT_15	449
-+#define CMDQ_EVENT_DSI0_TE_ENG_EVENT			450
-+#define CMDQ_EVENT_DSI0_IRQ_ENG_EVENT			451
-+#define CMDQ_EVENT_DSI0_DONE_ENG_EVENT			452
-+#define CMDQ_EVENT_DISP_WDMA0_SW_RST_DONE_ENG_EVENT	453
-+#define CMDQ_EVENT_DISP_SMIASSERT_ENG_EVENT		454
-+#define CMDQ_EVENT_DISP_POSTMASK0_RST_DONE_ENG_EVENT	455
-+#define CMDQ_EVENT_DISP_OVL2_2L_RST_DONE_ENG_EVENT	456
-+#define CMDQ_EVENT_DISP_OVL0_RST_DONE_ENG_EVENT		457
-+#define CMDQ_EVENT_DISP_OVL0_2L_RST_DONE_ENG_EVENT	458
-+#define CMDQ_EVENT_BUF_UNDERRUN_ENG_EVENT_0		459
-+#define CMDQ_EVENT_BUF_UNDERRUN_ENG_EVENT_1		460
-+#define CMDQ_EVENT_BUF_UNDERRUN_ENG_EVENT_2		461
-+#define CMDQ_EVENT_BUF_UNDERRUN_ENG_EVENT_3		462
-+#define CMDQ_EVENT_BUF_UNDERRUN_ENG_EVENT_4		463
-+#define CMDQ_EVENT_BUF_UNDERRUN_ENG_EVENT_5		464
-+#define CMDQ_EVENT_BUF_UNDERRUN_ENG_EVENT_6		465
-+#define CMDQ_EVENT_BUF_UNDERRUN_ENG_EVENT_7		466
-+#define CMDQ_MAX_HW_EVENT				512
-+
-+#endif
-diff --git a/include/dt-bindings/gce/mt8195-gce.h b/include/dt-bindings/gce/mt8195-gce.h
-new file mode 100644
-index 0000000000000000000000000000000000000000..dcfb302b8a5bc4baa239db2154c1f0a450d8e7f3
---- /dev/null
-+++ b/include/dt-bindings/gce/mt8195-gce.h
-@@ -0,0 +1,812 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/*
-+ * Copyright (c) 2021 MediaTek Inc.
-+ * Author: Jason-JH Lin <jason0jh.lin@mediatek.com>
-+ */
-+
-+#ifndef _DT_BINDINGS_GCE_MT8195_H
-+#define _DT_BINDINGS_GCE_MT8195_H
-+
-+/* assign timeout 0 also means default */
-+#define CMDQ_NO_TIMEOUT		0xffffffff
-+#define CMDQ_TIMEOUT_DEFAULT	1000
-+
-+/* GCE thread priority */
-+#define CMDQ_THR_PRIO_LOWEST	0
-+#define CMDQ_THR_PRIO_1		1
-+#define CMDQ_THR_PRIO_2		2
-+#define CMDQ_THR_PRIO_3		3
-+#define CMDQ_THR_PRIO_4		4
-+#define CMDQ_THR_PRIO_5		5
-+#define CMDQ_THR_PRIO_6		6
-+#define CMDQ_THR_PRIO_HIGHEST	7
-+
-+/* CPR count in 32bit register */
-+#define GCE_CPR_COUNT		1312
-+
-+/* GCE subsys table */
-+#define SUBSYS_1400XXXX		0
-+#define SUBSYS_1401XXXX		1
-+#define SUBSYS_1402XXXX		2
-+#define SUBSYS_1c00XXXX		3
-+#define SUBSYS_1c01XXXX		4
-+#define SUBSYS_1c02XXXX		5
-+#define SUBSYS_1c10XXXX		6
-+#define SUBSYS_1c11XXXX		7
-+#define SUBSYS_1c12XXXX		8
-+#define SUBSYS_14f0XXXX		9
-+#define SUBSYS_14f1XXXX		10
-+#define SUBSYS_14f2XXXX		11
-+#define SUBSYS_1800XXXX		12
-+#define SUBSYS_1801XXXX		13
-+#define SUBSYS_1802XXXX		14
-+#define SUBSYS_1803XXXX		15
-+#define SUBSYS_1032XXXX		16
-+#define SUBSYS_1033XXXX		17
-+#define SUBSYS_1600XXXX		18
-+#define SUBSYS_1601XXXX		19
-+#define SUBSYS_14e0XXXX		20
-+#define SUBSYS_1c20XXXX		21
-+#define SUBSYS_1c30XXXX		22
-+#define SUBSYS_1c40XXXX		23
-+#define SUBSYS_1c50XXXX		24
-+#define SUBSYS_1c60XXXX		25
-+
-+/* GCE General Purpose Register (GPR) support */
-+#define GCE_GPR_R00		0x0
-+#define GCE_GPR_R01		0x1
-+#define GCE_GPR_R02		0x2
-+#define GCE_GPR_R03		0x3
-+#define GCE_GPR_R04		0x4
-+#define GCE_GPR_R05		0x5
-+#define GCE_GPR_R06		0x6
-+#define GCE_GPR_R07		0x7
-+#define GCE_GPR_R08		0x8
-+#define GCE_GPR_R09		0x9
-+#define GCE_GPR_R10		0xa
-+#define GCE_GPR_R11		0xb
-+#define GCE_GPR_R12		0xc
-+#define GCE_GPR_R13		0xd
-+#define GCE_GPR_R14		0xe
-+#define GCE_GPR_R15		0xf
-+
-+/* GCE hw event id */
-+#define CMDQ_EVENT_CQ_THR_DONE_TRAW0_0	1
-+#define CMDQ_EVENT_CQ_THR_DONE_TRAW0_1	2
-+#define CMDQ_EVENT_CQ_THR_DONE_TRAW0_2	3
-+#define CMDQ_EVENT_CQ_THR_DONE_TRAW0_3	4
-+#define CMDQ_EVENT_CQ_THR_DONE_TRAW0_4	5
-+#define CMDQ_EVENT_CQ_THR_DONE_TRAW0_5	6
-+#define CMDQ_EVENT_CQ_THR_DONE_TRAW0_6	7
-+#define CMDQ_EVENT_CQ_THR_DONE_TRAW0_7	8
-+#define CMDQ_EVENT_CQ_THR_DONE_TRAW0_8	9
-+#define CMDQ_EVENT_CQ_THR_DONE_TRAW0_9	10
-+#define CMDQ_EVENT_CQ_THR_DONE_TRAW0_10	11
-+#define CMDQ_EVENT_CQ_THR_DONE_TRAW0_11	12
-+#define CMDQ_EVENT_CQ_THR_DONE_TRAW0_12	13
-+#define CMDQ_EVENT_CQ_THR_DONE_TRAW0_13	14
-+#define CMDQ_EVENT_CQ_THR_DONE_TRAW0_14	15
-+#define CMDQ_EVENT_TRAW0_DMA_ERROR_INT	16
-+#define CMDQ_EVENT_CQ_THR_DONE_TRAW1_0	17
-+#define CMDQ_EVENT_CQ_THR_DONE_TRAW1_1	18
-+#define CMDQ_EVENT_CQ_THR_DONE_TRAW1_2	19
-+#define CMDQ_EVENT_CQ_THR_DONE_TRAW1_3	20
-+#define CMDQ_EVENT_CQ_THR_DONE_TRAW1_4	21
-+#define CMDQ_EVENT_CQ_THR_DONE_TRAW1_5	22
-+#define CMDQ_EVENT_CQ_THR_DONE_TRAW1_6	23
-+#define CMDQ_EVENT_CQ_THR_DONE_TRAW1_7	24
-+#define CMDQ_EVENT_CQ_THR_DONE_TRAW1_8	25
-+#define CMDQ_EVENT_CQ_THR_DONE_TRAW1_9	26
-+#define CMDQ_EVENT_CQ_THR_DONE_TRAW1_10	27
-+#define CMDQ_EVENT_CQ_THR_DONE_TRAW1_11	28
-+#define CMDQ_EVENT_CQ_THR_DONE_TRAW1_12	29
-+#define CMDQ_EVENT_CQ_THR_DONE_TRAW1_13	30
-+#define CMDQ_EVENT_CQ_THR_DONE_TRAW1_14	31
-+#define CMDQ_EVENT_TRAW1_DMA_ERROR_INT	32
-+
-+#define CMDQ_EVENT_DIP0_FRAME_DONE_P2_0	65
-+#define CMDQ_EVENT_DIP0_FRAME_DONE_P2_1	66
-+#define CMDQ_EVENT_DIP0_FRAME_DONE_P2_2	67
-+#define CMDQ_EVENT_DIP0_FRAME_DONE_P2_3	68
-+#define CMDQ_EVENT_DIP0_FRAME_DONE_P2_4	69
-+#define CMDQ_EVENT_DIP0_FRAME_DONE_P2_5	70
-+#define CMDQ_EVENT_DIP0_FRAME_DONE_P2_6	71
-+#define CMDQ_EVENT_DIP0_FRAME_DONE_P2_7	72
-+#define CMDQ_EVENT_DIP0_FRAME_DONE_P2_8	73
-+#define CMDQ_EVENT_DIP0_FRAME_DONE_P2_9	74
-+#define CMDQ_EVENT_DIP0_FRAME_DONE_P2_10	75
-+#define CMDQ_EVENT_DIP0_FRAME_DONE_P2_11	76
-+#define CMDQ_EVENT_DIP0_FRAME_DONE_P2_12	77
-+#define CMDQ_EVENT_DIP0_FRAME_DONE_P2_13	78
-+#define CMDQ_EVENT_DIP0_FRAME_DONE_P2_14	79
-+#define CMDQ_EVENT_DIP0_DMA_ERR	80
-+#define CMDQ_EVENT_PQA0_FRAME_DONE_P2_0	81
-+#define CMDQ_EVENT_PQA0_FRAME_DONE_P2_1	82
-+#define CMDQ_EVENT_PQA0_FRAME_DONE_P2_2	83
-+#define CMDQ_EVENT_PQA0_FRAME_DONE_P2_3	84
-+#define CMDQ_EVENT_PQA0_FRAME_DONE_P2_4	85
-+#define CMDQ_EVENT_PQA0_FRAME_DONE_P2_5	86
-+#define CMDQ_EVENT_PQA0_FRAME_DONE_P2_6	87
-+#define CMDQ_EVENT_PQA0_FRAME_DONE_P2_7	88
-+#define CMDQ_EVENT_PQA0_FRAME_DONE_P2_8	89
-+#define CMDQ_EVENT_PQA0_FRAME_DONE_P2_9	90
-+#define CMDQ_EVENT_PQA0_FRAME_DONE_P2_10	91
-+#define CMDQ_EVENT_PQA0_FRAME_DONE_P2_11	92
-+#define CMDQ_EVENT_PQA0_FRAME_DONE_P2_12	93
-+#define CMDQ_EVENT_PQA0_FRAME_DONE_P2_13	94
-+#define CMDQ_EVENT_PQA0_FRAME_DONE_P2_14	95
-+#define CMDQ_EVENT_PQA0_DMA_ERR	96
-+#define CMDQ_EVENT_PQB0_FRAME_DONE_P2_0	97
-+#define CMDQ_EVENT_PQB0_FRAME_DONE_P2_1	98
-+#define CMDQ_EVENT_PQB0_FRAME_DONE_P2_2	99
-+#define CMDQ_EVENT_PQB0_FRAME_DONE_P2_3	100
-+#define CMDQ_EVENT_PQB0_FRAME_DONE_P2_4	101
-+#define CMDQ_EVENT_PQB0_FRAME_DONE_P2_5	102
-+#define CMDQ_EVENT_PQB0_FRAME_DONE_P2_6	103
-+#define CMDQ_EVENT_PQB0_FRAME_DONE_P2_7	104
-+#define CMDQ_EVENT_PQB0_FRAME_DONE_P2_8	105
-+#define CMDQ_EVENT_PQB0_FRAME_DONE_P2_9	106
-+#define CMDQ_EVENT_PQB0_FRAME_DONE_P2_10	107
-+#define CMDQ_EVENT_PQB0_FRAME_DONE_P2_11	108
-+#define CMDQ_EVENT_PQB0_FRAME_DONE_P2_12	109
-+#define CMDQ_EVENT_PQB0_FRAME_DONE_P2_13	110
-+#define CMDQ_EVENT_PQB0_FRAME_DONE_P2_14	111
-+#define CMDQ_EVENT_PQB0_DMA_ERR	112
-+#define CMDQ_EVENT_DIP0_DUMMY_0	113
-+#define CMDQ_EVENT_DIP0_DUMMY_1	114
-+#define CMDQ_EVENT_DIP0_DUMMY_2	115
-+#define CMDQ_EVENT_DIP0_DUMMY_3	116
-+#define CMDQ_EVENT_WPE0_EIS_GCE_FRAME_DONE	117
-+#define CMDQ_EVENT_WPE0_EIS_DONE_SYNC_OUT	118
-+#define CMDQ_EVENT_WPE0_TNR_GCE_FRAME_DONE	119
-+#define CMDQ_EVENT_WPE0_TNR_DONE_SYNC_OUT	120
-+#define CMDQ_EVENT_WPE0_EIS_FRAME_DONE_P2_0	121
-+#define CMDQ_EVENT_WPE0_EIS_FRAME_DONE_P2_1	122
-+#define CMDQ_EVENT_WPE0_EIS_FRAME_DONE_P2_2	123
-+#define CMDQ_EVENT_WPE0_EIS_FRAME_DONE_P2_3	124
-+#define CMDQ_EVENT_WPE0_EIS_FRAME_DONE_P2_4	125
-+#define CMDQ_EVENT_WPE0_EIS_FRAME_DONE_P2_5	126
-+#define CMDQ_EVENT_WPE0_EIS_FRAME_DONE_P2_6	127
-+#define CMDQ_EVENT_WPE0_EIS_FRAME_DONE_P2_7	128
-+#define CMDQ_EVENT_WPE0_EIS_FRAME_DONE_P2_8	129
-+#define CMDQ_EVENT_WPE0_EIS_FRAME_DONE_P2_9	130
-+#define CMDQ_EVENT_WPE0_EIS_FRAME_DONE_P2_10	131
-+#define CMDQ_EVENT_WPE0_EIS_FRAME_DONE_P2_11	132
-+#define CMDQ_EVENT_WPE0_EIS_FRAME_DONE_P2_12	133
-+#define CMDQ_EVENT_WPE0_EIS_FRAME_DONE_P2_13	134
-+#define CMDQ_EVENT_WPE0_EIS_FRAME_DONE_P2_14	135
-+#define CMDQ_EVENT_WPE0_TNR_FRAME_DONE_P2_0	136
-+#define CMDQ_EVENT_WPE0_TNR_FRAME_DONE_P2_1	137
-+#define CMDQ_EVENT_WPE0_TNR_FRAME_DONE_P2_2	138
-+#define CMDQ_EVENT_WPE0_TNR_FRAME_DONE_P2_3	139
-+#define CMDQ_EVENT_WPE0_TNR_FRAME_DONE_P2_4	140
-+#define CMDQ_EVENT_WPE0_TNR_FRAME_DONE_P2_5	141
-+#define CMDQ_EVENT_WPE0_TNR_FRAME_DONE_P2_6	142
-+#define CMDQ_EVENT_WPE0_TNR_FRAME_DONE_P2_7	143
-+#define CMDQ_EVENT_WPE0_TNR_FRAME_DONE_P2_8	144
-+#define CMDQ_EVENT_WPE0_TNR_FRAME_DONE_P2_9	145
-+#define CMDQ_EVENT_WPE0_TNR_FRAME_DONE_P2_10	146
-+#define CMDQ_EVENT_WPE0_TNR_FRAME_DONE_P2_11	147
-+#define CMDQ_EVENT_WPE0_TNR_FRAME_DONE_P2_12	148
-+#define CMDQ_EVENT_WPE0_TNR_FRAME_DONE_P2_13	149
-+#define CMDQ_EVENT_WPE0_TNR_FRAME_DONE_P2_14	150
-+#define CMDQ_EVENT_WPE0_DUMMY_0	151
-+#define CMDQ_EVENT_IMGSYS_IPE_DUMMY	152
-+#define CMDQ_EVENT_IMGSYS_IPE_FDVT_DONE	153
-+#define CMDQ_EVENT_IMGSYS_IPE_ME_DONE	154
-+#define CMDQ_EVENT_IMGSYS_IPE_DVS_DONE	155
-+#define CMDQ_EVENT_IMGSYS_IPE_DVP_DONE	156
-+
-+#define CMDQ_EVENT_TPR_0	194
-+#define CMDQ_EVENT_TPR_1	195
-+#define CMDQ_EVENT_TPR_2	196
-+#define CMDQ_EVENT_TPR_3	197
-+#define CMDQ_EVENT_TPR_4	198
-+#define CMDQ_EVENT_TPR_5	199
-+#define CMDQ_EVENT_TPR_6	200
-+#define CMDQ_EVENT_TPR_7	201
-+#define CMDQ_EVENT_TPR_8	202
-+#define CMDQ_EVENT_TPR_9	203
-+#define CMDQ_EVENT_TPR_10	204
-+#define CMDQ_EVENT_TPR_11	205
-+#define CMDQ_EVENT_TPR_12	206
-+#define CMDQ_EVENT_TPR_13	207
-+#define CMDQ_EVENT_TPR_14	208
-+#define CMDQ_EVENT_TPR_15	209
-+#define CMDQ_EVENT_TPR_16	210
-+#define CMDQ_EVENT_TPR_17	211
-+#define CMDQ_EVENT_TPR_18	212
-+#define CMDQ_EVENT_TPR_19	213
-+#define CMDQ_EVENT_TPR_20	214
-+#define CMDQ_EVENT_TPR_21	215
-+#define CMDQ_EVENT_TPR_22	216
-+#define CMDQ_EVENT_TPR_23	217
-+#define CMDQ_EVENT_TPR_24	218
-+#define CMDQ_EVENT_TPR_25	219
-+#define CMDQ_EVENT_TPR_26	220
-+#define CMDQ_EVENT_TPR_27	221
-+#define CMDQ_EVENT_TPR_28	222
-+#define CMDQ_EVENT_TPR_29	223
-+#define CMDQ_EVENT_TPR_30	224
-+#define CMDQ_EVENT_TPR_31	225
-+#define CMDQ_EVENT_TPR_TIMEOUT_0	226
-+#define CMDQ_EVENT_TPR_TIMEOUT_1	227
-+#define CMDQ_EVENT_TPR_TIMEOUT_2	228
-+#define CMDQ_EVENT_TPR_TIMEOUT_3	229
-+#define CMDQ_EVENT_TPR_TIMEOUT_4	230
-+#define CMDQ_EVENT_TPR_TIMEOUT_5	231
-+#define CMDQ_EVENT_TPR_TIMEOUT_6	232
-+#define CMDQ_EVENT_TPR_TIMEOUT_7	233
-+#define CMDQ_EVENT_TPR_TIMEOUT_8	234
-+#define CMDQ_EVENT_TPR_TIMEOUT_9	235
-+#define CMDQ_EVENT_TPR_TIMEOUT_10	236
-+#define CMDQ_EVENT_TPR_TIMEOUT_11	237
-+#define CMDQ_EVENT_TPR_TIMEOUT_12	238
-+#define CMDQ_EVENT_TPR_TIMEOUT_13	239
-+#define CMDQ_EVENT_TPR_TIMEOUT_14	240
-+#define CMDQ_EVENT_TPR_TIMEOUT_15	241
-+
-+#define CMDQ_EVENT_VPP0_MDP_RDMA_SOF	256
-+#define CMDQ_EVENT_VPP0_MDP_FG_SOF	257
-+#define CMDQ_EVENT_VPP0_STITCH_SOF	258
-+#define CMDQ_EVENT_VPP0_MDP_HDR_SOF	259
-+#define CMDQ_EVENT_VPP0_MDP_AAL_SOF	260
-+#define CMDQ_EVENT_VPP0_MDP_RSZ_IN_RSZ_SOF	261
-+#define CMDQ_EVENT_VPP0_MDP_TDSHP_SOF	262
-+#define CMDQ_EVENT_VPP0_DISP_COLOR_SOF	263
-+#define CMDQ_EVENT_VPP0_DISP_OVL_NOAFBC_SOF	264
-+#define CMDQ_EVENT_VPP0_VPP_PADDING_IN_PADDING_SOF	265
-+#define CMDQ_EVENT_VPP0_MDP_TCC_IN_SOF	266
-+#define CMDQ_EVENT_VPP0_MDP_WROT_SOF	267
-+
-+#define CMDQ_EVENT_VPP0_WARP0_MMSYS_TOP_RELAY_SOF_PRE	269
-+#define CMDQ_EVENT_VPP0_WARP1_MMSYS_TOP_RELAY_SOF_PRE	270
-+#define CMDQ_EVENT_VPP0_VPP1_MMSYS_TOP_RELAY_SOF	271
-+#define CMDQ_EVENT_VPP0_VPP1_IN_MMSYS_TOP_RELAY_SOF_PRE	272
-+
-+#define CMDQ_EVENT_VPP0_MDP_RDMA_FRAME_DONE	288
-+#define CMDQ_EVENT_VPP0_MDP_FG_TILE_DONE	289
-+#define CMDQ_EVENT_VPP0_STITCH_FRAME_DONE	290
-+#define CMDQ_EVENT_VPP0_MDP_HDR_FRAME_DONE	291
-+#define CMDQ_EVENT_VPP0_MDP_AAL_FRAME_DONE	292
-+#define CMDQ_EVENT_VPP0_MDP_RSZ_FRAME_DONE	293
-+#define CMDQ_EVENT_VPP0_MDP_TDSHP_FRAME_DONE	294
-+#define CMDQ_EVENT_VPP0_DISP_COLOR_FRAME_DONE	295
-+#define CMDQ_EVENT_VPP0_DISP_OVL_NOAFBC_FRAME_DONE	296
-+#define CMDQ_EVENT_VPP0_VPP_PADDING_IN_PADDING_FRAME_DONE	297
-+#define CMDQ_EVENT_VPP0_MDP_TCC_TCC_FRAME_DONE	298
-+#define CMDQ_EVENT_VPP0_MDP_WROT_VIDO_WDONE	299
-+
-+#define CMDQ_EVENT_VPP0_STREAM_DONE_0	320
-+#define CMDQ_EVENT_VPP0_STREAM_DONE_1	321
-+#define CMDQ_EVENT_VPP0_STREAM_DONE_2	322
-+#define CMDQ_EVENT_VPP0_STREAM_DONE_3	323
-+#define CMDQ_EVENT_VPP0_STREAM_DONE_4	324
-+#define CMDQ_EVENT_VPP0_STREAM_DONE_5	325
-+#define CMDQ_EVENT_VPP0_STREAM_DONE_6	326
-+#define CMDQ_EVENT_VPP0_STREAM_DONE_7	327
-+#define CMDQ_EVENT_VPP0_STREAM_DONE_8	328
-+#define CMDQ_EVENT_VPP0_STREAM_DONE_9	329
-+#define CMDQ_EVENT_VPP0_STREAM_DONE_10	330
-+#define CMDQ_EVENT_VPP0_STREAM_DONE_11	331
-+#define CMDQ_EVENT_VPP0_STREAM_DONE_12	332
-+#define CMDQ_EVENT_VPP0_STREAM_DONE_13	333
-+#define CMDQ_EVENT_VPP0_STREAM_DONE_14	334
-+#define CMDQ_EVENT_VPP0_STREAM_DONE_15	335
-+#define CMDQ_EVENT_VPP0_BUF_UNDERRUN_0	336
-+#define CMDQ_EVENT_VPP0_BUF_UNDERRUN_1	337
-+#define CMDQ_EVENT_VPP0_BUF_UNDERRUN_2	338
-+#define CMDQ_EVENT_VPP0_BUF_UNDERRUN_3	339
-+#define CMDQ_EVENT_VPP0_BUF_UNDERRUN_4	340
-+#define CMDQ_EVENT_VPP0_BUF_UNDERRUN_5	341
-+#define CMDQ_EVENT_VPP0_BUF_UNDERRUN_6	342
-+#define CMDQ_EVENT_VPP0_BUF_UNDERRUN_7	343
-+#define CMDQ_EVENT_VPP0_BUF_UNDERRUN_8	344
-+#define CMDQ_EVENT_VPP0_BUF_UNDERRUN_9	345
-+#define CMDQ_EVENT_VPP0_BUF_UNDERRUN_10	346
-+#define CMDQ_EVENT_VPP0_BUF_UNDERRUN_11	347
-+#define CMDQ_EVENT_VPP0_BUF_UNDERRUN_12	348
-+#define CMDQ_EVENT_VPP0_BUF_UNDERRUN_13	349
-+#define CMDQ_EVENT_VPP0_BUF_UNDERRUN_14	350
-+#define CMDQ_EVENT_VPP0_BUF_UNDERRUN_15	351
-+#define CMDQ_EVENT_VPP0_MDP_RDMA_SW_RST_DONE	352
-+#define CMDQ_EVENT_VPP0_MDP_RDMA_PM_VALID	353
-+#define CMDQ_EVENT_VPP0_DISP_OVL_NOAFBC_FRAME_RESET_DONE_PULSE	354
-+#define CMDQ_EVENT_VPP0_MDP_WROT_SW_RST_DONE	355
-+
-+#define CMDQ_EVENT_VPP1_HDMI_META_SOF		384
-+#define CMDQ_EVENT_VPP1_DGI_SOF			385
-+#define CMDQ_EVENT_VPP1_VPP_SPLIT_SOF		386
-+#define CMDQ_EVENT_VPP1_SVPP1_MDP_TCC_SOF	387
-+#define CMDQ_EVENT_VPP1_SVPP1_MDP_RDMA_SOF	388
-+#define CMDQ_EVENT_VPP1_SVPP2_MDP_RDMA_SOF	389
-+#define CMDQ_EVENT_VPP1_SVPP3_MDP_RDMA_SOF	390
-+#define CMDQ_EVENT_VPP1_SVPP1_MDP_FG_SOF	391
-+#define CMDQ_EVENT_VPP1_SVPP2_MDP_FG_SOF	392
-+#define CMDQ_EVENT_VPP1_SVPP3_MDP_FG_SOF	393
-+#define CMDQ_EVENT_VPP1_SVPP1_MDP_HDR_SOF	394
-+#define CMDQ_EVENT_VPP1_SVPP2_MDP_HDR_SOF	395
-+#define CMDQ_EVENT_VPP1_SVPP3_MDP_HDR_SOF	396
-+#define CMDQ_EVENT_VPP1_SVPP1_MDP_AAL_SOF	397
-+#define CMDQ_EVENT_VPP1_SVPP2_MDP_AAL_SOF	398
-+#define CMDQ_EVENT_VPP1_SVPP3_MDP_AAL_SOF	399
-+#define CMDQ_EVENT_VPP1_SVPP1_MDP_RSZ_SOF	400
-+#define CMDQ_EVENT_VPP1_SVPP2_MDP_RSZ_SOF	401
-+#define CMDQ_EVENT_VPP1_SVPP3_MDP_RSZ_SOF	402
-+#define CMDQ_EVENT_VPP1_SVPP1_TDSHP_SOF		403
-+#define CMDQ_EVENT_VPP1_SVPP2_TDSHP_SOF		404
-+#define CMDQ_EVENT_VPP1_SVPP3_TDSHP_SOF		405
-+#define CMDQ_EVENT_VPP1_SVPP2_VPP_MERGE_SOF	406
-+#define CMDQ_EVENT_VPP1_SVPP3_VPP_MERGE_SOF	407
-+#define CMDQ_EVENT_VPP1_SVPP1_MDP_COLOR_SOF	408
-+#define CMDQ_EVENT_VPP1_SVPP2_MDP_COLOR_SOF	409
-+#define CMDQ_EVENT_VPP1_SVPP3_MDP_COLOR_SOF	410
-+#define CMDQ_EVENT_VPP1_SVPP1_MDP_OVL_SOF	411
-+#define CMDQ_EVENT_VPP1_SVPP1_VPP_PAD_SOF	412
-+#define CMDQ_EVENT_VPP1_SVPP2_VPP_PAD_SOF	413
-+#define CMDQ_EVENT_VPP1_SVPP3_VPP_PAD_SOF	414
-+#define CMDQ_EVENT_VPP1_SVPP1_MDP_WROT_SOF	415
-+#define CMDQ_EVENT_VPP1_SVPP2_MDP_WROT_SOF	416
-+#define CMDQ_EVENT_VPP1_SVPP3_MDP_WROT_SOF	417
-+#define CMDQ_EVENT_VPP1_VPP0_DL_IRLY_SOF	418
-+#define CMDQ_EVENT_VPP1_VPP0_DL_ORLY_SOF	419
-+#define CMDQ_EVENT_VPP1_VDO0_DL_ORLY_0_SOF	420
-+#define CMDQ_EVENT_VPP1_VDO0_DL_ORLY_1_SOF	421
-+#define CMDQ_EVENT_VPP1_VDO1_DL_ORLY_0_SOF	422
-+#define CMDQ_EVENT_VPP1_VDO1_DL_ORLY_1_SOF	423
-+#define CMDQ_EVENT_VPP1_SVPP1_MDP_RDMA_FRAME_DONE	424
-+#define CMDQ_EVENT_VPP1_SVPP2_MDP_RDMA_FRAME_DONE	425
-+#define CMDQ_EVENT_VPP1_SVPP3_MDP_RDMA_FRAME_DONE	426
-+#define CMDQ_EVENT_VPP1_SVPP1_MDP_WROT_FRAME_DONE	427
-+#define CMDQ_EVENT_VPP1_SVPP2_MDP_WROT_FRAME_DONE	428
-+#define CMDQ_EVENT_VPP1_SVPP3_MDP_WROT_FRAME_DONE	429
-+#define CMDQ_EVENT_VPP1_SVPP1_MDP_OVL_FRAME_DONE	430
-+#define CMDQ_EVENT_VPP1_SVPP1_MDP_RSZ_FRAME_DONE	431
-+#define CMDQ_EVENT_VPP1_SVPP2_MDP_RSZ_FRAME_DONE	432
-+#define CMDQ_EVENT_VPP1_SVPP3_MDP_RSZ_FRAME_DONE	433
-+#define CMDQ_EVENT_VPP1_FRAME_DONE_10	434
-+#define CMDQ_EVENT_VPP1_FRAME_DONE_11	435
-+#define CMDQ_EVENT_VPP1_FRAME_DONE_12	436
-+#define CMDQ_EVENT_VPP1_FRAME_DONE_13	437
-+#define CMDQ_EVENT_VPP1_FRAME_DONE_14	438
-+#define CMDQ_EVENT_VPP1_STREAM_DONE_0	439
-+#define CMDQ_EVENT_VPP1_STREAM_DONE_1	440
-+#define CMDQ_EVENT_VPP1_STREAM_DONE_2	441
-+#define CMDQ_EVENT_VPP1_STREAM_DONE_3	442
-+#define CMDQ_EVENT_VPP1_STREAM_DONE_4	443
-+#define CMDQ_EVENT_VPP1_STREAM_DONE_5	444
-+#define CMDQ_EVENT_VPP1_STREAM_DONE_6	445
-+#define CMDQ_EVENT_VPP1_STREAM_DONE_7	446
-+#define CMDQ_EVENT_VPP1_STREAM_DONE_8	447
-+#define CMDQ_EVENT_VPP1_STREAM_DONE_9	448
-+#define CMDQ_EVENT_VPP1_STREAM_DONE_10	449
-+#define CMDQ_EVENT_VPP1_STREAM_DONE_11	450
-+#define CMDQ_EVENT_VPP1_STREAM_DONE_12	451
-+#define CMDQ_EVENT_VPP1_STREAM_DONE_13	452
-+#define CMDQ_EVENT_VPP1_STREAM_DONE_14	453
-+#define CMDQ_EVENT_VPP1_STREAM_DONE_15	454
-+#define CMDQ_EVENT_VPP1_MDP_BUF_UNDERRUN_0	455
-+#define CMDQ_EVENT_VPP1_MDP_BUF_UNDERRUN_1	456
-+#define CMDQ_EVENT_VPP1_MDP_BUF_UNDERRUN_2	457
-+#define CMDQ_EVENT_VPP1_MDP_BUF_UNDERRUN_3	458
-+#define CMDQ_EVENT_VPP1_MDP_BUF_UNDERRUN_4	459
-+#define CMDQ_EVENT_VPP1_MDP_BUF_UNDERRUN_5	460
-+#define CMDQ_EVENT_VPP1_MDP_BUF_UNDERRUN_6	461
-+#define CMDQ_EVENT_VPP1_MDP_BUF_UNDERRUN_7	462
-+#define CMDQ_EVENT_VPP1_MDP_BUF_UNDERRUN_8	463
-+#define CMDQ_EVENT_VPP1_MDP_BUF_UNDERRUN_9	464
-+#define CMDQ_EVENT_VPP1_MDP_BUF_UNDERRUN_10	465
-+#define CMDQ_EVENT_VPP1_MDP_BUF_UNDERRUN_11	466
-+#define CMDQ_EVENT_VPP1_MDP_BUF_UNDERRUN_12	467
-+#define CMDQ_EVENT_VPP1_MDP_BUF_UNDERRUN_13	468
-+#define CMDQ_EVENT_VPP1_MDP_BUF_UNDERRUN_14	469
-+#define CMDQ_EVENT_VPP1_MDP_BUF_UNDERRUN_15	470
-+#define CMDQ_EVENT_VPP1_DGI_0	471
-+#define CMDQ_EVENT_VPP1_DGI_1	472
-+#define CMDQ_EVENT_VPP1_DGI_2	473
-+#define CMDQ_EVENT_VPP1_DGI_3	474
-+#define CMDQ_EVENT_VPP1_DGI_4	475
-+#define CMDQ_EVENT_VPP1_DGI_5	476
-+#define CMDQ_EVENT_VPP1_DGI_6	477
-+#define CMDQ_EVENT_VPP1_DGI_7	478
-+#define CMDQ_EVENT_VPP1_DGI_8	479
-+#define CMDQ_EVENT_VPP1_DGI_9	480
-+#define CMDQ_EVENT_VPP1_DGI_10	481
-+#define CMDQ_EVENT_VPP1_DGI_11	482
-+#define CMDQ_EVENT_VPP1_DGI_12	483
-+#define CMDQ_EVENT_VPP1_DGI_13	484
-+#define CMDQ_EVENT_VPP1_SVPP3_VPP_MERGE	485
-+#define CMDQ_EVENT_VPP1_SVPP2_VPP_MERGE	486
-+#define CMDQ_EVENT_VPP1_MDP_OVL_FRAME_RESET_DONE_PULSE	487
-+#define CMDQ_EVENT_VPP1_VPP_SPLIT_DGI	488
-+#define CMDQ_EVENT_VPP1_VPP_SPLIT_HDMI	489
-+#define CMDQ_EVENT_VPP1_SVPP3_MDP_WROT_SW_RST_DONE	490
-+#define CMDQ_EVENT_VPP1_SVPP2_MDP_WROT_SW_RST_DONE	491
-+#define CMDQ_EVENT_VPP1_SVPP1_MDP_WROT_SW_RST_DONE	492
-+#define CMDQ_EVENT_VPP1_SVPP3_MDP_FG_TILE_DONE	493
-+#define CMDQ_EVENT_VPP1_SVPP2_MDP_FG_TILE_DONE	494
-+#define CMDQ_EVENT_VPP1_SVPP1_MDP_FG_TILE_DONE	495
-+
-+#define CMDQ_EVENT_VDO0_DISP_OVL0_SOF	512
-+#define CMDQ_EVENT_VDO0_DISP_WDMA0_SOF	513
-+#define CMDQ_EVENT_VDO0_DISP_RDMA0_SOF	514
-+#define CMDQ_EVENT_VDO0_DISP_COLOR0_SOF	515
-+#define CMDQ_EVENT_VDO0_DISP_CCORR0_SOF	516
-+#define CMDQ_EVENT_VDO0_DISP_AAL0_SOF	517
-+#define CMDQ_EVENT_VDO0_DISP_GAMMA0_SOF	518
-+#define CMDQ_EVENT_VDO0_DISP_DITHER0_SOF	519
-+#define CMDQ_EVENT_VDO0_DSI0_SOF	520
-+#define CMDQ_EVENT_VDO0_DSC_WRAP0C0_SOF	521
-+#define CMDQ_EVENT_VDO0_DISP_OVL1_SOF	522
-+#define CMDQ_EVENT_VDO0_DISP_WDMA1_SOF	523
-+#define CMDQ_EVENT_VDO0_DISP_RDMA1_SOF	524
-+#define CMDQ_EVENT_VDO0_DISP_COLOR1_SOF	525
-+#define CMDQ_EVENT_VDO0_DISP_CCORR1_SOF	526
-+#define CMDQ_EVENT_VDO0_DISP_AAL1_SOF	527
-+#define CMDQ_EVENT_VDO0_DISP_GAMMA1_SOF	528
-+#define CMDQ_EVENT_VDO0_DISP_DITHER1_SOF	529
-+#define CMDQ_EVENT_VDO0_DSI1_SOF	530
-+#define CMDQ_EVENT_VDO0_DSC_WRAP0C1_SOF	531
-+#define CMDQ_EVENT_VDO0_VPP_MERGE0_SOF	532
-+#define CMDQ_EVENT_VDO0_DP_INTF0_SOF	533
-+#define CMDQ_EVENT_VDO0_VPP1_DL_RELAY0_SOF	534
-+#define CMDQ_EVENT_VDO0_VPP1_DL_RELAY1_SOF	535
-+#define CMDQ_EVENT_VDO0_VDO1_DL_RELAY2_SOF	536
-+#define CMDQ_EVENT_VDO0_VDO0_DL_RELAY3_SOF	537
-+#define CMDQ_EVENT_VDO0_VDO0_DL_RELAY4_SOF	538
-+#define CMDQ_EVENT_VDO0_DISP_PWM0_SOF	539
-+#define CMDQ_EVENT_VDO0_DISP_PWM1_SOF	540
-+
-+#define CMDQ_EVENT_VDO0_DISP_OVL0_FRAME_DONE	544
-+#define CMDQ_EVENT_VDO0_DISP_WDMA0_FRAME_DONE	545
-+#define CMDQ_EVENT_VDO0_DISP_RDMA0_FRAME_DONE	546
-+#define CMDQ_EVENT_VDO0_DISP_COLOR0_FRAME_DONE	547
-+#define CMDQ_EVENT_VDO0_DISP_CCORR0_FRAME_DONE	548
-+#define CMDQ_EVENT_VDO0_DISP_AAL0_FRAME_DONE	549
-+#define CMDQ_EVENT_VDO0_DISP_GAMMA0_FRAME_DONE	550
-+#define CMDQ_EVENT_VDO0_DISP_DITHER0_FRAME_DONE	551
-+#define CMDQ_EVENT_VDO0_DSI0_FRAME_DONE	552
-+#define CMDQ_EVENT_VDO0_DSC_WRAP0C0_FRAME_DONE	553
-+#define CMDQ_EVENT_VDO0_DISP_OVL1_FRAME_DONE	554
-+#define CMDQ_EVENT_VDO0_DISP_WDMA1_FRAME_DONE	555
-+#define CMDQ_EVENT_VDO0_DISP_RDMA1_FRAME_DONE	556
-+#define CMDQ_EVENT_VDO0_DISP_COLOR1_FRAME_DONE	557
-+#define CMDQ_EVENT_VDO0_DISP_CCORR1_FRAME_DONE	558
-+#define CMDQ_EVENT_VDO0_DISP_AAL1_FRAME_DONE	559
-+#define CMDQ_EVENT_VDO0_DISP_GAMMA1_FRAME_DONE	560
-+#define CMDQ_EVENT_VDO0_DISP_DITHER1_FRAME_DONE	561
-+#define CMDQ_EVENT_VDO0_DSI1_FRAME_DONE	562
-+#define CMDQ_EVENT_VDO0_DSC_WRAP0C1_FRAME_DONE	563
-+
-+#define CMDQ_EVENT_VDO0_DP_INTF0_FRAME_DONE	565
-+
-+#define CMDQ_EVENT_VDO0_DISP_SMIASSERT_ENG	576
-+#define CMDQ_EVENT_VDO0_DSI0_IRQ_ENG_EVENT_MM	577
-+#define CMDQ_EVENT_VDO0_DSI0_TE_ENG_EVENT_MM	578
-+#define CMDQ_EVENT_VDO0_DSI0_DONE_ENG_EVENT_MM	579
-+#define CMDQ_EVENT_VDO0_DSI0_SOF_ENG_EVENT_MM	580
-+#define CMDQ_EVENT_VDO0_DSI0_VACTL_ENG_EVENT_MM	581
-+#define CMDQ_EVENT_VDO0_DSI1_IRQ_ENG_EVENT_MM	582
-+#define CMDQ_EVENT_VDO0_DSI1_TE_ENG_EVENT_MM	583
-+#define CMDQ_EVENT_VDO0_DSI1_DONE_ENG_EVENT_MM	584
-+#define CMDQ_EVENT_VDO0_DSI1_SOF_ENG_EVENT_MM	585
-+#define CMDQ_EVENT_VDO0_DSI1_VACTL_ENG_EVENT_MM	586
-+#define CMDQ_EVENT_VDO0_DISP_WDMA0_SW_RST_DONE_ENG	587
-+#define CMDQ_EVENT_VDO0_DISP_WDMA1_SW_RST_DONE_ENG	588
-+#define CMDQ_EVENT_VDO0_DISP_OVL0_RST_DONE_ENG	589
-+#define CMDQ_EVENT_VDO0_DISP_OVL1_RST_DONE_ENG	590
-+#define CMDQ_EVENT_VDO0_DP_INTF0_VSYNC_START_ENG_EVENT_MM	591
-+#define CMDQ_EVENT_VDO0_DP_INTF0_VSYNC_END_ENG_EVENT_MM	592
-+#define CMDQ_EVENT_VDO0_DP_INTF0_VDE_START_ENG_EVENT_MM	593
-+#define CMDQ_EVENT_VDO0_DP_INTF0_VDE_END_ENG_EVENT_MM	594
-+#define CMDQ_EVENT_VDO0_DP_INTF0_TARGET_LINE_ENG_EVENT_MM	595
-+#define CMDQ_EVENT_VDO0_VPP_MERGE0_ENG	596
-+#define CMDQ_EVENT_VDO0_DISP_STREAM_DONE_0	597
-+#define CMDQ_EVENT_VDO0_DISP_STREAM_DONE_1	598
-+#define CMDQ_EVENT_VDO0_DISP_STREAM_DONE_2	599
-+#define CMDQ_EVENT_VDO0_DISP_STREAM_DONE_3	600
-+#define CMDQ_EVENT_VDO0_DISP_STREAM_DONE_4	601
-+#define CMDQ_EVENT_VDO0_DISP_STREAM_DONE_5	602
-+#define CMDQ_EVENT_VDO0_DISP_STREAM_DONE_6	603
-+#define CMDQ_EVENT_VDO0_DISP_STREAM_DONE_7	604
-+#define CMDQ_EVENT_VDO0_DISP_STREAM_DONE_8	605
-+#define CMDQ_EVENT_VDO0_DISP_STREAM_DONE_9	606
-+#define CMDQ_EVENT_VDO0_DISP_STREAM_DONE_10	607
-+#define CMDQ_EVENT_VDO0_DISP_STREAM_DONE_11	608
-+#define CMDQ_EVENT_VDO0_DISP_STREAM_DONE_12	609
-+#define CMDQ_EVENT_VDO0_DISP_STREAM_DONE_13	610
-+#define CMDQ_EVENT_VDO0_DISP_STREAM_DONE_14	611
-+#define CMDQ_EVENT_VDO0_DISP_STREAM_DONE_15	612
-+#define CMDQ_EVENT_VDO0_DISP_BUF_UNDERRUN_0	613
-+#define CMDQ_EVENT_VDO0_DISP_BUF_UNDERRUN_1	614
-+#define CMDQ_EVENT_VDO0_DISP_BUF_UNDERRUN_2	615
-+#define CMDQ_EVENT_VDO0_DISP_BUF_UNDERRUN_3	616
-+#define CMDQ_EVENT_VDO0_DISP_BUF_UNDERRUN_4	617
-+#define CMDQ_EVENT_VDO0_DISP_BUF_UNDERRUN_5	618
-+#define CMDQ_EVENT_VDO0_DISP_BUF_UNDERRUN_6	619
-+#define CMDQ_EVENT_VDO0_DISP_BUF_UNDERRUN_7	620
-+#define CMDQ_EVENT_VDO0_DISP_BUF_UNDERRUN_8	621
-+#define CMDQ_EVENT_VDO0_DISP_BUF_UNDERRUN_9	622
-+#define CMDQ_EVENT_VDO0_DISP_BUF_UNDERRUN_10	623
-+#define CMDQ_EVENT_VDO0_DISP_BUF_UNDERRUN_11	624
-+#define CMDQ_EVENT_VDO0_DISP_BUF_UNDERRUN_12	625
-+#define CMDQ_EVENT_VDO0_DISP_BUF_UNDERRUN_13	626
-+#define CMDQ_EVENT_VDO0_DISP_BUF_UNDERRUN_14	627
-+#define CMDQ_EVENT_VDO0_DISP_BUF_UNDERRUN_15	628
-+
-+#define CMDQ_EVENT_VDO1_MDP_RDMA0_SOF	640
-+#define CMDQ_EVENT_VDO1_MDP_RDMA1_SOF	641
-+#define CMDQ_EVENT_VDO1_MDP_RDMA2_SOF	642
-+#define CMDQ_EVENT_VDO1_MDP_RDMA3_SOF	643
-+#define CMDQ_EVENT_VDO1_MDP_RDMA4_SOF	644
-+#define CMDQ_EVENT_VDO1_MDP_RDMA5_SOF	645
-+#define CMDQ_EVENT_VDO1_MDP_RDMA6_SOF	646
-+#define CMDQ_EVENT_VDO1_MDP_RDMA7_SOF	647
-+#define CMDQ_EVENT_VDO1_VPP_MERGE0_SOF	648
-+#define CMDQ_EVENT_VDO1_VPP_MERGE1_SOF	649
-+#define CMDQ_EVENT_VDO1_VPP_MERGE2_SOF	650
-+#define CMDQ_EVENT_VDO1_VPP_MERGE3_SOF	651
-+#define CMDQ_EVENT_VDO1_VPP_MERGE4_SOF	652
-+#define CMDQ_EVENT_VDO1_VPP2_DL_RELAY_SOF	653
-+#define CMDQ_EVENT_VDO1_VPP3_DL_RELAY_SOF	654
-+#define CMDQ_EVENT_VDO1_VDO0_DSC_DL_ASYNC_SOF	655
-+#define CMDQ_EVENT_VDO1_VDO0_MERGE_DL_ASYNC_SOF	656
-+#define CMDQ_EVENT_VDO1_OUT_DL_RELAY_SOF	657
-+#define CMDQ_EVENT_VDO1_DISP_MIXER_SOF	658
-+#define CMDQ_EVENT_VDO1_HDR_VDO_FE0_SOF	659
-+#define CMDQ_EVENT_VDO1_HDR_VDO_FE1_SOF	660
-+#define CMDQ_EVENT_VDO1_HDR_GFX_FE0_SOF	661
-+#define CMDQ_EVENT_VDO1_HDR_GFX_FE1_SOF	662
-+#define CMDQ_EVENT_VDO1_HDR_VDO_BE0_SOF	663
-+#define CMDQ_EVENT_VDO1_HDR_MLOAD_SOF	664
-+
-+#define CMDQ_EVENT_VDO1_MDP_RDMA0_FRAME_DONE	672
-+#define CMDQ_EVENT_VDO1_MDP_RDMA1_FRAME_DONE	673
-+#define CMDQ_EVENT_VDO1_MDP_RDMA2_FRAME_DONE	674
-+#define CMDQ_EVENT_VDO1_MDP_RDMA3_FRAME_DONE	675
-+#define CMDQ_EVENT_VDO1_MDP_RDMA4_FRAME_DONE	676
-+#define CMDQ_EVENT_VDO1_MDP_RDMA5_FRAME_DONE	677
-+#define CMDQ_EVENT_VDO1_MDP_RDMA6_FRAME_DONE	678
-+#define CMDQ_EVENT_VDO1_MDP_RDMA7_FRAME_DONE	679
-+#define CMDQ_EVENT_VDO1_VPP_MERGE0_FRAME_DONE	680
-+#define CMDQ_EVENT_VDO1_VPP_MERGE1_FRAME_DONE	681
-+#define CMDQ_EVENT_VDO1_VPP_MERGE2_FRAME_DONE	682
-+#define CMDQ_EVENT_VDO1_VPP_MERGE3_FRAME_DONE	683
-+#define CMDQ_EVENT_VDO1_VPP_MERGE4_FRAME_DONE	684
-+#define CMDQ_EVENT_VDO1_DPI0_FRAME_DONE	685
-+#define CMDQ_EVENT_VDO1_DPI1_FRAME_DONE	686
-+#define CMDQ_EVENT_VDO1_DP_INTF0_FRAME_DONE	687
-+#define CMDQ_EVENT_VDO1_DISP_MIXER_FRAME_DONE_MM	688
-+
-+#define CMDQ_EVENT_VDO1_STREAM_DONE_ENG_0	704
-+#define CMDQ_EVENT_VDO1_STREAM_DONE_ENG_1	705
-+#define CMDQ_EVENT_VDO1_STREAM_DONE_ENG_2	706
-+#define CMDQ_EVENT_VDO1_STREAM_DONE_ENG_3	707
-+#define CMDQ_EVENT_VDO1_STREAM_DONE_ENG_4	708
-+#define CMDQ_EVENT_VDO1_STREAM_DONE_ENG_5	709
-+#define CMDQ_EVENT_VDO1_STREAM_DONE_ENG_6	710
-+#define CMDQ_EVENT_VDO1_STREAM_DONE_ENG_7	711
-+#define CMDQ_EVENT_VDO1_STREAM_DONE_ENG_8	712
-+#define CMDQ_EVENT_VDO1_STREAM_DONE_ENG_9	713
-+#define CMDQ_EVENT_VDO1_STREAM_DONE_ENG_10	714
-+#define CMDQ_EVENT_VDO1_STREAM_DONE_ENG_11	715
-+#define CMDQ_EVENT_VDO1_STREAM_DONE_ENG_12	716
-+#define CMDQ_EVENT_VDO1_STREAM_DONE_ENG_13	717
-+#define CMDQ_EVENT_VDO1_STREAM_DONE_ENG_14	718
-+#define CMDQ_EVENT_VDO1_STREAM_DONE_ENG_15	719
-+#define CMDQ_EVENT_VDO1_BUF_UNDERRUN_ENG_0	720
-+#define CMDQ_EVENT_VDO1_BUF_UNDERRUN_ENG_1	721
-+#define CMDQ_EVENT_VDO1_BUF_UNDERRUN_ENG_2	722
-+#define CMDQ_EVENT_VDO1_BUF_UNDERRUN_ENG_3	723
-+#define CMDQ_EVENT_VDO1_BUF_UNDERRUN_ENG_4	724
-+#define CMDQ_EVENT_VDO1_BUF_UNDERRUN_ENG_5	725
-+#define CMDQ_EVENT_VDO1_BUF_UNDERRUN_ENG_6	726
-+#define CMDQ_EVENT_VDO1_BUF_UNDERRUN_ENG_7	727
-+#define CMDQ_EVENT_VDO1_BUF_UNDERRUN_ENG_8	728
-+#define CMDQ_EVENT_VDO1_BUF_UNDERRUN_ENG_9	729
-+#define CMDQ_EVENT_VDO1_BUF_UNDERRUN_ENG_10	730
-+#define CMDQ_EVENT_VDO1_BUF_UNDERRUN_ENG_11	731
-+#define CMDQ_EVENT_VDO1_BUF_UNDERRUN_ENG_12	732
-+#define CMDQ_EVENT_VDO1_BUF_UNDERRUN_ENG_13	733
-+#define CMDQ_EVENT_VDO1_BUF_UNDERRUN_ENG_14	734
-+#define CMDQ_EVENT_VDO1_BUF_UNDERRUN_ENG_15	735
-+#define CMDQ_EVENT_VDO1_MDP_RDMA0_SW_RST_DONE	736
-+#define CMDQ_EVENT_VDO1_MDP_RDMA1_SW_RST_DONE	737
-+#define CMDQ_EVENT_VDO1_MDP_RDMA2_SW_RST_DONE	738
-+#define CMDQ_EVENT_VDO1_MDP_RDMA3_SW_RST_DONE	739
-+#define CMDQ_EVENT_VDO1_MDP_RDMA4_SW_RST_DONE	740
-+#define CMDQ_EVENT_VDO1_MDP_RDMA5_SW_RST_DONE	741
-+#define CMDQ_EVENT_VDO1_MDP_RDMA6_SW_RST_DONE	742
-+#define CMDQ_EVENT_VDO1_MDP_RDMA7_SW_RST_DONE	743
-+
-+#define CMDQ_EVENT_VDO1_DP0_VDE_END_ENG_EVENT_MM	745
-+#define CMDQ_EVENT_VDO1_DP0_VDE_START_ENG_EVENT_MM	746
-+#define CMDQ_EVENT_VDO1_DP0_VSYNC_END_ENG_EVENT_MM	747
-+#define CMDQ_EVENT_VDO1_DP0_VSYNC_START_ENG_EVENT_MM	748
-+#define CMDQ_EVENT_VDO1_DP0_TARGET_LINE_ENG_EVENT_MM	749
-+#define CMDQ_EVENT_VDO1_VPP_MERGE0	750
-+#define CMDQ_EVENT_VDO1_VPP_MERGE1	751
-+#define CMDQ_EVENT_VDO1_VPP_MERGE2	752
-+#define CMDQ_EVENT_VDO1_VPP_MERGE3	753
-+#define CMDQ_EVENT_VDO1_VPP_MERGE4	754
-+#define CMDQ_EVENT_VDO1_HDMITX	755
-+#define CMDQ_EVENT_VDO1_HDR_VDO_BE0_ADL_TRIG_EVENT_MM	756
-+#define CMDQ_EVENT_VDO1_HDR_GFX_FE1_THDR_ADL_TRIG_EVENT_MM	757
-+#define CMDQ_EVENT_VDO1_HDR_GFX_FE1_DM_ADL_TRIG_EVENT_MM	758
-+#define CMDQ_EVENT_VDO1_HDR_GFX_FE0_THDR_ADL_TRIG_EVENT_MM	759
-+#define CMDQ_EVENT_VDO1_HDR_GFX_FE0_DM_ADL_TRIG_EVENT_MM	760
-+#define CMDQ_EVENT_VDO1_HDR_VDO_FE1_ADL_TRIG_EVENT_MM	761
-+#define CMDQ_EVENT_VDO1_HDR_VDO_FE1_AD0_TRIG_EVENT_MM	762
-+
-+#define CMDQ_EVENT_CAM_A_PASS1_DONE	769
-+#define CMDQ_EVENT_CAM_B_PASS1_DONE	770
-+#define CMDQ_EVENT_GCAMSV_A_PASS1_DONE	771
-+#define CMDQ_EVENT_GCAMSV_B_PASS1_DONE	772
-+#define CMDQ_EVENT_MRAW_0_PASS1_DONE	773
-+#define CMDQ_EVENT_MRAW_1_PASS1_DONE	774
-+#define CMDQ_EVENT_MRAW_2_PASS1_DONE	775
-+#define CMDQ_EVENT_MRAW_3_PASS1_DONE	776
-+#define CMDQ_EVENT_SENINF_CAM0_FIFO_FULL_X	777
-+#define CMDQ_EVENT_SENINF_CAM1_FIFO_FULL_X	778
-+#define CMDQ_EVENT_SENINF_CAM2_FIFO_FULL	779
-+#define CMDQ_EVENT_SENINF_CAM3_FIFO_FULL	780
-+#define CMDQ_EVENT_SENINF_CAM4_FIFO_FULL	781
-+#define CMDQ_EVENT_SENINF_CAM5_FIFO_FULL	782
-+#define CMDQ_EVENT_SENINF_CAM6_FIFO_FULL	783
-+#define CMDQ_EVENT_SENINF_CAM7_FIFO_FULL	784
-+#define CMDQ_EVENT_SENINF_CAM8_FIFO_FULL	785
-+#define CMDQ_EVENT_SENINF_CAM9_FIFO_FULL	786
-+#define CMDQ_EVENT_SENINF_CAM10_FIFO_FULL_X	787
-+#define CMDQ_EVENT_SENINF_CAM11_FIFO_FULL_X	788
-+#define CMDQ_EVENT_SENINF_CAM12_FIFO_FULL_X	789
-+#define CMDQ_EVENT_SENINF_CAM13_FIFO_FULL_X	790
-+#define CMDQ_EVENT_TG_OVRUN_MRAW0_INT_X0	791
-+#define CMDQ_EVENT_TG_OVRUN_MRAW1_INT_X0	792
-+#define CMDQ_EVENT_TG_OVRUN_MRAW2_INT	793
-+#define CMDQ_EVENT_TG_OVRUN_MRAW3_INT	794
-+#define CMDQ_EVENT_DMA_R1_ERROR_MRAW0_INT	795
-+#define CMDQ_EVENT_DMA_R1_ERROR_MRAW1_INT	796
-+#define CMDQ_EVENT_DMA_R1_ERROR_MRAW2_INT	797
-+#define CMDQ_EVENT_DMA_R1_ERROR_MRAW3_INT	798
-+#define CMDQ_EVENT_U_CAMSYS_PDA_IRQO_EVENT_DONE_D1	799
-+#define CMDQ_EVENT_SUBB_TG_INT4	800
-+#define CMDQ_EVENT_SUBB_TG_INT3	801
-+#define CMDQ_EVENT_SUBB_TG_INT2	802
-+#define CMDQ_EVENT_SUBB_TG_INT1	803
-+#define CMDQ_EVENT_SUBA_TG_INT4	804
-+#define CMDQ_EVENT_SUBA_TG_INT3	805
-+#define CMDQ_EVENT_SUBA_TG_INT2	806
-+#define CMDQ_EVENT_SUBA_TG_INT1	807
-+#define CMDQ_EVENT_SUBB_DRZS4NO_R1_LOW_LATENCY_LINE_CNT_INT	808
-+#define CMDQ_EVENT_SUBB_YUVO_R3_LOW_LATENCY_LINE_CNT_INT	809
-+#define CMDQ_EVENT_SUBB_YUVO_R1_LOW_LATENCY_LINE_CNT_INT	810
-+#define CMDQ_EVENT_SUBB_IMGO_R1_LOW_LATENCY_LINE_CNT_INT	811
-+#define CMDQ_EVENT_SUBA_DRZS4NO_R1_LOW_LATENCY_LINE_CNT_INT	812
-+#define CMDQ_EVENT_SUBA_YUVO_R3_LOW_LATENCY_LINE_CNT_INT	813
-+#define CMDQ_EVENT_SUBA_YUVO_R1_LOW_LATENCY_LINE_CNT_INT	814
-+#define CMDQ_EVENT_SUBA_IMGO_R1_LOW_LATENCY_LINE_CNT_INT	815
-+#define CMDQ_EVENT_GCE1_SOF_0	816
-+#define CMDQ_EVENT_GCE1_SOF_1	817
-+#define CMDQ_EVENT_GCE1_SOF_2	818
-+#define CMDQ_EVENT_GCE1_SOF_3	819
-+#define CMDQ_EVENT_GCE1_SOF_4	820
-+#define CMDQ_EVENT_GCE1_SOF_5	821
-+#define CMDQ_EVENT_GCE1_SOF_6	822
-+#define CMDQ_EVENT_GCE1_SOF_7	823
-+#define CMDQ_EVENT_GCE1_SOF_8	824
-+#define CMDQ_EVENT_GCE1_SOF_9	825
-+#define CMDQ_EVENT_GCE1_SOF_10	826
-+#define CMDQ_EVENT_GCE1_SOF_11	827
-+#define CMDQ_EVENT_GCE1_SOF_12	828
-+#define CMDQ_EVENT_GCE1_SOF_13	829
-+#define CMDQ_EVENT_GCE1_SOF_14	830
-+#define CMDQ_EVENT_GCE1_SOF_15	831
-+
-+#define CMDQ_EVENT_VDEC_LAT_LINE_COUNT_THRESHOLD_INTERRUPT	832
-+#define CMDQ_EVENT_VDEC_LAT_VDEC_INT	833
-+#define CMDQ_EVENT_VDEC_LAT_VDEC_PAUSE	834
-+#define CMDQ_EVENT_VDEC_LAT_VDEC_DEC_ERROR	835
-+#define CMDQ_EVENT_VDEC_LAT_MC_BUSY_OVERFLOW_MDEC_TIMEOUT	836
-+#define CMDQ_EVENT_VDEC_LAT_VDEC_FRAME_DONE	837
-+#define CMDQ_EVENT_VDEC_LAT_INI_FETCH_RDY	838
-+#define CMDQ_EVENT_VDEC_LAT_PROCESS_FLAG	839
-+#define CMDQ_EVENT_VDEC_LAT_SEARCH_START_CODE_DONE	840
-+#define CMDQ_EVENT_VDEC_LAT_REF_REORDER_DONE	841
-+#define CMDQ_EVENT_VDEC_LAT_WP_TBLE_DONE	842
-+#define CMDQ_EVENT_VDEC_LAT_COUNT_SRAM_CLR_DONE_AND_CTX_SRAM_CLR_DONE	843
-+#define CMDQ_EVENT_VDEC_LAT_GCE_CNT_OP_THRESHOLD	847
-+
-+#define CMDQ_EVENT_VDEC_LAT1_LINE_COUNT_THRESHOLD_INTERRUPT	848
-+#define CMDQ_EVENT_VDEC_LAT1_VDEC_INT	849
-+#define CMDQ_EVENT_VDEC_LAT1_VDEC_PAUSE	850
-+#define CMDQ_EVENT_VDEC_LAT1_VDEC_DEC_ERROR	851
-+#define CMDQ_EVENT_VDEC_LAT1_MC_BUSY_OVERFLOW_MDEC_TIMEOUT	852
-+#define CMDQ_EVENT_VDEC_LAT1_VDEC_FRAME_DONE	853
-+#define CMDQ_EVENT_VDEC_LAT1_INI_FETCH_RDY	854
-+#define CMDQ_EVENT_VDEC_LAT1_PROCESS_FLAG	855
-+#define CMDQ_EVENT_VDEC_LAT1_SEARCH_START_CODE_DONE	856
-+#define CMDQ_EVENT_VDEC_LAT1_REF_REORDER_DONE	857
-+#define CMDQ_EVENT_VDEC_LAT1_WP_TBLE_DONE	858
-+#define CMDQ_EVENT_VDEC_LAT1_COUNT_SRAM_CLR_DONE_AND_CTX_SRAM_CLR_DONE	859
-+#define CMDQ_EVENT_VDEC_LAT1_GCE_CNT_OP_THRESHOLD	863
-+
-+#define CMDQ_EVENT_VDEC_SOC_GLOBAL_CON_250_0	864
-+#define CMDQ_EVENT_VDEC_SOC_GLOBAL_CON_250_1	865
-+
-+#define CMDQ_EVENT_VDEC_SOC_GLOBAL_CON_250_8	872
-+#define CMDQ_EVENT_VDEC_SOC_GLOBAL_CON_250_9	873
-+
-+#define CMDQ_EVENT_VDEC_CORE_LINE_COUNT_THRESHOLD_INTERRUPT	896
-+#define CMDQ_EVENT_VDEC_CORE_VDEC_INT	897
-+#define CMDQ_EVENT_VDEC_CORE_VDEC_PAUSE	898
-+#define CMDQ_EVENT_VDEC_CORE_VDEC_DEC_ERROR	899
-+#define CMDQ_EVENT_VDEC_CORE_MC_BUSY_OVERFLOW_MDEC_TIMEOUT	900
-+#define CMDQ_EVENT_VDEC_CORE_VDEC_FRAME_DONE	901
-+#define CMDQ_EVENT_VDEC_CORE_INI_FETCH_RDY	902
-+#define CMDQ_EVENT_VDEC_CORE_PROCESS_FLAG	903
-+#define CMDQ_EVENT_VDEC_CORE_SEARCH_START_CODE_DONE	904
-+#define CMDQ_EVENT_VDEC_CORE_REF_REORDER_DONE	905
-+#define CMDQ_EVENT_VDEC_CORE_WP_TBLE_DONE	906
-+#define CMDQ_EVENT_VDEC_CORE_COUNT_SRAM_CLR_DONE_AND_CTX_SRAM_CLR_DONE	907
-+#define CMDQ_EVENT_VDEC_CORE_GCE_CNT_OP_THRESHOLD	911
-+
-+#define CMDQ_EVENT_VDEC_CORE1_LINE_COUNT_THRESHOLD_INTERRUPT	912
-+#define CMDQ_EVENT_VDEC_CORE1_VDEC_INT	913
-+#define CMDQ_EVENT_VDEC_CORE1_VDEC_PAUSE	914
-+#define CMDQ_EVENT_VDEC_CORE1_VDEC_DEC_ERROR	915
-+#define CMDQ_EVENT_VDEC_CORE1_MC_BUSY_OVERFLOW_MDEC_TIMEOUT	916
-+#define CMDQ_EVENT_VDEC_CORE1_VDEC_FRAME_DONE	917
-+#define CMDQ_EVENT_VDEC_CORE1_INI_FETCH_RDY	918
-+#define CMDQ_EVENT_VDEC_CORE1_PROCESS_FLAG	919
-+#define CMDQ_EVENT_VDEC_CORE1_SEARCH_START_CODE_DONE	920
-+#define CMDQ_EVENT_VDEC_CORE1_REF_REORDER_DONE	921
-+#define CMDQ_EVENT_VDEC_CORE1_WP_TBLE_DONE	922
-+#define CMDQ_EVENT_VDEC_CORE1_COUNT_SRAM_CLR_DONE_AND_CTX_SRAM_CLR_DONE	923
-+#define CMDQ_EVENT_VDEC_CORE1_CNT_OP_THRESHOLD	927
-+
-+#define CMDQ_EVENT_VENC_TOP_FRAME_DONE	929
-+#define CMDQ_EVENT_VENC_TOP_PAUSE_DONE	930
-+#define CMDQ_EVENT_VENC_TOP_JPGENC_DONE	931
-+#define CMDQ_EVENT_VENC_TOP_MB_DONE	932
-+#define CMDQ_EVENT_VENC_TOP_128BYTE_DONE	933
-+#define CMDQ_EVENT_VENC_TOP_JPGDEC_DONE	934
-+#define CMDQ_EVENT_VENC_TOP_JPGDEC_C1_DONE	935
-+#define CMDQ_EVENT_VENC_TOP_JPGDEC_INSUFF_DONE	936
-+#define CMDQ_EVENT_VENC_TOP_JPGDEC_C1_INSUFF_DONE	937
-+#define CMDQ_EVENT_VENC_TOP_WP_2ND_STAGE_DONE	938
-+#define CMDQ_EVENT_VENC_TOP_WP_3RD_STAGE_DONE	939
-+#define CMDQ_EVENT_VENC_TOP_PPS_HEADER_DONE	940
-+#define CMDQ_EVENT_VENC_TOP_SPS_HEADER_DONE	941
-+#define CMDQ_EVENT_VENC_TOP_VPS_HEADER_DONE	942
-+
-+#define CMDQ_EVENT_VENC_CORE1_TOP_FRAME_DONE	945
-+#define CMDQ_EVENT_VENC_CORE1_TOP_PAUSE_DONE	946
-+#define CMDQ_EVENT_VENC_CORE1_TOP_JPGENC_DONE	947
-+#define CMDQ_EVENT_VENC_CORE1_TOP_MB_DONE	948
-+#define CMDQ_EVENT_VENC_CORE1_TOP_128BYTE_DONE	949
-+#define CMDQ_EVENT_VENC_CORE1_TOP_JPGDEC_DONE	950
-+#define CMDQ_EVENT_VENC_CORE1_TOP_JPGDEC_C1_DONE	951
-+#define CMDQ_EVENT_VENC_CORE1_TOP_JPGDEC_INSUFF_DONE	952
-+#define CMDQ_EVENT_VENC_CORE1_TOP_JPGDEC_C1_INSUFF_DONE	953
-+#define CMDQ_EVENT_VENC_CORE1_TOP_WP_2ND_STAGE_DONE	954
-+#define CMDQ_EVENT_VENC_CORE1_TOP_WP_3RD_STAGE_DONE	955
-+#define CMDQ_EVENT_VENC_CORE1_TOP_PPS_HEADER_DONE	956
-+#define CMDQ_EVENT_VENC_CORE1_TOP_SPS_HEADER_DONE	957
-+#define CMDQ_EVENT_VENC_CORE1_TOP_VPS_HEADER_DONE	958
-+
-+#define CMDQ_EVENT_WPE_VPP0_WPE_GCE_FRAME_DONE	962
-+#define CMDQ_EVENT_WPE_VPP0_WPE_DONE_SYNC_OUT	963
-+
-+#define CMDQ_EVENT_WPE_VPP1_WPE_GCE_FRAME_DONE	969
-+#define CMDQ_EVENT_WPE_VPP1_WPE_DONE_SYNC_OUT	970
-+
-+#define CMDQ_EVENT_DP_TX_VBLANK_FALLING	994
-+#define CMDQ_EVENT_DP_TX_VSC_FINISH	995
-+
-+#define CMDQ_EVENT_OUTPIN_0	1018
-+#define CMDQ_EVENT_OUTPIN_1	1019
-+
-+/* end of hw event */
-+#define CMDQ_MAX_HW_EVENT				1019
-+
-+#endif
 diff --git a/include/dt-bindings/memory/mt8195-memory-port.h b/include/dt-bindings/memory/mt8195-memory-port.h
 new file mode 100644
 index 0000000000000000000000000000000000000000..9882877cda9d8687ee79d84158fce9d2dedfa2df
@@ -137001,11 +135632,24 @@ index a642bf30c027855e28f5e7cc24905f0a0b8d9c98..ef86626371f89b3ea920e3b77b1875a3
 +#define SOF_TKN_MEDIATEK_AFE_FORMAT		1602
 +
  #endif
+diff --git a/sound/soc/codecs/mt6359.c b/sound/soc/codecs/mt6359.c
+index 6de0d744fa9eb3611eabbbd35a02f29853e8273a..190bfec561816c69c014a895fcda26341e696580 100644
+--- a/sound/soc/codecs/mt6359.c
++++ b/sound/soc/codecs/mt6359.c
+@@ -2697,7 +2697,7 @@ static int mt6359_codec_probe(struct snd_soc_component *cmpnt)
+ 
+ static void mt6359_codec_remove(struct snd_soc_component *cmpnt)
+ {
+-	snd_soc_component_exit_regmap(cmpnt);
++	cmpnt->regmap = NULL;
+ }
+ 
+ static const DECLARE_TLV_DB_SCALE(hp_playback_tlv, -2200, 100, 0);
 diff --git a/sound/soc/mediatek/Kconfig b/sound/soc/mediatek/Kconfig
-index b853b5013fbcdbf421c379071c48b3bbb10b0d0d..b6075111c3e83278617c96446843bcbbe7a2f0f0 100644
+index 955b39567dec713abae7f9bb77f29c5c3c7222c1..029299e0a7f3a634a01b3526c6f91c38383a8ef5 100644
 --- a/sound/soc/mediatek/Kconfig
 +++ b/sound/soc/mediatek/Kconfig
-@@ -208,3 +208,18 @@ config SND_SOC_MT8195_MT6359_RT1019_RT5682
+@@ -209,3 +209,18 @@ config SND_SOC_MT8195_MT6359_RT1019_RT5682
  	  with the MT6359 RT1019 RT5682 audio codec.
  	  Select Y if you have such device.
  	  If unsure select "N".
@@ -138210,7 +136854,7 @@ index 0000000000000000000000000000000000000000..9a158b8aa2a413a052085bf9fd0e4935
 +MODULE_LICENSE("GPL v2");
 +MODULE_ALIAS("mt8195_mt6359_rt1011_rt5682 soc card");
 diff --git a/sound/soc/mediatek/mt8195/mt8195-mt6359-rt1019-rt5682.c b/sound/soc/mediatek/mt8195/mt8195-mt6359-rt1019-rt5682.c
-index 5dc217f59bd6e15f175d6e84e88c1e5765b3b31c..c3f58e1f271dd4bb49bd3f1edb2c2a35ad734a54 100644
+index c97ace7387b4cdce5f506f17789a8c67ecb6cede..c3f58e1f271dd4bb49bd3f1edb2c2a35ad734a54 100644
 --- a/sound/soc/mediatek/mt8195/mt8195-mt6359-rt1019-rt5682.c
 +++ b/sound/soc/mediatek/mt8195/mt8195-mt6359-rt1019-rt5682.c
 @@ -25,6 +25,21 @@
@@ -138533,7 +137177,7 @@ index 5dc217f59bd6e15f175d6e84e88c1e5765b3b31c..c3f58e1f271dd4bb49bd3f1edb2c2a35
  	if (!platform_node) {
  		dev_dbg(&pdev->dev, "Property 'platform' missing or invalid\n");
  		return -EINVAL;
-@@ -1013,32 +1262,46 @@ static int mt8195_mt6359_rt1019_rt5682_dev_probe(struct platform_device *pdev)
+@@ -1013,10 +1262,20 @@ static int mt8195_mt6359_rt1019_rt5682_dev_probe(struct platform_device *pdev)
  		if (!dai_link->platforms->name)
  			dai_link->platforms->of_node = platform_node;
  
@@ -138552,18 +137196,9 @@ index 5dc217f59bd6e15f175d6e84e88c1e5765b3b31c..c3f58e1f271dd4bb49bd3f1edb2c2a35
  						 "mediatek,dptx-codec", 0);
 +#endif
  			if (!dai_link->codecs->of_node) {
--				dev_err(&pdev->dev, "Property 'dptx-codec' missing or invalid\n");
--				return -EINVAL;
-+				dev_dbg(&pdev->dev, "No property 'dptx-codec'\n");
-+			} else {
-+				dai_link->codecs->name = NULL;
-+				dai_link->codecs->dai_name = "i2s-hifi";
-+				dai_link->init = mt8195_dptx_codec_init;
- 			}
--
--			dai_link->codecs->name = NULL;
--			dai_link->codecs->dai_name = "i2s-hifi";
--			dai_link->init = mt8195_dptx_codec_init;
+ 				dev_dbg(&pdev->dev, "No property 'dptx-codec'\n");
+ 			} else {
+@@ -1027,9 +1286,15 @@ static int mt8195_mt6359_rt1019_rt5682_dev_probe(struct platform_device *pdev)
  		}
  
  		if (strcmp(dai_link->name, "ETDM3_OUT_BE") == 0) {
@@ -138577,21 +137212,8 @@ index 5dc217f59bd6e15f175d6e84e88c1e5765b3b31c..c3f58e1f271dd4bb49bd3f1edb2c2a35
  						 "mediatek,hdmi-codec", 0);
 +#endif
  			if (!dai_link->codecs->of_node) {
--				dev_err(&pdev->dev, "Property 'hdmi-codec' missing or invalid\n");
--				return -EINVAL;
-+				dev_dbg(&pdev->dev, "No property 'hdmi-codec'\n");
-+			} else {
-+				dai_link->codecs->name = NULL;
-+				dai_link->codecs->dai_name = "i2s-hifi";
-+				dai_link->init = mt8195_hdmi_codec_init;
- 			}
--
--			dai_link->codecs->name = NULL;
--			dai_link->codecs->dai_name = "i2s-hifi";
--			dai_link->init = mt8195_hdmi_codec_init;
- 		}
- 	}
- 
+ 				dev_dbg(&pdev->dev, "No property 'hdmi-codec'\n");
+ 			} else {
 diff --git a/sound/soc/sof/Kconfig b/sound/soc/sof/Kconfig
 index cd659493b5dfe30b02d16ba5fa5ede6a4207ed4b..bef3d9a26d2c5dc9e359311358d243ec8cf879e0 100644
 --- a/sound/soc/sof/Kconfig
