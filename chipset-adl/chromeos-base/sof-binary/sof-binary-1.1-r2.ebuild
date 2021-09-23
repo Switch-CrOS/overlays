@@ -11,6 +11,11 @@ LICENSE="SOF"
 SLOT="0"
 KEYWORDS="*"
 
+RDEPEND="
+	media-libs/adl-max98390-dsm-param-brya
+"
+DEPEND="${RDEPEND}"
+
 S=${WORKDIR}/${PN}-adl-${PV}
 
 src_install() {
