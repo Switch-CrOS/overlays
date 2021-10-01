@@ -17,7 +17,7 @@ or portage actions."
 
 LICENSE="BSD-Google"
 KEYWORDS="-* amd64 x86"
-IUSE="sarien-kvm"
+IUSE="sarien-kvm sarien-kernelnext"
 
 # Add dependencies on other ebuilds from within this board overlay
 RDEPEND=""
@@ -30,6 +30,8 @@ src_install() {
 
 	if use sarien-kvm; then
 		doappid "{3774C742-22BD-4BC5-A052-554CB624433C}" "CHROMEBOOK"
+	elif use sarien-kernelnext; then
+		doappid "{2E49ECE1-EF84-4D25-AC2F-CC01E117C640}" "CHROMEBOOK"
 	else
 		doappid "{E3B85B97-1771-4440-9691-D1983FEF60EB}" "CHROMEBOOK"
 	fi
