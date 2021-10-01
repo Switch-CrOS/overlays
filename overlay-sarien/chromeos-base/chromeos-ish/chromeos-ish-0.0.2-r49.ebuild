@@ -36,4 +36,5 @@ KEYWORDS="*"
 PATCHES=(
 	"${FILESDIR}/chromeos-ish-ec-warning-06a82155ef.patch"
 	"${FILESDIR}/chromeos-ish-ec-glibc-strsignal.patch"
+	"${FILESDIR}/chromeos-ish-ec-gcc11.patch"
 )
