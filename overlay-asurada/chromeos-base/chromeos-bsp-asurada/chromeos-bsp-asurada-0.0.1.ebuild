@@ -12,7 +12,7 @@ or portage actions."
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="-* arm64 arm"
-IUSE="zephyr_ec"
+IUSE="zephyr_ec asurada-connectivitynext"
 S="${WORKDIR}"
 
 # Add dependencies on other ebuilds from within this board overlay
@@ -25,6 +25,8 @@ DEPEND="${RDEPEND}"
 src_install() {
 	if use zephyr_ec; then
 		doappid "{72518E73-3453-4856-90DA-0E9D809323EC}" "CHROMEBOOK"
+	elif use asurada-connectivitynext; then
+		doappid "{CF9FCFA1-774A-42CB-80FC-AE7EA1D35477}" "CHROMEBOOK"
 	else
 		doappid "{08F65CC8-BCFB-414F-9B49-DAB2996D2E71}" "CHROMEBOOK"
 	fi
