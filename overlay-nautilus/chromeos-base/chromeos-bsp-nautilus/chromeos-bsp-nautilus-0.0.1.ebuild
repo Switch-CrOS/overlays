@@ -34,4 +34,8 @@ src_install() {
 
 	# Install udev rules for proximity sensor.
 	udev_dorules "${FILESDIR}"/udev/*.rules
+
+	# Override default cpufreq configuration
+	insinto "/etc"
+	doins "${FILESDIR}/cpufreq/cpufreq.conf"
 }
