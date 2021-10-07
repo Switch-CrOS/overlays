@@ -5080,7 +5080,7 @@ index 0000000000000000000000000000000000000000..4d1a34bb27631d68799766de8ef953a4
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8195.dtsi b/arch/arm64/boot/dts/mediatek/mt8195.dtsi
 new file mode 100644
-index 0000000000000000000000000000000000000000..e64efa85946dc562c58cf31542d73133e594dda6
+index 0000000000000000000000000000000000000000..c348c9e6d9d6f8cad7df4d685394e503fc0acb95
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt8195.dtsi
 @@ -0,0 +1,3840 @@
@@ -5441,8 +5441,8 @@ index 0000000000000000000000000000000000000000..e64efa85946dc562c58cf31542d73133
 +				#reset-cells = <1>;
 +				ti,reset-bits = <
 +					0x140 18 0x144 18 0 0 (ASSERT_SET | DEASSERT_SET | STATUS_NONE)
-+					0x120 1 0x124 1 0 0     (ASSERT_SET | DEASSERT_SET | STATUS_NONE)
-+					0x730 1 0x734 1 0 0     (ASSERT_SET | DEASSERT_SET | STATUS_NONE)
++					0x120 0 0x124 0 0 0     (ASSERT_SET | DEASSERT_SET | STATUS_NONE)
++					0x730 10 0x734 10 0 0     (ASSERT_SET | DEASSERT_SET | STATUS_NONE)
 +					0x150 5 0x154 5 0 0     (ASSERT_SET | DEASSERT_SET | STATUS_NONE)
 +				>;
 +			};
@@ -88016,10 +88016,10 @@ index 251f034acb09e2bde0f701c82f38b87f1fa2d721..c865337bb8946e8258152f675b4ec271
  MODULE_DEVICE_TABLE(of, mtk_disp_rdma_driver_dt_match);
 diff --git a/drivers/gpu/drm/mediatek/mtk_dp.c b/drivers/gpu/drm/mediatek/mtk_dp.c
 new file mode 100644
-index 0000000000000000000000000000000000000000..b34de1165e1a7899c0e0e1468c978804dafbe9f8
+index 0000000000000000000000000000000000000000..153f7f2605d0335b49da6534d46e9364711b1859
 --- /dev/null
 +++ b/drivers/gpu/drm/mediatek/mtk_dp.c
-@@ -0,0 +1,2426 @@
+@@ -0,0 +1,2549 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
 + * Copyright (c) 2019 MediaTek Inc.
@@ -88282,6 +88282,9 @@ index 0000000000000000000000000000000000000000..b34de1165e1a7899c0e0e1468c978804
 +		break;
 +	}
 +
++	dev_info(mtk_dp->dev, "PixRateKhz = %ld SDP_DC_Init = %x\n",
++		mtk_dp->info.DPTX_OUTBL.PixRateKhz, SDP_Down_Cnt_Init);
++
 +	mhal_DPTx_SetSDP_DownCntinit(mtk_dp, SDP_Down_Cnt_Init);
 +}
 +
@@ -88305,11 +88308,13 @@ index 0000000000000000000000000000000000000000..b34de1165e1a7899c0e0e1468c978804
 +		break;
 +	case DP_LANECOUNT_4:
 +		ucDCOffset = (mtk_dp->info.DPTX_OUTBL.Vtt <= 525) ? 0x08 : 0x00;
-+		if (PixClkMhz > (mtk_dp->training_info.ubLinkRate * 27))
++		if (PixClkMhz > (mtk_dp->training_info.ubLinkRate * 27)) {
 +			mhal_DPTx_SetSDP_DownCntinitInHblanking(mtk_dp, 0x0008);
-+		else
++			dev_info(mtk_dp->dev, "Pixclk > LinkRateChange\n");
++		} else {
 +			mhal_DPTx_SetSDP_DownCntinitInHblanking(mtk_dp,
 +				0x0010 + ucDCOffset);
++		}
 +		break;
 +	}
 +
@@ -88333,6 +88338,7 @@ index 0000000000000000000000000000000000000000..b34de1165e1a7899c0e0e1468c978804
 +	NValue = TU_size / 10;
 +	FValue = TU_size-NValue * 10;
 +
++	dev_info(mtk_dp->dev, "TU_size %d, FValue %d\n", TU_size, FValue);
 +	if (mtk_dp->training_info.ubLinkLaneCount > 0) {
 +		Sram_Read_Start = mtk_dp->info.DPTX_OUTBL.Hde /
 +			(mtk_dp->training_info.ubLinkLaneCount*4*2*2);
@@ -88429,10 +88435,12 @@ index 0000000000000000000000000000000000000000..b34de1165e1a7899c0e0e1468c978804
 +	case DPTX_SRC_PG:
 +		mhal_DPTx_PGEnable(mtk_dp, true);
 +		mhal_DPTx_Set_MVIDx2(mtk_dp, false);
++		dev_info(mtk_dp->dev, "Set Pattern Gen output\n");
 +		break;
 +
 +	case DPTX_SRC_DPINTF:
 +		mhal_DPTx_PGEnable(mtk_dp, false);
++		dev_info(mtk_dp->dev, "Set dpintf output\n");
 +		break;
 +
 +	default:
@@ -88485,22 +88493,29 @@ index 0000000000000000000000000000000000000000..b34de1165e1a7899c0e0e1468c978804
 +	memset(ubDPCD200C, 0x0, sizeof(ubDPCD200C));
 +
 +	ret = drm_dp_dpcd_read(&mtk_dp->aux, DPCD_02002, ubDPCD2002, 0x2);
-+	if (!ret)
++	if (!ret) {
++		dev_info(mtk_dp->dev, "Read DPCD_02002 Fail\n");
 +		return;
++	}
 +
 +	ret = drm_dp_dpcd_read(&mtk_dp->aux, DPCD_0200C, ubDPCD200C, 0x4);
-+	if (!ret)
++	if (!ret) {
++		dev_info(mtk_dp->dev, "Read DPCD_0200C Fail\n");
 +		return;
++	}
 +
 +	ret = drm_dp_dpcd_read(&mtk_dp->aux, DPCD_00200, ubDPCD20x, 0x6);
-+	if (!ret)
++	if (!ret) {
++		dev_info(mtk_dp->dev, "Read DPCD200 Fail\n");
 +		return;
++	}
 +
 +	mdrv_DPTx_CheckSinkLock(mtk_dp, ubDPCD20x, ubDPCD200C);
 +	mdrv_DPTx_CheckSinkESI(mtk_dp, ubDPCD20x, ubDPCD2002);
 +
 +	if ((ubDPCD2002[0x0] & 0x1F || ubDPCD20x[0x0] & 0x1F) &&
 +		(ubDPCD200C[0x2] & BIT6 || ubDPCD20x[0x4] & BIT6)) {
++		dev_info(mtk_dp->dev, "New Branch Device Detection!!\n");
 +
 +		mtk_dp->training_info.ucCheckCapTimes = 0;
 +		if (mtk_dp->edid) {
@@ -88565,13 +88580,15 @@ index 0000000000000000000000000000000000000000..b34de1165e1a7899c0e0e1468c978804
 +		if (mtk_dp->training_info.bCablePlugIn && ubCurrentHPD) {
 +			dev_info(mtk_dp->dev, "HPD_CON\n");
 +		} else {
++			dev_info(mtk_dp->dev, "HPD_DISCON\n");
 +			mdrv_DPTx_VideoMute(mtk_dp, true);
 +			mdrv_DPTx_AudioMute(mtk_dp, true);
 +
 +			if (mtk_dp->bUeventToHwc) {
 +				mtk_dp->bUeventToHwc = false;
 +				mtk_dp->disp_status = DPTX_DISP_NONE;
-+			}
++			} else
++				dev_info(mtk_dp->dev, "Skip Uevent(0)\n");
 +
 +			mdrv_DPTx_InitVariable(mtk_dp);
 +			mhal_DPTx_PHY_SetIdlePattern(mtk_dp, true);
@@ -88579,6 +88596,7 @@ index 0000000000000000000000000000000000000000..b34de1165e1a7899c0e0e1468c978804
 +				mhal_DPTx_EnableFEC(mtk_dp, false);
 +			mdrv_DPTx_StopSentSDP(mtk_dp);
 +
++			dev_info(mtk_dp->dev, "Power OFF %d", mtk_dp->bPowerOn);
 +			if (mtk_dp->dp_tx_clk)
 +				clk_disable_unprepare(mtk_dp->dp_tx_clk);
 +			if (mtk_dp->edid) {
@@ -88749,6 +88767,8 @@ index 0000000000000000000000000000000000000000..b34de1165e1a7899c0e0e1468c978804
 +	memset(ubTempValue, 0x0, sizeof(ubTempValue));
 +	memset(ubDPCP_Buffer1, 0x0, sizeof(ubDPCP_Buffer1));
 +
++	dev_info(mtk_dp->dev, "training on ubLaneRate = 0x%x, ubLaneCount = 0x%x\n", ubLaneRate, ubLaneCount);
++
 +	drm_dp_dpcd_read(&mtk_dp->aux, DPCD_00600, ubTempValue, 0x1);
 +	if (ubTempValue[0] != 0x01) {
 +		ubTempValue[0] = 0x01;
@@ -88777,13 +88797,16 @@ index 0000000000000000000000000000000000000000..b34de1165e1a7899c0e0e1468c978804
 +		ubTrainRetryTimes++;
 +		if (!mtk_dp->training_info.bCablePlugIn ||
 +			((mtk_dp->training_info.usPHY_STS & HPD_DISCONNECT)
-+				!= 0x0))
++				!= 0x0)) {
++			dev_info(mtk_dp->dev, "Training Abort! HPD is low\n");
 +			return DPTX_PLUG_OUT;
++		}
 +
 +		if (mtk_dp->training_state < DPTX_NTSTATE_TRAINING)
 +			return DPTX_TRANING_STATE_CHANGE;
 +
 +		if (!bPassTPS1)	{
++			dev_info(mtk_dp->dev, "CR Training START\n");
 +			mhal_DPTx_SetScramble(mtk_dp, false);
 +
 +			if (ubStatusControl == 0x0)	{
@@ -88810,6 +88833,7 @@ index 0000000000000000000000000000000000000000..b34de1165e1a7899c0e0e1468c978804
 +
 +			if (drm_dp_clock_recovery_ok(ubTempValue,
 +				ubTargetLaneCount)) {
++				dev_info(mtk_dp->dev, "CR Training Success\n");
 +				mtk_dp->training_info.cr_done = true;
 +				bPassTPS1 = true;
 +				ubTrainRetryTimes = 0x0;
@@ -88824,18 +88848,25 @@ index 0000000000000000000000000000000000000000..b34de1165e1a7899c0e0e1468c978804
 +				} else {
 +					ubDPCD206 = ubTempValue[0x4];
 +				}
++
++				dev_info(mtk_dp->dev, "CR Training Fail\n");
 +			}
 +		} else if (bPassTPS1 && !bPassTPS2_3) {
++			dev_info(mtk_dp->dev, "EQ Training START\n");
 +			if (ubStatusControl == 0x1) {
-+				if (mtk_dp->training_info.bTPS4)
++				if (mtk_dp->training_info.bTPS4) {
 +					mhal_DPTx_SetTxTrainingPattern(mtk_dp,
 +						BIT7);
-+				else if (mtk_dp->training_info.bTPS3)
++					dev_info(mtk_dp->dev, "LT TPS4\n");
++				} else if (mtk_dp->training_info.bTPS3) {
 +					mhal_DPTx_SetTxTrainingPattern(mtk_dp,
 +						BIT6);
-+				else
++					dev_info(mtk_dp->dev, "LT TP3\n");
++				} else {
 +					mhal_DPTx_SetTxTrainingPattern(mtk_dp,
 +						BIT5);
++					dev_info(mtk_dp->dev, "LT TPS2\n");
++				}
 +
 +				if (mtk_dp->training_info.bTPS4) {
 +					ubTempValue[0] = 0x07;
@@ -88880,8 +88911,10 @@ index 0000000000000000000000000000000000000000..b34de1165e1a7899c0e0e1468c978804
 +				ubTargetLaneCount)) {
 +				mtk_dp->training_info.eq_done = true;
 +				bPassTPS2_3 = true;
++				dev_info(mtk_dp->dev, "EQ Training Success\n");
 +				break;
 +			}
++			dev_info(mtk_dp->dev, "EQ Training Fail\n");
 +
 +			if (ubDPCD206 == ubTempValue[0x4])
 +				ubIterationCount++;
@@ -88891,6 +88924,9 @@ index 0000000000000000000000000000000000000000..b34de1165e1a7899c0e0e1468c978804
 +
 +		mdrv_DPTx_TrainingCheckSwingPre(mtk_dp, ubTargetLaneCount,
 +			ubTempValue, ubDPCP_Buffer1);
++		dev_info(mtk_dp->dev, "ubTrainRetryTimes = %d, ubIterationCount = %d\n",
++			ubTrainRetryTimes, ubIterationCount);
++
 +	} while ((ubTrainRetryTimes < DPTX_TRAIN_RETRY_LIMIT) &&
 +		(ubIterationCount < DPTX_TRAIN_MAX_ITERATION));
 +
@@ -88909,9 +88945,11 @@ index 0000000000000000000000000000000000000000..b34de1165e1a7899c0e0e1468c978804
 +		drm_dp_dpcd_write(&mtk_dp->aux, DPCD_00101, ubTempValue, 0x1);
 +		mhal_DPTx_SetEF_Mode(mtk_dp, ENABLE_DPTX_EF_MODE);
 +
++		dev_info(mtk_dp->dev, "Link Training PASS\n");
 +		return DPTX_NOERR;
 +	}
 +
++	dev_info(mtk_dp->dev, "Link Training Fail\n");
 +	return DPTX_TRANING_FAIL;
 +}
 +
@@ -88919,9 +88957,10 @@ index 0000000000000000000000000000000000000000..b34de1165e1a7899c0e0e1468c978804
 +{
 +	u8 bTempBuffer[0x10];
 +
-+	if (!mhal_DPTx_GetHPDPinLevel(mtk_dp))
++	if (!mhal_DPTx_GetHPDPinLevel(mtk_dp)) {
++		dev_info(mtk_dp->dev, "HPD is low\n");
 +		return false;
-+
++	}
 +	memset(bTempBuffer, 0x0, sizeof(bTempBuffer));
 +
 +	bTempBuffer[0x0] = 0x1;
@@ -88937,7 +88976,9 @@ index 0000000000000000000000000000000000000000..b34de1165e1a7899c0e0e1468c978804
 +
 +	if (mtk_dp->training_info.bSinkEXTCAP_En) {
 +		drm_dp_dpcd_read(&mtk_dp->aux, DPCD_02200, bTempBuffer, 0x10);
++
 +		mtk_dp->training_info.ubDPCD_REV = bTempBuffer[0x0];
++		dev_info(mtk_dp->dev, "SINK DPCD version:0x%x\n", mtk_dp->training_info.ubDPCD_REV);
 +	}
 +
 +	memcpy(mtk_dp->rx_cap, bTempBuffer, 0x10);
@@ -88950,11 +88991,6 @@ index 0000000000000000000000000000000000000000..b34de1165e1a7899c0e0e1468c978804
 +	mtk_dp->training_info.ubLinkLaneCount =
 +		((bTempBuffer[0x2]&0x1F) >= MAX_LANECOUNT) ?
 +		MAX_LANECOUNT : (bTempBuffer[0x2]&0x1F);
-+
-+	if (mtk_dp->training_info.ubLinkRate > 0x14) {
-+		if (mtk_dp->training_info.ubLinkLaneCount > 2)
-+			mtk_dp->training_info.ubLinkLaneCount = 2;
-+	}
 +#endif
 +
 +#if ENABLE_DPTX_FIX_TPS2
@@ -88968,13 +89004,17 @@ index 0000000000000000000000000000000000000000..b34de1165e1a7899c0e0e1468c978804
 +			= (bTempBuffer[0x5] & BIT0);
 +
 +#if (ENABLE_DPTX_SSC_OUTPUT == 0x1)
-+	if ((bTempBuffer[0x3] & BIT0) == 0x1)
++	if ((bTempBuffer[0x3] & BIT0) == 0x1) {
 +		mtk_dp->training_info.bSinkSSC_En = true;
-+	else
++		dev_info(mtk_dp->dev, "SINK SUPPORT SSC!\n");
++	} else {
 +		mtk_dp->training_info.bSinkSSC_En = false;
++		dev_info(mtk_dp->dev, "SINK NOT SUPPORT SSC!\n");
++	}
 +#endif
 +
 +#if ENABLE_DPTX_SSC_FORCEON
++	dev_info(mtk_dp->dev, "FORCE SSC ON !!!\n");
 +	mtk_dp->training_info.bSinkSSC_En = true;
 +#endif
 +
@@ -89008,8 +89048,10 @@ index 0000000000000000000000000000000000000000..b34de1165e1a7899c0e0e1468c978804
 +	}
 +
 +	sad_count = drm_edid_to_sad(mtk_dp->edid, &sads);
-+	if (sad_count <= 0)
++	if (sad_count <= 0) {
++		dev_info(mtk_dp->dev, "The SADs is NULL\n");
 +		return 0;
++	}
 +
 +	for (i = 0; i < sad_count; i++) {
 +		if (sads[i].format == 0x01)	{
@@ -89028,6 +89070,7 @@ index 0000000000000000000000000000000000000000..b34de1165e1a7899c0e0e1468c978804
 +		}
 +	}
 +
++	dev_info(mtk_dp->dev, "audio caps:0x%x", caps);
 +	return caps;
 +}
 +
@@ -89053,6 +89096,8 @@ index 0000000000000000000000000000000000000000..b34de1165e1a7899c0e0e1468c978804
 +#endif
 +
 +	if (!mhal_DPTx_GetHPDPinLevel(mtk_dp)) {
++		dev_info(mtk_dp->dev, "Start Training Abort!=> HPD low !\n");
++
 +		ubTrainTimeLimits = 6;
 +		while (ubTrainTimeLimits > 6) {
 +			if (mhal_DPTx_GetHPDPinLevel(mtk_dp))
@@ -89074,6 +89119,8 @@ index 0000000000000000000000000000000000000000..b34de1165e1a7899c0e0e1468c978804
 +
 +		ubLinkRate = mtk_dp->rx_cap[1];
 +		ubLaneCount = mtk_dp->rx_cap[2] & 0x1F;
++		dev_info(mtk_dp->dev, "RX support ubLinkRate = 0x%x,ubLaneCount = %x",
++			ubLinkRate, ubLaneCount);
 +
 +#if !ENABLE_DPTX_FIX_LRLC
 +		mtk_dp->training_info.ubLinkRate =
@@ -89082,18 +89129,17 @@ index 0000000000000000000000000000000000000000..b34de1165e1a7899c0e0e1468c978804
 +		mtk_dp->training_info.ubLinkLaneCount =
 +			(ubLaneCount >= MAX_LANECOUNT) ?
 +			MAX_LANECOUNT : ubLaneCount;
-+		if (mtk_dp->training_info.ubLinkRate > 0x14) {
-+			if (mtk_dp->training_info.ubLinkLaneCount > 2)
-+				mtk_dp->training_info.ubLinkLaneCount = 2;
-+		}
 +#endif
 +		if (mtk_dp->training_info.bSinkEXTCAP_En)
 +			drm_dp_dpcd_read(&mtk_dp->aux, DPCD_02002, ubTemp, 0x1);
 +		else
 +			drm_dp_dpcd_read(&mtk_dp->aux, DPCD_00200, ubTemp, 0x1);
 +
-+		if ((ubTemp[0x0] & 0xBF) != 0)
++		if ((ubTemp[0x0] & 0xBF) != 0) {
 +			mtk_dp->training_info.ubSinkCountNum = ubTemp[0x0]&0xBF;
++			dev_info(mtk_dp->dev, "ExtSink Count = %d\n",
++				mtk_dp->training_info.ubSinkCountNum);
++		}
 +	}
 +
 +	ubLinkRate = mtk_dp->training_info.ubLinkRate;
@@ -89116,6 +89162,8 @@ index 0000000000000000000000000000000000000000..b34de1165e1a7899c0e0e1468c978804
 +	ubTrainTimeLimits = 0x6;
 +#endif
 +	do {
++		dev_info(mtk_dp->dev, "LinkRate:0x%x, LaneCount:%x", ubLinkRate, ubLaneCount);
++
 +		mtk_dp->training_info.cr_done = false;
 +		mtk_dp->training_info.eq_done = false;
 +
@@ -89203,16 +89251,21 @@ index 0000000000000000000000000000000000000000..b34de1165e1a7899c0e0e1468c978804
 +
 +			if (uaCheckTimes > DPTX_CheckSinkCap_TimeOutCnt) {
 +				mtk_dp->training_info.ucCheckCapTimes = 0;
++				dev_info(mtk_dp->dev, "CheckCap Fail %d times",
++					DPTX_CheckSinkCap_TimeOutCnt);
 +				mtk_dp->training_state = DPTX_NTSTATE_DPIDLE;
 +				ret = DPTX_TIMEOUT;
-+			}
++			} else
++				dev_info(mtk_dp->dev, "CheckCap Fail %d times", uaCheckTimes);
 +		}
 +		break;
 +
 +	case DPTX_NTSTATE_CHECKEDID:
-+		if (mtk_dp->edid)
++		if (mtk_dp->edid) {
 +			mtk_dp->info.audio_caps
 +				= mdrv_DPTx_getAudioCaps(mtk_dp);
++		} else
++			dev_info(mtk_dp->dev, "Read EDID Fail!\n");
 +
 +		mtk_dp->training_state = DPTX_NTSTATE_TRAINING_PRE;
 +		break;
@@ -89258,8 +89311,11 @@ index 0000000000000000000000000000000000000000..b34de1165e1a7899c0e0e1468c978804
 +	if (!mtk_dp->training_info.bCablePlugIn)
 +		return DPTX_PLUG_OUT;
 +
-+	if (mtk_dp->state != mtk_dp->state_pre)
++	if (mtk_dp->state != mtk_dp->state_pre) {
++		dev_info(mtk_dp->dev, "m_DPTXState %d, m_DPTXStateTemp %d\n",
++			mtk_dp->state, mtk_dp->state_pre);
 +		mtk_dp->state_pre = mtk_dp->state;
++	}
 +
 +	switch (mtk_dp->state) {
 +	case DPTXSTATE_INITIAL:
@@ -89274,8 +89330,10 @@ index 0000000000000000000000000000000000000000..b34de1165e1a7899c0e0e1468c978804
 +		break;
 +
 +	case DPTXSTATE_PREPARE:
-+		if (mtk_dp->bUeventToHwc)
++		if (mtk_dp->bUeventToHwc) {
 +			mtk_dp->bUeventToHwc = false;
++		} else
++			dev_info(mtk_dp->dev, "Skip Uevent(1)\n");
 +
 +		if (mtk_dp->info.bPatternGen) {
 +			mtk_dp->video_enable = true;
@@ -89301,6 +89359,7 @@ index 0000000000000000000000000000000000000000..b34de1165e1a7899c0e0e1468c978804
 +			mdrv_DPTx_AudioMute(mtk_dp, true);
 +			mdrv_DPTx_StopSentSDP(mtk_dp);
 +			mtk_dp->state = DPTXSTATE_IDLE;
++			dev_info(mtk_dp->dev, "DPTX Link Status Change!\n");
 +		}
 +		break;
 +
@@ -89314,6 +89373,8 @@ index 0000000000000000000000000000000000000000..b34de1165e1a7899c0e0e1468c978804
 +static void mdrv_DPTx_HPD_HandleInISR(struct mtk_dp *mtk_dp)
 +{
 +	bool ubCurrentHPD = mhal_DPTx_GetHPDPinLevel(mtk_dp);
++
++	dev_info(mtk_dp->dev, "%s\n", __func__);
 +
 +	if (mtk_dp->training_info.usPHY_STS == HPD_INITIAL_STATE)
 +		return;
@@ -89342,6 +89403,7 @@ index 0000000000000000000000000000000000000000..b34de1165e1a7899c0e0e1468c978804
 +		mtk_dp->training_info.bCablePlugIn = true;
 +		mtk_dp->training_info.bCableStateChange = true;
 +		mtk_dp->bUeventToHwc = true;
++		dev_info(mtk_dp->dev, " HPD_CON_ISR\n");
 +		queue_work(mtk_dp->workqueue, &mtk_dp->work);
 +	}
 +
@@ -89352,6 +89414,7 @@ index 0000000000000000000000000000000000000000..b34de1165e1a7899c0e0e1468c978804
 +		mtk_dp->training_state = DPTX_NTSTATE_STARTUP;
 +		mtk_dp->training_state_pre = DPTX_NTSTATE_STARTUP;
 +		mtk_dp->bUeventToHwc = true;
++		dev_info(mtk_dp->dev, "HPD_DISCON_ISR\n");
 +		queue_work(mtk_dp->workqueue, &mtk_dp->work);
 +	}
 +
@@ -89370,8 +89433,13 @@ index 0000000000000000000000000000000000000000..b34de1165e1a7899c0e0e1468c978804
 +
 +	DPTx_Int_Count++;
 +
++	dev_info(mtk_dp->dev, "%s\n", __func__);
 +	mtk_dp->irq_status = (ubHWStatus | ubSWStatus);
 +	mtk_dp->training_info.usPHY_STS |= (ubHWStatus | ubSWStatus);
++	dev_info(mtk_dp->dev, "HW/SW status = 0x%x\n", (ubHWStatus | ubSWStatus));
++	dev_info(mtk_dp->dev, "HW status = 0x%x\n", (ubHWStatus));
++	dev_info(mtk_dp->dev, "SW status = 0x%x\n", (ubSWStatus));
++	dev_info(mtk_dp->dev, "ISR: Int Count = %d \r\n", DPTx_Int_Count);
 +
 +	mdrv_DPTx_HPD_HandleInISR(mtk_dp);
 +
@@ -89404,6 +89472,8 @@ index 0000000000000000000000000000000000000000..b34de1165e1a7899c0e0e1468c978804
 +
 +void mdrv_DPTx_Video_Enable(struct mtk_dp *mtk_dp, bool bEnable)
 +{
++	dev_info(mtk_dp->dev, "Output Video %s!\n", bEnable ? "enable" : "disable");
++
 +	if (bEnable) {
 +		mdrv_DPTx_SetDPTXOut(mtk_dp);
 +		mdrv_DPTx_VideoMute(mtk_dp, false);
@@ -89414,22 +89484,29 @@ index 0000000000000000000000000000000000000000..b34de1165e1a7899c0e0e1468c978804
 +
 +static void mdrv_DPTx_Set_Color_Format(struct mtk_dp *mtk_dp, u8 ucColorFormat)
 +{
++	dev_info(mtk_dp->dev, "Set Color Format = 0x%x\n", ucColorFormat);
++
 +	mtk_dp->info.format = ucColorFormat;
 +	mhal_DPTx_SetColorFormat(mtk_dp, ucColorFormat);
 +}
 +
 +static void mdrv_DPTx_Set_Color_Depth(struct mtk_dp *mtk_dp, u8 ucColorDepth)
 +{
++	dev_info(mtk_dp->dev, "Set Color Depth = %d (1~4=6/8/10/12bpp)\n", ucColorDepth + 1);
++
 +	mtk_dp->info.depth = ucColorDepth;
 +	mhal_DPTx_SetColorDepth(mtk_dp, ucColorDepth);
 +}
 +
 +void mdrv_DPTx_I2S_Audio_Enable(struct mtk_dp *mtk_dp, bool bEnable)
 +{
-+	if (bEnable)
++	if (bEnable) {
 +		mdrv_DPTx_AudioMute(mtk_dp, false);
-+	else
++		dev_info(mtk_dp->dev, "I2S Audio Enable!\n");
++	} else {
 +		mdrv_DPTx_AudioMute(mtk_dp, true);
++		dev_info(mtk_dp->dev, "I2S Audio Disable!\n");
++	}
 +}
 +
 +static void mdrv_DPTx_I2S_Audio_Set_MDiv(struct mtk_dp *mtk_dp, u8 ucDiv)
@@ -89534,6 +89611,7 @@ index 0000000000000000000000000000000000000000..b34de1165e1a7899c0e0e1468c978804
 +		SDP_DB[0x3] = 0x00;
 +
 +	mhal_DPTx_Audio_SDP_Setting(mtk_dp, ucChannel);
++	dev_info(mtk_dp->dev, "I2S Set Audio Channel = %d\n", ucChannel);
 +	mdrv_DPTx_SPKG_SDP(mtk_dp, true, DPTx_SDPTYP_AUI, SDP_HB, SDP_DB);
 +}
 +
@@ -89548,6 +89626,7 @@ index 0000000000000000000000000000000000000000..b34de1165e1a7899c0e0e1468c978804
 +	u8 i, Data[3];
 +
 +	drm_dp_dpcd_read(&mtk_dp->aux, 0x90, Data, 0x1);
++	dev_info(mtk_dp->dev, "FEC Capable[0], [0:3] should be 1: 0x%x\n", Data[0]);
 +
 +	/* FEC error count select 120[3:1]:         *
 +	 * 000b: FEC_ERROR_COUNT_DIS                *
@@ -89630,9 +89709,11 @@ index 0000000000000000000000000000000000000000..b34de1165e1a7899c0e0e1468c978804
 +		if (IS_ERR(mtk_dp->edid))
 +			return NULL;
 +
++		dev_info(mtk_dp->dev, "duplicate edid from mtk_dp->edid!\n");
 +		return drm_edid_duplicate(mtk_dp->edid);
 +	}
 +
++	dev_info(mtk_dp->dev, "Get edid from RX!\n");
 +	return drm_get_edid(connector, &mtk_dp->aux.ddc);
 +}
 +
@@ -89652,19 +89733,24 @@ index 0000000000000000000000000000000000000000..b34de1165e1a7899c0e0e1468c978804
 +	int event;
 +	struct mtk_dp *mtk_dp = container_of(work, struct mtk_dp, work);
 +
++	dev_info(mtk_dp->dev, "%s\n", __func__);
++
 +	event = mhal_DPTx_GetHPDPinLevel(mtk_dp) ? connector_status_connected :
 +		connector_status_disconnected;
 +
 +	if (event < 0)
 +		return;
 +
-+	if (mtk_dp->bridge_attached)
++	if (mtk_dp->bridge_attached) {
++		dev_info(mtk_dp->dev, "%s event = %d \n", __func__, event);
 +		drm_helper_hpd_irq_event(mtk_dp->bridge.dev);
++	}
 +
 +	if (event == connector_status_disconnected)
 +		mtk_dp_update_plugged_status(mtk_dp);
 +
 +	if (mtk_dp->training_info.usPHY_STS & HPD_INT_EVNET) {
++		dev_info(mtk_dp->dev, "HPD_INT_EVNET\n");
 +		mtk_dp->training_info.usPHY_STS &= ~HPD_INT_EVNET;
 +		mdrv_DPTx_CheckSinkHPDEvent(mtk_dp);
 +	}
@@ -89673,6 +89759,8 @@ index 0000000000000000000000000000000000000000..b34de1165e1a7899c0e0e1468c978804
 +static irqreturn_t mtk_dp_hpd_event(int hpd, void *dev)
 +{
 +	struct mtk_dp *mtk_dp = dev;
++
++	dev_info(mtk_dp->dev, "%s\n", __func__);
 +
 +	mdrv_DPTx_ISR(mtk_dp);
 +
@@ -89698,6 +89786,8 @@ index 0000000000000000000000000000000000000000..b34de1165e1a7899c0e0e1468c978804
 +		mtk_dp->dp_tx_clk = NULL;
 +	}
 +
++	dev_info(mtk_dp->dev, "reg and clock get success!\n");
++
 +	return 0;
 +}
 +
@@ -89722,6 +89812,8 @@ index 0000000000000000000000000000000000000000..b34de1165e1a7899c0e0e1468c978804
 +
 +	ret = mhal_DPTx_GetHPDPinLevel(mtk_dp) ? connector_status_connected :
 +			connector_status_disconnected;
++
++	dev_info(mtk_dp->dev, "%s \n", __func__, (ret == 1) ? "connected" : "disconnected");
 +
 +	if (mtk_dp->driver_data && mtk_dp->driver_data->is_edp)
 +		return connector_status_connected;
@@ -89766,6 +89858,7 @@ index 0000000000000000000000000000000000000000..b34de1165e1a7899c0e0e1468c978804
 +		drm_connector_update_edid_property(&mtk_dp->conn,
 +			mtk_dp->edid);
 +		num_modes = drm_add_edid_modes(&mtk_dp->conn, mtk_dp->edid);
++		dev_info(mtk_dp->dev, "%s modes = %d\n", __func__, num_modes);
 +		return num_modes;
 +	} else {
 +		mtk_dp->edid = drm_get_edid(conn, &mtk_dp->aux.ddc);
@@ -89798,6 +89891,7 @@ index 0000000000000000000000000000000000000000..b34de1165e1a7899c0e0e1468c978804
 +		drm_connector_update_edid_property(&mtk_dp->conn,
 +			mtk_dp->edid);
 +		num_modes = drm_add_edid_modes(&mtk_dp->conn, mtk_dp->edid);
++		dev_info(mtk_dp->dev, "%s modes = %d\n", __func__, num_modes);
 +		return num_modes;
 +	} else {
 +		mtk_dp->edid = drm_get_edid(conn, &mtk_dp->aux.ddc);
@@ -89909,6 +90003,7 @@ index 0000000000000000000000000000000000000000..b34de1165e1a7899c0e0e1468c978804
 +static void mtk_dp_aux_init(struct mtk_dp *mtk_dp)
 +{
 +	drm_dp_aux_init(&mtk_dp->aux);
++	dev_info(mtk_dp->dev, "aux hw_mutex = 0x%p\n", &mtk_dp->aux.hw_mutex);
 +
 +	mtk_dp->aux.name = kasprintf(GFP_KERNEL, "DPDDC-MTK");
 +	mtk_dp->aux.transfer = mtk_dp_aux_transfer;
@@ -89916,6 +90011,9 @@ index 0000000000000000000000000000000000000000..b34de1165e1a7899c0e0e1468c978804
 +
 +static void mtk_dp_HPDInterruptSet(struct mtk_dp *mtk_dp, int bstatus)
 +{
++	dev_info(mtk_dp->dev, "status:%d[2:DISCONNECT, 4:CONNECT, 8:IRQ] Power:%d\n",
++		bstatus, mtk_dp->bPowerOn);
++
 +	if ((bstatus == HPD_CONNECT && !mtk_dp->bPowerOn)
 +		|| (bstatus == HPD_DISCONNECT && mtk_dp->bPowerOn)
 +		|| (bstatus == HPD_INT_EVNET && mtk_dp->bPowerOn)) {
@@ -89940,6 +90038,8 @@ index 0000000000000000000000000000000000000000..b34de1165e1a7899c0e0e1468c978804
 +
 +void mtk_dp_poweroff(struct mtk_dp *mtk_dp)
 +{
++	dev_info(mtk_dp->dev, "%s\n", __func__);
++
 +	mutex_lock(&mtk_dp->dp_lock);
 +
 +	mtk_dp_HPDInterruptSet(mtk_dp, HPD_DISCONNECT);
@@ -89948,6 +90048,8 @@ index 0000000000000000000000000000000000000000..b34de1165e1a7899c0e0e1468c978804
 +
 +void mtk_dp_poweron(struct mtk_dp *mtk_dp)
 +{
++	dev_info(mtk_dp->dev, "%s\n", __func__);
++
 +	mutex_lock(&mtk_dp->dp_lock);
 +
 +	mtk_dp_HPDInterruptSet(mtk_dp, HPD_CONNECT);
@@ -89990,8 +90092,10 @@ index 0000000000000000000000000000000000000000..b34de1165e1a7899c0e0e1468c978804
 +
 +	ret = drm_connector_init(bridge->dev, &mtk_dp->conn, &mtk_dp_connector_funcs,
 +				 DRM_MODE_CONNECTOR_DisplayPort);
-+	if (ret)
++	if (ret) {
++		dev_info(mtk_dp->dev, "Failed to initialize connector: %d\n", ret);
 +		return ret;
++	}
 +	drm_connector_helper_add(&mtk_dp->conn, &mtk_dp_connector_helper_funcs);
 +
 +	mtk_dp->conn.polled = DRM_CONNECTOR_POLL_HPD;
@@ -90000,8 +90104,10 @@ index 0000000000000000000000000000000000000000..b34de1165e1a7899c0e0e1468c978804
 +
 +	ret = drm_connector_attach_encoder(&mtk_dp->conn,
 +						bridge->encoder);
-+	if (ret)
++	if (ret) {
++		dev_info(mtk_dp->dev, "Failed to attach connector to encoder: %d\n", ret);
 +		return ret;
++	}
 +
 +	return 0;
 +}
@@ -90018,6 +90124,8 @@ index 0000000000000000000000000000000000000000..b34de1165e1a7899c0e0e1468c978804
 +	struct mtk_dp *mtk_dp = dp_from_bridge(bridge);
 +	u8 bTempBuffer;
 +
++	dev_info(mtk_dp->dev, "%s+\n", __func__);
++
 +	if (!mtk_dp->enabled)
 +		return;
 +
@@ -90026,6 +90134,8 @@ index 0000000000000000000000000000000000000000..b34de1165e1a7899c0e0e1468c978804
 +		drm_dp_dpcd_write(&mtk_dp->aux, DPCD_00600, &bTempBuffer, 0x1);
 +		mdelay(2);
 +	}
++
++	dev_info(mtk_dp->dev, "%s-\n", __func__);
 +
 +	msWrite2Byte(mtk_dp, TOP_OFFSET, 0x2); /* config only aux */
 +
@@ -90060,6 +90170,8 @@ index 0000000000000000000000000000000000000000..b34de1165e1a7899c0e0e1468c978804
 +{
 +	struct mtk_dp *mtk_dp = dp_from_bridge(bridge);
 +
++	dev_info(mtk_dp->dev, "%s\n", __func__);
++
 +	msWrite4ByteMask(mtk_dp, 0x0008, 0xf << 8, BITMASK(11 : 8));
 +
 +	mdrv_DPTx_CheckSinkCap(mtk_dp);
@@ -90072,6 +90184,8 @@ index 0000000000000000000000000000000000000000..b34de1165e1a7899c0e0e1468c978804
 +	struct mtk_dp *mtk_dp = dp_from_bridge(bridge);
 +	int ret = DPTX_NOERR;
 +	int i;
++
++	dev_info(mtk_dp->dev, "%s\n", __func__);
 +
 +	mtk_dp->enabled = true;
 +	mtk_dp_update_plugged_status(mtk_dp);
@@ -90089,6 +90203,10 @@ index 0000000000000000000000000000000000000000..b34de1165e1a7899c0e0e1468c978804
 +		if (ret != DPTX_NOERR)
 +			break;
 +	}
++
++	if (ret != DPTX_NOERR)
++		dev_info(mtk_dp->dev, "dptx handle fail!!!");
++
 +
 +	mtk_dp_video_config(mtk_dp);
 +	mdrv_DPTx_Video_Enable(mtk_dp, true);
@@ -90109,7 +90227,10 @@ index 0000000000000000000000000000000000000000..b34de1165e1a7899c0e0e1468c978804
 +
 +	rx_linkrate = (u32)mtk_dp->training_info.ubLinkRate * 270000;
 +
-+	if (rx_linkrate * mtk_dp->training_info.ubLinkLaneCount < mode->clock * 24)
++	if (rx_linkrate * mtk_dp->training_info.ubLinkLaneCount < mode->clock * 24 / 3)
++		return MODE_CLOCK_HIGH;
++
++	if (mode->clock > 600000)
 +		return MODE_CLOCK_HIGH;
 +
 +	return MODE_OK;
@@ -90398,6 +90519,8 @@ index 0000000000000000000000000000000000000000..b34de1165e1a7899c0e0e1468c978804
 +static int mtk_dp_suspend(struct device *dev)
 +{
 +	struct mtk_dp *mtk_dp = dev_get_drvdata(dev);
++
++	dev_info(mtk_dp->dev, "%s\n", __func__);
 +
 +	mhal_DPTx_AnalogPowerOnOff(mtk_dp, false);
 +	mhal_DPTx_HPDInterruptEnable(mtk_dp, false);
@@ -91863,10 +91986,10 @@ index 0000000000000000000000000000000000000000..44be798a9cfd96da90fb6d9afcfeda5a
 +
 diff --git a/drivers/gpu/drm/mediatek/mtk_dp_hal.c b/drivers/gpu/drm/mediatek/mtk_dp_hal.c
 new file mode 100644
-index 0000000000000000000000000000000000000000..19c665174acabee0a3c784be41421665a1d55265
+index 0000000000000000000000000000000000000000..0bcf66445d3341a241dc88dee29f5b74066eb188
 --- /dev/null
 +++ b/drivers/gpu/drm/mediatek/mtk_dp_hal.c
-@@ -0,0 +1,2272 @@
+@@ -0,0 +1,2355 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
 + * Copyright (c) 2019 MediaTek Inc.
@@ -92027,6 +92150,8 @@ index 0000000000000000000000000000000000000000..19c665174acabee0a3c784be41421665
 +#if 0
 +	u32 efuse = get_devinfo_with_index(114);
 +
++	dev_info(mtk_dp->dev,"DPTX Efuse(0x11C101B8) = 0x%x\n", efuse);
++
 +	if (efuse) {
 +		msWrite4ByteMask(mtk_dp, 0x0008, efuse >> 1, BITMASK(23 : 20));
 +		msWrite4ByteMask(mtk_dp, 0x0000, efuse, BITMASK(20 : 16));
@@ -92045,11 +92170,13 @@ index 0000000000000000000000000000000000000000..19c665174acabee0a3c784be41421665
 +			BIT6|BIT5, BIT6|BIT5);
 +		msWriteByteMask(mtk_dp, REG_3368_DP_ENCODER1_P0 + 1,
 +			0, BIT5|BIT4);
++		dev_info(mtk_dp->dev,"DPTX imode force-ov\n");
 +	} else {
 +		msWriteByteMask(mtk_dp, REG_3030_DP_ENCODER0_P0 + 1,
 +			BIT6, BIT6|BIT5);
 +		msWriteByteMask(mtk_dp, REG_3368_DP_ENCODER1_P0 + 1,
 +			BIT4, BIT5|BIT4);
++		dev_info(mtk_dp->dev,"DPTX pmode force-ov\n");
 +	}
 +}
 +
@@ -92100,6 +92227,10 @@ index 0000000000000000000000000000000000000000..19c665174acabee0a3c784be41421665
 +	msWrite2Byte(mtk_dp, REG_3174_DP_ENCODER0_P0,
 +		DPTX_TBL->Vbp + DPTX_TBL->Vsw);
 +	msWrite2Byte(mtk_dp, REG_3178_DP_ENCODER0_P0, DPTX_TBL->Vde);
++
++	dev_info(mtk_dp->dev,"MSA:Htt=%d Vtt=%d Hact=%d Vact=%d, fps=%d\n",
++			DPTX_TBL->Htt, DPTX_TBL->Vtt,
++			DPTX_TBL->Hde, DPTX_TBL->Vde, DPTX_TBL->FrameRate);
 +}
 +
 +void mhal_DPTx_SetColorFormat(struct mtk_dp *mtk_dp, BYTE  enOutColorFormat)
@@ -92273,6 +92404,7 @@ index 0000000000000000000000000000000000000000..19c665174acabee0a3c784be41421665
 +		break;
 +	default:
 +		ColorBpp = 24;
++		dev_info(mtk_dp->dev, "Set Wrong Bpp = %d\n", ColorBpp);
 +		break;
 +	}
 +
@@ -92681,6 +92813,7 @@ index 0000000000000000000000000000000000000000..19c665174acabee0a3c784be41421665
 +		msWrite2ByteMask(mtk_dp, REG_3324_DP_ENCODER1_P0,
 +			0, AUDIO_SOURCE_MUX_DP_ENCODER1_P0_FLDMASK);
 +	}
++	dev_info(mtk_dp->dev, "fs = %d, ch = %d\n", Fs, Channel);
 +
 +	//audio channel count change reset
 +	msWriteByteMask(mtk_dp, REG_33F4_DP_ENCODER1_P0 + 1, BIT1, BIT1);
@@ -92852,6 +92985,8 @@ index 0000000000000000000000000000000000000000..19c665174acabee0a3c784be41421665
 +{
 +	bool ret = (msReadByte(mtk_dp, REG_3414_DP_TRANS_P0) & BIT2) ? 1 : 0;
 +
++	dev_info(mtk_dp->dev, "%s\n", __func__);
++
 +	return ret;
 +}
 +
@@ -92883,6 +93018,8 @@ index 0000000000000000000000000000000000000000..19c665174acabee0a3c784be41421665
 +						+ bRegIndex;
 +
 +					msWriteByte(mtk_dp, addr, pHB[pOffset]);
++					dev_info(mtk_dp->dev, "W Reg addr: %x, index %d\n",
++						addr, pOffset);
 +				}
 +		else if (ucSDPType >= DPTx_SDPTYP_PPS0
 +			&& ucSDPType <= DPTx_SDPTYP_PPS3) {
@@ -92896,6 +93033,8 @@ index 0000000000000000000000000000000000000000..19c665174acabee0a3c784be41421665
 +						+ bRegIndex;
 +
 +					msWriteByte(mtk_dp, addr, pHB[pOffset]);
++					dev_info(mtk_dp->dev, "W H1 Reg addr:%x,index:%d\n",
++						addr, pOffset);
 +				}
 +		} else {
 +			ucSTOffset = (ucSDPType - DPTx_SDPTYP_ACM) * 8;
@@ -92909,6 +93048,8 @@ index 0000000000000000000000000000000000000000..19c665174acabee0a3c784be41421665
 +						+ bRegIndex;
 +
 +					msWriteByte(mtk_dp, addr, pHB[pOffset]);
++					dev_info(mtk_dp->dev, "W H2 Reg addr: %x,index %d\n",
++						addr, pOffset);
 +				}
 +		}
 +	}
@@ -92925,6 +93066,7 @@ index 0000000000000000000000000000000000000000..19c665174acabee0a3c784be41421665
 +			msWriteByteMask(mtk_dp, REG_3280_DP_ENCODER1_P0,
 +				BIT5, BIT5);
 +			msWriteByte(mtk_dp, REG_30B4_DP_ENCODER0_P0, 0x05);
++			dev_info(mtk_dp->dev, "SENT SDP TYPE ACM\n");
 +		}
 +		break;
 +	case DPTx_SDPTYP_ISRC:
@@ -92943,6 +93085,7 @@ index 0000000000000000000000000000000000000000..19c665174acabee0a3c784be41421665
 +			msWriteByteMask(mtk_dp, REG_3280_DP_ENCODER1_P0,
 +				BIT5, BIT5);
 +			msWriteByte(mtk_dp, REG_30B4_DP_ENCODER0_P0 + 1, 0x05);
++			dev_info(mtk_dp->dev, "SENT SDP TYPE ISRC\n");
 +		}
 +		break;
 +	case DPTx_SDPTYP_AVI:
@@ -92953,6 +93096,7 @@ index 0000000000000000000000000000000000000000..19c665174acabee0a3c784be41421665
 +			msWriteByteMask(mtk_dp, REG_3280_DP_ENCODER1_P0,
 +				BIT5, BIT5);
 +			msWriteByte(mtk_dp, REG_30A4_DP_ENCODER0_P0 + 1, 0x05);
++			dev_info(mtk_dp->dev, "SENT SDP TYPE AVI\n");
 +		}
 +		break;
 +	case DPTx_SDPTYP_AUI:
@@ -92963,6 +93107,7 @@ index 0000000000000000000000000000000000000000..19c665174acabee0a3c784be41421665
 +			msWriteByteMask(mtk_dp, REG_3280_DP_ENCODER1_P0,
 +				BIT5, BIT5);
 +			msWriteByte(mtk_dp, REG_30A8_DP_ENCODER0_P0, 0x05);
++			dev_info(mtk_dp->dev, "SENT SDP TYPE AUI\n");
 +		}
 +		break;
 +	case DPTx_SDPTYP_SPD:
@@ -92973,6 +93118,7 @@ index 0000000000000000000000000000000000000000..19c665174acabee0a3c784be41421665
 +			msWriteByteMask(mtk_dp, REG_3280_DP_ENCODER1_P0,
 +				BIT5, BIT5);
 +			msWriteByte(mtk_dp, REG_30A8_DP_ENCODER0_P0 + 1, 0x05);
++			dev_info(mtk_dp->dev, "SENT SDP TYPE SPD\n");
 +		}
 +		break;
 +	case DPTx_SDPTYP_MPEG:
@@ -92983,6 +93129,7 @@ index 0000000000000000000000000000000000000000..19c665174acabee0a3c784be41421665
 +			msWriteByteMask(mtk_dp, REG_3280_DP_ENCODER1_P0,
 +				BIT5, BIT5);
 +			msWriteByte(mtk_dp, REG_30AC_DP_ENCODER0_P0, 0x05);
++			dev_info(mtk_dp->dev, "SENT SDP TYPE MPEG\n");
 +		}
 +		break;
 +	case DPTx_SDPTYP_NTSC:
@@ -92993,6 +93140,7 @@ index 0000000000000000000000000000000000000000..19c665174acabee0a3c784be41421665
 +			msWriteByteMask(mtk_dp, REG_3280_DP_ENCODER1_P0,
 +				BIT5, BIT5);
 +			msWriteByte(mtk_dp, REG_30AC_DP_ENCODER0_P0 + 1, 0x05);
++			dev_info(mtk_dp->dev, "SENT SDP TYPE NTSC\n");
 +		}
 +		break;
 +	case DPTx_SDPTYP_VSP:
@@ -93003,6 +93151,7 @@ index 0000000000000000000000000000000000000000..19c665174acabee0a3c784be41421665
 +			msWriteByteMask(mtk_dp, REG_3280_DP_ENCODER1_P0,
 +				BIT5, BIT5);
 +			msWriteByte(mtk_dp, REG_30B0_DP_ENCODER0_P0, 0x05);
++			dev_info(mtk_dp->dev, "SENT SDP TYPE VSP\n");
 +		}
 +		break;
 +	case DPTx_SDPTYP_VSC:
@@ -93013,6 +93162,7 @@ index 0000000000000000000000000000000000000000..19c665174acabee0a3c784be41421665
 +			msWriteByteMask(mtk_dp, REG_3280_DP_ENCODER1_P0,
 +				BIT5, BIT5);
 +			msWriteByte(mtk_dp, REG_30B8_DP_ENCODER0_P0, 0x05);
++			dev_info(mtk_dp->dev, "SENT SDP TYPE VSC\n");
 +		}
 +		break;
 +	case DPTx_SDPTYP_EXT:
@@ -93023,6 +93173,7 @@ index 0000000000000000000000000000000000000000..19c665174acabee0a3c784be41421665
 +			msWriteByteMask(mtk_dp, REG_3280_DP_ENCODER1_P0,
 +				BIT5, BIT5);
 +			msWriteByte(mtk_dp, REG_30B0_DP_ENCODER0_P0 + 1, 0x05);
++			dev_info(mtk_dp->dev, "SENT SDP TYPE EXT\n");
 +		}
 +		break;
 +
@@ -93034,6 +93185,7 @@ index 0000000000000000000000000000000000000000..19c665174acabee0a3c784be41421665
 +			msWriteByteMask(mtk_dp, REG_3280_DP_ENCODER1_P0,
 +				BIT5, BIT5);
 +			msWriteByte(mtk_dp, REG_31E8_DP_ENCODER0_P0, 0x05);
++			dev_info(mtk_dp->dev, "SENT SDP TYPE PPS0\n");
 +		}
 +	break;
 +
@@ -93045,6 +93197,7 @@ index 0000000000000000000000000000000000000000..19c665174acabee0a3c784be41421665
 +			msWriteByteMask(mtk_dp, REG_3280_DP_ENCODER1_P0,
 +				BIT5, BIT5);
 +			msWriteByte(mtk_dp, REG_31E8_DP_ENCODER0_P0, 0x05);
++			dev_info(mtk_dp->dev, "SENT SDP TYPE PPS1\n");
 +		}
 +	break;
 +
@@ -93056,6 +93209,7 @@ index 0000000000000000000000000000000000000000..19c665174acabee0a3c784be41421665
 +			msWriteByteMask(mtk_dp, REG_3280_DP_ENCODER1_P0,
 +				BIT5, BIT5);
 +			msWriteByte(mtk_dp, REG_31E8_DP_ENCODER0_P0, 0x05);
++			dev_info(mtk_dp->dev, "SENT SDP TYPE PPS2\n");
 +		}
 +	break;
 +
@@ -93067,6 +93221,7 @@ index 0000000000000000000000000000000000000000..19c665174acabee0a3c784be41421665
 +			msWriteByteMask(mtk_dp, REG_3280_DP_ENCODER1_P0,
 +				BIT5, BIT5);
 +			msWriteByte(mtk_dp, REG_31E8_DP_ENCODER0_P0, 0x05);
++			dev_info(mtk_dp->dev, "SENT SDP TYPE PPS3\n");
 +		}
 +	break;
 +
@@ -93084,6 +93239,7 @@ index 0000000000000000000000000000000000000000..19c665174acabee0a3c784be41421665
 +			msWriteByteMask(mtk_dp, REG_3280_DP_ENCODER1_P0,
 +				BIT5, BIT5);
 +			msWriteByte(mtk_dp, REG_31DC_DP_ENCODER0_P0, 0x05);
++			dev_info(mtk_dp->dev, "SENT SDP TYPE DRM\n");
 +		}
 +	break;
 +	default:
@@ -93264,11 +93420,15 @@ index 0000000000000000000000000000000000000000..19c665174acabee0a3c784be41421665
 +			break;
 +		}
 +
-+		if (uAuxIrqStatus & AUX_400US_TIMEOUT_IRQ_AUX_TX_P0_FLDMASK)
++		if (uAuxIrqStatus & AUX_400US_TIMEOUT_IRQ_AUX_TX_P0_FLDMASK) {
++			dev_info(mtk_dp->dev, "(AUX Read)HW Timeout 400us irq");
 +			break;
++		}
 +	}
 +
 +	ubReplyCmd = msReadByte(mtk_dp, REG_3624_AUX_TX_P0) & 0x0F;
++	if (ubReplyCmd)
++		dev_info(mtk_dp->dev, "ubReplyCmd =%x NACK or Defer\n", ubReplyCmd);
 +
 +	if ((WaitReplyCount == 0x0) || ubReplyCmd) {
 +		BYTE phyStatus = 0x00;
@@ -93283,6 +93443,7 @@ index 0000000000000000000000000000000000000000..19c665174acabee0a3c784be41421665
 +		msWriteByte(mtk_dp, REG_3640_AUX_TX_P0, 0x7F);
 +
 +		udelay(AUX_WRITE_READ_WAIT_TIME);
++		dev_info(mtk_dp->dev, "WaitReplyCount =%x TimeOut", WaitReplyCount);
 +		return false;
 +	}
 +
@@ -93311,7 +93472,8 @@ index 0000000000000000000000000000000000000000..19c665174acabee0a3c784be41421665
 +					= msReadByte(mtk_dp,
 +						REG_3620_AUX_TX_P0);
 +			}
-+		} 
++		} else
++			dev_info(mtk_dp->dev, "Read TimeOut 0x%lx\n", usDPCDADDR);
 +	}
 +
 +	msWrite2ByteMask(mtk_dp, REG_3650_AUX_TX_P0,
@@ -93375,11 +93537,16 @@ index 0000000000000000000000000000000000000000..19c665174acabee0a3c784be41421665
 +			break;
 +		}
 +
-+		if (uAuxIrqStatus & AUX_400US_TIMEOUT_IRQ_AUX_TX_P0_FLDMASK)
++		if (uAuxIrqStatus & AUX_400US_TIMEOUT_IRQ_AUX_TX_P0_FLDMASK) {
++			dev_info(mtk_dp->dev, "HW TO irq (Write) %lld ns\n",
++				sched_clock() - cStart);
 +			break;
++		}
 +	}
 +
 +	ubReplyCmd = msReadByte(mtk_dp, REG_3624_AUX_TX_P0) & 0x0F;
++	if (ubReplyCmd)
++		dev_info(mtk_dp->dev, "ubReplyCmd =%x NACK or Defer\n", ubReplyCmd);
 +
 +	if ((WaitReplyCount == 0x0) || ubReplyCmd) {
 +		BYTE phyStatus = 0x00;
@@ -93393,6 +93560,8 @@ index 0000000000000000000000000000000000000000..19c665174acabee0a3c784be41421665
 +
 +		udelay(AUX_WRITE_READ_WAIT_TIME);
 +
++		dev_info(mtk_dp->dev, "ubReplyCmd = 0x%x WaitReplyCount = %d\n",
++			ubReplyCmd, WaitReplyCount);
 +		return false;
 +	}
 +
@@ -93410,6 +93579,9 @@ index 0000000000000000000000000000000000000000..19c665174acabee0a3c784be41421665
 +bool mhal_DPTx_SetSwingtPreEmphasis(struct mtk_dp *mtk_dp, int lane_num,
 +	int swingValue, int preEmphasis)
 +{
++	dev_info(mtk_dp->dev, "lane%d, set Swing = %x, Emp =%x\n", lane_num,
++		swingValue, preEmphasis);
++
 +	switch (lane_num) {
 +	case DPTx_LANE0:
 +		msWrite4ByteMask(mtk_dp,
@@ -93489,6 +93661,7 @@ index 0000000000000000000000000000000000000000..19c665174acabee0a3c784be41421665
 +	uint32_t int_status;
 +
 +	int_status = msRead4Byte(mtk_dp, DP_TX_TOP_IRQ_STATUS);
++	dev_info(mtk_dp->dev, "int_status = 0x%x\n", int_status);
 +
 +	if (int_status & BIT2)
 +		AuxIrqCnt++;
@@ -93500,10 +93673,14 @@ index 0000000000000000000000000000000000000000..19c665174acabee0a3c784be41421665
 +
 +	if (int_status & BIT0)
 +		EncIrqCnt++;
++
++	dev_info(mtk_dp->dev, "AuxIrqCnt:%ld, TransIrqCnt:%ld, EncIrqCnt:%ld\n",
++		AuxIrqCnt, TransIrqCnt, EncIrqCnt);
 +}
 +
 +void mhal_DPTx_EnableFEC(struct mtk_dp *mtk_dp, bool bENABLE)
 +{
++	dev_info(mtk_dp->dev, "enable = %d\n", bENABLE);
 +	if (bENABLE)
 +		msWriteByteMask(mtk_dp,
 +			REG_3540_DP_TRANS_P0, BIT0, BIT0); // [0] : FEC Enable
@@ -93514,6 +93691,7 @@ index 0000000000000000000000000000000000000000..19c665174acabee0a3c784be41421665
 +
 +void mhal_DPTx_EnableDSC(struct mtk_dp *mtk_dp, bool bENABLE)
 +{
++	dev_info(mtk_dp->dev, "DSC enable=%d\n", bENABLE);
 +	if (bENABLE) {
 +		msWriteByteMask(mtk_dp,
 +			REG_336C_DP_ENCODER1_P0,
@@ -93637,6 +93815,8 @@ index 0000000000000000000000000000000000000000..19c665174acabee0a3c784be41421665
 +			REG_3414_DP_TRANS_P0,
 +			0,
 +			HPD_SET_DP_TRANS_P0_FLDMASK);
++
++	dev_info(mtk_dp->dev, "REG3414 = 0x%x\n", msReadByte(mtk_dp, REG_3414_DP_TRANS_P0));
 +}
 +
 +WORD mhal_DPTx_GetSWIRQStatus(struct mtk_dp *mtk_dp)
@@ -93651,6 +93831,7 @@ index 0000000000000000000000000000000000000000..19c665174acabee0a3c784be41421665
 +}
 +void mhal_DPTx_SWInterruptClr(struct mtk_dp *mtk_dp, WORD bstatus)
 +{
++	dev_info(mtk_dp->dev, "%s\n", __func__);
 +	msWrite2Byte(mtk_dp, REG_35C8_DP_TRANS_P0, bstatus);
 +	msWrite2Byte(mtk_dp, REG_35C8_DP_TRANS_P0, 0);
 +}
@@ -93670,6 +93851,7 @@ index 0000000000000000000000000000000000000000..19c665174acabee0a3c784be41421665
 +
 +void mhal_DPTx_HPDInterruptClr(struct mtk_dp *mtk_dp, BYTE bstatus)
 +{
++	dev_info(mtk_dp->dev, "%s\n", __func__);
 +	msWriteByteMask(mtk_dp,
 +		REG_3418_DP_TRANS_P0,
 +		bstatus,
@@ -93682,6 +93864,7 @@ index 0000000000000000000000000000000000000000..19c665174acabee0a3c784be41421665
 +
 +void mhal_DPTx_HPDInterruptEnable(struct mtk_dp *mtk_dp, bool enable)
 +{
++	dev_info(mtk_dp->dev, "%s\n", __func__);
 +	// [7]:int[6]:Con[5]DisCon[4]No-Use:UnMASK HPD Port
 +	if (enable)
 +		msWriteByteMask(mtk_dp,
@@ -93767,6 +93950,8 @@ index 0000000000000000000000000000000000000000..19c665174acabee0a3c784be41421665
 +	uint32_t reg = 0;
 +	BYTE temp = 0;
 +
++	dev_info(mtk_dp->dev, "%s\n", __func__);
++
 +	temp = c0 & 0x3F;
 +	reg = temp | (temp << 8) | (temp << 16) | (temp << 24);
 +	msWrite4Byte(mtk_dp, 0x1138, reg);
@@ -93806,6 +93991,8 @@ index 0000000000000000000000000000000000000000..19c665174acabee0a3c784be41421665
 +
 +void mhal_DPTx_SSCOnOffSetting(struct mtk_dp *mtk_dp, bool bENABLE)
 +{
++	dev_info(mtk_dp->dev, "SSC enable = %d\n", bENABLE);
++
 +	msWrite4ByteMask(mtk_dp, 0x2000, BIT(0), BITMASK(0:1));
 +
 +	if (bENABLE)
@@ -93845,6 +94032,8 @@ index 0000000000000000000000000000000000000000..19c665174acabee0a3c784be41421665
 +
 +void mhal_DPTx_DigitalSetting(struct mtk_dp *mtk_dp)
 +{
++	dev_info(mtk_dp->dev, "%s\n", __func__);
++
 +	msWriteByteMask(mtk_dp,
 +		REG_304C_DP_ENCODER0_P0,
 +		0,
@@ -93869,6 +94058,8 @@ index 0000000000000000000000000000000000000000..19c665174acabee0a3c784be41421665
 +
 +void mhal_DPTx_DigitalSwReset(struct mtk_dp *mtk_dp)
 +{
++	dev_info(mtk_dp->dev, "%s\n", __func__);
++
 +	msWriteByteMask(mtk_dp, REG_340C_DP_TRANS_P0 + 1, BIT5, BIT5);
 +	mdelay(1);
 +	msWriteByteMask(mtk_dp, REG_340C_DP_TRANS_P0 + 1, 0, BIT5);
@@ -93893,6 +94084,8 @@ index 0000000000000000000000000000000000000000..19c665174acabee0a3c784be41421665
 +
 +void mhal_DPTx_SetTxLane(struct mtk_dp *mtk_dp, int  Value)
 +{
++	dev_info(mtk_dp->dev, "%s\n", __func__);
++
 +	if (Value == 0)
 +		msWriteByteMask(mtk_dp,
 +			REG_35F0_DP_TRANS_P0,
@@ -93918,6 +94111,8 @@ index 0000000000000000000000000000000000000000..19c665174acabee0a3c784be41421665
 +
 +void mhal_DPTx_SetTxRate(struct mtk_dp *mtk_dp, int Value)
 +{
++	dev_info(mtk_dp->dev, "%s\n", __func__);
++
 +	msWrite4Byte(mtk_dp, 0x2000, 0x00000001); // power off TPLL and Lane;
 +	/// Set gear : 0x0 : RBR, 0x1 : HBR, 0x2 : HBR2, 0x3 : HBR3
 +	switch (Value) {
@@ -93953,6 +94148,8 @@ index 0000000000000000000000000000000000000000..19c665174acabee0a3c784be41421665
 +
 +void mhal_DPTx_SetTxTrainingPattern(struct mtk_dp *mtk_dp, int  Value)
 +{
++	dev_info(mtk_dp->dev, "Set Train Pattern =0x%x\n ", Value);
++
 +	if (Value == BIT4) // if Set TPS1
 +		mhal_DPTx_PHY_SetIdlePattern(mtk_dp, false);
 +
@@ -93981,6 +94178,7 @@ index 0000000000000000000000000000000000000000..19c665174acabee0a3c784be41421665
 +
 +void mhal_DPTx_SetFreeSync(struct mtk_dp *mtk_dp, bool bENABLE)
 +{
++	dev_info(mtk_dp->dev, "%s\n", __func__);
 +	if (bENABLE)//mtk_dp, REG_bs2bs_mode, [13 : 12]  = 11 freesync on
 +		msWriteByteMask(mtk_dp,
 +			REG_3368_DP_ENCODER1_P0 + 1,
@@ -93992,6 +94190,7 @@ index 0000000000000000000000000000000000000000..19c665174acabee0a3c784be41421665
 +			BIT4,
 +			BIT5|BIT4);
 +}
++
 +
 +void mhal_DPTx_SetEF_Mode(struct mtk_dp *mtk_dp, bool  bENABLE)
 +{
@@ -94042,6 +94241,8 @@ index 0000000000000000000000000000000000000000..19c665174acabee0a3c784be41421665
 +
 +void mhal_DPTx_VideoMute(struct mtk_dp *mtk_dp, bool bENABLE)
 +{
++	dev_info(mtk_dp->dev, "enable = %d\n", bENABLE);
++
 +	if (bENABLE) {
 +		msWriteByteMask(mtk_dp,
 +			REG_3000_DP_ENCODER0_P0,
@@ -94063,10 +94264,12 @@ index 0000000000000000000000000000000000000000..19c665174acabee0a3c784be41421665
 +		else
 +			mtk_dp_atf_call(DP_ATF_VIDEO_UNMUTE, 0);
 +	}
++	dev_info(mtk_dp->dev, "mute = 0x%x\n", readl(mtk_dp->regs + 0x402c));
 +}
 +
 +void mhal_DPTx_VideoMuteSW(struct mtk_dp *mtk_dp, bool bENABLE)
 +{
++	dev_info(mtk_dp->dev, "enable = %d\n", bENABLE);
 +	if (bENABLE)
 +		msWriteByteMask(mtk_dp,
 +			REG_304C_DP_ENCODER0_P0,
@@ -94082,6 +94285,7 @@ index 0000000000000000000000000000000000000000..19c665174acabee0a3c784be41421665
 +
 +void mhal_DPTx_AudioMute(struct mtk_dp *mtk_dp, bool bENABLE)
 +{
++	dev_info(mtk_dp->dev, "%s\n", __func__);
 +	if (bENABLE) {
 +		msWrite2ByteMask(mtk_dp,
 +			REG_3030_DP_ENCODER0_P0,
@@ -94118,6 +94322,8 @@ index 0000000000000000000000000000000000000000..19c665174acabee0a3c784be41421665
 +
 +void mhal_DPTx_ShutDownDPTxPort(struct mtk_dp *mtk_dp)
 +{
++	dev_info(mtk_dp->dev, "%s\n", __func__);
++
 +	//Power Down Tx Aux
 +	msWriteByteMask(mtk_dp, REG_367C_AUX_TX_P0 + 1, 0, BIT4);
 +	msWriteByteMask(mtk_dp, REG_3670_AUX_TX_P0 + 1, BIT2, BIT2);
@@ -94529,10 +94735,10 @@ index 0000000000000000000000000000000000000000..41b57185212eedc8701affbe2c3205a9
 +
 diff --git a/drivers/gpu/drm/mediatek/mtk_dp_intf.c b/drivers/gpu/drm/mediatek/mtk_dp_intf.c
 new file mode 100644
-index 0000000000000000000000000000000000000000..801f1134d768aa7c69ffec7759ad4e6bb4a9d417
+index 0000000000000000000000000000000000000000..d54c0c14390ee7881df2b1f71ba4f45ff5675b7a
 --- /dev/null
 +++ b/drivers/gpu/drm/mediatek/mtk_dp_intf.c
-@@ -0,0 +1,871 @@
+@@ -0,0 +1,877 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +/*
 + * Copyright (c) 2014 MediaTek Inc.
@@ -95088,6 +95294,10 @@ index 0000000000000000000000000000000000000000..801f1134d768aa7c69ffec7759ad4e6b
 +	if (ret < 0)
 +		dev_err(dpintf->dev, "%s Failed to enable hf_fdp_ck clock: %d\n", __func__, ret);
 +
++	dev_info(dpintf->dev, "%s :dpintf->pclk_src[TVDPLL_PLL] =  %ld\n", __func__, clk_get_rate(dpintf->pclk_src[TVDPLL_PLL]));
++	dev_info(dpintf->dev, "%s :dpintf->pclk =  %ld\n", __func__, clk_get_rate(dpintf->pclk));
++	dev_info(dpintf->dev, "%s :dpintf->hf_fmm_ck =  %ld\n", __func__, clk_get_rate(dpintf->hf_fmm_ck));
++	dev_info(dpintf->dev, "%s :dpintf->hf_fdp_ck =  %ld\n", __func__, clk_get_rate(dpintf->hf_fdp_ck));
 +
 +	pr_info("%s -", __func__);
 +	return 0;
@@ -95361,6 +95571,8 @@ index 0000000000000000000000000000000000000000..801f1134d768aa7c69ffec7759ad4e6b
 +					  NULL, &dpintf->next_bridge);
 +	if (ret)
 +		return ret;
++
++	dev_info(dev, "Found bridge node: %pOF\n", dpintf->next_bridge->of_node);
 +
 +	platform_set_drvdata(pdev, dpintf);
 +
@@ -123149,7 +123361,7 @@ index c2ed5b6cab8bff5fd9a284abdcc9c904c7b425be..5adc2908dffe5cf3144538d79e65d377
 +
  #endif
 diff --git a/drivers/media/v4l2-core/v4l2-ctrls.c b/drivers/media/v4l2-core/v4l2-ctrls.c
-index fb388c1e2a0955645197a66dd2cf7baa74cc891c..cc329172444d443fd30263466acc982899a8185a 100644
+index fb388c1e2a0955645197a66dd2cf7baa74cc891c..2c0ea25ae599125620c9818df0a77cb8b75f70ef 100644
 --- a/drivers/media/v4l2-core/v4l2-ctrls.c
 +++ b/drivers/media/v4l2-core/v4l2-ctrls.c
 @@ -1700,6 +1700,7 @@ static void std_init_compound(const struct v4l2_ctrl *ctrl, u32 idx,
@@ -123175,6 +123387,51 @@ index fb388c1e2a0955645197a66dd2cf7baa74cc891c..cc329172444d443fd30263466acc9828
  	case V4L2_CTRL_TYPE_FWHT_PARAMS:
  		p_fwht_params = p;
  		p_fwht_params->version = V4L2_FWHT_VERSION;
+@@ -1957,22 +1966,6 @@ validate_vp9_seg_params(struct v4l2_vp9_segmentation *seg)
+ 	    !(seg->flags & V4L2_VP9_SEGMENTATION_FLAG_ENABLED))
+ 		return -EINVAL;
+ 
+-	/*
+-	 * V4L2_VP9_SEGMENTATION_FLAG_TEMPORAL_UPDATE implies
+-	 * V4L2_VP9_SEGMENTATION_FLAG_UPDATE_MAP.
+-	 */
+-	if (seg->flags & V4L2_VP9_SEGMENTATION_FLAG_TEMPORAL_UPDATE &&
+-	    !(seg->flags & V4L2_VP9_SEGMENTATION_FLAG_UPDATE_MAP))
+-		return -EINVAL;
+-
+-	/*
+-	 * V4L2_VP9_SEGMENTATION_FLAG_ABS_OR_DELTA_UPDATE implies
+-	 * V4L2_VP9_SEGMENTATION_FLAG_UPDATE_DATA.
+-	 */
+-	if (seg->flags & V4L2_VP9_SEGMENTATION_FLAG_ABS_OR_DELTA_UPDATE &&
+-	    !(seg->flags & V4L2_VP9_SEGMENTATION_FLAG_UPDATE_DATA))
+-		return -EINVAL;
+-
+ 	for (i = 0; i < ARRAY_SIZE(seg->feature_enabled); i++) {
+ 		if (seg->feature_enabled[i] &
+ 		    ~(V4L2_VP9_SEGMENT_FEATURE_QP_DELTA |
+@@ -2017,12 +2010,17 @@ validate_vp9_frame_decode_params(struct v4l2_ctrl_vp9_frame_decode_params *dec_p
+ 
+ 	/*
+ 	 * The refresh context and error resilient flags are mutually exclusive.
+-	 * Same goes for parallel decoding and error resilient modes.
+ 	 */
+ 	if (dec_params->flags & V4L2_VP9_FRAME_FLAG_ERROR_RESILIENT &&
+-	    dec_params->flags &
+-	    (V4L2_VP9_FRAME_FLAG_REFRESH_FRAME_CTX |
+-	     V4L2_VP9_FRAME_FLAG_PARALLEL_DEC_MODE))
++	    dec_params->flags & V4L2_VP9_FRAME_FLAG_REFRESH_FRAME_CTX)
++		return -EINVAL;
++
++	/*
++	 * error resilient mode and parallel decoding mode
++	 * are not mutually exclusive.
++	 */
++	if (dec_params->flags & V4L2_VP9_FRAME_FLAG_ERROR_RESILIENT &&
++	    !(dec_params->flags & V4L2_VP9_FRAME_FLAG_PARALLEL_DEC_MODE))
+ 		return -EINVAL;
+ 
+ 	if (dec_params->profile > V4L2_VP9_PROFILE_MAX)
 diff --git a/drivers/memory/mtk-smi.c b/drivers/memory/mtk-smi.c
 index 3f4a3c00826f7d95dc0a349ee3996758dfcbb88e..ccb00451a1b24e69a146b29cada20a0fa19cf836 100644
 --- a/drivers/memory/mtk-smi.c
@@ -125114,6 +125371,71 @@ index da1f19288aa6d428d3e50261a70679db55aa434b..e7b4911d52b9ddb8dcf8f48b6f7208d2
  	return 0;
  }
  EXPORT_SYMBOL_GPL(mtk_paris_pinctrl_probe);
+diff --git a/drivers/platform/chrome/cros_ec_debugfs.c b/drivers/platform/chrome/cros_ec_debugfs.c
+index 272c89837d745a9e48a8df80ef6313feda048f7d..0dbceee87a4b1a44d79e7cc9cd186972d9a19723 100644
+--- a/drivers/platform/chrome/cros_ec_debugfs.c
++++ b/drivers/platform/chrome/cros_ec_debugfs.c
+@@ -25,6 +25,9 @@
+ 
+ #define CIRC_ADD(idx, size, value)	(((idx) + (value)) & ((size) - 1))
+ 
++/* waitqueue for log readers */
++static DECLARE_WAIT_QUEUE_HEAD(cros_ec_debugfs_log_wq);
++
+ /**
+  * struct cros_ec_debugfs - EC debugging information.
+  *
+@@ -33,7 +36,6 @@
+  * @log_buffer: circular buffer for console log information
+  * @read_msg: preallocated EC command and buffer to read console log
+  * @log_mutex: mutex to protect circular buffer
+- * @log_wq: waitqueue for log readers
+  * @log_poll_work: recurring task to poll EC for new console log data
+  * @panicinfo_blob: panicinfo debugfs blob
+  */
+@@ -44,7 +46,6 @@ struct cros_ec_debugfs {
+ 	struct circ_buf log_buffer;
+ 	struct cros_ec_command *read_msg;
+ 	struct mutex log_mutex;
+-	wait_queue_head_t log_wq;
+ 	struct delayed_work log_poll_work;
+ 	/* EC panicinfo */
+ 	struct debugfs_blob_wrapper panicinfo_blob;
+@@ -107,7 +108,7 @@ static void cros_ec_console_log_work(struct work_struct *__work)
+ 			buf_space--;
+ 		}
+ 
+-		wake_up(&debug_info->log_wq);
++		wake_up(&cros_ec_debugfs_log_wq);
+ 	}
+ 
+ 	mutex_unlock(&debug_info->log_mutex);
+@@ -141,7 +142,7 @@ static ssize_t cros_ec_console_log_read(struct file *file, char __user *buf,
+ 
+ 		mutex_unlock(&debug_info->log_mutex);
+ 
+-		ret = wait_event_interruptible(debug_info->log_wq,
++		ret = wait_event_interruptible(cros_ec_debugfs_log_wq,
+ 					CIRC_CNT(cb->head, cb->tail, LOG_SIZE));
+ 		if (ret < 0)
+ 			return ret;
+@@ -173,7 +174,7 @@ static __poll_t cros_ec_console_log_poll(struct file *file,
+ 	struct cros_ec_debugfs *debug_info = file->private_data;
+ 	__poll_t mask = 0;
+ 
+-	poll_wait(file, &debug_info->log_wq, wait);
++	poll_wait(file, &cros_ec_debugfs_log_wq, wait);
+ 
+ 	mutex_lock(&debug_info->log_mutex);
+ 	if (CIRC_CNT(debug_info->log_buffer.head,
+@@ -377,7 +378,6 @@ static int cros_ec_create_console_log(struct cros_ec_debugfs *debug_info)
+ 	debug_info->log_buffer.tail = 0;
+ 
+ 	mutex_init(&debug_info->log_mutex);
+-	init_waitqueue_head(&debug_info->log_wq);
+ 
+ 	debugfs_create_file("console_log", S_IFREG | 0444, debug_info->dir,
+ 			    debug_info, &cros_ec_console_log_fops);
 diff --git a/drivers/regulator/core.c b/drivers/regulator/core.c
 index 0db7490d4d00f020909d38b473d0670fa47f43ba..eeb046503d79b1d3ab81261b4d02a6586a67784a 100644
 --- a/drivers/regulator/core.c
@@ -130798,10 +131120,10 @@ rename from drivers/thermal/mtk_thermal.c
 rename to drivers/thermal/mediatek/soc_temp.c
 diff --git a/drivers/thermal/mediatek/soc_temp_lvts.c b/drivers/thermal/mediatek/soc_temp_lvts.c
 new file mode 100644
-index 0000000000000000000000000000000000000000..cdec17aba9c3bd1566c745e682e5c762d8976206
+index 0000000000000000000000000000000000000000..9870d5a9df082eb4ce49e20bf0a2d982952e2a42
 --- /dev/null
 +++ b/drivers/thermal/mediatek/soc_temp_lvts.c
-@@ -0,0 +1,1462 @@
+@@ -0,0 +1,1490 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
 + * Copyright (c) 2020 MediaTek Inc.
@@ -130994,13 +131316,19 @@ index 0000000000000000000000000000000000000000..cdec17aba9c3bd1566c745e682e5c762
 +static void lvts_write_device(struct lvts_data *lvts_data, unsigned int data,
 +			      int tc_id)
 +{
++	struct device *dev = lvts_data->dev;
 +	void __iomem *base;
++	int ret;
 +
 +	base = GET_BASE_ADDR(tc_id);
 +
 +	writel(data, LVTS_CONFIG_0 + base);
 +
 +	usleep_range(5, 15);
++	ret = readl_poll_timeout(LVTS_CONFIG_0 + base, data,
++				!(data & DEVICE_ACCESS_STARTUS), 2, 200);
++	if (ret)
++		dev_err(dev,"write device err: LVTS %d didn't ready, data 0x%x\n", tc_id, data);
 +}
 +
 +static unsigned int lvts_read_device(struct lvts_data *lvts_data,
@@ -131014,6 +131342,7 @@ index 0000000000000000000000000000000000000000..cdec17aba9c3bd1566c745e682e5c762
 +	base = GET_BASE_ADDR(tc_id);
 +	writel(READ_DEVICE_REG(reg_idx), LVTS_CONFIG_0 + base);
 +
++	usleep_range(5, 15);
 +	ret = readl_poll_timeout(LVTS_CONFIG_0 + base, data,
 +				 !(data & DEVICE_ACCESS_STARTUS),
 +				 2, 200);
@@ -131077,6 +131406,7 @@ index 0000000000000000000000000000000000000000..cdec17aba9c3bd1566c745e682e5c762
 +		if (lvts_data->domain[i].reset)
 +			reset_control_assert(lvts_data->domain[i].reset);
 +
++		usleep_range(20, 30);
 +		if (lvts_data->domain[i].reset)
 +			reset_control_deassert(lvts_data->domain[i].reset);
 +	}
@@ -132051,6 +132381,9 @@ index 0000000000000000000000000000000000000000..cdec17aba9c3bd1566c745e682e5c762
 + */
 +
 +#define MT8195_NUM_LVTS (ARRAY_SIZE(mt8195_tc_settings))
++#define TSV2F_CHOP_CKSEL_AND_TSV2F_EN_8195 (DEVICE_WRITE | RG_TSV2F_CTRL_2 << 8 | 0x8C)
++#define TSBG_DEM_CKSEL_X_TSBG_CHOP_EN_8195 (DEVICE_WRITE | RG_TSV2F_CTRL_4 << 8 | 0xFC)
++#define SET_TS_CHOP_8195 (DEVICE_WRITE | RG_TSV2F_CTRL_0 << 8 | 0xF1)
 +
 +enum mt8195_lvts_domain {
 +	MT8195_AP_DOMAIN,
@@ -132078,6 +132411,23 @@ index 0000000000000000000000000000000000000000..cdec17aba9c3bd1566c745e682e5c762
 +	MT8195_TS7_1,
 +	MT8195_NUM_TS
 +};
++
++static void mt8195_device_enable_and_init(struct lvts_data *lvts_data)
++{
++	unsigned int i;
++
++	for (i = 0; i < lvts_data->num_tc; i++) {
++		lvts_write_device(lvts_data, STOP_COUNTING_V4, i);
++		lvts_write_device(lvts_data, SET_RG_TSFM_LPDLY_V4, i);
++		lvts_write_device(lvts_data, SET_COUNTING_WINDOW_20US1_V4, i);
++		lvts_write_device(lvts_data, SET_COUNTING_WINDOW_20US2_V4, i);
++		lvts_write_device(lvts_data, TSV2F_CHOP_CKSEL_AND_TSV2F_EN_8195, i);
++		lvts_write_device(lvts_data, TSBG_DEM_CKSEL_X_TSBG_CHOP_EN_8195, i);
++		lvts_write_device(lvts_data, SET_TS_RSV_V4, i);
++		lvts_write_device(lvts_data, SET_TS_CHOP_8195, i);
++	}
++	lvts_data->counting_window_us = 20;
++}
 +
 +static void mt8195_efuse_to_cal_data(struct lvts_data *lvts_data)
 +{
@@ -132209,13 +132559,13 @@ index 0000000000000000000000000000000000000000..cdec17aba9c3bd1566c745e682e5c762
 +	.num_sensor = MT8195_NUM_TS,
 +	.ops = {
 +		.efuse_to_cal_data = mt8195_efuse_to_cal_data,
-+		.device_enable_and_init = device_enable_and_init_v4,
++		.device_enable_and_init = mt8195_device_enable_and_init,
 +		.device_enable_auto_rck = device_enable_auto_rck_v4,
 +		.device_read_count_rc_n = device_read_count_rc_n_v4,
 +		.set_cal_data = set_calibration_data_v4,
 +		.init_controller = init_controller_v4,
 +	},
-+	.feature_bitmap = FEATURE_DEVICE_AUTO_RCK,
++	.feature_bitmap = FEATURE_DEVICE_AUTO_RCK | FEATURE_CK26M_ACTIVE,
 +	.num_efuse_addr = 22,
 +	.num_efuse_block = 2,
 +	.cal_data = {
