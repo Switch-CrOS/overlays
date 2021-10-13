@@ -59,6 +59,11 @@ RDEPEND="${RDEPEND}
 	sys-process/time
 "
 
+# These packages are for android hosting support.
+RDEPEND="${RDEPEND}
+	chromeos-base/chromeos-adb-env
+"
+
 DEPEND=""
 
 S=${WORKDIR}
