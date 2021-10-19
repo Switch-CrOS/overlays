@@ -23,4 +23,7 @@ modify_kernel_command_line() {
 
   # Enable l1d_flush for untrusted VM security
   echo "kvm-intel.vmentry_l1d_flush=always" >> "$1"
+
+  # Disable framebuffer compression
+  echo "i915.enable_fbc=0" >> "$1"
 }
