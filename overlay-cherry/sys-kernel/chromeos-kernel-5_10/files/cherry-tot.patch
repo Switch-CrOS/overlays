@@ -4039,6 +4039,27 @@ index 0000000000000000000000000000000000000000..0c6535abeb8122f788e521989038e0f1
 +        };
 +    };
 +...
+diff --git a/Documentation/devicetree/bindings/watchdog/mtk-wdt.txt b/Documentation/devicetree/bindings/watchdog/mtk-wdt.txt
+index a658a0b92b9acb8ea5b01ff9ed7aa8c565bb75fb..24dd5e02133b00a39214883e90add7d2a067fe21 100644
+--- a/Documentation/devicetree/bindings/watchdog/mtk-wdt.txt
++++ b/Documentation/devicetree/bindings/watchdog/mtk-wdt.txt
+@@ -18,6 +18,8 @@ Required properties:
+ - reg : Specifies base physical address and size of the registers.
+ 
+ Optional properties:
++- mediatek,disable-extrst: disable send output reset signal
++- interrupts: Watchdog pre-timeout (bark) interrupt.
+ - timeout-sec: contains the watchdog timeout in seconds.
+ - #reset-cells: Should be 1.
+ 
+@@ -26,6 +28,7 @@ Example:
+ watchdog: watchdog@10007000 {
+ 	compatible = "mediatek,mt8183-wdt",
+ 		     "mediatek,mt6589-wdt";
++	mediatek,disable-extrst;
+ 	reg = <0 0x10007000 0 0x100>;
+ 	timeout-sec = <10>;
+ 	#reset-cells = <1>;
 diff --git a/README b/README
 index 669ac7c32292798644b21dbb5a0dc657125f444d..9e61c76d91a3e5f62f116865497a9d692863ff83 100644
 --- a/README
@@ -4376,10 +4397,10 @@ index 0000000000000000000000000000000000000000..4bd85e33a4c9098904dfd4b7b171ba6b
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8195-cherry.dts b/arch/arm64/boot/dts/mediatek/mt8195-cherry.dts
 new file mode 100644
-index 0000000000000000000000000000000000000000..3cc4c47ec94bca3e4cbeef16d33841fd2d529a2e
+index 0000000000000000000000000000000000000000..db8a3ef820a7563f5571ae97370b3c59ad64e166
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt8195-cherry.dts
-@@ -0,0 +1,55 @@
+@@ -0,0 +1,60 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
 +/*
 + * Copyright (C) 2021 MediaTek Inc.
@@ -4412,11 +4433,16 @@ index 0000000000000000000000000000000000000000..3cc4c47ec94bca3e4cbeef16d33841fd
 +
 +&sound {
 +	compatible = "mediatek,mt8195_mt6359_rt1019_rt5682";
++	model = "mt8195_r1019_5682";
 +	mediatek,dptx-codec = <&dp_tx>;
 +	mediatek,hdmi-codec = <&hdmi0>;
 +};
 +
 +&rt1019p {
++	status = "okay";
++};
++
++&rt5682 {
 +	status = "okay";
 +};
 +
@@ -4437,10 +4463,10 @@ index 0000000000000000000000000000000000000000..3cc4c47ec94bca3e4cbeef16d33841fd
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8195-cherry.dtsi b/arch/arm64/boot/dts/mediatek/mt8195-cherry.dtsi
 new file mode 100644
-index 0000000000000000000000000000000000000000..a586627c3db1456593587413a8de5784750e3d0a
+index 0000000000000000000000000000000000000000..32e1478dbb67f54d74659f8acb1934036295c223
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt8195-cherry.dtsi
-@@ -0,0 +1,1331 @@
+@@ -0,0 +1,1341 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
 +/*
 + * Copyright (C) 2021 MediaTek Inc.
@@ -5578,13 +5604,23 @@ index 0000000000000000000000000000000000000000..a586627c3db1456593587413a8de5784
 +	pinctrl-names = "default";
 +	pinctrl-0 = <&i2c2_pin>;
 +
-+	rt5682@1a {
++	rt5682: rt5682@1a {
 +               compatible = "realtek,rt5682i";
 +               reg = <0x1a>;
 +               interrupt-parent = <&pio>;
 +               interrupts = <89 IRQ_TYPE_EDGE_BOTH>;
 +               realtek,jd-src = <1>;
 +               realtek,btndet-delay = <16>;
++               status = "disabled";
++	};
++
++	rt5682s: rt5682s@1a {
++               compatible = "realtek,rt5682s";
++               reg = <0x1a>;
++               interrupt-parent = <&pio>;
++               interrupts = <89 IRQ_TYPE_EDGE_BOTH>;
++               realtek,jd-src = <1>;
++               status = "disabled";
 +	};
 +
 +	rt1011_l: rt1011@38 {
@@ -5809,10 +5845,10 @@ index 0000000000000000000000000000000000000000..82bb10e9a53108ebf504505db1517786
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8195-tomato-rev1.dts b/arch/arm64/boot/dts/mediatek/mt8195-tomato-rev1.dts
 new file mode 100644
-index 0000000000000000000000000000000000000000..834182a6cebcc1a94c162797b3d5ec7c70fd20a8
+index 0000000000000000000000000000000000000000..ec09be6e9cbb8e08fff4ead85151229cc34a539a
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt8195-tomato-rev1.dts
-@@ -0,0 +1,38 @@
+@@ -0,0 +1,43 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
 +/*
 + * Copyright (C) 2021 MediaTek Inc.
@@ -5828,11 +5864,16 @@ index 0000000000000000000000000000000000000000..834182a6cebcc1a94c162797b3d5ec7c
 +
 +&sound {
 +	compatible = "mediatek,mt8195_mt6359_rt1019_rt5682";
++	model = "mt8195_r1019_5682";
 +	mediatek,dptx-codec = <&dp_tx>;
 +	mediatek,hdmi-codec = <&hdmi0>;
 +};
 +
 +&rt1019p {
++	status = "okay";
++};
++
++&rt5682 {
 +	status = "okay";
 +};
 +
@@ -5853,10 +5894,10 @@ index 0000000000000000000000000000000000000000..834182a6cebcc1a94c162797b3d5ec7c
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8195-tomato-rev2.dts b/arch/arm64/boot/dts/mediatek/mt8195-tomato-rev2.dts
 new file mode 100644
-index 0000000000000000000000000000000000000000..3e0fa453bd46d80389f8e3e7f9254f4275394e3b
+index 0000000000000000000000000000000000000000..b4079b0ddedf4040efc0c69b002b96ea9031b84b
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt8195-tomato-rev2.dts
-@@ -0,0 +1,21 @@
+@@ -0,0 +1,26 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
 +/*
 + * Copyright (C) 2021 MediaTek Inc.
@@ -5872,10 +5913,15 @@ index 0000000000000000000000000000000000000000..3e0fa453bd46d80389f8e3e7f9254f42
 +
 +&sound {
 +	compatible = "mediatek,mt8195_mt6359_rt1019_rt5682";
++	model = "mt8195_r1019_5682";
 +	mediatek,dptx-codec = <&dp_tx>;
 +};
 +
 +&rt1019p {
++	status = "okay";
++};
++
++&rt5682 {
 +	status = "okay";
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8195-tomato.dtsi b/arch/arm64/boot/dts/mediatek/mt8195-tomato.dtsi
@@ -5934,10 +5980,10 @@ index 0000000000000000000000000000000000000000..b848edfce4be8beafb01c5a27209d51e
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8195.dtsi b/arch/arm64/boot/dts/mediatek/mt8195.dtsi
 new file mode 100644
-index 0000000000000000000000000000000000000000..0ff85573f15bd5c83d63bca6521ee9ea673116cd
+index 0000000000000000000000000000000000000000..561e2ed0802db9bea5762aa45ccd547481394b71
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt8195.dtsi
-@@ -0,0 +1,3788 @@
+@@ -0,0 +1,3792 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
 +/*
 + * Copyright (c) 2021 MediaTek Inc.
@@ -6657,7 +6703,7 @@ index 0000000000000000000000000000000000000000..0ff85573f15bd5c83d63bca6521ee9ea
 +
 +		watchdog: watchdog@10007000 {
 +			compatible = "mediatek,mt8195-wdt", "mediatek,mt6589-wdt";
-+			disable_extrst;
++			mediatek,disable-extrst;
 +			reg = <0 0x10007000 0 0x100>;
 +		};
 +
@@ -7748,6 +7794,7 @@ index 0000000000000000000000000000000000000000..0ff85573f15bd5c83d63bca6521ee9ea
 +							<&spm MT8195_POWER_DOMAIN_VPPSYS1>;
 +			iommus = <&iommu_vpp M4U_PORT_L4_MDP_RDMA>,
 +				 <&iommu_vpp M4U_PORT_L4_MDP_WROT>;
++			dma-ranges = <0x2 0x0 0x0 0x40000000 0x1 0x0>; /* 8G - 12G IOVA*/
 +			clocks = <&vppsys0 CLK_VPP0_MDP_RDMA>,
 +					<&topckgen CLK_TOP_CFG_VPP0>,
 +					<&topckgen CLK_TOP_CFG_26M_VPP0>,
@@ -8204,6 +8251,7 @@ index 0000000000000000000000000000000000000000..0ff85573f15bd5c83d63bca6521ee9ea
 +						"TOP_CFG_26M_VPP1";
 +			iommus = <&iommu_vdo M4U_PORT_L5_SVPP1_MDP_RDMA>,
 +				 <&iommu_vdo M4U_PORT_L5_SVPP1_MDP_WROT>;
++			dma-ranges = <0x2 0x0 0x0 0x40000000 0x1 0x0>; /* 8G - 12G IOVA*/
 +			power-domains = <&spm MT8195_POWER_DOMAIN_VPPSYS1>;
 +		};
 +
@@ -8222,6 +8270,7 @@ index 0000000000000000000000000000000000000000..0ff85573f15bd5c83d63bca6521ee9ea
 +						"TOP_CFG_26M_VPP1";
 +			iommus = <&iommu_vdo M4U_PORT_L5_SVPP2_MDP_RDMA>,
 +				 <&iommu_vdo M4U_PORT_L5_SVPP2_MDP_WROT>;
++			dma-ranges = <0x2 0x0 0x0 0x40000000 0x1 0x0>; /* 8G - 12G IOVA*/
 +			power-domains = <&spm MT8195_POWER_DOMAIN_VPPSYS1>;
 +		};
 +
@@ -8240,6 +8289,7 @@ index 0000000000000000000000000000000000000000..0ff85573f15bd5c83d63bca6521ee9ea
 +						"TOP_CFG_26M_VPP1";
 +			iommus = <&iommu_vpp M4U_PORT_L6_SVPP3_MDP_RDMA>,
 +				 <&iommu_vpp M4U_PORT_L6_SVPP3_MDP_WROT>;
++			dma-ranges = <0x2 0x0 0x0 0x40000000 0x1 0x0>; /* 8G - 12G IOVA*/
 +			power-domains = <&spm MT8195_POWER_DOMAIN_VPPSYS1>;
 +		};
 +
@@ -85705,10 +85755,10 @@ index 251f034acb09e2bde0f701c82f38b87f1fa2d721..c865337bb8946e8258152f675b4ec271
  MODULE_DEVICE_TABLE(of, mtk_disp_rdma_driver_dt_match);
 diff --git a/drivers/gpu/drm/mediatek/mtk_dp.c b/drivers/gpu/drm/mediatek/mtk_dp.c
 new file mode 100644
-index 0000000000000000000000000000000000000000..0485b1061ebb9af05ba04e3f4ec37c5511836459
+index 0000000000000000000000000000000000000000..6a4d2e47b59cc31dea0f051f513a7e45fd28d222
 --- /dev/null
 +++ b/drivers/gpu/drm/mediatek/mtk_dp.c
-@@ -0,0 +1,2549 @@
+@@ -0,0 +1,2552 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
 + * Copyright (c) 2019 MediaTek Inc.
@@ -87920,6 +87970,9 @@ index 0000000000000000000000000000000000000000..0485b1061ebb9af05ba04e3f4ec37c55
 +		return MODE_CLOCK_HIGH;
 +
 +	if (mode->clock > 600000)
++		return MODE_CLOCK_HIGH;
++
++	if ((mode->clock * 1000) / (mode->htotal * mode->vtotal) > 62)
 +		return MODE_CLOCK_HIGH;
 +
 +	return MODE_OK;
@@ -102725,7 +102778,7 @@ index f81fa8862ed04b22f997bf45700e58dd90fc068b..e781ad583131e3f13ecb065bbabd21cd
  	struct mtk_smi_larb_iommu	larb_imu[MTK_LARB_NR_MAX];
  };
 diff --git a/drivers/mailbox/mtk-cmdq-mailbox.c b/drivers/mailbox/mtk-cmdq-mailbox.c
-index 89137f9bc569a7fb446a4c95ec6d23a0180af6af..b46636f091ee88b56c3fc02a6e83c6a3b8e10635 100644
+index 89137f9bc569a7fb446a4c95ec6d23a0180af6af..2e7c3360c503b864108d1a990192d3a48abc13e5 100644
 --- a/drivers/mailbox/mtk-cmdq-mailbox.c
 +++ b/drivers/mailbox/mtk-cmdq-mailbox.c
 @@ -91,6 +91,7 @@ struct cmdq {
@@ -102843,7 +102896,32 @@ index 89137f9bc569a7fb446a4c95ec6d23a0180af6af..b46636f091ee88b56c3fc02a6e83c6a3
  out:
  	spin_unlock_irqrestore(&thread->chan->lock, flags);
  	return 0;
-@@ -635,7 +654,11 @@ static int cmdq_probe(struct platform_device *pdev)
+@@ -537,7 +556,8 @@ static int cmdq_probe(struct platform_device *pdev)
+ 	struct device_node *phandle = dev->of_node;
+ 	struct device_node *node;
+ 	int alias_id = 0;
+-	char clk_name[4] = "gce";
++	static const char * const clk_name = "gce";
++	static const char * const clk_names[] = { "gce0", "gce1" };
+ 
+ 	cmdq = devm_kzalloc(dev, sizeof(*cmdq), GFP_KERNEL);
+ 	if (!cmdq)
+@@ -577,12 +597,9 @@ static int cmdq_probe(struct platform_device *pdev)
+ 
+ 	if (cmdq->gce_num > 1) {
+ 		for_each_child_of_node(phandle->parent, node) {
+-			char clk_id[8];
+-
+ 			alias_id = of_alias_get_id(node, clk_name);
+-			if (alias_id < cmdq->gce_num) {
+-				snprintf(clk_id, sizeof(clk_id), "%s%d", clk_name, alias_id);
+-				cmdq->clocks[alias_id].id = clk_id;
++			if (alias_id >= 0 && alias_id < cmdq->gce_num) {
++				cmdq->clocks[alias_id].id = clk_names[alias_id];
+ 				cmdq->clocks[alias_id].clk = of_clk_get(node, 0);
+ 				if (IS_ERR(cmdq->clocks[alias_id].clk)) {
+ 					dev_err(dev, "failed to get gce clk: %d\n", alias_id);
+@@ -635,7 +652,11 @@ static int cmdq_probe(struct platform_device *pdev)
  
  	WARN_ON(clk_bulk_prepare(cmdq->gce_num, cmdq->clocks));
  
@@ -106159,7 +106237,7 @@ index c721b0ce0f9ea30db68d23356aa87b19daf9ef7c..b3df6db36ae9f3a5fb65b4488bc4f8d2
  #endif  /* __MTK_MDP3_CMDQ_H__ */
 -
 diff --git a/drivers/media/platform/mtk-mdp3/mtk-mdp3-comp.c b/drivers/media/platform/mtk-mdp3/mtk-mdp3-comp.c
-index 95f876c6f825b356057be8eeb001d772fda3e7b3..4b15a11da64f8fe357a525f90326f5a4d8c06b59 100644
+index 95f876c6f825b356057be8eeb001d772fda3e7b3..255a1b7807ee63388a9bf164bd6994481f45ecc1 100644
 --- a/drivers/media/platform/mtk-mdp3/mtk-mdp3-comp.c
 +++ b/drivers/media/platform/mtk-mdp3/mtk-mdp3-comp.c
 @@ -1,6 +1,6 @@
@@ -106352,7 +106430,7 @@ index 95f876c6f825b356057be8eeb001d772fda3e7b3..4b15a11da64f8fe357a525f90326f5a4
  
  	/* Setup smi control */
  	MM_REG_WRITE(cmd, subsys_id, base, MDP_RDMA_GMCIF_CON,
-@@ -81,31 +175,68 @@ static int config_rdma_frame(struct mdp_comp_ctx *ctx, struct mdp_cmd *cmd,
+@@ -81,31 +175,72 @@ static int config_rdma_frame(struct mdp_comp_ctx *ctx, struct mdp_cmd *cmd,
  	/* Setup source frame info */
  	MM_REG_WRITE(cmd, subsys_id, base, MDP_RDMA_SRC_CON, rdma->src_ctrl,
  		     0x03C8FE0F);
@@ -106408,14 +106486,18 @@ index 95f876c6f825b356057be8eeb001d772fda3e7b3..4b15a11da64f8fe357a525f90326f5a4
 +			MM_REG_WRITE(cmd, subsys_id, base, MDP_RDMA_COMP_CON,
 +				     rdma->comp_ctrl, write_mask);
 +		}
++		else if (mdp_cfg->rdma_support_afbc &&
++			    (MDP_COLOR_IS_COMPRESS(colorformat))) {
++				MM_REG_WRITE(cmd, subsys_id, base, MDP_RDMA_MF_BKGD_SIZE_IN_PXL,
++					     ((width + 31) >> 5) << 5, 0x001FFFFF);
++				MM_REG_WRITE(cmd, subsys_id, base, MDP_RDMA_MF_BKGD_H_SIZE_IN_PXL,
++					     ((height + 7) >> 3) << 3, 0x001FFFFF);
 +
-+		if (mdp_cfg->rdma_support_afbc &&
-+		    (MDP_COLOR_IS_COMPRESS(colorformat))) {
-+			MM_REG_WRITE(cmd, subsys_id, base, MDP_RDMA_MF_BKGD_SIZE_IN_PXL,
-+				     ((width + 31) >> 5) << 5, 0x001FFFFF);
-+			MM_REG_WRITE(cmd, subsys_id, base, MDP_RDMA_MF_BKGD_H_SIZE_IN_PXL,
-+				     ((height + 7) >> 3) << 3, 0x001FFFFF);
-+
++				/* Setup Compression Control */
++				MM_REG_WRITE(cmd, subsys_id, base, MDP_RDMA_COMP_CON,
++					     rdma->comp_ctrl, write_mask);
++		}
++		else {
 +			/* Setup Compression Control */
 +			MM_REG_WRITE(cmd, subsys_id, base, MDP_RDMA_COMP_CON,
 +				     rdma->comp_ctrl, write_mask);
@@ -106443,7 +106525,7 @@ index 95f876c6f825b356057be8eeb001d772fda3e7b3..4b15a11da64f8fe357a525f90326f5a4
  	/* Setup source buffer end */
  	MM_REG_WRITE(cmd, subsys_id, base, MDP_RDMA_SRC_END_0,
  		     rdma->iova_end[0], 0xFFFFFFFF);
-@@ -122,14 +253,38 @@ static int config_rdma_frame(struct mdp_comp_ctx *ctx, struct mdp_cmd *cmd,
+@@ -122,14 +257,38 @@ static int config_rdma_frame(struct mdp_comp_ctx *ctx, struct mdp_cmd *cmd,
  	MM_REG_WRITE(cmd, subsys_id, base, MDP_RDMA_TRANSFORM_0,
  		     rdma->transform, 0x0F110000);
  
@@ -106483,7 +106565,7 @@ index 95f876c6f825b356057be8eeb001d772fda3e7b3..4b15a11da64f8fe357a525f90326f5a4
  	u32 colorformat = ctx->input->buffer.format.colorformat;
  	bool block10bit = MDP_COLOR_IS_10BIT_PACKED(colorformat);
  	bool en_ufo = MDP_COLOR_IS_UFP(colorformat);
-@@ -137,18 +292,33 @@ static int config_rdma_subfrm(struct mdp_comp_ctx *ctx,
+@@ -137,18 +296,33 @@ static int config_rdma_subfrm(struct mdp_comp_ctx *ctx,
  	u8 subsys_id = ctx->comp->subsys_id;
  
  	/* Enable RDMA */
@@ -106524,7 +106606,7 @@ index 95f876c6f825b356057be8eeb001d772fda3e7b3..4b15a11da64f8fe357a525f90326f5a4
  	/* Set U pixel offset */
  	MM_REG_WRITE(cmd, subsys_id, base, MDP_RDMA_SRC_OFFSET_1,
  		     subfrm->offset[1], 0xFFFFFFFF);
-@@ -165,178 +335,859 @@ static int config_rdma_subfrm(struct mdp_comp_ctx *ctx,
+@@ -165,178 +339,859 @@ static int config_rdma_subfrm(struct mdp_comp_ctx *ctx,
  	MM_REG_WRITE(cmd, subsys_id, base, MDP_RDMA_MF_OFFSET_1,
  		     subfrm->clip_ofst, 0x003F001F);
  
@@ -107491,7 +107573,7 @@ index 95f876c6f825b356057be8eeb001d772fda3e7b3..4b15a11da64f8fe357a525f90326f5a4
  
  	/* Write frame base address */
  	MM_REG_WRITE(cmd, subsys_id, base, VIDO_BASE_ADDR, wrot->iova[0],
-@@ -345,9 +1196,35 @@ static int config_wrot_frame(struct mdp_comp_ctx *ctx, struct mdp_cmd *cmd,
+@@ -345,9 +1200,35 @@ static int config_wrot_frame(struct mdp_comp_ctx *ctx, struct mdp_cmd *cmd,
  		     0xFFFFFFFF);
  	MM_REG_WRITE(cmd, subsys_id, base, VIDO_BASE_ADDR_V, wrot->iova[2],
  		     0xFFFFFFFF);
@@ -107527,7 +107609,7 @@ index 95f876c6f825b356057be8eeb001d772fda3e7b3..4b15a11da64f8fe357a525f90326f5a4
  	/* Write frame Y pitch */
  	MM_REG_WRITE(cmd, subsys_id, base, VIDO_STRIDE, wrot->stride[0],
  		     0x0000FFFF);
-@@ -370,18 +1247,35 @@ static int config_wrot_frame(struct mdp_comp_ctx *ctx, struct mdp_cmd *cmd,
+@@ -370,18 +1251,35 @@ static int config_wrot_frame(struct mdp_comp_ctx *ctx, struct mdp_cmd *cmd,
  	if (wrot->fifo_test != 0)
  		MM_REG_WRITE(cmd, subsys_id, base, VIDO_FIFO_TEST,
  			     wrot->fifo_test, 0x00000FFF);
@@ -107569,7 +107651,7 @@ index 95f876c6f825b356057be8eeb001d772fda3e7b3..4b15a11da64f8fe357a525f90326f5a4
  {
  	const struct mdp_wrot_subfrm *subfrm = &ctx->param->wrot.subfrms[index];
  	phys_addr_t base = ctx->comp->reg_base;
-@@ -405,6 +1299,9 @@ static int config_wrot_subfrm(struct mdp_comp_ctx *ctx,
+@@ -405,6 +1303,9 @@ static int config_wrot_subfrm(struct mdp_comp_ctx *ctx,
  	MM_REG_WRITE(cmd, subsys_id, base, VIDO_CROP_OFST, subfrm->clip_ofst,
  		     0x1FFF1FFF);
  
@@ -107579,7 +107661,7 @@ index 95f876c6f825b356057be8eeb001d772fda3e7b3..4b15a11da64f8fe357a525f90326f5a4
  	MM_REG_WRITE(cmd, subsys_id, base, VIDO_MAIN_BUF_SIZE,
  		     subfrm->main_buf, 0x1FFF7F00);
  
-@@ -414,22 +1311,36 @@ static int config_wrot_subfrm(struct mdp_comp_ctx *ctx,
+@@ -414,22 +1315,36 @@ static int config_wrot_subfrm(struct mdp_comp_ctx *ctx,
  	return 0;
  }
  
@@ -107628,7 +107710,7 @@ index 95f876c6f825b356057be8eeb001d772fda3e7b3..4b15a11da64f8fe357a525f90326f5a4
  	/* Disable WROT */
  	MM_REG_WRITE(cmd, subsys_id, base, VIDO_ROT_EN, 0x00, 0x00000001);
  
-@@ -448,7 +1359,7 @@ static const struct mdp_comp_ops wrot_ops = {
+@@ -448,7 +1363,7 @@ static const struct mdp_comp_ops wrot_ops = {
  	.post_process = NULL,
  };
  
@@ -107637,7 +107719,7 @@ index 95f876c6f825b356057be8eeb001d772fda3e7b3..4b15a11da64f8fe357a525f90326f5a4
  {
  	phys_addr_t base = ctx->comp->reg_base;
  	u8 subsys_id = ctx->comp->subsys_id;
-@@ -461,7 +1372,8 @@ static int init_wdma(struct mdp_comp_ctx *ctx, struct mdp_cmd *cmd)
+@@ -461,7 +1376,8 @@ static int init_wdma(struct mdp_comp_ctx *ctx, struct mdp_cmd *cmd)
  	return 0;
  }
  
@@ -107647,7 +107729,7 @@ index 95f876c6f825b356057be8eeb001d772fda3e7b3..4b15a11da64f8fe357a525f90326f5a4
  			     const struct v4l2_rect *compose)
  {
  	const struct mdp_wdma_data *wdma = &ctx->param->wdma;
-@@ -495,7 +1407,7 @@ static int config_wdma_frame(struct mdp_comp_ctx *ctx, struct mdp_cmd *cmd,
+@@ -495,7 +1411,7 @@ static int config_wdma_frame(struct mdp_comp_ctx *ctx, struct mdp_cmd *cmd,
  }
  
  static int config_wdma_subfrm(struct mdp_comp_ctx *ctx,
@@ -107656,7 +107738,7 @@ index 95f876c6f825b356057be8eeb001d772fda3e7b3..4b15a11da64f8fe357a525f90326f5a4
  {
  	const struct mdp_wdma_subfrm *subfrm = &ctx->param->wdma.subfrms[index];
  	phys_addr_t base = ctx->comp->reg_base;
-@@ -526,12 +1438,15 @@ static int config_wdma_subfrm(struct mdp_comp_ctx *ctx,
+@@ -526,12 +1442,15 @@ static int config_wdma_subfrm(struct mdp_comp_ctx *ctx,
  	return 0;
  }
  
@@ -107674,7 +107756,7 @@ index 95f876c6f825b356057be8eeb001d772fda3e7b3..4b15a11da64f8fe357a525f90326f5a4
  	/* Disable WDMA */
  	MM_REG_WRITE(cmd, subsys_id, base, WDMA_EN, 0x00, 0x00000001);
  	return 0;
-@@ -547,7 +1462,7 @@ static const struct mdp_comp_ops wdma_ops = {
+@@ -547,7 +1466,7 @@ static const struct mdp_comp_ops wdma_ops = {
  	.post_process = NULL,
  };
  
@@ -107683,7 +107765,7 @@ index 95f876c6f825b356057be8eeb001d772fda3e7b3..4b15a11da64f8fe357a525f90326f5a4
  {
  	phys_addr_t base = ctx->comp->reg_base;
  	u8 subsys_id = ctx->comp->subsys_id;
-@@ -559,7 +1474,8 @@ static int init_ccorr(struct mdp_comp_ctx *ctx, struct mdp_cmd *cmd)
+@@ -559,7 +1478,8 @@ static int init_ccorr(struct mdp_comp_ctx *ctx, struct mdp_cmd *cmd)
  	return 0;
  }
  
@@ -107693,7 +107775,7 @@ index 95f876c6f825b356057be8eeb001d772fda3e7b3..4b15a11da64f8fe357a525f90326f5a4
  			      const struct v4l2_rect *compose)
  {
  	/* Disabled function */
-@@ -567,7 +1483,7 @@ static int config_ccorr_frame(struct mdp_comp_ctx *ctx, struct mdp_cmd *cmd,
+@@ -567,7 +1487,7 @@ static int config_ccorr_frame(struct mdp_comp_ctx *ctx, struct mdp_cmd *cmd,
  }
  
  static int config_ccorr_subfrm(struct mdp_comp_ctx *ctx,
@@ -107702,7 +107784,7 @@ index 95f876c6f825b356057be8eeb001d772fda3e7b3..4b15a11da64f8fe357a525f90326f5a4
  {
  	const struct img_comp_subfrm *csf = &ctx->param->subfrms[index];
  	phys_addr_t base = ctx->comp->reg_base;
-@@ -593,59 +1509,30 @@ static const struct mdp_comp_ops ccorr_ops = {
+@@ -593,59 +1513,30 @@ static const struct mdp_comp_ops ccorr_ops = {
  	.post_process = NULL,
  };
  
@@ -107771,7 +107853,7 @@ index 95f876c6f825b356057be8eeb001d772fda3e7b3..4b15a11da64f8fe357a525f90326f5a4
  	const struct isp_data *isp = &ctx->param->isp;
  	phys_addr_t base = ctx->comp->reg_base;
  	u8 subsys_id = ctx->comp->subsys_id;
-@@ -720,21 +1607,8 @@ static int config_isp_frame(struct mdp_comp_ctx *ctx, struct mdp_cmd *cmd,
+@@ -720,21 +1611,8 @@ static int config_isp_frame(struct mdp_comp_ctx *ctx, struct mdp_cmd *cmd,
  		MM_REG_WRITE_MASK(cmd, subsys_id, base, 0x228C,
  				  isp->cq_iova, 0xFFFFFFFF);
  		break;
@@ -107794,7 +107876,7 @@ index 95f876c6f825b356057be8eeb001d772fda3e7b3..4b15a11da64f8fe357a525f90326f5a4
  		return -EINVAL;
  	}
  
-@@ -742,7 +1616,7 @@ static int config_isp_frame(struct mdp_comp_ctx *ctx, struct mdp_cmd *cmd,
+@@ -742,7 +1620,7 @@ static int config_isp_frame(struct mdp_comp_ctx *ctx, struct mdp_cmd *cmd,
  }
  
  static int config_isp_subfrm(struct mdp_comp_ctx *ctx,
@@ -107803,7 +107885,7 @@ index 95f876c6f825b356057be8eeb001d772fda3e7b3..4b15a11da64f8fe357a525f90326f5a4
  {
  	phys_addr_t base = ctx->comp->reg_base;
  	u8 subsys_id = ctx->comp->subsys_id;
-@@ -752,11 +1626,13 @@ static int config_isp_subfrm(struct mdp_comp_ctx *ctx,
+@@ -752,11 +1630,13 @@ static int config_isp_subfrm(struct mdp_comp_ctx *ctx,
  	return 0;
  }
  
@@ -107818,7 +107900,7 @@ index 95f876c6f825b356057be8eeb001d772fda3e7b3..4b15a11da64f8fe357a525f90326f5a4
  
  	/* MDP_DL_SEL: select MDP_CROP */
  	if (isp->dl_flags & (1 << MDP_CAMIN))
-@@ -771,84 +1647,70 @@ static int wait_isp_event(struct mdp_comp_ctx *ctx, struct mdp_cmd *cmd)
+@@ -771,84 +1651,70 @@ static int wait_isp_event(struct mdp_comp_ctx *ctx, struct mdp_cmd *cmd)
  	case ISP_DRV_DIP_CQ_THRE0:
  		MM_REG_WRITE_MASK(cmd, subsys_id, base, 0x2000, 0x0001,
  				  0x00000001);
@@ -107918,7 +108000,7 @@ index 95f876c6f825b356057be8eeb001d772fda3e7b3..4b15a11da64f8fe357a525f90326f5a4
  	return 0;
  }
  
-@@ -865,36 +1727,22 @@ static const struct mdp_comp_ops imgi_ops = {
+@@ -865,36 +1731,22 @@ static const struct mdp_comp_ops imgi_ops = {
  };
  
  static int config_camin_subfrm(struct mdp_comp_ctx *ctx,
@@ -107966,7 +108048,7 @@ index 95f876c6f825b356057be8eeb001d772fda3e7b3..4b15a11da64f8fe357a525f90326f5a4
  
  	return 0;
  }
-@@ -912,74 +1760,30 @@ static const struct mdp_comp_ops camin_ops = {
+@@ -912,74 +1764,30 @@ static const struct mdp_comp_ops camin_ops = {
  };
  
  static const struct mdp_comp_ops *mdp_comp_ops[MDP_COMP_TYPE_COUNT] = {
@@ -108065,7 +108147,7 @@ index 95f876c6f825b356057be8eeb001d772fda3e7b3..4b15a11da64f8fe357a525f90326f5a4
  };
  
  static const struct of_device_id mdp_comp_dt_ids[] = {
-@@ -998,14 +1802,50 @@ static const struct of_device_id mdp_comp_dt_ids[] = {
+@@ -998,14 +1806,50 @@ static const struct of_device_id mdp_comp_dt_ids[] = {
  	}, {
  		.compatible = "mediatek,mt8183-mdp3-wdma",
  		.data = (void *)MDP_COMP_TYPE_WDMA,
@@ -108118,7 +108200,7 @@ index 95f876c6f825b356057be8eeb001d772fda3e7b3..4b15a11da64f8fe357a525f90326f5a4
  	}, {
  		.compatible = "mediatek,mt8183-mdp3-imgi",
  		.data = (void *)MDP_COMP_TYPE_IMGI,
-@@ -1013,38 +1853,46 @@ static const struct of_device_id mdp_sub_comp_dt_ids[] = {
+@@ -1013,38 +1857,46 @@ static const struct of_device_id mdp_sub_comp_dt_ids[] = {
  		.compatible = "mediatek,mt8183-mdp3-exto",
  		.data = (void *)MDP_COMP_TYPE_EXTO,
  	}, {
@@ -108190,7 +108272,7 @@ index 95f876c6f825b356057be8eeb001d772fda3e7b3..4b15a11da64f8fe357a525f90326f5a4
  			return i;
  	return -ENODEV;
  }
-@@ -1067,8 +1915,8 @@ void mdp_comp_clock_on(struct device *dev, struct mdp_comp *comp)
+@@ -1067,8 +1919,8 @@ void mdp_comp_clock_on(struct device *dev, struct mdp_comp *comp)
  		err = clk_prepare_enable(comp->clks[i]);
  		if (err)
  			dev_err(dev,
@@ -108201,7 +108283,7 @@ index 95f876c6f825b356057be8eeb001d772fda3e7b3..4b15a11da64f8fe357a525f90326f5a4
  	}
  }
  
-@@ -1102,11 +1950,11 @@ void mdp_comp_clocks_off(struct device *dev, struct mdp_comp *comps, int num)
+@@ -1102,11 +1954,11 @@ void mdp_comp_clocks_off(struct device *dev, struct mdp_comp *comps, int num)
  		mdp_comp_clock_off(dev, &comps[i]);
  }
  
@@ -108215,7 +108297,7 @@ index 95f876c6f825b356057be8eeb001d772fda3e7b3..4b15a11da64f8fe357a525f90326f5a4
  	int ret = 0;
  	int index = 0;
  
-@@ -1121,23 +1969,15 @@ static int mdp_get_subsys_id(struct device *dev, struct device_node *node,
+@@ -1121,23 +1973,15 @@ static int mdp_get_subsys_id(struct device *dev, struct device_node *node,
  		return -ENODEV;
  	}
  
@@ -108244,7 +108326,7 @@ index 95f876c6f825b356057be8eeb001d772fda3e7b3..4b15a11da64f8fe357a525f90326f5a4
  
  	return 0;
  }
-@@ -1147,12 +1987,12 @@ static void __mdp_comp_init(struct mdp_dev *mdp, struct device_node *node,
+@@ -1147,12 +1991,12 @@ static void __mdp_comp_init(struct mdp_dev *mdp, struct device_node *node,
  {
  	struct resource res;
  	phys_addr_t base;
@@ -108259,7 +108341,7 @@ index 95f876c6f825b356057be8eeb001d772fda3e7b3..4b15a11da64f8fe357a525f90326f5a4
  
  	comp->mdp_dev = mdp;
  	comp->regs = of_iomap(node, 0);
-@@ -1172,14 +2012,14 @@ static int mdp_comp_init(struct mdp_dev *mdp, struct device_node *node,
+@@ -1172,14 +2016,14 @@ static int mdp_comp_init(struct mdp_dev *mdp, struct device_node *node,
  		return -EINVAL;
  	}
  
@@ -108278,7 +108360,7 @@ index 95f876c6f825b356057be8eeb001d772fda3e7b3..4b15a11da64f8fe357a525f90326f5a4
  
  	for (i = 0; i < clk_num; i++) {
  		comp->clks[i] = of_clk_get(node, i + clk_ofst);
-@@ -1187,7 +2027,7 @@ static int mdp_comp_init(struct mdp_dev *mdp, struct device_node *node,
+@@ -1187,7 +2031,7 @@ static int mdp_comp_init(struct mdp_dev *mdp, struct device_node *node,
  			break;
  	}
  
@@ -108287,7 +108369,7 @@ index 95f876c6f825b356057be8eeb001d772fda3e7b3..4b15a11da64f8fe357a525f90326f5a4
  
  	return 0;
  }
-@@ -1213,10 +2053,11 @@ static struct mdp_comp *mdp_comp_create(struct mdp_dev *mdp,
+@@ -1213,10 +2057,11 @@ static struct mdp_comp *mdp_comp_create(struct mdp_dev *mdp,
  		return ERR_PTR(ret);
  	}
  	mdp->comp[id] = comp;
@@ -108301,7 +108383,7 @@ index 95f876c6f825b356057be8eeb001d772fda3e7b3..4b15a11da64f8fe357a525f90326f5a4
  	return comp;
  }
  
-@@ -1229,30 +2070,30 @@ static int mdp_sub_comps_create(struct mdp_dev *mdp, struct device_node *node)
+@@ -1229,30 +2074,30 @@ static int mdp_sub_comps_create(struct mdp_dev *mdp, struct device_node *node)
  
  	of_property_for_each_string(node, "mdp3-comps", prop, name) {
  		const struct of_device_id *matches = mdp_sub_comp_dt_ids;
@@ -108338,7 +108420,7 @@ index 95f876c6f825b356057be8eeb001d772fda3e7b3..4b15a11da64f8fe357a525f90326f5a4
  			return -ENODEV;
  		}
  
-@@ -1274,36 +2115,13 @@ static void mdp_comp_deinit(struct mdp_comp *comp)
+@@ -1274,36 +2119,13 @@ static void mdp_comp_deinit(struct mdp_comp *comp)
  		iounmap(comp->regs);
  }
  
@@ -108378,7 +108460,7 @@ index 95f876c6f825b356057be8eeb001d772fda3e7b3..4b15a11da64f8fe357a525f90326f5a4
  	for (i = 0; i < ARRAY_SIZE(mdp->comp); i++) {
  		if (mdp->comp[i]) {
  			mdp_comp_deinit(mdp->comp[i]);
-@@ -1318,34 +2136,9 @@ int mdp_component_init(struct mdp_dev *mdp)
+@@ -1318,34 +2140,9 @@ int mdp_component_init(struct mdp_dev *mdp)
  	struct device_node *node, *parent;
  	struct platform_device *pdev;
  	u32 alias_id;
@@ -108415,7 +108497,7 @@ index 95f876c6f825b356057be8eeb001d772fda3e7b3..4b15a11da64f8fe357a525f90326f5a4
  	parent = dev->of_node->parent;
  	/* Iterate over sibling MDP function blocks */
  	for_each_child_of_node(parent, node) {
-@@ -1371,7 +2164,7 @@ int mdp_component_init(struct mdp_dev *mdp)
+@@ -1371,7 +2168,7 @@ int mdp_component_init(struct mdp_dev *mdp)
  				 node);
  			continue;
  		}
@@ -108424,7 +108506,7 @@ index 95f876c6f825b356057be8eeb001d772fda3e7b3..4b15a11da64f8fe357a525f90326f5a4
  		if (id < 0) {
  			dev_err(dev,
  				"Fail to get component id: type %d alias %d\n",
-@@ -1408,7 +2201,6 @@ int mdp_component_init(struct mdp_dev *mdp)
+@@ -1408,7 +2205,6 @@ int mdp_component_init(struct mdp_dev *mdp)
  
  err_init_comps:
  	mdp_component_deinit(mdp);
@@ -108432,7 +108514,7 @@ index 95f876c6f825b356057be8eeb001d772fda3e7b3..4b15a11da64f8fe357a525f90326f5a4
  	return ret;
  }
  
-@@ -1416,16 +2208,17 @@ int mdp_comp_ctx_init(struct mdp_dev *mdp, struct mdp_comp_ctx *ctx,
+@@ -1416,16 +2212,17 @@ int mdp_comp_ctx_init(struct mdp_dev *mdp, struct mdp_comp_ctx *ctx,
  		      const struct img_compparam *param,
  	const struct img_ipi_frameparam *frame)
  {
@@ -108452,7 +108534,7 @@ index 95f876c6f825b356057be8eeb001d772fda3e7b3..4b15a11da64f8fe357a525f90326f5a4
  		return -EINVAL;
  	}
  
-@@ -1436,3 +2229,197 @@ int mdp_comp_ctx_init(struct mdp_dev *mdp, struct mdp_comp_ctx *ctx,
+@@ -1436,3 +2233,197 @@ int mdp_comp_ctx_init(struct mdp_dev *mdp, struct mdp_comp_ctx *ctx,
  	return 0;
  }
  
@@ -109079,7 +109161,7 @@ index 21af4933fb8cdeba886026e810c594e92257c3ae..d69ac1658b31613bfb679aebb8b0cce9
  #endif  /* __MTK_MDP3_COMP_H__ */
 -
 diff --git a/drivers/media/platform/mtk-mdp3/mtk-mdp3-core.c b/drivers/media/platform/mtk-mdp3/mtk-mdp3-core.c
-index 7f0a6be3a3a21543f480f7845e1366f7d522b613..0ea43c11167d78e248181309bd94048e971bcc7b 100644
+index 7f0a6be3a3a21543f480f7845e1366f7d522b613..1eb26762ca639e558ae0777f56d56a24c7b3f45b 100644
 --- a/drivers/media/platform/mtk-mdp3/mtk-mdp3-core.c
 +++ b/drivers/media/platform/mtk-mdp3/mtk-mdp3-core.c
 @@ -1,6 +1,6 @@
@@ -109111,7 +109193,7 @@ index 7f0a6be3a3a21543f480f7845e1366f7d522b613..0ea43c11167d78e248181309bd94048e
 +	.rdma_support_afbc              = true,
 +	.rdma_esl_setting               = true,
 +	.rdma_rsz1_sram_sharing         = false,
-+	.rdma_upsample_repeat_only      = true,
++	.rdma_upsample_repeat_only      = false,
 +	.rsz_disable_dcm_small_sample   = false,
 +	.rsz_etc_control                = true,
 +	.wrot_filter_constraint         = false,
@@ -110165,7 +110247,7 @@ index 7f0a6be3a3a21543f480f7845e1366f7d522b613..0ea43c11167d78e248181309bd94048e
  EXPORT_SYMBOL_GPL(mdp_get_plat_device);
  
  int mdp_vpu_get_locked(struct mdp_dev *mdp)
-@@ -96,13 +1131,115 @@ static int mdp_probe(struct platform_device *pdev)
+@@ -96,13 +1131,117 @@ static int mdp_probe(struct platform_device *pdev)
  {
  	struct device *dev = &pdev->dev;
  	struct mdp_dev *mdp;
@@ -110185,6 +110267,8 @@ index 7f0a6be3a3a21543f480f7845e1366f7d522b613..0ea43c11167d78e248181309bd94048e
  
  	mdp->pdev = pdev;
 +	mdp->mdp_data = of_device_get_match_data(&pdev->dev);
++
++	dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(34));
 +
 +	ret = of_property_read_u32(dev->of_node, "mediatek,mdp3-id", &id);
 +	if (ret) {
@@ -110284,7 +110368,7 @@ index 7f0a6be3a3a21543f480f7845e1366f7d522b613..0ea43c11167d78e248181309bd94048e
  	ret = mdp_component_init(mdp);
  	if (ret) {
  		dev_err(dev, "Failed to initialize mdp components\n");
-@@ -143,6 +1280,18 @@ static int mdp_probe(struct platform_device *pdev)
+@@ -143,6 +1282,18 @@ static int mdp_probe(struct platform_device *pdev)
  		goto err_put_scp;
  	}
  
@@ -110303,7 +110387,7 @@ index 7f0a6be3a3a21543f480f7845e1366f7d522b613..0ea43c11167d78e248181309bd94048e
  	init_waitqueue_head(&mdp->callback_wq);
  	ida_init(&mdp->mdp_ida);
  	platform_set_drvdata(pdev, mdp);
-@@ -156,7 +1305,7 @@ static int mdp_probe(struct platform_device *pdev)
+@@ -156,7 +1307,7 @@ static int mdp_probe(struct platform_device *pdev)
  	if (ret) {
  		dev_err(dev, "Failed to register v4l2 device\n");
  		ret = -EINVAL;
@@ -110312,7 +110396,7 @@ index 7f0a6be3a3a21543f480f7845e1366f7d522b613..0ea43c11167d78e248181309bd94048e
  	}
  
  	ret = mdp_m2m_device_register(mdp);
-@@ -170,6 +1319,10 @@ static int mdp_probe(struct platform_device *pdev)
+@@ -170,6 +1321,10 @@ static int mdp_probe(struct platform_device *pdev)
  
  err_unregister_device:
  	v4l2_device_unregister(&mdp->v4l2_dev);
@@ -110323,7 +110407,7 @@ index 7f0a6be3a3a21543f480f7845e1366f7d522b613..0ea43c11167d78e248181309bd94048e
  err_mbox_destroy:
  	cmdq_mbox_destroy(mdp->cmdq_clt);
  err_put_scp:
-@@ -262,4 +1415,3 @@ module_platform_driver(mdp_driver);
+@@ -262,4 +1417,3 @@ module_platform_driver(mdp_driver);
  MODULE_AUTHOR("Ping-Hsun Wu <ping-hsun.wu@mediatek.com>");
  MODULE_DESCRIPTION("Mediatek image processor 3 driver");
  MODULE_LICENSE("GPL v2");
@@ -120607,10 +120691,20 @@ index a7500e18bb1de47129d577a029c88e13636259a4..84b3a74d00a8de30e7ca3b12b3005dc3
  	.probe = mt8195_pinctrl_probe,
  };
 diff --git a/drivers/pinctrl/mediatek/pinctrl-mtk-common-v2.c b/drivers/pinctrl/mediatek/pinctrl-mtk-common-v2.c
-index c81e5afe80a98ae825d4012f353dba110d6a0fe5..901a650d266b677e0d62f5b440dee24e33e5fc60 100644
+index c81e5afe80a98ae825d4012f353dba110d6a0fe5..6a4637d671a241c017d54793d519286cb7928219 100644
 --- a/drivers/pinctrl/mediatek/pinctrl-mtk-common-v2.c
 +++ b/drivers/pinctrl/mediatek/pinctrl-mtk-common-v2.c
-@@ -1039,6 +1039,20 @@ int mtk_pinconf_adv_drive_get_raw(struct mtk_pinctrl *hw,
+@@ -281,7 +281,8 @@ static int mtk_xt_get_gpio_n(void *data, unsigned long eint_n,
+ 	*gpio_chip = &hw->chip;
+ 
+ 	/* Be greedy to guess first gpio_n is equal to eint_n */
+-	if (desc[eint_n].eint.eint_n == eint_n)
++	if (((*gpio_chip)->ngpio > eint_n)
++		&& (desc[eint_n].eint.eint_n == eint_n))
+ 		*gpio_n = eint_n;
+ 	else
+ 		*gpio_n = mtk_xt_find_eint_num(hw, eint_n);
+@@ -1039,6 +1040,20 @@ int mtk_pinconf_adv_drive_get_raw(struct mtk_pinctrl *hw,
  }
  EXPORT_SYMBOL_GPL(mtk_pinconf_adv_drive_get_raw);
  
@@ -129963,7 +130057,7 @@ index c53f6f276d5c614461fb0422e3ab9f86fd0bb8e5..4e836b0c8d47cbdaa7dfb0690bf24700
  		reg = mtk->uwk_reg_base + PERI_SSUSB_SPM_CTRL;
  		msk = SSC_IP_SLEEP_EN | SSC_SPM_INT_EN;
 diff --git a/drivers/watchdog/mtk_wdt.c b/drivers/watchdog/mtk_wdt.c
-index 9bb7edbde11046f0f9d7322386567f25950750e9..73a406418747d2fb96655a60ba2dc0115222606a 100644
+index 9bb7edbde11046f0f9d7322386567f25950750e9..fe16a37f27ecfec995da1c792b3492d027b7e386 100644
 --- a/drivers/watchdog/mtk_wdt.c
 +++ b/drivers/watchdog/mtk_wdt.c
 @@ -22,6 +22,7 @@
@@ -129990,10 +130084,15 @@ index 9bb7edbde11046f0f9d7322386567f25950750e9..73a406418747d2fb96655a60ba2dc011
  	int ret;
  
  	ret = mtk_wdt_set_timeout(wdt_dev, wdt_dev->timeout);
-@@ -232,9 +235,25 @@ static int mtk_wdt_start(struct watchdog_device *wdt_dev)
+@@ -231,10 +234,29 @@ static int mtk_wdt_start(struct watchdog_device *wdt_dev)
+ 		return ret;
  
  	reg = ioread32(wdt_base + WDT_MODE);
- 	reg &= ~(WDT_MODE_IRQ_EN | WDT_MODE_DUAL_EN);
+-	reg &= ~(WDT_MODE_IRQ_EN | WDT_MODE_DUAL_EN);
++	if (wdt_dev->pretimeout)
++		reg |= (WDT_MODE_IRQ_EN | WDT_MODE_DUAL_EN);
++	else
++		reg &= ~(WDT_MODE_IRQ_EN | WDT_MODE_DUAL_EN);
 +	if (mtk_wdt->disable_wdt_extrst)
 +		reg &= ~WDT_MODE_EXRST_EN;
  	reg |= (WDT_MODE_EN | WDT_MODE_KEY);
@@ -130016,13 +130115,13 @@ index 9bb7edbde11046f0f9d7322386567f25950750e9..73a406418747d2fb96655a60ba2dc011
  	return 0;
  }
  
-@@ -301,6 +320,10 @@ static int mtk_wdt_probe(struct platform_device *pdev)
+@@ -301,6 +323,10 @@ static int mtk_wdt_probe(struct platform_device *pdev)
  		if (err)
  			return err;
  	}
 +
 +	mtk_wdt->disable_wdt_extrst =
-+		of_property_read_bool(dev->of_node, "disable_extrst");
++		of_property_read_bool(dev->of_node, "mediatek,disable-extrst");
 +
  	return 0;
  }
@@ -130968,10 +131067,41 @@ index 02b71a8deea455e5a99de8a9b6a0657780b1a817..b72fa385bebf5129f8b69e27e1be9a0f
 +
  #endif
 diff --git a/sound/soc/mediatek/Kconfig b/sound/soc/mediatek/Kconfig
-index 955b39567dec713abae7f9bb77f29c5c3c7222c1..29cd3b9d1fda177e4042a2b6727d000db4d445a5 100644
+index 955b39567dec713abae7f9bb77f29c5c3c7222c1..554160caf893b370c4fddd408ced08b968e73029 100644
 --- a/sound/soc/mediatek/Kconfig
 +++ b/sound/soc/mediatek/Kconfig
-@@ -209,3 +209,18 @@ config SND_SOC_MT8195_MT6359_RT1019_RT5682
+@@ -1,6 +1,7 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+ config SND_SOC_MEDIATEK
+ 	tristate
++	select REGMAP_MMIO
+ 
+ config SND_SOC_MT2701
+ 	tristate "ASoC support for Mediatek MT2701 chip"
+@@ -188,7 +189,9 @@ config SND_SOC_MT8192_MT6359_RT1015_RT5682
+ config SND_SOC_MT8195
+ 	tristate "ASoC support for Mediatek MT8195 chip"
+ 	depends on ARCH_MEDIATEK || COMPILE_TEST
++	depends on COMMON_CLK
+ 	select SND_SOC_MEDIATEK
++	select MFD_SYSCON if SND_SOC_MT6359
+ 	help
+ 	  This adds ASoC platform driver support for Mediatek MT8195 chip
+ 	  that can be used with other codecs.
+@@ -198,10 +201,11 @@ config SND_SOC_MT8195
+ config SND_SOC_MT8195_MT6359_RT1019_RT5682
+ 	tristate "ASoC Audio driver for MT8195 with MT6359 RT1019 RT5682 codec"
+ 	depends on I2C
+-	depends on SND_SOC_MT8195
++	depends on SND_SOC_MT8195 && MTK_PMIC_WRAP
+ 	select SND_SOC_MT6359
+ 	select SND_SOC_RT1015P
+ 	select SND_SOC_RT5682_I2C
++	select SND_SOC_RT5682S
+ 	select SND_SOC_DMIC
+ 	select SND_SOC_HDMI_CODEC
+ 	help
+@@ -209,3 +213,19 @@ config SND_SOC_MT8195_MT6359_RT1019_RT5682
  	  with the MT6359 RT1019 RT5682 audio codec.
  	  Select Y if you have such device.
  	  If unsure select "N".
@@ -130983,6 +131113,7 @@ index 955b39567dec713abae7f9bb77f29c5c3c7222c1..29cd3b9d1fda177e4042a2b6727d000d
 +	select SND_SOC_MT6359
 +	select SND_SOC_RT1011
 +	select SND_SOC_RT5682_I2C
++	select SND_SOC_RT5682S
 +	select SND_SOC_DMIC
 +	select SND_SOC_HDMI_CODEC
 +	help
@@ -131190,10 +131321,10 @@ index 740aa6ddda0ec71ce18844d9815634e3b386af2b..e0670e0dbd5b0d2f5a7adb0ee00686e9
  int mt8195_audsys_clk_register(struct mtk_base_afe *afe)
 diff --git a/sound/soc/mediatek/mt8195/mt8195-mt6359-rt1011-rt5682.c b/sound/soc/mediatek/mt8195/mt8195-mt6359-rt1011-rt5682.c
 new file mode 100644
-index 0000000000000000000000000000000000000000..a84ba77d6432f8e67319e097dbfbcdc0f397aba5
+index 0000000000000000000000000000000000000000..957961ab335efa9ec75cac888f34f40d3e138d12
 --- /dev/null
 +++ b/sound/soc/mediatek/mt8195/mt8195-mt6359-rt1011-rt5682.c
-@@ -0,0 +1,1140 @@
+@@ -0,0 +1,1155 @@
 +// SPDX-License-Identifier: GPL-2.0
 +//
 +// mt8195-mt6359-rt1011-rt5682.c  --
@@ -131222,6 +131353,9 @@ index 0000000000000000000000000000000000000000..a84ba77d6432f8e67319e097dbfbcdc0
 +
 +#define RT5682_CODEC_DAI	"rt5682-aif1"
 +#define RT5682_DEV0_NAME	"rt5682.2-001a"
++
++#define RT5682S_CODEC_DAI	"rt5682s-aif1"
++#define RT5682S_DEV0_NAME	"rt5682s.2-001a"
 +
 +struct mt8195_mt6359_rt1011_rt5682_priv {
 +	struct snd_soc_jack headset_jack;
@@ -131892,14 +132026,12 @@ index 0000000000000000000000000000000000000000..a84ba77d6432f8e67319e097dbfbcdc0
 +
 +SND_SOC_DAILINK_DEFS(ETDM2_IN_BE,
 +		     DAILINK_COMP_ARRAY(COMP_CPU("ETDM2_IN")),
-+		     DAILINK_COMP_ARRAY(COMP_CODEC(RT5682_DEV0_NAME,
-+						   RT5682_CODEC_DAI)),
++		     DAILINK_COMP_ARRAY(COMP_DUMMY()),
 +		     DAILINK_COMP_ARRAY(COMP_EMPTY()));
 +
 +SND_SOC_DAILINK_DEFS(ETDM1_OUT_BE,
 +		     DAILINK_COMP_ARRAY(COMP_CPU("ETDM1_OUT")),
-+		     DAILINK_COMP_ARRAY(COMP_CODEC(RT5682_DEV0_NAME,
-+						   RT5682_CODEC_DAI)),
++		     DAILINK_COMP_ARRAY(COMP_DUMMY()),
 +		     DAILINK_COMP_ARRAY(COMP_EMPTY()));
 +
 +SND_SOC_DAILINK_DEFS(ETDM2_OUT_BE,
@@ -132249,9 +132381,19 @@ index 0000000000000000000000000000000000000000..a84ba77d6432f8e67319e097dbfbcdc0
 +	struct device_node *platform_node;
 +	struct snd_soc_dai_link *dai_link;
 +	struct mt8195_mt6359_rt1011_rt5682_priv *priv = NULL;
++	int is5682s;
 +	int ret, i;
 +
 +	card->dev = &pdev->dev;
++
++	ret = snd_soc_of_parse_card_name(card, "model");
++	if (ret) {
++		dev_err(&pdev->dev, "%s new card name parsing error %d\n",
++			__func__, ret);
++		return ret;
++	}
++
++	is5682s = (strstr(card->name, "_5682s") != NULL);
 +
 +	platform_node = of_parse_phandle(pdev->dev.of_node,
 +					 "mediatek,platform", 0);
@@ -132275,9 +132417,7 @@ index 0000000000000000000000000000000000000000..a84ba77d6432f8e67319e097dbfbcdc0
 +				dai_link->codecs->dai_name = "i2s-hifi";
 +				dai_link->init = mt8195_dptx_codec_init;
 +			}
-+		}
-+
-+		if (strcmp(dai_link->name, "ETDM3_OUT_BE") == 0) {
++		} else if (strcmp(dai_link->name, "ETDM3_OUT_BE") == 0) {
 +			dai_link->codecs->of_node =
 +				of_parse_phandle(pdev->dev.of_node,
 +						 "mediatek,hdmi-codec", 0);
@@ -132288,6 +132428,12 @@ index 0000000000000000000000000000000000000000..a84ba77d6432f8e67319e097dbfbcdc0
 +				dai_link->codecs->dai_name = "i2s-hifi";
 +				dai_link->init = mt8195_hdmi_codec_init;
 +			}
++		} else if (strcmp(dai_link->name, "ETDM1_OUT_BE") == 0 ||
++			   strcmp(dai_link->name, "ETDM2_IN_BE") == 0) {
++			dai_link->codecs->name =
++				is5682s ? RT5682S_DEV0_NAME : RT5682_DEV0_NAME;
++			dai_link->codecs->dai_name =
++				is5682s ? RT5682S_CODEC_DAI : RT5682_CODEC_DAI;
 +		}
 +	}
 +
@@ -132335,13 +132481,16 @@ index 0000000000000000000000000000000000000000..a84ba77d6432f8e67319e097dbfbcdc0
 +MODULE_LICENSE("GPL v2");
 +MODULE_ALIAS("mt8195_mt6359_rt1011_rt5682 soc card");
 diff --git a/sound/soc/mediatek/mt8195/mt8195-mt6359-rt1019-rt5682.c b/sound/soc/mediatek/mt8195/mt8195-mt6359-rt1019-rt5682.c
-index c97ace7387b4cdce5f506f17789a8c67ecb6cede..c3f58e1f271dd4bb49bd3f1edb2c2a35ad734a54 100644
+index c97ace7387b4cdce5f506f17789a8c67ecb6cede..e6e9dffb8dcff039b414532e1d4b074fb1edbae4 100644
 --- a/sound/soc/mediatek/mt8195/mt8195-mt6359-rt1019-rt5682.c
 +++ b/sound/soc/mediatek/mt8195/mt8195-mt6359-rt1019-rt5682.c
-@@ -25,6 +25,21 @@
+@@ -25,6 +25,24 @@
  #define RT5682_CODEC_DAI	"rt5682-aif1"
  #define RT5682_DEV0_NAME	"rt5682.2-001a"
  
++#define RT5682S_CODEC_DAI	"rt5682s-aif1"
++#define RT5682S_DEV0_NAME	"rt5682s.2-001a"
++
 +#if IS_ENABLED(CONFIG_SND_SOC_SOF_MT8195)
 +#include <sound/sof.h>
 +#define SOF_DMA_DL2 "SOF_DMA_DL2"
@@ -132360,7 +132509,7 @@ index c97ace7387b4cdce5f506f17789a8c67ecb6cede..c3f58e1f271dd4bb49bd3f1edb2c2a35
  struct mt8195_mt6359_rt1019_rt5682_priv {
  	struct snd_soc_jack headset_jack;
  	struct snd_soc_jack dp_jack;
-@@ -36,6 +51,12 @@ static const struct snd_soc_dapm_widget
+@@ -36,6 +54,12 @@ static const struct snd_soc_dapm_widget
  	SND_SOC_DAPM_SPK("Speakers", NULL),
  	SND_SOC_DAPM_HP("Headphone Jack", NULL),
  	SND_SOC_DAPM_MIC("Headset Mic", NULL),
@@ -132373,7 +132522,7 @@ index c97ace7387b4cdce5f506f17789a8c67ecb6cede..c3f58e1f271dd4bb49bd3f1edb2c2a35
  };
  
  static const struct snd_soc_dapm_route mt8195_mt6359_rt1019_rt5682_routes[] = {
-@@ -45,6 +66,18 @@ static const struct snd_soc_dapm_route mt8195_mt6359_rt1019_rt5682_routes[] = {
+@@ -45,6 +69,18 @@ static const struct snd_soc_dapm_route mt8195_mt6359_rt1019_rt5682_routes[] = {
  	{ "Headphone Jack", NULL, "HPOL" },
  	{ "Headphone Jack", NULL, "HPOR" },
  	{ "IN1P", NULL, "Headset Mic" },
@@ -132392,7 +132541,7 @@ index c97ace7387b4cdce5f506f17789a8c67ecb6cede..c3f58e1f271dd4bb49bd3f1edb2c2a35
  };
  
  static const struct snd_kcontrol_new mt8195_mt6359_rt1019_rt5682_controls[] = {
-@@ -157,7 +190,7 @@ static int mt8195_mt6359_mtkaif_calibration(struct snd_soc_pcm_runtime *rtd)
+@@ -157,7 +193,7 @@ static int mt8195_mt6359_mtkaif_calibration(struct snd_soc_pcm_runtime *rtd)
  	     phase <= mtkaif_calibration_num_phase && mtkaif_calibration_ok;
  	     phase++) {
  		mt6359_set_mtkaif_calibration_phase(cmpnt_codec,
@@ -132401,7 +132550,7 @@ index c97ace7387b4cdce5f506f17789a8c67ecb6cede..c3f58e1f271dd4bb49bd3f1edb2c2a35
  
  		regmap_update_bits(afe_priv->topckgen,
  				   CKSYS_AUD_TOP_CFG, 0x1, 0x1);
-@@ -556,6 +589,12 @@ enum {
+@@ -556,6 +592,12 @@ enum {
  	DAI_LINK_PCM1_BE,
  	DAI_LINK_UL_SRC1_BE,
  	DAI_LINK_UL_SRC2_BE,
@@ -132414,7 +132563,24 @@ index c97ace7387b4cdce5f506f17789a8c67ecb6cede..c3f58e1f271dd4bb49bd3f1edb2c2a35
  };
  
  /* FE */
-@@ -698,6 +737,172 @@ SND_SOC_DAILINK_DEFS(UL_SRC2_BE,
+@@ -658,14 +700,12 @@ SND_SOC_DAILINK_DEFS(ETDM1_IN_BE,
+ 
+ SND_SOC_DAILINK_DEFS(ETDM2_IN_BE,
+ 		     DAILINK_COMP_ARRAY(COMP_CPU("ETDM2_IN")),
+-		     DAILINK_COMP_ARRAY(COMP_CODEC(RT5682_DEV0_NAME,
+-						   RT5682_CODEC_DAI)),
++		     DAILINK_COMP_ARRAY(COMP_DUMMY()),
+ 		     DAILINK_COMP_ARRAY(COMP_EMPTY()));
+ 
+ SND_SOC_DAILINK_DEFS(ETDM1_OUT_BE,
+ 		     DAILINK_COMP_ARRAY(COMP_CPU("ETDM1_OUT")),
+-		     DAILINK_COMP_ARRAY(COMP_CODEC(RT5682_DEV0_NAME,
+-						   RT5682_CODEC_DAI)),
++		     DAILINK_COMP_ARRAY(COMP_DUMMY()),
+ 		     DAILINK_COMP_ARRAY(COMP_EMPTY()));
+ 
+ SND_SOC_DAILINK_DEFS(ETDM2_OUT_BE,
+@@ -698,6 +738,172 @@ SND_SOC_DAILINK_DEFS(UL_SRC2_BE,
  						   "mt6359-snd-codec-aif2")),
  		     DAILINK_COMP_ARRAY(COMP_EMPTY()));
  
@@ -132587,7 +132753,7 @@ index c97ace7387b4cdce5f506f17789a8c67ecb6cede..c3f58e1f271dd4bb49bd3f1edb2c2a35
  static struct snd_soc_dai_link mt8195_mt6359_rt1019_rt5682_dai_links[] = {
  	/* FE */
  	[DAI_LINK_DL2_FE] = {
-@@ -977,6 +1182,33 @@ static struct snd_soc_dai_link mt8195_mt6359_rt1019_rt5682_dai_links[] = {
+@@ -977,6 +1183,33 @@ static struct snd_soc_dai_link mt8195_mt6359_rt1019_rt5682_dai_links[] = {
  		.dpcm_capture = 1,
  		SND_SOC_DAILINK_REG(UL_SRC2_BE),
  	},
@@ -132621,7 +132787,7 @@ index c97ace7387b4cdce5f506f17789a8c67ecb6cede..c3f58e1f271dd4bb49bd3f1edb2c2a35
  };
  
  static struct snd_soc_card mt8195_mt6359_rt1019_rt5682_soc_card = {
-@@ -990,6 +1222,10 @@ static struct snd_soc_card mt8195_mt6359_rt1019_rt5682_soc_card = {
+@@ -990,6 +1223,10 @@ static struct snd_soc_card mt8195_mt6359_rt1019_rt5682_soc_card = {
  	.num_dapm_widgets = ARRAY_SIZE(mt8195_mt6359_rt1019_rt5682_widgets),
  	.dapm_routes = mt8195_mt6359_rt1019_rt5682_routes,
  	.num_dapm_routes = ARRAY_SIZE(mt8195_mt6359_rt1019_rt5682_routes),
@@ -132632,20 +132798,28 @@ index c97ace7387b4cdce5f506f17789a8c67ecb6cede..c3f58e1f271dd4bb49bd3f1edb2c2a35
  };
  
  static int mt8195_mt6359_rt1019_rt5682_dev_probe(struct platform_device *pdev)
-@@ -998,12 +1234,25 @@ static int mt8195_mt6359_rt1019_rt5682_dev_probe(struct platform_device *pdev)
+@@ -998,12 +1235,33 @@ static int mt8195_mt6359_rt1019_rt5682_dev_probe(struct platform_device *pdev)
  	struct device_node *platform_node;
  	struct snd_soc_dai_link *dai_link;
  	struct mt8195_mt6359_rt1019_rt5682_priv *priv = NULL;
-+
 +#if IS_ENABLED(CONFIG_SND_SOC_SOF_MT8195)
 +	struct device_node *machine_node;
 +	struct snd_soc_acpi_mach *mach;
 +#endif
-+
++	int is5682s;
  	int ret, i;
  
  	card->dev = &pdev->dev;
  
++	ret = snd_soc_of_parse_card_name(card, "model");
++	if (ret) {
++		dev_err(&pdev->dev, "%s new card name parsing error %d\n",
++			__func__, ret);
++		return ret;
++	}
++
++	is5682s = (strstr(card->name, "_5682s") != NULL);
++
 +#if IS_ENABLED(CONFIG_SND_SOC_SOF_MT8195)
 +	mach = pdev->dev.platform_data;
 +	machine_node = mach->pdata;
@@ -132658,7 +132832,7 @@ index c97ace7387b4cdce5f506f17789a8c67ecb6cede..c3f58e1f271dd4bb49bd3f1edb2c2a35
  	if (!platform_node) {
  		dev_dbg(&pdev->dev, "Property 'platform' missing or invalid\n");
  		return -EINVAL;
-@@ -1013,10 +1262,20 @@ static int mt8195_mt6359_rt1019_rt5682_dev_probe(struct platform_device *pdev)
+@@ -1013,10 +1271,20 @@ static int mt8195_mt6359_rt1019_rt5682_dev_probe(struct platform_device *pdev)
  		if (!dai_link->platforms->name)
  			dai_link->platforms->of_node = platform_node;
  
@@ -132679,10 +132853,14 @@ index c97ace7387b4cdce5f506f17789a8c67ecb6cede..c3f58e1f271dd4bb49bd3f1edb2c2a35
  			if (!dai_link->codecs->of_node) {
  				dev_dbg(&pdev->dev, "No property 'dptx-codec'\n");
  			} else {
-@@ -1027,9 +1286,15 @@ static int mt8195_mt6359_rt1019_rt5682_dev_probe(struct platform_device *pdev)
- 		}
- 
- 		if (strcmp(dai_link->name, "ETDM3_OUT_BE") == 0) {
+@@ -1024,12 +1292,16 @@ static int mt8195_mt6359_rt1019_rt5682_dev_probe(struct platform_device *pdev)
+ 				dai_link->codecs->dai_name = "i2s-hifi";
+ 				dai_link->init = mt8195_dptx_codec_init;
+ 			}
+-		}
+-
+-		if (strcmp(dai_link->name, "ETDM3_OUT_BE") == 0) {
++		} else if (strcmp(dai_link->name, "ETDM3_OUT_BE") == 0) {
 +#if IS_ENABLED(CONFIG_SND_SOC_SOF_MT8195)
 +                        dai_link->codecs->of_node =
 +                                of_parse_phandle(machine_node,
@@ -132695,6 +132873,19 @@ index c97ace7387b4cdce5f506f17789a8c67ecb6cede..c3f58e1f271dd4bb49bd3f1edb2c2a35
  			if (!dai_link->codecs->of_node) {
  				dev_dbg(&pdev->dev, "No property 'hdmi-codec'\n");
  			} else {
+@@ -1037,6 +1309,12 @@ static int mt8195_mt6359_rt1019_rt5682_dev_probe(struct platform_device *pdev)
+ 				dai_link->codecs->dai_name = "i2s-hifi";
+ 				dai_link->init = mt8195_hdmi_codec_init;
+ 			}
++		} else if (strcmp(dai_link->name, "ETDM1_OUT_BE") == 0 ||
++			   strcmp(dai_link->name, "ETDM2_IN_BE") == 0) {
++			dai_link->codecs->name =
++				is5682s ? RT5682S_DEV0_NAME : RT5682_DEV0_NAME;
++			dai_link->codecs->dai_name =
++				is5682s ? RT5682S_CODEC_DAI : RT5682_CODEC_DAI;
+ 		}
+ 	}
+ 
 diff --git a/sound/soc/sof/Kconfig b/sound/soc/sof/Kconfig
 index cd659493b5dfe30b02d16ba5fa5ede6a4207ed4b..bef3d9a26d2c5dc9e359311358d243ec8cf879e0 100644
 --- a/sound/soc/sof/Kconfig
