@@ -10080,7 +10080,7 @@ index bc649da4899a0b873884226c40af571c6cfed8a2..aef716e3b2c1a6dc7082c37bb808c8f1
  	__update_runtime_status(dev, RPM_SUSPENDED);
  	pm_runtime_deactivate_timer(dev);
 diff --git a/drivers/bluetooth/btusb.c b/drivers/bluetooth/btusb.c
-index d875b0c8c799d319b46c5d75deeb9b9b4d09fc88..41bfb221fd0c1456afe72d6e7de32dadb98c714d 100644
+index d875b0c8c799d319b46c5d75deeb9b9b4d09fc88..17894a806c005593a35e7cc7942eeedf2a36df5d 100644
 --- a/drivers/bluetooth/btusb.c
 +++ b/drivers/bluetooth/btusb.c
 @@ -2214,6 +2214,7 @@ static void btusb_mtk_wmt_recv(struct urb *urb)
@@ -10140,6 +10140,14 @@ index d875b0c8c799d319b46c5d75deeb9b9b4d09fc88..41bfb221fd0c1456afe72d6e7de32dad
  
  	/* The vendor specific WMT commands are all answered by a vendor
  	 * specific event and will have the Command Status or Command
+@@ -3830,6 +3836,7 @@ static int btusb_probe(struct usb_interface *intf,
+ 		hdev->manufacturer = 70;
+ 		hdev->cmd_timeout = btusb_mtk_cmd_timeout;
+ 		set_bit(HCI_QUIRK_NON_PERSISTENT_SETUP, &hdev->quirks);
++		set_bit(HCI_QUIRK_NO_SUSPEND_NOTIFIER, &hdev->quirks);
+ 		data->recv_acl = btusb_recv_acl_mtk;
+ 	}
+ 
 diff --git a/drivers/clk/clk.c b/drivers/clk/clk.c
 index 2dc4d2306b74d53332856edb8f30062df46d8016..899defab2bd504349ee4c8103900ba2af04c4d07 100644
 --- a/drivers/clk/clk.c
@@ -119317,7 +119325,7 @@ index 0000000000000000000000000000000000000000..18d75977e2422e92a7c9fd5bd4958583
 +
 +#endif
 diff --git a/drivers/media/platform/mtk-vcodec/vdec_vpu_if.c b/drivers/media/platform/mtk-vcodec/vdec_vpu_if.c
-index 5dffc459a33dd215b0f0a90c1110b9ac9e4ed1bc..14b97eb05033831e1c95221f67e679944b5b04c3 100644
+index 5dffc459a33dd215b0f0a90c1110b9ac9e4ed1bc..530c0c61130a4eb2f954ef1e340b0789a43d893d 100644
 --- a/drivers/media/platform/mtk-vcodec/vdec_vpu_if.c
 +++ b/drivers/media/platform/mtk-vcodec/vdec_vpu_if.c
 @@ -33,8 +33,8 @@ static void handle_init_ack_msg(const struct vdec_vpu_ipi_init_ack *msg)
@@ -119359,7 +119367,19 @@ index 5dffc459a33dd215b0f0a90c1110b9ac9e4ed1bc..14b97eb05033831e1c95221f67e67994
  /*
   * vpu_dec_ipi_handler - Handler for VPU ipi message.
   *
-@@ -85,8 +106,13 @@ static void vpu_dec_ipi_handler(void *data, unsigned int len, void *priv)
+@@ -70,6 +91,11 @@ static void vpu_dec_ipi_handler(void *data, unsigned int len, void *priv)
+ 	struct vdec_vpu_inst *vpu = (struct vdec_vpu_inst *)
+ 					(unsigned long)msg->ap_inst_addr;
+ 
++	if (!vpu) {
++		pr_info("NULL ap_inst_addr");
++		return;
++	}
++
+ 	mtk_vcodec_debug(vpu, "+ id=%X", msg->msg_id);
+ 
+ 	vpu->failure = msg->status;
+@@ -85,8 +111,13 @@ static void vpu_dec_ipi_handler(void *data, unsigned int len, void *priv)
  		case VPU_IPIMSG_DEC_END_ACK:
  		case VPU_IPIMSG_DEC_DEINIT_ACK:
  		case VPU_IPIMSG_DEC_RESET_ACK:
@@ -119373,7 +119393,7 @@ index 5dffc459a33dd215b0f0a90c1110b9ac9e4ed1bc..14b97eb05033831e1c95221f67e67994
  		default:
  			mtk_vcodec_err(vpu, "invalid msg=%X", msg->msg_id);
  			break;
-@@ -98,18 +124,29 @@ static void vpu_dec_ipi_handler(void *data, unsigned int len, void *priv)
+@@ -98,18 +129,29 @@ static void vpu_dec_ipi_handler(void *data, unsigned int len, void *priv)
  
  static int vcodec_vpu_send_msg(struct vdec_vpu_inst *vpu, void *msg, int len)
  {
@@ -119407,7 +119427,7 @@ index 5dffc459a33dd215b0f0a90c1110b9ac9e4ed1bc..14b97eb05033831e1c95221f67e67994
  		return err;
  	}
  
-@@ -129,6 +166,7 @@ static int vcodec_send_ap_ipi(struct vdec_vpu_inst *vpu, unsigned int msg_id)
+@@ -129,6 +171,7 @@ static int vcodec_send_ap_ipi(struct vdec_vpu_inst *vpu, unsigned int msg_id)
  		msg.vpu_inst_addr = vpu->inst_addr;
  	else
  		msg.inst_id = vpu->inst_id;
@@ -119415,7 +119435,7 @@ index 5dffc459a33dd215b0f0a90c1110b9ac9e4ed1bc..14b97eb05033831e1c95221f67e67994
  
  	err = vcodec_vpu_send_msg(vpu, &msg, sizeof(msg));
  	mtk_vcodec_debug(vpu, "- id=%X ret=%d", msg_id, err);
-@@ -147,14 +185,25 @@ int vpu_dec_init(struct vdec_vpu_inst *vpu)
+@@ -147,14 +190,25 @@ int vpu_dec_init(struct vdec_vpu_inst *vpu)
  
  	err = mtk_vcodec_fw_ipi_register(vpu->ctx->dev->fw_handler, vpu->id,
  					 vpu->handler, "vdec", NULL);
@@ -119442,17 +119462,17 @@ index 5dffc459a33dd215b0f0a90c1110b9ac9e4ed1bc..14b97eb05033831e1c95221f67e67994
  
  	mtk_vcodec_debug(vpu, "vdec_inst=%p", vpu);
  
-@@ -185,17 +234,55 @@ int vpu_dec_start(struct vdec_vpu_inst *vpu, uint32_t *data, unsigned int len)
+@@ -185,17 +239,55 @@ int vpu_dec_start(struct vdec_vpu_inst *vpu, uint32_t *data, unsigned int len)
  
  	for (i = 0; i < len; i++)
  		msg.data[i] = data[i];
 +	msg.codec_type = vpu->codec_type;
-+
-+	err = vcodec_vpu_send_msg(vpu, (void *)&msg, sizeof(msg));
-+	mtk_vcodec_debug(vpu, "- ret=%d", err);
-+	return err;
-+}
-+
+ 
+ 	err = vcodec_vpu_send_msg(vpu, (void *)&msg, sizeof(msg));
+ 	mtk_vcodec_debug(vpu, "- ret=%d", err);
+ 	return err;
+ }
+ 
 +int vpu_dec_get_param(struct vdec_vpu_inst *vpu, uint32_t *data,
 +	unsigned int len, unsigned int param_type)
 +{
@@ -119474,12 +119494,12 @@ index 5dffc459a33dd215b0f0a90c1110b9ac9e4ed1bc..14b97eb05033831e1c95221f67e67994
 +		msg.data[i] = data[i];
 +	msg.param_type = param_type;
 +	msg.codec_type = vpu->codec_type;
- 
- 	err = vcodec_vpu_send_msg(vpu, (void *)&msg, sizeof(msg));
- 	mtk_vcodec_debug(vpu, "- ret=%d", err);
- 	return err;
- }
- 
++
++	err = vcodec_vpu_send_msg(vpu, (void *)&msg, sizeof(msg));
++	mtk_vcodec_debug(vpu, "- ret=%d", err);
++	return err;
++}
++
 +int vpu_dec_core(struct vdec_vpu_inst *vpu)
 +{
 +	return vcodec_send_ap_ipi(vpu, AP_IPIMSG_DEC_CORE);
@@ -121794,37 +121814,6 @@ index 9679cc26895e578b0eb0fa604acba40db71f3eeb..36e48cf58ed63a72d4f660144456a0e5
  	{},
  };
  MODULE_DEVICE_TABLE(of, mtk_scp_of_match);
-diff --git a/drivers/remoteproc/mtk_scp_ipi.c b/drivers/remoteproc/mtk_scp_ipi.c
-index 6dc955ecab80f98c319bf67b500bdf32399f2209..8236802ea5b8dba6e5dba43a0a576baf2456522e 100644
---- a/drivers/remoteproc/mtk_scp_ipi.c
-+++ b/drivers/remoteproc/mtk_scp_ipi.c
-@@ -169,7 +169,8 @@ int scp_ipi_send(struct mtk_scp *scp, u32 id, void *buf, unsigned int len,
- 	ret = clk_prepare_enable(scp->clk);
- 	if (ret) {
- 		dev_err(scp->dev, "failed to enable clock\n");
--		goto unlock_mutex;
-+		mutex_unlock(&scp->send_lock);
-+		return -EINVAL;
- 	}
- 
- 	 /* Wait until SCP receives the last command */
-@@ -191,6 +192,7 @@ int scp_ipi_send(struct mtk_scp *scp, u32 id, void *buf, unsigned int len,
- 	/* send the command to SCP */
- 	writel(scp->data->host_to_scp_int_bit,
- 	       scp->reg_base + scp->data->host_to_scp_reg);
-+	mutex_unlock(&scp->send_lock);
- 
- 	if (wait) {
- 		/* wait for SCP's ACK */
-@@ -207,8 +209,6 @@ int scp_ipi_send(struct mtk_scp *scp, u32 id, void *buf, unsigned int len,
- 
- clock_disable:
- 	clk_disable_unprepare(scp->clk);
--unlock_mutex:
--	mutex_unlock(&scp->send_lock);
- 
- 	return ret;
- }
 diff --git a/drivers/soc/mediatek/Kconfig b/drivers/soc/mediatek/Kconfig
 index d3902daa24fb3ea33342ff40767ce2c1e0149392..8964da28c6823dc03d554a78af49671db1b300e1 100644
 --- a/drivers/soc/mediatek/Kconfig
