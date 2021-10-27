@@ -12,7 +12,7 @@ or portage actions."
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="-* amd64 x86"
-IUSE="nami-kvm nami-kernelnext"
+IUSE="nami-kvm nami-kernelnext kernel-5_4"
 S="${WORKDIR}"
 
 # Add dependencies on other ebuilds from within this board overlay
@@ -26,7 +26,6 @@ DEPEND="
 "
 
 src_install() {
-
 	if use nami-kvm; then
 		doappid "{DB6012BC-8758-4280-B40D-41F2792F46B9}" "CHROMEBOOK"
 	elif use nami-kernelnext; then
@@ -37,6 +36,12 @@ src_install() {
 
 	unibuild_install_files audio-files
 	unibuild_install_files thermal-files
+
+	# Override default CPU clock speed governor for kernel 5.4
+	if use kernel-5_4; then
+		insinto "/etc"
+		doins "${FILESDIR}/common/cpufreq.conf"
+	fi
 
 	# Projects might support multiple panels with the same Wacom digitizer
 	# chip but have different firmwares for fine-tuned performance.
