@@ -11,7 +11,7 @@ or portage actions."
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="-* amd64 x86"
-IUSE="brya-manatee adlrvp"
+IUSE="brya-manatee adlrvp brya-lvm-stateful"
 S="${WORKDIR}"
 
 # Add dependencies on other ebuilds from within this board overlay
@@ -32,6 +32,8 @@ src_install() {
 		doappid "{8C4F1DCA-AC34-11EB-8FD3-7B09B37DFAB3}" "REFERENCE"
 	elif use adlrvp; then
 		doappid "{CA89482B-8F28-4ED4-B4E0-14C3FB7FCDF3}" "REFERENCE"
+	elif use brya-lvm-stateful; then
+		doappid "{84BBC912-D9F5-4EF2-89B8-7AED7592AB49}" "REFERENCE"
 	else
 		doappid "{DEB6CEFD-4EEE-462F-AC21-52DF1E17B52F}" "REFERENCE"
 	fi
