@@ -1,3 +1,68 @@
+diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,ccorr.yaml b/Documentation/devicetree/bindings/arm/mediatek/mediatek,ccorr.yaml
+new file mode 100644
+index 0000000000000000000000000000000000000000..40ea7955efc66e79cafbd97f47bfa6bdb02ae0f7
+--- /dev/null
++++ b/Documentation/devicetree/bindings/arm/mediatek/mediatek,ccorr.yaml
+@@ -0,0 +1,59 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/arm/mediatek/mediatek,ccorr.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Mediatek color correction
++
++maintainers:
++  - Matthias Brugger <matthias.bgg@gmail.com>
++
++description: |
++  Mediatek color correction with 3X3 matrix.
++
++properties:
++  compatible:
++    items:
++      - enum:
++        - mediatek,mt8183-mdp3-ccorr
++
++  mediatek,mdp3-id:
++    $ref: /schemas/types.yaml#/definitions/uint32
++    maxItems: 1
++    description: |
++      There may be multiple blocks with the same function but
++      different addresses in MDP3.
++      In order to distinguish the connection with other blocks,
++      a unique ID is needed to dynamically use one or more identical
++      blocks to implement multiple pipelines.
++
++  reg:
++    maxItems: 1
++
++  mediatek,gce-client-reg:
++    $ref: /schemas/types.yaml#/definitions/phandle-array
++    description: |
++      The register of client driver can be configured by gce with 4 arguments
++      defined in this property, such as phandle of gce, subsys id,
++      register offset and size.
++      Each GCE subsys id is mapping to a client defined in the header
++      include/dt-bindings/gce/<chip>-gce.h.
++
++  clocks:
++    minItems: 1
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/clock/mt8183-clk.h>
++    #include <dt-bindings/gce/mt8183-gce.h>
++
++    mdp3_ccorr: mdp3_ccorr@1401c000 {
++      compatible = "mediatek,mt8183-mdp3-ccorr";
++      mediatek,mdp3-id = <0>;
++      reg = <0x1401c000 0x1000>;
++      mediatek,gce-client-reg = <&gce SUBSYS_1401XXXX 0xc000 0x1000>;
++      clocks = <&mmsys CLK_MM_MDP_CCORR>;
++    };
 diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mmsys.txt b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mmsys.txt
 deleted file mode 100644
 index d8c9108c3b4a44915362a92784c196c7c95ffd1e..0000000000000000000000000000000000000000
@@ -130,6 +195,316 @@ index 0000000000000000000000000000000000000000..593d0f2d103454f3549823de109c4414
 +        mboxes = <&gce 0 CMDQ_THR_PRIO_HIGHEST>,
 +                 <&gce 1 CMDQ_THR_PRIO_HIGHEST>;
 +        mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0 0x1000>;
++    };
+diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,rdma.yaml b/Documentation/devicetree/bindings/arm/mediatek/mediatek,rdma.yaml
+new file mode 100755
+index 0000000000000000000000000000000000000000..d2545c3c0a67749bcb0990af21c1cb4281863a46
+--- /dev/null
++++ b/Documentation/devicetree/bindings/arm/mediatek/mediatek,rdma.yaml
+@@ -0,0 +1,227 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/arm/mediatek/mediatek,rdma.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Mediatek Read Direct Memory Access
++
++maintainers:
++  - Matthias Brugger <matthias.bgg@gmail.com>
++
++description: |
++  Mediatek Read Direct Memory Access(RDMA) component used to do read DMA.
++  It contains one line buffer to store the sufficient pixel data, and
++  must be siblings to the central MMSYS_CONFIG node.
++  For a description of the MMSYS_CONFIG binding, see
++  Documentation/devicetree/bindings/arm/mediatek/mediatek,mmsys.yaml
++  for details.
++  The 1st RDMA is also used to be a controller node in Media Data Path 3(MDP3)
++  that containing MMSYS, MUTEX, GCE and SCP settings.
++
++properties:
++  compatible:
++    oneOf:
++      - items:
++        - enum:
++          - mediatek,mt8183-mdp3
++          - mediatek,mt8195-mdp3
++        - enum:
++          - mediatek,mt8183-mdp3-rdma
++
++      - items:
++          # read DMA
++        - enum:
++          - mediatek,mt8195-mdp3-rdma
++        - enum:
++          - mediatek,mt8183-mdp3-rdma
++
++  mediatek,scp:
++    $ref: /schemas/types.yaml#/definitions/phandle
++    maxItems: 1
++    description: |
++      The node of system control processor (SCP), using
++      the remoteproc & rpmsg framework.
++      $ref: /schemas/remoteproc/mtk,scp.yaml
++
++  mediatek,mdp3-id:
++    $ref: /schemas/types.yaml#/definitions/uint32
++    maxItems: 1
++    description: |
++      There may be multiple blocks with the same function but
++      different addresses in MDP3.
++      In order to distinguish the connection with other blocks,
++      a unique ID is needed to dynamically use one or more identical
++      blocks to implement multiple pipelines.
++
++  mdp3-comps:
++    $ref: /schemas/types.yaml#/definitions/string-array
++    items:
++      - enum:
++          # MDP direct-link input path selection, create a
++          # component for path connectedness of HW pipe control
++          - mediatek,mt8183-mdp3-dl1
++      - enum:
++          - mediatek,mt8183-mdp3-dl2
++      - enum:
++          - mediatek,mt8195-mdp3-dl3
++      - enum:
++          - mediatek,mt8195-mdp3-dl4
++      - enum:
++          - mediatek,mt8195-mdp3-dl5
++      - enum:
++          - mediatek,mt8195-mdp3-dl6
++      - enum:
++          # MDP direct-link output path selection, create a
++          # component for path connectedness of HW pipe control
++          - mediatek,mt8183-mdp3-path1
++      - enum:
++          - mediatek,mt8183-mdp3-path2
++      - enum:
++          # Input DMA of ISP PASS2 (DIP) module for raw image input
++          - mediatek,mt8183-mdp3-imgi
++      - enum:
++          # Output DMA of ISP PASS2 (DIP) module for YUV image output
++          - mediatek,mt8183-mdp3-exto
++    description: |
++      MTK sub-system of direct-link or DIP
++
++  mdp3-comp-ids:
++    maxItems: 1
++    $ref: /schemas/types.yaml#/definitions/uint32-array
++    description: |
++      Pipeline ID of MDP sub-system.
++
++  reg:
++    minItems: 1
++    maxItems: 5
++    description: |
++      1st: basic HW address
++      2nd: mediatek,mt8183-mdp-dl1, mediatek,mt8183-mdp-dl2
++      3rd: mediatek,mt8183-mdp-path1
++      4th: mediatek,mt8183-mdp-path2
++      5th: mediatek,mt8183-mdp3-imgi, mediatek,mt8183-mdp3-exto
++
++  mediatek,gce-client-reg:
++    $ref: /schemas/types.yaml#/definitions/phandle-array
++    description: |
++      The register of client driver can be configured by gce with 4 arguments
++      defined in this property, such as phandle of gce, subsys id,
++      register offset and size.
++      Each GCE subsys id is mapping to a client defined in the header
++      include/dt-bindings/gce/<chip>-gce.h.
++
++  power-domains:
++    maxItems: 1
++
++  clocks:
++    minItems: 1
++    maxItems: 6
++    description: |
++      1st: RDMA0 clock
++      2nd: RSZ1 clock
++      3rd: direck-link TX clock in MDP side
++      4th: direck-link RX clock in MDP side
++      5th: direck-link TX clock in ISP side
++      6th: direck-link RX clock in ISP side
++
++  iommus:
++    maxItems: 1
++
++  mediatek,mmsys:
++    $ref: /schemas/types.yaml#/definitions/phandle
++    maxItems: 1
++    description: |
++      The node of mux(multiplexer) controller for HW connections.
++
++  mediatek,mm-mutex:
++    $ref: /schemas/types.yaml#/definitions/phandle
++    maxItems: 1
++    description: |
++      The node of sof(start of frame) signal controller.
++
++  mediatek,mailbox-gce:
++    $ref: /schemas/types.yaml#/definitions/phandle
++    description: |
++      The node of global command engine (GCE), used to read/write
++      registers with critical time limitation.
++
++  mboxes:
++    $ref: /schemas/types.yaml#/definitions/phandle-array
++
++  gce-subsys:
++    $ref: /schemas/types.yaml#/definitions/phandle-array
++    description: |
++      sub-system id corresponding to the global command engine (GCE)
++      register address.
++
++if:
++  properties:
++    compatible:
++      contains:
++        const: mediatek,mt8183-mdp3
++
++then:
++  required:
++    - mediatek,scp
++    - mediatek,mmsys
++    - mediatek,mm-mutex
++    - mediatek,mailbox-gce
++    - mboxes
++    - gce-subsys
++
++required:
++  - compatible
++  - mediatek,mdp3-id
++  - reg
++  - clocks
++  - mediatek,gce-client-reg
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/clock/mt8183-clk.h>
++    #include <dt-bindings/gce/mt8183-gce.h>
++    #include <dt-bindings/power/mt8183-power.h>
++    #include <dt-bindings/memory/mt8183-larb-port.h>
++
++    mdp3_rdma0: mdp3_rdma0@14001000 {
++      compatible = "mediatek,mt8183-mdp3",
++                   "mediatek,mt8183-mdp3-rdma";
++      mediatek,scp = <&scp>;
++      mediatek,mdp3-id = <0>;
++      mdp3-comps = "mediatek,mt8183-mdp3-dl1", "mediatek,mt8183-mdp3-dl2",
++                   "mediatek,mt8183-mdp3-path1", "mediatek,mt8183-mdp3-path2",
++                   "mediatek,mt8183-mdp3-imgi", "mediatek,mt8183-mdp3-exto";
++      mdp3-comp-ids = <0 1 0 1 0 1>;
++      reg = <0x14001000 0x1000>,
++            <0x14000000 0x1000>,
++            <0x14005000 0x1000>,
++            <0x14006000 0x1000>,
++            <0x15020000 0x1000>;
++      mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0x1000 0x1000>,
++                                <&gce SUBSYS_1400XXXX 0 0x1000>,
++                                <&gce SUBSYS_1400XXXX 0x5000 0x1000>,
++                                <&gce SUBSYS_1400XXXX 0x6000 0x1000>,
++                                <&gce SUBSYS_1502XXXX 0 0x1000>;
++      power-domains = <&spm MT8183_POWER_DOMAIN_DISP>;
++      clocks = <&mmsys CLK_MM_MDP_RDMA0>,
++               <&mmsys CLK_MM_MDP_RSZ1>,
++               <&mmsys CLK_MM_MDP_DL_TXCK>,
++               <&mmsys CLK_MM_MDP_DL_RX>,
++               <&mmsys CLK_MM_IPU_DL_TXCK>,
++               <&mmsys CLK_MM_IPU_DL_RX>;
++      iommus = <&iommu>;
++      mediatek,mmsys = <&mmsys>;
++      mediatek,mm-mutex = <&mutex>;
++      mediatek,mailbox-gce = <&gce>;
++      mboxes = <&gce 20 CMDQ_THR_PRIO_LOWEST 0>,
++               <&gce 21 CMDQ_THR_PRIO_LOWEST 0>,
++               <&gce 22 CMDQ_THR_PRIO_LOWEST 0>,
++               <&gce 23 CMDQ_THR_PRIO_LOWEST 0>;
++      gce-subsys = <&gce 0x14000000 SUBSYS_1400XXXX>,
++                   <&gce 0x14010000 SUBSYS_1401XXXX>,
++                   <&gce 0x14020000 SUBSYS_1402XXXX>,
++                   <&gce 0x15020000 SUBSYS_1502XXXX>;
++    };
+\ No newline at end of file
+diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,wdma.yaml b/Documentation/devicetree/bindings/arm/mediatek/mediatek,wdma.yaml
+new file mode 100644
+index 0000000000000000000000000000000000000000..53a4eae9f963874700ba0f0f361389b7e8badb24
+--- /dev/null
++++ b/Documentation/devicetree/bindings/arm/mediatek/mediatek,wdma.yaml
+@@ -0,0 +1,70 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/arm/mediatek/mediatek,wdma.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Mediatek Write Direct Memory Access
++
++maintainers:
++  - Matthias Brugger <matthias.bgg@gmail.com>
++
++description: |
++  Mediatek Write Direct Memory Access(WDMA) component used to write
++  the data into DMA.
++
++properties:
++  compatible:
++    items:
++      - enum:
++        - mediatek,mt8183-mdp3-wdma
++
++  mediatek,mdp3-id:
++    $ref: /schemas/types.yaml#/definitions/uint32
++    maxItems: 1
++    description: |
++      There may be multiple blocks with the same function but
++      different addresses in MDP3.
++      In order to distinguish the connection with other blocks,
++      a unique ID is needed to dynamically use one or more identical
++      blocks to implement multiple pipelines.
++
++  reg:
++    maxItems: 1
++
++  mediatek,gce-client-reg:
++    $ref: /schemas/types.yaml#/definitions/phandle-array
++    description: |
++      The register of client driver can be configured by gce with 4 arguments
++      defined in this property, such as phandle of gce, subsys id,
++      register offset and size.
++      Each GCE subsys id is mapping to a client defined in the header
++      include/dt-bindings/gce/<chip>-gce.h.
++
++  power-domains:
++    maxItems: 1
++
++  clocks:
++    minItems: 1
++
++  iommus:
++    maxItems: 1
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/clock/mt8183-clk.h>
++    #include <dt-bindings/gce/mt8183-gce.h>
++    #include <dt-bindings/power/mt8183-power.h>
++    #include <dt-bindings/memory/mt8183-larb-port.h>
++
++    mdp3_wdma: mdp3_wdma@14006000 {
++      compatible = "mediatek,mt8183-mdp3-wdma";
++      mediatek,mdp3-id = <0>;
++      reg = <0x14006000 0x1000>;
++      mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0x6000 0x1000>;
++      power-domains = <&spm MT8183_POWER_DOMAIN_DISP>;
++      clocks = <&mmsys CLK_MM_MDP_WDMA0>;
++      iommus = <&iommu>;
 +    };
 diff --git a/Documentation/devicetree/bindings/cpufreq/cpufreq-mediatek-hw.yaml b/Documentation/devicetree/bindings/cpufreq/cpufreq-mediatek-hw.yaml
 new file mode 100644
@@ -2120,70 +2495,6 @@ index 0000000000000000000000000000000000000000..54535aac894278154af421f0a150fcfe
 +      mediatek,gce-client-reg = <&gce0 SUBSYS_1400XXXX 0x5000 0x1000>;
 +      clocks = <&vppsys0 CLK_VPP0_MDP_AAL>;
 +    };
-diff --git a/Documentation/devicetree/bindings/media/mediatek,mdp3-ccorr.yaml b/Documentation/devicetree/bindings/media/mediatek,mdp3-ccorr.yaml
-new file mode 100644
-index 0000000000000000000000000000000000000000..205b91b55806633b9bdb24bbe508380f30202768
---- /dev/null
-+++ b/Documentation/devicetree/bindings/media/mediatek,mdp3-ccorr.yaml
-@@ -0,0 +1,58 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/media/mediatek,mdp3-ccorr.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Mediatek Media Data Path 3 CCORR Device Tree Bindings
-+
-+maintainers:
-+  - Daoyuan Huang <daoyuan.huang@mediatek.com>
-+  - Moudy Ho <moudy.ho@mediatek.com>
-+
-+description: |
-+  One of Media Data Path 3 (MDP3) components used to do color correction with 3X3 matrix.
-+
-+properties:
-+  compatible:
-+    items:
-+      - enum:
-+        - mediatek,mt8183-mdp3-ccorr
-+
-+  mediatek,mdp3-id:
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    maxItems: 1
-+    description: |
-+      HW index to distinguish same functionality modules.
-+
-+  reg:
-+    description: |
-+      Physical base address and length of the function block
-+      register space, the number aligns with the component
-+      and its own subcomponent.
-+
-+  mediatek,gce-client-reg:
-+    $ref: /schemas/types.yaml#/definitions/phandle-array
-+    description: |
-+      sub-system id corresponding to the global command engine (GCE)
-+      register address.
-+      $ref: /schemas/mailbox/mtk-gce.txt
-+
-+  clocks:
-+    minItems: 1
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/clock/mt8183-clk.h>
-+    #include <dt-bindings/gce/mt8183-gce.h>
-+
-+    mdp3_ccorr: mdp3_ccorr@1401c000 {
-+      compatible = "mediatek,mt8183-mdp3-ccorr";
-+      mediatek,mdp3-id = <0>;
-+      reg = <0x1401c000 0x1000>;
-+      mediatek,gce-client-reg = <&gce SUBSYS_1401XXXX 0xc000 0x1000>;
-+      clocks = <&mmsys CLK_MM_MDP_CCORR>;
-+    };
-+
 diff --git a/Documentation/devicetree/bindings/media/mediatek,mdp3-color.yaml b/Documentation/devicetree/bindings/media/mediatek,mdp3-color.yaml
 new file mode 100644
 index 0000000000000000000000000000000000000000..4eba4505ed263146dbc6a244946fc2a736e96146
@@ -2590,261 +2901,19 @@ index 0000000000000000000000000000000000000000..1f990c5ce6abe578f990beeb02d1074b
 +      mediatek,gce-client-reg = <&gce0 SUBSYS_1400XXXX 0xa000 0x1000>;
 +      clocks = <&vppsys0 CLK_VPP0_PADDING>;
 +    };
-diff --git a/Documentation/devicetree/bindings/media/mediatek-mdp3.yaml b/Documentation/devicetree/bindings/media/mediatek,mdp3-rdma.yaml
-old mode 100755
-new mode 100644
-similarity index 52%
-rename from Documentation/devicetree/bindings/media/mediatek-mdp3.yaml
-rename to Documentation/devicetree/bindings/media/mediatek,mdp3-rdma.yaml
-index e3e10f0544ba8dfc7028f5f1448e5d5ff374cb72..ce023d9fbef7fb8e1a801b7a805c27a805c16e29
---- a/Documentation/devicetree/bindings/media/mediatek-mdp3.yaml
-+++ b/Documentation/devicetree/bindings/media/mediatek,mdp3-rdma.yaml
-@@ -1,7 +1,7 @@
- # SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
- %YAML 1.2
- ---
--$id: http://devicetree.org/schemas/media/mediatek-mdp3.yaml#
-+$id: http://devicetree.org/schemas/media/mediatek,mdp3-rdma.yaml#
- $schema: http://devicetree.org/meta-schemas/core.yaml#
- 
- title: Mediatek Media Data Path 3 Device Tree Bindings
-@@ -11,30 +11,26 @@ maintainers:
-   - Moudy Ho <moudy.ho@mediatek.com>
- 
- description: |
--  Media Data Path 3 (MDP3) is used for scaling and color space conversion.
-+  One of Media Data Path 3 (MDP3) components used to do read DMA.
-+  RDMA0 is also used to be a controller node containing MMSYS,
-+  MUTEX, GCE and SCP settings.
- 
- properties:
-   compatible:
-     oneOf:
-       - items:
-         - enum:
--          # controller node
-           - mediatek,mt8183-mdp3
-+          - mediatek,mt8195-mdp3
-         - enum:
-           - mediatek,mt8183-mdp3-rdma
- 
-       - items:
--        - enum:
-           # read DMA
-+        - enum:
-+          - mediatek,mt8195-mdp3-rdma
-+        - enum:
-           - mediatek,mt8183-mdp3-rdma
--          # frame resizer
--          - mediatek,mt8183-mdp3-rsz
--          # write DMA
--          - mediatek,mt8183-mdp3-wdma
--          # write DMA with frame rotation
--          - mediatek,mt8183-mdp3-wrot
--          # color correction with 3X3 matrix
--          - mediatek,mt8183-mdp3-ccorr
- 
-   mediatek,scp:
-     $ref: /schemas/types.yaml#/definitions/phandle
-@@ -48,20 +44,53 @@ properties:
-     $ref: /schemas/types.yaml#/definitions/uint32
-     maxItems: 1
-     description: |
--      HW index to distinguish same functionality modules.
-+      In MDP3, it can allocate multiple identical modules for
-+      different data path selection or multi-pipeline execution.
-+      This node is used to indicate the ID of each module.
- 
-   mdp3-comps:
-     $ref: /schemas/types.yaml#/definitions/string-array
--    description: |
--      Subcomponent, the number aligns with
--      mdp_sub_comp_dt_ids[] in mtk-mdp3-comp.c.
-+    items:
-+        - enum:
-+          # MDP direct-link input path selection, create a
-+          # component for path connectedness of HW pipe control
-+          - mediatek,mt8183-mdp3-dl1
-+        - enum:
-+          - mediatek,mt8183-mdp3-dl2
-+        - enum:
-+          - mediatek,mt8195-mdp3-dl1
-+        - enum:
-+          - mediatek,mt8195-mdp3-dl2
-+        - enum:
-+          - mediatek,mt8195-mdp3-dl3
-+        - enum:
-+          - mediatek,mt8195-mdp3-dl4
-+        - enum:
-+          - mediatek,mt8195-mdp3-dl5
-+        - enum:
-+          - mediatek,mt8195-mdp3-dl6
-+        - enum:
-+          # MDP direct-link output path selection, create a
-+          # component for path connectedness of HW pipe control
-+          - mediatek,mt8183-mdp3-path1
-+        - enum:
-+          - mediatek,mt8183-mdp3-path2
-+        - enum:
-+          - mediatek,mt8195-mdp3-path1
-+        - enum:
-+          - mediatek,mt8195-mdp3-path2
-+        - enum:
-+          # Input DMA of ISP PASS2 (DIP) module for raw image input
-+          - mediatek,mt8183-mdp3-imgi
-+        - enum:
-+          # Output DMA of ISP PASS2 (DIP) module for YUV image output
-+          - mediatek,mt8183-mdp3-exto
- 
-   mdp3-comp-ids:
-     maxItems: 1
-     $ref: /schemas/types.yaml#/definitions/uint32-array
-     description: |
--      Index of the modules, the number list in
--      mdp_comp_matches[] in mtk-mdp3-comp.c.
-+      Pipeline ID of MDP direct-link or DIP.
- 
-   reg:
-     description: |
-@@ -121,13 +150,6 @@ properties:
-       register address.
-       $ref: /schemas/mailbox/mtk-gce.txt
- 
--  mediatek,gce-events:
--    $ref: /schemas/types.yaml#/definitions/uint32-array
--    description: |
--      In use event IDs list, all IDs are defined in
--      'dt-bindings/gce/mt8183-gce.h'.
--      $ref: /schemas/mailbox/mtk-gce.txt
--
- if:
-   properties:
-     compatible:
-@@ -142,7 +164,6 @@ then:
-     - mediatek,scp
-     - mediatek,mmsys
-     - mediatek,mm-mutex
--    - mediatek,gce-events
-     - mediatek,mailbox-gce
-     - mboxes
-     - gce-subsys
-@@ -168,14 +189,19 @@ examples:
-                    "mediatek,mt8183-mdp3-rdma";
-       mediatek,scp = <&scp>;
-       mediatek,mdp3-id = <0>;
--      mdp3-comps = "mediatek,mt8183-mdp3-dl", "mediatek,mt8183-mdp3-dl1",
-+      mdp3-comps = "mediatek,mt8183-mdp3-dl1", "mediatek,mt8183-mdp3-dl2",
-+                   "mediatek,mt8183-mdp3-path1", "mediatek,mt8183-mdp3-path2",
-                    "mediatek,mt8183-mdp3-imgi", "mediatek,mt8183-mdp3-exto";
--      mdp3-comp-ids = <0 1 0 1>;
-+      mdp3-comp-ids = <0 1 0 1 0 1>;
-       reg = <0x14001000 0x1000>,
-             <0x14000000 0x1000>,
-+            <0x14005000 0x1000>,
-+            <0x14006000 0x1000>,
-             <0x15020000 0x1000>;
-       mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0x1000 0x1000>,
-                                 <&gce SUBSYS_1400XXXX 0 0x1000>,
-+                                <&gce SUBSYS_1400XXXX 0x5000 0x1000>,
-+                                <&gce SUBSYS_1400XXXX 0x6000 0x1000>,
-                                 <&gce SUBSYS_1502XXXX 0 0x1000>;
-       power-domains = <&spm MT8183_POWER_DOMAIN_DISP>;
-       clocks = <&mmsys CLK_MM_MDP_RDMA0>,
-@@ -196,79 +222,4 @@ examples:
-                    <&gce 0x14010000 SUBSYS_1401XXXX>,
-                    <&gce 0x14020000 SUBSYS_1402XXXX>,
-                    <&gce 0x15020000 SUBSYS_1502XXXX>;
--      mediatek,gce-events = <CMDQ_EVENT_MDP_RDMA0_SOF>,
--                            <CMDQ_EVENT_MDP_RDMA0_EOF>,
--                            <CMDQ_EVENT_MDP_RSZ0_SOF>,
--                            <CMDQ_EVENT_MDP_RSZ1_SOF>,
--                            <CMDQ_EVENT_MDP_TDSHP_SOF>,
--                            <CMDQ_EVENT_MDP_WROT0_SOF>,
--                            <CMDQ_EVENT_MDP_WROT0_EOF>,
--                            <CMDQ_EVENT_MDP_WDMA0_SOF>,
--                            <CMDQ_EVENT_MDP_WDMA0_EOF>,
--                            <CMDQ_EVENT_ISP_FRAME_DONE_P2_0>,
--                            <CMDQ_EVENT_ISP_FRAME_DONE_P2_1>,
--                            <CMDQ_EVENT_ISP_FRAME_DONE_P2_2>,
--                            <CMDQ_EVENT_ISP_FRAME_DONE_P2_3>,
--                            <CMDQ_EVENT_ISP_FRAME_DONE_P2_4>,
--                            <CMDQ_EVENT_ISP_FRAME_DONE_P2_5>,
--                            <CMDQ_EVENT_ISP_FRAME_DONE_P2_6>,
--                            <CMDQ_EVENT_ISP_FRAME_DONE_P2_7>,
--                            <CMDQ_EVENT_ISP_FRAME_DONE_P2_8>,
--                            <CMDQ_EVENT_ISP_FRAME_DONE_P2_9>,
--                            <CMDQ_EVENT_ISP_FRAME_DONE_P2_10>,
--                            <CMDQ_EVENT_ISP_FRAME_DONE_P2_11>,
--                            <CMDQ_EVENT_ISP_FRAME_DONE_P2_12>,
--                            <CMDQ_EVENT_ISP_FRAME_DONE_P2_13>,
--                            <CMDQ_EVENT_ISP_FRAME_DONE_P2_14>,
--                            <CMDQ_EVENT_WPE_A_DONE>,
--                            <CMDQ_EVENT_SPE_B_DONE>;
--    };
--
--    mdp3_rsz0: mdp3_rsz0@14003000 {
--      compatible = "mediatek,mt8183-mdp3-rsz";
--      mediatek,mdp3-id = <0>;
--      reg = <0x14003000 0x1000>;
--      mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0x3000 0x1000>;
--      clocks = <&mmsys CLK_MM_MDP_RSZ0>;
--    };
--
--    mdp3_rsz1: mdp3_rsz1@14004000 {
--      compatible = "mediatek,mt8183-mdp3-rsz";
--      mediatek,mdp3-id = <1>;
--      reg = <0x14004000 0x1000>;
--      mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0x4000 0x1000>;
--      clocks = <&mmsys CLK_MM_MDP_RSZ1>;
--    };
--
--    mdp3_wrot0: mdp3_wrot0@14005000 {
--      compatible = "mediatek,mt8183-mdp3-wrot";
--      mediatek,mdp3-id = <0>;
--      mdp3-comps = "mediatek,mt8183-mdp3-path";
--      mdp3-comp-ids = <0>;
--      reg = <0x14005000 0x1000>;
--      mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0x5000 0x1000>;
--      power-domains = <&spm MT8183_POWER_DOMAIN_DISP>;
--      clocks = <&mmsys CLK_MM_MDP_WROT0>;
--      iommus = <&iommu>;
--    };
--
--    mdp3_wdma: mdp3_wdma@14006000 {
--      compatible = "mediatek,mt8183-mdp3-wdma";
--      mediatek,mdp3-id = <0>;
--      mdp3-comps = "mediatek,mt8183-mdp3-path";
--      mdp3-comp-ids = <1>;
--      reg = <0x14006000 0x1000>;
--      mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0x6000 0x1000>;
--      power-domains = <&spm MT8183_POWER_DOMAIN_DISP>;
--      clocks = <&mmsys CLK_MM_MDP_WDMA0>;
--      iommus = <&iommu>;
--    };
--
--    mdp3_ccorr: mdp3_ccorr@1401c000 {
--      compatible = "mediatek,mt8183-mdp3-ccorr";
--      mediatek,mdp3-id = <0>;
--      reg = <0x1401c000 0x1000>;
--      mediatek,gce-client-reg = <&gce SUBSYS_1401XXXX 0xc000 0x1000>;
--      clocks = <&mmsys CLK_MM_MDP_CCORR>;
--    };
--
-+    };
-\ No newline at end of file
 diff --git a/Documentation/devicetree/bindings/media/mediatek,mdp3-rsz.yaml b/Documentation/devicetree/bindings/media/mediatek,mdp3-rsz.yaml
 new file mode 100644
-index 0000000000000000000000000000000000000000..c286ba94f5b6ebb2905837e3c00606c8de81142c
+index 0000000000000000000000000000000000000000..900fd303bd1cf611af9840062f92e5f7868d389b
 --- /dev/null
 +++ b/Documentation/devicetree/bindings/media/mediatek,mdp3-rsz.yaml
-@@ -0,0 +1,68 @@
+@@ -0,0 +1,70 @@
 +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
 +%YAML 1.2
 +---
 +$id: http://devicetree.org/schemas/media/mediatek,mdp3-rsz.yaml#
 +$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+title: Mediatek Media Data Path 3 Resizer Device Tree Bindings
++title: Mediatek Resizer
 +
 +maintainers:
 +  - Daoyuan Huang <daoyuan.huang@mediatek.com>
@@ -2865,20 +2934,23 @@ index 0000000000000000000000000000000000000000..c286ba94f5b6ebb2905837e3c00606c8
 +    $ref: /schemas/types.yaml#/definitions/uint32
 +    maxItems: 1
 +    description: |
-+      HW index to distinguish same functionality modules.
++      There may be multiple blocks with the same function but
++      different addresses in MDP3.
++      In order to distinguish the connection with other blocks,
++      a unique ID is needed to dynamically use one or more identical
++      blocks to implement multiple pipelines.
 +
 +  reg:
-+    description: |
-+      Physical base address and length of the function block
-+      register space, the number aligns with the component
-+      and its own subcomponent.
++    maxItems: 1
 +
 +  mediatek,gce-client-reg:
 +    $ref: /schemas/types.yaml#/definitions/phandle-array
 +    description: |
-+      sub-system id corresponding to the global command engine (GCE)
-+      register address.
-+      $ref: /schemas/mailbox/mtk-gce.txt
++      The register of client driver can be configured by gce with 4 arguments
++      defined in this property, such as phandle of gce, subsys id,
++      register offset and size.
++      Each GCE subsys id is mapping to a client defined in the header
++      include/dt-bindings/gce/<chip>-gce.h.
 +
 +  clocks:
 +    minItems: 1
@@ -2905,7 +2977,6 @@ index 0000000000000000000000000000000000000000..c286ba94f5b6ebb2905837e3c00606c8
 +      mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0x4000 0x1000>;
 +      clocks = <&mmsys CLK_MM_MDP_RSZ1>;
 +    };
-+
 diff --git a/Documentation/devicetree/bindings/media/mediatek,mdp3-split.yaml b/Documentation/devicetree/bindings/media/mediatek,mdp3-split.yaml
 new file mode 100644
 index 0000000000000000000000000000000000000000..40827d577f7409c8bc51b64d9ba3061f432a9af9
@@ -3182,96 +3253,19 @@ index 0000000000000000000000000000000000000000..25b4668d93fc6ba34a70b6ae341916b0
 +      mediatek,gce-client-reg = <&gce0 SUBSYS_1400XXXX 0x7000 0x1000>;
 +      clocks = <&vppsys0 CLK_VPP0_MDP_TDSHP>;
 +    };
-diff --git a/Documentation/devicetree/bindings/media/mediatek,mdp3-wdma.yaml b/Documentation/devicetree/bindings/media/mediatek,mdp3-wdma.yaml
-new file mode 100644
-index 0000000000000000000000000000000000000000..93e6f331ada8ee5ae43fbc7a6ad9eeaf77a11e79
---- /dev/null
-+++ b/Documentation/devicetree/bindings/media/mediatek,mdp3-wdma.yaml
-@@ -0,0 +1,71 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/media/mediatek,mdp3-wdma.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Mediatek Media Data Path 3 Device Tree Bindings
-+
-+maintainers:
-+  - Daoyuan Huang <daoyuan.huang@mediatek.com>
-+  - Moudy Ho <moudy.ho@mediatek.com>
-+
-+description: |
-+  One of Media Data Path 3 (MDP3) components used to write DMA.
-+
-+properties:
-+  compatible:
-+    items:
-+      - enum:
-+        - mediatek,mt8183-mdp3-wdma
-+
-+  mediatek,mdp3-id:
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    maxItems: 1
-+    description: |
-+      HW index to distinguish same functionality modules.
-+
-+  reg:
-+    description: |
-+      Physical base address and length of the function block
-+      register space, the number aligns with the component
-+      and its own subcomponent.
-+
-+  mediatek,gce-client-reg:
-+    $ref: /schemas/types.yaml#/definitions/phandle-array
-+    description: |
-+      sub-system id corresponding to the global command engine (GCE)
-+      register address.
-+      $ref: /schemas/mailbox/mtk-gce.txt
-+
-+  power-domains:
-+    maxItems: 1
-+
-+  clocks:
-+    minItems: 1
-+
-+  iommus:
-+    $ref: /schemas/types.yaml#/definitions/phandle
-+    description: |
-+      Should point to the respective IOMMU block with master
-+      port as argument.
-+      $ref: /schemas/iommu/mediatek,iommu.yaml
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/clock/mt8183-clk.h>
-+    #include <dt-bindings/gce/mt8183-gce.h>
-+    #include <dt-bindings/power/mt8183-power.h>
-+    #include <dt-bindings/memory/mt8183-larb-port.h>
-+
-+    mdp3_wdma: mdp3_wdma@14006000 {
-+      compatible = "mediatek,mt8183-mdp3-wdma";
-+      mediatek,mdp3-id = <0>;
-+      reg = <0x14006000 0x1000>;
-+      mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0x6000 0x1000>;
-+      power-domains = <&spm MT8183_POWER_DOMAIN_DISP>;
-+      clocks = <&mmsys CLK_MM_MDP_WDMA0>;
-+      iommus = <&iommu>;
-+    };
 diff --git a/Documentation/devicetree/bindings/media/mediatek,mdp3-wrot.yaml b/Documentation/devicetree/bindings/media/mediatek,mdp3-wrot.yaml
 new file mode 100644
-index 0000000000000000000000000000000000000000..885e0f0f9e1f224b8de2498192d4c1351a794eb1
+index 0000000000000000000000000000000000000000..6b96e6bfbad6e19bec68e2145627c0477c0b8cc6
 --- /dev/null
 +++ b/Documentation/devicetree/bindings/media/mediatek,mdp3-wrot.yaml
-@@ -0,0 +1,73 @@
+@@ -0,0 +1,72 @@
 +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
 +%YAML 1.2
 +---
 +$id: http://devicetree.org/schemas/media/mediatek,mdp3-wrot.yaml#
 +$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+title: Mediatek Media Data Path 3 Device Tree Bindings
++title: Mediatek Write DMA with Rotation
 +
 +maintainers:
 +  - Daoyuan Huang <daoyuan.huang@mediatek.com>
@@ -3292,20 +3286,23 @@ index 0000000000000000000000000000000000000000..885e0f0f9e1f224b8de2498192d4c135
 +    $ref: /schemas/types.yaml#/definitions/uint32
 +    maxItems: 1
 +    description: |
-+      HW index to distinguish same functionality modules.
++      There may be multiple blocks with the same function but
++      different addresses in MDP3.
++      In order to distinguish the connection with other blocks,
++      a unique ID is needed to dynamically use one or more identical
++      blocks to implement multiple pipelines.
 +
 +  reg:
-+    description: |
-+      Physical base address and length of the function block
-+      register space, the number aligns with the component
-+      and its own subcomponent.
++    maxItems: 1
 +
 +  mediatek,gce-client-reg:
 +    $ref: /schemas/types.yaml#/definitions/phandle-array
 +    description: |
-+      sub-system id corresponding to the global command engine (GCE)
-+      register address.
-+      $ref: /schemas/mailbox/mtk-gce.txt
++      The register of client driver can be configured by gce with 4 arguments
++      defined in this property, such as phandle of gce, subsys id,
++      register offset and size.
++      Each GCE subsys id is mapping to a client defined in the header
++      include/dt-bindings/gce/<chip>-gce.h.
 +
 +  power-domains:
 +    maxItems: 1
@@ -3314,11 +3311,7 @@ index 0000000000000000000000000000000000000000..885e0f0f9e1f224b8de2498192d4c135
 +    minItems: 1
 +
 +  iommus:
-+    $ref: /schemas/types.yaml#/definitions/phandle
-+    description: |
-+      Should point to the respective IOMMU block with master
-+      port as argument.
-+      $ref: /schemas/iommu/mediatek,iommu.yaml
++    maxItems: 1
 +
 +additionalProperties: false
 +
@@ -3338,6 +3331,286 @@ index 0000000000000000000000000000000000000000..885e0f0f9e1f224b8de2498192d4c135
 +      clocks = <&mmsys CLK_MM_MDP_WROT0>;
 +      iommus = <&iommu>;
 +    };
+diff --git a/Documentation/devicetree/bindings/media/mediatek-mdp3.yaml b/Documentation/devicetree/bindings/media/mediatek-mdp3.yaml
+deleted file mode 100755
+index e3e10f0544ba8dfc7028f5f1448e5d5ff374cb72..0000000000000000000000000000000000000000
+--- a/Documentation/devicetree/bindings/media/mediatek-mdp3.yaml
++++ /dev/null
+@@ -1,274 +0,0 @@
+-# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+-%YAML 1.2
+----
+-$id: http://devicetree.org/schemas/media/mediatek-mdp3.yaml#
+-$schema: http://devicetree.org/meta-schemas/core.yaml#
+-
+-title: Mediatek Media Data Path 3 Device Tree Bindings
+-
+-maintainers:
+-  - Daoyuan Huang <daoyuan.huang@mediatek.com>
+-  - Moudy Ho <moudy.ho@mediatek.com>
+-
+-description: |
+-  Media Data Path 3 (MDP3) is used for scaling and color space conversion.
+-
+-properties:
+-  compatible:
+-    oneOf:
+-      - items:
+-        - enum:
+-          # controller node
+-          - mediatek,mt8183-mdp3
+-        - enum:
+-          - mediatek,mt8183-mdp3-rdma
+-
+-      - items:
+-        - enum:
+-          # read DMA
+-          - mediatek,mt8183-mdp3-rdma
+-          # frame resizer
+-          - mediatek,mt8183-mdp3-rsz
+-          # write DMA
+-          - mediatek,mt8183-mdp3-wdma
+-          # write DMA with frame rotation
+-          - mediatek,mt8183-mdp3-wrot
+-          # color correction with 3X3 matrix
+-          - mediatek,mt8183-mdp3-ccorr
+-
+-  mediatek,scp:
+-    $ref: /schemas/types.yaml#/definitions/phandle
+-    maxItems: 1
+-    description: |
+-      The node of system control processor (SCP), using
+-      the remoteproc & rpmsg framework.
+-      $ref: /schemas/remoteproc/mtk,scp.yaml
+-
+-  mediatek,mdp3-id:
+-    $ref: /schemas/types.yaml#/definitions/uint32
+-    maxItems: 1
+-    description: |
+-      HW index to distinguish same functionality modules.
+-
+-  mdp3-comps:
+-    $ref: /schemas/types.yaml#/definitions/string-array
+-    description: |
+-      Subcomponent, the number aligns with
+-      mdp_sub_comp_dt_ids[] in mtk-mdp3-comp.c.
+-
+-  mdp3-comp-ids:
+-    maxItems: 1
+-    $ref: /schemas/types.yaml#/definitions/uint32-array
+-    description: |
+-      Index of the modules, the number list in
+-      mdp_comp_matches[] in mtk-mdp3-comp.c.
+-
+-  reg:
+-    description: |
+-      Physical base address and length of the function block
+-      register space, the number aligns with the component
+-      and its own subcomponent.
+-
+-  mediatek,gce-client-reg:
+-    $ref: /schemas/types.yaml#/definitions/phandle-array
+-    description: |
+-      sub-system id corresponding to the global command engine (GCE)
+-      register address.
+-      $ref: /schemas/mailbox/mtk-gce.txt
+-
+-  power-domains:
+-    maxItems: 1
+-
+-  clocks:
+-    minItems: 1
+-    maxItems: 6
+-
+-  iommus:
+-    $ref: /schemas/types.yaml#/definitions/phandle
+-    description: |
+-      Should point to the respective IOMMU block with master
+-      port as argument.
+-      $ref: /schemas/iommu/mediatek,iommu.yaml
+-
+-  mediatek,mmsys:
+-    $ref: /schemas/types.yaml#/definitions/phandle
+-    maxItems: 1
+-    description: |
+-      The node of mux(multiplexer) controller for HW connections.
+-
+-  mediatek,mm-mutex:
+-    $ref: /schemas/types.yaml#/definitions/phandle
+-    maxItems: 1
+-    description: |
+-      The node of sof(start of frame) signal controller.
+-
+-  mediatek,mailbox-gce:
+-    $ref: /schemas/types.yaml#/definitions/phandle
+-    description: |
+-      The node of global command engine (GCE), used to read/write
+-      registers with critical time limitation.
+-      $ref: /schemas/mailbox/mtk-gce.txt
+-
+-  mboxes:
+-    $ref: /schemas/types.yaml#/definitions/phandle-array
+-    description: |
+-      $ref: /schemas/mailbox/mailbox.txt
+-
+-  gce-subsys:
+-    $ref: /schemas/types.yaml#/definitions/phandle-array
+-    description: |
+-      sub-system id corresponding to the global command engine (GCE)
+-      register address.
+-      $ref: /schemas/mailbox/mtk-gce.txt
+-
+-  mediatek,gce-events:
+-    $ref: /schemas/types.yaml#/definitions/uint32-array
+-    description: |
+-      In use event IDs list, all IDs are defined in
+-      'dt-bindings/gce/mt8183-gce.h'.
+-      $ref: /schemas/mailbox/mtk-gce.txt
+-
+-if:
+-  properties:
+-    compatible:
+-      items:
+-        - enum:
+-          - mediatek,mt8183-mdp3
+-        - enum:
+-          - mediatek,mt8183-mdp3-rdma
+-
+-then:
+-  required:
+-    - mediatek,scp
+-    - mediatek,mmsys
+-    - mediatek,mm-mutex
+-    - mediatek,gce-events
+-    - mediatek,mailbox-gce
+-    - mboxes
+-    - gce-subsys
+-
+-required:
+-  - compatible
+-  - mediatek,mdp3-id
+-  - reg
+-  - clocks
+-  - mediatek,gce-client-reg
+-
+-additionalProperties: false
+-
+-examples:
+-  - |
+-    #include <dt-bindings/clock/mt8183-clk.h>
+-    #include <dt-bindings/gce/mt8183-gce.h>
+-    #include <dt-bindings/power/mt8183-power.h>
+-    #include <dt-bindings/memory/mt8183-larb-port.h>
+-
+-    mdp3_rdma0: mdp3_rdma0@14001000 {
+-      compatible = "mediatek,mt8183-mdp3",
+-                   "mediatek,mt8183-mdp3-rdma";
+-      mediatek,scp = <&scp>;
+-      mediatek,mdp3-id = <0>;
+-      mdp3-comps = "mediatek,mt8183-mdp3-dl", "mediatek,mt8183-mdp3-dl1",
+-                   "mediatek,mt8183-mdp3-imgi", "mediatek,mt8183-mdp3-exto";
+-      mdp3-comp-ids = <0 1 0 1>;
+-      reg = <0x14001000 0x1000>,
+-            <0x14000000 0x1000>,
+-            <0x15020000 0x1000>;
+-      mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0x1000 0x1000>,
+-                                <&gce SUBSYS_1400XXXX 0 0x1000>,
+-                                <&gce SUBSYS_1502XXXX 0 0x1000>;
+-      power-domains = <&spm MT8183_POWER_DOMAIN_DISP>;
+-      clocks = <&mmsys CLK_MM_MDP_RDMA0>,
+-               <&mmsys CLK_MM_MDP_RSZ1>,
+-               <&mmsys CLK_MM_MDP_DL_TXCK>,
+-               <&mmsys CLK_MM_MDP_DL_RX>,
+-               <&mmsys CLK_MM_IPU_DL_TXCK>,
+-               <&mmsys CLK_MM_IPU_DL_RX>;
+-      iommus = <&iommu>;
+-      mediatek,mmsys = <&mmsys>;
+-      mediatek,mm-mutex = <&mutex>;
+-      mediatek,mailbox-gce = <&gce>;
+-      mboxes = <&gce 20 CMDQ_THR_PRIO_LOWEST 0>,
+-               <&gce 21 CMDQ_THR_PRIO_LOWEST 0>,
+-               <&gce 22 CMDQ_THR_PRIO_LOWEST 0>,
+-               <&gce 23 CMDQ_THR_PRIO_LOWEST 0>;
+-      gce-subsys = <&gce 0x14000000 SUBSYS_1400XXXX>,
+-                   <&gce 0x14010000 SUBSYS_1401XXXX>,
+-                   <&gce 0x14020000 SUBSYS_1402XXXX>,
+-                   <&gce 0x15020000 SUBSYS_1502XXXX>;
+-      mediatek,gce-events = <CMDQ_EVENT_MDP_RDMA0_SOF>,
+-                            <CMDQ_EVENT_MDP_RDMA0_EOF>,
+-                            <CMDQ_EVENT_MDP_RSZ0_SOF>,
+-                            <CMDQ_EVENT_MDP_RSZ1_SOF>,
+-                            <CMDQ_EVENT_MDP_TDSHP_SOF>,
+-                            <CMDQ_EVENT_MDP_WROT0_SOF>,
+-                            <CMDQ_EVENT_MDP_WROT0_EOF>,
+-                            <CMDQ_EVENT_MDP_WDMA0_SOF>,
+-                            <CMDQ_EVENT_MDP_WDMA0_EOF>,
+-                            <CMDQ_EVENT_ISP_FRAME_DONE_P2_0>,
+-                            <CMDQ_EVENT_ISP_FRAME_DONE_P2_1>,
+-                            <CMDQ_EVENT_ISP_FRAME_DONE_P2_2>,
+-                            <CMDQ_EVENT_ISP_FRAME_DONE_P2_3>,
+-                            <CMDQ_EVENT_ISP_FRAME_DONE_P2_4>,
+-                            <CMDQ_EVENT_ISP_FRAME_DONE_P2_5>,
+-                            <CMDQ_EVENT_ISP_FRAME_DONE_P2_6>,
+-                            <CMDQ_EVENT_ISP_FRAME_DONE_P2_7>,
+-                            <CMDQ_EVENT_ISP_FRAME_DONE_P2_8>,
+-                            <CMDQ_EVENT_ISP_FRAME_DONE_P2_9>,
+-                            <CMDQ_EVENT_ISP_FRAME_DONE_P2_10>,
+-                            <CMDQ_EVENT_ISP_FRAME_DONE_P2_11>,
+-                            <CMDQ_EVENT_ISP_FRAME_DONE_P2_12>,
+-                            <CMDQ_EVENT_ISP_FRAME_DONE_P2_13>,
+-                            <CMDQ_EVENT_ISP_FRAME_DONE_P2_14>,
+-                            <CMDQ_EVENT_WPE_A_DONE>,
+-                            <CMDQ_EVENT_SPE_B_DONE>;
+-    };
+-
+-    mdp3_rsz0: mdp3_rsz0@14003000 {
+-      compatible = "mediatek,mt8183-mdp3-rsz";
+-      mediatek,mdp3-id = <0>;
+-      reg = <0x14003000 0x1000>;
+-      mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0x3000 0x1000>;
+-      clocks = <&mmsys CLK_MM_MDP_RSZ0>;
+-    };
+-
+-    mdp3_rsz1: mdp3_rsz1@14004000 {
+-      compatible = "mediatek,mt8183-mdp3-rsz";
+-      mediatek,mdp3-id = <1>;
+-      reg = <0x14004000 0x1000>;
+-      mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0x4000 0x1000>;
+-      clocks = <&mmsys CLK_MM_MDP_RSZ1>;
+-    };
+-
+-    mdp3_wrot0: mdp3_wrot0@14005000 {
+-      compatible = "mediatek,mt8183-mdp3-wrot";
+-      mediatek,mdp3-id = <0>;
+-      mdp3-comps = "mediatek,mt8183-mdp3-path";
+-      mdp3-comp-ids = <0>;
+-      reg = <0x14005000 0x1000>;
+-      mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0x5000 0x1000>;
+-      power-domains = <&spm MT8183_POWER_DOMAIN_DISP>;
+-      clocks = <&mmsys CLK_MM_MDP_WROT0>;
+-      iommus = <&iommu>;
+-    };
+-
+-    mdp3_wdma: mdp3_wdma@14006000 {
+-      compatible = "mediatek,mt8183-mdp3-wdma";
+-      mediatek,mdp3-id = <0>;
+-      mdp3-comps = "mediatek,mt8183-mdp3-path";
+-      mdp3-comp-ids = <1>;
+-      reg = <0x14006000 0x1000>;
+-      mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0x6000 0x1000>;
+-      power-domains = <&spm MT8183_POWER_DOMAIN_DISP>;
+-      clocks = <&mmsys CLK_MM_MDP_WDMA0>;
+-      iommus = <&iommu>;
+-    };
+-
+-    mdp3_ccorr: mdp3_ccorr@1401c000 {
+-      compatible = "mediatek,mt8183-mdp3-ccorr";
+-      mediatek,mdp3-id = <0>;
+-      reg = <0x1401c000 0x1000>;
+-      mediatek,gce-client-reg = <&gce SUBSYS_1401XXXX 0xc000 0x1000>;
+-      clocks = <&mmsys CLK_MM_MDP_CCORR>;
+-    };
+-
 diff --git a/Documentation/devicetree/bindings/media/mediatek-vcodec-comp-decoder.txt b/Documentation/devicetree/bindings/media/mediatek-vcodec-comp-decoder.txt
 new file mode 100644
 index 0000000000000000000000000000000000000000..91757c1c9ed9c09bfe4b077afc75aed836e30d3a
@@ -4553,6 +4826,120 @@ index fac4afd79fb5e81e2bbf890245727c596a9eae73..e372db81c6316607b56847e5ca990ad7
  	};
  };
  
+diff --git a/arch/arm64/boot/dts/mediatek/mt8183.dtsi b/arch/arm64/boot/dts/mediatek/mt8183.dtsi
+old mode 100755
+new mode 100644
+index a983374f8c558dc72b429f87e2c64d18493c6ce1..c607d09e9b416c48ecaab489298049462192efc4
+--- a/arch/arm64/boot/dts/mediatek/mt8183.dtsi
++++ b/arch/arm64/boot/dts/mediatek/mt8183.dtsi
+@@ -1684,14 +1684,19 @@
+ 				     "mediatek,mt8183-mdp3-rdma";
+ 			mediatek,scp = <&scp>;
+ 			mediatek,mdp3-id = <0>;
+-			mdp3-comps = "mediatek,mt8183-mdp3-dl", "mediatek,mt8183-mdp3-dl",
++			mdp3-comps = "mediatek,mt8183-mdp3-dl1", "mediatek,mt8183-mdp3-dl2",
++				     "mediatek,mt8183-mdp3-path1", "mediatek,mt8183-mdp3-path2",
+ 				     "mediatek,mt8183-mdp3-imgi", "mediatek,mt8183-mdp3-exto";
+-			mdp3-comp-ids = <0 1 0 1>;
++			mdp3-comp-ids = <0 1 0 1 0 1>;
+ 			reg = <0 0x14001000 0 0x1000>,
+ 			      <0 0x14000000 0 0x1000>,
++			      <0 0x14005000 0 0x1000>,
++			      <0 0x14006000 0 0x1000>,
+ 			      <0 0x15020000 0 0x1000>;
+ 			mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0x1000 0x1000>,
+ 						  <&gce SUBSYS_1400XXXX 0 0x1000>,
++						  <&gce SUBSYS_1400XXXX 0x5000 0x1000>,
++						  <&gce SUBSYS_1400XXXX 0x6000 0x1000>,
+ 						  <&gce SUBSYS_1502XXXX 0 0x1000>;
+ 			power-domains = <&spm MT8183_POWER_DOMAIN_DISP>;
+ 			clocks = <&mmsys CLK_MM_MDP_RDMA0>,
+@@ -1717,32 +1722,6 @@
+ 				     <&gce 0x14010000 SUBSYS_1401XXXX>,
+ 				     <&gce 0x14020000 SUBSYS_1402XXXX>,
+ 				     <&gce 0x15020000 SUBSYS_1502XXXX>;
+-			mediatek,gce-events = <CMDQ_EVENT_MDP_RDMA0_SOF>,
+-					      <CMDQ_EVENT_MDP_RDMA0_EOF>,
+-					      <CMDQ_EVENT_MDP_RSZ0_SOF>,
+-					      <CMDQ_EVENT_MDP_RSZ1_SOF>,
+-					      <CMDQ_EVENT_MDP_TDSHP_SOF>,
+-					      <CMDQ_EVENT_MDP_WROT0_SOF>,
+-					      <CMDQ_EVENT_MDP_WROT0_EOF>,
+-					      <CMDQ_EVENT_MDP_WDMA0_SOF>,
+-					      <CMDQ_EVENT_MDP_WDMA0_EOF>,
+-					      <CMDQ_EVENT_ISP_FRAME_DONE_P2_0>,
+-					      <CMDQ_EVENT_ISP_FRAME_DONE_P2_1>,
+-					      <CMDQ_EVENT_ISP_FRAME_DONE_P2_2>,
+-					      <CMDQ_EVENT_ISP_FRAME_DONE_P2_3>,
+-					      <CMDQ_EVENT_ISP_FRAME_DONE_P2_4>,
+-					      <CMDQ_EVENT_ISP_FRAME_DONE_P2_5>,
+-					      <CMDQ_EVENT_ISP_FRAME_DONE_P2_6>,
+-					      <CMDQ_EVENT_ISP_FRAME_DONE_P2_7>,
+-					      <CMDQ_EVENT_ISP_FRAME_DONE_P2_8>,
+-					      <CMDQ_EVENT_ISP_FRAME_DONE_P2_9>,
+-					      <CMDQ_EVENT_ISP_FRAME_DONE_P2_10>,
+-					      <CMDQ_EVENT_ISP_FRAME_DONE_P2_11>,
+-					      <CMDQ_EVENT_ISP_FRAME_DONE_P2_12>,
+-					      <CMDQ_EVENT_ISP_FRAME_DONE_P2_13>,
+-					      <CMDQ_EVENT_ISP_FRAME_DONE_P2_14>,
+-					      <CMDQ_EVENT_WPE_A_DONE>,
+-					      <CMDQ_EVENT_SPE_B_DONE>;
+ 		};
+ 
+ 		mdp3_rsz0: mdp3_rsz0@14003000 {
+@@ -1764,8 +1743,6 @@
+ 		mdp3_wrot0: mdp3_wrot0@14005000 {
+ 			compatible = "mediatek,mt8183-mdp3-wrot";
+ 			mediatek,mdp3-id = <0>;
+-			mdp3-comps = "mediatek,mt8183-mdp3-path";
+-			mdp3-comp-ids = <0>;
+ 			reg = <0 0x14005000 0 0x1000>;
+ 			mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0x5000 0x1000>;
+ 			power-domains = <&spm MT8183_POWER_DOMAIN_DISP>;
+@@ -1776,8 +1753,6 @@
+ 		mdp3_wdma: mdp3_wdma@14006000 {
+ 			compatible = "mediatek,mt8183-mdp3-wdma";
+ 			mediatek,mdp3-id = <0>;
+-			mdp3-comps = "mediatek,mt8183-mdp3-path";
+-			mdp3-comp-ids = <1>;
+ 			reg = <0 0x14006000 0 0x1000>;
+ 			mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0x6000 0x1000>;
+ 			power-domains = <&spm MT8183_POWER_DOMAIN_DISP>;
+@@ -1915,7 +1890,33 @@
+ 			interrupts = <GIC_SPI 217 IRQ_TYPE_LEVEL_LOW>;
+ 			power-domains = <&spm MT8183_POWER_DOMAIN_DISP>;
+ 			mediatek,gce-events = <CMDQ_EVENT_MUTEX_STREAM_DONE0>,
+-					      <CMDQ_EVENT_MUTEX_STREAM_DONE1>;
++					      <CMDQ_EVENT_MUTEX_STREAM_DONE1>,
++					      <CMDQ_EVENT_MDP_RDMA0_SOF>,
++					      <CMDQ_EVENT_MDP_RDMA0_EOF>,
++					      <CMDQ_EVENT_MDP_RSZ0_SOF>,
++					      <CMDQ_EVENT_MDP_RSZ1_SOF>,
++					      <CMDQ_EVENT_MDP_TDSHP_SOF>,
++					      <CMDQ_EVENT_MDP_WROT0_SOF>,
++					      <CMDQ_EVENT_MDP_WROT0_EOF>,
++					      <CMDQ_EVENT_MDP_WDMA0_SOF>,
++					      <CMDQ_EVENT_MDP_WDMA0_EOF>,
++					      <CMDQ_EVENT_ISP_FRAME_DONE_P2_0>,
++					      <CMDQ_EVENT_ISP_FRAME_DONE_P2_1>,
++					      <CMDQ_EVENT_ISP_FRAME_DONE_P2_2>,
++					      <CMDQ_EVENT_ISP_FRAME_DONE_P2_3>,
++					      <CMDQ_EVENT_ISP_FRAME_DONE_P2_4>,
++					      <CMDQ_EVENT_ISP_FRAME_DONE_P2_5>,
++					      <CMDQ_EVENT_ISP_FRAME_DONE_P2_6>,
++					      <CMDQ_EVENT_ISP_FRAME_DONE_P2_7>,
++					      <CMDQ_EVENT_ISP_FRAME_DONE_P2_8>,
++					      <CMDQ_EVENT_ISP_FRAME_DONE_P2_9>,
++					      <CMDQ_EVENT_ISP_FRAME_DONE_P2_10>,
++					      <CMDQ_EVENT_ISP_FRAME_DONE_P2_11>,
++					      <CMDQ_EVENT_ISP_FRAME_DONE_P2_12>,
++					      <CMDQ_EVENT_ISP_FRAME_DONE_P2_13>,
++					      <CMDQ_EVENT_ISP_FRAME_DONE_P2_14>,
++					      <CMDQ_EVENT_WPE_A_DONE>,
++					      <CMDQ_EVENT_SPE_B_DONE>;
+ 		};
+ 
+ 		larb0: larb@14017000 {
 diff --git a/arch/arm64/boot/dts/mediatek/mt8195-cherry.dts b/arch/arm64/boot/dts/mediatek/mt8195-cherry.dts
 new file mode 100644
 index 0000000000000000000000000000000000000000..db8a3ef820a7563f5571ae97370b3c59ad64e166
@@ -4621,7 +5008,7 @@ index 0000000000000000000000000000000000000000..db8a3ef820a7563f5571ae97370b3c59
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8195-cherry.dtsi b/arch/arm64/boot/dts/mediatek/mt8195-cherry.dtsi
 new file mode 100644
-index 0000000000000000000000000000000000000000..32e1478dbb67f54d74659f8acb1934036295c223
+index 0000000000000000000000000000000000000000..c53c95ddc26442ce00d7281fd2b78f37a8da2e05
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt8195-cherry.dtsi
 @@ -0,0 +1,1341 @@
@@ -5892,7 +6279,7 @@ index 0000000000000000000000000000000000000000..32e1478dbb67f54d74659f8acb193403
 +
 +	cros_ec {
 +		compatible = "google,cros-ec-rpmsg";
-+		mtk,rpmsg-name = "cros-ec-rpmsg";
++		mediatek,rpmsg-name = "cros-ec-rpmsg";
 +	};
 +};
 +
@@ -6170,7 +6557,7 @@ index 0000000000000000000000000000000000000000..b848edfce4be8beafb01c5a27209d51e
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8195.dtsi b/arch/arm64/boot/dts/mediatek/mt8195.dtsi
 new file mode 100644
-index 0000000000000000000000000000000000000000..561e2ed0802db9bea5762aa45ccd547481394b71
+index 0000000000000000000000000000000000000000..7481f7cd215131c8d18ddaa0c2f278e6c36aaf36
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt8195.dtsi
 @@ -0,0 +1,3792 @@
@@ -9490,8 +9877,8 @@ index 0000000000000000000000000000000000000000..561e2ed0802db9bea5762aa45ccd5474
 +		vdosys1: syscon@1c100000 {
 +			compatible = "mediatek,mt8195-vdosys1", "syscon";
 +			reg = <0 0x1c100000 0 0x1000>;
-+			mboxes = <&gce1 1 CMDQ_THR_PRIO_4>;
-+			mediatek,gce-client-reg = <&gce1 SUBSYS_1c10XXXX 0x0000 0x1000>;
++			mboxes = <&gce0 1 CMDQ_THR_PRIO_4>;
++			mediatek,gce-client-reg = <&gce0 SUBSYS_1c10XXXX 0x0000 0x1000>;
 +			#clock-cells = <1>;
 +			#reset-cells = <1>;
 +		};
@@ -9538,7 +9925,7 @@ index 0000000000000000000000000000000000000000..561e2ed0802db9bea5762aa45ccd5474
 +			clocks = <&vdosys1 CLK_VDO1_MDP_RDMA0>;
 +			power-domains = <&spm MT8195_POWER_DOMAIN_VDOSYS1>;
 +			iommus = <&iommu_vdo M4U_PORT_L2_MDP_RDMA0>;
-+			mediatek,gce-client-reg = <&gce1 SUBSYS_1c10XXXX 0x4000 0x1000>;
++			mediatek,gce-client-reg = <&gce0 SUBSYS_1c10XXXX 0x4000 0x1000>;
 +		};
 +
 +		vdo1_rdma1: vdo1_rdma@1c105000 {
@@ -9548,7 +9935,7 @@ index 0000000000000000000000000000000000000000..561e2ed0802db9bea5762aa45ccd5474
 +			clocks = <&vdosys1 CLK_VDO1_MDP_RDMA1>;
 +			power-domains = <&spm MT8195_POWER_DOMAIN_VDOSYS1>;
 +			iommus = <&iommu_vpp M4U_PORT_L3_MDP_RDMA1>;
-+			mediatek,gce-client-reg = <&gce1 SUBSYS_1c10XXXX 0x5000 0x1000>;
++			mediatek,gce-client-reg = <&gce0 SUBSYS_1c10XXXX 0x5000 0x1000>;
 +		};
 +
 +		vdo1_rdma2: vdo1_rdma@1c106000 {
@@ -9558,7 +9945,7 @@ index 0000000000000000000000000000000000000000..561e2ed0802db9bea5762aa45ccd5474
 +			clocks = <&vdosys1 CLK_VDO1_MDP_RDMA2>;
 +			power-domains = <&spm MT8195_POWER_DOMAIN_VDOSYS1>;
 +			iommus = <&iommu_vdo M4U_PORT_L2_MDP_RDMA2>;
-+			mediatek,gce-client-reg = <&gce1 SUBSYS_1c10XXXX 0x6000 0x1000>;
++			mediatek,gce-client-reg = <&gce0 SUBSYS_1c10XXXX 0x6000 0x1000>;
 +		};
 +
 +		vdo1_rdma3: vdo1_rdma@1c107000 {
@@ -9568,7 +9955,7 @@ index 0000000000000000000000000000000000000000..561e2ed0802db9bea5762aa45ccd5474
 +			clocks = <&vdosys1 CLK_VDO1_MDP_RDMA3>;
 +			power-domains = <&spm MT8195_POWER_DOMAIN_VDOSYS1>;
 +			iommus = <&iommu_vpp M4U_PORT_L3_MDP_RDMA3>;
-+			mediatek,gce-client-reg = <&gce1 SUBSYS_1c10XXXX 0x7000 0x1000>;
++			mediatek,gce-client-reg = <&gce0 SUBSYS_1c10XXXX 0x7000 0x1000>;
 +		};
 +
 +		vdo1_rdma4: vdo1_rdma@1c108000 {
@@ -9578,7 +9965,7 @@ index 0000000000000000000000000000000000000000..561e2ed0802db9bea5762aa45ccd5474
 +			clocks = <&vdosys1 CLK_VDO1_MDP_RDMA4>;
 +			power-domains = <&spm MT8195_POWER_DOMAIN_VDOSYS1>;
 +			iommus = <&iommu_vdo M4U_PORT_L2_MDP_RDMA4>;
-+			mediatek,gce-client-reg = <&gce1 SUBSYS_1c10XXXX 0x8000 0x1000>;
++			mediatek,gce-client-reg = <&gce0 SUBSYS_1c10XXXX 0x8000 0x1000>;
 +		};
 +
 +		vdo1_rdma5: vdo1_rdma@1c109000 {
@@ -9588,7 +9975,7 @@ index 0000000000000000000000000000000000000000..561e2ed0802db9bea5762aa45ccd5474
 +			clocks = <&vdosys1 CLK_VDO1_MDP_RDMA5>;
 +			power-domains = <&spm MT8195_POWER_DOMAIN_VDOSYS1>;
 +			iommus = <&iommu_vpp M4U_PORT_L3_MDP_RDMA5>;
-+			mediatek,gce-client-reg = <&gce1 SUBSYS_1c10XXXX 0x9000 0x1000>;
++			mediatek,gce-client-reg = <&gce0 SUBSYS_1c10XXXX 0x9000 0x1000>;
 +		};
 +
 +		vdo1_rdma6: vdo1_rdma@1c10a000 {
@@ -9598,7 +9985,7 @@ index 0000000000000000000000000000000000000000..561e2ed0802db9bea5762aa45ccd5474
 +			clocks = <&vdosys1 CLK_VDO1_MDP_RDMA6>;
 +			power-domains = <&spm MT8195_POWER_DOMAIN_VDOSYS1>;
 +			iommus = <&iommu_vdo M4U_PORT_L2_MDP_RDMA6>;
-+			mediatek,gce-client-reg = <&gce1 SUBSYS_1c10XXXX 0xa000 0x1000>;
++			mediatek,gce-client-reg = <&gce0 SUBSYS_1c10XXXX 0xa000 0x1000>;
 +		};
 +
 +		vdo1_rdma7: vdo1_rdma@1c10b000 {
@@ -9608,7 +9995,7 @@ index 0000000000000000000000000000000000000000..561e2ed0802db9bea5762aa45ccd5474
 +			clocks = <&vdosys1 CLK_VDO1_MDP_RDMA7>;
 +			power-domains = <&spm MT8195_POWER_DOMAIN_VDOSYS1>;
 +			iommus = <&iommu_vpp M4U_PORT_L3_MDP_RDMA7>;
-+			mediatek,gce-client-reg = <&gce1 SUBSYS_1c10XXXX 0xb000 0x1000>;
++			mediatek,gce-client-reg = <&gce0 SUBSYS_1c10XXXX 0xb000 0x1000>;
 +		};
 +
 +		merge1: disp_vpp_merge@1c10c000 {
@@ -9619,7 +10006,7 @@ index 0000000000000000000000000000000000000000..561e2ed0802db9bea5762aa45ccd5474
 +				 <&vdosys1 CLK_VDO1_MERGE0_DL_ASYNC>;
 +			clock-names = "merge","merge_async";
 +			power-domains = <&spm MT8195_POWER_DOMAIN_VDOSYS1>;
-+			mediatek,gce-client-reg = <&gce1 SUBSYS_1c10XXXX 0xc000 0x1000>;
++			mediatek,gce-client-reg = <&gce0 SUBSYS_1c10XXXX 0xc000 0x1000>;
 +			mediatek,merge-mute = <1>;
 +			resets = <&vdosys1 MT8195_VDOSYS1_SW0_RST_B_MERGE0_DL_ASYNC>;
 +		};
@@ -9632,7 +10019,7 @@ index 0000000000000000000000000000000000000000..561e2ed0802db9bea5762aa45ccd5474
 +				 <&vdosys1 CLK_VDO1_MERGE1_DL_ASYNC>;
 +			clock-names = "merge","merge_async";
 +			power-domains = <&spm MT8195_POWER_DOMAIN_VDOSYS1>;
-+			mediatek,gce-client-reg = <&gce1 SUBSYS_1c10XXXX 0xd000 0x1000>;
++			mediatek,gce-client-reg = <&gce0 SUBSYS_1c10XXXX 0xd000 0x1000>;
 +			mediatek,merge-mute = <1>;
 +			resets = <&vdosys1 MT8195_VDOSYS1_SW0_RST_B_MERGE1_DL_ASYNC>;
 +		};
@@ -9645,7 +10032,7 @@ index 0000000000000000000000000000000000000000..561e2ed0802db9bea5762aa45ccd5474
 +				 <&vdosys1 CLK_VDO1_MERGE2_DL_ASYNC>;
 +			clock-names = "merge","merge_async";
 +			power-domains = <&spm MT8195_POWER_DOMAIN_VDOSYS1>;
-+			mediatek,gce-client-reg = <&gce1 SUBSYS_1c10XXXX 0xe000 0x1000>;
++			mediatek,gce-client-reg = <&gce0 SUBSYS_1c10XXXX 0xe000 0x1000>;
 +			mediatek,merge-mute = <1>;
 +			resets = <&vdosys1 MT8195_VDOSYS1_SW0_RST_B_MERGE2_DL_ASYNC>;
 +		};
@@ -9658,7 +10045,7 @@ index 0000000000000000000000000000000000000000..561e2ed0802db9bea5762aa45ccd5474
 +				 <&vdosys1 CLK_VDO1_MERGE3_DL_ASYNC>;
 +			clock-names = "merge","merge_async";
 +			power-domains = <&spm MT8195_POWER_DOMAIN_VDOSYS1>;
-+			mediatek,gce-client-reg = <&gce1 SUBSYS_1c10XXXX 0xf000 0x1000>;
++			mediatek,gce-client-reg = <&gce0 SUBSYS_1c10XXXX 0xf000 0x1000>;
 +			mediatek,merge-mute = <1>;
 +			resets = <&vdosys1 MT8195_VDOSYS1_SW0_RST_B_MERGE3_DL_ASYNC>;
 +		};
@@ -9671,7 +10058,7 @@ index 0000000000000000000000000000000000000000..561e2ed0802db9bea5762aa45ccd5474
 +				 <&vdosys1 CLK_VDO1_MERGE4_DL_ASYNC>;
 +			clock-names = "merge","merge_async";
 +			power-domains = <&spm MT8195_POWER_DOMAIN_VDOSYS1>;
-+			mediatek,gce-client-reg = <&gce1 SUBSYS_1c11XXXX 0x0000 0x1000>;
++			mediatek,gce-client-reg = <&gce0 SUBSYS_1c11XXXX 0x0000 0x1000>;
 +			mediatek,merge-fifo-en = <1>;
 +			resets = <&vdosys1 MT8195_VDOSYS1_SW0_RST_B_MERGE4_DL_ASYNC>;
 +		};
@@ -9723,13 +10110,13 @@ index 0000000000000000000000000000000000000000..561e2ed0802db9bea5762aa45ccd5474
 +			      <0 0x1c11C000 0 0x1000>;
 +			reg-names = "mixer", "vdo_fe0", "vdo_fe1", "gfx_fe0", "gfx_fe1",
 +				    "vdo_be", "adl_ds";
-+			mediatek,gce-client-reg = <&gce1 SUBSYS_1c11XXXX 0x4000 0x1000>,
-+						  <&gce1 SUBSYS_1c11XXXX 0x5000 0x1000>,
-+						  <&gce1 SUBSYS_1c11XXXX 0x7000 0x1000>,
-+						  <&gce1 SUBSYS_1c11XXXX 0x9000 0x1000>,
-+						  <&gce1 SUBSYS_1c11XXXX 0xA000 0x1000>,
-+						  <&gce1 SUBSYS_1c11XXXX 0xB000 0x1000>,
-+						  <&gce1 SUBSYS_1c11XXXX 0xC000 0x1000>;
++			mediatek,gce-client-reg = <&gce0 SUBSYS_1c11XXXX 0x4000 0x1000>,
++						  <&gce0 SUBSYS_1c11XXXX 0x5000 0x1000>,
++						  <&gce0 SUBSYS_1c11XXXX 0x7000 0x1000>,
++						  <&gce0 SUBSYS_1c11XXXX 0x9000 0x1000>,
++						  <&gce0 SUBSYS_1c11XXXX 0xA000 0x1000>,
++						  <&gce0 SUBSYS_1c11XXXX 0xB000 0x1000>,
++						  <&gce0 SUBSYS_1c11XXXX 0xC000 0x1000>;
 +			clocks = <&vdosys1 CLK_VDO1_DISP_MIXER>,
 +				 <&vdosys1 CLK_VDO1_HDR_VDO_FE0>,
 +				 <&vdosys1 CLK_VDO1_HDR_VDO_FE1>,
@@ -101393,7 +101780,7 @@ index 96db18d46fedbf1a83c260a1babbda5ea1fa1555..95395c1ec1161d6708a55f7bae93d2db
  };
  
 diff --git a/drivers/i2c/busses/i2c-mt65xx.c b/drivers/i2c/busses/i2c-mt65xx.c
-index 835bffb5f74b3bdee59b28bffa76f60c631d9377..3b50f19190df9dfadceabbcfb69e61f1b7e8614c 100644
+index 835bffb5f74b3bdee59b28bffa76f60c631d9377..3039d3b0e0ca5e0a14e8ef296d57cc646c7ce257 100644
 --- a/drivers/i2c/busses/i2c-mt65xx.c
 +++ b/drivers/i2c/busses/i2c-mt65xx.c
 @@ -15,6 +15,7 @@
@@ -101404,17 +101791,16 @@ index 835bffb5f74b3bdee59b28bffa76f60c631d9377..3b50f19190df9dfadceabbcfb69e61f1
  #include <linux/kernel.h>
  #include <linux/mm.h>
  #include <linux/module.h>
-@@ -49,6 +50,9 @@
+@@ -49,6 +50,8 @@
  #define I2C_RD_TRANAC_VALUE		0x0001
  #define I2C_SCL_MIS_COMP_VALUE		0x0000
  #define I2C_CHN_CLR_FLAG		0x0000
-+#define I2C_CLR_DEBUGCTR		0x0000
-+#define I2C_RELIABILITY			0x0010
++#define I2C_RELIABILITY		0x0010
 +#define I2C_DMAACK_ENABLE		0x0008
  
  #define I2C_DMA_CON_TX			0x0000
  #define I2C_DMA_CON_RX			0x0001
-@@ -129,6 +133,7 @@ enum I2C_REGS_OFFSET {
+@@ -129,6 +132,7 @@ enum I2C_REGS_OFFSET {
  	OFFSET_HS,
  	OFFSET_SOFTRESET,
  	OFFSET_DCM_EN,
@@ -101422,7 +101808,7 @@ index 835bffb5f74b3bdee59b28bffa76f60c631d9377..3b50f19190df9dfadceabbcfb69e61f1
  	OFFSET_PATH_DIR,
  	OFFSET_DEBUGSTAT,
  	OFFSET_DEBUGCTRL,
-@@ -196,8 +201,9 @@ static const u16 mt_i2c_regs_v2[] = {
+@@ -196,8 +200,9 @@ static const u16 mt_i2c_regs_v2[] = {
  	[OFFSET_TRANSFER_LEN_AUX] = 0x44,
  	[OFFSET_CLOCK_DIV] = 0x48,
  	[OFFSET_SOFTRESET] = 0x50,
@@ -101433,57 +101819,57 @@ index 835bffb5f74b3bdee59b28bffa76f60c631d9377..3b50f19190df9dfadceabbcfb69e61f1
  	[OFFSET_DEBUGCTRL] = 0xe8,
  	[OFFSET_FIFO_STAT] = 0xf4,
  	[OFFSET_FIFO_THRESH] = 0xf8,
-@@ -921,6 +927,57 @@ static int mtk_i2c_set_speed_adjust_timing(struct mtk_i2c *i2c,
+@@ -921,6 +926,57 @@ static int mtk_i2c_set_speed_adjust_timing(struct mtk_i2c *i2c,
  	return 0;
  }
  
 +static void i2c_dump_register(struct mtk_i2c *i2c)
 +{
-+	dev_err(i2c->dev, "SLAVE_ADDR: 0x%x, INTR_MASK: 0x%x\n",
++	dev_dbg(i2c->dev, "SLAVE_ADDR: 0x%x, INTR_MASK: 0x%x\n",
 +		mtk_i2c_readw(i2c, OFFSET_SLAVE_ADDR),
 +		mtk_i2c_readw(i2c, OFFSET_INTR_MASK));
-+	dev_err(i2c->dev, "INTR_STAT: 0x%x, CONTROL: 0x%x\n",
++	dev_dbg(i2c->dev, "INTR_STAT: 0x%x, CONTROL: 0x%x\n",
 +		mtk_i2c_readw(i2c, OFFSET_INTR_STAT),
 +		mtk_i2c_readw(i2c, OFFSET_CONTROL));
-+	dev_err(i2c->dev, "TRANSFER_LEN: 0x%x, TRANSAC_LEN: 0x%x\n",
++	dev_dbg(i2c->dev, "TRANSFER_LEN: 0x%x, TRANSAC_LEN: 0x%x\n",
 +		mtk_i2c_readw(i2c, OFFSET_TRANSFER_LEN),
 +		mtk_i2c_readw(i2c, OFFSET_TRANSAC_LEN));
-+	dev_err(i2c->dev, "DELAY_LEN: 0x%x, HTIMING: 0x%x\n",
++	dev_dbg(i2c->dev, "DELAY_LEN: 0x%x, HTIMING: 0x%x\n",
 +		mtk_i2c_readw(i2c, OFFSET_DELAY_LEN),
 +		mtk_i2c_readw(i2c, OFFSET_TIMING));
-+	dev_err(i2c->dev, "START: 0x%x, EXT_CONF: 0x%x\n",
++	dev_dbg(i2c->dev, "START: 0x%x, EXT_CONF: 0x%x\n",
 +		mtk_i2c_readw(i2c, OFFSET_START),
 +		mtk_i2c_readw(i2c, OFFSET_EXT_CONF));
-+	dev_err(i2c->dev, "HS: 0x%x, IO_CONFIG: 0x%x\n",
++	dev_dbg(i2c->dev, "HS: 0x%x, IO_CONFIG: 0x%x\n",
 +		mtk_i2c_readw(i2c, OFFSET_HS),
 +		mtk_i2c_readw(i2c, OFFSET_IO_CONFIG));
-+	dev_err(i2c->dev, "DCM_EN: 0x%x, TRANSFER_LEN_AUX: 0x%x\n",
++	dev_dbg(i2c->dev, "DCM_EN: 0x%x, TRANSFER_LEN_AUX: 0x%x\n",
 +		mtk_i2c_readw(i2c, OFFSET_DCM_EN),
 +		mtk_i2c_readw(i2c, OFFSET_TRANSFER_LEN_AUX));
-+	dev_err(i2c->dev, "CLOCK_DIV: 0x%x, FIFO_STAT: 0x%x\n",
++	dev_dbg(i2c->dev, "CLOCK_DIV: 0x%x, FIFO_STAT: 0x%x\n",
 +		mtk_i2c_readw(i2c, OFFSET_CLOCK_DIV),
 +		mtk_i2c_readw(i2c, OFFSET_FIFO_STAT));
-+	dev_err(i2c->dev, "DEBUGCTRL : 0x%x, DEBUGSTAT: 0x%x\n",
++	dev_dbg(i2c->dev, "DEBUGCTRL : 0x%x, DEBUGSTAT: 0x%x\n",
 +		mtk_i2c_readw(i2c, OFFSET_DEBUGCTRL),
 +		mtk_i2c_readw(i2c, OFFSET_DEBUGSTAT));
 +	if (i2c->dev_comp->regs == mt_i2c_regs_v2) {
-+		dev_err(i2c->dev, "LTIMING: 0x%x, MULTI_DMA: 0x%x\n",
++		dev_dbg(i2c->dev, "LTIMING: 0x%x, MULTI_DMA: 0x%x\n",
 +			mtk_i2c_readw(i2c, OFFSET_LTIMING),
 +			mtk_i2c_readw(i2c, OFFSET_MULTI_DMA));
 +	}
-+	dev_err(i2c->dev, "\nDMA_INT_FLAG: 0x%x, DMA_INT_EN: 0x%x\n",
++	dev_dbg(i2c->dev, "\nDMA_INT_FLAG: 0x%x, DMA_INT_EN: 0x%x\n",
 +		readl(i2c->pdmabase + OFFSET_INT_FLAG),
 +		readl(i2c->pdmabase + OFFSET_INT_EN));
-+	dev_err(i2c->dev, "DMA_EN: 0x%x, DMA_CON: 0x%x\n",
++	dev_dbg(i2c->dev, "DMA_EN: 0x%x, DMA_CON: 0x%x\n",
 +		readl(i2c->pdmabase + OFFSET_EN),
 +		readl(i2c->pdmabase + OFFSET_CON));
-+	dev_err(i2c->dev, "DMA_TX_MEM_ADDR: 0x%x, DMA_RX_MEM_ADDR: 0x%x\n",
++	dev_dbg(i2c->dev, "DMA_TX_MEM_ADDR: 0x%x, DMA_RX_MEM_ADDR: 0x%x\n",
 +		readl(i2c->pdmabase + OFFSET_TX_MEM_ADDR),
 +		readl(i2c->pdmabase + OFFSET_RX_MEM_ADDR));
-+	dev_err(i2c->dev, "DMA_TX_LEN: 0x%x, DMA_RX_LEN: 0x%x\n",
++	dev_dbg(i2c->dev, "DMA_TX_LEN: 0x%x, DMA_RX_LEN: 0x%x\n",
 +		readl(i2c->pdmabase + OFFSET_TX_LEN),
 +		readl(i2c->pdmabase + OFFSET_RX_LEN));
-+	dev_err(i2c->dev, "DMA_TX_4G_MODE: 0x%x, DMA_RX_4G_MODE: 0x%x",
++	dev_dbg(i2c->dev, "DMA_TX_4G_MODE: 0x%x, DMA_RX_4G_MODE: 0x%x",
 +		readl(i2c->pdmabase + OFFSET_TX_4G_MODE),
 +		readl(i2c->pdmabase + OFFSET_RX_4G_MODE));
 +}
@@ -101491,7 +101877,7 @@ index 835bffb5f74b3bdee59b28bffa76f60c631d9377..3b50f19190df9dfadceabbcfb69e61f1
  static int mtk_i2c_do_transfer(struct mtk_i2c *i2c, struct i2c_msg *msgs,
  			       int num, int left_num)
  {
-@@ -930,6 +987,7 @@ static int mtk_i2c_do_transfer(struct mtk_i2c *i2c, struct i2c_msg *msgs,
+@@ -930,6 +986,7 @@ static int mtk_i2c_do_transfer(struct mtk_i2c *i2c, struct i2c_msg *msgs,
  	u16 restart_flag = 0;
  	u16 dma_sync = 0;
  	u32 reg_4g_mode;
@@ -101499,12 +101885,13 @@ index 835bffb5f74b3bdee59b28bffa76f60c631d9377..3b50f19190df9dfadceabbcfb69e61f1
  	u8 *dma_rd_buf = NULL;
  	u8 *dma_wr_buf = NULL;
  	dma_addr_t rpaddr = 0;
-@@ -943,6 +1001,27 @@ static int mtk_i2c_do_transfer(struct mtk_i2c *i2c, struct i2c_msg *msgs,
+@@ -943,6 +1000,28 @@ static int mtk_i2c_do_transfer(struct mtk_i2c *i2c, struct i2c_msg *msgs,
  
  	reinit_completion(&i2c->msg_complete);
  
-+	if (i2c->dev_comp->apdma_sync && i2c->op != I2C_MASTER_WRRD && num > 1) {
-+		mtk_i2c_writew(i2c, I2C_CLR_DEBUGCTR, OFFSET_DEBUGCTRL);
++	if (i2c->dev_comp->apdma_sync &&
++	    i2c->op != I2C_MASTER_WRRD && num > 1) {
++		mtk_i2c_writew(i2c, 0x00, OFFSET_DEBUGCTRL);
 +		writel(I2C_DMA_HANDSHAKE_RST | I2C_DMA_WARM_RST,
 +		       i2c->pdmabase + OFFSET_RST);
 +
@@ -101527,12 +101914,10 @@ index 835bffb5f74b3bdee59b28bffa76f60c631d9377..3b50f19190df9dfadceabbcfb69e61f1
  	control_reg = mtk_i2c_readw(i2c, OFFSET_CONTROL) &
  			~(I2C_CONTROL_DIR_CHANGE | I2C_CONTROL_RS);
  	if ((i2c->speed_hz > I2C_MAX_FAST_MODE_PLUS_FREQ) || (left_num >= 1))
-@@ -1127,7 +1206,8 @@ static int mtk_i2c_do_transfer(struct mtk_i2c *i2c, struct i2c_msg *msgs,
- 	}
+@@ -1128,6 +1207,7 @@ static int mtk_i2c_do_transfer(struct mtk_i2c *i2c, struct i2c_msg *msgs,
  
  	if (ret == 0) {
--		dev_dbg(i2c->dev, "addr: %x, transfer timeout\n", msgs->addr);
-+		dev_err(i2c->dev, "addr: %x, transfer timeout\n", msgs->addr);
+ 		dev_dbg(i2c->dev, "addr: %x, transfer timeout\n", msgs->addr);
 +		i2c_dump_register(i2c);
  		mtk_i2c_init_hw(i2c);
  		return -ETIMEDOUT;
@@ -105096,7 +105481,7 @@ index 6b44e6e58571cb194c60ebb3e1d792cadc4a171f..469f54d0565fdaab7eca595e962494cc
  #endif  /* __MTK_IMG_IPI_H__ */
 -
 diff --git a/drivers/media/platform/mtk-mdp3/mtk-mdp3-cmdq.c b/drivers/media/platform/mtk-mdp3/mtk-mdp3-cmdq.c
-index 4c204e06f31dba20d68ad9748ea55a1e82f97c80..579604f6217ac1111fa062d1636942ee3c17e50c 100644
+index 4c204e06f31dba20d68ad9748ea55a1e82f97c80..196f392ca731563ea032e3efc1b8229709e0cf3b 100644
 --- a/drivers/media/platform/mtk-mdp3/mtk-mdp3-cmdq.c
 +++ b/drivers/media/platform/mtk-mdp3/mtk-mdp3-cmdq.c
 @@ -1,6 +1,6 @@
@@ -105608,12 +105993,12 @@ index 4c204e06f31dba20d68ad9748ea55a1e82f97c80..579604f6217ac1111fa062d1636942ee
 -			     mutex_sof, 0x00000007);
 +	/* Set mutex modules */
 +	if (subfrm->mutex_mod || subfrm->mutex_mod2) {
-+		mtk_mutex_add_mdp_mod(mutex[mutex_id], subfrm->mutex_mod,
++		mtk_mutex_add_mod_by_cmdq(mutex[mutex_id], subfrm->mutex_mod,
 +				      subfrm->mutex_mod2, mutex_sof, cmd);
 +	}
 +
 +	if (subfrm->mutex2_mod || subfrm->mutex2_mod2) {
-+		mtk_mutex_add_mdp_mod(mutex2[mutex2_id], subfrm->mutex2_mod,
++		mtk_mutex_add_mod_by_cmdq(mutex2[mutex2_id], subfrm->mutex2_mod,
 +				      subfrm->mutex2_mod2, mutex2_sof, cmd);
  	}
  	return 0;
@@ -106430,7 +106815,7 @@ index c721b0ce0f9ea30db68d23356aa87b19daf9ef7c..b8844ebde4a1b5086d444b1f42e4ba04
  #endif  /* __MTK_MDP3_CMDQ_H__ */
 -
 diff --git a/drivers/media/platform/mtk-mdp3/mtk-mdp3-comp.c b/drivers/media/platform/mtk-mdp3/mtk-mdp3-comp.c
-index 95f876c6f825b356057be8eeb001d772fda3e7b3..4090e7fed44d4a81573932e9280ccde2bbd3a548 100644
+index 95f876c6f825b356057be8eeb001d772fda3e7b3..1d15a51409f6887d66a70fedb3c52a6fab9786a3 100644
 --- a/drivers/media/platform/mtk-mdp3/mtk-mdp3-comp.c
 +++ b/drivers/media/platform/mtk-mdp3/mtk-mdp3-comp.c
 @@ -1,6 +1,6 @@
@@ -108832,22 +109217,22 @@ index 95f876c6f825b356057be8eeb001d772fda3e7b3..4090e7fed44d4a81573932e9280ccde2
 +	switch (mtk_wrot) {
 +	case MDP_COMP_WROT0:
 +		mutex_id = 2;
-+		mtk_mutex_add_mdp_mod(mutex[mutex_id],
++		mtk_mutex_add_mod_by_cmdq(mutex[mutex_id],
 +				      0x800, 0x0, 0x0, cmd);
 +		break;
 +	case MDP_COMP_WROT1:
 +		mutex2_id = 1;
-+		mtk_mutex_add_mdp_mod(mutex2[mutex2_id],
++		mtk_mutex_add_mod_by_cmdq(mutex2[mutex2_id],
 +				      0x80000000, 0x0, 0x0, cmd);
 +		break;
 +	case MDP_COMP_WROT2:
 +		mutex2_id = 2;
-+		mtk_mutex_add_mdp_mod(mutex2[mutex2_id],
++		mtk_mutex_add_mod_by_cmdq(mutex2[mutex2_id],
 +				      0x0, 0x1, 0x0, cmd);
 +		break;
 +	case MDP_COMP_WROT3:
 +		mutex2_id = 3;
-+		mtk_mutex_add_mdp_mod(mutex2[mutex2_id],
++		mtk_mutex_add_mod_by_cmdq(mutex2[mutex2_id],
 +				      0x0, 0x2, 0x0, cmd);
 +		break;
 +	default:
@@ -110604,7 +110989,7 @@ index 7f0a6be3a3a21543f480f7845e1366f7d522b613..e5fbbf67edcc79a14c064f606ddecb40
  MODULE_LICENSE("GPL v2");
 -
 diff --git a/drivers/media/platform/mtk-mdp3/mtk-mdp3-core.h b/drivers/media/platform/mtk-mdp3/mtk-mdp3-core.h
-index 19f46da487aa8c8d1901bd133d5382ad7becc2c2..2691707adb71817d5a3183d970262bb0a19c0847 100644
+index 19f46da487aa8c8d1901bd133d5382ad7becc2c2..158467a508410252dc16068133aa162a9a5d8aac 100644
 --- a/drivers/media/platform/mtk-mdp3/mtk-mdp3-core.h
 +++ b/drivers/media/platform/mtk-mdp3/mtk-mdp3-core.h
 @@ -1,6 +1,6 @@
@@ -110616,12 +111001,13 @@ index 19f46da487aa8c8d1901bd133d5382ad7becc2c2..2691707adb71817d5a3183d970262bb0
   * Author: Ping-Hsun Wu <ping-hsun.wu@mediatek.com>
   */
  
-@@ -9,10 +9,13 @@
+@@ -9,10 +9,14 @@
  
  #include <media/v4l2-device.h>
  #include <media/v4l2-mem2mem.h>
 +#include <linux/soc/mediatek/mtk-mmsys.h>
 +#include <linux/soc/mediatek/mtk-mutex.h>
++#include "mtk-mdp3-regs.h"
  #include "mtk-mdp3-comp.h"
  #include "mtk-mdp3-vpu.h"
  
@@ -110630,7 +111016,7 @@ index 19f46da487aa8c8d1901bd133d5382ad7becc2c2..2691707adb71817d5a3183d970262bb0
  
  enum mdp_buffer_usage {
  	MDP_BUFFER_USAGE_HW_READ,
-@@ -22,33 +25,82 @@ enum mdp_buffer_usage {
+@@ -22,33 +26,83 @@ enum mdp_buffer_usage {
  	MDP_BUFFER_USAGE_WPE,
  };
  
@@ -110727,6 +111113,7 @@ index 19f46da487aa8c8d1901bd133d5382ad7becc2c2..2691707adb71817d5a3183d970262bb0
 +	atomic_t				suspended;
 +	atomic_t				job_count;
 +	atomic_t				cmdq_count;
++	struct mdp_framechange_param prev_image;
 +};
 +
 +struct mdp_pipe_info {
@@ -110737,7 +111124,7 @@ index 19f46da487aa8c8d1901bd133d5382ad7becc2c2..2691707adb71817d5a3183d970262bb0
  };
  
  int mdp_vpu_get_locked(struct mdp_dev *mdp);
-@@ -56,31 +108,4 @@ void mdp_vpu_put_locked(struct mdp_dev *mdp);
+@@ -56,31 +110,4 @@ void mdp_vpu_put_locked(struct mdp_dev *mdp);
  int mdp_vpu_register(struct mdp_dev *mdp);
  void mdp_vpu_unregister(struct mdp_dev *mdp);
  
@@ -110969,7 +111356,7 @@ index 083f03367809c55ee184db575b5740cd1600d97d..648b227b66fa18a7cbe39de4b20c2b30
  #endif  /* __MTK_MDP3_DEBUG_H__ */
 -
 diff --git a/drivers/media/platform/mtk-mdp3/mtk-mdp3-m2m.c b/drivers/media/platform/mtk-mdp3/mtk-mdp3-m2m.c
-index 350a0707bfba54bcd440bdf62ad0dbcb0bb073fb..a5ca59d4c7476cc48915a4f0212ed6726904315f 100644
+index 350a0707bfba54bcd440bdf62ad0dbcb0bb073fb..669afa19e025ecb20f489c042904e2888d1538b3 100644
 --- a/drivers/media/platform/mtk-mdp3/mtk-mdp3-m2m.c
 +++ b/drivers/media/platform/mtk-mdp3/mtk-mdp3-m2m.c
 @@ -1,6 +1,6 @@
@@ -110981,34 +111368,42 @@ index 350a0707bfba54bcd440bdf62ad0dbcb0bb073fb..a5ca59d4c7476cc48915a4f0212ed672
   * Author: Ping-Hsun Wu <ping-hsun.wu@mediatek.com>
   */
  
-@@ -99,6 +99,7 @@ static void mdp_m2m_worker(struct work_struct *work)
+@@ -98,6 +98,7 @@ static void mdp_m2m_worker(struct work_struct *work)
+ 	struct vb2_v4l2_buffer *src_vb, *dst_vb;
  	struct img_ipi_frameparam param = {0};
  	struct mdp_cmdq_param task = {0};
++	struct mdp_framechange_param cur_frame = {0};
  	enum vb2_buffer_state vb_state = VB2_BUF_STATE_ERROR;
-+	static u8 prev_scenario;
  	int ret;
  
- 	if (mdp_m2m_ctx_is_state_set(ctx, MDP_M2M_CTX_ERROR)) {
-@@ -115,6 +116,18 @@ static void mdp_m2m_worker(struct work_struct *work)
+@@ -115,11 +116,26 @@ static void mdp_m2m_worker(struct work_struct *work)
  	frame = ctx_get_frame(ctx, V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE);
  	src_vb = v4l2_m2m_next_src_buf(ctx->m2m_ctx);
  	mdp_set_src_config(&param.inputs[0], frame, &src_vb->vb2_buf);
 +	mdp_set_scenario(ctx->mdp_dev, &param, frame);
+ 
+ 	frame = ctx_get_frame(ctx, V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE);
+ 	dst_vb = v4l2_m2m_next_dst_buf(ctx->m2m_ctx);
+ 	mdp_set_dst_config(&param.outputs[0], frame, &dst_vb->vb2_buf);
+ 
++	cur_frame.scenario = param.type;
++	cur_frame.in_color = param.inputs[0].buffer.format.colorformat;
++	memcpy(&cur_frame.in, &param.inputs[0], sizeof(cur_frame.in));
++	memcpy(&cur_frame.out, &param.outputs[0], sizeof(cur_frame.out));
 +
-+	if (prev_scenario != param.type) {
-+		prev_scenario = param.type;
++	if (mdp_get_framechange(ctx->mdp_dev, &cur_frame))
 +		param.frame_change = true;
-+	} else {
++	else
 +		param.frame_change = (ctx->frame_count == 0) ? true : false;
-+	}
 +
 +	if (param.frame_change)
 +		dev_info(&ctx->mdp_dev->pdev->dev,
 +			 "MDP Scenario: %d\n", param.type);
++
+ 	dst_vb->vb2_buf.timestamp = src_vb->vb2_buf.timestamp;
+ 	param.timestamp = src_vb->vb2_buf.timestamp;
  
- 	frame = ctx_get_frame(ctx, V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE);
- 	dst_vb = v4l2_m2m_next_dst_buf(ctx->m2m_ctx);
-@@ -213,9 +226,6 @@ static int mdp_m2m_queue_setup(struct vb2_queue *q,
+@@ -213,9 +229,6 @@ static int mdp_m2m_queue_setup(struct vb2_queue *q,
  			sizes[i] = pix_mp->plane_fmt[i].sizeimage;
  	}
  
@@ -111018,7 +111413,7 @@ index 350a0707bfba54bcd440bdf62ad0dbcb0bb073fb..a5ca59d4c7476cc48915a4f0212ed672
  	return 0;
  }
  
-@@ -273,9 +283,9 @@ static int mdp_m2m_querycap(struct file *file, void *fh,
+@@ -273,9 +286,9 @@ static int mdp_m2m_querycap(struct file *file, void *fh,
  {
  	struct mdp_m2m_ctx *ctx = fh_to_ctx(fh);
  
@@ -111031,7 +111426,7 @@ index 350a0707bfba54bcd440bdf62ad0dbcb0bb073fb..a5ca59d4c7476cc48915a4f0212ed672
  	cap->capabilities = V4L2_CAP_VIDEO_M2M_MPLANE | V4L2_CAP_STREAMING |
  			V4L2_CAP_DEVICE_CAPS; /* | V4L2_CAP_META_OUTPUT */
  	cap->device_caps = V4L2_CAP_VIDEO_M2M_MPLANE | V4L2_CAP_STREAMING;
-@@ -303,9 +313,6 @@ static int mdp_m2m_g_fmt_mplane(struct file *file, void *fh,
+@@ -303,9 +316,6 @@ static int mdp_m2m_g_fmt_mplane(struct file *file, void *fh,
  	pix_mp->ycbcr_enc = ctx->curr_param.ycbcr_enc;
  	pix_mp->quantization = ctx->curr_param.quant;
  
@@ -111041,7 +111436,7 @@ index 350a0707bfba54bcd440bdf62ad0dbcb0bb073fb..a5ca59d4c7476cc48915a4f0212ed672
  	return 0;
  }
  
-@@ -317,12 +324,11 @@ static int mdp_m2m_s_fmt_mplane(struct file *file, void *fh,
+@@ -317,12 +327,11 @@ static int mdp_m2m_s_fmt_mplane(struct file *file, void *fh,
  	struct mdp_frame *capture;
  	const struct mdp_format *fmt;
  	struct vb2_queue *vq;
@@ -111056,7 +111451,7 @@ index 350a0707bfba54bcd440bdf62ad0dbcb0bb073fb..a5ca59d4c7476cc48915a4f0212ed672
  		return -EINVAL;
  	}
  
-@@ -348,6 +354,9 @@ static int mdp_m2m_s_fmt_mplane(struct file *file, void *fh,
+@@ -348,6 +357,9 @@ static int mdp_m2m_s_fmt_mplane(struct file *file, void *fh,
  		ctx->curr_param.ycbcr_enc = f->fmt.pix_mp.ycbcr_enc;
  		ctx->curr_param.quant = f->fmt.pix_mp.quantization;
  		ctx->curr_param.xfer_func = f->fmt.pix_mp.xfer_func;
@@ -111066,7 +111461,7 @@ index 350a0707bfba54bcd440bdf62ad0dbcb0bb073fb..a5ca59d4c7476cc48915a4f0212ed672
  	} else {
  		capture->compose.left = 0;
  		capture->compose.top = 0;
-@@ -357,8 +366,6 @@ static int mdp_m2m_s_fmt_mplane(struct file *file, void *fh,
+@@ -357,8 +369,6 @@ static int mdp_m2m_s_fmt_mplane(struct file *file, void *fh,
  
  	ctx->frame_count = 0;
  
@@ -111075,7 +111470,7 @@ index 350a0707bfba54bcd440bdf62ad0dbcb0bb073fb..a5ca59d4c7476cc48915a4f0212ed672
  	return 0;
  }
  
-@@ -413,7 +420,7 @@ static int mdp_m2m_streamon(struct file *file, void *fh,
+@@ -413,7 +423,7 @@ static int mdp_m2m_streamon(struct file *file, void *fh,
  			return ret;
  
  		ret = mdp_vpu_ctx_init(&ctx->vpu, &ctx->mdp_dev->vpu,
@@ -111084,7 +111479,7 @@ index 350a0707bfba54bcd440bdf62ad0dbcb0bb073fb..a5ca59d4c7476cc48915a4f0212ed672
  		if (ret) {
  			dev_err(&ctx->mdp_dev->pdev->dev,
  				"VPU init failed %d\n", ret);
-@@ -430,6 +437,7 @@ static int mdp_m2m_g_selection(struct file *file, void *fh,
+@@ -430,6 +440,7 @@ static int mdp_m2m_g_selection(struct file *file, void *fh,
  {
  	struct mdp_m2m_ctx *ctx = fh_to_ctx(fh);
  	struct mdp_frame *frame;
@@ -111092,7 +111487,7 @@ index 350a0707bfba54bcd440bdf62ad0dbcb0bb073fb..a5ca59d4c7476cc48915a4f0212ed672
  	bool valid = false;
  
  	if (s->type <= V4L2_BUF_TYPE_META_OUTPUT) {
-@@ -440,8 +448,8 @@ static int mdp_m2m_g_selection(struct file *file, void *fh,
+@@ -440,8 +451,8 @@ static int mdp_m2m_g_selection(struct file *file, void *fh,
  	}
  
  	if (!valid) {
@@ -111103,7 +111498,7 @@ index 350a0707bfba54bcd440bdf62ad0dbcb0bb073fb..a5ca59d4c7476cc48915a4f0212ed672
  		return -EINVAL;
  	}
  
-@@ -475,6 +483,7 @@ static int mdp_m2m_s_selection(struct file *file, void *fh,
+@@ -475,6 +486,7 @@ static int mdp_m2m_s_selection(struct file *file, void *fh,
  	struct mdp_frame *frame = ctx_get_frame(ctx, s->type);
  	struct mdp_frame *capture;
  	struct v4l2_rect r;
@@ -111111,7 +111506,7 @@ index 350a0707bfba54bcd440bdf62ad0dbcb0bb073fb..a5ca59d4c7476cc48915a4f0212ed672
  	bool valid = false;
  	int ret;
  
-@@ -485,7 +494,7 @@ static int mdp_m2m_s_selection(struct file *file, void *fh,
+@@ -485,7 +497,7 @@ static int mdp_m2m_s_selection(struct file *file, void *fh,
  			valid = (s->target == V4L2_SEL_TGT_COMPOSE);
  	}
  	if (!valid) {
@@ -111120,7 +111515,7 @@ index 350a0707bfba54bcd440bdf62ad0dbcb0bb073fb..a5ca59d4c7476cc48915a4f0212ed672
  			s->target);
  		return -EINVAL;
  	}
-@@ -620,9 +629,12 @@ static int mdp_m2m_open(struct file *file)
+@@ -620,9 +632,12 @@ static int mdp_m2m_open(struct file *file)
  	struct video_device *vdev = video_devdata(file);
  	struct mdp_dev *mdp = video_get_drvdata(vdev);
  	struct mdp_m2m_ctx *ctx;
@@ -111133,7 +111528,7 @@ index 350a0707bfba54bcd440bdf62ad0dbcb0bb073fb..a5ca59d4c7476cc48915a4f0212ed672
  	ctx = kzalloc(sizeof(*ctx), GFP_KERNEL);
  	if (!ctx)
  		return -ENOMEM;
-@@ -648,7 +660,7 @@ static int mdp_m2m_open(struct file *file)
+@@ -648,7 +663,7 @@ static int mdp_m2m_open(struct file *file)
  
  	ctx->m2m_ctx = v4l2_m2m_ctx_init(mdp->m2m_dev, ctx, mdp_m2m_queue_init);
  	if (IS_ERR(ctx->m2m_ctx)) {
@@ -111142,7 +111537,7 @@ index 350a0707bfba54bcd440bdf62ad0dbcb0bb073fb..a5ca59d4c7476cc48915a4f0212ed672
  		ret = PTR_ERR(ctx->m2m_ctx);
  		goto err_release_handler;
  	}
-@@ -658,8 +670,7 @@ static int mdp_m2m_open(struct file *file)
+@@ -658,8 +673,7 @@ static int mdp_m2m_open(struct file *file)
  
  	ret = mdp_frameparam_init(&ctx->curr_param);
  	if (ret) {
@@ -111152,7 +111547,7 @@ index 350a0707bfba54bcd440bdf62ad0dbcb0bb073fb..a5ca59d4c7476cc48915a4f0212ed672
  		goto err_release_m2m_ctx;
  	}
  
-@@ -675,7 +686,7 @@ static int mdp_m2m_open(struct file *file)
+@@ -675,7 +689,7 @@ static int mdp_m2m_open(struct file *file)
  	default_format.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
  	mdp_m2m_s_fmt_mplane(file, &ctx->fh, &default_format);
  
@@ -111161,7 +111556,7 @@ index 350a0707bfba54bcd440bdf62ad0dbcb0bb073fb..a5ca59d4c7476cc48915a4f0212ed672
  
  	return 0;
  
-@@ -711,7 +722,6 @@ static int mdp_m2m_release(struct file *file)
+@@ -711,7 +725,6 @@ static int mdp_m2m_release(struct file *file)
  	ida_free(&mdp->mdp_ida, ctx->id);
  	mutex_unlock(&mdp->m2m_lock);
  
@@ -111169,7 +111564,7 @@ index 350a0707bfba54bcd440bdf62ad0dbcb0bb073fb..a5ca59d4c7476cc48915a4f0212ed672
  	kfree(ctx);
  
  	return 0;
-@@ -793,4 +803,3 @@ void mdp_m2m_job_finish(struct mdp_m2m_ctx *ctx)
+@@ -793,4 +806,3 @@ void mdp_m2m_job_finish(struct mdp_m2m_ctx *ctx)
  
  	mdp_m2m_process_done(ctx, vb_state);
  }
@@ -111193,7 +111588,7 @@ index c3f340f7ec4950835b87120fdbc1dc369e25c7c7..0b48b65a3b012275dcec73bda49981ba
  #endif  /* __MTK_MDP3_M2M_H__ */
 -
 diff --git a/drivers/media/platform/mtk-mdp3/mtk-mdp3-regs.c b/drivers/media/platform/mtk-mdp3/mtk-mdp3-regs.c
-index 333f5117088bb9a0ca9e9259a46778f4c55dab9d..2527a412ebb4f4b2068835e96ed1cbc9ff0c7a40 100644
+index 333f5117088bb9a0ca9e9259a46778f4c55dab9d..1bcb29b4ecb5fa7c82fba77d2360e4dcd8064a73 100644
 --- a/drivers/media/platform/mtk-mdp3/mtk-mdp3-regs.c
 +++ b/drivers/media/platform/mtk-mdp3/mtk-mdp3-regs.c
 @@ -1,6 +1,6 @@
@@ -111634,10 +112029,65 @@ index 333f5117088bb9a0ca9e9259a46778f4c55dab9d..2527a412ebb4f4b2068835e96ed1cbc9
  	if (plane == 0)
  		return stride;
  	if (plane < MDP_COLOR_GET_PLANE_COUNT(c)) {
-@@ -598,11 +433,28 @@ static u32 mdp_fmt_get_plane_size(const struct mdp_format *fmt,
+@@ -598,11 +433,83 @@ static u32 mdp_fmt_get_plane_size(const struct mdp_format *fmt,
  	return 0;
  }
  
++int mdp_get_framechange(struct mdp_dev *mdp,
++			 struct mdp_framechange_param *cur)
++{
++	int ret = 0;
++	struct mdp_framechange_param *prev;
++	prev = &mdp->prev_image;
++
++	if (prev->scenario != cur->scenario)
++		ret = true;
++
++	if (prev->in_color != cur->in_color)
++		ret = true;
++
++	if (prev->in.buffer.format.width != cur->in.buffer.format.width ||
++		prev->in.buffer.format.height != cur->in.buffer.format.height)
++		ret = true;
++
++	if (prev->out.buffer.format.width != cur->out.buffer.format.width ||
++		prev->out.buffer.format.height != cur->out.buffer.format.height)
++		ret = true;
++
++	if (prev->out.crop.left != cur->out.crop.left ||
++		prev->out.crop.top != cur->out.crop.top ||
++		prev->out.crop.width != cur->out.crop.width ||
++		prev->out.crop.height != cur->out.crop.height)
++		ret = true;
++
++	dev_dbg(&mdp->pdev->dev,
++			"prev[%d][0x%x] [%d, %d], [%d, %d], [%d, %d, %d, %d]\n", prev->scenario,
++			prev->in_color,
++			prev->in.buffer.format.width,
++			prev->in.buffer.format.height,
++			prev->out.buffer.format.width,
++			prev->out.buffer.format.height,
++			prev->out.crop.left,
++			prev->out.crop.top,
++			prev->out.crop.width,
++			prev->out.crop.height);
++
++	dev_dbg(&mdp->pdev->dev,
++		    "cur[%d][0x%x] [%d, %d], [%d, %d], [%d, %d, %d, %d]\n", cur->scenario,
++			cur->in_color,
++			cur->in.buffer.format.width,
++			cur->in.buffer.format.height,
++			cur->out.buffer.format.width,
++			cur->out.buffer.format.height,
++			cur->out.crop.left,
++			cur->out.crop.top,
++			cur->out.crop.width,
++			cur->out.crop.height);
++
++	memcpy(prev, cur, sizeof(struct mdp_framechange_param));
++	return ret;
++}
++
 +void mdp_set_scenario(struct mdp_dev *mdp,
 +		      struct img_ipi_frameparam *param,
 +		      struct mdp_frame *frame)
@@ -111663,7 +112113,7 @@ index 333f5117088bb9a0ca9e9259a46778f4c55dab9d..2527a412ebb4f4b2068835e96ed1cbc9
  
  	b->format.colorformat = frame->mdp_fmt->mdp_color;
  	b->format.ycbcr_prof = frame->ycbcr_prof;
-@@ -622,6 +474,28 @@ static void mdp_prepare_buffer(struct img_image_buffer *b,
+@@ -622,6 +529,28 @@ static void mdp_prepare_buffer(struct img_image_buffer *b,
  			mdp_fmt_get_plane_size(frame->mdp_fmt, stride,
  					       pix_mp->height, i) -
  					       vb->planes[i].data_offset;
@@ -111692,7 +112142,7 @@ index 333f5117088bb9a0ca9e9259a46778f4c55dab9d..2527a412ebb4f4b2068835e96ed1cbc9
  		b->iova[i] = vb2_dma_contig_plane_dma_addr(vb, i) +
  			     vb->planes[i].data_offset;
  	}
-@@ -633,6 +507,27 @@ static void mdp_prepare_buffer(struct img_image_buffer *b,
+@@ -633,6 +562,27 @@ static void mdp_prepare_buffer(struct img_image_buffer *b,
  		b->format.plane_fmt[i].size =
  			mdp_fmt_get_plane_size(frame->mdp_fmt, stride,
  					       pix_mp->height, i);
@@ -111720,7 +112170,7 @@ index 333f5117088bb9a0ca9e9259a46778f4c55dab9d..2527a412ebb4f4b2068835e96ed1cbc9
  		b->iova[i] = b->iova[i - 1] + b->format.plane_fmt[i - 1].size;
  	}
  	b->usage = frame->usage;
-@@ -744,3 +639,9 @@ int mdp_frameparam_init(struct mdp_frameparam *param)
+@@ -744,3 +694,9 @@ int mdp_frameparam_init(struct mdp_frameparam *param)
  	return 0;
  }
  
@@ -111731,7 +112181,7 @@ index 333f5117088bb9a0ca9e9259a46778f4c55dab9d..2527a412ebb4f4b2068835e96ed1cbc9
 +}
 +
 diff --git a/drivers/media/platform/mtk-mdp3/mtk-mdp3-regs.h b/drivers/media/platform/mtk-mdp3/mtk-mdp3-regs.h
-index b41c419afb101699fd6166966d534804d0bead94..2ce1afababe9fc782ddd7e0d7a85c357a7fd9473 100644
+index b41c419afb101699fd6166966d534804d0bead94..a7391aad0899cb990fbd2f1e6a293547b653626d 100644
 --- a/drivers/media/platform/mtk-mdp3/mtk-mdp3-regs.h
 +++ b/drivers/media/platform/mtk-mdp3/mtk-mdp3-regs.h
 @@ -1,6 +1,6 @@
@@ -112042,10 +112492,26 @@ index b41c419afb101699fd6166966d534804d0bead94..2ce1afababe9fc782ddd7e0d7a85c357
  };
  
  static inline bool mdp_target_is_crop(u32 target)
-@@ -362,12 +340,15 @@ int mdp_try_crop(struct v4l2_rect *r, const struct v4l2_selection *s,
+@@ -351,6 +329,13 @@ struct mdp_frameparam {
+ 	enum v4l2_quantization		quant;
+ };
+ 
++struct mdp_framechange_param {
++	u8 scenario;
++	u32 in_color;
++	struct img_input in;
++	struct img_output out;
++};
++
+ int mdp_enum_fmt_mplane(struct v4l2_fmtdesc *f);
+ const struct mdp_format *mdp_try_fmt_mplane(struct v4l2_format *f,
+ 					    struct mdp_frameparam *param,
+@@ -362,12 +347,17 @@ int mdp_try_crop(struct v4l2_rect *r, const struct v4l2_selection *s,
  int mdp_check_scaling_ratio(const struct v4l2_rect *crop,
  			    const struct v4l2_rect *compose, s32 rotation,
  	const struct mdp_limit *limit);
++int mdp_get_framechange(struct mdp_dev *mdp,
++			 struct mdp_framechange_param *cur);
 +void mdp_set_scenario(struct mdp_dev *mdp,
 +		      struct img_ipi_frameparam *param,
 +		      struct mdp_frame *frame);
@@ -125699,10 +126165,10 @@ index 9e2b81bd38db1a07bb7297342aa17c8bcd744748..65c85980247448c90811ad4f81a0d572
  
  /*
 diff --git a/drivers/soc/mediatek/mtk-mutex.c b/drivers/soc/mediatek/mtk-mutex.c
-index 718a41beb6afbab5d2ddb469ed1d6a924760ad73..4559fe6eb4f9bb66c9e3707a9b88637c8fd5f872 100644
+index 718a41beb6afbab5d2ddb469ed1d6a924760ad73..08f0e78a80f542116f7f4d35d40c0f265c23fe93 100644
 --- a/drivers/soc/mediatek/mtk-mutex.c
 +++ b/drivers/soc/mediatek/mtk-mutex.c
-@@ -7,9 +7,11 @@
+@@ -7,90 +7,155 @@
  #include <linux/iopoll.h>
  #include <linux/module.h>
  #include <linux/of_device.h>
@@ -125710,11 +126176,11 @@ index 718a41beb6afbab5d2ddb469ed1d6a924760ad73..4559fe6eb4f9bb66c9e3707a9b88637c
  #include <linux/platform_device.h>
  #include <linux/regmap.h>
  #include <linux/soc/mediatek/mtk-mmsys.h>
-+#include <linux/soc/mediatek/mtk-cmdq.h>
  #include <linux/soc/mediatek/mtk-mutex.h>
++#include <linux/soc/mediatek/mtk-cmdq.h>
  
  #define MT2701_MUTEX0_MOD0			0x2c
-@@ -17,80 +19,143 @@
+ #define MT2701_MUTEX0_SOF0			0x30
  #define MT8183_MUTEX0_MOD0			0x30
  #define MT8183_MUTEX0_SOF0			0x2c
  
@@ -126188,7 +126654,7 @@ index 718a41beb6afbab5d2ddb469ed1d6a924760ad73..4559fe6eb4f9bb66c9e3707a9b88637c
  struct mtk_mutex *mtk_mutex_get(struct device *dev)
  {
  	struct mtk_mutex_ctx *mtx = dev_get_drvdata(dev);
-@@ -290,6 +502,21 @@ struct mtk_mutex *mtk_mutex_get(struct device *dev)
+@@ -290,6 +502,18 @@ struct mtk_mutex *mtk_mutex_get(struct device *dev)
  }
  EXPORT_SYMBOL_GPL(mtk_mutex_get);
  
@@ -126198,19 +126664,16 @@ index 718a41beb6afbab5d2ddb469ed1d6a924760ad73..4559fe6eb4f9bb66c9e3707a9b88637c
 +	struct mtk_mutex_ctx *mtx = dev_get_drvdata(dev);
 +	int i = mtx->data->mutex_mdp_offset[id];
 +
-+	if (!mtx->mutex[i].claimed) {
-+		mtx->mutex[i].claimed = true;
-+		return &mtx->mutex[i];
-+	}
++	mtx->mutex[i].claimed = true;
 +
-+	return ERR_PTR(-EBUSY);
++	return &mtx->mutex[i];
 +}
 +EXPORT_SYMBOL_GPL(mtk_mutex_mdp_get);
 +
  void mtk_mutex_put(struct mtk_mutex *mutex)
  {
  	struct mtk_mutex_ctx *mtx = container_of(mutex, struct mtk_mutex_ctx,
-@@ -347,17 +574,23 @@ void mtk_mutex_add_comp(struct mtk_mutex *mutex,
+@@ -347,17 +571,23 @@ void mtk_mutex_add_comp(struct mtk_mutex *mutex,
  	case DDP_COMPONENT_DPI1:
  		sof_id = MUTEX_SOF_DPI1;
  		break;
@@ -126237,37 +126700,7 @@ index 718a41beb6afbab5d2ddb469ed1d6a924760ad73..4559fe6eb4f9bb66c9e3707a9b88637c
  			writel_relaxed(reg, mtx->regs + offset);
  		}
  		return;
-@@ -369,6 +602,29 @@ void mtk_mutex_add_comp(struct mtk_mutex *mutex,
- }
- EXPORT_SYMBOL_GPL(mtk_mutex_add_comp);
- 
-+void mtk_mutex_add_mdp_mod(struct mtk_mutex *mutex, u32 mod,
-+			   u32 mod1, u32 sof, struct mmsys_cmdq_cmd *cmd)
-+{
-+	struct mtk_mutex_ctx *mtx = container_of(mutex, struct mtk_mutex_ctx,
-+						 mutex[mutex->id]);
-+	unsigned int offset;
-+
-+	WARN_ON(&mtx->mutex[mutex->id] != mutex);
-+
-+	offset = DISP_REG_MUTEX_MOD(mtx->data->mutex_mod_reg, mutex->id);
-+	cmdq_pkt_write_mask(cmd->pkt, mtx->subsys_id, mtx->addr + offset,
-+			    mod, mtx->data->mutex_mdp_mod_mask);
-+
-+	offset = DISP_REG_MUTEX_MOD1(mtx->data->mutex_mod_reg, mutex->id);
-+	cmdq_pkt_write_mask(cmd->pkt, mtx->subsys_id, mtx->addr + offset,
-+			    mod1, mtx->data->mutex_mdp_mod_mask);
-+
-+	offset = DISP_REG_MUTEX_SOF(mtx->data->mutex_sof_reg, mutex->id);
-+	cmdq_pkt_write_mask(cmd->pkt, mtx->subsys_id, mtx->addr + offset,
-+			    sof, mtx->data->mutex_mdp_sof_mask);
-+}
-+EXPORT_SYMBOL_GPL(mtk_mutex_add_mdp_mod);
-+
- void mtk_mutex_remove_comp(struct mtk_mutex *mutex,
- 			   enum mtk_ddp_comp_id id)
- {
-@@ -386,22 +642,24 @@ void mtk_mutex_remove_comp(struct mtk_mutex *mutex,
+@@ -386,22 +616,24 @@ void mtk_mutex_remove_comp(struct mtk_mutex *mutex,
  	case DDP_COMPONENT_DSI3:
  	case DDP_COMPONENT_DPI0:
  	case DDP_COMPONENT_DPI1:
@@ -126295,7 +126728,37 @@ index 718a41beb6afbab5d2ddb469ed1d6a924760ad73..4559fe6eb4f9bb66c9e3707a9b88637c
  			writel_relaxed(reg, mtx->regs + offset);
  		}
  		break;
-@@ -420,6 +678,20 @@ void mtk_mutex_enable(struct mtk_mutex *mutex)
+@@ -409,6 +641,29 @@ void mtk_mutex_remove_comp(struct mtk_mutex *mutex,
+ }
+ EXPORT_SYMBOL_GPL(mtk_mutex_remove_comp);
+ 
++void mtk_mutex_add_mod_by_cmdq(struct mtk_mutex *mutex, u32 mod,
++			       u32 mod1, u32 sof, struct mmsys_cmdq_cmd *cmd)
++{
++	struct mtk_mutex_ctx *mtx = container_of(mutex, struct mtk_mutex_ctx,
++						 mutex[mutex->id]);
++	unsigned int offset;
++
++	WARN_ON(&mtx->mutex[mutex->id] != mutex);
++
++	offset = DISP_REG_MUTEX_MOD(mtx->data->mutex_mod_reg, mutex->id);
++	cmdq_pkt_write_mask(cmd->pkt, mtx->subsys_id, mtx->addr + offset,
++			    mod, mtx->data->mutex_mdp_mod_mask);
++
++	offset = DISP_REG_MUTEX_MOD1(mtx->data->mutex_mod_reg, mutex->id);
++	cmdq_pkt_write_mask(cmd->pkt, mtx->subsys_id, mtx->addr + offset,
++			    mod1, mtx->data->mutex_mdp_mod_mask);
++
++	offset = DISP_REG_MUTEX_SOF(mtx->data->mutex_sof_reg, mutex->id);
++	cmdq_pkt_write_mask(cmd->pkt, mtx->subsys_id, mtx->addr + offset,
++			    sof, mtx->data->mutex_mdp_sof_mask);
++}
++EXPORT_SYMBOL_GPL(mtk_mutex_add_mod_by_cmdq);
++
+ void mtk_mutex_enable(struct mtk_mutex *mutex)
+ {
+ 	struct mtk_mutex_ctx *mtx = container_of(mutex, struct mtk_mutex_ctx,
+@@ -420,6 +675,20 @@ void mtk_mutex_enable(struct mtk_mutex *mutex)
  }
  EXPORT_SYMBOL_GPL(mtk_mutex_enable);
  
@@ -126316,7 +126779,7 @@ index 718a41beb6afbab5d2ddb469ed1d6a924760ad73..4559fe6eb4f9bb66c9e3707a9b88637c
  void mtk_mutex_disable(struct mtk_mutex *mutex)
  {
  	struct mtk_mutex_ctx *mtx = container_of(mutex, struct mtk_mutex_ctx,
-@@ -431,6 +703,20 @@ void mtk_mutex_disable(struct mtk_mutex *mutex)
+@@ -431,6 +700,20 @@ void mtk_mutex_disable(struct mtk_mutex *mutex)
  }
  EXPORT_SYMBOL_GPL(mtk_mutex_disable);
  
@@ -126337,7 +126800,7 @@ index 718a41beb6afbab5d2ddb469ed1d6a924760ad73..4559fe6eb4f9bb66c9e3707a9b88637c
  void mtk_mutex_acquire(struct mtk_mutex *mutex)
  {
  	struct mtk_mutex_ctx *mtx = container_of(mutex, struct mtk_mutex_ctx,
-@@ -458,7 +744,8 @@ static int mtk_mutex_probe(struct platform_device *pdev)
+@@ -458,7 +741,8 @@ static int mtk_mutex_probe(struct platform_device *pdev)
  {
  	struct device *dev = &pdev->dev;
  	struct mtk_mutex_ctx *mtx;
@@ -126347,7 +126810,7 @@ index 718a41beb6afbab5d2ddb469ed1d6a924760ad73..4559fe6eb4f9bb66c9e3707a9b88637c
  	int i;
  
  	mtx = devm_kzalloc(dev, sizeof(*mtx), GFP_KERNEL);
-@@ -479,6 +766,15 @@ static int mtk_mutex_probe(struct platform_device *pdev)
+@@ -479,6 +763,15 @@ static int mtk_mutex_probe(struct platform_device *pdev)
  		}
  	}
  
@@ -126363,7 +126826,7 @@ index 718a41beb6afbab5d2ddb469ed1d6a924760ad73..4559fe6eb4f9bb66c9e3707a9b88637c
  	regs = platform_get_resource(pdev, IORESOURCE_MEM, 0);
  	mtx->regs = devm_ioremap_resource(dev, regs);
  	if (IS_ERR(mtx->regs)) {
-@@ -507,6 +803,12 @@ static const struct of_device_id mutex_driver_dt_match[] = {
+@@ -507,6 +800,12 @@ static const struct of_device_id mutex_driver_dt_match[] = {
  	  .data = &mt8173_mutex_driver_data},
  	{ .compatible = "mediatek,mt8183-disp-mutex",
  	  .data = &mt8183_mutex_driver_data},
@@ -130819,7 +131282,7 @@ index 2228bf6133da29ccd56e055b96021ca950542f7a..76161dda5211de9134066df73bbcb94b
 +
  #endif /* __MTK_MMSYS_H */
 diff --git a/include/linux/soc/mediatek/mtk-mutex.h b/include/linux/soc/mediatek/mtk-mutex.h
-index 6fe4ffbde290a1438a36f52462f8463289e7f3bf..a2b81ce55b5da7aaa3254060ab5725494c932e05 100644
+index 6fe4ffbde290a1438a36f52462f8463289e7f3bf..902b0f4f663b2e332a6bc79b60e92b4befffa98a 100644
 --- a/include/linux/soc/mediatek/mtk-mutex.h
 +++ b/include/linux/soc/mediatek/mtk-mutex.h
 @@ -11,11 +11,19 @@ struct device;
@@ -130831,8 +131294,8 @@ index 6fe4ffbde290a1438a36f52462f8463289e7f3bf..a2b81ce55b5da7aaa3254060ab572549
  int mtk_mutex_prepare(struct mtk_mutex *mutex);
  void mtk_mutex_add_comp(struct mtk_mutex *mutex,
  			enum mtk_ddp_comp_id id);
-+void mtk_mutex_add_mdp_mod(struct mtk_mutex *mutex, u32 mod,
-+			   u32 mod1, u32 sof, struct mmsys_cmdq_cmd *cmd);
++void mtk_mutex_add_mod_by_cmdq(struct mtk_mutex *mutex, u32 mod,
++			       u32 mod1, u32 sof, struct mmsys_cmdq_cmd *cmd);
  void mtk_mutex_enable(struct mtk_mutex *mutex);
 +void mtk_mutex_enable_by_cmdq(struct mtk_mutex *mutex,
 +			      struct mmsys_cmdq_cmd *cmd);
