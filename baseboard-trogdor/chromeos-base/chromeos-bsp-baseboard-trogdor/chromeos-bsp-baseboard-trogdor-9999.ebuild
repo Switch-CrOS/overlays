@@ -47,6 +47,9 @@ src_install() {
 	# udev rules to enable USB wakeup
 	udev_dorules "${FILESDIR}/99-usb-wakeup.rules"
 
+	# udev rule to enable wakeup for smp2p devices
+	udev_dorules "${FILESDIR}/99-qcom-smp2p-wakeup.rules"
+
 	# udev rules for HP USB-C/A Universal Dock G2 Adicora-D
 	udev_dorules "${FILESDIR}/99-hp-usb-c-dock.rules"
 
