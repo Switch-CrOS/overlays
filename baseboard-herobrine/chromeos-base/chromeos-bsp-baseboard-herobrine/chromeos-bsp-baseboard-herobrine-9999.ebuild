@@ -47,6 +47,9 @@ src_install() {
 	# udev rules to enable USB wakeup
 	udev_dorules "${FILESDIR}/99-usb-wakeup.rules"
 
+	# udev rule to enable wakeup for smp2p devices
+	udev_dorules "${FILESDIR}/99-qcom-smp2p-wakeup.rules"
+
 	# Install modem FSG verification init script
 	insinto "/etc/init"
 	doins "${FILESDIR}/verify_fsg.conf"
