@@ -47,4 +47,8 @@ src_install() {
 	udev_dorules "${FILESDIR}/99-hammerd.rules"
 	insinto /etc/init
 	doins "${FILESDIR}/hammerd.override"
+
+	# Install cpufreq config rules
+	insinto "/etc"
+	doins "${FILESDIR}/cpufreq/cpufreq.conf"
 }
