@@ -21,10 +21,8 @@ src_install() {
 	insinto "${CONFIG_DIR}"
 	doins "${FILESDIR}"/*.json
 
-	if [[ ${kernel} == "4_19" ]]; then
-		newins "${FILESDIR}/post-start-hooks-${kernel}.sh" post-start-hooks.sh
-		newins "${FILESDIR}/post-start-hooks-algo-${kernel}.sh" post-start-hooks-algo.sh
-	fi
+	newins "${FILESDIR}/post-start-hooks-${kernel}.sh" post-start-hooks.sh
+	newins "${FILESDIR}/post-start-hooks-algo-${kernel}.sh" post-start-hooks-algo.sh
 
 	doins "${FILESDIR}/setup-hooks-algo.sh"
 	doins "${FILESDIR}/setup-hooks.sh"
