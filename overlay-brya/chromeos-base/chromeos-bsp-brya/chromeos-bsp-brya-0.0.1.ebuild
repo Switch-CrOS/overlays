@@ -40,4 +40,8 @@ src_install() {
 
 	# Install audio config files
 	unibuild_install_files audio-files
+
+	# Override for chromeos-base/hpsd
+	insinto /etc/init
+	doins "${FILESDIR}/hpsd.override"
 }
