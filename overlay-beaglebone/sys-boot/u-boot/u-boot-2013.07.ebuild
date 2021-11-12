@@ -52,6 +52,9 @@ src_configure() {
 }
 
 src_compile() {
+	# (b/206056057) Disable SANDBOX and LD_PRELOAD for frozen gcc.
+	unset LD_PRELOAD
+	export SANDBOX_ON=0
 	umake
 }
 
