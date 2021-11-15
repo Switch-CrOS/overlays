@@ -1,4 +1,4 @@
-From e8e194e5970e8e56d6fb6820ce7630f949d140a0 Mon Sep 17 00:00:00 2001
+From 1eb53006acb34d1e40960b9da1f51a99dd664b9f Mon Sep 17 00:00:00 2001
 From: Tomasz Jeznach <tjeznach@chromium.org>
 Date: Mon, 17 May 2021 10:12:03 -0700
 Subject: [PATCH 2/4] CHROMIUM: irq-forward: experimental interrupt user space
@@ -11,14 +11,18 @@ Change-Id: Ie778cf3bc92426b7af23c632bf6e9f934c65bf98
 Signed-off-by: Tomasz Jeznach <tjeznach@chromium.org>
 Reviewed-on: https://chromium-review.googlesource.com/c/chromiumos/third_party/kernel/+/2250717
 Reviewed-by: Micah Morton <mortonm@chromium.org>
+
+[stevensd: use global workqueue to clean up]
+
+Signed-off-by: David Stevens <stevensd@chromium.org>
 ---
  include/linux/plat_irqfd.h          |  40 ++++
  include/uapi/linux/platirqforward.h |  43 ++++
  virt/lib/Kconfig                    |   3 +
  virt/lib/Makefile                   |   1 +
- virt/lib/plat_irqfd.c               | 161 +++++++++++++
+ virt/lib/plat_irqfd.c               | 160 +++++++++++++
  virt/lib/platirqforward.c           | 342 ++++++++++++++++++++++++++++
- 6 files changed, 590 insertions(+)
+ 6 files changed, 589 insertions(+)
  create mode 100644 include/linux/plat_irqfd.h
  create mode 100644 include/uapi/linux/platirqforward.h
  create mode 100644 virt/lib/plat_irqfd.c
@@ -140,10 +144,10 @@ index bd7f9a78bb6b..633e793b19a5 100644
 +obj-$(CONFIG_PLAT_IRQ_FORWARD) += platirqforward.o plat_irqfd.o
 diff --git a/virt/lib/plat_irqfd.c b/virt/lib/plat_irqfd.c
 new file mode 100644
-index 000000000000..3815401825d7
+index 000000000000..07b24f2e02a2
 --- /dev/null
 +++ b/virt/lib/plat_irqfd.c
-@@ -0,0 +1,161 @@
+@@ -0,0 +1,160 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
 + * Experimental driver for user space interrupt handler.
@@ -159,12 +163,11 @@ index 000000000000..3815401825d7
 +#include <uapi/linux/platirqforward.h>
 +#include <linux/plat_irqfd.h>
 +
-+static struct workqueue_struct *vfio_irqfd_cleanup_wq;
 +static DEFINE_SPINLOCK(plat_irqfd_lock);
 +
 +static void plat_irqfd_deactivate(struct plat_irq_forward_irqfd *plat_irqfd)
 +{
-+	queue_work(vfio_irqfd_cleanup_wq, &plat_irqfd->shutdown);
++	schedule_work(&plat_irqfd->shutdown);
 +}
 +
 +static int plat_irqfd_wakeup(wait_queue_entry_t *wait, unsigned int mode,
@@ -654,5 +657,5 @@ index 000000000000..3f72a2469f5d
 +module_init(plat_irq_forward_init);
 +module_exit(plat_irq_forward_cleanup);
 -- 
-2.31.0
+2.34.0.rc1.387.gb447b232ab-goog
 
