@@ -11,7 +11,7 @@ or portage actions."
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="-* arm64 arm"
-IUSE="kevin-arcnext kevin-kernelnext"
+IUSE="kevin-arcnext kevin-kernelnext kernel-4_4"
 S="${WORKDIR}"
 
 # Add dependencies on other ebuilds from within this board overlay
@@ -31,7 +31,11 @@ src_install() {
 	fi
 
 	# Install audio config files
-	local audio_config_dir="${FILESDIR}/audio-config"
+	if use kernel-4_4; then
+		local audio_config_dir="${FILESDIR}/audio-config-4.4"
+	else
+		local audio_config_dir="${FILESDIR}/audio-config"
+	fi
 	install_audio_configs kevin "${audio_config_dir}"
 
 	# Install platform specific config files for power_manager.
