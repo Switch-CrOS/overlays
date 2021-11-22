@@ -14,7 +14,10 @@ KEYWORDS="-* amd64 x86"
 S="${WORKDIR}"
 
 # Add dependencies on other ebuilds from within this board overlay
-RDEPEND=""
+RDEPEND="
+	chromeos-base/sof-binary
+	chromeos-base/sof-topology
+"
 DEPEND="
 	${RDEPEND}
 	chromeos-base/chromeos-config
