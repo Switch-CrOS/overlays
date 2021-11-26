@@ -3,27 +3,31 @@
 
 EAPI=6
 
+# This ebuild only cares about its own FILESDIR and ebuild file, so it tracks
+# the canonical empty project.
+CROS_WORKON_PROJECT="chromiumos/infra/build/empty-project"
+CROS_WORKON_LOCALNAME="platform/empty-project"
+
 inherit appid
 inherit cros-unibuild
+inherit cros-workon
 inherit udev
 
 DESCRIPTION="Ebuild which pulls in any necessary ebuilds as dependencies
 or portage actions."
 
 LICENSE="BSD-Google"
-SLOT="0"
-KEYWORDS="-* amd64 x86"
+KEYWORDS="-* ~amd64 ~x86"
 IUSE="zork-arc-r zork-borealis zork-kernelnext zork-minios zork-connectivitynext"
-S="${WORKDIR}"
 
 # Add dependencies on other ebuilds from within this board overlay
 RDEPEND="
-	chromeos-base/rmi4utils
-	chromeos-base/touch_updater
+	chromeos-base/rmi4utils:=
+	chromeos-base/touch_updater:=
 "
 DEPEND="
 	${RDEPEND}
-	chromeos-base/chromeos-config
+	chromeos-base/chromeos-config:=
 "
 
 src_install() {
