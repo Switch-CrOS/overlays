@@ -13,5 +13,8 @@ do
   echo "${pid}" > /sys/fs/cgroup/cpu/camera/service/cgroup.procs
 done
 
+echo "1" > /sys/fs/cgroup/cpu/camera/cpu.uclamp.latency_sensitive
+echo "20.00" > /sys/fs/cgroup/cpu/camera/cpu.uclamp.min
+
 echo "1" > /sys/fs/cgroup/cpu/camera/service/cpu.uclamp.latency_sensitive
 echo "20.00" > /sys/fs/cgroup/cpu/camera/service/cpu.uclamp.min
