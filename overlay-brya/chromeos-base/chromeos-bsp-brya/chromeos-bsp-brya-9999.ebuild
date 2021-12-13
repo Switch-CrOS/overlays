@@ -49,4 +49,8 @@ src_install() {
 	# Override for chromeos-base/hpsd
 	insinto /etc/init
 	doins "${FILESDIR}/hpsd.override"
+
+	# Install Upstart script to fix incorrect CBI values
+	insinto /etc/init
+	doins "${FILESDIR}/brya-cbi-override.conf"
 }
