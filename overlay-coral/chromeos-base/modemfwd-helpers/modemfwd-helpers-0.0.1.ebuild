@@ -1,13 +1,17 @@
 # Copyright 2017 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=5
+EAPI=7
 
 inherit cros-cellular udev user
 
 DESCRIPTION="Chrome OS Modem Update Helpers (coral)"
 HOMEPAGE="http://src.chromium.org"
-SRC_URI="gs://chromeos-localmirror/distfiles/cellular-firmware-coral-14028.0.0.tbz2"
+MIRROR_PATH="gs://chromeos-localmirror/distfiles"
+SRC_URI="
+	${MIRROR_PATH}/cellular-firmware-fibocom-l850-18500.5001.00.04.26.06_6000.05_Secureboot.tar.xz
+	${MIRROR_PATH}/cellular-firmware-fibocom-l850-coral-carriers_OEM_6000-r2.tar.xz
+"
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
@@ -28,10 +32,11 @@ src_install() {
 
 	udev_dorules "${FILESDIR}/94-l850gl-gpio.rules"
 
-	# TODO(ejcaruso): remove these after the component updater service
-	# handles the LTE firmware bundle better, b/74250103
-	cellular_dofirmware *.fls3.xz
-	cellular_dofirmware firmware_manifest.prototxt
+	cellular_dofirmware "${FILESDIR}/firmware_manifest.prototxt"
+
+	insinto "$(_cellular_get_firmwaredir)/l850"
+	doins -r cellular-firmware-fibocom-l850-*/*
+
 }
 
 pkg_preinst() {
