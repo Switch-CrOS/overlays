@@ -210,6 +210,17 @@ chromeos:
           config:
             <<: [ *convertible_config, *camera_config_ufc ]
           $has-keyboard-backlight: "1"
+        - $sku-id: 10 # LTE+Wifi+No esim
+          $set-cellular-transmit-power-for-tablet-mode: "1"
+          $use-modemmanager-for-dynamic-sar: "1"
+          $use-multi-power-level-dynamic-sar: "1"
+          $set-cellular-transmit-power-level-mapping: |
+            HIGH 0
+            MEDIUM 1
+            LOW 2
+          $has-keyboard-backlight: "1"
+          config:
+            <<: [ *convertible_config, *p_sensor_20mm_lazor_config, *camera_config_ufc ]
     - $device-name: "limozeen"
       $fw-name: "google,lazor"
       $coreboot-build-name: "lazor"
@@ -221,14 +232,21 @@ chromeos:
       firmware:
         <<: *zephyr_firmware_common
       skus:
-        - $sku-id: 4 # LTE+Wifi
+        - $sku-id: 4 # LTE+Wifi+Touchscreen
           $has-touchscreen: True
           config:
             <<: [ *clamshell_config, *camera_config_ufc ]
         - $sku-id: 5 # TODO(philipchen) Deprecate sku5 when no one uses it.
           config:
             <<: [ *clamshell_config, *camera_config_ufc ]
-        - $sku-id: 6 # LTE+Wifi
+        - $sku-id: 6 # LTE+Wifi+No Touchscreen
+          config:
+            <<: [ *clamshell_config, *camera_config_ufc ]
+        - $sku-id: 15 # LTE+Wifi+Touchscreen+No esim
+          $has-touchscreen: True
+          config:
+            <<: [ *clamshell_config, *camera_config_ufc ]
+        - $sku-id: 18 # LTE+Wifi+No Touchscreen+No esim
           config:
             <<: [ *clamshell_config, *camera_config_ufc ]
     - $device-name: "marzipan"
