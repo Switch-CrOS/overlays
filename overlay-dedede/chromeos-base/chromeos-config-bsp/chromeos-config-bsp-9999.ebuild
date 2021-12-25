@@ -9,7 +9,6 @@ CROS_WORKON_REPO="${CROS_GIT_HOST_URL}"
 PROJECTS=(
     "boten"
     "drawcia"
-    "jslrvp"
     "madoo"
     "magolor"
     "waddledee"
