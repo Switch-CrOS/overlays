@@ -11,11 +11,11 @@ or portage actions."
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="-* amd64 x86"
-IUSE="kernel-5_4"
+IUSE="kernel-5_4 modemfwd"
 S="${WORKDIR}"
 
 # Add dependencies on other ebuilds from within this board overlay
-RDEPEND=""
+RDEPEND="modemfwd? ( chromeos-base/modemfwd-helpers )"
 DEPEND="${RDEPEND}"
 
 src_install() {
