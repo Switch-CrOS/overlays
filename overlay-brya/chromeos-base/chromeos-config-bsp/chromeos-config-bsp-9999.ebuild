@@ -19,6 +19,7 @@ PROJECTS=(
 	"taeko"
 	"taniks"
 	"vell"
+	"volmar"
 	"vyhar"
 )
 
