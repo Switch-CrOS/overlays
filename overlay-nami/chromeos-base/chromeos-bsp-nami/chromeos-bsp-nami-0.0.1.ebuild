@@ -37,12 +37,6 @@ src_install() {
 	unibuild_install_files audio-files
 	unibuild_install_files thermal-files
 
-	# Override default CPU clock speed governor for kernel 5.4
-	if use kernel-5_4; then
-		insinto "/etc"
-		doins "${FILESDIR}/common/cpufreq.conf"
-	fi
-
 	# Projects might support multiple panels with the same Wacom digitizer
 	# chip but have different firmwares for fine-tuned performance.
 	# As a result, we need a way to identify the correct firmware to update.
