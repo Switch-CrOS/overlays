@@ -28,4 +28,8 @@ src_install() {
 
 	# Install audio config files
 	install_audio_configs sentry "${FILESDIR}/audio-config"
+
+	# Install device-specific custom dptf profile.
+	insinto "/etc/dptf"
+	doins "${FILESDIR}"/dptf/*
 }
