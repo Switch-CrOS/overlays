@@ -20,7 +20,7 @@ CROS_BOARDS=( guybrush )
 
 inherit cros-unibuild cros-workon
 
-DESCRIPTION="Chrome OS Model configuration package for Majolica"
+DESCRIPTION="Chrome OS Model configuration package"
 HOMEPAGE="https://www.chromium.org/chromium-os"
 SRC_URI=""
 
