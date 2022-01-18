@@ -64,7 +64,7 @@ generate_new_squash() {
     "refs/changes/${patch_id: -2}/${patch_id}/${patchset}"
 
   base="$(git merge-base "cros/chromeos-${MAJOR}.${MINOR}" FETCH_HEAD)"
-  tree="$(git cat-file -p "${base}" | sed -n 's/^tree //p' | head -n 1)"
+  tree="$(git rev-parse "${base}:")"
 
   info "Generating new squash..."
   git diff --full-index "${base}" FETCH_HEAD > \
@@ -151,7 +151,7 @@ The squash is created by running \`bash $(basename "$0") $1\` which does the fol
   git merge-base cros/chromeos-${MAJOR}.${MINOR} ${tot_commit_id}
   > ${base}
 
-  git cat-file -p ${base} | sed -n 's/^tree //p' | head -n 1
+  git rev-parse ${base}:
   > ${tree}
 
 Diff file is generated via:
