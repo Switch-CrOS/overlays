@@ -120,7 +120,7 @@ common_config: &common_config
     key-id: "{{$key-id}}"
     signature-id: "{{$device-name}}"
   test-label: "{{$device-name}}"
-  power:
+  power: &power_common
     low-battery-shutdown-percent: "4.0"
     $has-keyboard-backlight: "0"
     has-keyboard-backlight: "{{$has-keyboard-backlight}}"
@@ -247,6 +247,25 @@ cros-healthd-sku-number-enabled: &cros_healthd_sku_number_enabled
     cached-vpd:
       has-sku-number: True
 
+pico6-config: &pico6_config
+  <<: *pico_config
+  wifi:
+    non-tablet-mode-power-table-mtk:
+      limit-2g: 44
+      limit-5g-1: 44
+      limit-5g-2: 44
+      limit-5g-3: 42
+      limit-5g-4: 58
+    tablet-mode-power-table-mtk:
+      limit-2g: 46
+      limit-5g-1: 48
+      limit-5g-2: 50
+      limit-5g-3: 42
+      limit-5g-4: 58
+  power:
+    <<: *power_common
+    set-wifi-transmit-power-for-tablet-mode: "1"
+
 chromeos:
   devices:
     - $device-name: "jacuzzi"
@@ -372,4 +391,4 @@ chromeos:
       skus:
         - $sku-id: 2
           $key-id: "JACUZZIA"
-          config: *pico_config
+          config: *pico6_config
