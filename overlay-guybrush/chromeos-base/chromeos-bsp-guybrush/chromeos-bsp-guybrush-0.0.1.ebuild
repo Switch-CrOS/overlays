@@ -12,6 +12,7 @@ LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="-* amd64 x86"
 S="${WORKDIR}"
+IUSE="guybrush-kernelnext"
 
 # Add dependencies on other ebuilds from within this board overlay
 RDEPEND="
@@ -24,7 +25,11 @@ DEPEND="
 "
 
 src_install() {
-	doappid "{BAEFD150-0AC7-4FC9-A044-8C3F317F7CD9}" "REFERENCE"
+	if use guybrush-kernelnext; then
+		doappid "{39ECC3D3-D4FC-4977-A3A1-9C5859E55AE5}" "CHROMEBOOK"
+	else
+		doappid "{BAEFD150-0AC7-4FC9-A044-8C3F317F7CD9}" "REFERENCE"
+	fi
 
 	unibuild_install_files audio-files
 }
