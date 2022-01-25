@@ -1,23 +1,3 @@
-diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mmsys.yaml b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mmsys.yaml
-index f9ffa5b703a59fcc5aa44b89c3edeedb05f2e891..763c62323a74c117ff4e5bb928bfee6b5d8fa2a2 100644
---- a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mmsys.yaml
-+++ b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mmsys.yaml
-@@ -43,6 +43,9 @@ properties:
-   "#clock-cells":
-     const: 1
- 
-+  '#reset-cells':
-+    const: 1
-+
- required:
-   - compatible
-   - reg
-@@ -56,4 +59,5 @@ examples:
-         compatible = "mediatek,mt8173-mmsys", "syscon";
-         reg = <0x14000000 0x1000>;
-         #clock-cells = <1>;
-+        #reset-cells = <1>;
-     };
 diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt8186-clock.yaml b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt8186-clock.yaml
 new file mode 100644
 index 0000000000000000000000000000000000000000..2e253e3e2dffd45ec97b606c34119f2c1ff2af93
@@ -238,30 +218,6 @@ index 0000000000000000000000000000000000000000..6c388b2bba05c038fdff0d9bedf01ddd
 +        reg = <0x1000c000 0x1000>;
 +        #clock-cells = <1>;
 +    };
-diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,dsi.txt b/Documentation/devicetree/bindings/display/mediatek/mediatek,dsi.txt
-index d30428b9fb33916085e03e8788b899c95ea1f83f..36b01458f45cf4aaa1051986320fbb47f5cd1eea 100644
---- a/Documentation/devicetree/bindings/display/mediatek/mediatek,dsi.txt
-+++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,dsi.txt
-@@ -19,6 +19,11 @@ Required properties:
-   Documentation/devicetree/bindings/graph.txt. This port should be connected
-   to the input port of an attached DSI panel or DSI-to-eDP encoder chip.
- 
-+Optional properties:
-+- resets: list of phandle + reset specifier pair, as described in [1].
-+
-+[1] Documentation/devicetree/bindings/reset/reset.txt
-+
- MIPI TX Configuration Module
- ============================
- 
-@@ -45,6 +50,7 @@ dsi0: dsi@1401b000 {
- 	clocks = <&mmsys MM_DSI0_ENGINE>, <&mmsys MM_DSI0_DIGITAL>,
- 		 <&mipi_tx0>;
- 	clock-names = "engine", "digital", "hs";
-+	resets = <&mmsys MT8173_MMSYS_SW0_RST_B_DISP_DSI0>;
- 	phys = <&mipi_tx0>;
- 	phy-names = "dphy";
- 
 diff --git a/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml b/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
 index 0f26fe14c8e21761a8de9f37ae6377fa9e0eb96c..c528a299afa915630a7b9b8ccbfd3c29370a767a 100644
 --- a/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
@@ -403,10 +359,10 @@ index 86c3f32645e37448b3ddeed848216356944b7522..db9732ffab0e17dadf4e60eae009f63b
 +dtb-$(CONFIG_ARCH_MEDIATEK) += mt8186-corsola-krabby.dtb
 diff --git a/arch/arm64/boot/dts/mediatek/mt6366.dtsi b/arch/arm64/boot/dts/mediatek/mt6366.dtsi
 new file mode 100644
-index 0000000000000000000000000000000000000000..51811b659967c6aeba3ea67fb17c6eaa07a182c9
+index 0000000000000000000000000000000000000000..498ffd5ad29ae0e66b193c0d723fcedc850a4b98
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt6366.dtsi
-@@ -0,0 +1,376 @@
+@@ -0,0 +1,375 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
 +/*
 + * Copyright (c) 2020 MediaTek Inc.
@@ -423,7 +379,6 @@ index 0000000000000000000000000000000000000000..51811b659967c6aeba3ea67fb17c6eaa
 +		mt6358codec: mt6358codec {
 +			compatible = "mediatek,mt6358-sound";
 +			Avdd-supply = <&mt6358_vaud28_reg>;
-+			mediatek,dmic-mode = <1>; /* one-wires */
 +		};
 +
 +		mt6358regulator: mt6358regulator {
@@ -783,135 +738,6 @@ index 0000000000000000000000000000000000000000..51811b659967c6aeba3ea67fb17c6eaa
 +		};
 +	};
 +};
-diff --git a/arch/arm64/boot/dts/mediatek/mt8173.dtsi b/arch/arm64/boot/dts/mediatek/mt8173.dtsi
-index 53788996eaeec7895d85e8f1a196fe03ddc1eafb..083e7a1dbfb6efc13f493f85495f7e41c0cd96d8 100644
---- a/arch/arm64/boot/dts/mediatek/mt8173.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt8173.dtsi
-@@ -1043,6 +1043,7 @@
- 			assigned-clocks = <&topckgen CLK_TOP_MM_SEL>;
- 			assigned-clock-rates = <400000000>;
- 			#clock-cells = <1>;
-+			#reset-cells = <1>;
- 			mboxes = <&gce 0 CMDQ_THR_PRIO_HIGHEST>,
- 				 <&gce 1 CMDQ_THR_PRIO_HIGHEST>;
- 			mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0 0x1000>;
-@@ -1257,6 +1258,7 @@
- 				 <&mmsys CLK_MM_DSI0_DIGITAL>,
- 				 <&mipi_tx0>;
- 			clock-names = "engine", "digital", "hs";
-+			resets = <&mmsys MT8173_MMSYS_SW0_RST_B_DISP_DSI0>;
- 			phys = <&mipi_tx0>;
- 			phy-names = "dphy";
- 			status = "disabled";
-diff --git a/arch/arm64/boot/dts/mediatek/mt8183.dtsi b/arch/arm64/boot/dts/mediatek/mt8183.dtsi
-index 70e7c08294870636d05613f00f3318131a6f9f42..43908ea1d8b5aee9fa65184e59b8c5125214c688 100755
---- a/arch/arm64/boot/dts/mediatek/mt8183.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt8183.dtsi
-@@ -11,7 +11,7 @@
- #include <dt-bindings/interrupt-controller/irq.h>
- #include <dt-bindings/memory/mt8183-larb-port.h>
- #include <dt-bindings/power/mt8183-power.h>
--#include <dt-bindings/reset-controller/mt8183-resets.h>
-+#include <dt-bindings/reset/mt8183-resets.h>
- #include <dt-bindings/phy/phy.h>
- #include <dt-bindings/thermal/thermal.h>
- #include <dt-bindings/pinctrl/mt8183-pinfunc.h>
-@@ -1672,6 +1672,7 @@
- 			compatible = "mediatek,mt8183-mmsys", "syscon";
- 			reg = <0 0x14000000 0 0x1000>;
- 			#clock-cells = <1>;
-+			#reset-cells = <1>;
- 			mboxes = <&gce 0 CMDQ_THR_PRIO_HIGHEST>,
- 				 <&gce 1 CMDQ_THR_PRIO_HIGHEST>;
- 			mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0 0x1000>;
-@@ -1886,11 +1887,11 @@
- 			reg = <0 0x14014000 0 0x1000>;
- 			interrupts = <GIC_SPI 236 IRQ_TYPE_LEVEL_LOW>;
- 			power-domains = <&spm MT8183_POWER_DOMAIN_DISP>;
--			mediatek,syscon-dsi = <&mmsys 0x140>;
- 			clocks = <&mmsys CLK_MM_DSI0_MM>,
- 				 <&mmsys CLK_MM_DSI0_IF>,
- 				 <&mipi_tx0>;
- 			clock-names = "engine", "digital", "hs";
-+			resets = <&mmsys MT8183_MMSYS_SW0_RST_B_DISP_DSI0>;
- 			phys = <&mipi_tx0>;
- 			phy-names = "dphy";
- 		};
-diff --git a/arch/arm64/boot/dts/mediatek/mt8186-corsola-audio-da7219.dtsi b/arch/arm64/boot/dts/mediatek/mt8186-corsola-audio-da7219.dtsi
-new file mode 100644
-index 0000000000000000000000000000000000000000..50be880bcda03d6b66d9855c8f9ccd995c59375f
---- /dev/null
-+++ b/arch/arm64/boot/dts/mediatek/mt8186-corsola-audio-da7219.dtsi
-@@ -0,0 +1,50 @@
-+// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-+/*
-+ * Google Corsola (and derivatives) audio fragment for da7219.
-+ *
-+ * Copyright 2021 Google LLC.
-+ */
-+
-+&i2c5 {
-+	da7219: da7219@1a {
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&da7219_pins>;
-+		compatible = "dlg,da7219";
-+		reg = <0x1a>;
-+		interrupt-parent = <&pio>;
-+		interrupts = <17 IRQ_TYPE_LEVEL_LOW 17 0>;
-+
-+		dlg,micbias-lvl = <2600>;
-+		dlg,mic-amp-in-sel = "diff";
-+		VDD-supply = <&pp1800_alw>;
-+		VDDMIC-supply = <&pp3300_alw>;
-+		VDDIO-supply = <&pp1800_alw>;
-+
-+		status = "okay";
-+
-+		da7219_aad {
-+			dlg,adc-1bit-rpt = <1>;
-+			dlg,btn-avg = <4>;
-+			dlg,btn-cfg = <50>;
-+			dlg,mic-det-thr = <500>;
-+			dlg,jack-ins-deb = <20>;
-+			dlg,jack-det-rate = "32ms_64ms";
-+			dlg,jack-rem-deb = <1>;
-+
-+			dlg,a-d-btn-thr = <0xa>;
-+			dlg,d-b-btn-thr = <0x16>;
-+			dlg,b-c-btn-thr = <0x21>;
-+			dlg,c-mic-btn-thr = <0x3E>;
-+		};
-+	};
-+};
-+
-+&pio {
-+	da7219_pins: da7219_pins {
-+		pins1 {
-+			pinmux = <PINMUX_GPIO17__FUNC_GPIO17>;
-+			input-enable;
-+			bias-pull-up;
-+		};
-+	};
-+};
-diff --git a/arch/arm64/boot/dts/mediatek/mt8186-corsola-audio-max98357a.dtsi b/arch/arm64/boot/dts/mediatek/mt8186-corsola-audio-max98357a.dtsi
-new file mode 100644
-index 0000000000000000000000000000000000000000..5564c66326389109f9d457c90833b8372faeee7b
---- /dev/null
-+++ b/arch/arm64/boot/dts/mediatek/mt8186-corsola-audio-max98357a.dtsi
-@@ -0,0 +1,13 @@
-+// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-+/*
-+ * Google Corsola (and derivatives) audio fragment for max98357a.
-+ *
-+ * Copyright 2021 Google LLC.
-+ */
-+
-+/ {
-+	max98357a: max98357a {
-+		compatible = "maxim,max98357a";
-+		sdmode-gpios = <&pio 150 0>;
-+	};
-+};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8186-corsola-kingler.dts b/arch/arm64/boot/dts/mediatek/mt8186-corsola-kingler.dts
 new file mode 100644
 index 0000000000000000000000000000000000000000..a7399ee7a201f0360cbb1d408cd203ad44e16a62
@@ -932,10 +758,10 @@ index 0000000000000000000000000000000000000000..a7399ee7a201f0360cbb1d408cd203ad
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8186-corsola-kingler.dtsi b/arch/arm64/boot/dts/mediatek/mt8186-corsola-kingler.dtsi
 new file mode 100644
-index 0000000000000000000000000000000000000000..214536da3b2ea28b7e8159f7b06d202f78649f8f
+index 0000000000000000000000000000000000000000..57f62c3d8dbd8fe70ab0663db0f43388602727b7
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt8186-corsola-kingler.dtsi
-@@ -0,0 +1,245 @@
+@@ -0,0 +1,260 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
 +/*
 + * Copyright 2021 Google LLC
@@ -943,8 +769,6 @@ index 0000000000000000000000000000000000000000..214536da3b2ea28b7e8159f7b06d202f
 +
 +/dts-v1/;
 +#include "mt8186-corsola.dtsi"
-+#include "mt8186-corsola-audio-max98357a.dtsi"
-+#include "mt8186-corsola-audio-da7219.dtsi"
 +
 +&disp_dsi {
 +	ports {
@@ -1178,8 +1002,25 @@ index 0000000000000000000000000000000000000000..214536da3b2ea28b7e8159f7b06d202f
 +	};
 +};
 +
++&btsco {
++	status = "okay";
++};
++
++&da7219 {
++	status = "okay";
++};
++
++&dmic_codec {
++	status = "okay";
++};
++
++&max98357a {
++	status = "okay";
++};
++
 +&sound {
 +	compatible = "mediatek,mt8186_mt6366_da7219_max98357_sound";
++	status = "okay";
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8186-corsola-krabby.dts b/arch/arm64/boot/dts/mediatek/mt8186-corsola-krabby.dts
 new file mode 100644
@@ -1371,10 +1212,10 @@ index 0000000000000000000000000000000000000000..7c8b5f1c4e8bff4ff737ddc4b33d45da
 +
 diff --git a/arch/arm64/boot/dts/mediatek/mt8186-corsola.dtsi b/arch/arm64/boot/dts/mediatek/mt8186-corsola.dtsi
 new file mode 100644
-index 0000000000000000000000000000000000000000..798be5c6c2fc2f5aad36f278e8ce6b53f3392471
+index 0000000000000000000000000000000000000000..96666a813a57f6d63dc3632aee38316df1558bdf
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt8186-corsola.dtsi
-@@ -0,0 +1,1379 @@
+@@ -0,0 +1,1439 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
 +/*
 + * Copyright (C) 2021 MediaTek Inc.
@@ -1595,14 +1436,84 @@ index 0000000000000000000000000000000000000000..798be5c6c2fc2f5aad36f278e8ce6b53
 +		};
 +	};
 +
++	btsco: bt-sco {
++		compatible = "linux,bt-sco";
++		status = "disabled";
++	};
++
++	dmic_codec: dmic-codec {
++		compatible = "dmic-codec";
++		num-channels = <2>;
++		wakeup-delay-ms = <50>;
++		status = "disabled";
++	};
++
++	max98357a: max98357a {
++		compatible = "maxim,max98357a";
++		sdmode-gpios = <&pio 150 0>;
++		status = "disabled";
++	};
++
++	sound: sound {
++		mediatek,platform = <&afe>;
++		pinctrl-names = "aud_clk_mosi_off",
++				"aud_clk_mosi_on",
++				"aud_clk_miso_off",
++				"aud_clk_miso_on",
++				"aud_dat_miso_off",
++				"aud_dat_miso_on",
++				"aud_dat_mosi_off",
++				"aud_dat_mosi_on",
++				"aud_gpio_i2s0_off",
++				"aud_gpio_i2s0_on",
++				"aud_gpio_i2s1_off",
++				"aud_gpio_i2s1_on",
++				"aud_gpio_i2s2_off",
++				"aud_gpio_i2s2_on",
++				"aud_gpio_i2s3_off",
++				"aud_gpio_i2s3_on",
++				"aud_gpio_tdm_off",
++				"aud_gpio_tdm_on",
++				"aud_gpio_pcm_off",
++				"aud_gpio_pcm_on";
++		pinctrl-0 = <&aud_clk_mosi_off>;
++		pinctrl-1 = <&aud_clk_mosi_on>;
++		pinctrl-2 = <&aud_clk_miso_off>;
++		pinctrl-3 = <&aud_clk_miso_on>;
++		pinctrl-4 = <&aud_dat_miso_off>;
++		pinctrl-5 = <&aud_dat_miso_on>;
++		pinctrl-6 = <&aud_dat_mosi_off>;
++		pinctrl-7 = <&aud_dat_mosi_on>;
++		pinctrl-8 = <&aud_gpio_i2s0_off>;
++		pinctrl-9 = <&aud_gpio_i2s0_on>;
++		pinctrl-10 = <&aud_gpio_i2s1_off>;
++		pinctrl-11 = <&aud_gpio_i2s1_on>;
++		pinctrl-12 = <&aud_gpio_i2s2_off>;
++		pinctrl-13 = <&aud_gpio_i2s2_on>;
++		pinctrl-14 = <&aud_gpio_i2s3_off>;
++		pinctrl-15 = <&aud_gpio_i2s3_on>;
++		pinctrl-16 = <&aud_gpio_tdm_off>;
++		pinctrl-17 = <&aud_gpio_tdm_on>;
++		pinctrl-18 = <&aud_gpio_pcm_off>;
++		pinctrl-19 = <&aud_gpio_pcm_on>;
++		status = "disabled";
++	};
++
 +	wifi_pwrseq: wifi-pwrseq {
 +		compatible = "mmc-pwrseq-simple";
 +		pinctrl-names = "default";
 +		pinctrl-0 = <&wifi_pins_pwrseq>;
 +
++		post-power-on-delay-ms = <50>;
 +		/* Toggle WLAN_MODULE_RST_L to reset the chip */
-+		reset-gpios = <&pio 54 0>;
++		reset-gpios = <&pio 54 1>;
 +	};
++};
++
++&afe {
++	i2s0-share = "I2S1";
++	i2s3-share = "I2S2";
++	status = "okay";
 +};
 +
 +&disp_dsi {
@@ -1988,6 +1899,14 @@ index 0000000000000000000000000000000000000000..798be5c6c2fc2f5aad36f278e8ce6b53
 +		};
 +	};
 +
++	da7219_pins: da7219_pins {
++		pins1 {
++			pinmux = <PINMUX_GPIO17__FUNC_GPIO17>;
++			input-enable;
++			bias-pull-up;
++		};
++	};
++
 +	mmc0_pins_default: mmc0default {
 +		pins_clk {
 +			pinmux = <PINMUX_GPIO68__FUNC_MSDC0_CLK>;
@@ -2089,7 +2008,6 @@ index 0000000000000000000000000000000000000000..798be5c6c2fc2f5aad36f278e8ce6b53
 +	wifi_pins_pwrseq: wifipwrseq {
 +		pins_wifi_enable {
 +			pinmux = <PINMUX_GPIO54__FUNC_GPIO54>;
-+			input-enable;
 +		};
 +	};
 +
@@ -2479,6 +2397,8 @@ index 0000000000000000000000000000000000000000..798be5c6c2fc2f5aad36f278e8ce6b53
 +&i2c3 {
 +	pinctrl-names = "default";
 +	pinctrl-0 = <&i2c3_pins>;
++	#address-cells = <1>;
++	#size-cells = <0>;
 +	status = "okay";
 +};
 +
@@ -2496,6 +2416,37 @@ index 0000000000000000000000000000000000000000..798be5c6c2fc2f5aad36f278e8ce6b53
 +	#address-cells = <1>;
 +	#size-cells = <0>;
 +	status = "okay";
++	da7219: da7219@1a {
++		pinctrl-names = "default";
++		pinctrl-0 = <&da7219_pins>;
++		compatible = "dlg,da7219";
++		reg = <0x1a>;
++		interrupt-parent = <&pio>;
++		interrupts = <17 IRQ_TYPE_LEVEL_LOW 17 0>;
++
++		dlg,micbias-lvl = <2600>;
++		dlg,mic-amp-in-sel = "diff";
++		VDD-supply = <&pp1800_alw>;
++		VDDMIC-supply = <&pp3300_alw>;
++		VDDIO-supply = <&pp1800_alw>;
++
++		status = "disabled";
++
++		da7219_aad {
++			dlg,adc-1bit-rpt = <1>;
++			dlg,btn-avg = <4>;
++			dlg,btn-cfg = <50>;
++			dlg,mic-det-thr = <500>;
++			dlg,jack-ins-deb = <20>;
++			dlg,jack-det-rate = "32ms_64ms";
++			dlg,jack-rem-deb = <1>;
++
++			dlg,a-d-btn-thr = <0xa>;
++			dlg,d-b-btn-thr = <0x16>;
++			dlg,b-c-btn-thr = <0x21>;
++			dlg,c-mic-btn-thr = <0x3E>;
++		};
++	};
 +};
 +
 +&i2c6 {
@@ -2524,54 +2475,6 @@ index 0000000000000000000000000000000000000000..798be5c6c2fc2f5aad36f278e8ce6b53
 +
 +&mfg0 {
 +	domain-supply = <&mt6358_vgpu_reg>;
-+};
-+
-+&btsco {
-+	status = "okay";
-+};
-+
-+&sound {
-+	pinctrl-names = "aud_clk_mosi_off",
-+			"aud_clk_mosi_on",
-+			"aud_clk_miso_off",
-+			"aud_clk_miso_on",
-+			"aud_dat_miso_off",
-+			"aud_dat_miso_on",
-+			"aud_dat_mosi_off",
-+			"aud_dat_mosi_on",
-+			"aud_gpio_i2s0_off",
-+			"aud_gpio_i2s0_on",
-+			"aud_gpio_i2s1_off",
-+			"aud_gpio_i2s1_on",
-+			"aud_gpio_i2s2_off",
-+			"aud_gpio_i2s2_on",
-+			"aud_gpio_i2s3_off",
-+			"aud_gpio_i2s3_on",
-+			"aud_gpio_tdm_off",
-+			"aud_gpio_tdm_on",
-+			"aud_gpio_pcm_off",
-+			"aud_gpio_pcm_on";
-+	pinctrl-0 = <&aud_clk_mosi_off>;
-+	pinctrl-1 = <&aud_clk_mosi_on>;
-+	pinctrl-2 = <&aud_clk_miso_off>;
-+	pinctrl-3 = <&aud_clk_miso_on>;
-+	pinctrl-4 = <&aud_dat_miso_off>;
-+	pinctrl-5 = <&aud_dat_miso_on>;
-+	pinctrl-6 = <&aud_dat_mosi_off>;
-+	pinctrl-7 = <&aud_dat_mosi_on>;
-+	pinctrl-8 = <&aud_gpio_i2s0_off>;
-+	pinctrl-9 = <&aud_gpio_i2s0_on>;
-+	pinctrl-10 = <&aud_gpio_i2s1_off>;
-+	pinctrl-11 = <&aud_gpio_i2s1_on>;
-+	pinctrl-12 = <&aud_gpio_i2s2_off>;
-+	pinctrl-13 = <&aud_gpio_i2s2_on>;
-+	pinctrl-14 = <&aud_gpio_i2s3_off>;
-+	pinctrl-15 = <&aud_gpio_i2s3_on>;
-+	pinctrl-16 = <&aud_gpio_tdm_off>;
-+	pinctrl-17 = <&aud_gpio_tdm_on>;
-+	pinctrl-18 = <&aud_gpio_pcm_off>;
-+	pinctrl-19 = <&aud_gpio_pcm_on>;
-+	status = "okay";
 +};
 +
 +&mmc0 {
@@ -2624,6 +2527,10 @@ index 0000000000000000000000000000000000000000..798be5c6c2fc2f5aad36f278e8ce6b53
 +&mt6358_vmc_reg {
 +	/* SDIO IO power fixed to 1.8V */
 +	regulator-max-microvolt = <1800000>;
++};
++
++&mt6358codec {
++        mediatek,dmic-mode = <1>; /* one-wire */
 +};
 +
 +&nor_flash {
@@ -2722,12 +2629,6 @@ index 0000000000000000000000000000000000000000..798be5c6c2fc2f5aad36f278e8ce6b53
 +		reg = <0>;
 +		spi-max-frequency = <1000000>;
 +	};
-+};
-+
-+&afe {
-+	i2s0-share = "I2S1";
-+	i2s3-share = "I2S2";
-+	status = "okay";
 +};
 +
 +&xhci {
@@ -3414,10 +3315,10 @@ index 0000000000000000000000000000000000000000..393a004ee8c306e672263c04bd06fffe
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8186.dtsi b/arch/arm64/boot/dts/mediatek/mt8186.dtsi
 new file mode 100644
-index 0000000000000000000000000000000000000000..5e4df2ed4bb3fb39a9bc08ecf0cde61dd504b273
+index 0000000000000000000000000000000000000000..a6a7df0eadb80e754035d7939cc3febb45c5350f
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt8186.dtsi
-@@ -0,0 +1,1559 @@
+@@ -0,0 +1,1558 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
 +/*
 + * Copyright (C) 2021 MediaTek Inc.
@@ -3947,6 +3848,15 @@ index 0000000000000000000000000000000000000000..5e4df2ed4bb3fb39a9bc08ecf0cde61d
 +			clocks = <&clk26m>;
 +		};
 +
++		devapc_infra_peri: devapc@10207000 {
++			compatible = "mediatek,mt8186-devapc";
++			reg = <0 0x10207000 0 0x1000>;
++			vio-idx-num = <519>;
++			interrupts = <GIC_SPI 159 IRQ_TYPE_LEVEL_HIGH>;
++			clocks = <&infracfg_ao CLK_INFRA_AO_DEVICE_APC>;
++			clock-names = "devapc-infra-clock";
++		};
++
 +		gce: mailbox@1022c000 {
 +			compatible = "mediatek,mt6779-gce",
 +					 "mediatek,mt8186-gce";
@@ -4166,16 +4076,6 @@ index 0000000000000000000000000000000000000000..5e4df2ed4bb3fb39a9bc08ecf0cde61d
 +					  "top_apll12_div_tdm",
 +					  "top_mux_audio_h",
 +					  "top_clk26m_clk";
-+			status = "disabled";
-+		};
-+
-+		btsco: bt-sco {
-+			compatible = "linux,bt-sco";
-+			status = "disabled";
-+		};
-+
-+		sound: sound {
-+			mediatek,platform = <&afe>;
 +			status = "disabled";
 +		};
 +
@@ -5001,10 +4901,19 @@ index a6c68d70c690d90e5dfa782de8a381b17a4f2465..db7107942927986e7dedc49227077336
  CONFIG_USB_MTU3_HOST=y
  CONFIG_USB_ONBOARD_HUB=y
 diff --git a/chromeos/config/arm64/chromiumos-mediatek.flavour.config b/chromeos/config/arm64/chromiumos-mediatek.flavour.config
-index be94dd1048975bb29fdae9674911b0434f07b674..8a484e2b0f486009305fb2802d691efa619272f5 100644
+index be94dd1048975bb29fdae9674911b0434f07b674..cfaa844de0a7a5bb0bc050b354c3916b2fc758f7 100644
 --- a/chromeos/config/arm64/chromiumos-mediatek.flavour.config
 +++ b/chromeos/config/arm64/chromiumos-mediatek.flavour.config
-@@ -36,7 +36,7 @@ CONFIG_I2C_MT65XX=y
+@@ -9,7 +9,7 @@ CONFIG_ATH10K_TRACING=y
+ CONFIG_BT_HCIBTUSB_MTK=y
+ CONFIG_BT_HCIUART_QCA=y
+ CONFIG_BT_HCIUART_RTL=y
+-CONFIG_BT_MTKSDIO=m
++CONFIG_BT_MTKSDIO=n
+ # CONFIG_COMMON_CLK_MT2712 is not set
+ # CONFIG_COMMON_CLK_MT6797 is not set
+ CONFIG_CONFIGFS_FS=y
+@@ -36,13 +36,13 @@ CONFIG_I2C_MT65XX=y
  CONFIG_IIO_CROS_EC_SENSORS_LID_ANGLE=m
  CONFIG_MALI_BIFROST=y
  CONFIG_MALI_BIFROST_EXPERT=y
@@ -5013,6 +4922,13 @@ index be94dd1048975bb29fdae9674911b0434f07b674..8a484e2b0f486009305fb2802d691efa
  CONFIG_MEDIATEK_MT6577_AUXADC=y
  CONFIG_MEDIATEK_WATCHDOG=y
  CONFIG_MFD_MT6397=y
+ CONFIG_MMC_MTK=y
+ CONFIG_MT7921E=m
+-CONFIG_MT7921S=m
++CONFIG_MT7921S=n
+ CONFIG_MTK_CMDQ=y
+ CONFIG_MTK_EFUSE=y
+ CONFIG_MTK_IOMMU=y
 @@ -54,6 +54,7 @@ CONFIG_PCIE_MEDIATEK=y
  CONFIG_PHY_MTK_TPHY=y
  # CONFIG_PINCTRL_MT2712 is not set
@@ -5038,11 +4954,12 @@ index be94dd1048975bb29fdae9674911b0434f07b674..8a484e2b0f486009305fb2802d691efa
  CONFIG_USB_MTU3=y
  CONFIG_USB_MTU3_HOST=y
  CONFIG_VIDEO_DW9768=m
-@@ -102,3 +106,4 @@ CONFIG_VIDEO_MEDIATEK_VCODEC=m
+@@ -102,3 +106,5 @@ CONFIG_VIDEO_MEDIATEK_VCODEC=m
  CONFIG_VIDEO_OV02A10=m
  CONFIG_VIDEO_OV5695=m
  CONFIG_VIDEO_OV8856=m
 +CONFIG_MTK_SCP=m
++CONFIG_MTK_DEVAPC=y
 diff --git a/drivers/clk/mediatek/Kconfig b/drivers/clk/mediatek/Kconfig
 index 4654ec336fc1625c8fc5c28eac7e43b4ab6b1af5..51075818c1ce4db1ca412b807e1d57faa0974b21 100644
 --- a/drivers/clk/mediatek/Kconfig
@@ -5063,7 +4980,7 @@ index 4654ec336fc1625c8fc5c28eac7e43b4ab6b1af5..51075818c1ce4db1ca412b807e1d57fa
  	bool "Clock driver for MediaTek MT8516"
  	depends on ARCH_MEDIATEK || COMPILE_TEST
 diff --git a/drivers/clk/mediatek/Makefile b/drivers/clk/mediatek/Makefile
-index dc96038a0155005a6a9419aa3ff8197482b414ab..ae6256b91d16292355b03413fd3d44d0b1e37d1e 100644
+index dc96038a0155005a6a9419aa3ff8197482b414ab..3f26a288111fadb885897c9c86b386c2423bede3 100644
 --- a/drivers/clk/mediatek/Makefile
 +++ b/drivers/clk/mediatek/Makefile
 @@ -88,5 +88,11 @@ obj-$(CONFIG_COMMON_CLK_MT8195) += clk-mt8195-apmixedsys.o clk-mt8195-topckgen.o
@@ -5075,7 +4992,7 @@ index dc96038a0155005a6a9419aa3ff8197482b414ab..ae6256b91d16292355b03413fd3d44d0
 +				   clk-mt8186-mfg.o clk-mt8186-mm.o clk-mt8186-wpe.o \
 +				   clk-mt8186-img.o clk-mt8186-vdec.o clk-mt8186-venc.o \
 +				   clk-mt8186-cam.o clk-mt8186-mdp.o clk-mt8186-ipe.o
-+obj-$(CONFIG_COMMON_CLK_MT8186) += clk-bringup.o clkdbg.o clkdbg-mt8186.o
++obj-$(CONFIG_COMMON_CLK_MT8186) += clk-bringup.o clkdbg.o clkdbg-mt8186.o clkchk.o clkchk-mt8186.o
  obj-$(CONFIG_COMMON_CLK_MT8516) += clk-mt8516.o
  obj-$(CONFIG_COMMON_CLK_MT8516_AUDSYS) += clk-mt8516-aud.o
 diff --git a/drivers/clk/mediatek/clk-bringup.c b/drivers/clk/mediatek/clk-bringup.c
@@ -7105,6 +7022,751 @@ index 99ada6e06697aecc608f621ee4ef40ba73c8d1fd..df0eee0bab770f00513ad78e089c5fe1
  		writel(r, pll->base_addr + REG_CON0);
  	}
  
+diff --git a/drivers/clk/mediatek/clkchk-mt8186.c b/drivers/clk/mediatek/clkchk-mt8186.c
+new file mode 100644
+index 0000000000000000000000000000000000000000..149d4cbe7b08d724e765b219131854d39b8c4bf4
+--- /dev/null
++++ b/drivers/clk/mediatek/clkchk-mt8186.c
+@@ -0,0 +1,504 @@
++// SPDX-License-Identifier: GPL-2.0
++//
++// Copyright (c) 2021 MediaTek Inc.
++
++#include <linux/io.h>
++#include <linux/module.h>
++#include "clkchk.h"
++
++static const char * const off_pll_names[] = {
++	"univ2pll",
++	"msdcpll",
++	"mmpll",
++	"nnapll",
++	"nna2pll",
++	"adsppll",
++	"mfgpll",
++	"tvdpll",
++	"apll1",
++	"apll2",
++	NULL
++};
++
++static const char * const all_clk_names[] = {
++	"armpll_ll",
++	"armpll_bl",
++	"ccipll",
++	"mainpll",
++	"univ2pll",
++	"msdcpll",
++	"mmpll",
++	"nnapll",
++	"nna2pll",
++	"adsppll",
++	"mfgpll",
++	"tvdpll",
++	"apll1",
++	"apll2",
++	"mcu_armpll_ll_sel",
++	"mcu_armpll_bl_sel",
++	"mcu_armpll_bus_sel",
++	"top_axi",
++	"top_scp",
++	"top_mfg",
++	"top_camtg",
++	"top_camtg1",
++	"top_camtg2",
++	"top_camtg3",
++	"top_camtg4",
++	"top_camtg5",
++	"top_camtg6",
++	"top_uart",
++	"top_spi",
++	"top_msdc5hclk",
++	"top_msdc50_0",
++	"top_msdc30_1",
++	"top_audio",
++	"top_aud_intbus",
++	"top_aud_1",
++	"top_aud_2",
++	"top_aud_engen1",
++	"top_aud_engen2",
++	"top_disp_pwm",
++	"top_sspm",
++	"top_dxcc",
++	"top_usb",
++	"top_srck",
++	"top_spm",
++	"top_i2c",
++	"top_pwm",
++	"top_seninf",
++	"top_seninf1",
++	"top_seninf2",
++	"top_seninf3",
++	"top_aes_msdcfde",
++	"top_pwrap_ulposc",
++	"top_camtm",
++	"top_venc",
++	"top_cam",
++	"top_img1",
++	"top_ipe",
++	"top_dpmaif",
++	"top_vdec",
++	"top_disp",
++	"top_mdp",
++	"top_audio_h",
++	"top_ufs",
++	"top_aes_fde",
++	"top_audiodsp",
++	"top_dsi_occ",
++	"top_spmi_mst",
++	"top_spinor",
++	"top_nna",
++	"top_nna1",
++	"top_nna2",
++	"top_ssusb_xhci",
++	"top_ssusb_1p",
++	"top_ssusb_xhci_1p",
++	"top_wpe",
++	"top_dpi",
++	"top_u3_occ_250m",
++	"top_u3_occ_500m",
++	"top_adsp_bus",
++	"apll_i2s0_mck_sel",
++	"apll_i2s1_mck_sel",
++	"apll_i2s2_mck_sel",
++	"apll_i2s4_mck_sel",
++	"apll_tdmout_mck_sel",
++	"mainpll_d2",
++	"mainpll_d2_d2",
++	"mainpll_d2_d4",
++	"mainpll_d2_d16",
++	"mainpll_d3",
++	"mainpll_d3_d2",
++	"mainpll_d3_d4",
++	"mainpll_d5",
++	"mainpll_d5_d2",
++	"mainpll_d5_d4",
++	"mainpll_d7",
++	"mainpll_d7_d2",
++	"mainpll_d7_d4",
++	"univpll_d2",
++	"univpll_d2_d2",
++	"univpll_d2_d4",
++	"univpll_d3",
++	"univpll_d3_d2",
++	"univpll_d3_d4",
++	"univpll_d3_d8",
++	"univpll_d3_d32",
++	"univpll_d5",
++	"univpll_d5_d2",
++	"univpll_d5_d4",
++	"univpll_d7",
++	"univpll_192m_d4",
++	"univpll_192m_d8",
++	"univpll_192m_d16",
++	"univpll_192m_d32",
++	"apll1_d2",
++	"apll1_d4",
++	"apll1_d8",
++	"apll2_d2",
++	"apll2_d4",
++	"apll2_d8",
++	"mmpll_d2",
++	"tvdpll_d2",
++	"tvdpll_d4",
++	"tvdpll_d8",
++	"tvdpll_d16",
++	"tvdpll_d32",
++	"msdcpll_d2",
++	"ulposc1_d2",
++	"ulposc1_d4",
++	"ulposc1_d8",
++	"ulposc1_d10",
++	"ulposc1_d16",
++	"ulposc1_d32",
++	"adsppll_d2",
++	"adsppll_d4",
++	"adsppll_d8",
++	"nnapll_d2",
++	"nnapll_d4",
++	"nnapll_d8",
++	"nna2pll_d2",
++	"f_bist2fpc_ck",
++	"hd_466m_fmem_ck",
++	"mpll",
++	"apll12_div0",
++	"apll12_div1",
++	"apll12_div2",
++	"apll12_div4",
++	"apll12_div_tdmout_m",
++	"infra_ao_pmic_tmr",
++	"infra_ao_pmic_ap",
++	"infra_ao_pmic_md",
++	"infra_ao_pmic_conn",
++	"infra_ao_sej",
++	"infra_ao_apxgpt",
++	"infra_ao_icusb",
++	"infra_ao_gce",
++	"infra_ao_therm",
++	"infra_ao_i2c_ap",
++	"infra_ao_i2c_ccu",
++	"infra_ao_i2c_sspm",
++	"infra_ao_i2c_rsv",
++	"infra_ao_pwm_hclk",
++	"infra_ao_pwm1",
++	"infra_ao_pwm2",
++	"infra_ao_pwm3",
++	"infra_ao_pwm4",
++	"infra_ao_pwm5",
++	"infra_ao_pwm",
++	"infra_ao_uart0",
++	"infra_ao_uart1",
++	"infra_ao_uart2",
++	"infra_ao_gce_26m",
++	"infra_ao_dma",
++	"infra_ao_btif",
++	"infra_ao_spi0",
++	"infra_ao_msdc0",
++	"infra_ao_msdcfde",
++	"infra_ao_msdc1",
++	"infra_ao_gcpu",
++	"infra_ao_trng",
++	"infra_ao_auxadc",
++	"infra_ao_cpum",
++	"infra_ao_ccif1_ap",
++	"infra_ao_ccif1_md",
++	"infra_ao_auxadc_md",
++	"infra_ao_ap_dma",
++	"infra_ao_xiu",
++	"infra_ao_dapc",
++	"infra_ao_ccif_ap",
++	"infra_ao_debugtop",
++	"infra_ao_audio",
++	"infra_ao_ccif_md",
++	"infra_ao_secore",
++	"infra_ao_dxcc_ao",
++	"infra_ao_imp_iic",
++	"infra_ao_dramc26",
++	"infra_ao_pwm_fbclk6",
++	"infra_ao_ssusb_hclk",
++	"infra_ao_disp_pwm",
++	"infra_ao_cldmabclk",
++	"infra_ao_audio26m",
++	"infra_ao_ssusb_p1_hclk",
++	"infra_ao_spi1",
++	"infra_ao_i2c4",
++	"infra_ao_mdtemp",
++	"infra_ao_spi2",
++	"infra_ao_spi3",
++	"infra_ao_ssusb_ref",
++	"infra_ao_ssusb_xhci",
++	"infra_ao_ssusb_p1_ref",
++	"infra_ao_ssusb_p1_xhci",
++	"infra_ao_sspm",
++	"infra_ao_ssusb_p1_sys",
++	"infra_ao_i2c5",
++	"infra_ao_i2c5a",
++	"infra_ao_i2c5_imm",
++	"infra_ao_i2c1a",
++	"infra_ao_i2c1_imm",
++	"infra_ao_i2c2a",
++	"infra_ao_i2c2_imm",
++	"infra_ao_spi4",
++	"infra_ao_spi5",
++	"infra_ao_cq_dma",
++	"infra_ao_bist2fpc",
++	"infra_ao_msdc0sf",
++	"infra_ao_msdc1sf",
++	"infra_ao_sspm_26m",
++	"infra_ao_sspm_32k",
++	"infra_ao_i2c6",
++	"infra_ao_ap_msdc0",
++	"infra_ao_md_msdc0",
++	"infra_ao_msdc0_clk",
++	"infra_ao_msdc1_clk",
++	"infra_ao_sej_f13m_ck",
++	"infra_ao_aes_top0_bclk",
++	"infra_ao_mcu_pm_bclk",
++	"infra_ao_ccif2_ap",
++	"infra_ao_ccif2_md",
++	"infra_ao_ccif3_ap",
++	"infra_ao_ccif3_md",
++	"infra_ao_fadsp_26m",
++	"infra_ao_fadsp_32k",
++	"infra_ao_ccif4_ap",
++	"infra_ao_ccif4_md",
++	"infra_ao_fadsp_ck",
++	"infra_ao_flashif_133m",
++	"infra_ao_flashif_66m",
++	"adsp_core",
++	"adsp_coredbg_en",
++	"adsp_timer_en",
++	"adsp_dma_en",
++	"adsp_uart_en",
++	"adsp_uart_bclk",
++	"nna0_enballe",
++	"nna1_enballe",
++	"nna2_enballe",
++	"nna_26m_clk",
++	"nna_emi_clk",
++	"nna_axi_clk",
++	"imp_iic_wrap_ap_clock_i2c6",
++	"aud_afe",
++	"aud_22m",
++	"aud_24m",
++	"aud_apll2_tuner",
++	"aud_apll_tuner",
++	"aud_tdm_ck",
++	"aud_adc",
++	"aud_dac",
++	"aud_dac_predis",
++	"aud_tml",
++	"aud_nle",
++	"aud_i2s1_bclk",
++	"aud_i2s2_bclk",
++	"aud_i2s3_bclk",
++	"aud_i2s4_bclk",
++	"aud_connsys_i2s_asrc",
++	"aud_general1_asrc",
++	"aud_general2_asrc",
++	"aud_dac_hires",
++	"aud_adc_hires",
++	"aud_adc_hires_tml",
++	"aud_adda6_adc",
++	"aud_adda6_adc_hires",
++	"aud_3rd_dac",
++	"aud_3rd_dac_predis",
++	"aud_3rd_dac_tml",
++	"aud_3rd_dac_hires",
++	"aud_etdm_in1_bclk",
++	"aud_etdm_out1_bclk",
++	"msdc_axi_wrap_cken",
++	"usb3_sif_dma_bus_ck",
++	"usb3_sif_ssusb_ip_dma_bus_ck",
++	"usb3_sif_ssusb_u2_port_dis",
++	"usb3_sif_ssusb_u3_port_dis",
++	"mipi_tx0_mipi_tx_test_en",
++	"mfg_bg3d",
++	"mm_disp_mutex0",
++	"mm_apb_mm_bus",
++	"mm_disp_ovl0",
++	"mm_disp_rdma0",
++	"mm_disp_ovl0_2l",
++	"mm_disp_wdma0",
++	"mm_disp_rsz0",
++	"mm_disp_aal0",
++	"mm_disp_ccorr0",
++	"mm_disp_color0",
++	"mm_smi_infra",
++	"mm_disp_dsc_wrap0",
++	"mm_disp_gamma0",
++	"mm_disp_postmask0",
++	"mm_disp_dither0",
++	"mm_smi_common",
++	"mm_dsi0",
++	"mm_disp_fake_eng0",
++	"mm_disp_fake_eng1",
++	"mm_smi_gals",
++	"mm_smi_iommu",
++	"mm_dsi0_dsi_domain",
++	"mm_disp_26m_ck",
++	"wpe",
++	"wpe_smi_larb8",
++	"wpe_sys_event_tx",
++	"wpe_smi_larb8_p_en",
++	"img1_larb9_img1",
++	"img1_larb10_img1",
++	"img1_dip",
++	"img1_gals_img1",
++	"img2_larb9_img2",
++	"img2_larb10_img2",
++	"img2_mfb",
++	"img2_wpe",
++	"img2_mss",
++	"img2_gals_img2",
++	"vdec_larb1_cken",
++	"vdec_lat_cken",
++	"vdec_lat_active",
++	"vdec_lat_cken_eng",
++	"vdec_mini_mdp_cken_cfg_rg",
++	"vdec_cken",
++	"vdec_active",
++	"vdec_cken_eng",
++	"venc_cke0_larb",
++	"venc_cke1_venc",
++	"venc_cke2_jpgenc",
++	"venc_cke5_gals",
++	"cam_larb13",
++	"cam_dfp_vad",
++	"cam_larb14",
++	"cam",
++	"camtg",
++	"cam_seninf",
++	"camsv1",
++	"camsv2",
++	"camsv3",
++	"cam_ccu0",
++	"cam_ccu1",
++	"cam_mraw0",
++	"cam_fake_eng",
++	"cam_ccu_gals",
++	"cam2mm_gals",
++	"cam_rawa_larbx_rawa",
++	"cam_rawa",
++	"cam_rawa_camtg_rawa",
++	"cam_rawb_larbx_rawb",
++	"cam_rawb",
++	"cam_rawb_camtg_rawb",
++	"mdp_rdma0",
++	"mdp_tdshp0",
++	"mdp_img_dl_async0",
++	"mdp_img_dl_async1",
++	"mdp_smi0",
++	"mdp_apb_bus",
++	"mdp_wrot0",
++	"mdp_rsz0",
++	"mdp_hdr0",
++	"mdp_mutex0",
++	"mdp_wrot1",
++	"mdp_rsz1",
++	"mdp_fake_eng0",
++	"mdp_aal0",
++	"mdp_img_dl_rel0_as0",
++	"mdp_img_dl_rel1_as1",
++	"ipe_larb19",
++	"ipe_larb20",
++	"ipe_smi_subcom",
++	"ipe_fd",
++	"ipe_fe",
++	"ipe_rsc",
++	"ipe_dpe",
++	"ipe_gals_ipe",
++	/* end */
++	NULL
++};
++
++static void __iomem *scpsys_base, *pwr_sta, *pwr_sta_2nd;
++
++static void dump_pwr_status(void)
++{
++	static const char * const pwr_names[] = {
++		[0] = "WPE",
++		[1] = "CONN_ON",
++		[2] = "MFG0",
++		[3] = "MFG1",
++		[4] = "MFG2",
++		[5] = "MFG3",
++		[6] = "CSIRX_TOP",
++		[7] = "MGF5",
++		[8] = "MFG6",
++		[9] = "IFR",
++		[10] = "ADSP_INFRA",
++		[11] = "DPY",
++		[12] = "DRAMC_MD32",
++		[13] = "IMG",
++		[14] = "IMG2",
++		[15] = "IPE",
++		[16] = "VDEC",
++		[17] = "ADSP_AO",
++		[18] = "VENC",
++		[19] = "SSUSB_P1",
++		[20] = "SSUSB",
++		[21] = "DIS",
++		[22] = "AUDIO",
++		[23] = "CAM",
++		[24] = "CAM_RAWA",
++		[25] = "CAM_RAWB",
++		[26] = "NNA3",
++		[27] = "NNA0",
++		[28] = "NNA1",
++		[29] = "NNA2",
++		[30] = "NNA",
++		[31] = "ADSP_TOP",
++		[32] = NULL,
++	};
++
++	u32 pwr_status_val = 0, pwr_status_2nd_val = 0;
++	u8 i = 0;
++
++	if (scpsys_base == NULL || pwr_sta == NULL || pwr_sta_2nd == NULL)
++		return;
++
++	pwr_status_val = readl(pwr_sta);
++	pwr_status_2nd_val = readl(pwr_sta_2nd);
++
++	pr_info("PWR_STATUS: 0x%08x\n", pwr_status_val);
++	pr_info("PWR_STATUS_2ND: 0x%08x\n", pwr_status_2nd_val);
++
++	for (i = 0; i < 32; i++) {
++		const char *st = (pwr_status_val & BIT(i)) != 0U ? "ON" : "OFF";
++		const char *st_2nd = (pwr_status_2nd_val & BIT(i)) != 0U ? "ON" : "OFF";
++
++		if (!strcmp(st, "ON") && !strcmp(st_2nd, "ON"))
++			pr_info("[%2d]: %3s: %s\n", i, st, pwr_names[i]);
++	}
++}
++
++static const char * const compatible[] = {"mediatek,mt8186", NULL};
++
++static struct clkchk_cfg_t cfg = {
++	.aee_excp_on_fail = false,
++	.warn_on_fail = true,
++	.compatible = compatible,
++	.off_pll_names = off_pll_names,
++	.all_clk_names = all_clk_names,
++	.dump_pwr_status = dump_pwr_status,
++};
++
++static int __init clkchk_platform_init(void)
++{
++	scpsys_base = ioremap(0x10006000, PAGE_SIZE);
++	pwr_sta = scpsys_base + 0x16C;
++	pwr_sta_2nd = scpsys_base + 0x170;
++
++	return clkchk_init(&cfg);
++}
++
++static void __exit clkchk_platform_exit(void)
++{
++}
++
++module_init(clkchk_platform_init);
++module_exit(clkchk_platform_exit);
++MODULE_LICENSE("GPL");
+diff --git a/drivers/clk/mediatek/clkchk.c b/drivers/clk/mediatek/clkchk.c
+new file mode 100644
+index 0000000000000000000000000000000000000000..4577f0676534b57511bb453089085b0279f81d19
+--- /dev/null
++++ b/drivers/clk/mediatek/clkchk.c
+@@ -0,0 +1,198 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Copyright (c) 2021 MediaTek Inc.
++ */
++
++#define pr_fmt(fmt) "[clkchk] " fmt
++
++#include <linux/clk.h>
++#include <linux/clk-provider.h>
++#include <linux/module.h>
++#include <linux/syscore_ops.h>
++#include "clkchk.h"
++
++#define AEE_EXCP_CHECK_PLL_FAIL	0
++#define CLKDBG_CCF_API_4_4	1
++#define MAX_PLLS		32
++
++#define TOTAL_CLK_NUM		1050
++#define MAX_SUBSYS_CLK_NUM	300
++
++#if AEE_EXCP_CHECK_PLL_FAIL
++#include <mt-plat/aee.h>
++#endif
++
++#if !CLKDBG_CCF_API_4_4
++
++/* backward compatible */
++
++static const char *clk_hw_get_name(const struct clk_hw *hw)
++{
++	return __clk_get_name(hw->clk);
++}
++
++static bool clk_hw_is_prepared(const struct clk_hw *hw)
++{
++	return __clk_is_prepared(hw->clk);
++}
++
++static bool clk_hw_is_enabled(const struct clk_hw *hw)
++{
++	return __clk_is_enabled(hw->clk);
++}
++
++static unsigned long clk_hw_get_rate(const struct clk_hw *hw)
++{
++	return __clk_get_rate(hw->clk);
++}
++
++static struct clk_hw *clk_hw_get_parent(const struct clk_hw *hw)
++{
++	return __clk_get_hw(clk_get_parent(hw->clk));
++}
++
++#endif /* !CLKDBG_CCF_API_4_4 */
++
++static struct clkchk_cfg_t *clkchk_cfg;
++
++static const char *ccf_state(struct clk_hw *hw)
++{
++	if (__clk_get_enable_count(hw->clk))
++		return "enabled";
++
++	if (clk_hw_is_prepared(hw))
++		return "prepared";
++
++	return "disabled";
++}
++
++static void print_enabled_clks(void)
++{
++	const char * const *cn = clkchk_cfg->all_clk_names;
++
++	pr_info("enabled clks:\n");
++
++	for (; *cn != NULL; cn++) {
++		struct clk *c = __clk_lookup(*cn);
++		struct clk_hw *c_hw = __clk_get_hw(c);
++		struct clk_hw *p_hw;
++
++		if (IS_ERR_OR_NULL(c) || c_hw == NULL)
++			continue;
++
++		p_hw = clk_hw_get_parent(c_hw);
++
++		if (p_hw == NULL)
++			continue;
++
++		if (!clk_hw_is_prepared(c_hw) &&
++			__clk_get_enable_count(c) <= 0U)
++			continue;
++
++		pr_info("[%-17s: %8s, %3d, %3d, %10ld, %17s]\n",
++			clk_hw_get_name(c_hw),
++			ccf_state(c_hw),
++			clk_hw_is_prepared(c_hw),
++			__clk_get_enable_count(c),
++			clk_hw_get_rate(c_hw),
++			p_hw != NULL ? clk_hw_get_name(p_hw) : "- ");
++	}
++}
++
++static void check_pll_off(void)
++{
++	static struct clk *off_plls[MAX_PLLS];
++
++	struct clk **c;
++	int invalid = 0;
++	char buf[128] = {0};
++	int n = 0;
++
++	if (off_plls[0] == NULL) {
++		const char * const *pn = clkchk_cfg->off_pll_names;
++		struct clk **end = off_plls + MAX_PLLS - 1;
++
++		for (c = off_plls; *pn != NULL && c < end; pn++, c++)
++			*c = __clk_lookup(*pn);
++	}
++
++	for (c = off_plls; *c != NULL; c++) {
++		struct clk_hw *c_hw = __clk_get_hw(*c);
++
++		if (c_hw == NULL)
++			continue;
++
++		if (!clk_hw_is_prepared(c_hw) && !clk_hw_is_enabled(c_hw))
++			continue;
++
++		n += snprintf(buf + n, sizeof(buf) - (size_t)n, "%s ",
++				clk_hw_get_name(c_hw));
++
++		invalid++;
++	}
++
++	if (invalid == 0)
++		return;
++
++	/* invalid. output debug info */
++
++	pr_info("unexpected unclosed PLL: %s\n", buf);
++	print_enabled_clks();
++
++#if AEE_EXCP_CHECK_PLL_FAIL
++	if (clkchk_cfg->aee_excp_on_fail)
++		aee_kernel_exception("clkchk", "unclosed PLL: %s\n", buf);
++#endif
++
++	if (clkchk_cfg->warn_on_fail)
++		WARN_ON(true);
++}
++
++static int clkchk_syscore_suspend(void)
++{
++	clkchk_cfg->dump_pwr_status();
++	check_pll_off();
++
++	return 0;
++}
++
++static void clkchk_syscore_resume(void)
++{
++}
++
++static struct syscore_ops clkchk_syscore_ops = {
++	.suspend = clkchk_syscore_suspend,
++	.resume = clkchk_syscore_resume,
++};
++
++int clkchk_init(struct clkchk_cfg_t *cfg)
++{
++	const char * const *c;
++	bool match = false;
++
++	if (cfg == NULL || cfg->compatible == NULL
++		|| cfg->all_clk_names == NULL || cfg->off_pll_names == NULL) {
++		pr_info("Invalid clkchk_cfg.\n");
++		return -EINVAL;
++	}
++
++	clkchk_cfg = cfg;
++
++	for (c = cfg->compatible; *c != NULL; c++) {
++		if (of_machine_is_compatible(*c) != 0) {
++			match = true;
++			break;
++		}
++	}
++
++	if (!match)
++		return -ENODEV;
++
++	register_syscore_ops(&clkchk_syscore_ops);
++	pr_info("clkchk_init [DONE]\n");
++
++	return 0;
++}
++EXPORT_SYMBOL(clkchk_init);
++
++MODULE_LICENSE("GPL");
+diff --git a/drivers/clk/mediatek/clkchk.h b/drivers/clk/mediatek/clkchk.h
+new file mode 100644
+index 0000000000000000000000000000000000000000..de03d2f89ed67da26e67fb5b8a6058916d64f7db
+--- /dev/null
++++ b/drivers/clk/mediatek/clkchk.h
+@@ -0,0 +1,25 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/*
++ * Copyright (c) 2021 MediaTek Inc.
++ */
++
++#include <stdbool.h>
++#include <stddef.h>
++
++struct provider_clk {
++	const char *provider_name;
++	u32 idx;
++	struct clk *ck;
++};
++
++struct clkchk_cfg_t {
++	bool aee_excp_on_fail;
++	bool warn_on_fail;
++	const char * const *compatible;
++	const char * const *off_pll_names;
++	const char * const *all_clk_names;
++	void (*setup_provider_clk)(struct provider_clk *pvdck);
++	void (*dump_pwr_status)(void);
++};
++
++int clkchk_init(struct clkchk_cfg_t *cfg);
 diff --git a/drivers/clk/mediatek/clkdbg-mt8186.c b/drivers/clk/mediatek/clkdbg-mt8186.c
 new file mode 100644
 index 0000000000000000000000000000000000000000..984b1e0183567b93ab7abe3f4fa64a2c67c681ca
@@ -12345,72 +13007,19 @@ index 3e7d1e6fbe010e0852b1fa2e8a088ef02a7f746c..c1e676aebe5774ec28ac1cc98f4e80a2
  extern struct platform_driver mtk_dpi_driver;
  extern struct platform_driver mtk_dsi_driver;
 diff --git a/drivers/gpu/drm/mediatek/mtk_dsi.c b/drivers/gpu/drm/mediatek/mtk_dsi.c
-index 0ad7157660afa6c4468f1ebcc4019e1eb2499eed..a3eea2e20843644a7fe5f40258df4225709a4ceb 100644
+index 0e5199f83327900f4427de749ae3a187427d8323..a3eea2e20843644a7fe5f40258df4225709a4ceb 100644
 --- a/drivers/gpu/drm/mediatek/mtk_dsi.c
 +++ b/drivers/gpu/drm/mediatek/mtk_dsi.c
-@@ -7,12 +7,11 @@
- #include <linux/component.h>
- #include <linux/iopoll.h>
- #include <linux/irq.h>
--#include <linux/mfd/syscon.h>
- #include <linux/of.h>
- #include <linux/of_platform.h>
- #include <linux/phy/phy.h>
- #include <linux/platform_device.h>
--#include <linux/regmap.h>
-+#include <linux/reset.h>
- 
- #include <video/mipi_display.h>
- #include <video/videomode.h>
-@@ -145,8 +144,6 @@
- #define DATA_0				(0xff << 16)
- #define DATA_1				(0xff << 24)
- 
--#define MMSYS_SW_RST_DSI_B BIT(25)
--
- #define NS_TO_CYCLE(n, c)    ((n) / (c) + (((n) % (c)) ? 1 : 0))
- 
- #define MTK_DSI_HOST_IS_READ(type) \
-@@ -191,8 +188,7 @@ struct mtk_dsi {
- 	struct drm_connector *connector;
- 	struct drm_panel *panel;
- 	struct phy *phy;
--	struct regmap *mmsys_sw_rst_b;
--	u32 sw_rst_b;
-+
- 	void __iomem *regs;
- 
- 	struct clk *engine_clk;
-@@ -280,16 +276,6 @@ static void mtk_dsi_disable(struct mtk_dsi *dsi)
- 	mtk_dsi_mask(dsi, DSI_CON_CTRL, DSI_EN, 0);
- }
- 
--static void mtk_dsi_reset_all(struct mtk_dsi *dsi)
--{
--	regmap_update_bits(dsi->mmsys_sw_rst_b, dsi->sw_rst_b,
--			   MMSYS_SW_RST_DSI_B, 0);
--	usleep_range(1000, 1100);
--
--	regmap_update_bits(dsi->mmsys_sw_rst_b, dsi->sw_rst_b,
--			   MMSYS_SW_RST_DSI_B, MMSYS_SW_RST_DSI_B);
--}
--
- static void mtk_dsi_reset_engine(struct mtk_dsi *dsi)
- {
- 	mtk_dsi_mask(dsi, DSI_CON_CTRL, DSI_RESET, DSI_RESET);
-@@ -1055,11 +1041,25 @@ static int mtk_dsi_bind(struct device *dev, struct device *master, void *data)
+@@ -1041,6 +1041,20 @@ static int mtk_dsi_bind(struct device *dev, struct device *master, void *data)
  	struct drm_device *drm = data;
  	struct mtk_dsi *dsi = dev_get_drvdata(dev);
  
--	ret = mtk_dsi_encoder_init(drm, dsi);
 +	ret = drm_of_find_panel_or_bridge(dev->of_node, 0, 0,
 +					  &dsi->panel, &dsi->next_bridge);
- 
--	mtk_dsi_reset_all(dsi);
++
 +	if (ret)
 +		return -EPROBE_DEFER;
- 
--	return ret;
++
 +	if (dsi->panel) {
 +		dsi->next_bridge = devm_drm_panel_bridge_add(dev, dsi->panel);
 +		if (IS_ERR(dsi->next_bridge)) {
@@ -12419,42 +13028,13 @@ index 0ad7157660afa6c4468f1ebcc4019e1eb2499eed..a3eea2e20843644a7fe5f40258df4225
 +		}
 +	}
 +
-+	ret = mtk_dsi_encoder_init(drm, dsi);
-+	if (ret)
-+		return ret;
-+
-+	return device_reset_optional(dev);
- }
- 
- static void mtk_dsi_unbind(struct device *dev, struct device *master,
-@@ -1080,7 +1080,6 @@ static int mtk_dsi_probe(struct platform_device *pdev)
- 	struct mtk_dsi *dsi;
- 	struct device *dev = &pdev->dev;
- 	struct resource *regs;
--	struct regmap *regmap;
- 	int irq_num;
- 	int ret;
- 
-@@ -1096,35 +1095,6 @@ static int mtk_dsi_probe(struct platform_device *pdev)
+ 	ret = mtk_dsi_encoder_init(drm, dsi);
+ 	if (ret)
+ 		return ret;
+@@ -1081,19 +1095,6 @@ static int mtk_dsi_probe(struct platform_device *pdev)
  		return ret;
  	}
  
--	regmap = syscon_regmap_lookup_by_phandle(dev->of_node,
--						 "mediatek,syscon-dsi");
--	ret = of_property_read_u32_index(dev->of_node, "mediatek,syscon-dsi", 1,
--					 &dsi->sw_rst_b);
--
--	if (IS_ERR(regmap))
--		ret = PTR_ERR(regmap);
--
--	if (ret) {
--		ret = PTR_ERR(regmap);
--		dev_err(dev, "Failed to get mmsys registers: %d\n", ret);
--		return ret;
--	}
--
--	dsi->mmsys_sw_rst_b = regmap;
--
 -	ret = drm_of_find_panel_or_bridge(dev->of_node, 0, 0,
 -					  &dsi->panel, &dsi->next_bridge);
 -	if (ret)
@@ -12471,7 +13051,7 @@ index 0ad7157660afa6c4468f1ebcc4019e1eb2499eed..a3eea2e20843644a7fe5f40258df4225
  	dsi->driver_data = of_device_get_match_data(dev);
  
  	dsi->engine_clk = devm_clk_get(dev, "engine");
-@@ -1234,6 +1204,12 @@ static const struct mtk_dsi_driver_data mt8183_dsi_driver_data = {
+@@ -1203,6 +1204,12 @@ static const struct mtk_dsi_driver_data mt8183_dsi_driver_data = {
  	.has_size_ctl = true,
  };
  
@@ -12484,7 +13064,7 @@ index 0ad7157660afa6c4468f1ebcc4019e1eb2499eed..a3eea2e20843644a7fe5f40258df4225
  static const struct of_device_id mtk_dsi_of_match[] = {
  	{ .compatible = "mediatek,mt2701-dsi",
  	  .data = &mt2701_dsi_driver_data },
-@@ -1241,6 +1217,8 @@ static const struct of_device_id mtk_dsi_of_match[] = {
+@@ -1210,6 +1217,8 @@ static const struct of_device_id mtk_dsi_of_match[] = {
  	  .data = &mt8173_dsi_driver_data },
  	{ .compatible = "mediatek,mt8183-dsi",
  	  .data = &mt8183_dsi_driver_data },
@@ -20652,23 +21232,41 @@ index 0000000000000000000000000000000000000000..186e2209e176a0feaca3096040104cc3
 +};
 +
 +#endif /* __SOC_MEDIATEK_MT8195_PM_DOMAINS_H */
+diff --git a/drivers/soc/mediatek/mtk-devapc.c b/drivers/soc/mediatek/mtk-devapc.c
+index 7c65ad3d1f8a38f3b75add46415bf777b50c2f41..762e0e4d967dd36e3075040d1ca6ae79f3dc4f46 100644
+--- a/drivers/soc/mediatek/mtk-devapc.c
++++ b/drivers/soc/mediatek/mtk-devapc.c
+@@ -227,10 +227,25 @@ static const struct mtk_devapc_data devapc_mt6779 = {
+ 	.vio_shift_con_offset = 0xF20,
+ };
+ 
++static const struct mtk_devapc_data devapc_mt8186 = {
++	.vio_idx_num = 519,
++	.vio_mask_offset = 0x0,
++	.vio_sta_offset = 0x400,
++	.vio_dbg0_offset = 0x900,
++	.vio_dbg1_offset = 0x904,
++	.apc_con_offset = 0xF00,
++	.vio_shift_sta_offset = 0xF10,
++	.vio_shift_sel_offset = 0xF14,
++	.vio_shift_con_offset = 0xF20,
++};
++
+ static const struct of_device_id mtk_devapc_dt_match[] = {
+ 	{
+ 		.compatible = "mediatek,mt6779-devapc",
+ 		.data = &devapc_mt6779,
++	}, {
++		.compatible = "mediatek,mt8186-devapc",
++		.data = &devapc_mt8186,
+ 	}, {
+ 	},
+ };
 diff --git a/drivers/soc/mediatek/mtk-mmsys.c b/drivers/soc/mediatek/mtk-mmsys.c
-index a78e88f27b62b2161aa3a399f662f9ca7b5e49f3..ecbf9ceedb764a5d9bdb9015d5e0f3848fef4d9b 100644
+index 7b268d0f81f280d806d4a213da4c90d69a4bf0d4..ecbf9ceedb764a5d9bdb9015d5e0f3848fef4d9b 100644
 --- a/drivers/soc/mediatek/mtk-mmsys.c
 +++ b/drivers/soc/mediatek/mtk-mmsys.c
-@@ -4,16 +4,19 @@
-  * Author: James Liao <jamesjj.liao@mediatek.com>
-  */
- 
-+#include <linux/delay.h>
- #include <linux/device.h>
- #include <linux/io.h>
- #include <linux/of_device.h>
- #include <linux/platform_device.h>
-+#include <linux/reset-controller.h>
- #include <linux/soc/mediatek/mtk-mmsys.h>
- 
- #include "mtk-mmsys.h"
+@@ -16,6 +16,7 @@
  #include "mt8167-mmsys.h"
  #include "mt8183-mmsys.h"
  #include "mt8365-mmsys.h"
@@ -20676,7 +21274,7 @@ index a78e88f27b62b2161aa3a399f662f9ca7b5e49f3..ecbf9ceedb764a5d9bdb9015d5e0f384
  
  static const struct mtk_mmsys_driver_data mt2701_mmsys_driver_data = {
  	.clk_driver = "clk-mt2701-mm",
-@@ -59,9 +62,17 @@ static const struct mtk_mmsys_driver_data mt8365_mmsys_driver_data = {
+@@ -61,6 +62,12 @@ static const struct mtk_mmsys_driver_data mt8365_mmsys_driver_data = {
  	.num_routes = ARRAY_SIZE(mt8365_mmsys_routing_table),
  };
  
@@ -20689,90 +21287,7 @@ index a78e88f27b62b2161aa3a399f662f9ca7b5e49f3..ecbf9ceedb764a5d9bdb9015d5e0f384
  struct mtk_mmsys {
  	void __iomem *regs;
  	const struct mtk_mmsys_driver_data *data;
-+	spinlock_t lock; /* protects mmsys_sw_rst_b reg */
-+	struct reset_controller_dev rcdev;
- };
- 
- void mtk_mmsys_ddp_connect(struct device *dev,
-@@ -101,6 +112,58 @@ void mtk_mmsys_ddp_disconnect(struct device *dev,
- }
- EXPORT_SYMBOL_GPL(mtk_mmsys_ddp_disconnect);
- 
-+static int mtk_mmsys_reset_update(struct reset_controller_dev *rcdev, unsigned long id,
-+				  bool assert)
-+{
-+	struct mtk_mmsys *mmsys = container_of(rcdev, struct mtk_mmsys, rcdev);
-+	unsigned long flags;
-+	u32 reg;
-+
-+	spin_lock_irqsave(&mmsys->lock, flags);
-+
-+	reg = readl_relaxed(mmsys->regs + MMSYS_SW0_RST_B);
-+
-+	if (assert)
-+		reg &= ~BIT(id);
-+	else
-+		reg |= BIT(id);
-+
-+	writel_relaxed(reg, mmsys->regs + MMSYS_SW0_RST_B);
-+
-+	spin_unlock_irqrestore(&mmsys->lock, flags);
-+
-+	return 0;
-+}
-+
-+static int mtk_mmsys_reset_assert(struct reset_controller_dev *rcdev, unsigned long id)
-+{
-+	return mtk_mmsys_reset_update(rcdev, id, true);
-+}
-+
-+static int mtk_mmsys_reset_deassert(struct reset_controller_dev *rcdev, unsigned long id)
-+{
-+	return mtk_mmsys_reset_update(rcdev, id, false);
-+}
-+
-+static int mtk_mmsys_reset(struct reset_controller_dev *rcdev, unsigned long id)
-+{
-+	int ret;
-+
-+	ret = mtk_mmsys_reset_assert(rcdev, id);
-+	if (ret)
-+		return ret;
-+
-+	usleep_range(1000, 1100);
-+
-+	return mtk_mmsys_reset_deassert(rcdev, id);
-+}
-+
-+static const struct reset_control_ops mtk_mmsys_reset_ops = {
-+	.assert = mtk_mmsys_reset_assert,
-+	.deassert = mtk_mmsys_reset_deassert,
-+	.reset = mtk_mmsys_reset,
-+};
-+
- static int mtk_mmsys_probe(struct platform_device *pdev)
- {
- 	struct device *dev = &pdev->dev;
-@@ -120,6 +183,18 @@ static int mtk_mmsys_probe(struct platform_device *pdev)
- 		return ret;
- 	}
- 
-+	spin_lock_init(&mmsys->lock);
-+
-+	mmsys->rcdev.owner = THIS_MODULE;
-+	mmsys->rcdev.nr_resets = 32;
-+	mmsys->rcdev.ops = &mtk_mmsys_reset_ops;
-+	mmsys->rcdev.of_node = pdev->dev.of_node;
-+	ret = devm_reset_controller_register(&pdev->dev, &mmsys->rcdev);
-+	if (ret) {
-+		dev_err(&pdev->dev, "Couldn't register mmsys reset controller: %d\n", ret);
-+		return ret;
-+	}
-+
- 	mmsys->data = of_device_get_match_data(&pdev->dev);
- 	platform_set_drvdata(pdev, mmsys);
- 
-@@ -171,6 +246,10 @@ static const struct of_device_id of_match_mtk_mmsys[] = {
+@@ -239,6 +246,10 @@ static const struct of_device_id of_match_mtk_mmsys[] = {
  		.compatible = "mediatek,mt8365-mmsys",
  		.data = &mt8365_mmsys_driver_data,
  	},
@@ -20783,19 +21298,6 @@ index a78e88f27b62b2161aa3a399f662f9ca7b5e49f3..ecbf9ceedb764a5d9bdb9015d5e0f384
  	{ }
  };
  
-diff --git a/drivers/soc/mediatek/mtk-mmsys.h b/drivers/soc/mediatek/mtk-mmsys.h
-index 9e2b81bd38db1a07bb7297342aa17c8bcd744748..8b0ed05117ea401089a3745363a9193d6e6b4bdf 100644
---- a/drivers/soc/mediatek/mtk-mmsys.h
-+++ b/drivers/soc/mediatek/mtk-mmsys.h
-@@ -78,6 +78,8 @@
- #define DSI_SEL_IN_RDMA				0x1
- #define DSI_SEL_IN_MASK				0x1
- 
-+#define MMSYS_SW0_RST_B				0x140
-+
- struct mtk_mmsys_routes {
- 	u32 from_comp;
- 	u32 to_comp;
 diff --git a/drivers/soc/mediatek/mtk-mutex.c b/drivers/soc/mediatek/mtk-mutex.c
 index 2e4bcc300576f5c4e55f9cb14d24a2b71e272c6c..5ac8c3e10c4a58beb54212f113754de3b09c7bbb 100644
 --- a/drivers/soc/mediatek/mtk-mutex.c
@@ -21253,23 +21755,6 @@ index 5c93730615f8d7eac53af6f4f91338a774e23518..de64314c3bcd94872613b771a92db76d
  	sp->buffer = dmam_alloc_coherent(&pdev->dev,
  				MTK_NOR_BOUNCE_BUF_SIZE + MTK_NOR_DMA_ALIGN,
  				&sp->buffer_dma, GFP_KERNEL);
-diff --git a/drivers/watchdog/mtk_wdt.c b/drivers/watchdog/mtk_wdt.c
-index ceb57ea627cd22a1a9633a71ae1b55b86321e1a6..543cf38bd04e11626ecd3744b17d83e2056eb9d6 100644
---- a/drivers/watchdog/mtk_wdt.c
-+++ b/drivers/watchdog/mtk_wdt.c
-@@ -9,9 +9,9 @@
-  * Based on sunxi_wdt.c
-  */
- 
--#include <dt-bindings/reset-controller/mt2712-resets.h>
--#include <dt-bindings/reset-controller/mt8183-resets.h>
--#include <dt-bindings/reset-controller/mt8192-resets.h>
-+#include <dt-bindings/reset/mt2712-resets.h>
-+#include <dt-bindings/reset/mt8183-resets.h>
-+#include <dt-bindings/reset/mt8192-resets.h>
- #include <dt-bindings/reset/mt8195-resets.h>
- #include <linux/delay.h>
- #include <linux/err.h>
 diff --git a/include/dt-bindings/clock/mt8186-clk.h b/include/dt-bindings/clock/mt8186-clk.h
 new file mode 100644
 index 0000000000000000000000000000000000000000..1c2a634476fa1d5c9c4e491838167f55cca0d767
@@ -24075,44 +24560,6 @@ index 0000000000000000000000000000000000000000..b20ca4b3e3a89c718c5eee0bd7cca72b
 +#define MT8195_POWER_DOMAIN_CAM_MRAW		34
 +
 +#endif /* _DT_BINDINGS_POWER_MT8195_POWER_H */
-diff --git a/include/dt-bindings/reset-controller/mt2712-resets.h b/include/dt-bindings/reset/mt2712-resets.h
-similarity index 100%
-rename from include/dt-bindings/reset-controller/mt2712-resets.h
-rename to include/dt-bindings/reset/mt2712-resets.h
-diff --git a/include/dt-bindings/reset/mt8173-resets.h b/include/dt-bindings/reset/mt8173-resets.h
-index ba8636eda5ae3d048f2cf72a89b0eaac945f2ac2..6a60c7cecc4c38952aef76c8103f53085ccaae94 100644
---- a/include/dt-bindings/reset/mt8173-resets.h
-+++ b/include/dt-bindings/reset/mt8173-resets.h
-@@ -27,6 +27,8 @@
- #define MT8173_INFRA_GCE_FAXI_RST       40
- #define MT8173_INFRA_MMIOMMURST         47
- 
-+/* MMSYS resets */
-+#define MT8173_MMSYS_SW0_RST_B_DISP_DSI0	25
- 
- /*  PERICFG resets */
- #define MT8173_PERI_UART0_SW_RST        0
-diff --git a/include/dt-bindings/reset-controller/mt8183-resets.h b/include/dt-bindings/reset/mt8183-resets.h
-similarity index 98%
-rename from include/dt-bindings/reset-controller/mt8183-resets.h
-rename to include/dt-bindings/reset/mt8183-resets.h
-index a1bbd41e0d128d36a2dfa60919a6cc60bac98772..48c5d2de0a383a2a6fae8deb471250c95d7e7e1d 100644
---- a/include/dt-bindings/reset-controller/mt8183-resets.h
-+++ b/include/dt-bindings/reset/mt8183-resets.h
-@@ -80,6 +80,9 @@
- 
- #define MT8183_INFRACFG_SW_RST_NUM				128
- 
-+/* MMSYS resets */
-+#define MT8183_MMSYS_SW0_RST_B_DISP_DSI0			25
-+
- #define MT8183_TOPRGU_MM_SW_RST					1
- #define MT8183_TOPRGU_MFG_SW_RST				2
- #define MT8183_TOPRGU_VENC_SW_RST				3
-diff --git a/include/dt-bindings/reset-controller/mt8192-resets.h b/include/dt-bindings/reset/mt8192-resets.h
-similarity index 100%
-rename from include/dt-bindings/reset-controller/mt8192-resets.h
-rename to include/dt-bindings/reset/mt8192-resets.h
 diff --git a/include/linux/mfd/mt6358/registers.h b/include/linux/mfd/mt6358/registers.h
 index 201139b12140ff0af6dd58db01a1da287554d6ad..3d33517f178c622f2fefbc59f7fe15605ff06120 100644
 --- a/include/linux/mfd/mt6358/registers.h
