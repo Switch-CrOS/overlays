@@ -38,10 +38,6 @@ src_install() {
 	fi
 	install_audio_configs kevin "${audio_config_dir}"
 
-	# Install platform specific config files for power_manager.
-	insinto "/usr/share/power_manager/board_specific"
-	doins "${FILESDIR}"/powerd_prefs/*
-
 	# Disable touchpad wakeup source completely
 	udev_dorules "${FILESDIR}/93-powerd-overrides.rules"
 }
