@@ -36,4 +36,7 @@ modify_kernel_command_line() {
   # The 5G driver requires a lot of swiotlb buffers (b/201020414)
   # So increase the swiotlb slots from default 32768 (64MB) to 65536 (128MB)
   echo "swiotlb=65536" >> "$1"
+
+  # Ensure internal devices are also in their own DMA domain,
+  echo "intel_iommu=on" >> "$1"
 }
