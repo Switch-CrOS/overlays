@@ -11,7 +11,7 @@ or portage actions."
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="-* amd64 x86"
-IUSE="fizz-cfm"
+IUSE="fizz-cfm  kernel-4_4"
 S="${WORKDIR}"
 
 # Add dependencies on other ebuilds from within this board overlay
@@ -30,6 +30,9 @@ src_install() {
 
 	# Install audio config files
 	local audio_config_dir="${FILESDIR}/audio-config"
+	if use kernel-4_4; then
+		audio_config_dir="${FILESDIR}/audio-config-4_4"
+	fi
 	install_audio_configs fizz "${audio_config_dir}"
 
 	# Install board-specific config files for power_manager.
