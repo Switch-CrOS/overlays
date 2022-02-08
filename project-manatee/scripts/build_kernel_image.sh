@@ -25,4 +25,11 @@ modify_kernel_command_line() {
   # The hardware the hypervisor accesses is very limited, and
   # none of it requires the swiotlb.
   echo "swiotlb=noforce" >> "$1"
+
+  # By default, the dentry cache and inode cache allocate hash tables of
+  # size num_pages/2 and num_pages/4, respectively, each with 8 byte entries.
+  # Specify a smaller limit on manaTEE, since not much will run in the
+  # hypervisor. The values are 1/8 the default size for a 8GB system.
+  echo "dhash_entries=131072" >> "$1"
+  echo "ihash_entries=65536" >> "$1"
 }
