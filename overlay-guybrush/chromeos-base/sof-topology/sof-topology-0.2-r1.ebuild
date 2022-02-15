@@ -17,4 +17,7 @@ src_install() {
 	insinto /lib/firmware/amd/sof-tplg
 	doins ./*.tplg
 	dodoc README
+
+	dosym sof-acp.tplg /lib/firmware/amd/sof-tplg/sof-rn-rt5682-max98360.tplg
+	dosym sof-acp.tplg /lib/firmware/amd/sof-tplg/sof-rn-rt5682-rt1019.tplg
 }
