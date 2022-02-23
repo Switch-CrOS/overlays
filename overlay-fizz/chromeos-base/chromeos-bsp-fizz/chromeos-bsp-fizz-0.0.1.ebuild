@@ -11,7 +11,7 @@ or portage actions."
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="-* amd64 x86"
-IUSE="fizz-cfm  kernel-4_4"
+IUSE="fizz-cfm fizz-kernelnext kernel-4_4"
 S="${WORKDIR}"
 
 # Add dependencies on other ebuilds from within this board overlay
@@ -24,6 +24,8 @@ DEPEND="
 src_install() {
 	if use fizz-cfm; then
 		doappid "{83703798-86A9-3073-D590-0D0937639CB0}" "CHROMEBOX"
+	elif use fizz-kernelnext; then
+		doappid "{4E92DCBB-A7F8-4AC1-85A2-B63D0FBBFD1B}" "CHROMEBOX"
 	else
 		doappid "{0C1E39B7-DAE6-4972-8004-E96F60D9342C}" "CHROMEBOX"
 	fi
