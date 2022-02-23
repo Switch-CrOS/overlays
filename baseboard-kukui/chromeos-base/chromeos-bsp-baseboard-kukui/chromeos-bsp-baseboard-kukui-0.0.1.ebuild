@@ -16,7 +16,9 @@ S="${WORKDIR}"
 IUSE="arcvm kernel-5_10"
 
 # Add dependencies on other ebuilds from within this board overlay
-RDEPEND=""
+RDEPEND="
+	chromeos-base/chromeos-scp-firmware-kukui
+"
 DEPEND="${RDEPEND}"
 
 src_install() {
