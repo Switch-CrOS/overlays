@@ -1181,10 +1181,10 @@ index 0000000000000000000000000000000000000000..d7babf65c3daeb47e225434c2cd5a706
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8186-corsola-krabby.dtsi b/arch/arm64/boot/dts/mediatek/mt8186-corsola-krabby.dtsi
 new file mode 100644
-index 0000000000000000000000000000000000000000..5a1d6d81fccdaeb52210f1c4aa1d944e0e64eae5
+index 0000000000000000000000000000000000000000..e3043795f607c5385df422f4cb778d191e8bb0e6
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt8186-corsola-krabby.dtsi
-@@ -0,0 +1,355 @@
+@@ -0,0 +1,357 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
 +/*
 + * Copyright 2022 Google LLC
@@ -1378,6 +1378,8 @@ index 0000000000000000000000000000000000000000..5a1d6d81fccdaeb52210f1c4aa1d944e
 +	clock-frequency = <100000>;
 +
 +	it6505dptx: it6505dptx@5c {
++		#address-cells = <1>;
++		#size-cells = <0>;
 +		compatible = "ite,it6505";
 +		status = "okay";
 +		interrupt-parent = <&pio>;
@@ -1470,7 +1472,7 @@ index 0000000000000000000000000000000000000000..5a1d6d81fccdaeb52210f1c4aa1d944e
 +				 <PINMUX_GPIO100__FUNC_GPIO100>,
 +				 <PINMUX_GPIO102__FUNC_GPIO102>,
 +				 <PINMUX_GPIO99__FUNC_GPIO99>;
-+			drive-strength = <MTK_DRIVE_6mA>;
++			drive-strength = <MTK_DRIVE_10mA>;
 +			output-low;
 +		};
 +	};
@@ -1493,7 +1495,7 @@ index 0000000000000000000000000000000000000000..5a1d6d81fccdaeb52210f1c4aa1d944e
 +				 <PINMUX_GPIO100__FUNC_DPI_VSYNC>,
 +				 <PINMUX_GPIO102__FUNC_DPI_DE>,
 +				 <PINMUX_GPIO99__FUNC_DPI_PCLK>;
-+			drive-strength = <MTK_DRIVE_6mA>;
++			drive-strength = <MTK_DRIVE_10mA>;
 +		};
 +	};
 +
@@ -5249,10 +5251,10 @@ index 0000000000000000000000000000000000000000..1dec24d656798d08e2e3d4cadcf644cf
 +	};
 +};
 diff --git a/chromeos/config/arm64/chromiumos-arm64.flavour.config b/chromeos/config/arm64/chromiumos-arm64.flavour.config
-index 95aaab413b3284d71920cd117efeb0319d1af756..2929076014c73f0f1423d0053a4e26bc3c01a69c 100644
+index a0e088a8a151f4c174aa77333751c78de7814c75..bde00e01332ce0f042d72dc9c7cef9a3f83af714 100644
 --- a/chromeos/config/arm64/chromiumos-arm64.flavour.config
 +++ b/chromeos/config/arm64/chromiumos-arm64.flavour.config
-@@ -34,6 +34,8 @@ CONFIG_CORESIGHT_CPU_DEBUG_DEFAULT_ON=y
+@@ -35,6 +35,8 @@ CONFIG_CORESIGHT_CPU_DEBUG_DEFAULT_ON=y
  CONFIG_CORESIGHT_LINK_AND_SINK_TMC=y
  CONFIG_CORESIGHT_SOURCE_ETM4X=y
  CONFIG_CPUFREQ_DT=y
@@ -5261,7 +5263,7 @@ index 95aaab413b3284d71920cd117efeb0319d1af756..2929076014c73f0f1423d0053a4e26bc
  CONFIG_CROS_EC_MKBP_PROXIMITY=m
  CONFIG_CROS_EC_RPMSG=m
  CONFIG_CRYPTO_DEV_VIRTIO=m
-@@ -262,7 +264,7 @@ CONFIG_SX9324=m
+@@ -263,7 +265,7 @@ CONFIG_SX9324=m
  CONFIG_TCG_CR50_I2C=y
  CONFIG_TCG_TIS_I2C_INFINEON=y
  CONFIG_TOUCHSCREEN_MELFAS_MIP4=y
@@ -5331,10 +5333,10 @@ index 126f339f3f4172fb64029cf7c1e81119d85aa14f..d5d6ee0c121194c895990d9f0e9dca84
  CONFIG_USB_MTU3_HOST=y
  CONFIG_VIDEO_DW9768=m
 diff --git a/chromeos/config/arm64/chromiumos-qualcomm.flavour.config b/chromeos/config/arm64/chromiumos-qualcomm.flavour.config
-index 0975fdf7cb22a6c75da2a1c6459d7e6a8af5b859..262fa312986509882cae4393d4a1604c6fd35f44 100644
+index c020758c9fea496675a0f23e54b29ae7efec54b2..a1654b728f27f4d8bd0df3a0c67121c2367a1f31 100644
 --- a/chromeos/config/arm64/chromiumos-qualcomm.flavour.config
 +++ b/chromeos/config/arm64/chromiumos-qualcomm.flavour.config
-@@ -24,6 +24,8 @@ CONFIG_COMMON_CLK_QCOM=y
+@@ -25,6 +25,8 @@ CONFIG_COMMON_CLK_QCOM=y
  CONFIG_CORESIGHT=y
  CONFIG_CORESIGHT_LINK_AND_SINK_TMC=y
  CONFIG_CORESIGHT_SOURCE_ETM4X=y
@@ -5373,12 +5375,12 @@ index 28b383f22c5e2ea5f040edcdc764d0f8630c17c0..ce226b7f82cdce50e6d5b722b283f45b
  CONFIG_CPU_THERMAL=y
  # CONFIG_CROS_EC_LIGHTBAR is not set
 diff --git a/drivers/clk/mediatek/Kconfig b/drivers/clk/mediatek/Kconfig
-index 4654ec336fc1625c8fc5c28eac7e43b4ab6b1af5..51075818c1ce4db1ca412b807e1d57faa0974b21 100644
+index 8eb9c8379f9adfcaebf3bac3d9113d852cb52a87..cfe95fc799b2e221b1961532b209821b3080c400 100644
 --- a/drivers/clk/mediatek/Kconfig
 +++ b/drivers/clk/mediatek/Kconfig
-@@ -583,6 +583,14 @@ config COMMON_CLK_MT8195
-         help
-           This driver supports MediaTek MT8195 clocks.
+@@ -495,6 +495,14 @@ config COMMON_CLK_MT8183_VENCSYS
+ 	help
+ 	  This driver supports MediaTek MT8183 vencsys clocks.
  
 +config COMMON_CLK_MT8186
 +	bool "Clock driver for MediaTek MT8186"
@@ -5388,22 +5390,29 @@ index 4654ec336fc1625c8fc5c28eac7e43b4ab6b1af5..51075818c1ce4db1ca412b807e1d57fa
 +	help
 +	  This driver supports MediaTek MT8186 clocks.
 +
- config COMMON_CLK_MT8516
- 	bool "Clock driver for MediaTek MT8516"
- 	depends on ARCH_MEDIATEK || COMPILE_TEST
+ config COMMON_CLK_MT8192
+ 	bool "Clock driver for MediaTek MT8192"
+ 	depends on ARM64 || COMPILE_TEST
 diff --git a/drivers/clk/mediatek/Makefile b/drivers/clk/mediatek/Makefile
-index dc96038a0155005a6a9419aa3ff8197482b414ab..3f26a288111fadb885897c9c86b386c2423bede3 100644
+index dc96038a0155005a6a9419aa3ff8197482b414ab..a8d8cb78bd7e292f4837e1057f1dd003f082121e 100644
 --- a/drivers/clk/mediatek/Makefile
 +++ b/drivers/clk/mediatek/Makefile
-@@ -88,5 +88,11 @@ obj-$(CONFIG_COMMON_CLK_MT8195) += clk-mt8195-apmixedsys.o clk-mt8195-topckgen.o
- 				   clk-mt8195-venc.o clk-mt8195-vpp0.o clk-mt8195-vpp1.o \
- 				   clk-mt8195-wpe.o clk-mt8195-imp_iic_wrap.o \
- 				   clk-mt8195-apusys_pll.o
+@@ -67,6 +67,11 @@ obj-$(CONFIG_COMMON_CLK_MT8183_MFGCFG) += clk-mt8183-mfgcfg.o
+ obj-$(CONFIG_COMMON_CLK_MT8183_MMSYS) += clk-mt8183-mm.o
+ obj-$(CONFIG_COMMON_CLK_MT8183_VDECSYS) += clk-mt8183-vdec.o
+ obj-$(CONFIG_COMMON_CLK_MT8183_VENCSYS) += clk-mt8183-venc.o
 +obj-$(CONFIG_COMMON_CLK_MT8186) += clk-mt8186-mcu.o clk-mt8186-topckgen.o clk-mt8186-infra_ao.o \
 +				   clk-mt8186-apmixedsys.o clk-mt8186-imp_iic_wrap.o \
 +				   clk-mt8186-mfg.o clk-mt8186-mm.o clk-mt8186-wpe.o \
 +				   clk-mt8186-img.o clk-mt8186-vdec.o clk-mt8186-venc.o \
 +				   clk-mt8186-cam.o clk-mt8186-mdp.o clk-mt8186-ipe.o
+ obj-$(CONFIG_COMMON_CLK_MT8192) += clk-mt8192.o
+ obj-$(CONFIG_COMMON_CLK_MT8192_AUDSYS) += clk-mt8192-aud.o
+ obj-$(CONFIG_COMMON_CLK_MT8192_CAMSYS) += clk-mt8192-cam.o
+@@ -88,5 +93,6 @@ obj-$(CONFIG_COMMON_CLK_MT8195) += clk-mt8195-apmixedsys.o clk-mt8195-topckgen.o
+ 				   clk-mt8195-venc.o clk-mt8195-vpp0.o clk-mt8195-vpp1.o \
+ 				   clk-mt8195-wpe.o clk-mt8195-imp_iic_wrap.o \
+ 				   clk-mt8195-apusys_pll.o
 +obj-$(CONFIG_COMMON_CLK_MT8186) += clk-bringup.o clkdbg.o clkdbg-mt8186.o clkchk.o clkchk-mt8186.o
  obj-$(CONFIG_COMMON_CLK_MT8516) += clk-mt8516.o
  obj-$(CONFIG_COMMON_CLK_MT8516_AUDSYS) += clk-mt8516-aud.o
@@ -5479,16 +5488,17 @@ index 0000000000000000000000000000000000000000..297fd8a7c98e24a5209bf14070c26b73
 +MODULE_LICENSE("GPL");
 diff --git a/drivers/clk/mediatek/clk-mt8186-apmixedsys.c b/drivers/clk/mediatek/clk-mt8186-apmixedsys.c
 new file mode 100644
-index 0000000000000000000000000000000000000000..24c9f99b16e3aac970f4fdc7d009bac2b989675b
+index 0000000000000000000000000000000000000000..f07d464f908b679b1638cccc928b07b3c428c6ab
 --- /dev/null
 +++ b/drivers/clk/mediatek/clk-mt8186-apmixedsys.c
-@@ -0,0 +1,110 @@
+@@ -0,0 +1,133 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +//
-+// Copyright (c) 2021 MediaTek Inc.
++// Copyright (c) 2022 MediaTek Inc.
 +// Author: Chun-Jie Chen <chun-jie.chen@mediatek.com>
 +
 +#include "clk-mtk.h"
++#include "clk-pll.h"
 +
 +#include <dt-bindings/clock/mt8186-clk.h>
 +#include <linux/clk-provider.h>
@@ -5526,7 +5536,10 @@ index 0000000000000000000000000000000000000000..24c9f99b16e3aac970f4fdc7d009bac2
 +	}
 +
 +static const struct mtk_pll_data plls[] = {
-+	/* armpll_ll/armpll_bl/ccipll should not be closed in Linux world */
++	/*
++	 * armpll_ll/armpll_bl/ccipll are main clock source of AP MCU,
++	 * should not be closed in Linux world.
++	 */
 +	PLL(CLK_APMIXED_ARMPLL_LL, "armpll_ll", 0x0204, 0x0210, 0,
 +	    PLL_AO, 0, 22, 0x0208, 24, 0, 0, 0, 0x0208),
 +	PLL(CLK_APMIXED_ARMPLL_BL, "armpll_bl", 0x0214, 0x0220, 0,
@@ -5572,21 +5585,40 @@ index 0000000000000000000000000000000000000000..24c9f99b16e3aac970f4fdc7d009bac2
 +	if (!clk_data)
 +		return -ENOMEM;
 +
-+	mtk_clk_register_plls(node, plls, ARRAY_SIZE(plls), clk_data);
-+
-+	r = of_clk_add_provider(node, of_clk_src_onecell_get, clk_data);
++	r = mtk_clk_register_plls(node, plls, ARRAY_SIZE(plls), clk_data);
 +	if (r)
 +		goto free_apmixed_data;
 +
++	r = of_clk_add_provider(node, of_clk_src_onecell_get, clk_data);
++	if (r)
++		goto unregister_plls;
++
++	platform_set_drvdata(pdev, clk_data);
++
 +	return r;
 +
++unregister_plls:
++	mtk_clk_unregister_plls(plls, ARRAY_SIZE(plls), clk_data);
 +free_apmixed_data:
 +	mtk_free_clk_data(clk_data);
 +	return r;
 +}
 +
++static int clk_mt8186_apmixed_remove(struct platform_device *pdev)
++{
++	struct device_node *node = pdev->dev.of_node;
++	struct clk_onecell_data *clk_data = platform_get_drvdata(pdev);
++
++	of_clk_del_provider(node);
++	mtk_clk_unregister_plls(plls, ARRAY_SIZE(plls), clk_data);
++	mtk_free_clk_data(clk_data);
++
++	return 0;
++}
++
 +static struct platform_driver clk_mt8186_apmixed_drv = {
 +	.probe = clk_mt8186_apmixed_probe,
++	.remove = clk_mt8186_apmixed_remove,
 +	.driver = {
 +		.name = "clk-mt8186-apmixed",
 +		.of_match_table = of_match_clk_mt8186_apmixed,
@@ -5595,13 +5627,13 @@ index 0000000000000000000000000000000000000000..24c9f99b16e3aac970f4fdc7d009bac2
 +builtin_platform_driver(clk_mt8186_apmixed_drv);
 diff --git a/drivers/clk/mediatek/clk-mt8186-cam.c b/drivers/clk/mediatek/clk-mt8186-cam.c
 new file mode 100644
-index 0000000000000000000000000000000000000000..ae64c63078e243cd004e6482d6ea385752b68357
+index 0000000000000000000000000000000000000000..6053f0faded7b94adde4ccd41130e10688dea3db
 --- /dev/null
 +++ b/drivers/clk/mediatek/clk-mt8186-cam.c
-@@ -0,0 +1,89 @@
+@@ -0,0 +1,90 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +//
-+// Copyright (c) 2021 MediaTek Inc.
++// Copyright (c) 2022 MediaTek Inc.
 +// Author: Chun-Jie Chen <chun-jie.chen@mediatek.com>
 +
 +#include "clk-gate.h"
@@ -5682,6 +5714,7 @@ index 0000000000000000000000000000000000000000..ae64c63078e243cd004e6482d6ea3857
 +
 +static struct platform_driver clk_mt8186_cam_drv = {
 +	.probe = mtk_clk_simple_probe,
++	.remove = mtk_clk_simple_remove,
 +	.driver = {
 +		.name = "clk-mt8186-cam",
 +		.of_match_table = of_match_clk_mt8186_cam,
@@ -5690,13 +5723,13 @@ index 0000000000000000000000000000000000000000..ae64c63078e243cd004e6482d6ea3857
 +builtin_platform_driver(clk_mt8186_cam_drv);
 diff --git a/drivers/clk/mediatek/clk-mt8186-img.c b/drivers/clk/mediatek/clk-mt8186-img.c
 new file mode 100644
-index 0000000000000000000000000000000000000000..b6eb51454f17c3a4937e2d49f45e338a47a6b673
+index 0000000000000000000000000000000000000000..6f15ce66a918d328b4069903783d50aaff118e71
 --- /dev/null
 +++ b/drivers/clk/mediatek/clk-mt8186-img.c
-@@ -0,0 +1,67 @@
+@@ -0,0 +1,68 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +//
-+// Copyright (c) 2021 MediaTek Inc.
++// Copyright (c) 2022 MediaTek Inc.
 +// Author: Chun-Jie Chen <chun-jie.chen@mediatek.com>
 +
 +#include "clk-gate.h"
@@ -5755,6 +5788,7 @@ index 0000000000000000000000000000000000000000..b6eb51454f17c3a4937e2d49f45e338a
 +
 +static struct platform_driver clk_mt8186_img_drv = {
 +	.probe = mtk_clk_simple_probe,
++	.remove = mtk_clk_simple_remove,
 +	.driver = {
 +		.name = "clk-mt8186-img",
 +		.of_match_table = of_match_clk_mt8186_img,
@@ -5763,13 +5797,13 @@ index 0000000000000000000000000000000000000000..b6eb51454f17c3a4937e2d49f45e338a
 +builtin_platform_driver(clk_mt8186_img_drv);
 diff --git a/drivers/clk/mediatek/clk-mt8186-imp_iic_wrap.c b/drivers/clk/mediatek/clk-mt8186-imp_iic_wrap.c
 new file mode 100644
-index 0000000000000000000000000000000000000000..3c06a996ce20656c96d45b8eff6f65e1cd5b0a73
+index 0000000000000000000000000000000000000000..927cbd6508a6e7d84e0ff3385c483af668882470
 --- /dev/null
 +++ b/drivers/clk/mediatek/clk-mt8186-imp_iic_wrap.c
-@@ -0,0 +1,66 @@
+@@ -0,0 +1,67 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +//
-+// Copyright (c) 2021 MediaTek Inc.
++// Copyright (c) 2022 MediaTek Inc.
 +// Author: Chun-Jie Chen <chun-jie.chen@mediatek.com>
 +
 +#include "clk-gate.h"
@@ -5827,6 +5861,7 @@ index 0000000000000000000000000000000000000000..3c06a996ce20656c96d45b8eff6f65e1
 +
 +static struct platform_driver clk_mt8186_imp_iic_wrap_drv = {
 +	.probe = mtk_clk_simple_probe,
++	.remove = mtk_clk_simple_remove,
 +	.driver = {
 +		.name = "clk-mt8186-imp_iic_wrap",
 +		.of_match_table = of_match_clk_mt8186_imp_iic_wrap,
@@ -5835,13 +5870,13 @@ index 0000000000000000000000000000000000000000..3c06a996ce20656c96d45b8eff6f65e1
 +builtin_platform_driver(clk_mt8186_imp_iic_wrap_drv);
 diff --git a/drivers/clk/mediatek/clk-mt8186-infra_ao.c b/drivers/clk/mediatek/clk-mt8186-infra_ao.c
 new file mode 100644
-index 0000000000000000000000000000000000000000..7a23fded9879b0d1e64ca0b3d42721b995fc80c3
+index 0000000000000000000000000000000000000000..2cc9cd52dbf33a09e86e134d0dbadfd21c2a5598
 --- /dev/null
 +++ b/drivers/clk/mediatek/clk-mt8186-infra_ao.c
-@@ -0,0 +1,215 @@
+@@ -0,0 +1,216 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +//
-+// Copyright (c) 2021 MediaTek Inc.
++// Copyright (c) 2022 MediaTek Inc.
 +// Author: Chun-Jie Chen <chun-jie.chen@mediatek.com>
 +
 +#include "clk-gate.h"
@@ -5909,10 +5944,10 @@ index 0000000000000000000000000000000000000000..7a23fded9879b0d1e64ca0b3d42721b9
 +	GATE_INFRA_AO0(CLK_INFRA_AO_PMIC_AP, "infra_ao_pmic_ap", "top_pwrap_ulposc", 1),
 +	GATE_INFRA_AO0(CLK_INFRA_AO_PMIC_MD, "infra_ao_pmic_md", "top_pwrap_ulposc", 2),
 +	GATE_INFRA_AO0(CLK_INFRA_AO_PMIC_CONN, "infra_ao_pmic_conn", "top_pwrap_ulposc", 3),
-+	/* infra_ao_scp_core are main clocks in always-on co-processor. */
++	/* infra_ao_scp_core are main clock in always-on co-processor. */
 +	GATE_INFRA_AO0_FLAGS(CLK_INFRA_AO_SCP_CORE,
 +			     "infra_ao_scp_core", "top_scp", 4, CLK_IS_CRITICAL),
-+	/* infra_ao_sej is main clock is for secure engine with JTAG support */
++	/* infra_ao_sej is main clock for secure engine with JTAG support */
 +	GATE_INFRA_AO0_FLAGS(CLK_INFRA_AO_SEJ,
 +			     "infra_ao_sej", "top_axi", 5, CLK_IS_CRITICAL),
 +	GATE_INFRA_AO0(CLK_INFRA_AO_APXGPT, "infra_ao_apxgpt", "top_axi", 6),
@@ -6012,7 +6047,7 @@ index 0000000000000000000000000000000000000000..7a23fded9879b0d1e64ca0b3d42721b9
 +	GATE_INFRA_AO3(CLK_INFRA_AO_MD_MSDC0, "infra_ao_md_msdc0", "top_axi", 8),
 +	GATE_INFRA_AO3(CLK_INFRA_AO_MSDC0_SRC, "infra_ao_msdc0_clk", "top_msdc50_0", 9),
 +	GATE_INFRA_AO3(CLK_INFRA_AO_MSDC1_SRC, "infra_ao_msdc1_clk", "top_msdc30_1", 10),
-+	/* infra_ao_sej_f13m is main clock is for secure engine with JTAG support */
++	/* infra_ao_sej_f13m is main clock for secure engine with JTAG support */
 +	GATE_INFRA_AO3_FLAGS(CLK_INFRA_AO_SEJ_F13M,
 +			     "infra_ao_sej_f13m", "clk26m", 15, CLK_IS_CRITICAL),
 +	/* infra_ao_aes_top0_bclk is for secure encryption */
@@ -6048,6 +6083,7 @@ index 0000000000000000000000000000000000000000..7a23fded9879b0d1e64ca0b3d42721b9
 +
 +static struct platform_driver clk_mt8186_infra_ao_drv = {
 +	.probe = mtk_clk_simple_probe,
++	.remove = mtk_clk_simple_remove,
 +	.driver = {
 +		.name = "clk-mt8186-infra-ao",
 +		.of_match_table = of_match_clk_mt8186_infra_ao,
@@ -6056,13 +6092,13 @@ index 0000000000000000000000000000000000000000..7a23fded9879b0d1e64ca0b3d42721b9
 +builtin_platform_driver(clk_mt8186_infra_ao_drv);
 diff --git a/drivers/clk/mediatek/clk-mt8186-ipe.c b/drivers/clk/mediatek/clk-mt8186-ipe.c
 new file mode 100644
-index 0000000000000000000000000000000000000000..4d451f2b4a0b11a111cdc508a340f57d999e7beb
+index 0000000000000000000000000000000000000000..a1cb56532da0340c0ca03b071dd69d012f2149ca
 --- /dev/null
 +++ b/drivers/clk/mediatek/clk-mt8186-ipe.c
-@@ -0,0 +1,54 @@
+@@ -0,0 +1,55 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +//
-+// Copyright (c) 2021 MediaTek Inc.
++// Copyright (c) 2022 MediaTek Inc.
 +// Author: Chun-Jie Chen <chun-jie.chen@mediatek.com>
 +
 +#include "clk-gate.h"
@@ -6108,6 +6144,7 @@ index 0000000000000000000000000000000000000000..4d451f2b4a0b11a111cdc508a340f57d
 +
 +static struct platform_driver clk_mt8186_ipe_drv = {
 +	.probe = mtk_clk_simple_probe,
++	.remove = mtk_clk_simple_remove,
 +	.driver = {
 +		.name = "clk-mt8186-ipe",
 +		.of_match_table = of_match_clk_mt8186_ipe,
@@ -6116,13 +6153,13 @@ index 0000000000000000000000000000000000000000..4d451f2b4a0b11a111cdc508a340f57d
 +builtin_platform_driver(clk_mt8186_ipe_drv);
 diff --git a/drivers/clk/mediatek/clk-mt8186-mcu.c b/drivers/clk/mediatek/clk-mt8186-mcu.c
 new file mode 100644
-index 0000000000000000000000000000000000000000..58135de5ccc27c83f71224be3c5aabeda9d9ca32
+index 0000000000000000000000000000000000000000..6d82c5de16c1a9d1622a2ede5ee7a25b184d36be
 --- /dev/null
 +++ b/drivers/clk/mediatek/clk-mt8186-mcu.c
-@@ -0,0 +1,85 @@
+@@ -0,0 +1,106 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +//
-+// Copyright (c) 2021 MediaTek Inc.
++// Copyright (c) 2022 MediaTek Inc.
 +// Author: Chun-Jie Chen <chun-jie.chen@mediatek.com>
 +
 +#include "clk-mtk.h"
@@ -6175,30 +6212,51 @@ index 0000000000000000000000000000000000000000..58135de5ccc27c83f71224be3c5aabed
 +	int r;
 +	void __iomem *base;
 +
-+	base = devm_platform_ioremap_resource(pdev, 0);
-+	if (IS_ERR(base))
-+		return PTR_ERR(base);
-+
 +	clk_data = mtk_alloc_clk_data(CLK_MCU_NR_CLK);
 +	if (!clk_data)
 +		return -ENOMEM;
 +
-+	mtk_clk_register_composites(mcu_muxes, ARRAY_SIZE(mcu_muxes), base,
-+				    &mt8186_clk_lock, clk_data);
++	base = devm_platform_ioremap_resource(pdev, 0);
++	if (IS_ERR(base)) {
++		r = PTR_ERR(base);
++		goto free_mcu_data;
++	}
 +
-+	r = of_clk_add_provider(node, of_clk_src_onecell_get, clk_data);
++	r = mtk_clk_register_composites(mcu_muxes, ARRAY_SIZE(mcu_muxes), base,
++					&mt8186_clk_lock, clk_data);
 +	if (r)
 +		goto free_mcu_data;
 +
++	r = of_clk_add_provider(node, of_clk_src_onecell_get, clk_data);
++	if (r)
++		goto unregister_composite_muxes;
++
++	platform_set_drvdata(pdev, clk_data);
++
 +	return r;
 +
++unregister_composite_muxes:
++	mtk_clk_unregister_composites(mcu_muxes, ARRAY_SIZE(mcu_muxes), clk_data);
 +free_mcu_data:
 +	mtk_free_clk_data(clk_data);
 +	return r;
 +}
 +
++static int clk_mt8186_mcu_remove(struct platform_device *pdev)
++{
++	struct clk_onecell_data *clk_data = platform_get_drvdata(pdev);
++	struct device_node *node = pdev->dev.of_node;
++
++	of_clk_del_provider(node);
++	mtk_clk_unregister_composites(mcu_muxes, ARRAY_SIZE(mcu_muxes), clk_data);
++	mtk_free_clk_data(clk_data);
++
++	return 0;
++}
++
 +static struct platform_driver clk_mt8186_mcu_drv = {
 +	.probe = clk_mt8186_mcu_probe,
++	.remove = clk_mt8186_mcu_remove,
 +	.driver = {
 +		.name = "clk-mt8186-mcu",
 +		.of_match_table = of_match_clk_mt8186_mcu,
@@ -6207,13 +6265,13 @@ index 0000000000000000000000000000000000000000..58135de5ccc27c83f71224be3c5aabed
 +builtin_platform_driver(clk_mt8186_mcu_drv);
 diff --git a/drivers/clk/mediatek/clk-mt8186-mdp.c b/drivers/clk/mediatek/clk-mt8186-mdp.c
 new file mode 100644
-index 0000000000000000000000000000000000000000..e11c7cf0c42aafe7a7a214933a7a5be54b7cfdbc
+index 0000000000000000000000000000000000000000..dfa0750acec103614f974b8613074df54e010df3
 --- /dev/null
 +++ b/drivers/clk/mediatek/clk-mt8186-mdp.c
-@@ -0,0 +1,79 @@
+@@ -0,0 +1,80 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +//
-+// Copyright (c) 2021 MediaTek Inc.
++// Copyright (c) 2022 MediaTek Inc.
 +// Author: Chun-Jie Chen <chun-jie.chen@mediatek.com>
 +
 +#include "clk-gate.h"
@@ -6284,6 +6342,7 @@ index 0000000000000000000000000000000000000000..e11c7cf0c42aafe7a7a214933a7a5be5
 +
 +static struct platform_driver clk_mt8186_mdp_drv = {
 +	.probe = mtk_clk_simple_probe,
++	.remove = mtk_clk_simple_remove,
 +	.driver = {
 +		.name = "clk-mt8186-mdp",
 +		.of_match_table = of_match_clk_mt8186_mdp,
@@ -6292,13 +6351,13 @@ index 0000000000000000000000000000000000000000..e11c7cf0c42aafe7a7a214933a7a5be5
 +builtin_platform_driver(clk_mt8186_mdp_drv);
 diff --git a/drivers/clk/mediatek/clk-mt8186-mfg.c b/drivers/clk/mediatek/clk-mt8186-mfg.c
 new file mode 100644
-index 0000000000000000000000000000000000000000..00feb0f67adb9d51bad31a59a4ab7637a5e1c1cf
+index 0000000000000000000000000000000000000000..8ecb489a7fe02360f3008d7f3b20765cbf971a3d
 --- /dev/null
 +++ b/drivers/clk/mediatek/clk-mt8186-mfg.c
-@@ -0,0 +1,47 @@
+@@ -0,0 +1,48 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +//
-+// Copyright (c) 2021 MediaTek Inc.
++// Copyright (c) 2022 MediaTek Inc.
 +// Author: Chun-Jie Chen <chun-jie.chen@mediatek.com>
 +
 +#include "clk-gate.h"
@@ -6337,6 +6396,7 @@ index 0000000000000000000000000000000000000000..00feb0f67adb9d51bad31a59a4ab7637
 +
 +static struct platform_driver clk_mt8186_mfg_drv = {
 +	.probe = mtk_clk_simple_probe,
++	.remove = mtk_clk_simple_remove,
 +	.driver = {
 +		.name = "clk-mt8186-mfg",
 +		.of_match_table = of_match_clk_mt8186_mfg,
@@ -6345,13 +6405,13 @@ index 0000000000000000000000000000000000000000..00feb0f67adb9d51bad31a59a4ab7637
 +builtin_platform_driver(clk_mt8186_mfg_drv);
 diff --git a/drivers/clk/mediatek/clk-mt8186-mm.c b/drivers/clk/mediatek/clk-mt8186-mm.c
 new file mode 100644
-index 0000000000000000000000000000000000000000..6064626fde8fe438161037665e4caf6fbd6554c7
+index 0000000000000000000000000000000000000000..b21be505a3da88961839914339c6083b963ab283
 --- /dev/null
 +++ b/drivers/clk/mediatek/clk-mt8186-mm.c
-@@ -0,0 +1,94 @@
+@@ -0,0 +1,111 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +//
-+// Copyright (c) 2021 MediaTek Inc.
++// Copyright (c) 2022 MediaTek Inc.
 +// Author: Chun-Jie Chen <chun-jie.chen@mediatek.com>
 +
 +#include "clk-gate.h"
@@ -6426,18 +6486,35 @@ index 0000000000000000000000000000000000000000..6064626fde8fe438161037665e4caf6f
 +
 +	r = of_clk_add_provider(node, of_clk_src_onecell_get, clk_data);
 +	if (r)
-+		goto free_mm_data;
++		goto unregister_gates;
++
++	platform_set_drvdata(pdev, clk_data);
 +
 +	return r;
 +
++unregister_gates:
++	mtk_clk_unregister_gates(mm_clks, ARRAY_SIZE(mm_clks), clk_data);
 +free_mm_data:
 +	mtk_free_clk_data(clk_data);
 +	return r;
 +}
 +
++static int clk_mt8186_mm_remove(struct platform_device *pdev)
++{
++	struct device *dev = &pdev->dev;
++	struct device_node *node = dev->parent->of_node;
++	struct clk_onecell_data *clk_data = platform_get_drvdata(pdev);
++
++	of_clk_del_provider(node);
++	mtk_clk_unregister_gates(mm_clks, ARRAY_SIZE(mm_clks), clk_data);
++	mtk_free_clk_data(clk_data);
++
++	return 0;
++}
 +
 +static struct platform_driver clk_mt8186_mm_drv = {
 +	.probe = clk_mt8186_mm_probe,
++	.remove = clk_mt8186_mm_remove,
 +	.driver = {
 +		.name = "clk-mt8186-mm",
 +	},
@@ -6445,13 +6522,13 @@ index 0000000000000000000000000000000000000000..6064626fde8fe438161037665e4caf6f
 +builtin_platform_driver(clk_mt8186_mm_drv);
 diff --git a/drivers/clk/mediatek/clk-mt8186-topckgen.c b/drivers/clk/mediatek/clk-mt8186-topckgen.c
 new file mode 100644
-index 0000000000000000000000000000000000000000..0295e4bde9fcfa7f88041f00e9dafdd87c45b6a6
+index 0000000000000000000000000000000000000000..7c5d90d5b31ca55ab738be6a600d924b67f7a5f3
 --- /dev/null
 +++ b/drivers/clk/mediatek/clk-mt8186-topckgen.c
-@@ -0,0 +1,736 @@
+@@ -0,0 +1,780 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +//
-+// Copyright (c) 2021 MediaTek Inc.
++// Copyright (c) 2022 MediaTek Inc.
 +// Author: Chun-Jie Chen <chun-jie.chen@mediatek.com>
 +
 +#include "clk-mtk.h"
@@ -7147,38 +7224,82 @@ index 0000000000000000000000000000000000000000..0295e4bde9fcfa7f88041f00e9dafdd8
 +	int r;
 +	void __iomem *base;
 +
-+	base = devm_platform_ioremap_resource(pdev, 0);
-+	if (IS_ERR(base))
-+		return PTR_ERR(base);
-+
 +	clk_data = mtk_alloc_clk_data(CLK_TOP_NR_CLK);
 +	if (!clk_data)
 +		return -ENOMEM;
 +
-+	mtk_clk_register_fixed_clks(top_fixed_clks, ARRAY_SIZE(top_fixed_clks),
-+				    clk_data);
-+	mtk_clk_register_factors(top_divs, ARRAY_SIZE(top_divs), clk_data);
-+	mtk_clk_register_muxes(top_mtk_muxes, ARRAY_SIZE(top_mtk_muxes), node,
-+			       &mt8186_clk_lock, clk_data);
++	base = devm_platform_ioremap_resource(pdev, 0);
++	if (IS_ERR(base)) {
++		r = PTR_ERR(base);
++		goto free_top_data;
++	}
 +
-+	mtk_clk_register_composites(top_muxes, ARRAY_SIZE(top_muxes), base,
-+				    &mt8186_clk_lock, clk_data);
-+	mtk_clk_register_composites(top_adj_divs, ARRAY_SIZE(top_adj_divs), base,
-+				    &mt8186_clk_lock, clk_data);
-+
-+	r = of_clk_add_provider(node, of_clk_src_onecell_get, clk_data);
++	r = mtk_clk_register_fixed_clks(top_fixed_clks, ARRAY_SIZE(top_fixed_clks),
++					clk_data);
 +	if (r)
 +		goto free_top_data;
 +
++	r = mtk_clk_register_factors(top_divs, ARRAY_SIZE(top_divs), clk_data);
++	if (r)
++		goto unregister_fixed_clks;
++
++	r = mtk_clk_register_muxes(top_mtk_muxes, ARRAY_SIZE(top_mtk_muxes), node,
++				   &mt8186_clk_lock, clk_data);
++	if (r)
++		goto unregister_factors;
++
++	r = mtk_clk_register_composites(top_muxes, ARRAY_SIZE(top_muxes), base,
++					&mt8186_clk_lock, clk_data);
++	if (r)
++		goto unregister_muxes;
++
++	r = mtk_clk_register_composites(top_adj_divs, ARRAY_SIZE(top_adj_divs), base,
++					&mt8186_clk_lock, clk_data);
++	if (r)
++		goto unregister_composite_muxes;
++
++	r = of_clk_add_provider(node, of_clk_src_onecell_get, clk_data);
++	if (r)
++		goto unregister_composite_divs;;
++
++	platform_set_drvdata(pdev, clk_data);
++
 +	return r;
 +
++unregister_composite_divs:
++	mtk_clk_unregister_composites(top_adj_divs, ARRAY_SIZE(top_adj_divs), clk_data);
++unregister_composite_muxes:
++	mtk_clk_unregister_composites(top_muxes, ARRAY_SIZE(top_muxes), clk_data);
++unregister_muxes:
++	mtk_clk_unregister_muxes(top_mtk_muxes, ARRAY_SIZE(top_mtk_muxes), clk_data);
++unregister_factors:
++	mtk_clk_unregister_factors(top_divs, ARRAY_SIZE(top_divs), clk_data);
++unregister_fixed_clks:
++	mtk_clk_unregister_fixed_clks(top_fixed_clks, ARRAY_SIZE(top_fixed_clks), clk_data);
 +free_top_data:
 +	mtk_free_clk_data(clk_data);
 +	return r;
 +}
 +
++static int clk_mt8186_topck_remove(struct platform_device *pdev)
++{
++	struct clk_onecell_data *clk_data = platform_get_drvdata(pdev);
++	struct device_node *node = pdev->dev.of_node;
++
++	of_clk_del_provider(node);
++	mtk_clk_unregister_composites(top_adj_divs, ARRAY_SIZE(top_adj_divs), clk_data);
++	mtk_clk_unregister_composites(top_muxes, ARRAY_SIZE(top_muxes), clk_data);
++	mtk_clk_unregister_muxes(top_mtk_muxes, ARRAY_SIZE(top_mtk_muxes), clk_data);
++	mtk_clk_unregister_factors(top_divs, ARRAY_SIZE(top_divs), clk_data);
++	mtk_clk_unregister_fixed_clks(top_fixed_clks, ARRAY_SIZE(top_fixed_clks), clk_data);
++	mtk_free_clk_data(clk_data);
++
++	return 0;
++}
++
 +static struct platform_driver clk_mt8186_topck_drv = {
 +	.probe = clk_mt8186_topck_probe,
++	.remove = clk_mt8186_topck_remove,
 +	.driver = {
 +		.name = "clk-mt8186-topck",
 +		.of_match_table = of_match_clk_mt8186_topck,
@@ -7187,13 +7308,13 @@ index 0000000000000000000000000000000000000000..0295e4bde9fcfa7f88041f00e9dafdd8
 +builtin_platform_driver(clk_mt8186_topck_drv);
 diff --git a/drivers/clk/mediatek/clk-mt8186-vdec.c b/drivers/clk/mediatek/clk-mt8186-vdec.c
 new file mode 100644
-index 0000000000000000000000000000000000000000..e3ae9247abd61c53e3e9e10e199cf9bac99f2ada
+index 0000000000000000000000000000000000000000..5ad7e1ae0bacd5df120313503b2426fba5b98f37
 --- /dev/null
 +++ b/drivers/clk/mediatek/clk-mt8186-vdec.c
-@@ -0,0 +1,87 @@
+@@ -0,0 +1,88 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +//
-+// Copyright (c) 2021 MediaTek Inc.
++// Copyright (c) 2022 MediaTek Inc.
 +// Author: Chun-Jie Chen <chun-jie.chen@mediatek.com>
 +
 +#include <linux/clk-provider.h>
@@ -7272,6 +7393,7 @@ index 0000000000000000000000000000000000000000..e3ae9247abd61c53e3e9e10e199cf9ba
 +
 +static struct platform_driver clk_mt8186_vdec_drv = {
 +	.probe = mtk_clk_simple_probe,
++	.remove = mtk_clk_simple_remove,
 +	.driver = {
 +		.name = "clk-mt8186-vdec",
 +		.of_match_table = of_match_clk_mt8186_vdec,
@@ -7280,13 +7402,13 @@ index 0000000000000000000000000000000000000000..e3ae9247abd61c53e3e9e10e199cf9ba
 +builtin_platform_driver(clk_mt8186_vdec_drv);
 diff --git a/drivers/clk/mediatek/clk-mt8186-venc.c b/drivers/clk/mediatek/clk-mt8186-venc.c
 new file mode 100644
-index 0000000000000000000000000000000000000000..30df37c4b5c3eb56ecaeb9a721d6df4d04aafdce
+index 0000000000000000000000000000000000000000..2ae9bcfb35de6eb27385646f5eca8c1a8bf14868
 --- /dev/null
 +++ b/drivers/clk/mediatek/clk-mt8186-venc.c
-@@ -0,0 +1,50 @@
+@@ -0,0 +1,51 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +//
-+// Copyright (c) 2021 MediaTek Inc.
++// Copyright (c) 2022 MediaTek Inc.
 +// Author: Chun-Jie Chen <chun-jie.chen@mediatek.com>
 +
 +#include "clk-gate.h"
@@ -7328,6 +7450,7 @@ index 0000000000000000000000000000000000000000..30df37c4b5c3eb56ecaeb9a721d6df4d
 +
 +static struct platform_driver clk_mt8186_venc_drv = {
 +	.probe = mtk_clk_simple_probe,
++	.remove = mtk_clk_simple_remove,
 +	.driver = {
 +		.name = "clk-mt8186-venc",
 +		.of_match_table = of_match_clk_mt8186_venc,
@@ -7336,13 +7459,13 @@ index 0000000000000000000000000000000000000000..30df37c4b5c3eb56ecaeb9a721d6df4d
 +builtin_platform_driver(clk_mt8186_venc_drv);
 diff --git a/drivers/clk/mediatek/clk-mt8186-wpe.c b/drivers/clk/mediatek/clk-mt8186-wpe.c
 new file mode 100644
-index 0000000000000000000000000000000000000000..a650c34b4ff1052401d629471d3217868422cd82
+index 0000000000000000000000000000000000000000..8c16c53ba808d500ad9d156956892ba0bc63c0ba
 --- /dev/null
 +++ b/drivers/clk/mediatek/clk-mt8186-wpe.c
-@@ -0,0 +1,50 @@
+@@ -0,0 +1,51 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +//
-+// Copyright (c) 2021 MediaTek Inc.
++// Copyright (c) 2022 MediaTek Inc.
 +// Author: Chun-Jie Chen <chun-jie.chen@mediatek.com>
 +
 +#include "clk-gate.h"
@@ -7384,6 +7507,7 @@ index 0000000000000000000000000000000000000000..a650c34b4ff1052401d629471d321786
 +
 +static struct platform_driver clk_mt8186_wpe_drv = {
 +	.probe = mtk_clk_simple_probe,
++	.remove = mtk_clk_simple_remove,
 +	.driver = {
 +		.name = "clk-mt8186-wpe",
 +		.of_match_table = of_match_clk_mt8186_wpe,
@@ -7391,10 +7515,10 @@ index 0000000000000000000000000000000000000000..a650c34b4ff1052401d629471d321786
 +};
 +builtin_platform_driver(clk_mt8186_wpe_drv);
 diff --git a/drivers/clk/mediatek/clk-pll.c b/drivers/clk/mediatek/clk-pll.c
-index 99ada6e06697aecc608f621ee4ef40ba73c8d1fd..df0eee0bab770f00513ad78e089c5fe17a7662cf 100644
+index 3997debc600e4e015b8f28c0ee2dc18fdb463ad7..959d725ac865b55a1df2e7d0a7e57fbff4520e4b 100644
 --- a/drivers/clk/mediatek/clk-pll.c
 +++ b/drivers/clk/mediatek/clk-pll.c
-@@ -239,7 +239,6 @@ static int mtk_pll_prepare(struct clk_hw *hw)
+@@ -242,7 +242,6 @@ static int mtk_pll_prepare(struct clk_hw *hw)
  {
  	struct mtk_clk_pll *pll = to_mtk_clk_pll(hw);
  	u32 r;
@@ -7402,7 +7526,7 @@ index 99ada6e06697aecc608f621ee4ef40ba73c8d1fd..df0eee0bab770f00513ad78e089c5fe1
  
  	r = readl(pll->pwr_addr) | CON0_PWR_ON;
  	writel(r, pll->pwr_addr);
-@@ -252,9 +251,8 @@ static int mtk_pll_prepare(struct clk_hw *hw)
+@@ -255,9 +254,8 @@ static int mtk_pll_prepare(struct clk_hw *hw)
  	r = readl(pll->en_addr) | BIT(pll->data->pll_en_bit);
  	writel(r, pll->en_addr);
  
@@ -7414,7 +7538,7 @@ index 99ada6e06697aecc608f621ee4ef40ba73c8d1fd..df0eee0bab770f00513ad78e089c5fe1
  		writel(r, pll->base_addr + REG_CON0);
  	}
  
-@@ -275,7 +273,6 @@ static void mtk_pll_unprepare(struct clk_hw *hw)
+@@ -278,7 +276,6 @@ static void mtk_pll_unprepare(struct clk_hw *hw)
  {
  	struct mtk_clk_pll *pll = to_mtk_clk_pll(hw);
  	u32 r;
@@ -7422,7 +7546,7 @@ index 99ada6e06697aecc608f621ee4ef40ba73c8d1fd..df0eee0bab770f00513ad78e089c5fe1
  
  	if (pll->data->flags & HAVE_RST_BAR) {
  		r = readl(pll->base_addr + REG_CON0);
-@@ -285,9 +282,8 @@ static void mtk_pll_unprepare(struct clk_hw *hw)
+@@ -288,9 +285,8 @@ static void mtk_pll_unprepare(struct clk_hw *hw)
  
  	__mtk_pll_tuner_disable(pll);
  
@@ -12894,7 +13018,7 @@ index 0000000000000000000000000000000000000000..f4f27f3f0baf147a8552055b80f5e6a9
 +MODULE_AUTHOR("Andrew-sh.Cheng <andrew-sh.cheng@mediatek.com>");
 +MODULE_LICENSE("GPL v2");
 diff --git a/drivers/gpu/drm/bridge/analogix/anx7625.c b/drivers/gpu/drm/bridge/analogix/anx7625.c
-index 4b63a8f4027ba7b8ecbf34c0db0ce8733760746c..5738fbe4c4f3a34367433151970a675f2a5117e6 100644
+index 633618bafd75d3087cb4797b28c63b8d2f05f241..82665394b99a793d377eac68641cf8bc12ee6040 100644
 --- a/drivers/gpu/drm/bridge/analogix/anx7625.c
 +++ b/drivers/gpu/drm/bridge/analogix/anx7625.c
 @@ -15,6 +15,9 @@
@@ -13094,7 +13218,49 @@ index 4b63a8f4027ba7b8ecbf34c0db0ce8733760746c..5738fbe4c4f3a34367433151970a675f
  
  	ret = devm_mipi_dsi_attach(dev, dsi);
  	if (ret) {
-@@ -2524,6 +2665,10 @@ static int __maybe_unused anx7625_runtime_pm_resume(struct device *dev)
+@@ -2124,17 +2265,30 @@ static int anx7625_bridge_attach(struct drm_bridge *bridge,
+ 		return err;
+ 	}
+ 
++	ctx->link = device_link_add(bridge->dev->dev, dev, DL_FLAG_STATELESS);
++	if (!ctx->link) {
++		DRM_DEV_ERROR(dev, "device link creation failed");
++		err = -EINVAL;
++		goto remove_aux;
++	}
++
+ 	if (ctx->pdata.panel_bridge) {
+ 		err = drm_bridge_attach(bridge->encoder,
+ 					ctx->pdata.panel_bridge,
+ 					&ctx->bridge, flags);
+ 		if (err)
+-			return err;
++			goto remove_device_link;
+ 	}
+ 
+ 	ctx->bridge_attached = 1;
+ 
+ 	return 0;
++
++remove_device_link:
++	device_link_del(ctx->link);
++remove_aux:
++	drm_dp_aux_unregister(&ctx->aux);
++	return err;
+ }
+ 
+ static void anx7625_bridge_detach(struct drm_bridge *bridge)
+@@ -2142,6 +2296,9 @@ static void anx7625_bridge_detach(struct drm_bridge *bridge)
+ 	struct anx7625_data *ctx = bridge_to_anx7625(bridge);
+ 
+ 	drm_dp_aux_unregister(&ctx->aux);
++
++	if (ctx->link)
++		device_link_del(ctx->link);
+ }
+ 
+ static enum drm_mode_status
+@@ -2524,6 +2681,10 @@ static int __maybe_unused anx7625_runtime_pm_resume(struct device *dev)
  	mutex_lock(&ctx->lock);
  
  	anx7625_power_on_init(ctx);
@@ -13105,7 +13271,48 @@ index 4b63a8f4027ba7b8ecbf34c0db0ce8733760746c..5738fbe4c4f3a34367433151970a675f
  	anx7625_hpd_polling(ctx);
  
  	mutex_unlock(&ctx->lock);
-@@ -2678,6 +2823,11 @@ static int anx7625_i2c_probe(struct i2c_client *client,
+@@ -2531,38 +2692,9 @@ static int __maybe_unused anx7625_runtime_pm_resume(struct device *dev)
+ 	return 0;
+ }
+ 
+-static int __maybe_unused anx7625_resume(struct device *dev)
+-{
+-	struct anx7625_data *ctx = dev_get_drvdata(dev);
+-
+-	if (!ctx->pdata.intp_irq)
+-		return 0;
+-
+-	if (!pm_runtime_enabled(dev) || !pm_runtime_suspended(dev)) {
+-		enable_irq(ctx->pdata.intp_irq);
+-		anx7625_runtime_pm_resume(dev);
+-	}
+-
+-	return 0;
+-}
+-
+-static int __maybe_unused anx7625_suspend(struct device *dev)
+-{
+-	struct anx7625_data *ctx = dev_get_drvdata(dev);
+-
+-	if (!ctx->pdata.intp_irq)
+-		return 0;
+-
+-	if (!pm_runtime_enabled(dev) || !pm_runtime_suspended(dev)) {
+-		anx7625_runtime_pm_suspend(dev);
+-		disable_irq(ctx->pdata.intp_irq);
+-	}
+-
+-	return 0;
+-}
+-
+ static const struct dev_pm_ops anx7625_pm_ops = {
+-	SET_SYSTEM_SLEEP_PM_OPS(anx7625_suspend, anx7625_resume)
++	SET_SYSTEM_SLEEP_PM_OPS(pm_runtime_force_suspend,
++				pm_runtime_force_resume)
+ 	SET_RUNTIME_PM_OPS(anx7625_runtime_pm_suspend,
+ 			   anx7625_runtime_pm_resume, NULL)
+ };
+@@ -2678,6 +2810,11 @@ static int anx7625_i2c_probe(struct i2c_client *client,
  	if (platform->pdata.intp_irq)
  		queue_work(platform->workqueue, &platform->work);
  
@@ -13117,7 +13324,7 @@ index 4b63a8f4027ba7b8ecbf34c0db0ce8733760746c..5738fbe4c4f3a34367433151970a675f
  	platform->bridge.funcs = &anx7625_bridge_funcs;
  	platform->bridge.of_node = client->dev.of_node;
  	if (!anx7625_of_panel_on_aux_bus(&client->dev))
-@@ -2731,6 +2881,11 @@ static int anx7625_i2c_remove(struct i2c_client *client)
+@@ -2731,6 +2868,11 @@ static int anx7625_i2c_remove(struct i2c_client *client)
  
  	drm_bridge_remove(&platform->bridge);
  
@@ -13130,7 +13337,7 @@ index 4b63a8f4027ba7b8ecbf34c0db0ce8733760746c..5738fbe4c4f3a34367433151970a675f
  		destroy_workqueue(platform->workqueue);
  
 diff --git a/drivers/gpu/drm/bridge/analogix/anx7625.h b/drivers/gpu/drm/bridge/analogix/anx7625.h
-index edbbfe410a56e82b43edd5c3bee9644708eb85a5..e94c00551ac8a4e3eafcb6c203639843a78ca209 100644
+index edbbfe410a56e82b43edd5c3bee9644708eb85a5..fefd5f34d8304509057a17540b3c0286efecb4ed 100644
 --- a/drivers/gpu/drm/bridge/analogix/anx7625.h
 +++ b/drivers/gpu/drm/bridge/analogix/anx7625.h
 @@ -55,6 +55,18 @@
@@ -13175,16 +13382,17 @@ index edbbfe410a56e82b43edd5c3bee9644708eb85a5..e94c00551ac8a4e3eafcb6c203639843
  struct anx7625_data {
  	struct anx7625_platform_data pdata;
  	struct platform_device *audio_pdev;
-@@ -473,6 +494,7 @@ struct anx7625_data {
+@@ -473,6 +494,8 @@ struct anx7625_data {
  	struct drm_connector *connector;
  	struct mipi_dsi_device *dsi;
  	struct drm_dp_aux aux;
 +	struct anx7625_port_data typec_ports[2];
++	struct device_link *link;
  };
  
  #endif  /* __ANX7625_H__ */
 diff --git a/drivers/gpu/drm/bridge/ite-it6505.c b/drivers/gpu/drm/bridge/ite-it6505.c
-index e085204dc37f0866affcd650400a8b4c5d203fb8..b0a8f44c36202ce07033ab16ec7d8a94630b2c25 100644
+index 3add6ba9c3eca16edaf5b9e46f9857a8534d05a9..124949ed634065cabe600f4201c9f4de6913542f 100644
 --- a/drivers/gpu/drm/bridge/ite-it6505.c
 +++ b/drivers/gpu/drm/bridge/ite-it6505.c
 @@ -6,7 +6,6 @@
@@ -14943,10 +15151,10 @@ index bced4c7d668e384e8b09e54b019844f12fbf6b64..e922ef2569804ad177feb2c864c5a25c
  };
  MODULE_DEVICE_TABLE(of, mtk_dsi_of_match);
 diff --git a/drivers/gpu/drm/panel/panel-edp.c b/drivers/gpu/drm/panel/panel-edp.c
-index ed52222a62fca61da02f6ea539c49b13d2d3bb91..b40d572fb2e71ae596ae7a95bd6ac9d1c4eb2e02 100644
+index ce4c5b391df8f0a348507998733d5513b698a232..8a106fa47cb37c392468924f8ac7ba99d14a00c4 100644
 --- a/drivers/gpu/drm/panel/panel-edp.c
 +++ b/drivers/gpu/drm/panel/panel-edp.c
-@@ -1303,6 +1303,29 @@ static const struct panel_desc innolux_n125hce_gn1 = {
+@@ -1330,6 +1330,29 @@ static const struct panel_desc innolux_n125hce_gn1 = {
  	},
  };
  
@@ -14976,7 +15184,7 @@ index ed52222a62fca61da02f6ea539c49b13d2d3bb91..b40d572fb2e71ae596ae7a95bd6ac9d1
  static const struct drm_display_mode innolux_p120zdg_bf1_mode = {
  	.clock = 206016,
  	.hdisplay = 2160,
-@@ -1723,6 +1746,9 @@ static const struct of_device_id platform_of_match[] = {
+@@ -1750,6 +1773,9 @@ static const struct of_device_id platform_of_match[] = {
  	}, {
  		.compatible = "innolux,n125hce-gn1",
  		.data = &innolux_n125hce_gn1,
