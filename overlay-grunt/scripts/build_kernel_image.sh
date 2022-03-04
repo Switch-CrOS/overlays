@@ -13,4 +13,6 @@
 
 modify_kernel_command_line() {
   echo "spectre_v2_user=off" >> "$1"
+  # see b/164396969
+  echo "rtc-cmos.use_acpi_alarm=1" >> "$1"
 }
