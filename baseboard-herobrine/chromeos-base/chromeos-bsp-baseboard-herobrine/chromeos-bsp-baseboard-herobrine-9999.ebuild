@@ -21,6 +21,7 @@ IUSE="cheets"
 RDEPEND="
 	net-misc/rmtfs
 	net-misc/qc-netmgr
+	sys-apps/mosys
 "
 DEPEND="${RDEPEND}"
 
