@@ -31,5 +31,8 @@ modify_kernel_command_line() {
   quirks+="046d:0876:k"
   # Aggregate and export
   echo "usbcore.quirks=${quirks}"
+
+  # Enable l1d_flush for untrusted VM security
+  echo "kvm-intel.vmentry_l1d_flush=always" >> "$1"
  } >> "$1"
 }
