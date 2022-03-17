@@ -9,6 +9,7 @@ CROS_WORKON_REPO="${CROS_GIT_HOST_URL}"
 PROJECTS=(
 	"nivviks"
 	"nereid"
+	"adlnrvp"
 )
 
 CONFIG_PATH="sw_build_config/platform/chromeos-config"
