@@ -3,8 +3,6 @@
 
 EAPI=7
 
-CROS_WORKON_COMMIT="447e95b8615011fd5091d24a0a0f70f0fa131388"
-CROS_WORKON_TREE="aea82be6c043af2b4d7578a2ad0e7e53367dba83"
 CROS_WORKON_PROJECT="chromiumos/third_party/kernel"
 CROS_WORKON_LOCALNAME="kernel/v5.10-manatee"
 CROS_WORKON_EGIT_BRANCH="chromeos-5.10-manatee"
@@ -14,8 +12,9 @@ inherit cros-workon cros-kernel2
 
 HOMEPAGE="https://www.chromium.org/chromium-os/chromiumos-design-docs/chromium-os-kernel"
 DESCRIPTION="Chrome OS Linux Kernel 5.10 manatee guest"
-KEYWORDS="*"
+KEYWORDS="~*"
 
+RDEPEND+="!sys-kernel/chromeos-kernel-5_10"
 # This is Manatee specific 5.10 kernel temporarily branched in order to allow
 # development for teamfood. We will undiverge and remove this soon!
 #
