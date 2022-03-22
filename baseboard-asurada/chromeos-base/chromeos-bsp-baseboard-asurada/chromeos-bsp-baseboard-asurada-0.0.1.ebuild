@@ -16,7 +16,9 @@ S="${WORKDIR}"
 IUSE=""
 
 # Add dependencies on other ebuilds from within this board overlay
-RDEPEND=""
+RDEPEND="
+	chromeos-base/chromeos-scp-firmware-asurada
+"
 DEPEND="${RDEPEND}"
 
 src_install() {
