@@ -154,6 +154,13 @@ cros-healthd-sku-number-enabled: &cros_healthd_sku_number_enabled
     cached-vpd:
       has-sku-number: True
 
+jinlon-config: &jinlon_config
+  <<: [ *base_config, *cros_healthd_sku_number_enabled ]
+  ui:
+    side-volume-button:
+      region: keyboard
+      side: left
+
 chromeos:
   devices:
     - $device-name: "unprovisioned_hatch"
@@ -410,9 +417,7 @@ chromeos:
         - $sku-id: 255
           $fw-name: "Jinlon"
           $ec-build-name: "jinlon"
-          config:
-            <<: *base_config
-            <<: *cros_healthd_sku_number_enabled
+          config: *jinlon_config
     - $device-name: "jinlon"
       $fw-name: "Jinlon"
       $ec-build-name: "jinlon"
@@ -426,20 +431,15 @@ chromeos:
       $cras_card_config: "jinlon"
       skus:
         - $sku-id: 1
-          config:
-            <<: *base_config
-            <<: *cros_healthd_sku_number_enabled
+          config: *jinlon_config
         - $sku-id: 2
           $internal-backlight-no-als-battery-brightness: "52.0"
-          config:
-            <<: *base_config
-            <<: *cros_healthd_sku_number_enabled
+          config: *jinlon_config
         - $sku-id: 21
           $set-cellular-transmit-power-for-tablet-mode: "1"
           $set-cellular-transmit-power-dpr-gpio: "471"
           config:
-            <<: *base_config
-            <<: *cros_healthd_sku_number_enabled
+            <<: *jinlon_config
             modem:
               firmware-variant: "{{$device-name}}"
               wedge-reboot-delay-ms: "20000"
@@ -448,8 +448,7 @@ chromeos:
           $set-cellular-transmit-power-dpr-gpio: "471"
           $internal-backlight-no-als-battery-brightness: "52.0"
           config:
-            <<: *base_config
-            <<: *cros_healthd_sku_number_enabled
+            <<: *jinlon_config
             modem:
               firmware-variant: "{{$device-name}}"
               wedge-reboot-delay-ms: "20000"
