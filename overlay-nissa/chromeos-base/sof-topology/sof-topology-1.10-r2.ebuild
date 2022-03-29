@@ -16,6 +16,7 @@ S=${WORKDIR}/${PN}-brya-${PV}
 src_install() {
 	insinto /lib/firmware/intel/sof-tplg
 	doins ./*.tplg
+	newins ./sof-adl-max98360a-nau8825.tplg sof-adl-mx98360a-nau8825.tplg
 	insinto /lib/firmware/intel/sof-tplg/nivviks0
 	newins ./sof-adl-rt1019-nau8825.tplg sof-adl-mx98360a-nau8825.tplg
 	dodoc README
