@@ -854,18 +854,6 @@ index 0000000000000000000000000000000000000000..9280a26038f3193bb8c03dab2462f605
 +    };
 +
 +...
-diff --git a/Documentation/devicetree/bindings/usb/mediatek,mtk-xhci.yaml b/Documentation/devicetree/bindings/usb/mediatek,mtk-xhci.yaml
-index 11f7bacd4e2b076ccbed146003b63d6f1c2b67c0..6d9c3bad1d103380c3bd5bf77b03a96440c42bd4 100644
---- a/Documentation/devicetree/bindings/usb/mediatek,mtk-xhci.yaml
-+++ b/Documentation/devicetree/bindings/usb/mediatek,mtk-xhci.yaml
-@@ -30,6 +30,7 @@ properties:
-           - mediatek,mt7629-xhci
-           - mediatek,mt8173-xhci
-           - mediatek,mt8183-xhci
-+          - mediatek,mt8186-xhci
-           - mediatek,mt8192-xhci
-           - mediatek,mt8195-xhci
-       - const: mediatek,mtk-xhci
 diff --git a/README b/README
 index 669ac7c32292798644b21dbb5a0dc657125f444d..dc0f0ea4da037c7ea336d73d30e6dbfae24f796f 100644
 --- a/README
@@ -1967,10 +1955,10 @@ index 0000000000000000000000000000000000000000..7d4546e6e9effa8a22104ec76802afc0
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8186-corsola.dtsi b/arch/arm64/boot/dts/mediatek/mt8186-corsola.dtsi
 new file mode 100644
-index 0000000000000000000000000000000000000000..9abd1193d546698830e1f202433d8749b9fd5f33
+index 0000000000000000000000000000000000000000..521ad59e5e06e0ca05de94160f0fd7f07dbf3ce7
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt8186-corsola.dtsi
-@@ -0,0 +1,1604 @@
+@@ -0,0 +1,1606 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
 +/*
 + * Copyright (C) 2022 MediaTek Inc.
@@ -2923,6 +2911,7 @@ index 0000000000000000000000000000000000000000..9abd1193d546698830e1f202433d8749
 +		pins_cmd_dat{
 +			pinmux = <PINMUX_GPIO26__FUNC_I2S2_BCK>,
 +				 <PINMUX_GPIO27__FUNC_I2S2_LRCK>;
++			drive-strength = <MTK_DRIVE_4mA>;
 +		};
 +	};
 +
@@ -2936,6 +2925,7 @@ index 0000000000000000000000000000000000000000..9abd1193d546698830e1f202433d8749
 +	aud_gpio_i2s3_on: aud_gpio_i2s3_on {
 +		pins_cmd_dat {
 +			pinmux = <PINMUX_GPIO4__FUNC_I2S3_DO>;
++			drive-strength = <MTK_DRIVE_4mA>;
 +		};
 +	};
 +
@@ -3606,11 +3596,11 @@ index 0000000000000000000000000000000000000000..eb23d1f19f8700bbf90dc011a4aa67ca
 +	};
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8186.dtsi b/arch/arm64/boot/dts/mediatek/mt8186.dtsi
-new file mode 100644
-index 0000000000000000000000000000000000000000..7db07edb096e325ed98f5fa649cc8bd729b13975
+new file mode 100755
+index 0000000000000000000000000000000000000000..d8443b9b78e349b5d241cebe04b056f1ec2b6d30
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt8186.dtsi
-@@ -0,0 +1,2391 @@
+@@ -0,0 +1,2398 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
 +/*
 + * Copyright (C) 2022 MediaTek Inc.
@@ -4293,6 +4283,11 @@ index 0000000000000000000000000000000000000000..7db07edb096e325ed98f5fa649cc8bd7
 +			};
 +		};
 +
++		pericfg: pericfg@10003000 {
++			compatible = "mediatek,pericfg", "syscon";
++			reg = <0 0x10003000 0 0x1000>;
++		};
++
 +		pio: pinctrl@10005000 {
 +			compatible = "mediatek,mt8186-pinctrl";
 +			reg = <0 0x10005000 0 0x1000>,
@@ -4895,6 +4890,8 @@ index 0000000000000000000000000000000000000000..7db07edb096e325ed98f5fa649cc8bd7
 +				 <&infracfg_ao CLK_INFRA_AO_SSUSB_TOP_REF>;
 +			clock-names = "sys_ck", "ref_ck", "mcu_ck", "dma_ck", "xhci_ck";
 +			power-domains = <&spm MT8186_POWER_DOMAIN_SSUSB>;
++			mediatek,syscon-wakeup = <&pericfg 0x420 2>;
++			wakeup-source;
 +			#address-cells = <2>;
 +			#size-cells = <2>;
 +			status = "disabled";
@@ -5009,6 +5006,8 @@ index 0000000000000000000000000000000000000000..7db07edb096e325ed98f5fa649cc8bd7
 +				 <&infracfg_ao CLK_INFRA_AO_SSUSB_TOP_P1_REF>;
 +			clock-names = "sys_ck", "ref_ck", "mcu_ck", "xhci_ck";
 +			power-domains = <&spm MT8186_POWER_DOMAIN_SSUSB_P1>;
++			mediatek,syscon-wakeup = <&pericfg 0x424 2>;
++			wakeup-source;
 +			#address-cells = <2>;
 +			#size-cells = <2>;
 +			status = "disabled";
@@ -5211,12 +5210,10 @@ index 0000000000000000000000000000000000000000..7db07edb096e325ed98f5fa649cc8bd7
 +			power-domains = <&spm MT8186_POWER_DOMAIN_DIS>;
 +			clocks = <&topckgen CLK_TOP_DPI>,
 +				 <&mmsys CLK_MM_DISP_DPI>,
-+				 <&apmixedsys CLK_APMIXED_TVDPLL>,
-+				 <&topckgen CLK_TOP_TVDPLL_D2>,
-+				 <&topckgen CLK_TOP_TVDPLL_D4>,
-+				 <&topckgen CLK_TOP_TVDPLL_D8>,
-+				 <&topckgen CLK_TOP_TVDPLL_D16>;
-+			clock-names = "pixel", "engine", "pll", "tvdpll_d2", "tvdpll_d4", "tvdpll_d8", "tvdpll_d16";
++				 <&apmixedsys CLK_APMIXED_TVDPLL>;
++			clock-names = "pixel", "engine", "pll";
++			assigned-clocks = <&topckgen CLK_TOP_DPI>;
++			assigned-clock-parents = <&topckgen CLK_TOP_TVDPLL_D2>;
 +		};
 +
 +		ccorr0: ccorr@1400b000 {
@@ -6093,7 +6090,7 @@ index 5c047e79ee4f23771602d9b233dc0660cc833748..b48057e78df8961cb1adc8b3032844db
  CONFIG_DRM_PANEL_INNOLUX_P079ZCA=y
  CONFIG_DRM_PANEL_KINGDISPLAY_KD097D04=y
 diff --git a/chromeos/config/chromeos/arm64/common.config b/chromeos/config/chromeos/arm64/common.config
-index 28b383f22c5e2ea5f040edcdc764d0f8630c17c0..ce226b7f82cdce50e6d5b722b283f45b602efa01 100644
+index e7aaad5fc662fa86c1a72385723f580e2c7b19fc..adc6258bedb5dfe0e4fdfbb0918d86a62afcf59a 100644
 --- a/chromeos/config/chromeos/arm64/common.config
 +++ b/chromeos/config/chromeos/arm64/common.config
 @@ -26,11 +26,9 @@ CONFIG_COMPAT=y
@@ -13968,7 +13965,7 @@ index 0000000000000000000000000000000000000000..683742435d26554da972edaad3585b90
 +MODULE_AUTHOR("Allen-KH Cheng <allen-kh.cheng@mediatek.com>");
 +MODULE_DESCRIPTION("MTK ADSP IPC Driver");
 diff --git a/drivers/gpu/drm/bridge/analogix/anx7625.c b/drivers/gpu/drm/bridge/analogix/anx7625.c
-index 4043192c03690cf8b9e42bc4e87dce864f690bf0..7fcd55c7f16fff24c9f503519e6b7f5650d92518 100644
+index d91b7681c620c1e1dbe4e9efbc85ced9c2acf48a..e1b51809b8400f27169dba34c6a649b40f42dd4b 100644
 --- a/drivers/gpu/drm/bridge/analogix/anx7625.c
 +++ b/drivers/gpu/drm/bridge/analogix/anx7625.c
 @@ -15,6 +15,9 @@
@@ -13981,7 +13978,7 @@ index 4043192c03690cf8b9e42bc4e87dce864f690bf0..7fcd55c7f16fff24c9f503519e6b7f56
  #include <linux/workqueue.h>
  
  #include <linux/of_gpio.h>
-@@ -1604,6 +1607,122 @@ static int anx7625_get_swing_setting(struct device *dev,
+@@ -1612,6 +1615,122 @@ static int anx7625_get_swing_setting(struct device *dev,
  	return 0;
  }
  
@@ -14104,7 +14101,7 @@ index 4043192c03690cf8b9e42bc4e87dce864f690bf0..7fcd55c7f16fff24c9f503519e6b7f56
  static int anx7625_parse_dt(struct device *dev,
  			    struct anx7625_platform_data *pdata)
  {
-@@ -1646,6 +1765,9 @@ static int anx7625_parse_dt(struct device *dev,
+@@ -1654,6 +1773,9 @@ static int anx7625_parse_dt(struct device *dev,
  	if (of_property_read_bool(np, "analogix,audio-enable"))
  		pdata->audio_en = 1;
  
@@ -14114,7 +14111,7 @@ index 4043192c03690cf8b9e42bc4e87dce864f690bf0..7fcd55c7f16fff24c9f503519e6b7f56
  	ret = drm_of_find_panel_or_bridge(np, 1, 0, &panel, NULL);
  	if (ret < 0) {
  		if (ret == -ENODEV)
-@@ -1769,15 +1891,31 @@ static int anx7625_audio_hw_params(struct device *dev, void *data,
+@@ -1777,15 +1899,31 @@ static int anx7625_audio_hw_params(struct device *dev, void *data,
  	int wl, ch, rate;
  	int ret = 0;
  
@@ -14149,7 +14146,7 @@ index 4043192c03690cf8b9e42bc4e87dce864f690bf0..7fcd55c7f16fff24c9f503519e6b7f56
  	ret |= anx7625_write_and_or(ctx, ctx->i2c.tx_p2_client,
  				    AUDIO_CHANNEL_STATUS_6,
  				    ~I2S_SLAVE_MODE,
-@@ -1927,14 +2065,14 @@ static int anx7625_audio_get_eld(struct device *dev, void *data,
+@@ -1935,14 +2073,14 @@ static int anx7625_audio_get_eld(struct device *dev, void *data,
  	struct anx7625_data *ctx = dev_get_drvdata(dev);
  
  	if (!ctx->connector) {
@@ -14170,7 +14167,7 @@ index 4043192c03690cf8b9e42bc4e87dce864f690bf0..7fcd55c7f16fff24c9f503519e6b7f56
  	return 0;
  }
  
-@@ -2127,17 +2265,30 @@ static int anx7625_bridge_attach(struct drm_bridge *bridge,
+@@ -2135,17 +2273,30 @@ static int anx7625_bridge_attach(struct drm_bridge *bridge,
  		return err;
  	}
  
@@ -14202,7 +14199,7 @@ index 4043192c03690cf8b9e42bc4e87dce864f690bf0..7fcd55c7f16fff24c9f503519e6b7f56
  }
  
  static void anx7625_bridge_detach(struct drm_bridge *bridge)
-@@ -2145,6 +2296,9 @@ static void anx7625_bridge_detach(struct drm_bridge *bridge)
+@@ -2153,6 +2304,9 @@ static void anx7625_bridge_detach(struct drm_bridge *bridge)
  	struct anx7625_data *ctx = bridge_to_anx7625(bridge);
  
  	drm_dp_aux_unregister(&ctx->aux);
@@ -14212,7 +14209,7 @@ index 4043192c03690cf8b9e42bc4e87dce864f690bf0..7fcd55c7f16fff24c9f503519e6b7f56
  }
  
  static enum drm_mode_status
-@@ -2527,6 +2681,10 @@ static int __maybe_unused anx7625_runtime_pm_resume(struct device *dev)
+@@ -2535,6 +2689,10 @@ static int __maybe_unused anx7625_runtime_pm_resume(struct device *dev)
  	mutex_lock(&ctx->lock);
  
  	anx7625_power_on_init(ctx);
@@ -14223,7 +14220,7 @@ index 4043192c03690cf8b9e42bc4e87dce864f690bf0..7fcd55c7f16fff24c9f503519e6b7f56
  	anx7625_hpd_polling(ctx);
  
  	mutex_unlock(&ctx->lock);
-@@ -2534,38 +2692,9 @@ static int __maybe_unused anx7625_runtime_pm_resume(struct device *dev)
+@@ -2542,38 +2700,9 @@ static int __maybe_unused anx7625_runtime_pm_resume(struct device *dev)
  	return 0;
  }
  
@@ -14264,7 +14261,7 @@ index 4043192c03690cf8b9e42bc4e87dce864f690bf0..7fcd55c7f16fff24c9f503519e6b7f56
  	SET_RUNTIME_PM_OPS(anx7625_runtime_pm_suspend,
  			   anx7625_runtime_pm_resume, NULL)
  };
-@@ -2681,6 +2810,11 @@ static int anx7625_i2c_probe(struct i2c_client *client,
+@@ -2689,6 +2818,11 @@ static int anx7625_i2c_probe(struct i2c_client *client,
  	if (platform->pdata.intp_irq)
  		queue_work(platform->workqueue, &platform->work);
  
@@ -14276,7 +14273,7 @@ index 4043192c03690cf8b9e42bc4e87dce864f690bf0..7fcd55c7f16fff24c9f503519e6b7f56
  	platform->bridge.funcs = &anx7625_bridge_funcs;
  	platform->bridge.of_node = client->dev.of_node;
  	if (!anx7625_of_panel_on_aux_bus(&client->dev))
-@@ -2734,6 +2868,11 @@ static int anx7625_i2c_remove(struct i2c_client *client)
+@@ -2742,6 +2876,11 @@ static int anx7625_i2c_remove(struct i2c_client *client)
  
  	drm_bridge_remove(&platform->bridge);
  
@@ -15751,9 +15748,7 @@ index 662e91d9d45f6f23740868ad793bbbd29e2ab63b..8ce60371536ed237af49ef77f6c314af
  };
  MODULE_DEVICE_TABLE(of, mtk_disp_rdma_driver_dt_match);
 diff --git a/drivers/gpu/drm/mediatek/mtk_dpi.c b/drivers/gpu/drm/mediatek/mtk_dpi.c
-old mode 100644
-new mode 100755
-index 4554e2de14309dde4c4eee9a9e38ac432eceb6f6..904881a4546c90d91c1c4d81b1a685e45afbf9cb
+index 4554e2de14309dde4c4eee9a9e38ac432eceb6f6..c2a594bf6715cb04cdd4a69caac274b6664f2088 100644
 --- a/drivers/gpu/drm/mediatek/mtk_dpi.c
 +++ b/drivers/gpu/drm/mediatek/mtk_dpi.c
 @@ -28,6 +28,7 @@
@@ -15764,30 +15759,7 @@ index 4554e2de14309dde4c4eee9a9e38ac432eceb6f6..904881a4546c90d91c1c4d81b1a685e4
  
  enum mtk_dpi_out_bit_num {
  	MTK_DPI_OUT_BIT_NUM_8BITS,
-@@ -63,6 +64,14 @@ enum mtk_dpi_out_color_format {
- 	MTK_DPI_COLOR_FORMAT_YCBCR_422_FULL
- };
- 
-+enum TVDPLL_CLK {
-+	TVDPLL_PLL = 0,
-+	TVDPLL_D2 = 2,
-+	TVDPLL_D4 = 4,
-+	TVDPLL_D8 = 8,
-+	TVDPLL_D16 = 16,
-+};
-+
- struct mtk_dpi {
- 	struct drm_encoder encoder;
- 	struct drm_bridge bridge;
-@@ -73,6 +82,7 @@ struct mtk_dpi {
- 	struct clk *engine_clk;
- 	struct clk *pixel_clk;
- 	struct clk *tvd_clk;
-+	struct clk *pclk_src[5];
- 	int irq;
- 	struct drm_display_mode mode;
- 	const struct mtk_dpi_conf *conf;
-@@ -85,6 +95,7 @@ struct mtk_dpi {
+@@ -85,6 +86,7 @@ struct mtk_dpi {
  	struct pinctrl_state *pins_dpi;
  	u32 output_fmt;
  	int refcount;
@@ -15795,7 +15767,7 @@ index 4554e2de14309dde4c4eee9a9e38ac432eceb6f6..904881a4546c90d91c1c4d81b1a685e4
  };
  
  static inline struct mtk_dpi *bridge_to_dpi(struct drm_bridge *b)
-@@ -393,6 +404,7 @@ static void mtk_dpi_dual_edge(struct mtk_dpi *dpi)
+@@ -393,6 +395,7 @@ static void mtk_dpi_dual_edge(struct mtk_dpi *dpi)
  		mtk_dpi_mask(dpi, DPI_OUTPUT_SETTING,
  			     dpi->output_fmt == MEDIA_BUS_FMT_RGB888_2X12_LE ?
  			     EDGE_SEL : 0, EDGE_SEL);
@@ -15803,46 +15775,7 @@ index 4554e2de14309dde4c4eee9a9e38ac432eceb6f6..904881a4546c90d91c1c4d81b1a685e4
  	} else {
  		mtk_dpi_mask(dpi, DPI_DDR_SETTING, DDR_EN | DDR_4PHASE, 0);
  	}
-@@ -459,6 +471,7 @@ static int mtk_dpi_set_display_mode(struct mtk_dpi *dpi,
- 	struct videomode vm = { 0 };
- 	unsigned long pll_rate;
- 	unsigned int factor;
-+	struct clk *clksrc = NULL;
- 
- 	/* let pll_rate can fix the valid range of tvdpll (1G~2GHz) */
- 	factor = dpi->conf->cal_factor(mode->clock);
-@@ -473,11 +486,26 @@ static int mtk_dpi_set_display_mode(struct mtk_dpi *dpi,
- 
- 	vm.pixelclock = pll_rate / factor;
- 	if ((dpi->output_fmt == MEDIA_BUS_FMT_RGB888_2X12_LE) ||
--	    (dpi->output_fmt == MEDIA_BUS_FMT_RGB888_2X12_BE))
--		clk_set_rate(dpi->pixel_clk, vm.pixelclock * 2);
--	else
--		clk_set_rate(dpi->pixel_clk, vm.pixelclock);
-+	    (dpi->output_fmt == MEDIA_BUS_FMT_RGB888_2X12_BE)) {
-+			if (factor == 8)
-+				clksrc = dpi->pclk_src[2];
-+			else if (factor == 4)
-+				clksrc = dpi->pclk_src[1];
-+			else
-+				clksrc = dpi->pclk_src[1];
-+		}
-+	else{
-+			if (factor == 8)
-+				clksrc = dpi->pclk_src[3];
-+			else if (factor == 4)
-+				clksrc = dpi->pclk_src[2];
-+			else
-+				clksrc = dpi->pclk_src[2];
-+	}
- 
-+	clk_prepare_enable(dpi->pixel_clk);
-+	clk_set_parent(dpi->pixel_clk, clksrc);
-+	clk_disable_unprepare(dpi->pixel_clk);
- 
- 	vm.pixelclock = clk_get_rate(dpi->pixel_clk);
- 
-@@ -705,8 +733,10 @@ static int mtk_dpi_bind(struct device *dev, struct device *master, void *data)
+@@ -705,8 +708,10 @@ static int mtk_dpi_bind(struct device *dev, struct device *master, void *data)
  {
  	struct mtk_dpi *dpi = dev_get_drvdata(dev);
  	struct drm_device *drm_dev = data;
@@ -15853,7 +15786,7 @@ index 4554e2de14309dde4c4eee9a9e38ac432eceb6f6..904881a4546c90d91c1c4d81b1a685e4
  	ret = drm_simple_encoder_init(drm_dev, &dpi->encoder,
  				      DRM_MODE_ENCODER_TMDS);
  	if (ret) {
-@@ -823,6 +853,14 @@ static const struct mtk_dpi_conf mt8192_conf = {
+@@ -823,6 +828,14 @@ static const struct mtk_dpi_conf mt8192_conf = {
  	.num_output_fmts = ARRAY_SIZE(mt8173_output_fmts),
  };
  
@@ -15868,31 +15801,7 @@ index 4554e2de14309dde4c4eee9a9e38ac432eceb6f6..904881a4546c90d91c1c4d81b1a685e4
  static int mtk_dpi_probe(struct platform_device *pdev)
  {
  	struct device *dev = &pdev->dev;
-@@ -893,6 +931,23 @@ static int mtk_dpi_probe(struct platform_device *pdev)
- 		return ret;
- 	}
- 
-+	dpi->pclk_src[1] = devm_clk_get_optional(dev, "tvdpll_d2");
-+	if (IS_ERR(dpi->pclk_src[1])) {
-+		dev_info(dev, "Failed to get TVDPLL_D2 clock\n");
-+	}
-+	dpi->pclk_src[2] = devm_clk_get_optional(dev, "tvdpll_d4");
-+	if (IS_ERR(dpi->pclk_src[2])) {
-+		dev_info(dev, "Failed to get TVDPLL_D4 clock\n");
-+	}
-+	dpi->pclk_src[3] = devm_clk_get_optional(dev, "tvdpll_d8");
-+	if (IS_ERR(dpi->pclk_src[3])) {
-+		dev_info(dev, "Failed to get TVDPLL_D8 clock\n");
-+	}
-+	dpi->pclk_src[4] = devm_clk_get_optional(dev, "tvdpll_d16");
-+	if (IS_ERR(dpi->pclk_src[4])) {
-+		dev_info(dev, "Failed to get TVDPLL_D16 clock\n");
-+	}
-+
- 	dpi->irq = platform_get_irq(pdev, 0);
- 	if (dpi->irq <= 0)
- 		return -EINVAL;
-@@ -945,6 +1000,9 @@ static const struct of_device_id mtk_dpi_of_ids[] = {
+@@ -945,6 +958,9 @@ static const struct of_device_id mtk_dpi_of_ids[] = {
  	{ .compatible = "mediatek,mt8192-dpi",
  	  .data = &mt8192_conf,
  	},
@@ -17752,7 +17661,7 @@ index 0000000000000000000000000000000000000000..9943ee3aac31e7c659e045ddfa8cb5e7
 +
 +#endif // __MTK_MDP_RDMA_H__
 diff --git a/drivers/gpu/drm/panel/panel-edp.c b/drivers/gpu/drm/panel/panel-edp.c
-index 41602fbf9a3abe0368de6bb661c2312b992b1455..3678f06a75bb916e5cac9ad0b7341bccfe2a0daa 100644
+index 3cd017d5eade214e9da8f2cca3364d80f6824069..415fd35f2794793d130abbbffa1904d27be74b76 100644
 --- a/drivers/gpu/drm/panel/panel-edp.c
 +++ b/drivers/gpu/drm/panel/panel-edp.c
 @@ -1330,6 +1330,29 @@ static const struct panel_desc innolux_n125hce_gn1 = {
@@ -38917,7 +38826,7 @@ index 0000000000000000000000000000000000000000..1ddc27838eb184c5b6797885b3828239
 +#endif
 diff --git a/sound/soc/mediatek/mt8186/mt8186-afe-pcm.c b/sound/soc/mediatek/mt8186/mt8186-afe-pcm.c
 new file mode 100644
-index 0000000000000000000000000000000000000000..3b81482b7bc71a3d366152adcb0448260652c97a
+index 0000000000000000000000000000000000000000..1020e8030a6753d52057957e04ddd17a00a803b9
 --- /dev/null
 +++ b/sound/soc/mediatek/mt8186/mt8186-afe-pcm.c
 @@ -0,0 +1,3005 @@
@@ -39709,8 +39618,8 @@ index 0000000000000000000000000000000000000000..3b81482b7bc71a3d366152adcb044826
 +				    I_DL5_CH2, 1, 0),
 +	SOC_DAPM_SINGLE_AUTODISABLE("DL6_CH2 Switch", AFE_CONN6_1,
 +				    I_DL6_CH2, 1, 0),
-+	SOC_DAPM_SINGLE_AUTODISABLE("PCM_1_CAP_CH1 Switch", AFE_CONN6,
-+				    I_PCM_1_CAP_CH1, 1, 0),
++	SOC_DAPM_SINGLE_AUTODISABLE("PCM_1_CAP_CH2 Switch", AFE_CONN6,
++				    I_PCM_1_CAP_CH2, 1, 0),
 +	SOC_DAPM_SINGLE_AUTODISABLE("I2S2_CH2 Switch", AFE_CONN6,
 +				    I_I2S2_CH2, 1, 0),
 +	SOC_DAPM_SINGLE_AUTODISABLE("CONNSYS_I2S_CH2 Switch", AFE_CONN6_1,
@@ -39793,8 +39702,8 @@ index 0000000000000000000000000000000000000000..3b81482b7bc71a3d366152adcb044826
 +				    I_DL3_CH2, 1, 0),
 +	SOC_DAPM_SINGLE_AUTODISABLE("DL4_CH2 Switch", AFE_CONN47_1,
 +				    I_DL4_CH2, 1, 0),
-+	SOC_DAPM_SINGLE_AUTODISABLE("PCM_1_CAP_CH1 Switch", AFE_CONN47,
-+				    I_PCM_1_CAP_CH1, 1, 0),
++	SOC_DAPM_SINGLE_AUTODISABLE("PCM_1_CAP_CH2 Switch", AFE_CONN47,
++				    I_PCM_1_CAP_CH2, 1, 0),
 +	SOC_DAPM_SINGLE_AUTODISABLE("GAIN1_OUT_CH2 Switch", AFE_CONN47,
 +				    I_GAIN1_OUT_CH2, 1, 0),
 +};
