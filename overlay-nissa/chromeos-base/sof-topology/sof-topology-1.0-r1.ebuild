@@ -5,19 +5,18 @@
 EAPI=6
 
 DESCRIPTION="SOF topology files for Nissa"
-SRC_URI="gs://chromeos-localmirror/distfiles/${PN}-brya-${PV}.tar.bz2"
+SRC_URI="gs://chromeos-localmirror/distfiles/${PN}-nissa-${PV}.tar.bz2"
 
 LICENSE="SOF"
 SLOT="0"
 KEYWORDS="*"
 
-S=${WORKDIR}/${PN}-brya-${PV}
+S=${WORKDIR}/${PN}-nissa-${PV}
 
 src_install() {
 	insinto /lib/firmware/intel/sof-tplg
-	doins ./*.tplg
 	newins ./sof-adl-max98360a-nau8825.tplg sof-adl-mx98360a-nau8825.tplg
 	insinto /lib/firmware/intel/sof-tplg/nivviks0
-	newins ./sof-adl-rt1019-nau8825.tplg sof-adl-mx98360a-nau8825.tplg
+	doins sof-adl-mx98360a-nau8825.tplg
 	dodoc README
 }
