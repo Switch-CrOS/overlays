@@ -5,7 +5,7 @@
 EAPI=6
 
 DESCRIPTION="Alder Lake SOF firmware binary"
-SRC_URI="gs://chromeos-localmirror/distfiles/${PN}-adl-${PV}.tar.bz2"
+SRC_URI="gs://chromeos-localmirror/distfiles/${PN}-adln-${PV}.tar.bz2"
 
 LICENSE="SOF"
 SLOT="0"
@@ -15,7 +15,7 @@ RDEPEND="
 "
 DEPEND="${RDEPEND}"
 
-S=${WORKDIR}/${PN}-adl-${PV}
+S=${WORKDIR}/${PN}-adln-${PV}
 
 src_install() {
 	insinto /lib/firmware/intel/sof/community
