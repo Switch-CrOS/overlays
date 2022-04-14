@@ -12,6 +12,7 @@ KEYWORDS="*"
 IUSE=""
 
 RDEPEND="
+	chromeos-base/kexec-init
 	sys-apps/kexec-tools
 	virtual/target-chromium-os
 "
