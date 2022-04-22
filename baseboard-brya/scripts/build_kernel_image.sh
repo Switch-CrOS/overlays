@@ -44,7 +44,4 @@ modify_kernel_command_line() {
   # (0=disabled, 1=enable up to PSR1, 2=enable up to PSR2)
   # Temporary WA until b:216826833 is root caused and fixed
   echo "i915.enable_psr=1" >> "$1"
-
-  #  Offloading RCU callbacks on all CPUs
-  echo "rcu_nocbs=0-N" >> "$1"
 }
