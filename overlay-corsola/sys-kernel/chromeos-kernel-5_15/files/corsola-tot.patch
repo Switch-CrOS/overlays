@@ -495,62 +495,6 @@ index 0f26fe14c8e21761a8de9f37ae6377fa9e0eb96c..d78df484bb763ffa46faa140e5f024e2
  additionalProperties: false
  
  examples:
-diff --git a/Documentation/devicetree/bindings/mailbox/mtk,adsp-mbox.yaml b/Documentation/devicetree/bindings/mailbox/mtk,adsp-mbox.yaml
-new file mode 100644
-index 0000000000000000000000000000000000000000..fe454a1fba17a7df542551e46fe3954d654b7ca4
---- /dev/null
-+++ b/Documentation/devicetree/bindings/mailbox/mtk,adsp-mbox.yaml
-@@ -0,0 +1,50 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/mailbox/mtk,adsp-mbox.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Mediatek ADSP mailbox
-+
-+maintainers:
-+  - Allen-KH Cheng <Allen-KH.Cheng@mediatek.com>
-+
-+description: |
-+  The MTK ADSP mailbox Inter-Processor Communication (IPC) enables the SoC
-+  to ommunicate with ADSP by passing messages through two mailbox channels.
-+  The MTK ADSP mailbox IPC also provides the ability for one processor to
-+  signal the other processor using interrupts.
-+
-+properties:
-+  compatible:
-+    items:
-+      - const: mediatek,mt8195-adsp-mbox
-+
-+  "#mbox-cells":
-+    const: 0
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+required:
-+  - compatible
-+  - "#mbox-cells"
-+  - reg
-+  - interrupts
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+
-+    adsp_mailbox0:mailbox@10816000 {
-+        compatible = "mediatek,mt8195-adsp-mbox";
-+        #mbox-cells = <0>;
-+        reg = <0x10816000 0x1000>;
-+        interrupts = <GIC_SPI 702 IRQ_TYPE_LEVEL_HIGH 0>;
-+    };
 diff --git a/Documentation/devicetree/bindings/mailbox/mtk-gce.txt b/Documentation/devicetree/bindings/mailbox/mtk-gce.txt
 index 98fe37e8b17b98e2ebfb6429c8cc73ce988b6c3e..c2aeba63bd47dd13232122cf23525101d9b291b3 100644
 --- a/Documentation/devicetree/bindings/mailbox/mtk-gce.txt
@@ -3834,10 +3778,10 @@ index 0000000000000000000000000000000000000000..eb23d1f19f8700bbf90dc011a4aa67ca
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8186.dtsi b/arch/arm64/boot/dts/mediatek/mt8186.dtsi
 new file mode 100644
-index 0000000000000000000000000000000000000000..b006a722553983f9a83b9aeac15f3a32fcbd55a4
+index 0000000000000000000000000000000000000000..3711efabc7a2fb6bab7c8f055eb33fa8988917f4
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt8186.dtsi
-@@ -0,0 +1,2442 @@
+@@ -0,0 +1,2441 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
 +/*
 + * Copyright (C) 2022 MediaTek Inc.
@@ -3861,6 +3805,247 @@ index 0000000000000000000000000000000000000000..b006a722553983f9a83b9aeac15f3a32
 +	interrupt-parent = <&gic>;
 +	#address-cells = <2>;
 +	#size-cells = <2>;
++
++	cpus {
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		cpu0: cpu@0 {
++			device_type = "cpu";
++			compatible = "arm,cortex-a55";
++			reg = <0x0000>;
++			enable-method = "psci";
++			clock-frequency = <2000000000>;
++			clocks = <&mcusys CLK_MCU_ARMPLL_LL_SEL>,
++				 <&apmixedsys CLK_APMIXED_MAINPLL>;
++			clock-names = "cpu", "intermediate";
++			operating-points-v2 = <&cluster0_opp>;
++			dynamic-power-coefficient = <84>;
++			capacity-dmips-mhz = <382>;
++			cpu-idle-states = <&cpu_off_l &cluster_off_l>;
++			next-level-cache = <&l2_0>;
++			#cooling-cells = <2>;
++			cci = <&cci>;
++		};
++
++		cpu1: cpu@100 {
++			device_type = "cpu";
++			compatible = "arm,cortex-a55";
++			reg = <0x0100>;
++			enable-method = "psci";
++			clock-frequency = <2000000000>;
++			clocks = <&mcusys CLK_MCU_ARMPLL_LL_SEL>,
++				 <&apmixedsys CLK_APMIXED_MAINPLL>;
++			clock-names = "cpu", "intermediate";
++			operating-points-v2 = <&cluster0_opp>;
++			dynamic-power-coefficient = <84>;
++			capacity-dmips-mhz = <382>;
++			cpu-idle-states = <&cpu_off_l &cluster_off_l>;
++			next-level-cache = <&l2_0>;
++			#cooling-cells = <2>;
++			cci = <&cci>;
++		};
++
++		cpu2: cpu@200 {
++			device_type = "cpu";
++			compatible = "arm,cortex-a55";
++			reg = <0x0200>;
++			enable-method = "psci";
++			clock-frequency = <2000000000>;
++			clocks = <&mcusys CLK_MCU_ARMPLL_LL_SEL>,
++				 <&apmixedsys CLK_APMIXED_MAINPLL>;
++			clock-names = "cpu", "intermediate";
++			operating-points-v2 = <&cluster0_opp>;
++			dynamic-power-coefficient = <84>;
++			capacity-dmips-mhz = <382>;
++			cpu-idle-states = <&cpu_off_l &cluster_off_l>;
++			next-level-cache = <&l2_0>;
++			#cooling-cells = <2>;
++			cci = <&cci>;
++		};
++
++		cpu3: cpu@300 {
++			device_type = "cpu";
++			compatible = "arm,cortex-a55";
++			reg = <0x0300>;
++			enable-method = "psci";
++			clock-frequency = <2000000000>;
++			clocks = <&mcusys CLK_MCU_ARMPLL_LL_SEL>,
++				 <&apmixedsys CLK_APMIXED_MAINPLL>;
++			clock-names = "cpu", "intermediate";
++			operating-points-v2 = <&cluster0_opp>;
++			dynamic-power-coefficient = <84>;
++			capacity-dmips-mhz = <382>;
++			cpu-idle-states = <&cpu_off_l &cluster_off_l>;
++			next-level-cache = <&l2_0>;
++			#cooling-cells = <2>;
++			cci = <&cci>;
++		};
++
++		cpu4: cpu@400 {
++			device_type = "cpu";
++			compatible = "arm,cortex-a55";
++			reg = <0x0400>;
++			enable-method = "psci";
++			clock-frequency = <2000000000>;
++			clocks = <&mcusys CLK_MCU_ARMPLL_LL_SEL>,
++				 <&apmixedsys CLK_APMIXED_MAINPLL>;
++			clock-names = "cpu", "intermediate";
++			operating-points-v2 = <&cluster0_opp>;
++			dynamic-power-coefficient = <84>;
++			capacity-dmips-mhz = <382>;
++			cpu-idle-states = <&cpu_off_l &cluster_off_l>;
++			next-level-cache = <&l2_0>;
++			#cooling-cells = <2>;
++			cci = <&cci>;
++		};
++
++		cpu5: cpu@500 {
++			device_type = "cpu";
++			compatible = "arm,cortex-a55";
++			reg = <0x0500>;
++			enable-method = "psci";
++			clock-frequency = <2000000000>;
++			clocks = <&mcusys CLK_MCU_ARMPLL_LL_SEL>,
++				 <&apmixedsys CLK_APMIXED_MAINPLL>;
++			clock-names = "cpu", "intermediate";
++			operating-points-v2 = <&cluster0_opp>;
++			dynamic-power-coefficient = <84>;
++			capacity-dmips-mhz = <382>;
++			cpu-idle-states = <&cpu_off_l &cluster_off_l>;
++			next-level-cache = <&l2_0>;
++			#cooling-cells = <2>;
++			cci = <&cci>;
++		};
++
++		cpu6: cpu@600 {
++			device_type = "cpu";
++			compatible = "arm,cortex-a75";
++			reg = <0x0600>;
++			enable-method = "psci";
++			clock-frequency = <2050000000>;
++			clocks = <&mcusys CLK_MCU_ARMPLL_BL_SEL>,
++				 <&apmixedsys CLK_APMIXED_MAINPLL>;
++			clock-names = "cpu", "intermediate";
++			operating-points-v2 = <&cluster1_opp>;
++			dynamic-power-coefficient = <335>;
++			capacity-dmips-mhz = <1024>;
++			cpu-idle-states = <&cpu_off_b &cluster_off_b>;
++			next-level-cache = <&l2_1>;
++			#cooling-cells = <2>;
++			cci = <&cci>;
++		};
++
++		cpu7: cpu@700 {
++			device_type = "cpu";
++			compatible = "arm,cortex-a75";
++			reg = <0x0700>;
++			enable-method = "psci";
++			clock-frequency = <2050000000>;
++			clocks = <&mcusys CLK_MCU_ARMPLL_BL_SEL>,
++				 <&apmixedsys CLK_APMIXED_MAINPLL>;
++			clock-names = "cpu", "intermediate";
++			operating-points-v2 = <&cluster1_opp>;
++			dynamic-power-coefficient = <335>;
++			capacity-dmips-mhz = <1024>;
++			cpu-idle-states = <&cpu_off_b &cluster_off_b>;
++			next-level-cache = <&l2_1>;
++			#cooling-cells = <2>;
++			cci = <&cci>;
++		};
++
++		cpu_map: cpu-map {
++			cluster0: cluster0 {
++				core0 {
++					cpu = <&cpu0>;
++				};
++
++				core1 {
++					cpu = <&cpu1>;
++				};
++
++				core2 {
++					cpu = <&cpu2>;
++				};
++
++				core3 {
++					cpu = <&cpu3>;
++				};
++
++				core4 {
++					cpu = <&cpu4>;
++				};
++
++				core5 {
++					cpu = <&cpu5>;
++				};
++			};
++
++			cluster1: cluster1 {
++				core0 {
++					cpu = <&cpu6>;
++				};
++
++				core1 {
++					cpu = <&cpu7>;
++				};
++			};
++		};
++
++		idle-states {
++			entry-method = "psci";
++
++			cpu_off_l: cpu-off-l {
++				compatible = "arm,idle-state";
++				arm,psci-suspend-param = <0x00010001>;
++				local-timer-stop;
++				entry-latency-us = <50>;
++				exit-latency-us = <100>;
++				min-residency-us = <1600>;
++			};
++
++			cpu_off_b: cpu-off-b {
++				compatible = "arm,idle-state";
++				arm,psci-suspend-param = <0x00010001>;
++				local-timer-stop;
++				entry-latency-us = <50>;
++				exit-latency-us = <100>;
++				min-residency-us = <1400>;
++			};
++
++			cluster_off_l: cluster-off-l {
++				compatible = "arm,idle-state";
++				arm,psci-suspend-param = <0x01010001>;
++				local-timer-stop;
++				entry-latency-us = <100>;
++				exit-latency-us = <250>;
++				min-residency-us = <2100>;
++			};
++
++			cluster_off_b: cluster-off-b {
++				compatible = "arm,idle-state";
++				arm,psci-suspend-param = <0x01010001>;
++				local-timer-stop;
++				entry-latency-us = <100>;
++				exit-latency-us = <250>;
++				min-residency-us = <1900>;
++			};
++		};
++
++		l2_0: l2-cache0 {
++			compatible = "cache";
++			next-level-cache = <&l3_0>;
++		};
++
++		l2_1: l2-cache1 {
++			compatible = "cache";
++			next-level-cache = <&l3_0>;
++		};
++
++		l3_0: l3-cache {
++			compatible = "cache";
++		};
++	};
 +
 +	cci: cci {
 +		compatible = "mediatek,mt8186-cci";
@@ -4226,247 +4411,6 @@ index 0000000000000000000000000000000000000000..b006a722553983f9a83b9aeac15f3a32
 +		};
 +	};
 +
-+	cpus {
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		cpu0: cpu@000 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a55", "arm,armv8";
-+			reg = <0x0000>;
-+			enable-method = "psci";
-+			clock-frequency = <2000000000>;
-+			clocks = <&mcusys CLK_MCU_ARMPLL_LL_SEL>,
-+				 <&apmixedsys CLK_APMIXED_MAINPLL>;
-+			clock-names = "cpu", "intermediate";
-+			operating-points-v2 = <&cluster0_opp>;
-+			dynamic-power-coefficient = <84>;
-+			capacity-dmips-mhz = <382>;
-+			cpu-idle-states = <&cpuoff_l &clusteroff_l>;
-+			next-level-cache = <&l2_0>;
-+			#cooling-cells = <2>;
-+			cci = <&cci>;
-+		};
-+
-+		cpu1: cpu@100 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a55", "arm,armv8";
-+			reg = <0x0100>;
-+			enable-method = "psci";
-+			clock-frequency = <2000000000>;
-+			clocks = <&mcusys CLK_MCU_ARMPLL_LL_SEL>,
-+				 <&apmixedsys CLK_APMIXED_MAINPLL>;
-+			clock-names = "cpu", "intermediate";
-+			operating-points-v2 = <&cluster0_opp>;
-+			dynamic-power-coefficient = <84>;
-+			capacity-dmips-mhz = <382>;
-+			cpu-idle-states = <&cpuoff_l &clusteroff_l>;
-+			next-level-cache = <&l2_0>;
-+			#cooling-cells = <2>;
-+			cci = <&cci>;
-+		};
-+
-+		cpu2: cpu@200 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a55", "arm,armv8";
-+			reg = <0x0200>;
-+			enable-method = "psci";
-+			clock-frequency = <2000000000>;
-+			clocks = <&mcusys CLK_MCU_ARMPLL_LL_SEL>,
-+				 <&apmixedsys CLK_APMIXED_MAINPLL>;
-+			clock-names = "cpu", "intermediate";
-+			operating-points-v2 = <&cluster0_opp>;
-+			dynamic-power-coefficient = <84>;
-+			capacity-dmips-mhz = <382>;
-+			cpu-idle-states = <&cpuoff_l &clusteroff_l>;
-+			next-level-cache = <&l2_0>;
-+			#cooling-cells = <2>;
-+			cci = <&cci>;
-+		};
-+
-+		cpu3: cpu@300 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a55", "arm,armv8";
-+			reg = <0x0300>;
-+			enable-method = "psci";
-+			clock-frequency = <2000000000>;
-+			clocks = <&mcusys CLK_MCU_ARMPLL_LL_SEL>,
-+				 <&apmixedsys CLK_APMIXED_MAINPLL>;
-+			clock-names = "cpu", "intermediate";
-+			operating-points-v2 = <&cluster0_opp>;
-+			dynamic-power-coefficient = <84>;
-+			capacity-dmips-mhz = <382>;
-+			cpu-idle-states = <&cpuoff_l &clusteroff_l>;
-+			next-level-cache = <&l2_0>;
-+			#cooling-cells = <2>;
-+			cci = <&cci>;
-+		};
-+
-+		cpu4: cpu@400 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a55", "arm,armv8";
-+			reg = <0x0400>;
-+			enable-method = "psci";
-+			clock-frequency = <2000000000>;
-+			clocks = <&mcusys CLK_MCU_ARMPLL_LL_SEL>,
-+				 <&apmixedsys CLK_APMIXED_MAINPLL>;
-+			clock-names = "cpu", "intermediate";
-+			operating-points-v2 = <&cluster0_opp>;
-+			dynamic-power-coefficient = <84>;
-+			capacity-dmips-mhz = <382>;
-+			cpu-idle-states = <&cpuoff_l &clusteroff_l>;
-+			next-level-cache = <&l2_0>;
-+			#cooling-cells = <2>;
-+			cci = <&cci>;
-+		};
-+
-+		cpu5: cpu@500 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a55", "arm,armv8";
-+			reg = <0x0500>;
-+			enable-method = "psci";
-+			clock-frequency = <2000000000>;
-+			clocks = <&mcusys CLK_MCU_ARMPLL_LL_SEL>,
-+				 <&apmixedsys CLK_APMIXED_MAINPLL>;
-+			clock-names = "cpu", "intermediate";
-+			operating-points-v2 = <&cluster0_opp>;
-+			dynamic-power-coefficient = <84>;
-+			capacity-dmips-mhz = <382>;
-+			cpu-idle-states = <&cpuoff_l &clusteroff_l>;
-+			next-level-cache = <&l2_0>;
-+			#cooling-cells = <2>;
-+			cci = <&cci>;
-+		};
-+
-+		cpu6: cpu@600 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a75", "arm,armv8";
-+			reg = <0x0600>;
-+			enable-method = "psci";
-+			clock-frequency = <2050000000>;
-+			clocks = <&mcusys CLK_MCU_ARMPLL_BL_SEL>,
-+				 <&apmixedsys CLK_APMIXED_MAINPLL>;
-+			clock-names = "cpu", "intermediate";
-+			operating-points-v2 = <&cluster1_opp>;
-+			dynamic-power-coefficient = <335>;
-+			capacity-dmips-mhz = <1024>;
-+			cpu-idle-states = <&cpuoff_b &clusteroff_b>;
-+			next-level-cache = <&l2_1>;
-+			#cooling-cells = <2>;
-+			cci = <&cci>;
-+		};
-+
-+		cpu7: cpu@700 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a75", "arm,armv8";
-+			reg = <0x0700>;
-+			enable-method = "psci";
-+			clock-frequency = <2050000000>;
-+			clocks = <&mcusys CLK_MCU_ARMPLL_BL_SEL>,
-+				 <&apmixedsys CLK_APMIXED_MAINPLL>;
-+			clock-names = "cpu", "intermediate";
-+			operating-points-v2 = <&cluster1_opp>;
-+			dynamic-power-coefficient = <335>;
-+			capacity-dmips-mhz = <1024>;
-+			cpu-idle-states = <&cpuoff_b &clusteroff_b>;
-+			next-level-cache = <&l2_1>;
-+			#cooling-cells = <2>;
-+			cci = <&cci>;
-+		};
-+
-+		cpu_map: cpu-map {
-+			cluster0: cluster0 {
-+				core0 {
-+					cpu = <&cpu0>;
-+				};
-+
-+				core1 {
-+					cpu = <&cpu1>;
-+				};
-+
-+				core2 {
-+					cpu = <&cpu2>;
-+				};
-+
-+				core3 {
-+					cpu = <&cpu3>;
-+				};
-+
-+				core4 {
-+					cpu = <&cpu4>;
-+				};
-+
-+				core5 {
-+					cpu = <&cpu5>;
-+				};
-+			};
-+
-+			cluster1: cluster1 {
-+				core0 {
-+					cpu = <&cpu6>;
-+				};
-+
-+				core1 {
-+					cpu = <&cpu7>;
-+				};
-+			};
-+		};
-+
-+		idle-states {
-+			entry-method = "arm,psci";
-+
-+			cpuoff_l: cpu-off-l {
-+				compatible = "arm,idle-state";
-+				arm,psci-suspend-param = <0x00010001>;
-+				local-timer-stop;
-+				entry-latency-us = <50>;
-+				exit-latency-us = <100>;
-+				min-residency-us = <1600>;
-+			};
-+
-+			cpuoff_b: cpu-off-b {
-+				compatible = "arm,idle-state";
-+				arm,psci-suspend-param = <0x00010001>;
-+				local-timer-stop;
-+				entry-latency-us = <50>;
-+				exit-latency-us = <100>;
-+				min-residency-us = <1400>;
-+			};
-+
-+			clusteroff_l: cluster-off-l {
-+				compatible = "arm,idle-state";
-+				arm,psci-suspend-param = <0x01010001>;
-+				local-timer-stop;
-+				entry-latency-us = <100>;
-+				exit-latency-us = <250>;
-+				min-residency-us = <2100>;
-+			};
-+
-+			clusteroff_b: cluster-off-b {
-+				compatible = "arm,idle-state";
-+				arm,psci-suspend-param = <0x01010001>;
-+				local-timer-stop;
-+				entry-latency-us = <100>;
-+				exit-latency-us = <250>;
-+				min-residency-us = <1900>;
-+			};
-+		};
-+
-+		l2_0: l2-cache0 {
-+			compatible = "cache";
-+			next-level-cache = <&l3_0>;
-+		};
-+
-+		l2_1: l2-cache1 {
-+			compatible = "cache";
-+			next-level-cache = <&l3_0>;
-+		};
-+
-+		l3_0: l3-cache {
-+			compatible = "cache";
-+		};
-+	};
-+
 +	psci {
 +		compatible = "arm,psci-1.0";
 +		method = "smc";
@@ -4822,14 +4766,14 @@ index 0000000000000000000000000000000000000000..b006a722553983f9a83b9aeac15f3a32
 +			status = "disabled";
 +		};
 +
-+		adsp_mailbox0: mailbox@0x10686000 {
++		adsp_mailbox0: mailbox@10686000 {
 +			compatible = "mediatek,mt8186-adsp-mbox";
 +			#mbox-cells = <0>;
 +			reg = <0 0x10686100 0 0x1000>;
 +			interrupts = <GIC_SPI 361 IRQ_TYPE_LEVEL_HIGH>;
 +		};
 +
-+		adsp_mailbox1: mailbox@0x10687000 {
++		adsp_mailbox1: mailbox@10687000 {
 +			compatible = "mediatek,mt8186-adsp-mbox";
 +			#mbox-cells = <0>;
 +			reg = <0 0x10687100 0 0x1000>;
@@ -4837,7 +4781,7 @@ index 0000000000000000000000000000000000000000..b006a722553983f9a83b9aeac15f3a32
 +		};
 +
 +		nor_flash: spi@11000000 {
-+			compatible = "mediatek,mt8186-nor";
++			compatible = "mediatek,mt8186-nor", "mediatek,mt8173-nor";
 +			reg = <0 0x11000000 0 0x1000>;
 +			clocks = <&topckgen CLK_TOP_SPINOR>,
 +				 <&infracfg_ao CLK_INFRA_AO_SPINOR>,
@@ -4853,7 +4797,7 @@ index 0000000000000000000000000000000000000000..b006a722553983f9a83b9aeac15f3a32
 +		};
 +
 +		auxadc: adc@11001000 {
-+			compatible = "mediatek,mt8186-auxadc";
++			compatible = "mediatek,mt8186-auxadc", "mediatek,mt8173-auxadc";
 +			reg = <0 0x11001000 0 0x1000>;
 +			#io-channel-cells = <1>;
 +			clocks = <&infracfg_ao CLK_INFRA_AO_AUXADC>;
@@ -4913,7 +4857,7 @@ index 0000000000000000000000000000000000000000..b006a722553983f9a83b9aeac15f3a32
 +			clock-div = <1>;
 +		};
 +
-+		i2c3: i2c3@0x1100f000 {
++		i2c3: i2c3@1100f000 {
 +			compatible = "mediatek,mt8186-i2c";
 +			reg = <0 0x1100f000 0 0x1000>,
 +			      <0 0x10200480 0 0x100>;
@@ -5214,8 +5158,7 @@ index 0000000000000000000000000000000000000000..b006a722553983f9a83b9aeac15f3a32
 +				 <&infracfg_ao CLK_INFRA_AO_MSDC0>,
 +				 <&infracfg_ao CLK_INFRA_AO_MSDC0_SRC>,
 +				 <&infracfg_ao CLK_INFRA_AO_MSDCFDE>;
-+			clock-names = "source", "hclk", "source_cg",
-+				      "ahb_clk";
++			clock-names = "source", "hclk", "source_cg", "ahb_cg";
 +			assigned-clocks = <&topckgen CLK_TOP_MSDC50_0>;
 +			assigned-clock-parents = <&apmixedsys CLK_APMIXED_MSDCPLL>;
 +			status = "disabled";
@@ -5265,14 +5208,14 @@ index 0000000000000000000000000000000000000000..b006a722553983f9a83b9aeac15f3a32
 +			#size-cells = <1>;
 +			ranges = <0x0 0x0 0x11c80000 0x1000>;
 +
-+			u2port1: usb2-phy1@0 {
++			u2port1: usb-phy@0 {
 +				reg = <0x0 0x700>;
 +				clocks = <&clk26m>;
 +				clock-names = "ref";
 +				#phy-cells = <1>;
 +			};
 +
-+			u3port1: usb3-phy1@700 {
++			u3port1: usb-phy@700 {
 +				reg = <0x700 0x900>;
 +				clocks = <&clk26m>;
 +				clock-names = "ref";
@@ -6281,7 +6224,7 @@ index 0000000000000000000000000000000000000000..b006a722553983f9a83b9aeac15f3a32
 +	};
 +};
 diff --git a/chromeos/config/chromeos/arm64/chromiumos-arm64.flavour.config b/chromeos/config/chromeos/arm64/chromiumos-arm64.flavour.config
-index bdd39cea040b1911f59993438f1e6b854b0a7a00..ce90dda74815420b43bf214c191b1b5bf9d54330 100644
+index c36c510ab16334e8a9a3462c9c68bba52fc9b260..eb5ed786c36325b3e7a724310f3362e5de9b3a3a 100644
 --- a/chromeos/config/chromeos/arm64/chromiumos-arm64.flavour.config
 +++ b/chromeos/config/chromeos/arm64/chromiumos-arm64.flavour.config
 @@ -35,6 +35,8 @@ CONFIG_CORESIGHT_CPU_DEBUG_DEFAULT_ON=y
@@ -6302,7 +6245,7 @@ index bdd39cea040b1911f59993438f1e6b854b0a7a00..ce90dda74815420b43bf214c191b1b5b
  CONFIG_MTK_IOMMU=y
  CONFIG_MTK_PMIC_WRAP=y
 diff --git a/chromeos/config/chromeos/arm64/chromiumos-mediatek.flavour.config b/chromeos/config/chromeos/arm64/chromiumos-mediatek.flavour.config
-index 90b97da1f577e71a5b3cca9790bef51c838677af..4f381176632e268f24ce483bd16900671225bb56 100644
+index 40cec0bcc7ed8a3c168bd7335648c6df51880640..2df898fb057de319065d258b64041d48e0784c6d 100644
 --- a/chromeos/config/chromeos/arm64/chromiumos-mediatek.flavour.config
 +++ b/chromeos/config/chromeos/arm64/chromiumos-mediatek.flavour.config
 @@ -2,6 +2,7 @@
@@ -6346,7 +6289,7 @@ index 90b97da1f577e71a5b3cca9790bef51c838677af..4f381176632e268f24ce483bd1690067
  CONFIG_SND_SOC_MT8192=y
  CONFIG_SND_SOC_MT8192_MT6359_RT1015_RT5682=y
  CONFIG_SPI_GPIO=y
-@@ -90,10 +98,13 @@ CONFIG_SX9324=m
+@@ -90,11 +98,13 @@ CONFIG_SX9324=m
  CONFIG_TCG_CR50_I2C=y
  CONFIG_TCG_TIS_I2C_INFINEON=y
  CONFIG_TMPFS=y
@@ -6355,13 +6298,13 @@ index 90b97da1f577e71a5b3cca9790bef51c838677af..4f381176632e268f24ce483bd1690067
  CONFIG_USB_MTU3_HOST=y
  CONFIG_VIDEO_DW9768=m
  CONFIG_VIDEO_MEDIATEK_JPEG=m
+ CONFIG_VIDEO_MEDIATEK_MDP=m
 +CONFIG_VIDEO_MEDIATEK_MDP3=m
-+CONFIG_VIDEO_MEDIATEK_VCODEC=m
+ CONFIG_VIDEO_MEDIATEK_VCODEC=m
  CONFIG_VIDEO_OV02A10=m
  CONFIG_VIDEO_OV5695=m
- CONFIG_VIDEO_OV8856=m
 diff --git a/chromeos/config/chromeos/arm64/chromiumos-qualcomm.flavour.config b/chromeos/config/chromeos/arm64/chromiumos-qualcomm.flavour.config
-index eb55874390ef5f2b9b2b11e0ba65f43760d16cab..8c785e179144f8ab99a9fc493d806f1ef76a497d 100644
+index fd9e5096d3ac3c794052f29fb2578573ee102368..37d20cff6e2a05ebe4d59f811c6d5469fb7cad24 100644
 --- a/chromeos/config/chromeos/arm64/chromiumos-qualcomm.flavour.config
 +++ b/chromeos/config/chromeos/arm64/chromiumos-qualcomm.flavour.config
 @@ -25,6 +25,8 @@ CONFIG_COMMON_CLK_QCOM=y
@@ -6405,7 +6348,7 @@ index cbf4ced033e0c533a135481de72ba6dae2621ae5..13ab29b451958a4e8d1d3f9864909fc8
 diff --git a/drivers/bluetooth/btmtksdio.c b/drivers/bluetooth/btmtksdio.c
 old mode 100644
 new mode 100755
-index baf9c51923d702ff6fd54701357b0853f01f0edf..38ae623a77ebec3c5e41bc86b0adcbfe90f79981
+index b6d77e04240cadb46df5e4b769034b6a33e516a7..2b301579cfffdea7715a5d4a43dd393052100b91
 --- a/drivers/bluetooth/btmtksdio.c
 +++ b/drivers/bluetooth/btmtksdio.c
 @@ -24,6 +24,7 @@
@@ -6503,7 +6446,7 @@ index baf9c51923d702ff6fd54701357b0853f01f0edf..38ae623a77ebec3c5e41bc86b0adcbfe
  		/* Enable SCO over I2S/PCM */
  		err = btmtksdio_sco_setting(hdev);
  		if (err < 0) {
-@@ -1168,7 +1193,7 @@ static int btmtksdio_setup(struct hci_dev *hdev)
+@@ -1171,7 +1196,7 @@ static int btmtksdio_setup(struct hci_dev *hdev)
  	if (enable_autosuspend)
  		pm_runtime_allow(bdev->dev);
  
@@ -6512,7 +6455,7 @@ index baf9c51923d702ff6fd54701357b0853f01f0edf..38ae623a77ebec3c5e41bc86b0adcbfe
  
  	return 0;
  }
-@@ -1285,6 +1310,14 @@ static bool btmtksdio_sdio_wakeup(struct hci_dev *hdev)
+@@ -1288,6 +1313,14 @@ static bool btmtksdio_sdio_wakeup(struct hci_dev *hdev)
  		.wakeup_delay = cpu_to_le16(0x20),
  	};
  
@@ -6527,7 +6470,7 @@ index baf9c51923d702ff6fd54701357b0853f01f0edf..38ae623a77ebec3c5e41bc86b0adcbfe
  	if (may_wakeup && bdev->data->chipid == 0x7921) {
  		struct sk_buff *skb;
  
-@@ -1425,7 +1458,7 @@ static int btmtksdio_runtime_suspend(struct device *dev)
+@@ -1428,7 +1461,7 @@ static int btmtksdio_runtime_suspend(struct device *dev)
  
  	err = btmtksdio_fw_pmctrl(bdev);
  
@@ -6536,7 +6479,7 @@ index baf9c51923d702ff6fd54701357b0853f01f0edf..38ae623a77ebec3c5e41bc86b0adcbfe
  
  	return err;
  }
-@@ -1445,7 +1478,7 @@ static int btmtksdio_runtime_resume(struct device *dev)
+@@ -1448,7 +1481,7 @@ static int btmtksdio_runtime_resume(struct device *dev)
  
  	err = btmtksdio_drv_pmctrl(bdev);
  
@@ -14322,7 +14265,7 @@ index 0000000000000000000000000000000000000000..683742435d26554da972edaad3585b90
 +MODULE_AUTHOR("Allen-KH Cheng <allen-kh.cheng@mediatek.com>");
 +MODULE_DESCRIPTION("MTK ADSP IPC Driver");
 diff --git a/drivers/gpu/drm/bridge/analogix/anx7625.c b/drivers/gpu/drm/bridge/analogix/anx7625.c
-index d91b7681c620c1e1dbe4e9efbc85ced9c2acf48a..e1b51809b8400f27169dba34c6a649b40f42dd4b 100644
+index d61820a2009a27dc7a67b80b9ab1d0e4406beecc..65c89ecab24b4c7ced8fd1ebc26e2a7f2a74e1e2 100644
 --- a/drivers/gpu/drm/bridge/analogix/anx7625.c
 +++ b/drivers/gpu/drm/bridge/analogix/anx7625.c
 @@ -15,6 +15,9 @@
@@ -14503,27 +14446,6 @@ index d91b7681c620c1e1dbe4e9efbc85ced9c2acf48a..e1b51809b8400f27169dba34c6a649b4
  	ret |= anx7625_write_and_or(ctx, ctx->i2c.tx_p2_client,
  				    AUDIO_CHANNEL_STATUS_6,
  				    ~I2S_SLAVE_MODE,
-@@ -1935,14 +2073,14 @@ static int anx7625_audio_get_eld(struct device *dev, void *data,
- 	struct anx7625_data *ctx = dev_get_drvdata(dev);
- 
- 	if (!ctx->connector) {
--		dev_err(dev, "connector not initial\n");
--		return -EINVAL;
-+		/* Pass en empty ELD if connector not available */
-+		memset(buf, 0, len);
-+	} else {
-+		dev_dbg(dev, "audio copy eld\n");
-+		memcpy(buf, ctx->connector->eld,
-+		       min(sizeof(ctx->connector->eld), len));
- 	}
- 
--	dev_dbg(dev, "audio copy eld\n");
--	memcpy(buf, ctx->connector->eld,
--	       min(sizeof(ctx->connector->eld), len));
--
- 	return 0;
- }
- 
 @@ -2135,17 +2273,30 @@ static int anx7625_bridge_attach(struct drm_bridge *bridge,
  		return err;
  	}
@@ -14643,7 +14565,7 @@ index d91b7681c620c1e1dbe4e9efbc85ced9c2acf48a..e1b51809b8400f27169dba34c6a649b4
  		destroy_workqueue(platform->workqueue);
  
 diff --git a/drivers/gpu/drm/bridge/analogix/anx7625.h b/drivers/gpu/drm/bridge/analogix/anx7625.h
-index edbbfe410a56e82b43edd5c3bee9644708eb85a5..fefd5f34d8304509057a17540b3c0286efecb4ed 100644
+index e257a84db9626a7a3c687136cd8620149c8e9004..e7ae22da3593deed6b4abcfd3c5a8837c04d0d80 100644
 --- a/drivers/gpu/drm/bridge/analogix/anx7625.h
 +++ b/drivers/gpu/drm/bridge/analogix/anx7625.h
 @@ -55,6 +55,18 @@
@@ -14666,7 +14588,7 @@ index edbbfe410a56e82b43edd5c3bee9644708eb85a5..fefd5f34d8304509057a17540b3c0286
  
  /***************************************************************/
 @@ -431,6 +443,7 @@ struct anx7625_platform_data {
- 	int lane1_reg_data[DP_TX_SWING_REG_CNT];
+ 	u8 lane1_reg_data[DP_TX_SWING_REG_CNT];
  	u32 low_power_mode;
  	struct device_node *mipi_host_node;
 +	bool tx_rx_to_two_ports;
@@ -14698,7 +14620,7 @@ index edbbfe410a56e82b43edd5c3bee9644708eb85a5..fefd5f34d8304509057a17540b3c0286
  
  #endif  /* __ANX7625_H__ */
 diff --git a/drivers/gpu/drm/bridge/ite-it6505.c b/drivers/gpu/drm/bridge/ite-it6505.c
-index b207f152aa31787adc2abd6876ee9a89217b6877..bb320b6b3b6bbf448d92303ec6ea9b6e18c16ae1 100644
+index b207f152aa31787adc2abd6876ee9a89217b6877..01e777be71c2aeab64a5f433deabaf162014f66c 100644
 --- a/drivers/gpu/drm/bridge/ite-it6505.c
 +++ b/drivers/gpu/drm/bridge/ite-it6505.c
 @@ -6,7 +6,6 @@
@@ -14818,7 +14740,47 @@ index b207f152aa31787adc2abd6876ee9a89217b6877..bb320b6b3b6bbf448d92303ec6ea9b6e
  	pclk = 13500 * 2048 / sum;
  	it6505->video_info.clock = pclk;
  	it6505->video_info.hdisplay = hdew;
-@@ -1217,24 +1238,6 @@ static int it6505_send_video_infoframe(struct it6505 *it6505,
+@@ -737,8 +758,9 @@ static int it6505_drm_dp_link_probe(struct drm_dp_aux *aux,
+ 	return 0;
+ }
+ 
+-static int it6505_drm_dp_link_power_up(struct drm_dp_aux *aux,
+-				       struct it6505_drm_dp_link *link)
++static int it6505_drm_dp_link_set_power(struct drm_dp_aux *aux,
++				        struct it6505_drm_dp_link *link,
++					u8 mode)
+ {
+ 	u8 value;
+ 	int err;
+@@ -752,18 +774,20 @@ static int it6505_drm_dp_link_power_up(struct drm_dp_aux *aux,
+ 		return err;
+ 
+ 	value &= ~DP_SET_POWER_MASK;
+-	value |= DP_SET_POWER_D0;
++	value |= mode;
+ 
+ 	err = drm_dp_dpcd_writeb(aux, DP_SET_POWER, value);
+ 	if (err < 0)
+ 		return err;
+ 
+-	/*
+-	 * According to the DP 1.1 specification, a "Sink Device must exit the
+-	 * power saving state within 1 ms" (Section 2.5.3.1, Table 5-52, "Sink
+-	 * Control Field" (register 0x600).
+-	 */
+-	usleep_range(1000, 2000);
++	if (mode == DP_SET_POWER_D0) {
++		/*
++		 * According to the DP 1.1 specification, a "Sink Device must
++		 * exit the power saving state within 1 ms" (Section 2.5.3.1,
++		 * Table 5-52, "Sink Control Field" (register 0x600).
++		 */
++		usleep_range(1000, 2000);
++	}
+ 
+ 	return 0;
+ }
+@@ -1217,24 +1241,6 @@ static int it6505_send_video_infoframe(struct it6505 *it6505,
  	return 0;
  }
  
@@ -14843,7 +14805,7 @@ index b207f152aa31787adc2abd6876ee9a89217b6877..bb320b6b3b6bbf448d92303ec6ea9b6e
  static void it6505_clk_phase_adjustment(struct it6505 *it6505,
  					const struct drm_display_mode *mode)
  {
-@@ -1463,7 +1466,8 @@ static void it6505_parse_link_capabilities(struct it6505 *it6505)
+@@ -1463,7 +1469,8 @@ static void it6505_parse_link_capabilities(struct it6505 *it6505)
  	it6505->lane_count = link->num_lanes;
  	DRM_DEV_DEBUG_DRIVER(dev, "Sink support %d lanes training",
  			     it6505->lane_count);
@@ -14853,7 +14815,7 @@ index b207f152aa31787adc2abd6876ee9a89217b6877..bb320b6b3b6bbf448d92303ec6ea9b6e
  
  	it6505->branch_device = drm_dp_is_branch(it6505->dpcd);
  	DRM_DEV_DEBUG_DRIVER(dev, "Sink %sbranch device",
-@@ -1533,7 +1537,6 @@ static inline void it6505_link_rate_setup(struct it6505 *it6505)
+@@ -1533,7 +1540,6 @@ static inline void it6505_link_rate_setup(struct it6505 *it6505)
  
  static void it6505_lane_count_setup(struct it6505 *it6505)
  {
@@ -14861,7 +14823,7 @@ index b207f152aa31787adc2abd6876ee9a89217b6877..bb320b6b3b6bbf448d92303ec6ea9b6e
  	it6505_set_bits(it6505, REG_TRAIN_CTRL0, LANE_SWAP,
  			it6505->lane_swap ? LANE_SWAP : 0x00);
  	it6505_set_bits(it6505, REG_TRAIN_CTRL0, LANE_COUNT_MASK,
-@@ -2338,8 +2341,6 @@ static void it6505_irq_hpd(struct it6505 *it6505)
+@@ -2338,8 +2344,6 @@ static void it6505_irq_hpd(struct it6505 *it6505)
  
  		if (!it6505_get_video_status(it6505))
  			it6505_video_reset(it6505);
@@ -14870,7 +14832,7 @@ index b207f152aa31787adc2abd6876ee9a89217b6877..bb320b6b3b6bbf448d92303ec6ea9b6e
  	} else {
  		memset(it6505->dpcd, 0, sizeof(it6505->dpcd));
  
-@@ -2556,13 +2557,12 @@ static int it6505_poweron(struct it6505 *it6505)
+@@ -2556,13 +2560,12 @@ static int it6505_poweron(struct it6505 *it6505)
  		usleep_range(10000, 20000);
  	}
  
@@ -14885,7 +14847,15 @@ index b207f152aa31787adc2abd6876ee9a89217b6877..bb320b6b3b6bbf448d92303ec6ea9b6e
  	return 0;
  }
  
-@@ -2662,78 +2662,6 @@ static enum drm_connector_status it6505_detect(struct it6505 *it6505)
+@@ -2624,7 +2627,6 @@ static enum drm_connector_status it6505_detect(struct it6505 *it6505)
+ 	if (it6505_get_sink_hpd_status(it6505)) {
+ 		it6505_aux_on(it6505);
+ 		it6505_drm_dp_link_probe(&it6505->aux, &it6505->link);
+-		it6505_drm_dp_link_power_up(&it6505->aux, &it6505->link);
+ 		it6505->auto_train_retry = AUTO_TRAIN_RETRY;
+ 
+ 		if (it6505->dpcd[0] == 0) {
+@@ -2662,78 +2664,6 @@ static enum drm_connector_status it6505_detect(struct it6505 *it6505)
  	return status;
  }
  
@@ -14964,7 +14934,7 @@ index b207f152aa31787adc2abd6876ee9a89217b6877..bb320b6b3b6bbf448d92303ec6ea9b6e
  static void __maybe_unused it6505_delayed_audio(struct work_struct *work)
  {
  	struct it6505 *it6505 = container_of(work, struct it6505,
-@@ -2932,14 +2860,6 @@ static int it6505_bridge_attach(struct drm_bridge *bridge,
+@@ -2932,14 +2862,6 @@ static int it6505_bridge_attach(struct drm_bridge *bridge,
  		return ret;
  	}
  
@@ -14979,7 +14949,7 @@ index b207f152aa31787adc2abd6876ee9a89217b6877..bb320b6b3b6bbf448d92303ec6ea9b6e
  	return 0;
  }
  
-@@ -2948,7 +2868,6 @@ static void it6505_bridge_detach(struct drm_bridge *bridge)
+@@ -2948,7 +2870,6 @@ static void it6505_bridge_detach(struct drm_bridge *bridge)
  	struct it6505 *it6505 = bridge_to_it6505(bridge);
  
  	flush_work(&it6505->link_works);
@@ -14987,7 +14957,7 @@ index b207f152aa31787adc2abd6876ee9a89217b6877..bb320b6b3b6bbf448d92303ec6ea9b6e
  }
  
  static enum drm_mode_status
-@@ -2961,7 +2880,7 @@ it6505_bridge_mode_valid(struct drm_bridge *bridge,
+@@ -2961,7 +2882,7 @@ it6505_bridge_mode_valid(struct drm_bridge *bridge,
  	if (mode->flags & DRM_MODE_FLAG_INTERLACE)
  		return MODE_NO_INTERLACE;
  
@@ -14996,7 +14966,29 @@ index b207f152aa31787adc2abd6876ee9a89217b6877..bb320b6b3b6bbf448d92303ec6ea9b6e
  		return MODE_CLOCK_HIGH;
  
  	it6505->video_info.clock = mode->clock;
-@@ -3086,8 +3005,10 @@ static __maybe_unused int it6505_bridge_suspend(struct device *dev)
+@@ -3011,6 +2932,8 @@ static void it6505_bridge_atomic_enable(struct drm_bridge *bridge,
+ 	if (ret)
+ 		dev_err(dev, "Failed to setup AVI infoframe: %d", ret);
+ 
++	it6505_drm_dp_link_set_power(&it6505->aux, &it6505->link,
++				     DP_SET_POWER_D0);
+ 	it6505_update_video_parameter(it6505, mode);
+ 
+ 	ret = it6505_send_video_infoframe(it6505, &frame);
+@@ -3030,8 +2953,11 @@ static void it6505_bridge_atomic_disable(struct drm_bridge *bridge,
+ 
+ 	DRM_DEV_DEBUG_DRIVER(dev, "start");
+ 
+-	if (it6505->powered)
++	if (it6505->powered) {
+ 		it6505_video_disable(it6505);
++		it6505_drm_dp_link_set_power(&it6505->aux, &it6505->link,
++					     DP_SET_POWER_D3);
++	}
+ }
+ 
+ static enum drm_connector_status
+@@ -3086,8 +3012,10 @@ static __maybe_unused int it6505_bridge_suspend(struct device *dev)
  	return it6505_poweroff(it6505);
  }
  
@@ -15009,7 +15001,7 @@ index b207f152aa31787adc2abd6876ee9a89217b6877..bb320b6b3b6bbf448d92303ec6ea9b6e
  
  static int it6505_init_pdata(struct it6505 *it6505)
  {
-@@ -3116,10 +3037,140 @@ static int it6505_init_pdata(struct it6505 *it6505)
+@@ -3116,10 +3044,140 @@ static int it6505_init_pdata(struct it6505 *it6505)
  	return 0;
  }
  
@@ -15150,7 +15142,7 @@ index b207f152aa31787adc2abd6876ee9a89217b6877..bb320b6b3b6bbf448d92303ec6ea9b6e
  
  	it6505->lane_swap_disabled =
  		device_property_read_bool(dev, "no-laneswap");
-@@ -3135,7 +3186,31 @@ static void it6505_parse_dt(struct it6505 *it6505)
+@@ -3135,7 +3193,31 @@ static void it6505_parse_dt(struct it6505 *it6505)
  	} else {
  		*afe_setting = 0;
  	}
@@ -15183,7 +15175,7 @@ index b207f152aa31787adc2abd6876ee9a89217b6877..bb320b6b3b6bbf448d92303ec6ea9b6e
  }
  
  static ssize_t receive_timing_debugfs_show(struct file *file, char __user *buf,
-@@ -3297,7 +3372,6 @@ static int it6505_i2c_probe(struct i2c_client *client,
+@@ -3297,7 +3379,6 @@ static int it6505_i2c_probe(struct i2c_client *client,
  {
  	struct it6505 *it6505;
  	struct device *dev = &client->dev;
@@ -15191,7 +15183,7 @@ index b207f152aa31787adc2abd6876ee9a89217b6877..bb320b6b3b6bbf448d92303ec6ea9b6e
  	int err, intp_irq;
  
  	it6505 = devm_kzalloc(&client->dev, sizeof(*it6505), GFP_KERNEL);
-@@ -3313,16 +3387,7 @@ static int it6505_i2c_probe(struct i2c_client *client,
+@@ -3313,16 +3394,7 @@ static int it6505_i2c_probe(struct i2c_client *client,
  	it6505->client = client;
  	i2c_set_clientdata(client, it6505);
  
@@ -15209,7 +15201,7 @@ index b207f152aa31787adc2abd6876ee9a89217b6877..bb320b6b3b6bbf448d92303ec6ea9b6e
  
  	it6505->regmap = devm_regmap_init_i2c(client, &it6505_regmap_config);
  	if (IS_ERR(it6505->regmap)) {
-@@ -3375,6 +3440,7 @@ static int it6505_i2c_probe(struct i2c_client *client,
+@@ -3375,6 +3447,7 @@ static int it6505_i2c_probe(struct i2c_client *client,
  
  	DRM_DEV_DEBUG_DRIVER(dev, "it6505 device name: %s", dev_name(dev));
  	debugfs_init(it6505);
@@ -15217,7 +15209,7 @@ index b207f152aa31787adc2abd6876ee9a89217b6877..bb320b6b3b6bbf448d92303ec6ea9b6e
  
  	it6505->bridge.funcs = &it6505_bridge_funcs;
  	it6505->bridge.type = DRM_MODE_CONNECTOR_DisplayPort;
-@@ -3393,6 +3459,7 @@ static int it6505_i2c_remove(struct i2c_client *client)
+@@ -3393,6 +3466,7 @@ static int it6505_i2c_remove(struct i2c_client *client)
  	drm_dp_aux_unregister(&it6505->aux);
  	it6505_debugfs_remove(it6505);
  	it6505_poweroff(it6505);
@@ -20267,196 +20259,14 @@ index 4052aad75a81f6a28c7dbffbf5bee5b9591b95d1..29d1bc14ebf118c59d2e9ef895b748d4
  
  MODULE_DESCRIPTION("IOMMU API for MediaTek M4U v1 implementations");
  MODULE_LICENSE("GPL v2");
-diff --git a/drivers/mailbox/Kconfig b/drivers/mailbox/Kconfig
-index c9fc06c7e68572f4cf37d3dc6facd5142d506455..6cd2bcd56caf022723e54473f7c02c164d8494bb 100644
---- a/drivers/mailbox/Kconfig
-+++ b/drivers/mailbox/Kconfig
-@@ -226,6 +226,15 @@ config STM32_IPCC
- 	  with hardware for Inter-Processor Communication Controller (IPCC)
- 	  between processors. Say Y here if you want to have this support.
- 
-+config MTK_ADSP_MBOX
-+	tristate "MediaTek ADSP Mailbox Controller"
-+	depends on ARCH_MEDIATEK || COMPILE_TEST
-+	help
-+          Say yes here to add support for "MediaTek ADSP Mailbox Controller.
-+          This mailbox driver is used to send notification or short message
-+          between processors with ADSP. It will place the message to share
-+	  buffer and will access the ipc control.
-+
- config MTK_CMDQ_MBOX
- 	tristate "MediaTek CMDQ Mailbox Support"
- 	depends on ARCH_MEDIATEK || COMPILE_TEST
-diff --git a/drivers/mailbox/Makefile b/drivers/mailbox/Makefile
-index c2089f04887e9990a7c39c9dcdd5f76ee6819f2f..18793e6caa2f1c46905daebdb71f09e598fe294d 100644
---- a/drivers/mailbox/Makefile
-+++ b/drivers/mailbox/Makefile
-@@ -49,6 +49,8 @@ obj-$(CONFIG_TEGRA_HSP_MBOX)	+= tegra-hsp.o
- 
- obj-$(CONFIG_STM32_IPCC) 	+= stm32-ipcc.o
- 
-+obj-$(CONFIG_MTK_ADSP_MBOX)	+= mtk-adsp-mailbox.o
-+
- obj-$(CONFIG_MTK_CMDQ_MBOX)	+= mtk-cmdq-mailbox.o
- 
- obj-$(CONFIG_ZYNQMP_IPI_MBOX)	+= zynqmp-ipi-mailbox.o
 diff --git a/drivers/mailbox/mtk-adsp-mailbox.c b/drivers/mailbox/mtk-adsp-mailbox.c
-new file mode 100644
-index 0000000000000000000000000000000000000000..5ca0301bf36c749fee6072ea880e0b04e78bff18
---- /dev/null
+index 5e7378090c7bc96ef054ee170334ea2d31f304af..5ca0301bf36c749fee6072ea880e0b04e78bff18 100644
+--- a/drivers/mailbox/mtk-adsp-mailbox.c
 +++ b/drivers/mailbox/mtk-adsp-mailbox.c
-@@ -0,0 +1,184 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Copyright (c) 2022 MediaTek Corporation. All rights reserved.
-+ * Author: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-+ */
-+
-+#include <linux/interrupt.h>
-+#include <linux/io.h>
-+#include <linux/iopoll.h>
-+#include <linux/kernel.h>
-+#include <linux/mailbox_controller.h>
-+#include <linux/module.h>
-+#include <linux/of_device.h>
-+#include <linux/slab.h>
-+
-+struct mtk_adsp_mbox_priv {
-+	struct device *dev;
-+	struct mbox_controller mbox;
-+	void __iomem *va_mboxreg;
-+	const struct mtk_adsp_mbox_cfg *cfg;
-+};
-+
-+struct mtk_adsp_mbox_cfg {
-+	u32 set_in;
-+	u32 set_out;
-+	u32 clr_in;
-+	u32 clr_out;
-+};
-+
-+static inline struct mtk_adsp_mbox_priv *get_mtk_adsp_mbox_priv(struct mbox_controller *mbox)
-+{
-+	return container_of(mbox, struct mtk_adsp_mbox_priv, mbox);
-+}
-+
-+static irqreturn_t mtk_adsp_mbox_irq(int irq, void *data)
-+{
-+	struct mbox_chan *chan = data;
-+	struct mtk_adsp_mbox_priv *priv = get_mtk_adsp_mbox_priv(chan->mbox);
-+	u32 op = readl(priv->va_mboxreg + priv->cfg->set_out);
-+
-+	writel(op, priv->va_mboxreg + priv->cfg->clr_out);
-+
-+	return IRQ_WAKE_THREAD;
-+}
-+
-+static irqreturn_t mtk_adsp_mbox_isr(int irq, void *data)
-+{
-+	struct mbox_chan *chan = data;
-+
-+	mbox_chan_received_data(chan, NULL);
-+
-+	return IRQ_HANDLED;
-+}
-+
-+static struct mbox_chan *mtk_adsp_mbox_xlate(struct mbox_controller *mbox,
-+					     const struct of_phandle_args *sp)
-+{
-+	return mbox->chans;
-+}
-+
-+static int mtk_adsp_mbox_startup(struct mbox_chan *chan)
-+{
-+	struct mtk_adsp_mbox_priv *priv = get_mtk_adsp_mbox_priv(chan->mbox);
-+
-+	/* Clear ADSP mbox command */
-+	writel(0xFFFFFFFF, priv->va_mboxreg + priv->cfg->clr_in);
-+	writel(0xFFFFFFFF, priv->va_mboxreg + priv->cfg->clr_out);
-+
-+	return 0;
-+}
-+
-+static void mtk_adsp_mbox_shutdown(struct mbox_chan *chan)
-+{
-+	struct mtk_adsp_mbox_priv *priv = get_mtk_adsp_mbox_priv(chan->mbox);
-+
-+	/* Clear ADSP mbox command */
-+	writel(0xFFFFFFFF, priv->va_mboxreg + priv->cfg->clr_in);
-+	writel(0xFFFFFFFF, priv->va_mboxreg + priv->cfg->clr_out);
-+}
-+
-+static int mtk_adsp_mbox_send_data(struct mbox_chan *chan, void *data)
-+{
-+	struct mtk_adsp_mbox_priv *priv = get_mtk_adsp_mbox_priv(chan->mbox);
-+	u32 *msg = data;
-+
-+	writel(*msg, priv->va_mboxreg + priv->cfg->set_in);
-+
-+	return 0;
-+}
-+
-+static bool mtk_adsp_mbox_last_tx_done(struct mbox_chan *chan)
-+{
-+	struct mtk_adsp_mbox_priv *priv = get_mtk_adsp_mbox_priv(chan->mbox);
-+
-+	return readl(priv->va_mboxreg + priv->cfg->set_in) == 0;
-+}
-+
-+static const struct mbox_chan_ops mtk_adsp_mbox_chan_ops = {
-+	.send_data	= mtk_adsp_mbox_send_data,
-+	.startup	= mtk_adsp_mbox_startup,
-+	.shutdown	= mtk_adsp_mbox_shutdown,
-+	.last_tx_done	= mtk_adsp_mbox_last_tx_done,
-+};
-+
-+static int mtk_adsp_mbox_probe(struct platform_device *pdev)
-+{
-+	struct device *dev = &pdev->dev;
-+	struct mtk_adsp_mbox_priv *priv;
-+	const struct mtk_adsp_mbox_cfg *cfg;
-+	struct mbox_controller *mbox;
-+	int ret, irq;
-+
-+	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
-+	if (!priv)
-+		return -ENOMEM;
-+
-+	mbox = &priv->mbox;
-+	mbox->dev = dev;
-+	mbox->ops = &mtk_adsp_mbox_chan_ops;
-+	mbox->txdone_irq = false;
-+	mbox->txdone_poll = true;
-+	mbox->of_xlate = mtk_adsp_mbox_xlate;
-+	mbox->num_chans = 1;
-+	mbox->chans = devm_kzalloc(dev, sizeof(*mbox->chans), GFP_KERNEL);
-+	if (!mbox->chans)
-+		return -ENOMEM;
-+
-+	priv->va_mboxreg = devm_platform_ioremap_resource(pdev, 0);
-+	if (IS_ERR(priv->va_mboxreg))
-+		return PTR_ERR(priv->va_mboxreg);
-+
-+	cfg = of_device_get_match_data(dev);
-+	if (!cfg)
-+		return -EINVAL;
-+	priv->cfg = cfg;
-+
-+	irq = platform_get_irq(pdev, 0);
-+	if (irq < 0)
-+		return irq;
-+
-+	ret = devm_request_threaded_irq(dev, irq, mtk_adsp_mbox_irq,
-+					mtk_adsp_mbox_isr, IRQF_TRIGGER_NONE,
-+					dev_name(dev), mbox->chans);
-+	if (ret < 0)
-+		return ret;
-+
-+	platform_set_drvdata(pdev, priv);
-+
-+	return devm_mbox_controller_register(dev, &priv->mbox);
-+}
-+
+@@ -149,14 +149,22 @@ static int mtk_adsp_mbox_probe(struct platform_device *pdev)
+ 	return devm_mbox_controller_register(dev, &priv->mbox);
+ }
+ 
 +static const struct mtk_adsp_mbox_cfg mt8186_adsp_mbox_cfg = {
 +        .set_in         = 0x00,
 +        .set_out        = 0x04,
@@ -20464,32 +20274,22 @@ index 0000000000000000000000000000000000000000..5ca0301bf36c749fee6072ea880e0b04
 +        .clr_out        = 0x0C,
 +};
 +
-+static const struct mtk_adsp_mbox_cfg mt8195_adsp_mbox_cfg = {
+ static const struct mtk_adsp_mbox_cfg mt8195_adsp_mbox_cfg = {
+-	.set_in		= 0x00,
+-	.set_out	= 0x1c,
+-	.clr_in		= 0x04,
+-	.clr_out	= 0x20,
 +        .set_in         = 0x00,
 +        .set_out        = 0x1c,
 +        .clr_in         = 0x04,
 +        .clr_out        = 0x20,
-+};
-+
-+static const struct of_device_id mtk_adsp_mbox_of_match[] = {
+ };
+ 
+ static const struct of_device_id mtk_adsp_mbox_of_match[] = {
 +	{ .compatible = "mediatek,mt8186-adsp-mbox", .data = &mt8186_adsp_mbox_cfg },
-+	{ .compatible = "mediatek,mt8195-adsp-mbox", .data = &mt8195_adsp_mbox_cfg },
-+	{},
-+};
-+MODULE_DEVICE_TABLE(of, mtk_adsp_mbox_of_match);
-+
-+static struct platform_driver mtk_adsp_mbox_driver = {
-+	.probe		= mtk_adsp_mbox_probe,
-+	.driver = {
-+		.name	= "mtk_adsp_mbox",
-+		.of_match_table = mtk_adsp_mbox_of_match,
-+	},
-+};
-+module_platform_driver(mtk_adsp_mbox_driver);
-+
-+MODULE_AUTHOR("Allen-KH Cheng <Allen-KH.Cheng@mediatek.com>");
-+MODULE_DESCRIPTION("MTK ADSP Mailbox Controller");
-+MODULE_LICENSE("GPL v2");
+ 	{ .compatible = "mediatek,mt8195-adsp-mbox", .data = &mt8195_adsp_mbox_cfg },
+ 	{},
+ };
 diff --git a/drivers/media/platform/Kconfig b/drivers/media/platform/Kconfig
 index 11d88747831942b43fed77de6294a5d7cb3a9824..d811093f3eee17f4a887947142ac8cea60966703 100644
 --- a/drivers/media/platform/Kconfig
@@ -36255,6 +36055,46 @@ index 1ac92015992ed157456e3e4ebafa9d251ea5d687..daa1ede6550750e6688485018627d236
  	SET_RUNTIME_PM_OPS(msdc_runtime_suspend, msdc_runtime_resume, NULL)
  };
  
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/mcu.c b/drivers/net/wireless/mediatek/mt76/mt7921/mcu.c
+index 152e7579f77d45334261344a8cc1bb5109d44f87..278ce84b5b58196f98bd17c02958279cba67ad05 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7921/mcu.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7921/mcu.c
+@@ -704,17 +704,6 @@ static int mt7921_load_patch(struct mt7921_dev *dev)
+ 	if (ret)
+ 		dev_err(dev->mt76.dev, "Failed to start patch\n");
+ 
+-	if (mt76_is_sdio(&dev->mt76)) {
+-		/* activate again */
+-		ret = __mt7921_mcu_fw_pmctrl(dev);
+-		if (ret)
+-			return ret;
+-
+-		ret = __mt7921_mcu_drv_pmctrl(dev);
+-		if (ret)
+-			return ret;
+-	}
+-
+ out:
+ 	sem = mt76_connac_mcu_patch_sem_ctrl(&dev->mt76, false);
+ 	switch (sem) {
+@@ -860,6 +849,17 @@ static int mt7921_load_firmware(struct mt7921_dev *dev)
+ 	if (ret)
+ 		return ret;
+ 
++	if (mt76_is_sdio(&dev->mt76)) {
++		/* activate again */
++		ret = __mt7921_mcu_fw_pmctrl(dev);
++		if (ret)
++			return ret;
++
++		ret = __mt7921_mcu_drv_pmctrl(dev);
++		if (ret)
++			return ret;
++	}
++
+ 	ret = mt7921_load_ram(dev);
+ 	if (ret)
+ 		return ret;
 diff --git a/drivers/pinctrl/mediatek/Makefile b/drivers/pinctrl/mediatek/Makefile
 old mode 100644
 new mode 100755
@@ -41536,29 +41376,6 @@ index 0000000000000000000000000000000000000000..488f1fb37bd033028e1784d7b49b064f
 +MODULE_AUTHOR("Roger Lu <roger.lu@mediatek.com>");
 +MODULE_DESCRIPTION("MediaTek SVS driver");
 +MODULE_LICENSE("GPL v2");
-diff --git a/drivers/spi/spi-mtk-nor.c b/drivers/spi/spi-mtk-nor.c
-index 94fb09696677f14a53f1b24375c4d9429a518252..d167699a1a96bd7015a278f5345dd8e650e6e8ed 100644
---- a/drivers/spi/spi-mtk-nor.c
-+++ b/drivers/spi/spi-mtk-nor.c
-@@ -960,7 +960,17 @@ static int __maybe_unused mtk_nor_suspend(struct device *dev)
- 
- static int __maybe_unused mtk_nor_resume(struct device *dev)
- {
--	return pm_runtime_force_resume(dev);
-+	struct spi_controller *ctlr = dev_get_drvdata(dev);
-+	struct mtk_nor *sp = spi_controller_get_devdata(ctlr);
-+	int ret;
-+
-+	ret = pm_runtime_force_resume(dev);
-+	if (ret)
-+		return ret;
-+
-+	mtk_nor_init(sp);
-+
-+	return 0;
- }
- 
- static const struct dev_pm_ops mtk_nor_pm_ops = {
 diff --git a/drivers/thermal/mediatek/soc_temp_lvts.c b/drivers/thermal/mediatek/soc_temp_lvts.c
 index 81567dc192eb5b619b5f78f1f4f9a76a33c439f9..aa4e9ff4a4baef1e77d1e1227552178c794e18d9 100644
 --- a/drivers/thermal/mediatek/soc_temp_lvts.c
