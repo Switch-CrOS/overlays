@@ -19,4 +19,7 @@ modify_kernel_command_line() {
 
 	# See b/218950907
 	echo "rtc-cmos.use_acpi_alarm=1" >> "$1"
+
+	# See b/219534576
+	echo "amd-pmc.enable_stb=1" >> "$1"
 }
