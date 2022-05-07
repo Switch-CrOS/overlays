@@ -1,7 +1,7 @@
 # Copyright 2016 The Chromium OS Authors. All rights reserved.
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=4
+EAPI=7
 
 inherit appid udev
 
@@ -34,7 +34,11 @@ src_install() {
 	# Install cpuset adjustments.
 	if use cheets; then
 		insinto "/opt/google/containers/android/vendor/etc/init/"
-		doins "${FILESDIR}/init.cpusets.rc"
+		if use kernel-4_4; then
+			doins "${FILESDIR}/4.4/init.cpusets.rc"
+		else
+			doins "${FILESDIR}/5.10/init.cpusets.rc"
+		fi
 	fi
 
 	# Install platform specific triggers and udev rules for codecs.
