@@ -5,8 +5,58 @@
 # Initial value just for style purposes.
 USE=""
 
-USE="${USE} cros_ec"
 USE="${USE} aurora"
 
-# use kernel 5.15
-USE="${USE} -kernel-4_19 kernel-5_15"
+USE="${USE} -video_cards_nouveau -video_cards_radeon -video_cards_llvmpipe"
+
+# Enable Intel media-driver
+USE="${USE} -video_cards_i965 video_cards_iHD"
+
+# We do not need this driver
+USE="${USE} -vkms"
+
+# Enable Display port DPCD driver
+USE="${USE} drm_dp_aux_chardev"
+
+# Enable GpuMemoryBuffers backed by dma-bufs.
+USE="${USE} native_gpu_memory_buffers"
+
+# Enable VMD
+USE="${USE} vmd"
+
+# Enable NVMe utility
+USE="${USE} nvme"
+
+# No EC
+USE="${USE} -cros_ec -eclog"
+
+# No cr50
+USE="${USE} -cr50_onboard"
+
+# Disable pinweaver, it needs specific boards
+USE="${USE} -pinweaver_csme"
+
+# Specify firmwares needed
+LINUX_FIRMWARE="${LINUX_FIRMWARE} i915_kbl i915_tgl ibt-hw ibt_9260 ibt_9560 ibt_ax200 ibt_ax201 ibt_ax211 rtl8168h-2"
+
+# Load GuC/HuC Binaries
+USE="${USE} builtin_fw_guc_g9 builtin_fw_huc_g9"
+USE="${USE} builtin_fw_guc_tgl builtin_fw_huc_tgl"
+
+# Enable Downloadable Content (DLC) Test
+USE="${USE} dlc_test"
+
+# this indicates that this board has a -borealis overlay
+USE="${USE} has-borealis"
+
+# Enable VMs
+USE="${USE} kvm_host crosvm-gpu virtio_gpu"
+
+# Enable DPTF
+USE="${USE} dptf"
+
+# Specify device has coresched
+USE="${USE} coresched"
+
+# Disable firmware builds
+USE="${USE} -bootimage -coreboot"
