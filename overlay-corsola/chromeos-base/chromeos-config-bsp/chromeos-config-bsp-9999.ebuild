@@ -10,6 +10,7 @@ PROJECTS=(
 	"kingler"
 	"krabby"
 	"steelix"
+	"tentacruel"
 )
 
 CONFIG_PATH="sw_build_config/platform/chromeos-config"
