@@ -21,5 +21,4 @@ src_install() {
 	insinto /lib/firmware/intel/sof/community
 	doins sof-adl.ri
 	doins sof-adl.ldc
-	dodoc README
 }
