@@ -72,7 +72,7 @@ generate_new_squash() {
 
   popd 1>/dev/null
 
-  git add "files/${BOARD}-tot.patch"
+  git add "${ebuild_dir}/files/${BOARD}-tot.patch"
 }
 
 update_ebuild() {
@@ -119,7 +119,7 @@ update_scmversion() {
   local new="-CL${patch_id}-v${patchset}"
 
   sed -i "s/${old}/${new}/g" "${ebuild_dir}/files/scmversion.patch"
-  git add files/scmversion.patch
+  git add "${ebuild_dir}/files/scmversion.patch"
 }
 
 commit_change() {
