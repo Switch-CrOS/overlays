@@ -22,9 +22,8 @@ DEPEND="
 	chromeos-base/chromeos-bsp-baseboard-krabbylake
 "
 
-# TODO(b/224998582): re-enable chromeos-base/chromeos-tcon-updater-atlas
 RDEPEND="${DEPEND}
-	!!chromeos-base/chromeos-tcon-updater-atlas
+	chromeos-base/chromeos-tcon-updater-atlas
 "
 
 src_install() {
