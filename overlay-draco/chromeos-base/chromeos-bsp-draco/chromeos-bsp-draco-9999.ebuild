@@ -8,7 +8,7 @@ EAPI=7
 CROS_WORKON_PROJECT="chromiumos/infra/build/empty-project"
 CROS_WORKON_LOCALNAME="platform/empty-project"
 
-inherit appid cros-workon
+inherit appid cros-workon cros-unibuild
 
 DESCRIPTION="Ebuild which pulls in any necessary ebuilds as dependencies
 or portage actions."
@@ -30,4 +30,6 @@ DEPEND="
 
 src_install() {
 	doappid "{0E09161D-1415-4283-AAEB-88CC9EFFEFC5}" "CHROMEBOOK"
+
+	unibuild_install_files audio-files
 }
