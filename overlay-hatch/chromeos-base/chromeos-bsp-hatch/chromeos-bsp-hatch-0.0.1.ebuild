@@ -11,13 +11,13 @@ or portage actions."
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="-* amd64 x86"
-IUSE="hatch-arc-r hatch-borealis hatch-diskswap hatch-kvm hatch-kernelnext hatch-connectivitynext hatch-manatee aurora aurora-borealis hatch-lvm-stateful"
+IUSE="hatch-arc-r hatch-borealis hatch-diskswap hatch-kvm hatch-kernelnext hatch-connectivitynext hatch-manatee aurora aurora-borealis hatch-lvm-stateful kernel-4_19"
 S="${WORKDIR}"
 
 # Add dependencies on other ebuilds from within this board overlay
 RDEPEND="
-	chromeos-base/sof-binary
-	chromeos-base/sof-topology
+	kernel-4_19? ( chromeos-base/sof-binary chromeos-base/sof-topology )
+	!kernel-4_19? ( sys-firmware/sof-firmware )
 	media-sound/sound_card_init
 "
 DEPEND="
