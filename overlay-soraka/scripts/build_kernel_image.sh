@@ -17,7 +17,7 @@ modify_kernel_command_line() {
   echo "intel_idle.slp_s0_check=1" >> "$1"
 
   # Setup S0ix validation initial timeout for slp_s0_check
-  echo "intel_idle.slp_s0_seed=5" >> "$1"
+  echo "intel_idle.slp_s0_seed=15" >> "$1"
 
   # Enable S0ix logging using GSMI
   echo "gsmi.s0ix_logging_enable=1" >> "$1"
