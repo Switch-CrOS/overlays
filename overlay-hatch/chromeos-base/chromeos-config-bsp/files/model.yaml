@@ -4,6 +4,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+imports:
+  - "include/kernel-info.yaml"
+
 base-config: &base_config
   name: "{{$device-name}}"
   identity: &identity_common
@@ -66,6 +69,7 @@ base-config: &base_config
     wake-on-dp: "{{$wake-on-dp}}"
   audio: &audio
     main: &audio_main
+      <<: *kernel-info
       # Variables to be overridden by chromeos/devices/... For example:
       # To add a volume curve specific for Kohaku:
       # 1. Add chromeos-base/chromeos-bsp-hatch/files/kohaku/audio/cras-config/card_settings
@@ -114,7 +118,7 @@ base-config: &base_config
         # ALSA UCM config
         - source: "{{$ucm_src_root}}/audio/ucm-config/{{$ucm_name}}/{{$ucm_name}}.conf"
           destination: "{{$ucm_root}}/{{$ucm_name}}/{{$ucm_name}}.conf"
-        - source: "{{$ucm_src_root}}/audio/ucm-config/{{$ucm_name}}/HiFi.conf"
+        - source: "{{$ucm_src_root}}/audio/ucm-config/{{$ucm_name}}/HiFi{{$kernel-specific-suffix}}.conf"
           destination: "{{$ucm_root}}/{{$ucm_name}}/HiFi.conf"
         # CRAS card config (Volume Curve)
         - source: "{{$cras_card_config}}/audio/{{$cras-source-config-dir}}/card_settings"
@@ -132,7 +136,7 @@ audio_files: &audio_files_with_sound_card_init
   # ALSA UCM config
   - source: "{{$ucm_src_root}}/audio/ucm-config/{{$ucm_name}}/{{$ucm_name}}.conf"
     destination: "{{$ucm_root}}/{{$ucm_name}}/{{$ucm_name}}.conf"
-  - source: "{{$ucm_src_root}}/audio/ucm-config/{{$ucm_name}}/HiFi.conf"
+  - source: "{{$ucm_src_root}}/audio/ucm-config/{{$ucm_name}}/HiFi{{$kernel-specific-suffix}}.conf"
     destination: "{{$ucm_root}}/{{$ucm_name}}/HiFi.conf"
   # CRAS card config (Volume Curve)
   - source: "{{$cras_card_config}}/audio/{{$cras-source-config-dir}}/card_settings"
