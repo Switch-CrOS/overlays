@@ -14,6 +14,11 @@ KEYWORDS="-* amd64"
 
 S="${WORKDIR}"
 
+src_prepare() {
+	default
+	rm "${S}"/usr/"$(get_libdir)"/libSkyCamAIC.so*
+}
+
 src_install() {
 	insinto /usr/"$(get_libdir)"
 	dolib.so usr/"$(get_libdir)"/*.so*
