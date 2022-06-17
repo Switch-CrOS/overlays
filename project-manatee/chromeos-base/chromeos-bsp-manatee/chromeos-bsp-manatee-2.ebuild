@@ -19,10 +19,10 @@ RDEPEND="
 	manatee? (
 		manatee-5_10? ( sys-kernel/chromeos-kernel-5_10-manatee )
 		iwlwifi-gfp2-firmware? (
-			=sys-kernel/iwlwifi-gfp2-firmware-69.45:=
+			=sys-kernel/iwlwifi-gfp2-firmware-70.87:=
 		)
 		iwlwifi-hrp2-firmware? (
-			=sys-kernel/iwlwifi-hrp2-firmware-69.45:=
+			=sys-kernel/iwlwifi-hrp2-firmware-70.65:=
 		)
 	)
 "
