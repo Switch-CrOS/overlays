@@ -4,7 +4,7 @@
 EAPI=7
 
 DESCRIPTION="Proprietary binaries for IPU6EP on Intel ADL platforms"
-SRC_URI="https://github.com/intel/ipu6-camera-bins/archive/Chrome_adl_${PV}.tar.gz -> ${P}.tar.gz"
+SRC_URI="https://github.com/intel/ipu6-camera-bins/archive/Chrome_adln_${PV}.tar.gz -> ${P}.tar.gz"
 
 LICENSE="BSD-Intel+patent-grant"
 SLOT="0"
@@ -15,7 +15,7 @@ RDEPEND="
 	!media-libs/ipu6ep-firmware
 "
 
-S="${WORKDIR}/ipu6-camera-bins-Chrome_adl_${PV}"
+S="${WORKDIR}/ipu6-camera-bins-Chrome_adln_${PV}"
 
 src_install() {
 	dolib.so usr/"$(get_libdir)"/*.so
