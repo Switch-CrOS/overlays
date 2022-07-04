@@ -1,0 +1,72 @@
+#!/bin/sh
+# Copyright 2022 The ChromiumOS Authors.
+# Distributed under the terms of the GNU General Public License v2
+
+# Init gpio for fibocom LTE module
+
+readonly LOG_TAG='fibocomm-lte'
+
+log_info() {
+  logger -t "${LOG_TAG}" --id="$$" -p info "$*"
+  echo "   INFO: $*"
+}
+
+log_error() {
+  logger -t "${LOG_TAG}" --id="$$" -p err "$*"
+  echo "  ERROR: $*"
+}
+
+disable_gpios() {
+  # lte-w-disable
+  gpioset gpiochip0 178=0
+
+  # sar-detect
+  gpioset gpiochip0 179=0
+
+  # reset and sleep 20ms
+  gpioset --mode=time -u 20 gpiochip0 182=0
+
+  # poweroff and sleep 100ms
+  gpioset --mode=time -u 100 gpiochip0 181=0
+
+  # m2-power
+  gpioset gpiochip0 180=0
+}
+
+enable_gpio() {
+  local option="--mode=exit"
+  local num="$1"
+  local name="$2"
+  local delay="$3"
+
+  if [ "${delay}" -ne 0 ]; then
+    option="--mode=time -u ${delay}"
+  fi
+
+  gpioset ${option} gpiochip0 ${num}=1
+  ret=$?
+  if [ "${ret}" -ne 0 ]; then
+    log_error "Failed to enable ${name}"
+    disable_gpios
+    exit $ret
+  fi
+}
+
+main() {
+  # TODO: detect SKUs with LTE.
+  if [ "$1" = "on" ]; then
+
+    # enable_gpio pin_num pin_name delay_ms
+    enable_gpio 178 "lte-w-disable" 0
+    enable_gpio 179 "sar-detect" 0
+    enable_gpio 180 "m2-power" 2
+    enable_gpio 181 "poweroff" 14
+    enable_gpio 182 "reset" 0
+
+    log_info "Fibocom LTE power init done."
+
+  else
+    disable_gpios
+  fi
+}
+main "$@"
