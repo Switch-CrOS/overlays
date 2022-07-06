@@ -24,10 +24,10 @@ disable_gpios() {
   gpioset gpiochip0 179=0
 
   # reset and sleep 20ms
-  gpioset --mode=time -u 20 gpiochip0 182=0
+  gpioset --mode=time -u 20000 gpiochip0 182=0
 
   # poweroff and sleep 100ms
-  gpioset --mode=time -u 100 gpiochip0 181=0
+  gpioset --mode=time -u 100000 gpiochip0 181=0
 
   # m2-power
   gpioset gpiochip0 180=0
@@ -56,11 +56,11 @@ main() {
   # TODO: detect SKUs with LTE.
   if [ "$1" = "on" ]; then
 
-    # enable_gpio pin_num pin_name delay_ms
+    # enable_gpio pin_num pin_name delay_microsec
     enable_gpio 178 "lte-w-disable" 0
     enable_gpio 179 "sar-detect" 0
-    enable_gpio 180 "m2-power" 2
-    enable_gpio 181 "poweroff" 14
+    enable_gpio 180 "m2-power" 2000
+    enable_gpio 181 "poweroff" 14000
     enable_gpio 182 "reset" 0
 
     log_info "Fibocom LTE power init done."
