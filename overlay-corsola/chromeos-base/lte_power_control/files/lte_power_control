@@ -4,18 +4,6 @@
 
 # Init gpio for fibocom LTE module
 
-readonly LOG_TAG='fibocomm-lte'
-
-log_info() {
-  logger -t "${LOG_TAG}" --id="$$" -p info "$*"
-  echo "   INFO: $*"
-}
-
-log_error() {
-  logger -t "${LOG_TAG}" --id="$$" -p err "$*"
-  echo "  ERROR: $*"
-}
-
 disable_gpios() {
   # lte-w-disable
   gpioset gpiochip0 178=0
@@ -36,8 +24,7 @@ disable_gpios() {
 enable_gpio() {
   local option="--mode=exit"
   local num="$1"
-  local name="$2"
-  local delay="$3"
+  local delay="$2"
 
   if [ "${delay}" -ne 0 ]; then
     option="--mode=time -u ${delay}"
@@ -46,7 +33,6 @@ enable_gpio() {
   gpioset ${option} gpiochip0 ${num}=1
   ret=$?
   if [ "${ret}" -ne 0 ]; then
-    log_error "Failed to enable ${name}"
     disable_gpios
     exit $ret
   fi
@@ -55,16 +41,22 @@ enable_gpio() {
 main() {
   # TODO: detect SKUs with LTE.
   if [ "$1" = "on" ]; then
+    # enable_gpio pin_num delay_microsec
 
-    # enable_gpio pin_num pin_name delay_microsec
-    enable_gpio 178 "lte-w-disable" 0
-    enable_gpio 179 "sar-detect" 0
-    enable_gpio 180 "m2-power" 2000
-    enable_gpio 181 "poweroff" 14000
-    enable_gpio 182 "reset" 0
+    # lte-w-disable
+    enable_gpio 178 0
 
-    log_info "Fibocom LTE power init done."
+    # sar-detect"
+    enable_gpio 179 0
 
+    # m2-power
+    enable_gpio 180 2000
+
+    # poweroff
+    enable_gpio 181 14000
+
+    #reset
+    enable_gpio 182 0
   else
     disable_gpios
   fi
