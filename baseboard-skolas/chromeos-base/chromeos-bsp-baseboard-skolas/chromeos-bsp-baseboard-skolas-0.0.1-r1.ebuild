@@ -1,1 +1,0 @@
-chromeos-bsp-baseboard-skolas-0.0.1.ebuild
