@@ -1,5 +1,6 @@
-# Copyright 2022 The ChromiumOS Authors.
-# Distributed under the terms of the GNU General Public License v2
+# Copyright 2022 The Chromium OS Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
 
 EAPI=7
 
@@ -11,9 +12,13 @@ HOMEPAGE="http://src.chromium.org"
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="*"
+IUSE="internal"
 
 S="${WORKDIR}"
-DEPEND="chromeos-base/qc-modemfwd-helper"
+DEPEND="
+internal? ( chromeos-base/modem-fw-dlc-villager )
+chromeos-base/qc-modemfwd-helper
+"
 RDEPEND="${DEPEND}"
 
 src_install() {
@@ -24,5 +29,6 @@ src_install() {
 
 	cellular_dofirmware "${FILESDIR}/firmware_manifest.prototxt"
 
-	# fw is loaded to the image using src/private-overlays/baseboard-herobrine-private/chromeos-base/sc7280-modem-firmware/
+	# fw is currently loaded to the image using src/private-overlays/baseboard-herobrine-private/chromeos-base/sc7280-modem-firmware/
+	# chromeos-base/modem-fw-dlc-villager reserves space for DLC's until DLCs can be enabled.
 }
