@@ -32,4 +32,9 @@ modify_kernel_command_line() {
   # hypervisor. The values are 1/8 the default size for a 8GB system.
   echo "dhash_entries=131072" >> "$1"
   echo "ihash_entries=65536" >> "$1"
+
+  # KVM spends considerable amount of time of halt polling upon HLT VM exits,
+  # which not only significantly increases host CPU utilization, but also hurts
+  # power saving.
+  echo "kvm.halt_poll_ns=0" >> "$1"
 }
