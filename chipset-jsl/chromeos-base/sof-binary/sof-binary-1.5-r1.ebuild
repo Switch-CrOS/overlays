@@ -16,5 +16,4 @@ src_install() {
 	insinto /lib/firmware/intel/sof/community
 	doins sof-jsl.ri
 	doins sof-jsl.ldc
-	dodoc README
 }
