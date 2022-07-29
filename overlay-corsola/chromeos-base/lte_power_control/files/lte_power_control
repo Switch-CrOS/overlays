@@ -5,38 +5,49 @@
 
 # Init gpio for fibocom LTE module
 
+readonly GPIO_DIR="/sys/class/gpio"
+
 disable_gpios() {
   # lte-w-disable
-  gpioset gpiochip0 178=0
+  disable_gpio 493
 
   # sar-detect
-  gpioset gpiochip0 179=0
+  disable_gpio 494
 
   # reset and sleep 20ms
-  gpioset --mode=time -u 20000 gpiochip0 182=0
+  disable_gpio 497
+  sleep 0.02
 
   # poweroff and sleep 100ms
-  gpioset --mode=time -u 100000 gpiochip0 181=0
+  disable_gpio 496
+  sleep 0.1
 
   # m2-power
-  gpioset gpiochip0 180=0
+  disable_gpio 495
+}
+
+set_gpio() {
+  local gpio="$1"
+  local gpio_level="$2"
+  local gpio_path
+  echo "${gpio}" > "${GPIO_DIR}/export"
+  ret="$?"
+  if [ "${ret}" -ne 0 ]; then
+    exit 1
+  fi
+  gpio_path="${GPIO_DIR}/gpio${gpio}"
+  echo "${gpio_level}" > "${gpio_path}/direction"
+  echo "${gpio}" > "${GPIO_DIR}/unexport"
+}
+
+disable_gpio() {
+  local gpio="$1"
+  set_gpio "${gpio}" "low"
 }
 
 enable_gpio() {
-  local option="--mode=exit"
-  local num="$1"
-  local delay="$2"
-
-  if [ "${delay}" -ne 0 ]; then
-    option="--mode=time -u ${delay}"
-  fi
-
-  gpioset ${option} gpiochip0 ${num}=1
-  ret=$?
-  if [ "${ret}" -ne 0 ]; then
-    disable_gpios
-    exit "${ret}"
-  fi
+  local gpio="$1"
+  set_gpio "${gpio}" "high"
 }
 
 main() {
@@ -46,22 +57,22 @@ main() {
   fi
 
   if [ "$1" = "on" ]; then
-    # enable_gpio pin_num delay_microsec
-
     # lte-w-disable
-    enable_gpio 178 0
+    enable_gpio 493
 
     # sar-detect"
-    enable_gpio 179 0
+    enable_gpio 494
 
-    # m2-power
-    enable_gpio 180 2000
+    # m2-power and sleep 2ms
+    enable_gpio 495
+    sleep 0.002
 
-    # poweroff
-    enable_gpio 181 14000
+    # poweroff and sleep 14ms
+    enable_gpio 496
+    sleep 0.014
 
     #reset
-    enable_gpio 182 0
+    enable_gpio 497
   else
     disable_gpios
   fi
