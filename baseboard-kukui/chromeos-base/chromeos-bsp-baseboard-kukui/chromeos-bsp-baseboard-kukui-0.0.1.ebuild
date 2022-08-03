@@ -22,7 +22,7 @@ RDEPEND="
 DEPEND="${RDEPEND}"
 
 src_install() {
-	local kernel=$(usex kernel-5_10 5_10 4_19)
+	local kernel="5_10"
 
 	# Override default CPU clock speed governor.
 	insinto "/etc"
