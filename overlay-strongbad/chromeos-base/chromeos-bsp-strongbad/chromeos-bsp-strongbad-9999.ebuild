@@ -1,5 +1,7 @@
-# Copyright 2020 The Chromium OS Authors. All rights reserved.
-# Distributed under the terms of the GNU General Public License v2
+# Copyright 2022 The Chromium OS Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
 EAPI=7
 
 inherit appid cros-unibuild cros-workon udev
@@ -15,7 +17,7 @@ or portage actions."
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="-* ~arm64 ~arm"
-IUSE="strongbad-kernelnext"
+IUSE="strongbad-kernelnext strongbad-userdebug"
 
 RDEPEND="
 	chromeos-base/chromeos-bsp-baseboard-trogdor
@@ -25,6 +27,8 @@ DEPEND="${RDEPEND}"
 src_install() {
 	if use strongbad-kernelnext; then
 		doappid "{CAF7DF76-5722-4B6F-9994-D7D222F191D7}" "CHROMEBOOK"
+	elif use strongbad-userdebug; then
+		doappid "{9B15802E-94AF-24C2-5DC4-D9A3A80E0FF5}" "CHROMEBOOK"
 	else
 		doappid "{ABD68995-5A83-31CA-9AC6-49D8194EEA52}" "CHROMEBOOK"
 	fi
