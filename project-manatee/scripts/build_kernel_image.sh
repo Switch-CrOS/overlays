@@ -37,4 +37,7 @@ modify_kernel_command_line() {
   # which not only significantly increases host CPU utilization, but also hurts
   # power saving.
   echo "kvm.halt_poll_ns=0" >> "$1"
+
+  # hypervisor allows Crosvm to write to MSRs through /dev/cpu/CPUNUM/msr
+  echo "msr.allow_writes=on" >> "$1"
 }
