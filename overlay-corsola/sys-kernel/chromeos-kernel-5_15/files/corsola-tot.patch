@@ -127,17 +127,18 @@ index 669ac7c32292798644b21dbb5a0dc657125f444d..dc0f0ea4da037c7ea336d73d30e6dbfa
 +
 +
 diff --git a/arch/arm64/boot/dts/mediatek/Makefile b/arch/arm64/boot/dts/mediatek/Makefile
-index 356234ad9d0b34cc5ba431df207557162c4ab2e8..a3e9c8d40f15684d2c0021f861d2fd0c5422dd09 100644
+index 356234ad9d0b34cc5ba431df207557162c4ab2e8..a151b516d165b9bca2421ab8c565701256a03c7e 100644
 --- a/arch/arm64/boot/dts/mediatek/Makefile
 +++ b/arch/arm64/boot/dts/mediatek/Makefile
-@@ -48,6 +48,13 @@ dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-kukui-kodama-sku32.dtb
+@@ -48,6 +48,14 @@ dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-kukui-kodama-sku32.dtb
  dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-kukui-krane-sku0.dtb
  dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-kukui-krane-sku176.dtb
  dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-pumpkin.dtb
 +dtb-$(CONFIG_ARCH_MEDIATEK) += mt8186-corsola-kingler.dtb
 +dtb-$(CONFIG_ARCH_MEDIATEK) += mt8186-corsola-krabby.dtb
-+dtb-$(CONFIG_ARCH_MEDIATEK) += mt8186-corsola-rusty-sku196608.dtb
-+dtb-$(CONFIG_ARCH_MEDIATEK) += mt8186-corsola-rusty-sku196609.dtb
++dtb-$(CONFIG_ARCH_MEDIATEK) += mt8186-corsola-magneton-sku393216.dtb
++dtb-$(CONFIG_ARCH_MEDIATEK) += mt8186-corsola-magneton-sku393217.dtb
++dtb-$(CONFIG_ARCH_MEDIATEK) += mt8186-corsola-rusty.dtb
 +dtb-$(CONFIG_ARCH_MEDIATEK) += mt8186-corsola-steelix-sku131072.dtb
 +dtb-$(CONFIG_ARCH_MEDIATEK) += mt8186-corsola-steelix-sku131073.dtb
 +dtb-$(CONFIG_ARCH_MEDIATEK) += mt8186-corsola-tentacruel.dtb
@@ -860,7 +861,7 @@ index 0000000000000000000000000000000000000000..d7babf65c3daeb47e225434c2cd5a706
 +	compatible = "google,corsola", "google,krabby", "mediatek,mt8186";
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8186-corsola-krabby.dtsi b/arch/arm64/boot/dts/mediatek/mt8186-corsola-krabby.dtsi
-new file mode 100755
+new file mode 100644
 index 0000000000000000000000000000000000000000..64afeb3b79ae0bb8966d59484a1d56b13ff0394c
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt8186-corsola-krabby.dtsi
@@ -1229,12 +1230,465 @@ index 0000000000000000000000000000000000000000..64afeb3b79ae0bb8966d59484a1d56b1
 +		sound-dai = <&rt5682s>;
 +	};
 +};
-diff --git a/arch/arm64/boot/dts/mediatek/mt8186-corsola-rusty-sku196608.dts b/arch/arm64/boot/dts/mediatek/mt8186-corsola-rusty-sku196608.dts
+diff --git a/arch/arm64/boot/dts/mediatek/mt8186-corsola-magneton-sku393216.dts b/arch/arm64/boot/dts/mediatek/mt8186-corsola-magneton-sku393216.dts
 new file mode 100644
-index 0000000000000000000000000000000000000000..d99d0b8aa3b814e83d9f710898bce4f752323eb0
+index 0000000000000000000000000000000000000000..2c09dd7941eb8e2907c93692af8f90ec6bf9791b
 --- /dev/null
-+++ b/arch/arm64/boot/dts/mediatek/mt8186-corsola-rusty-sku196608.dts
-@@ -0,0 +1,20 @@
++++ b/arch/arm64/boot/dts/mediatek/mt8186-corsola-magneton-sku393216.dts
+@@ -0,0 +1,29 @@
++// SPDX-License-Identifier: (GPL-2.0 OR MIT)
++/*
++ * Copyright 2022 Google LLC
++ */
++
++/dts-v1/;
++#include "mt8186-corsola-magneton.dtsi"
++
++/ {
++	model = "Google Magneton sku393216 board";
++	compatible = "google,steelix-sku393216", "google,steelix", "mediatek,mt8186";
++};
++
++&i2c1 {
++	touchscreen_auo: touchscreen@10 {
++		compatible = "hid-over-i2c";
++		reg = <0x10>;
++		interrupt-parent = <&pio>;
++		interrupts = <12 IRQ_TYPE_EDGE_FALLING>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&touchscreen_pins>;
++		reset-gpios = <&pio 60 GPIO_ACTIVE_LOW>;
++		vdd-supply = <&pp3300_s3>;
++		status = "okay";
++
++		post-power-on-delay-ms = <10>;
++		hid-descr-addr = <0x0001>;
++	};
++};
+diff --git a/arch/arm64/boot/dts/mediatek/mt8186-corsola-magneton-sku393217.dts b/arch/arm64/boot/dts/mediatek/mt8186-corsola-magneton-sku393217.dts
+new file mode 100644
+index 0000000000000000000000000000000000000000..46935858ea326586cc6ee1ece20dd2d14f4dbc88
+--- /dev/null
++++ b/arch/arm64/boot/dts/mediatek/mt8186-corsola-magneton-sku393217.dts
+@@ -0,0 +1,29 @@
++// SPDX-License-Identifier: (GPL-2.0 OR MIT)
++/*
++ * Copyright 2022 Google LLC
++ */
++
++/dts-v1/;
++#include "mt8186-corsola-magneton.dtsi"
++
++/ {
++	model = "Google Magneton sku393217 board";
++	compatible = "google,steelix-sku393217", "google,steelix", "mediatek,mt8186";
++};
++
++&i2c1 {
++	touchscreen_boe: touchscreen@40 {
++		compatible = "hid-over-i2c";
++		reg = <0x40>;
++		interrupt-parent = <&pio>;
++		interrupts = <12 IRQ_TYPE_LEVEL_LOW>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&touchscreen_pins>;
++		reset-gpios = <&pio 60 GPIO_ACTIVE_LOW>;
++		vdd-supply = <&pp3300_s3>;
++		status = "okay";
++
++		post-power-on-delay-ms = <10>;
++		hid-descr-addr = <0x0001>;
++	};
++};
+diff --git a/arch/arm64/boot/dts/mediatek/mt8186-corsola-magneton.dtsi b/arch/arm64/boot/dts/mediatek/mt8186-corsola-magneton.dtsi
+new file mode 100644
+index 0000000000000000000000000000000000000000..a18a7a41e8fafd316a07ac27b0d953596e05efa0
+--- /dev/null
++++ b/arch/arm64/boot/dts/mediatek/mt8186-corsola-magneton.dtsi
+@@ -0,0 +1,377 @@
++// SPDX-License-Identifier: (GPL-2.0 OR MIT)
++/*
++ * Copyright 2022 Google LLC
++ */
++
++/dts-v1/;
++#include "mt8186-corsola.dtsi"
++#include <dt-bindings/input/input.h>
++#include <dt-bindings/input/gpio-keys.h>
++
++/ {
++	dmic_codec: dmic-codec {
++		compatible = "dmic-codec";
++		num-channels = <2>;
++		wakeup-delay-ms = <50>;
++		status = "okay";
++	};
++
++	rt1019p: rt1019p {
++		compatible = "realtek,rt1019p";
++		pinctrl-names = "default";
++		pinctrl-0 = <&rt1019p_pins_default>;
++		sdb-gpios = <&pio 150 GPIO_ACTIVE_HIGH>;
++		#sound-dai-cells = <0>;
++		status = "okay";
++	};
++};
++
++&btsco {
++	status = "okay";
++};
++
++&cros_ec {
++	typec {
++		compatible = "google,cros-ec-typec";
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		usb_c0: connector@0 {
++			compatible = "usb-c-connector";
++			reg = <0>;
++			label = "left";
++			power-role = "dual";
++			data-role = "host";
++			try-power-role = "source";
++
++			ports {
++				#address-cells = <1>;
++				#size-cells = <0>;
++
++				port@1 {
++					reg = <1>;
++
++					typec_port0: endpoint {
++						remote-endpoint = <&ite_typec0>;
++					};
++				};
++			};
++		};
++
++		usb_c1: connector@1 {
++			compatible = "usb-c-connector";
++			reg = <1>;
++			label = "right";
++			power-role = "dual";
++			data-role = "host";
++			try-power-role = "source";
++
++			ports {
++				#address-cells = <1>;
++				#size-cells = <0>;
++
++				port@1 {
++					reg = <1>;
++
++					typec_port1: endpoint {
++						remote-endpoint = <&ite_typec1>;
++					};
++				};
++			};
++		};
++	};
++};
++
++&dpi0 {
++	pinctrl-names = "sleep", "default";
++	pinctrl-0 = <&dpi_pin_default>;
++	pinctrl-1 = <&dpi_pin_func>;
++};
++
++&dpi_out {
++	remote-endpoint = <&it6505_in>;
++};
++
++&dsi_out {
++	remote-endpoint = <&ps8640_in>;
++};
++
++&i2c0 {
++	clock-frequency = <400000>;
++
++	ps8640: edp-bridge@8 {
++		compatible = "parade,ps8640";
++		reg = <0x8>;
++		powerdown-gpios = <&pio 96 GPIO_ACTIVE_LOW>;
++		reset-gpios = <&pio 98 GPIO_ACTIVE_LOW>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&ps8640_pins>;
++		vdd12-supply = <&mt6366_vrf12_reg>;
++		vdd33-supply = <&mt6366_vcn33_bt_reg>;
++
++		ports {
++			#address-cells = <1>;
++			#size-cells = <0>;
++
++			port@0 {
++				reg = <0>;
++
++				ps8640_in: endpoint {
++					remote-endpoint = <&dsi_out>;
++				};
++			};
++
++			port@1 {
++				reg = <1>;
++
++				ps8640_out: endpoint {
++					remote-endpoint = <&panel_in>;
++				};
++			};
++		};
++
++		aux-bus {
++			panel {
++				compatible = "auo,b116xw03";
++				power-supply = <&pp3300_disp_x>;
++				backlight = <&backlight_lcd0>;
++
++				port {
++					panel_in: endpoint {
++						remote-endpoint = <&ps8640_out>;
++					};
++				};
++			};
++		};
++	};
++};
++
++&i2c2 {
++	pinctrl-0 = <&i2c2_pins &trackpad_pins>;
++
++	touchpad@15 {
++		compatible = "elan,ekth3000";
++		reg = <0x15>;
++		interrupt-parent = <&pio>;
++		interrupts = <11 IRQ_TYPE_LEVEL_LOW>;
++		pinctrl-names = "default";
++		vcc-supply = <&pp3300_s3>;
++		wakeup-source;
++	};
++
++	touchpad@2c {
++		compatible = "hid-over-i2c";
++		reg = <0x2c>;
++		hid-descr-addr = <0x20>;
++		interrupts-extended = <&pio 11 IRQ_TYPE_LEVEL_LOW>;
++		pinctrl-names = "default";
++		vcc-supply = <&pp3300_s3>;
++		wakeup-source;
++	};
++};
++
++&i2c3 {
++	clock-frequency = <100000>;
++
++	it6505dptx: it6505dptx@5c {
++		#address-cells = <1>;
++		#size-cells = <0>;
++		#sound-dai-cells = <0>;
++		compatible = "ite,it6505";
++		status = "okay";
++		interrupt-parent = <&pio>;
++		interrupts = <8 IRQ_TYPE_LEVEL_LOW 8 0>;
++		reg = <0x5c>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&it6505_pins>;
++		ovdd-supply = <&mt6366_vsim2_reg>;
++		pwr18-supply = <&pp1800_dpbrdg_dx>;
++		reset-gpios = <&pio 177 0>;
++		hpd-gpios = <&pio 10 0>;
++		no-laneswap;
++		max-lane-count = <2>;
++		max-dpi-pixel-clock = <150000>;
++
++		port {
++			it6505_in: endpoint {
++				remote-endpoint = <&dpi_out>;
++			};
++		};
++
++		ite_mux0 {
++			compatible = "typec-mode-switch";
++			reg = <0>;
++			accessory;
++
++			port {
++				ite_typec0: endpoint {
++					remote-endpoint = <&typec_port0>;
++				};
++			};
++		};
++
++		ite_mux1 {
++			compatible = "typec-mode-switch";
++			reg = <1>;
++			accessory;
++
++			port {
++				ite_typec1: endpoint {
++					remote-endpoint = <&typec_port1>;
++				};
++			};
++		};
++	};
++};
++
++&i2c5 {
++	rt5682s: rt5682s@1a {
++		compatible = "realtek,rt5682s";
++		reg = <0x1a>;
++		interrupt-parent = <&pio>;
++		interrupts = <17 IRQ_TYPE_EDGE_BOTH>;
++		realtek,jd-src = <1>;
++		AVDD-supply = <&mt6366_vio18_reg>;
++		MICVDD-supply = <&pp3300_z2>;
++		#sound-dai-cells = <0>;
++	};
++};
++
++&keyboard_controller {
++	function-row-physmap = <
++		MATRIX_KEY(0x00, 0x02, 0)	/* T1 */
++		MATRIX_KEY(0x03, 0x02, 0)	/* T2 */
++		MATRIX_KEY(0x02, 0x02, 0)	/* T3 */
++		MATRIX_KEY(0x01, 0x02, 0)	/* T4 */
++		MATRIX_KEY(0x03, 0x04, 0)	/* T5 */
++		MATRIX_KEY(0x02, 0x04, 0)	/* T6 */
++		MATRIX_KEY(0x01, 0x04, 0)	/* T7 */
++		MATRIX_KEY(0x02, 0x09, 0)	/* T8 */
++		MATRIX_KEY(0x01, 0x09, 0)	/* T9 */
++		MATRIX_KEY(0x00, 0x04, 0)	/* T10 */
++	>;
++
++	linux,keymap = <
++		MATRIX_KEY(0x00, 0x02, KEY_BACK)
++		MATRIX_KEY(0x03, 0x02, KEY_REFRESH)
++		MATRIX_KEY(0x02, 0x02, KEY_ZOOM)
++		MATRIX_KEY(0x01, 0x02, KEY_SCALE)
++		MATRIX_KEY(0x03, 0x04, KEY_BRIGHTNESSDOWN)
++		MATRIX_KEY(0x02, 0x04, KEY_BRIGHTNESSUP)
++		MATRIX_KEY(0x01, 0x04, KEY_MICMUTE)
++		MATRIX_KEY(0x02, 0x09, KEY_MUTE)
++		MATRIX_KEY(0x01, 0x09, KEY_VOLUMEDOWN)
++		MATRIX_KEY(0x00, 0x04, KEY_VOLUMEUP)
++		CROS_STD_MAIN_KEYMAP
++	>;
++};
++
++&mmc1_pins_default {
++	pins_clk {
++		drive-strength = <MTK_DRIVE_8mA>;
++	};
++
++	pins_cmd_dat {
++		drive-strength = <MTK_DRIVE_8mA>;
++	};
++};
++
++&mmc1_pins_uhs {
++	pins_clk {
++		drive-strength = <MTK_DRIVE_8mA>;
++	};
++
++	pins_cmd_dat {
++		drive-strength = <MTK_DRIVE_8mA>;
++	};
++};
++
++&mt6366_vcn33_bt_reg {
++        /* ps8640 3.3V power supply */
++        regulator-max-microvolt = <3300000>;
++};
++
++&mt6366_vsim2_reg {
++	regulator-min-microvolt = <2700000>;
++	regulator-max-microvolt = <2700000>;
++};
++
++&pio {
++	dpi_pin_default: dpi_pin_default {
++		pins_cmd_dat {
++			pinmux = <PINMUX_GPIO103__FUNC_GPIO103>,
++				 <PINMUX_GPIO104__FUNC_GPIO104>,
++				 <PINMUX_GPIO105__FUNC_GPIO105>,
++				 <PINMUX_GPIO106__FUNC_GPIO106>,
++				 <PINMUX_GPIO107__FUNC_GPIO107>,
++				 <PINMUX_GPIO108__FUNC_GPIO108>,
++				 <PINMUX_GPIO109__FUNC_GPIO109>,
++				 <PINMUX_GPIO110__FUNC_GPIO110>,
++				 <PINMUX_GPIO111__FUNC_GPIO111>,
++				 <PINMUX_GPIO112__FUNC_GPIO112>,
++				 <PINMUX_GPIO113__FUNC_GPIO113>,
++				 <PINMUX_GPIO114__FUNC_GPIO114>,
++				 <PINMUX_GPIO101__FUNC_GPIO101>,
++				 <PINMUX_GPIO100__FUNC_GPIO100>,
++				 <PINMUX_GPIO102__FUNC_GPIO102>,
++				 <PINMUX_GPIO99__FUNC_GPIO99>;
++			drive-strength = <MTK_DRIVE_10mA>;
++			output-low;
++		};
++	};
++
++	dpi_pin_func: dpi_pin_func {
++		pins_cmd_dat {
++			pinmux = <PINMUX_GPIO103__FUNC_DPI_DATA0>,
++				 <PINMUX_GPIO104__FUNC_DPI_DATA1>,
++				 <PINMUX_GPIO105__FUNC_DPI_DATA2>,
++				 <PINMUX_GPIO106__FUNC_DPI_DATA3>,
++				 <PINMUX_GPIO107__FUNC_DPI_DATA4>,
++				 <PINMUX_GPIO108__FUNC_DPI_DATA5>,
++				 <PINMUX_GPIO109__FUNC_DPI_DATA6>,
++				 <PINMUX_GPIO110__FUNC_DPI_DATA7>,
++				 <PINMUX_GPIO111__FUNC_DPI_DATA8>,
++				 <PINMUX_GPIO112__FUNC_DPI_DATA9>,
++				 <PINMUX_GPIO113__FUNC_DPI_DATA10>,
++				 <PINMUX_GPIO114__FUNC_DPI_DATA11>,
++				 <PINMUX_GPIO101__FUNC_DPI_HSYNC>,
++				 <PINMUX_GPIO100__FUNC_DPI_VSYNC>,
++				 <PINMUX_GPIO102__FUNC_DPI_DE>,
++				 <PINMUX_GPIO99__FUNC_DPI_PCLK>;
++			drive-strength = <MTK_DRIVE_10mA>;
++		};
++	};
++
++	it6505_pins: it6505_pins {
++		pins_hpd {
++			pinmux = <PINMUX_GPIO10__FUNC_GPIO10>;
++			input-enable;
++			bias-pull-up;
++		};
++
++		pins_int {
++			pinmux = <PINMUX_GPIO8__FUNC_GPIO8>;
++			input-enable;
++			bias-pull-up;
++		};
++
++		pins_reset {
++			pinmux = <PINMUX_GPIO177__FUNC_GPIO177>;
++			output-low;
++			bias-pull-up;
++		};
++	};
++};
++
++&sound {
++	compatible = "mediatek,mt8186-mt6366-rt1019-rt5682s-sound";
++	status = "okay";
++
++	playback-codecs {
++		sound-dai = <&it6505dptx>,<&rt1019p>;
++	};
++
++	headset-codec {
++		sound-dai = <&rt5682s>;
++	};
++};
+diff --git a/arch/arm64/boot/dts/mediatek/mt8186-corsola-rusty.dts b/arch/arm64/boot/dts/mediatek/mt8186-corsola-rusty.dts
+new file mode 100644
+index 0000000000000000000000000000000000000000..70090f54205277df7ebdd87824ebd7ab3421e930
+--- /dev/null
++++ b/arch/arm64/boot/dts/mediatek/mt8186-corsola-rusty.dts
+@@ -0,0 +1,21 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
 +/*
 + * Copyright 2022 Google LLC
@@ -1244,41 +1698,12 @@ index 0000000000000000000000000000000000000000..d99d0b8aa3b814e83d9f710898bce4f7
 +#include "mt8186-corsola-steelix.dtsi"
 +
 +/ {
-+	model = "Google Rusty sku196608 board";
-+	compatible = "google,steelix-sku196608", "google,steelix", "mediatek,mt8186";
++	model = "Google Rusty sku196608/196609 board";
++	compatible = "google,steelix-sku196608", "google,steelix-sku196609",
++			"google,steelix", "mediatek,mt8186";
 +};
 +
 +&gpio_keys {
-+	status = "disabled";
-+};
-+
-+&touchscreen {
-+	status = "disabled";
-+};
-diff --git a/arch/arm64/boot/dts/mediatek/mt8186-corsola-rusty-sku196609.dts b/arch/arm64/boot/dts/mediatek/mt8186-corsola-rusty-sku196609.dts
-new file mode 100644
-index 0000000000000000000000000000000000000000..429de7ce4bfc9f2149380dd3efc09c5f6b2e0f86
---- /dev/null
-+++ b/arch/arm64/boot/dts/mediatek/mt8186-corsola-rusty-sku196609.dts
-@@ -0,0 +1,24 @@
-+// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-+/*
-+ * Copyright 2022 Google LLC
-+ */
-+
-+/dts-v1/;
-+#include "mt8186-corsola-steelix.dtsi"
-+
-+/ {
-+	model = "Google Rusty sku196609 board";
-+	compatible = "google,steelix-sku196609", "google,steelix", "mediatek,mt8186";
-+};
-+
-+&gpio_keys {
-+	status = "disabled";
-+};
-+
-+&fibocom_wwan_fm101 {
 +	status = "disabled";
 +};
 +
@@ -1287,10 +1712,10 @@ index 0000000000000000000000000000000000000000..429de7ce4bfc9f2149380dd3efc09c5f
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8186-corsola-steelix-sku131072.dts b/arch/arm64/boot/dts/mediatek/mt8186-corsola-steelix-sku131072.dts
 new file mode 100644
-index 0000000000000000000000000000000000000000..128b1b13bff744e562dd2508658ab8db96553afb
+index 0000000000000000000000000000000000000000..5546a0b9e3ad4d77ca6facfbdab94267ec32a221
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt8186-corsola-steelix-sku131072.dts
-@@ -0,0 +1,20 @@
+@@ -0,0 +1,16 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
 +/*
 + * Copyright 2022 Google LLC
@@ -1304,19 +1729,15 @@ index 0000000000000000000000000000000000000000..128b1b13bff744e562dd2508658ab8db
 +	compatible = "google,steelix-sku131072", "google,steelix", "mediatek,mt8186";
 +};
 +
-+&fibocom_wwan_fm101 {
-+	status = "disabled";
-+};
-+
 +&mt6366codec {
 +        mediatek,dmic-mode = <0>; /* two-wire */
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8186-corsola-steelix-sku131073.dts b/arch/arm64/boot/dts/mediatek/mt8186-corsola-steelix-sku131073.dts
 new file mode 100644
-index 0000000000000000000000000000000000000000..c5b392acaa589614118674980b0440e4b5db7676
+index 0000000000000000000000000000000000000000..7a58c18cdfaca2a300ebac449cfb27513af60fda
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt8186-corsola-steelix-sku131073.dts
-@@ -0,0 +1,20 @@
+@@ -0,0 +1,16 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
 +/*
 + * Copyright 2022 Google LLC
@@ -1330,19 +1751,15 @@ index 0000000000000000000000000000000000000000..c5b392acaa589614118674980b0440e4
 +	compatible = "google,steelix-sku131073", "google,steelix", "mediatek,mt8186";
 +};
 +
-+&fibocom_wwan_fm101 {
-+	status = "disabled";
-+};
-+
 +&mt6366codec {
 +	mediatek,dmic-mode = <1>; /* one-wire */
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8186-corsola-steelix.dtsi b/arch/arm64/boot/dts/mediatek/mt8186-corsola-steelix.dtsi
 new file mode 100644
-index 0000000000000000000000000000000000000000..1d76c8fe2e0c25960e0fada82474efbb76967f61
+index 0000000000000000000000000000000000000000..75b1195ff417aa27d26277067f7cb10a42710047
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt8186-corsola-steelix.dtsi
-@@ -0,0 +1,427 @@
+@@ -0,0 +1,417 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
 +/*
 + * Copyright 2022 Google LLC
@@ -1384,16 +1801,6 @@ index 0000000000000000000000000000000000000000..1d76c8fe2e0c25960e0fada82474efbb
 +		pinctrl-0 = <&rt1019p_pins_default>;
 +		sdb-gpios = <&pio 150 GPIO_ACTIVE_HIGH>;
 +		#sound-dai-cells = <0>;
-+		status = "okay";
-+	};
-+
-+	fibocom_wwan_fm101: fibocom-wwan-fm101 {
-+		compatible = "fibocom,wwan-fm101";
-+		lte-w-disable-gpios = <&pio 178 GPIO_ACTIVE_HIGH>;
-+		sar-detect-gpios = <&pio 179 GPIO_ACTIVE_HIGH>;
-+		m2-power-gpios = <&pio 180 GPIO_ACTIVE_HIGH>;
-+		poweroff-gpios = <&pio 181 GPIO_ACTIVE_HIGH>;
-+		reset-gpios = <&pio 182 GPIO_ACTIVE_HIGH>;
 +		status = "okay";
 +	};
 +};
@@ -3596,7 +4003,7 @@ index 3e8018c1e80219f918ebd28ffcfe356be5ea26c1..456d0bf5114a0ded89bef23f9b7d9270
  
  &uart0 {
 diff --git a/arch/arm64/boot/dts/mediatek/mt8186.dtsi b/arch/arm64/boot/dts/mediatek/mt8186.dtsi
-index 35281db2e2b94ff746294b9827b6f2791e0535e9..872dea0b2ecf9eeb49c2a970babf3588b8a327c6 100644
+index 35281db2e2b94ff746294b9827b6f2791e0535e9..af283c41908fd982628ae5cdadbd1e007270d24d 100644
 --- a/arch/arm64/boot/dts/mediatek/mt8186.dtsi
 +++ b/arch/arm64/boot/dts/mediatek/mt8186.dtsi
 @@ -5,12 +5,15 @@
@@ -4390,7 +4797,7 @@ index 35281db2e2b94ff746294b9827b6f2791e0535e9..872dea0b2ecf9eeb49c2a970babf3588
 +
 +		gce: mailbox@1022c000 {
 +			compatible = "mediatek,mt8186-gce",
-+				     "mediatek,mt6779-gce";
++				     "mediatek,mt8192-gce";
 +			reg = <0 0X1022c000 0 0x4000>;
 +			interrupts = <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH 0>;
 +			#mbox-cells = <2>;
@@ -5700,7 +6107,7 @@ index 35281db2e2b94ff746294b9827b6f2791e0535e9..872dea0b2ecf9eeb49c2a970babf3588
  	};
  };
 diff --git a/chromeos/config/chromeos/arm64/chromiumos-arm64.flavour.config b/chromeos/config/chromeos/arm64/chromiumos-arm64.flavour.config
-index 4b8053bdb447d5d1d86d0fccb3f1196c1e51f8de..e73412debcef54b915e709f257ec7aa9181c01ee 100644
+index d604dc2836db8365c75fb6cb69d8fee1cadcd77e..b760fbc6faf6e5d7f3a70a050422c8d25c74c56f 100644
 --- a/chromeos/config/chromeos/arm64/chromiumos-arm64.flavour.config
 +++ b/chromeos/config/chromeos/arm64/chromiumos-arm64.flavour.config
 @@ -109,7 +109,6 @@ CONFIG_MTK_CMDQ=y
@@ -5711,7 +6118,7 @@ index 4b8053bdb447d5d1d86d0fccb3f1196c1e51f8de..e73412debcef54b915e709f257ec7aa9
  CONFIG_MWIFIEX_PCIE=m
  CONFIG_MWIFIEX_SDIO=m
  CONFIG_PCIEAER=y
-@@ -285,6 +284,7 @@ CONFIG_VIDEO_DW9768=m
+@@ -286,6 +285,7 @@ CONFIG_VIDEO_DW9768=m
  CONFIG_VIDEO_HANTRO=y
  CONFIG_VIDEO_MEDIATEK_JPEG=m
  CONFIG_VIDEO_MEDIATEK_MDP=m
@@ -12091,10 +12498,10 @@ index 33e61a136bbc5e635cd5b67074e660b50e8bc378..654f8e25798440c3d900ff93555cd76c
  void mtk_mdp_rdma_start(struct device *dev, struct cmdq_pkt *cmdq_pkt);
 diff --git a/drivers/gpu/drm/mediatek/mtk_disp_ovl_adaptor.c b/drivers/gpu/drm/mediatek/mtk_disp_ovl_adaptor.c
 new file mode 100644
-index 0000000000000000000000000000000000000000..f67366690d921016e777522e85d69282768662f8
+index 0000000000000000000000000000000000000000..267ee0a1b8fada9c6b94f6bc3e8be3503a1c6aeb
 --- /dev/null
 +++ b/drivers/gpu/drm/mediatek/mtk_disp_ovl_adaptor.c
-@@ -0,0 +1,514 @@
+@@ -0,0 +1,528 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +/*
 + * Copyright (c) 2021 MediaTek Inc.
@@ -12154,6 +12561,7 @@ index 0000000000000000000000000000000000000000..f67366690d921016e777522e85d69282
 +struct mtk_disp_ovl_adaptor {
 +	struct device *ovl_adaptor_comp[OVL_ADAPTOR_ID_MAX];
 +	struct device *mmsys_dev;
++	bool children_bound;
 +};
 +
 +static const char * const private_comp_stem[OVL_ADAPTOR_TYPE_NUM] = {
@@ -12532,6 +12940,11 @@ index 0000000000000000000000000000000000000000..f67366690d921016e777522e85d69282
 +static int mtk_disp_ovl_adaptor_comp_bind(struct device *dev, struct device *master,
 +					  void *data)
 +{
++	struct mtk_disp_ovl_adaptor *priv = dev_get_drvdata(dev);
++
++	if (!priv->children_bound)
++		return -EPROBE_DEFER;
++
 +	return 0;
 +}
 +
@@ -12548,13 +12961,21 @@ index 0000000000000000000000000000000000000000..f67366690d921016e777522e85d69282
 +static int mtk_disp_ovl_adaptor_master_bind(struct device *dev)
 +{
 +	struct mtk_disp_ovl_adaptor *priv = dev_get_drvdata(dev);
++	int ret;
 +
-+	component_bind_all(dev, priv->mmsys_dev);
++	ret = component_bind_all(dev, priv->mmsys_dev);
++	if (ret)
++		return dev_err_probe(dev, ret, "component_bind_all failed!\n");
++
++	priv->children_bound = true;
 +	return 0;
 +}
 +
 +static void mtk_disp_ovl_adaptor_master_unbind(struct device *dev)
 +{
++	struct mtk_disp_ovl_adaptor *priv = dev_get_drvdata(dev);
++
++	priv->children_bound = false;
 +}
 +
 +static const struct component_master_ops mtk_disp_ovl_adaptor_master_ops = {
@@ -12610,7 +13031,7 @@ index 0000000000000000000000000000000000000000..f67366690d921016e777522e85d69282
 +	},
 +};
 diff --git a/drivers/gpu/drm/mediatek/mtk_dpi.c b/drivers/gpu/drm/mediatek/mtk_dpi.c
-index e61cd67b978ff9cc044c0ac55b131c6ad1da70b6..0644e169631079d7c94393fb688a4f4176886fac 100644
+index fb0b7970463691a82880522482f3d3251d7a8a3e..7eb6315f5b80ea5593802dba68f35968a64bbdfe 100644
 --- a/drivers/gpu/drm/mediatek/mtk_dpi.c
 +++ b/drivers/gpu/drm/mediatek/mtk_dpi.c
 @@ -14,6 +14,7 @@
@@ -12629,7 +13050,7 @@ index e61cd67b978ff9cc044c0ac55b131c6ad1da70b6..0644e169631079d7c94393fb688a4f41
  
  enum mtk_dpi_out_bit_num {
  	MTK_DPI_OUT_BIT_NUM_8BITS,
-@@ -85,6 +87,7 @@ struct mtk_dpi {
+@@ -80,6 +82,7 @@ struct mtk_dpi {
  	struct pinctrl_state *pins_dpi;
  	u32 output_fmt;
  	int refcount;
@@ -12637,15 +13058,15 @@ index e61cd67b978ff9cc044c0ac55b131c6ad1da70b6..0644e169631079d7c94393fb688a4f41
  };
  
  static inline struct mtk_dpi *bridge_to_dpi(struct drm_bridge *b)
-@@ -125,6 +128,7 @@ struct mtk_dpi_conf {
- 	bool edge_sel_en;
- 	const u32 *output_fmts;
- 	u32 num_output_fmts;
+@@ -151,6 +154,7 @@ struct mtk_dpi_conf {
+ 	u32 yuv422_en_bit;
+ 	u32 csc_enable_bit;
+ 	u32 pixels_per_iter;
 +	bool rgb888_dual_enable;
  };
  
  static void mtk_dpi_mask(struct mtk_dpi *dpi, u32 offset, u32 val, u32 mask)
-@@ -393,6 +397,9 @@ static void mtk_dpi_dual_edge(struct mtk_dpi *dpi)
+@@ -447,6 +451,9 @@ static void mtk_dpi_dual_edge(struct mtk_dpi *dpi)
  		mtk_dpi_mask(dpi, DPI_OUTPUT_SETTING,
  			     dpi->output_fmt == MEDIA_BUS_FMT_RGB888_2X12_LE ?
  			     EDGE_SEL : 0, EDGE_SEL);
@@ -12655,7 +13076,7 @@ index e61cd67b978ff9cc044c0ac55b131c6ad1da70b6..0644e169631079d7c94393fb688a4f41
  	} else {
  		mtk_dpi_mask(dpi, DPI_DDR_SETTING, DDR_EN | DDR_4PHASE, 0);
  	}
-@@ -705,8 +712,10 @@ static int mtk_dpi_bind(struct device *dev, struct device *master, void *data)
+@@ -776,8 +783,10 @@ static int mtk_dpi_bind(struct device *dev, struct device *master, void *data)
  {
  	struct mtk_dpi *dpi = dev_get_drvdata(dev);
  	struct drm_device *drm_dev = data;
@@ -12666,23 +13087,32 @@ index e61cd67b978ff9cc044c0ac55b131c6ad1da70b6..0644e169631079d7c94393fb688a4f41
  	ret = drm_simple_encoder_init(drm_dev, &dpi->encoder,
  				      DRM_MODE_ENCODER_TMDS);
  	if (ret) {
-@@ -815,6 +824,15 @@ static const struct mtk_dpi_conf mt8183_conf = {
- 	.num_output_fmts = ARRAY_SIZE(mt8183_output_fmts),
+@@ -928,6 +937,24 @@ static const struct mtk_dpi_conf mt8183_conf = {
+ 	.csc_enable_bit = CSC_ENABLE,
  };
  
 +static const struct mtk_dpi_conf mt8186_conf = {
-+		.cal_factor = mt8183_calculate_factor,
-+		.reg_h_fre_con = 0xe0,
-+		.max_clock_khz = 150000,
-+		.output_fmts = mt8183_output_fmts,
-+		.num_output_fmts = ARRAY_SIZE(mt8183_output_fmts),
-+		.rgb888_dual_enable = true,
++	.cal_factor = mt8183_calculate_factor,
++	.reg_h_fre_con = 0xe0,
++	.max_clock_khz = 150000,
++	.output_fmts = mt8183_output_fmts,
++	.num_output_fmts = ARRAY_SIZE(mt8183_output_fmts),
++	.rgb888_dual_enable = true,
++	.pixels_per_iter = 1,
++	.is_ck_de_pol = true,
++	.swap_input_support = true,
++	.support_direct_pin = true,
++	.dimension_mask = HPW_MASK,
++	.hvsize_mask = HSIZE_MASK,
++	.channel_swap_shift = CH_SWAP,
++	.yuv422_en_bit = YUV422_EN,
++	.csc_enable_bit = CSC_ENABLE,
 +};
 +
  static const struct mtk_dpi_conf mt8192_conf = {
  	.cal_factor = mt8183_calculate_factor,
  	.reg_h_fre_con = 0xe0,
-@@ -942,6 +960,9 @@ static const struct of_device_id mtk_dpi_of_ids[] = {
+@@ -1078,6 +1105,9 @@ static const struct of_device_id mtk_dpi_of_ids[] = {
  	{ .compatible = "mediatek,mt8183-dpi",
  	  .data = &mt8183_conf,
  	},
@@ -12693,14 +13123,13 @@ index e61cd67b978ff9cc044c0ac55b131c6ad1da70b6..0644e169631079d7c94393fb688a4f41
  	  .data = &mt8192_conf,
  	},
 diff --git a/drivers/gpu/drm/mediatek/mtk_dpi_regs.h b/drivers/gpu/drm/mediatek/mtk_dpi_regs.h
-index 3a02fabe16627a3e6419675586d40c0a8a8598d8..24d4cdf3696bee5c87ce426629640b0105e744fb 100644
+index 62bd4931b344e39d92b5758d6699cc6b7f446f65..e5d254a2097bacaa95ef9842b28c9ce2966119e0 100644
 --- a/drivers/gpu/drm/mediatek/mtk_dpi_regs.h
 +++ b/drivers/gpu/drm/mediatek/mtk_dpi_regs.h
-@@ -217,4 +217,9 @@
+@@ -235,4 +235,8 @@
+ #define MATRIX_SEL_RGB_TO_JPEG		0
+ #define MATRIX_SEL_RGB_TO_BT601		2
  
- #define EDGE_SEL_EN			BIT(5)
- #define H_FRE_2N			BIT(25)
-+
 +#define DPI_FORMAT_MASK			0x1
 +#define DPI_RGB888_DDR_CON		BIT(0)
 +#define DPI_RGB565_SDR_CON		BIT(1)
@@ -12917,7 +13346,7 @@ index cb9a36c48d4fdc096e9ce3c57e8f8078a6cef32c..3e9046993d09bfd66efc7600af0cbdcc
  
  #endif /* MTK_DRM_CRTC_H */
 diff --git a/drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.c b/drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.c
-index a848ca7e167ae9a597eb881452157b85331f1780..2aab1e1eda3638ce7f032e3fa0ca21aa5d479d6f 100644
+index 2d72cc5ddaba4fea36ee175d1159ecb39990abf8..9cf38ce0f83ab4cdf83d625c843789d306bcd6c9 100644
 --- a/drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.c
 +++ b/drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.c
 @@ -389,6 +389,25 @@ static const struct mtk_ddp_comp_funcs ddp_ufoe = {
@@ -12954,7 +13383,7 @@ index a848ca7e167ae9a597eb881452157b85331f1780..2aab1e1eda3638ce7f032e3fa0ca21aa
  	[MTK_DISP_POSTMASK] = "postmask",
  	[MTK_DISP_PWM] = "pwm",
  	[MTK_DISP_RDMA] = "rdma",
-@@ -417,51 +437,52 @@ struct mtk_ddp_comp_match {
+@@ -418,53 +438,54 @@ struct mtk_ddp_comp_match {
  	const struct mtk_ddp_comp_funcs *funcs;
  };
  
@@ -12966,6 +13395,8 @@ index a848ca7e167ae9a597eb881452157b85331f1780..2aab1e1eda3638ce7f032e3fa0ca21aa
 -	[DDP_COMPONENT_COLOR0]		= { MTK_DISP_COLOR,	0, &ddp_color },
 -	[DDP_COMPONENT_COLOR1]		= { MTK_DISP_COLOR,	1, &ddp_color },
 -	[DDP_COMPONENT_DITHER0]		= { MTK_DISP_DITHER,	0, &ddp_dither },
+-	[DDP_COMPONENT_DP_INTF0]	= { MTK_DP_INTF,	0, &ddp_dpi },
+-	[DDP_COMPONENT_DP_INTF1]	= { MTK_DP_INTF,	1, &ddp_dpi },
 -	[DDP_COMPONENT_DPI0]		= { MTK_DPI,		0, &ddp_dpi },
 -	[DDP_COMPONENT_DPI1]		= { MTK_DPI,		1, &ddp_dpi },
 -	[DDP_COMPONENT_DSC0]		= { MTK_DISP_DSC,	0, &ddp_dsc },
@@ -13007,6 +13438,8 @@ index a848ca7e167ae9a597eb881452157b85331f1780..2aab1e1eda3638ce7f032e3fa0ca21aa
 +	[DDP_COMPONENT_COLOR0]		= { MTK_DISP_COLOR,		0, &ddp_color },
 +	[DDP_COMPONENT_COLOR1]		= { MTK_DISP_COLOR,		1, &ddp_color },
 +	[DDP_COMPONENT_DITHER0]		= { MTK_DISP_DITHER,		0, &ddp_dither },
++	[DDP_COMPONENT_DP_INTF0]	= { MTK_DP_INTF,		0, &ddp_dpi },
++	[DDP_COMPONENT_DP_INTF1]	= { MTK_DP_INTF,		1, &ddp_dpi },
 +	[DDP_COMPONENT_DPI0]		= { MTK_DPI,			0, &ddp_dpi },
 +	[DDP_COMPONENT_DPI1]		= { MTK_DPI,			1, &ddp_dpi },
 +	[DDP_COMPONENT_DRM_OVL_ADAPTOR]	= { MTK_DISP_OVL_ADAPTOR,	0, &ddp_ovl_adaptor },
@@ -13049,7 +13482,7 @@ index a848ca7e167ae9a597eb881452157b85331f1780..2aab1e1eda3638ce7f032e3fa0ca21aa
  				     unsigned int path_len,
  				     struct mtk_ddp_comp *ddp_comp)
  {
-@@ -514,7 +535,7 @@ unsigned int mtk_drm_find_possible_crtc_by_comp(struct drm_device *drm,
+@@ -517,7 +538,7 @@ unsigned int mtk_drm_find_possible_crtc_by_comp(struct drm_device *drm,
  }
  
  int mtk_ddp_comp_init(struct device_node *node, struct mtk_ddp_comp *comp,
@@ -13058,7 +13491,7 @@ index a848ca7e167ae9a597eb881452157b85331f1780..2aab1e1eda3638ce7f032e3fa0ca21aa
  {
  	struct platform_device *comp_pdev;
  	enum mtk_ddp_comp_type type;
-@@ -523,19 +544,24 @@ int mtk_ddp_comp_init(struct device_node *node, struct mtk_ddp_comp *comp,
+@@ -526,19 +547,24 @@ int mtk_ddp_comp_init(struct device_node *node, struct mtk_ddp_comp *comp,
  	int ret;
  #endif
  
@@ -13089,7 +13522,7 @@ index a848ca7e167ae9a597eb881452157b85331f1780..2aab1e1eda3638ce7f032e3fa0ca21aa
  
  	if (type == MTK_DISP_AAL ||
  	    type == MTK_DISP_BLS ||
-@@ -545,6 +571,7 @@ int mtk_ddp_comp_init(struct device_node *node, struct mtk_ddp_comp *comp,
+@@ -548,6 +574,7 @@ int mtk_ddp_comp_init(struct device_node *node, struct mtk_ddp_comp *comp,
  	    type == MTK_DISP_MERGE ||
  	    type == MTK_DISP_OVL ||
  	    type == MTK_DISP_OVL_2L ||
@@ -13098,7 +13531,7 @@ index a848ca7e167ae9a597eb881452157b85331f1780..2aab1e1eda3638ce7f032e3fa0ca21aa
  	    type == MTK_DISP_RDMA ||
  	    type == MTK_DPI ||
 diff --git a/drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.h b/drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.h
-index a43d82c12a9a7935b2fb42ddbf024179ea637e24..af9a6671f9c41cbd714a87833b42e779afc242e6 100644
+index 2d0052c23dcbc3f9f62a044cb899d338351a37d0..3084cc4e2830d89df9224845c3b498c73f6aed6f 100644
 --- a/drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.h
 +++ b/drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.h
 @@ -9,6 +9,7 @@
@@ -13117,7 +13550,7 @@ index a43d82c12a9a7935b2fb42ddbf024179ea637e24..af9a6671f9c41cbd714a87833b42e779
  	MTK_DISP_POSTMASK,
  	MTK_DISP_PWM,
  	MTK_DISP_RDMA,
-@@ -70,12 +72,17 @@ struct mtk_ddp_comp_funcs {
+@@ -71,12 +73,17 @@ struct mtk_ddp_comp_funcs {
  	void (*bgclr_in_off)(struct device *dev);
  	void (*ctm_set)(struct device *dev,
  			struct drm_crtc_state *state);
@@ -13136,7 +13569,7 @@ index a43d82c12a9a7935b2fb42ddbf024179ea637e24..af9a6671f9c41cbd714a87833b42e779
  	const struct mtk_ddp_comp_funcs *funcs;
  };
  
-@@ -202,13 +209,58 @@ static inline void mtk_ddp_ctm_set(struct mtk_ddp_comp *comp,
+@@ -203,13 +210,58 @@ static inline void mtk_ddp_ctm_set(struct mtk_ddp_comp *comp,
  		comp->funcs->ctm_set(comp->dev, state);
  }
  
@@ -13198,7 +13631,7 @@ index a43d82c12a9a7935b2fb42ddbf024179ea637e24..af9a6671f9c41cbd714a87833b42e779
  		   struct cmdq_client_reg *cmdq_reg, void __iomem *regs,
  		   unsigned int offset);
 diff --git a/drivers/gpu/drm/mediatek/mtk_drm_drv.c b/drivers/gpu/drm/mediatek/mtk_drm_drv.c
-index 9971c6cb606617e992f8c9439ac63bff3d6abc10..d4248b73ecdbf6c9d1117e49969b6eece8004eb9 100644
+index 546b794128154233baab1b0b9663eef79eb6b493..e85b9552e45b7adebf20a5c517804a937a70406e 100644
 --- a/drivers/gpu/drm/mediatek/mtk_drm_drv.c
 +++ b/drivers/gpu/drm/mediatek/mtk_drm_drv.c
 @@ -62,7 +62,7 @@ static const struct drm_mode_config_funcs mtk_drm_mode_config_funcs = {
@@ -13733,7 +14166,7 @@ index 9971c6cb606617e992f8c9439ac63bff3d6abc10..d4248b73ecdbf6c9d1117e49969b6eec
  	private->drm = NULL;
  }
  
-@@ -648,6 +801,8 @@ static const struct of_device_id mtk_ddp_comp_dt_ids[] = {
+@@ -646,6 +799,8 @@ static const struct of_device_id mtk_ddp_comp_dt_ids[] = {
  	  .data = (void *)MTK_DPI },
  	{ .compatible = "mediatek,mt8183-dpi",
  	  .data = (void *)MTK_DPI },
@@ -13741,7 +14174,7 @@ index 9971c6cb606617e992f8c9439ac63bff3d6abc10..d4248b73ecdbf6c9d1117e49969b6eec
 +	  .data = (void *)MTK_DPI },
  	{ .compatible = "mediatek,mt8192-dpi",
  	  .data = (void *)MTK_DPI },
- 	{ .compatible = "mediatek,mt2701-dsi",
+ 	{ .compatible = "mediatek,mt8195-dp-intf",
 @@ -661,29 +816,6 @@ static const struct of_device_id mtk_ddp_comp_dt_ids[] = {
  	{ }
  };
@@ -13836,9 +14269,9 @@ index 9971c6cb606617e992f8c9439ac63bff3d6abc10..d4248b73ecdbf6c9d1117e49969b6eec
  		    comp_type == MTK_DISP_OVL_2L ||
 +		    comp_type == MTK_DISP_OVL_ADAPTOR ||
  		    comp_type == MTK_DISP_RDMA ||
+ 		    comp_type == MTK_DP_INTF ||
  		    comp_type == MTK_DPI ||
- 		    comp_type == MTK_DSI) {
-@@ -824,7 +985,7 @@ static int mtk_drm_probe(struct platform_device *pdev)
+@@ -825,7 +986,7 @@ static int mtk_drm_probe(struct platform_device *pdev)
  	pm_runtime_disable(dev);
  err_node:
  	of_node_put(private->mutex_node);
@@ -13847,7 +14280,7 @@ index 9971c6cb606617e992f8c9439ac63bff3d6abc10..d4248b73ecdbf6c9d1117e49969b6eec
  		of_node_put(private->comp_node[i]);
  	return ret;
  }
-@@ -837,7 +998,7 @@ static int mtk_drm_remove(struct platform_device *pdev)
+@@ -838,7 +999,7 @@ static int mtk_drm_remove(struct platform_device *pdev)
  	component_master_del(&pdev->dev, &mtk_drm_ops);
  	pm_runtime_disable(&pdev->dev);
  	of_node_put(private->mutex_node);
@@ -13856,7 +14289,7 @@ index 9971c6cb606617e992f8c9439ac63bff3d6abc10..d4248b73ecdbf6c9d1117e49969b6eec
  		of_node_put(private->comp_node[i]);
  
  	return 0;
-@@ -847,9 +1008,10 @@ static int mtk_drm_sys_prepare(struct device *dev)
+@@ -848,9 +1009,10 @@ static int mtk_drm_sys_prepare(struct device *dev)
  {
  	struct mtk_drm_private *private = dev_get_drvdata(dev);
  	struct drm_device *drm = private->drm;
@@ -13869,21 +14302,20 @@ index 9971c6cb606617e992f8c9439ac63bff3d6abc10..d4248b73ecdbf6c9d1117e49969b6eec
  
  	return ret;
  }
-@@ -858,9 +1020,11 @@ static void mtk_drm_sys_complete(struct device *dev)
+@@ -859,9 +1021,10 @@ static void mtk_drm_sys_complete(struct device *dev)
  {
  	struct mtk_drm_private *private = dev_get_drvdata(dev);
  	struct drm_device *drm = private->drm;
 -	int ret;
 +	int ret = 0;
-+
-+	if (private->drm_master)
-+		ret = drm_mode_config_helper_resume(drm);
  
 -	ret = drm_mode_config_helper_resume(drm);
++	if (private->drm_master)
++		ret = drm_mode_config_helper_resume(drm);
  	if (ret)
  		dev_err(dev, "Failed to resume\n");
  }
-@@ -885,11 +1049,13 @@ static struct platform_driver * const mtk_drm_drivers[] = {
+@@ -886,11 +1049,13 @@ static struct platform_driver * const mtk_drm_drivers[] = {
  	&mtk_disp_color_driver,
  	&mtk_disp_gamma_driver,
  	&mtk_disp_merge_driver,
@@ -13969,16 +14401,17 @@ index 7b37b5cf9629545657504180478acef376749933..acbf14b597db015a487cbe04c08af274
  #endif /* MTK_DRM_DRV_H */
 diff --git a/drivers/gpu/drm/mediatek/mtk_ethdr.c b/drivers/gpu/drm/mediatek/mtk_ethdr.c
 new file mode 100644
-index 0000000000000000000000000000000000000000..2f882be87e4d056a3fa79663a0ba9208cf377333
+index 0000000000000000000000000000000000000000..541f85f7099a07c540f904bf9125cefeb70514e9
 --- /dev/null
 +++ b/drivers/gpu/drm/mediatek/mtk_ethdr.c
-@@ -0,0 +1,369 @@
+@@ -0,0 +1,370 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +/*
 + * Copyright (c) 2021 MediaTek Inc.
 + */
 +
 +#include <drm/drm_fourcc.h>
++#include <drm/drm_framebuffer.h>
 +#include <linux/clk.h>
 +#include <linux/component.h>
 +#include <linux/of_device.h>
@@ -14514,10 +14947,66 @@ index bb9dd92c9898d3ea34ecec811937c8311b663762..5e86fd48928af3b0ac35b3d44fc9e1c5
  		}
  	} else if (MTK_IOMMU_IS_TYPE(data->plat_data, MTK_IOMMU_TYPE_INFRA) &&
 diff --git a/drivers/mailbox/mtk-cmdq-mailbox.c b/drivers/mailbox/mtk-cmdq-mailbox.c
-index d941e62a7148fd5c533950454d378c8ff048aab4..dc08df27e6f700e64b08e20e3db21ed7d657a9ea 100644
+index d941e62a7148fd5c533950454d378c8ff048aab4..b1e835b2693b9c849159bbc284ce9ad5c65016b2 100644
 --- a/drivers/mailbox/mtk-cmdq-mailbox.c
 +++ b/drivers/mailbox/mtk-cmdq-mailbox.c
-@@ -202,15 +202,10 @@ static bool cmdq_thread_is_in_wfe(struct cmdq_thread *thread)
+@@ -91,6 +91,8 @@ struct cmdq {
+ 	u8			shift_pa;
+ 	bool			control_by_sw;
+ 	u32			gce_num;
++	atomic_t		usage;
++	spinlock_t		lock;
+ };
+ 
+ struct gce_plat {
+@@ -100,6 +102,46 @@ struct gce_plat {
+ 	u32 gce_num;
+ };
+ 
++static s32 cmdq_clk_enable(struct cmdq *cmdq)
++{
++	s32 usage, ret;
++	unsigned long flags;
++
++	spin_lock_irqsave(&cmdq->lock, flags);
++
++	usage = atomic_inc_return(&cmdq->usage);
++
++	ret = clk_bulk_enable(cmdq->gce_num, cmdq->clocks);
++	if (usage <=0 || ret < 0) {
++		dev_err(cmdq->mbox.dev, "ref count %d ret %d suspend %d\n",
++			usage, ret, cmdq->suspended);
++	} else if (usage == 1) {
++		if (cmdq->control_by_sw)
++			writel((0x7 << 16) + 0x7, cmdq->base + GCE_GCTL_VALUE);
++	}
++
++	spin_unlock_irqrestore(&cmdq->lock, flags);
++
++	return ret;
++}
++
++static void cmdq_clk_disable(struct cmdq *cmdq)
++{
++	s32 usage;
++
++	usage = atomic_dec_return(&cmdq->usage);
++
++	if (usage < 0) {
++		dev_err(cmdq->mbox.dev, "ref count %d suspend %d\n",
++			usage, cmdq->suspended);
++	} else if (usage == 0) {
++		if (cmdq->control_by_sw)
++			writel(0x7, cmdq->base + GCE_GCTL_VALUE);
++	}
++
++	clk_bulk_disable(cmdq->gce_num, cmdq->clocks);
++}
++
+ u8 cmdq_get_shift_pa(struct mbox_chan *chan)
+ {
+ 	struct cmdq *cmdq = container_of(chan->mbox, struct cmdq, mbox);
+@@ -202,15 +244,10 @@ static bool cmdq_thread_is_in_wfe(struct cmdq_thread *thread)
  
  static void cmdq_task_exec_done(struct cmdq_task *task, int sta)
  {
@@ -14533,7 +15022,36 @@ index d941e62a7148fd5c533950454d378c8ff048aab4..dc08df27e6f700e64b08e20e3db21ed7
  	mbox_chan_received_data(task->thread->chan, &data);
  
  	list_del(&task->list_entry);
-@@ -459,7 +454,6 @@ static void cmdq_mbox_shutdown(struct mbox_chan *chan)
+@@ -281,7 +318,8 @@ static void cmdq_thread_irq_handler(struct cmdq *cmdq,
+ 
+ 	if (list_empty(&thread->task_busy_list)) {
+ 		cmdq_thread_disable(cmdq, thread);
+-		clk_bulk_disable(cmdq->gce_num, cmdq->clocks);
++
++		cmdq_clk_disable(cmdq);
+ 	}
+ }
+ 
+@@ -370,8 +408,7 @@ static int cmdq_mbox_send_data(struct mbox_chan *chan, void *data)
+ 	task->pkt = pkt;
+ 
+ 	if (list_empty(&thread->task_busy_list)) {
+-		WARN_ON(clk_bulk_enable(cmdq->gce_num, cmdq->clocks));
+-
++		WARN_ON(cmdq_clk_enable(cmdq) < 0);
+ 		/*
+ 		 * The thread reset will clear thread related register to 0,
+ 		 * including pc, end, priority, irq, suspend and enable. Thus
+@@ -444,7 +481,7 @@ static void cmdq_mbox_shutdown(struct mbox_chan *chan)
+ 	}
+ 
+ 	cmdq_thread_disable(cmdq, thread);
+-	clk_bulk_disable(cmdq->gce_num, cmdq->clocks);
++	cmdq_clk_disable(cmdq);
+ 
+ done:
+ 	/*
+@@ -459,7 +496,6 @@ static void cmdq_mbox_shutdown(struct mbox_chan *chan)
  static int cmdq_mbox_flush(struct mbox_chan *chan, unsigned long timeout)
  {
  	struct cmdq_thread *thread = (struct cmdq_thread *)chan->con_priv;
@@ -14541,7 +15059,7 @@ index d941e62a7148fd5c533950454d378c8ff048aab4..dc08df27e6f700e64b08e20e3db21ed7
  	struct cmdq_cb_data data;
  	struct cmdq *cmdq = dev_get_drvdata(chan->mbox->dev);
  	struct cmdq_task *task, *tmp;
-@@ -476,13 +470,8 @@ static int cmdq_mbox_flush(struct mbox_chan *chan, unsigned long timeout)
+@@ -476,13 +512,8 @@ static int cmdq_mbox_flush(struct mbox_chan *chan, unsigned long timeout)
  
  	list_for_each_entry_safe(task, tmp, &thread->task_busy_list,
  				 list_entry) {
@@ -14555,6 +15073,44 @@ index d941e62a7148fd5c533950454d378c8ff048aab4..dc08df27e6f700e64b08e20e3db21ed7
  		mbox_chan_received_data(task->thread->chan, &data);
  		list_del(&task->list_entry);
  		kfree(task);
+@@ -490,7 +521,8 @@ static int cmdq_mbox_flush(struct mbox_chan *chan, unsigned long timeout)
+ 
+ 	cmdq_thread_resume(thread);
+ 	cmdq_thread_disable(cmdq, thread);
+-	clk_bulk_disable(cmdq->gce_num, cmdq->clocks);
++
++	cmdq_clk_disable(cmdq);
+ 
+ out:
+ 	spin_unlock_irqrestore(&thread->chan->lock, flags);
+@@ -501,8 +533,12 @@ static int cmdq_mbox_flush(struct mbox_chan *chan, unsigned long timeout)
+ 	spin_unlock_irqrestore(&thread->chan->lock, flags);
+ 	if (readl_poll_timeout_atomic(thread->base + CMDQ_THR_ENABLE_TASK,
+ 				      enable, enable == 0, 1, timeout)) {
+-		dev_err(cmdq->mbox.dev, "Fail to wait GCE thread 0x%x done\n",
+-			(u32)(thread->base - cmdq->base));
++		dev_err(cmdq->mbox.dev,
++			"Fail to wait GCE thread 0x%x done enable 0x%X wait 0x%X ctrl 0x%X\n",
++			(u32)(thread->base - cmdq->base),
++			readl(thread->base + CMDQ_THR_ENABLE_TASK),
++			readl(thread->base + CMDQ_THR_WAIT_TOKEN),
++			readl(cmdq->base + GCE_GCTL_VALUE));
+ 
+ 		return -EFAULT;
+ 	}
+@@ -636,8 +672,12 @@ static int cmdq_probe(struct platform_device *pdev)
+ 
+ 	WARN_ON(clk_bulk_prepare(cmdq->gce_num, cmdq->clocks));
+ 
++	spin_lock_init(&cmdq->lock);
+ 	cmdq_init(cmdq);
+ 
++	dev_info(dev, "cmdq gce_num: %d control_by_sw %d 20220809==\n",
++		 cmdq->gce_num, cmdq->control_by_sw);
++
+ 	return 0;
+ }
+ 
 diff --git a/drivers/media/platform/Kconfig b/drivers/media/platform/Kconfig
 index 3057704dda690715d78a706960dbd93de61efb4c..451cd145d6530d33c219d250f917bc0f6717f774 100644
 --- a/drivers/media/platform/Kconfig
@@ -21835,14 +22391,14 @@ index 0e9e703c931a4faf46422d9ed2107c596a71b42f..3d18c86cf88c17c0a43b415ce045526e
 +obj-$(CONFIG_MTK_SYSTRACKER_V2) += systracker/
 \ No newline at end of file
 diff --git a/drivers/soc/mediatek/mt8186-mmsys.h b/drivers/soc/mediatek/mt8186-mmsys.h
-index eb1ad9c37a9cb0177758c527569752beef8f3643..0b450b00b82988153dd8d66b63aaf5a95474e465 100644
+index eb1ad9c37a9cb0177758c527569752beef8f3643..620c062e48934308eda9ad13063b00c8508475bb 100644
 --- a/drivers/soc/mediatek/mt8186-mmsys.h
 +++ b/drivers/soc/mediatek/mt8186-mmsys.h
 @@ -3,6 +3,7 @@
  #ifndef __SOC_MEDIATEK_MT8186_MMSYS_H
  #define __SOC_MEDIATEK_MT8186_MMSYS_H
  
-+#define MT8186_MMSYS_DUMMY0			0X400
++#define MT8186_DPI_OUTPUT_FORMAT		0X400
  #define MT8186_MMSYS_OVL_CON			0xF04
  #define MT8186_MMSYS_OVL0_CON_MASK			0x3
  #define MT8186_MMSYS_OVL0_2L_CON_MASK			0xC
@@ -22009,7 +22565,7 @@ index abfe94a302489c370922979ff559dc6a6c4a33c9..a6652ae63431a051fb0e842cc028bd0b
 +};
  #endif /* __SOC_MEDIATEK_MT8195_MMSYS_H */
 diff --git a/drivers/soc/mediatek/mtk-mmsys.c b/drivers/soc/mediatek/mtk-mmsys.c
-index 06d8e83a2cb56f5afdc25ab423083b7d733befe8..2b10fcf36d7e8dd023e2e2b0adbf91863bf4e4e9 100644
+index 06d8e83a2cb56f5afdc25ab423083b7d733befe8..0e71a3296046f05efb6db36bceec74ba039381c8 100644
 --- a/drivers/soc/mediatek/mtk-mmsys.c
 +++ b/drivers/soc/mediatek/mtk-mmsys.c
 @@ -20,6 +20,8 @@
@@ -22134,7 +22690,7 @@ index 06d8e83a2cb56f5afdc25ab423083b7d733befe8..2b10fcf36d7e8dd023e2e2b0adbf9186
 +void mtk_mmsys_ddp_dpi_confing(struct device *dev, u32 mask, u32 val,
 +			       struct cmdq_pkt *cmdq_pkt)
 +{
-+	mtk_mmsys_update_bits(dev_get_drvdata(dev), MT8186_MMSYS_DUMMY0, mask,
++	mtk_mmsys_update_bits(dev_get_drvdata(dev), MT8186_DPI_OUTPUT_FORMAT, mask,
 +			      val, cmdq_pkt);
 +}
 +EXPORT_SYMBOL_GPL(mtk_mmsys_ddp_dpi_confing);
