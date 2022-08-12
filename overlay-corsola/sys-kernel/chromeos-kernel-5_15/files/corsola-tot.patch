@@ -127,20 +127,25 @@ index 669ac7c32292798644b21dbb5a0dc657125f444d..dc0f0ea4da037c7ea336d73d30e6dbfa
 +
 +
 diff --git a/arch/arm64/boot/dts/mediatek/Makefile b/arch/arm64/boot/dts/mediatek/Makefile
-index 356234ad9d0b34cc5ba431df207557162c4ab2e8..a151b516d165b9bca2421ab8c565701256a03c7e 100644
+index 356234ad9d0b34cc5ba431df207557162c4ab2e8..4b036cd1d0da6a455fe0c2adc78006eb003f0fc5 100644
 --- a/arch/arm64/boot/dts/mediatek/Makefile
 +++ b/arch/arm64/boot/dts/mediatek/Makefile
-@@ -48,6 +48,14 @@ dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-kukui-kodama-sku32.dtb
+@@ -48,6 +48,19 @@ dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-kukui-kodama-sku32.dtb
  dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-kukui-krane-sku0.dtb
  dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-kukui-krane-sku176.dtb
  dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-pumpkin.dtb
 +dtb-$(CONFIG_ARCH_MEDIATEK) += mt8186-corsola-kingler.dtb
 +dtb-$(CONFIG_ARCH_MEDIATEK) += mt8186-corsola-krabby.dtb
++dtb-$(CONFIG_ARCH_MEDIATEK) += mt8186-corsola-magneton-rev2-sku393216.dtb
++dtb-$(CONFIG_ARCH_MEDIATEK) += mt8186-corsola-magneton-rev2-sku393217.dtb
 +dtb-$(CONFIG_ARCH_MEDIATEK) += mt8186-corsola-magneton-sku393216.dtb
 +dtb-$(CONFIG_ARCH_MEDIATEK) += mt8186-corsola-magneton-sku393217.dtb
 +dtb-$(CONFIG_ARCH_MEDIATEK) += mt8186-corsola-rusty.dtb
++dtb-$(CONFIG_ARCH_MEDIATEK) += mt8186-corsola-rusty-rev2.dtb
 +dtb-$(CONFIG_ARCH_MEDIATEK) += mt8186-corsola-steelix-sku131072.dtb
 +dtb-$(CONFIG_ARCH_MEDIATEK) += mt8186-corsola-steelix-sku131073.dtb
++dtb-$(CONFIG_ARCH_MEDIATEK) += mt8186-corsola-steelix-rev2-sku131072.dtb
++dtb-$(CONFIG_ARCH_MEDIATEK) += mt8186-corsola-steelix-rev2-sku131073.dtb
 +dtb-$(CONFIG_ARCH_MEDIATEK) += mt8186-corsola-tentacruel.dtb
  dtb-$(CONFIG_ARCH_MEDIATEK) += mt8186-evb.dtb
  dtb-$(CONFIG_ARCH_MEDIATEK) += mt8192-evb.dtb
@@ -1230,23 +1235,118 @@ index 0000000000000000000000000000000000000000..64afeb3b79ae0bb8966d59484a1d56b1
 +		sound-dai = <&rt5682s>;
 +	};
 +};
-diff --git a/arch/arm64/boot/dts/mediatek/mt8186-corsola-magneton-sku393216.dts b/arch/arm64/boot/dts/mediatek/mt8186-corsola-magneton-sku393216.dts
+diff --git a/arch/arm64/boot/dts/mediatek/mt8186-corsola-magneton-rev2-sku393216.dts b/arch/arm64/boot/dts/mediatek/mt8186-corsola-magneton-rev2-sku393216.dts
 new file mode 100644
-index 0000000000000000000000000000000000000000..2c09dd7941eb8e2907c93692af8f90ec6bf9791b
+index 0000000000000000000000000000000000000000..9dc2ff2b038a514956f4e0f5fc8fd904acadc987
 --- /dev/null
-+++ b/arch/arm64/boot/dts/mediatek/mt8186-corsola-magneton-sku393216.dts
-@@ -0,0 +1,29 @@
++++ b/arch/arm64/boot/dts/mediatek/mt8186-corsola-magneton-rev2-sku393216.dts
+@@ -0,0 +1,37 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
 +/*
 + * Copyright 2022 Google LLC
 + */
 +
 +/dts-v1/;
-+#include "mt8186-corsola-magneton.dtsi"
++#include "mt8186-corsola-steelix.dtsi"
++
++/ {
++	model = "Google Magneton sku393216 board";
++	compatible = "google,steelix-rev2-sku393216", "google,steelix", "mediatek,mt8186";
++};
++
++&gpio_keys {
++	status = "disabled";
++};
++
++&touchscreen {
++	status = "disabled";
++};
++
++&i2c1 {
++	touchscreen_auo: touchscreen@10 {
++		compatible = "hid-over-i2c";
++		reg = <0x10>;
++		interrupt-parent = <&pio>;
++		interrupts = <12 IRQ_TYPE_EDGE_FALLING>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&touchscreen_pins>;
++		reset-gpios = <&pio 60 GPIO_ACTIVE_LOW>;
++		vdd-supply = <&pp3300_s3>;
++		status = "okay";
++
++		post-power-on-delay-ms = <10>;
++		hid-descr-addr = <0x0001>;
++	};
++};
+diff --git a/arch/arm64/boot/dts/mediatek/mt8186-corsola-magneton-rev2-sku393217.dts b/arch/arm64/boot/dts/mediatek/mt8186-corsola-magneton-rev2-sku393217.dts
+new file mode 100644
+index 0000000000000000000000000000000000000000..129a2f7d975cbf54f4bc8aae0f7fa2118ae6350f
+--- /dev/null
++++ b/arch/arm64/boot/dts/mediatek/mt8186-corsola-magneton-rev2-sku393217.dts
+@@ -0,0 +1,37 @@
++// SPDX-License-Identifier: (GPL-2.0 OR MIT)
++/*
++ * Copyright 2022 Google LLC
++ */
++
++/dts-v1/;
++#include "mt8186-corsola-steelix.dtsi"
++
++/ {
++	model = "Google Magneton sku393217 board";
++	compatible = "google,steelix-rev2-sku393217", "google,steelix", "mediatek,mt8186";
++};
++
++&gpio_keys {
++	status = "disabled";
++};
++
++&touchscreen {
++	status = "disabled";
++};
++
++&i2c1 {
++	touchscreen_boe: touchscreen@40 {
++		compatible = "hid-over-i2c";
++		reg = <0x40>;
++		interrupt-parent = <&pio>;
++		interrupts = <12 IRQ_TYPE_LEVEL_LOW>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&touchscreen_pins>;
++		reset-gpios = <&pio 60 GPIO_ACTIVE_LOW>;
++		vdd-supply = <&pp3300_s3>;
++		status = "okay";
++
++		post-power-on-delay-ms = <10>;
++		hid-descr-addr = <0x0001>;
++	};
++};
+diff --git a/arch/arm64/boot/dts/mediatek/mt8186-corsola-magneton-sku393216.dts b/arch/arm64/boot/dts/mediatek/mt8186-corsola-magneton-sku393216.dts
+new file mode 100644
+index 0000000000000000000000000000000000000000..b40213df1d8a38ba671be8208a45b52c7b4f8049
+--- /dev/null
++++ b/arch/arm64/boot/dts/mediatek/mt8186-corsola-magneton-sku393216.dts
+@@ -0,0 +1,38 @@
++// SPDX-License-Identifier: (GPL-2.0 OR MIT)
++/*
++ * Copyright 2022 Google LLC
++ */
++
++/dts-v1/;
++#include "mt8186-corsola-steelix.dtsi"
++#include "mt8186-corsola-ps8640.dtsi"
 +
 +/ {
 +	model = "Google Magneton sku393216 board";
 +	compatible = "google,steelix-sku393216", "google,steelix", "mediatek,mt8186";
++};
++
++&gpio_keys {
++	status = "disabled";
++};
++
++&touchscreen {
++	status = "disabled";
 +};
 +
 +&i2c1 {
@@ -1267,21 +1367,30 @@ index 0000000000000000000000000000000000000000..2c09dd7941eb8e2907c93692af8f90ec
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8186-corsola-magneton-sku393217.dts b/arch/arm64/boot/dts/mediatek/mt8186-corsola-magneton-sku393217.dts
 new file mode 100644
-index 0000000000000000000000000000000000000000..46935858ea326586cc6ee1ece20dd2d14f4dbc88
+index 0000000000000000000000000000000000000000..3ab346e77b717fb199f5e5abd747d53d332f027f
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt8186-corsola-magneton-sku393217.dts
-@@ -0,0 +1,29 @@
+@@ -0,0 +1,38 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
 +/*
 + * Copyright 2022 Google LLC
 + */
 +
 +/dts-v1/;
-+#include "mt8186-corsola-magneton.dtsi"
++#include "mt8186-corsola-steelix.dtsi"
++#include "mt8186-corsola-ps8640.dtsi"
 +
 +/ {
 +	model = "Google Magneton sku393217 board";
 +	compatible = "google,steelix-sku393217", "google,steelix", "mediatek,mt8186";
++};
++
++&gpio_keys {
++	status = "disabled";
++};
++
++&touchscreen {
++	status = "disabled";
 +};
 +
 +&i2c1 {
@@ -1300,112 +1409,23 @@ index 0000000000000000000000000000000000000000..46935858ea326586cc6ee1ece20dd2d1
 +		hid-descr-addr = <0x0001>;
 +	};
 +};
-diff --git a/arch/arm64/boot/dts/mediatek/mt8186-corsola-magneton.dtsi b/arch/arm64/boot/dts/mediatek/mt8186-corsola-magneton.dtsi
+diff --git a/arch/arm64/boot/dts/mediatek/mt8186-corsola-ps8640.dtsi b/arch/arm64/boot/dts/mediatek/mt8186-corsola-ps8640.dtsi
 new file mode 100644
-index 0000000000000000000000000000000000000000..a18a7a41e8fafd316a07ac27b0d953596e05efa0
+index 0000000000000000000000000000000000000000..98c00d568ee7d05fbd32b07f8b1658bf7c73ed42
 --- /dev/null
-+++ b/arch/arm64/boot/dts/mediatek/mt8186-corsola-magneton.dtsi
-@@ -0,0 +1,377 @@
++++ b/arch/arm64/boot/dts/mediatek/mt8186-corsola-ps8640.dtsi
+@@ -0,0 +1,58 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
 +/*
 + * Copyright 2022 Google LLC
 + */
-+
-+/dts-v1/;
-+#include "mt8186-corsola.dtsi"
-+#include <dt-bindings/input/input.h>
-+#include <dt-bindings/input/gpio-keys.h>
-+
-+/ {
-+	dmic_codec: dmic-codec {
-+		compatible = "dmic-codec";
-+		num-channels = <2>;
-+		wakeup-delay-ms = <50>;
-+		status = "okay";
-+	};
-+
-+	rt1019p: rt1019p {
-+		compatible = "realtek,rt1019p";
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&rt1019p_pins_default>;
-+		sdb-gpios = <&pio 150 GPIO_ACTIVE_HIGH>;
-+		#sound-dai-cells = <0>;
-+		status = "okay";
-+	};
-+};
-+
-+&btsco {
-+	status = "okay";
-+};
-+
-+&cros_ec {
-+	typec {
-+		compatible = "google,cros-ec-typec";
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		usb_c0: connector@0 {
-+			compatible = "usb-c-connector";
-+			reg = <0>;
-+			label = "left";
-+			power-role = "dual";
-+			data-role = "host";
-+			try-power-role = "source";
-+
-+			ports {
-+				#address-cells = <1>;
-+				#size-cells = <0>;
-+
-+				port@1 {
-+					reg = <1>;
-+
-+					typec_port0: endpoint {
-+						remote-endpoint = <&ite_typec0>;
-+					};
-+				};
-+			};
-+		};
-+
-+		usb_c1: connector@1 {
-+			compatible = "usb-c-connector";
-+			reg = <1>;
-+			label = "right";
-+			power-role = "dual";
-+			data-role = "host";
-+			try-power-role = "source";
-+
-+			ports {
-+				#address-cells = <1>;
-+				#size-cells = <0>;
-+
-+				port@1 {
-+					reg = <1>;
-+
-+					typec_port1: endpoint {
-+						remote-endpoint = <&ite_typec1>;
-+					};
-+				};
-+			};
-+		};
-+	};
-+};
-+
-+&dpi0 {
-+	pinctrl-names = "sleep", "default";
-+	pinctrl-0 = <&dpi_pin_default>;
-+	pinctrl-1 = <&dpi_pin_func>;
-+};
-+
-+&dpi_out {
-+	remote-endpoint = <&it6505_in>;
-+};
 +
 +&dsi_out {
 +	remote-endpoint = <&ps8640_in>;
 +};
 +
 +&i2c0 {
-+	clock-frequency = <400000>;
++	/delete-node/anx7625@58;
 +
 +	ps8640: edp-bridge@8 {
 +		compatible = "parade,ps8640";
@@ -1453,241 +1473,11 @@ index 0000000000000000000000000000000000000000..a18a7a41e8fafd316a07ac27b0d95359
 +		};
 +	};
 +};
-+
-+&i2c2 {
-+	pinctrl-0 = <&i2c2_pins &trackpad_pins>;
-+
-+	touchpad@15 {
-+		compatible = "elan,ekth3000";
-+		reg = <0x15>;
-+		interrupt-parent = <&pio>;
-+		interrupts = <11 IRQ_TYPE_LEVEL_LOW>;
-+		pinctrl-names = "default";
-+		vcc-supply = <&pp3300_s3>;
-+		wakeup-source;
-+	};
-+
-+	touchpad@2c {
-+		compatible = "hid-over-i2c";
-+		reg = <0x2c>;
-+		hid-descr-addr = <0x20>;
-+		interrupts-extended = <&pio 11 IRQ_TYPE_LEVEL_LOW>;
-+		pinctrl-names = "default";
-+		vcc-supply = <&pp3300_s3>;
-+		wakeup-source;
-+	};
-+};
-+
-+&i2c3 {
-+	clock-frequency = <100000>;
-+
-+	it6505dptx: it6505dptx@5c {
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+		#sound-dai-cells = <0>;
-+		compatible = "ite,it6505";
-+		status = "okay";
-+		interrupt-parent = <&pio>;
-+		interrupts = <8 IRQ_TYPE_LEVEL_LOW 8 0>;
-+		reg = <0x5c>;
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&it6505_pins>;
-+		ovdd-supply = <&mt6366_vsim2_reg>;
-+		pwr18-supply = <&pp1800_dpbrdg_dx>;
-+		reset-gpios = <&pio 177 0>;
-+		hpd-gpios = <&pio 10 0>;
-+		no-laneswap;
-+		max-lane-count = <2>;
-+		max-dpi-pixel-clock = <150000>;
-+
-+		port {
-+			it6505_in: endpoint {
-+				remote-endpoint = <&dpi_out>;
-+			};
-+		};
-+
-+		ite_mux0 {
-+			compatible = "typec-mode-switch";
-+			reg = <0>;
-+			accessory;
-+
-+			port {
-+				ite_typec0: endpoint {
-+					remote-endpoint = <&typec_port0>;
-+				};
-+			};
-+		};
-+
-+		ite_mux1 {
-+			compatible = "typec-mode-switch";
-+			reg = <1>;
-+			accessory;
-+
-+			port {
-+				ite_typec1: endpoint {
-+					remote-endpoint = <&typec_port1>;
-+				};
-+			};
-+		};
-+	};
-+};
-+
-+&i2c5 {
-+	rt5682s: rt5682s@1a {
-+		compatible = "realtek,rt5682s";
-+		reg = <0x1a>;
-+		interrupt-parent = <&pio>;
-+		interrupts = <17 IRQ_TYPE_EDGE_BOTH>;
-+		realtek,jd-src = <1>;
-+		AVDD-supply = <&mt6366_vio18_reg>;
-+		MICVDD-supply = <&pp3300_z2>;
-+		#sound-dai-cells = <0>;
-+	};
-+};
-+
-+&keyboard_controller {
-+	function-row-physmap = <
-+		MATRIX_KEY(0x00, 0x02, 0)	/* T1 */
-+		MATRIX_KEY(0x03, 0x02, 0)	/* T2 */
-+		MATRIX_KEY(0x02, 0x02, 0)	/* T3 */
-+		MATRIX_KEY(0x01, 0x02, 0)	/* T4 */
-+		MATRIX_KEY(0x03, 0x04, 0)	/* T5 */
-+		MATRIX_KEY(0x02, 0x04, 0)	/* T6 */
-+		MATRIX_KEY(0x01, 0x04, 0)	/* T7 */
-+		MATRIX_KEY(0x02, 0x09, 0)	/* T8 */
-+		MATRIX_KEY(0x01, 0x09, 0)	/* T9 */
-+		MATRIX_KEY(0x00, 0x04, 0)	/* T10 */
-+	>;
-+
-+	linux,keymap = <
-+		MATRIX_KEY(0x00, 0x02, KEY_BACK)
-+		MATRIX_KEY(0x03, 0x02, KEY_REFRESH)
-+		MATRIX_KEY(0x02, 0x02, KEY_ZOOM)
-+		MATRIX_KEY(0x01, 0x02, KEY_SCALE)
-+		MATRIX_KEY(0x03, 0x04, KEY_BRIGHTNESSDOWN)
-+		MATRIX_KEY(0x02, 0x04, KEY_BRIGHTNESSUP)
-+		MATRIX_KEY(0x01, 0x04, KEY_MICMUTE)
-+		MATRIX_KEY(0x02, 0x09, KEY_MUTE)
-+		MATRIX_KEY(0x01, 0x09, KEY_VOLUMEDOWN)
-+		MATRIX_KEY(0x00, 0x04, KEY_VOLUMEUP)
-+		CROS_STD_MAIN_KEYMAP
-+	>;
-+};
-+
-+&mmc1_pins_default {
-+	pins_clk {
-+		drive-strength = <MTK_DRIVE_8mA>;
-+	};
-+
-+	pins_cmd_dat {
-+		drive-strength = <MTK_DRIVE_8mA>;
-+	};
-+};
-+
-+&mmc1_pins_uhs {
-+	pins_clk {
-+		drive-strength = <MTK_DRIVE_8mA>;
-+	};
-+
-+	pins_cmd_dat {
-+		drive-strength = <MTK_DRIVE_8mA>;
-+	};
-+};
-+
-+&mt6366_vcn33_bt_reg {
-+        /* ps8640 3.3V power supply */
-+        regulator-max-microvolt = <3300000>;
-+};
-+
-+&mt6366_vsim2_reg {
-+	regulator-min-microvolt = <2700000>;
-+	regulator-max-microvolt = <2700000>;
-+};
-+
-+&pio {
-+	dpi_pin_default: dpi_pin_default {
-+		pins_cmd_dat {
-+			pinmux = <PINMUX_GPIO103__FUNC_GPIO103>,
-+				 <PINMUX_GPIO104__FUNC_GPIO104>,
-+				 <PINMUX_GPIO105__FUNC_GPIO105>,
-+				 <PINMUX_GPIO106__FUNC_GPIO106>,
-+				 <PINMUX_GPIO107__FUNC_GPIO107>,
-+				 <PINMUX_GPIO108__FUNC_GPIO108>,
-+				 <PINMUX_GPIO109__FUNC_GPIO109>,
-+				 <PINMUX_GPIO110__FUNC_GPIO110>,
-+				 <PINMUX_GPIO111__FUNC_GPIO111>,
-+				 <PINMUX_GPIO112__FUNC_GPIO112>,
-+				 <PINMUX_GPIO113__FUNC_GPIO113>,
-+				 <PINMUX_GPIO114__FUNC_GPIO114>,
-+				 <PINMUX_GPIO101__FUNC_GPIO101>,
-+				 <PINMUX_GPIO100__FUNC_GPIO100>,
-+				 <PINMUX_GPIO102__FUNC_GPIO102>,
-+				 <PINMUX_GPIO99__FUNC_GPIO99>;
-+			drive-strength = <MTK_DRIVE_10mA>;
-+			output-low;
-+		};
-+	};
-+
-+	dpi_pin_func: dpi_pin_func {
-+		pins_cmd_dat {
-+			pinmux = <PINMUX_GPIO103__FUNC_DPI_DATA0>,
-+				 <PINMUX_GPIO104__FUNC_DPI_DATA1>,
-+				 <PINMUX_GPIO105__FUNC_DPI_DATA2>,
-+				 <PINMUX_GPIO106__FUNC_DPI_DATA3>,
-+				 <PINMUX_GPIO107__FUNC_DPI_DATA4>,
-+				 <PINMUX_GPIO108__FUNC_DPI_DATA5>,
-+				 <PINMUX_GPIO109__FUNC_DPI_DATA6>,
-+				 <PINMUX_GPIO110__FUNC_DPI_DATA7>,
-+				 <PINMUX_GPIO111__FUNC_DPI_DATA8>,
-+				 <PINMUX_GPIO112__FUNC_DPI_DATA9>,
-+				 <PINMUX_GPIO113__FUNC_DPI_DATA10>,
-+				 <PINMUX_GPIO114__FUNC_DPI_DATA11>,
-+				 <PINMUX_GPIO101__FUNC_DPI_HSYNC>,
-+				 <PINMUX_GPIO100__FUNC_DPI_VSYNC>,
-+				 <PINMUX_GPIO102__FUNC_DPI_DE>,
-+				 <PINMUX_GPIO99__FUNC_DPI_PCLK>;
-+			drive-strength = <MTK_DRIVE_10mA>;
-+		};
-+	};
-+
-+	it6505_pins: it6505_pins {
-+		pins_hpd {
-+			pinmux = <PINMUX_GPIO10__FUNC_GPIO10>;
-+			input-enable;
-+			bias-pull-up;
-+		};
-+
-+		pins_int {
-+			pinmux = <PINMUX_GPIO8__FUNC_GPIO8>;
-+			input-enable;
-+			bias-pull-up;
-+		};
-+
-+		pins_reset {
-+			pinmux = <PINMUX_GPIO177__FUNC_GPIO177>;
-+			output-low;
-+			bias-pull-up;
-+		};
-+	};
-+};
-+
-+&sound {
-+	compatible = "mediatek,mt8186-mt6366-rt1019-rt5682s-sound";
-+	status = "okay";
-+
-+	playback-codecs {
-+		sound-dai = <&it6505dptx>,<&rt1019p>;
-+	};
-+
-+	headset-codec {
-+		sound-dai = <&rt5682s>;
-+	};
-+};
-diff --git a/arch/arm64/boot/dts/mediatek/mt8186-corsola-rusty.dts b/arch/arm64/boot/dts/mediatek/mt8186-corsola-rusty.dts
+diff --git a/arch/arm64/boot/dts/mediatek/mt8186-corsola-rusty-rev2.dts b/arch/arm64/boot/dts/mediatek/mt8186-corsola-rusty-rev2.dts
 new file mode 100644
-index 0000000000000000000000000000000000000000..70090f54205277df7ebdd87824ebd7ab3421e930
+index 0000000000000000000000000000000000000000..3ba3dc2e1aaa5ec54c85d6b581fd5c6176e78750
 --- /dev/null
-+++ b/arch/arm64/boot/dts/mediatek/mt8186-corsola-rusty.dts
++++ b/arch/arm64/boot/dts/mediatek/mt8186-corsola-rusty-rev2.dts
 @@ -0,0 +1,21 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
 +/*
@@ -1696,6 +1486,34 @@ index 0000000000000000000000000000000000000000..70090f54205277df7ebdd87824ebd7ab
 +
 +/dts-v1/;
 +#include "mt8186-corsola-steelix.dtsi"
++
++/ {
++	model = "Google Rusty sku196608/196609 board";
++	compatible = "google,steelix-rev2-sku196608", "google,steelix-rev2-sku196609",
++			"google,steelix", "mediatek,mt8186";
++};
++
++&gpio_keys {
++	status = "disabled";
++};
++
++&touchscreen {
++	status = "disabled";
++};
+diff --git a/arch/arm64/boot/dts/mediatek/mt8186-corsola-rusty.dts b/arch/arm64/boot/dts/mediatek/mt8186-corsola-rusty.dts
+new file mode 100644
+index 0000000000000000000000000000000000000000..e46f3adbf6dd5942e5a181296b2c911189b23511
+--- /dev/null
++++ b/arch/arm64/boot/dts/mediatek/mt8186-corsola-rusty.dts
+@@ -0,0 +1,22 @@
++// SPDX-License-Identifier: (GPL-2.0 OR MIT)
++/*
++ * Copyright 2022 Google LLC
++ */
++
++/dts-v1/;
++#include "mt8186-corsola-steelix.dtsi"
++#include "mt8186-corsola-ps8640.dtsi"
 +
 +/ {
 +	model = "Google Rusty sku196608/196609 board";
@@ -1710,11 +1528,11 @@ index 0000000000000000000000000000000000000000..70090f54205277df7ebdd87824ebd7ab
 +&touchscreen {
 +	status = "disabled";
 +};
-diff --git a/arch/arm64/boot/dts/mediatek/mt8186-corsola-steelix-sku131072.dts b/arch/arm64/boot/dts/mediatek/mt8186-corsola-steelix-sku131072.dts
+diff --git a/arch/arm64/boot/dts/mediatek/mt8186-corsola-steelix-rev2-sku131072.dts b/arch/arm64/boot/dts/mediatek/mt8186-corsola-steelix-rev2-sku131072.dts
 new file mode 100644
-index 0000000000000000000000000000000000000000..5546a0b9e3ad4d77ca6facfbdab94267ec32a221
+index 0000000000000000000000000000000000000000..555a6c0ed0e360301de0e68bb9b3e9c3f842ef00
 --- /dev/null
-+++ b/arch/arm64/boot/dts/mediatek/mt8186-corsola-steelix-sku131072.dts
++++ b/arch/arm64/boot/dts/mediatek/mt8186-corsola-steelix-rev2-sku131072.dts
 @@ -0,0 +1,16 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
 +/*
@@ -1726,17 +1544,17 @@ index 0000000000000000000000000000000000000000..5546a0b9e3ad4d77ca6facfbdab94267
 +
 +/ {
 +	model = "Google Steelix sku131072 board";
-+	compatible = "google,steelix-sku131072", "google,steelix", "mediatek,mt8186";
++	compatible = "google,steelix-rev2-sku131072", "google,steelix", "mediatek,mt8186";
 +};
 +
 +&mt6366codec {
-+        mediatek,dmic-mode = <0>; /* two-wire */
++	mediatek,dmic-mode = <0>; /* two-wire */
 +};
-diff --git a/arch/arm64/boot/dts/mediatek/mt8186-corsola-steelix-sku131073.dts b/arch/arm64/boot/dts/mediatek/mt8186-corsola-steelix-sku131073.dts
+diff --git a/arch/arm64/boot/dts/mediatek/mt8186-corsola-steelix-rev2-sku131073.dts b/arch/arm64/boot/dts/mediatek/mt8186-corsola-steelix-rev2-sku131073.dts
 new file mode 100644
-index 0000000000000000000000000000000000000000..7a58c18cdfaca2a300ebac449cfb27513af60fda
+index 0000000000000000000000000000000000000000..a8267edc9c2da243550413ef1f9df9daff249819
 --- /dev/null
-+++ b/arch/arm64/boot/dts/mediatek/mt8186-corsola-steelix-sku131073.dts
++++ b/arch/arm64/boot/dts/mediatek/mt8186-corsola-steelix-rev2-sku131073.dts
 @@ -0,0 +1,16 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
 +/*
@@ -1748,6 +1566,52 @@ index 0000000000000000000000000000000000000000..7a58c18cdfaca2a300ebac449cfb2751
 +
 +/ {
 +	model = "Google Steelix sku131073 board";
++	compatible = "google,steelix-rev2-sku131073", "google,steelix", "mediatek,mt8186";
++};
++
++&mt6366codec {
++	mediatek,dmic-mode = <1>; /* one-wire */
++};
+diff --git a/arch/arm64/boot/dts/mediatek/mt8186-corsola-steelix-sku131072.dts b/arch/arm64/boot/dts/mediatek/mt8186-corsola-steelix-sku131072.dts
+new file mode 100644
+index 0000000000000000000000000000000000000000..59aa864ed304f8e9f14a05a2d5c2d85e2fef1d3a
+--- /dev/null
++++ b/arch/arm64/boot/dts/mediatek/mt8186-corsola-steelix-sku131072.dts
+@@ -0,0 +1,17 @@
++// SPDX-License-Identifier: (GPL-2.0 OR MIT)
++/*
++ * Copyright 2022 Google LLC
++ */
++
++/dts-v1/;
++#include "mt8186-corsola-steelix.dtsi"
++#include "mt8186-corsola-ps8640.dtsi"
++
++/ {
++	model = "Google Steelix sku131072 board";
++	compatible = "google,steelix-sku131072", "google,steelix", "mediatek,mt8186";
++};
++
++&mt6366codec {
++	mediatek,dmic-mode = <0>; /* two-wire */
++};
+diff --git a/arch/arm64/boot/dts/mediatek/mt8186-corsola-steelix-sku131073.dts b/arch/arm64/boot/dts/mediatek/mt8186-corsola-steelix-sku131073.dts
+new file mode 100644
+index 0000000000000000000000000000000000000000..af92cea09365a18f8a8d178c8f6d14077034b759
+--- /dev/null
++++ b/arch/arm64/boot/dts/mediatek/mt8186-corsola-steelix-sku131073.dts
+@@ -0,0 +1,17 @@
++// SPDX-License-Identifier: (GPL-2.0 OR MIT)
++/*
++ * Copyright 2022 Google LLC
++ */
++
++/dts-v1/;
++#include "mt8186-corsola-steelix.dtsi"
++#include "mt8186-corsola-ps8640.dtsi"
++
++/ {
++	model = "Google Steelix sku131073 board";
 +	compatible = "google,steelix-sku131073", "google,steelix", "mediatek,mt8186";
 +};
 +
@@ -1756,7 +1620,7 @@ index 0000000000000000000000000000000000000000..7a58c18cdfaca2a300ebac449cfb2751
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8186-corsola-steelix.dtsi b/arch/arm64/boot/dts/mediatek/mt8186-corsola-steelix.dtsi
 new file mode 100644
-index 0000000000000000000000000000000000000000..75b1195ff417aa27d26277067f7cb10a42710047
+index 0000000000000000000000000000000000000000..92c462b39fae24123ed2e504b50defdc05b68ee5
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt8186-corsola-steelix.dtsi
 @@ -0,0 +1,417 @@
@@ -1872,52 +1736,52 @@ index 0000000000000000000000000000000000000000..75b1195ff417aa27d26277067f7cb10a
 +};
 +
 +&dsi_out {
-+	remote-endpoint = <&ps8640_in>;
++	remote-endpoint = <&anx7625_in_>;
 +};
 +
 +&i2c0 {
 +	clock-frequency = <400000>;
 +
-+	ps8640: edp-bridge@8 {
-+		compatible = "parade,ps8640";
-+		reg = <0x8>;
-+		powerdown-gpios = <&pio 96 GPIO_ACTIVE_LOW>;
-+		reset-gpios = <&pio 98 GPIO_ACTIVE_LOW>;
++	anx_bridge: anx7625@58 {
++		compatible = "analogix,anx7625";
++		reg = <0x58>;
 +		pinctrl-names = "default";
-+		pinctrl-0 = <&ps8640_pins>;
-+		vdd12-supply = <&mt6366_vrf12_reg>;
-+		vdd33-supply = <&mt6366_vcn33_bt_reg>;
++		pinctrl-0 = <&anx7625_pins>;
++		panel_flags = <1>;
++		enable-gpios = <&pio 96 GPIO_ACTIVE_HIGH>;
++		reset-gpios = <&pio 98 GPIO_ACTIVE_HIGH>;
++		vdd10-supply = <&pp1000_edpbrdg>;
++		vdd18-supply = <&pp1800_edpbrdg_dx>;
++		vdd33-supply = <&pp3300_edp_dx>;
++		#address-cells = <1>;
++		#size-cells = <0>;
 +
-+		ports {
-+			#address-cells = <1>;
-+			#size-cells = <0>;
++		port@0 {
++			reg = <0>;
 +
-+			port@0 {
-+				reg = <0>;
-+
-+				ps8640_in: endpoint {
-+					remote-endpoint = <&dsi_out>;
-+				};
++			anx7625_in_: endpoint {
++				remote-endpoint = <&dsi_out>;
++				data-lanes = <0 1 2 3>;
 +			};
++		};
 +
-+			port@1 {
-+				reg = <1>;
++		port@1 {
++			reg = <1>;
 +
-+				ps8640_out: endpoint {
-+					remote-endpoint = <&panel_in>;
-+				};
++			anx7625_out: endpoint {
++				remote-endpoint = <&panel_in>;
 +			};
 +		};
 +
 +		aux-bus {
-+			panel {
++			panel: panel {
 +				compatible = "auo,b116xw03";
 +				power-supply = <&pp3300_disp_x>;
 +				backlight = <&backlight_lcd0>;
 +
 +				port {
 +					panel_in: endpoint {
-+						remote-endpoint = <&ps8640_out>;
++						remote-endpoint = <&anx7625_out>;
 +					};
 +				};
 +			};
@@ -21615,46 +21479,22 @@ index 3f94c37251df1573a163cbed47dc8dd9ea935f03..f8ce98c02d885582491437631bcedc80
  }
  EXPORT_SYMBOL_GPL(mt76_mcu_get_response);
 diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/mac.c b/drivers/net/wireless/mediatek/mt76/mt7921/mac.c
-index 9b0d0af70e7835b1dc474897a94e62937462b8ae..ff6aac7e6953db21b3ee4c4a02e7ee7b04bf830d 100644
+index a5e9423a4205c0a175df53c4d7052936965a01e8..ff6aac7e6953db21b3ee4c4a02e7ee7b04bf830d 100644
 --- a/drivers/net/wireless/mediatek/mt76/mt7921/mac.c
 +++ b/drivers/net/wireless/mediatek/mt76/mt7921/mac.c
-@@ -1422,15 +1422,21 @@ void mt7921_mac_reset_work(struct work_struct *work)
- void mt7921_reset(struct mt76_dev *mdev)
- {
+@@ -1424,6 +1424,7 @@ void mt7921_reset(struct mt76_dev *mdev)
  	struct mt7921_dev *dev = container_of(mdev, struct mt7921_dev, mt76);
-+	struct mt76_connac_pm *pm = &dev->pm;
+ 	struct mt76_connac_pm *pm = &dev->pm;
  
 +	dump_stack(); //Debug
  	if (!dev->hw_init_done)
  		return;
  
- 	if (dev->hw_full_reset)
- 		return;
- 
-+	if (pm->suspended)
-+		return;
-+
- 	queue_work(dev->mt76.wq, &dev->reset_work);
- }
-+EXPORT_SYMBOL_GPL(mt7921_reset);
- 
- void mt7921_mac_update_mib_stats(struct mt7921_phy *phy)
- {
 diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/mcu.c b/drivers/net/wireless/mediatek/mt76/mt7921/mcu.c
-index e82545a7fcc11d1af7fc3089bf176f8537a7e3bd..e06011080f2f0c41edae3153204e08b27d55beb4 100644
+index e63280020671ff5a99fc5aa0c54460ad3fdfb91b..e06011080f2f0c41edae3153204e08b27d55beb4 100644
 --- a/drivers/net/wireless/mediatek/mt76/mt7921/mcu.c
 +++ b/drivers/net/wireless/mediatek/mt76/mt7921/mcu.c
-@@ -176,7 +176,8 @@ int mt7921_mcu_parse_response(struct mt76_dev *mdev, int cmd,
- 	if (seq != rxd->seq)
- 		return -EAGAIN;
- 
--	if (cmd == MCU_CMD(PATCH_SEM_CONTROL)) {
-+	if (cmd == MCU_CMD(PATCH_SEM_CONTROL) ||
-+	    cmd == MCU_CMD(PATCH_FINISH_REQ)) {
- 		skb_pull(skb, sizeof(*rxd) - 4);
- 		ret = *skb->data;
- 	} else if (cmd == MCU_EXT_CMD(THERMAL_CTRL)) {
-@@ -226,7 +227,7 @@ int mt7921_mcu_fill_message(struct mt76_dev *mdev, struct sk_buff *skb,
+@@ -227,7 +227,7 @@ int mt7921_mcu_fill_message(struct mt76_dev *mdev, struct sk_buff *skb,
  	if (cmd == MCU_UNI_CMD(HIF_CTRL) ||
  	    cmd == MCU_UNI_CMD(SUSPEND) ||
  	    cmd == MCU_UNI_CMD(OFFLOAD))
@@ -21663,7 +21503,7 @@ index e82545a7fcc11d1af7fc3089bf176f8537a7e3bd..e06011080f2f0c41edae3153204e08b2
  	else
  		mdev->mcu.timeout = 3 * HZ;
  
-@@ -419,6 +420,7 @@ mt7921_mcu_rx_unsolicited_event(struct mt7921_dev *dev, struct sk_buff *skb)
+@@ -420,6 +420,7 @@ mt7921_mcu_rx_unsolicited_event(struct mt7921_dev *dev, struct sk_buff *skb)
  		mt7921_mcu_debug_msg_event(dev, skb);
  		break;
  	case MCU_EVENT_COREDUMP:
@@ -21671,87 +21511,11 @@ index e82545a7fcc11d1af7fc3089bf176f8537a7e3bd..e06011080f2f0c41edae3153204e08b2
  		dev->fw_assert = true;
  		mt76_connac_mcu_coredump_event(&dev->mt76, skb,
  					       &dev->coredump);
-@@ -704,13 +706,6 @@ static int mt7921_load_patch(struct mt7921_dev *dev)
- 	if (ret)
- 		dev_err(dev->mt76.dev, "Failed to start patch\n");
- 
--	if (mt76_is_sdio(&dev->mt76)) {
--		/* activate again */
--		ret = __mt7921_mcu_fw_pmctrl(dev);
--		if (!ret)
--			ret = __mt7921_mcu_drv_pmctrl(dev);
--	}
--
- out:
- 	sem = mt76_connac_mcu_patch_sem_ctrl(&dev->mt76, false);
- 	switch (sem) {
-@@ -721,6 +716,14 @@ static int mt7921_load_patch(struct mt7921_dev *dev)
- 		dev_err(dev->mt76.dev, "Failed to release patch semaphore\n");
- 		break;
- 	}
-+
-+	if (!ret && mt76_is_sdio(&dev->mt76)) {
-+		/* activate again */
-+		ret = __mt7921_mcu_fw_pmctrl(dev);
-+		if (!ret)
-+			ret = __mt7921_mcu_drv_pmctrl(dev);
-+	}
-+
- 	release_firmware(fw);
- 
- 	return ret;
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/pci.c b/drivers/net/wireless/mediatek/mt76/mt7921/pci.c
-index 18c8f5cbd96c19371a47b5aa4f7a66221b17446e..f340d485afa48a965de71fa19de58ff570b4f05f 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7921/pci.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7921/pci.c
-@@ -366,6 +366,7 @@ static int mt7921_pci_suspend(struct pci_dev *pdev, pm_message_t state)
- 	int i, err;
- 
- 	pm->suspended = true;
-+	cancel_work_sync(&dev->reset_work);
- 	cancel_delayed_work_sync(&pm->ps_work);
- 	cancel_work_sync(&pm->wake_work);
- 
-@@ -431,6 +432,9 @@ static int mt7921_pci_suspend(struct pci_dev *pdev, pm_message_t state)
- restore_suspend:
- 	pm->suspended = false;
- 
-+	if (err < 0)
-+		mt7921_reset(&dev->mt76);
-+
- 	return err;
- }
- 
-@@ -449,7 +453,7 @@ static int mt7921_pci_resume(struct pci_dev *pdev)
- 
- 	err = mt7921_mcu_drv_pmctrl(dev);
- 	if (err < 0)
--		return err;
-+		goto failed;
- 
- 	mt7921_wpdma_reinit_cond(dev);
- 
-@@ -479,11 +483,13 @@ static int mt7921_pci_resume(struct pci_dev *pdev)
- 		mt76_connac_mcu_set_deep_sleep(&dev->mt76, false);
- 
- 	err = mt76_connac_mcu_set_hif_suspend(mdev, false);
--	if (err)
--		return err;
- 
-+failed:
- 	pm->suspended = false;
- 
-+	if (err < 0)
-+		mt7921_reset(&dev->mt76);
-+
- 	return err;
- }
- #endif /* CONFIG_PM */
 diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/sdio.c b/drivers/net/wireless/mediatek/mt76/mt7921/sdio.c
-index e92d1c2ff0296aafca6c9e9e85999d589404e220..11c10071abe4a5fcf50de99250f255bf0a877f42 100644
+index 657cb9ce89d099d860b141ed0feacb78c16b45fe..11c10071abe4a5fcf50de99250f255bf0a877f42 100644
 --- a/drivers/net/wireless/mediatek/mt76/mt7921/sdio.c
 +++ b/drivers/net/wireless/mediatek/mt76/mt7921/sdio.c
-@@ -199,9 +199,11 @@ static int mt7921s_suspend(struct device *__dev)
+@@ -199,6 +199,7 @@ static int mt7921s_suspend(struct device *__dev)
  	struct mt76_dev *mdev = &dev->mt76;
  	int err;
  
@@ -21759,11 +21523,7 @@ index e92d1c2ff0296aafca6c9e9e85999d589404e220..11c10071abe4a5fcf50de99250f255bf
  	pm->suspended = true;
  	set_bit(MT76_STATE_SUSPEND, &mdev->phy.state);
  
-+	flush_work(&dev->reset_work);
- 	cancel_delayed_work_sync(&pm->ps_work);
- 	cancel_work_sync(&pm->wake_work);
- 
-@@ -239,6 +241,7 @@ static int mt7921s_suspend(struct device *__dev)
+@@ -240,6 +241,7 @@ static int mt7921s_suspend(struct device *__dev)
  
  	sdio_set_host_pm_flags(func, MMC_PM_KEEP_POWER);
  
@@ -21771,18 +21531,15 @@ index e92d1c2ff0296aafca6c9e9e85999d589404e220..11c10071abe4a5fcf50de99250f255bf
  	return 0;
  
  restore_txrx_worker:
-@@ -257,6 +260,10 @@ static int mt7921s_suspend(struct device *__dev)
- 	clear_bit(MT76_STATE_SUSPEND, &mdev->phy.state);
- 	pm->suspended = false;
+@@ -261,6 +263,7 @@ static int mt7921s_suspend(struct device *__dev)
+ 	if (err < 0)
+ 		mt7921_reset(&dev->mt76);
  
-+	if (err < 0)
-+		mt7921_reset(&dev->mt76);
-+
 +	dev_info(dev->mt76.dev, "[Debug] %s - err=%d", __func__, err); //Debug
  	return err;
  }
  
-@@ -268,11 +275,12 @@ static int mt7921s_resume(struct device *__dev)
+@@ -272,6 +275,7 @@ static int mt7921s_resume(struct device *__dev)
  	struct mt76_dev *mdev = &dev->mt76;
  	int err;
  
@@ -21790,31 +21547,16 @@ index e92d1c2ff0296aafca6c9e9e85999d589404e220..11c10071abe4a5fcf50de99250f255bf
  	clear_bit(MT76_STATE_SUSPEND, &mdev->phy.state);
  
  	err = mt7921_mcu_drv_pmctrl(dev);
+@@ -294,6 +298,7 @@ static int mt7921s_resume(struct device *__dev)
  	if (err < 0)
--		return err;
-+		goto failed;
+ 		mt7921_reset(&dev->mt76);
  
- 	mt76_worker_enable(&mdev->tx_worker);
- 	mt76_worker_enable(&mdev->sdio.txrx_worker);
-@@ -284,11 +292,13 @@ static int mt7921s_resume(struct device *__dev)
- 		mt76_connac_mcu_set_deep_sleep(mdev, false);
- 
- 	err = mt76_connac_mcu_set_hif_suspend(mdev, false);
--	if (err)
--		return err;
--
-+failed:
- 	pm->suspended = false;
- 
-+	if (err < 0)
-+		mt7921_reset(&dev->mt76);
-+
 +	dev_info(dev->mt76.dev, "[Debug] %s -", __func__); //Debug
  	return err;
  }
  
 diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/sdio_mcu.c b/drivers/net/wireless/mediatek/mt76/mt7921/sdio_mcu.c
-index 5d8af18c702671db30e2a41a3ded9a6ea8548645..742762b6465cffaf6e1e44968019977ee042c5b8 100644
+index e741314cbfafce1486c3a59ecbd37eecfe3752c1..742762b6465cffaf6e1e44968019977ee042c5b8 100644
 --- a/drivers/net/wireless/mediatek/mt76/mt7921/sdio_mcu.c
 +++ b/drivers/net/wireless/mediatek/mt76/mt7921/sdio_mcu.c
 @@ -118,6 +118,7 @@ int mt7921s_mcu_drv_pmctrl(struct mt7921_dev *dev)
@@ -21825,79 +21567,14 @@ index 5d8af18c702671db30e2a41a3ded9a6ea8548645..742762b6465cffaf6e1e44968019977e
  		err = -EIO;
  		goto out;
  	}
-@@ -136,8 +137,8 @@ int mt7921s_mcu_fw_pmctrl(struct mt7921_dev *dev)
- 	struct sdio_func *func = dev->mt76.sdio.func;
- 	struct mt76_phy *mphy = &dev->mt76.phy;
- 	struct mt76_connac_pm *pm = &dev->pm;
--	int err = 0;
- 	u32 status;
-+	int err;
+@@ -161,6 +162,7 @@ int mt7921s_mcu_fw_pmctrl(struct mt7921_dev *dev)
  
- 	sdio_claim_host(func);
- 
-@@ -148,7 +149,7 @@ int mt7921s_mcu_fw_pmctrl(struct mt7921_dev *dev)
- 					 2000, 1000000);
- 		if (err < 0) {
- 			dev_err(dev->mt76.dev, "mailbox ACK not cleared\n");
--			goto err;
-+			goto out;
- 		}
- 	}
- 
-@@ -156,18 +157,19 @@ int mt7921s_mcu_fw_pmctrl(struct mt7921_dev *dev)
- 
- 	err = readx_poll_timeout(mt76s_read_pcr, &dev->mt76, status,
- 				 !(status & WHLPCR_IS_DRIVER_OWN), 2000, 1000000);
-+out:
- 	sdio_release_host(func);
- 
--err:
  	if (err < 0) {
  		dev_err(dev->mt76.dev, "firmware own failed\n");
 +		dump_stack(); //Debug
  		clear_bit(MT76_STATE_PM, &mphy->state);
--		err = -EIO;
-+		return -EIO;
+ 		return -EIO;
  	}
- 
- 	pm->stats.last_doze_event = jiffies;
- 	pm->stats.awake_time += pm->stats.last_doze_event -
- 				pm->stats.last_wake_event;
- 
--	return err;
-+	return 0;
- }
-diff --git a/drivers/net/wireless/mediatek/mt76/sdio.c b/drivers/net/wireless/mediatek/mt76/sdio.c
-index def7f325f5c546e7062debe70b504b9a08f3e0d0..140145e03f12c9ff72f2646ddcd4a5af1d7873fd 100644
---- a/drivers/net/wireless/mediatek/mt76/sdio.c
-+++ b/drivers/net/wireless/mediatek/mt76/sdio.c
-@@ -480,14 +480,14 @@ static void mt76s_status_worker(struct mt76_worker *w)
- 		if (ndata_frames > 0)
- 			resched = true;
- 
--		if (dev->drv->tx_status_data &&
-+		if (dev->drv->tx_status_data && ndata_frames > 0 &&
- 		    !test_and_set_bit(MT76_READING_STATS, &dev->phy.state) &&
- 		    !test_bit(MT76_STATE_SUSPEND, &dev->phy.state))
--			queue_work(dev->wq, &dev->sdio.stat_work);
-+			ieee80211_queue_work(dev->hw, &dev->sdio.stat_work);
- 	} while (nframes > 0);
- 
- 	if (resched)
--		mt76_worker_schedule(&dev->sdio.txrx_worker);
-+		mt76_worker_schedule(&dev->tx_worker);
- }
- 
- static void mt76s_tx_status_data(struct work_struct *work)
-@@ -510,7 +510,7 @@ static void mt76s_tx_status_data(struct work_struct *work)
- 	}
- 
- 	if (count && test_bit(MT76_STATE_RUNNING, &dev->phy.state))
--		queue_work(dev->wq, &sdio->stat_work);
-+		ieee80211_queue_work(dev->hw, &sdio->stat_work);
- 	else
- 		clear_bit(MT76_READING_STATS, &dev->phy.state);
- }
 diff --git a/drivers/pinctrl/mediatek/Makefile b/drivers/pinctrl/mediatek/Makefile
 old mode 100644
 new mode 100755
