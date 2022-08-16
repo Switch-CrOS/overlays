@@ -12,13 +12,13 @@
 # See crrev.com/i/216896 as an example.
 
 modify_kernel_command_line() {
-        {
-                echo "amdgpu.abmlevel=0x4"
+  {
+    echo "amdgpu.abmlevel=0x4"
 
-                # See b/189856884 - enable PSR
-                echo "amdgpu.dcfeaturemask=0x8"
+    # See b/189856884 - enable PSR
+    echo "amdgpu.dcfeaturemask=0x8"
 
-                echo "rtc-cmos.use_acpi_alarm=1"
-                echo "amd-pmc.enable_stb=1"
-        }  >> "$1"
+    echo "rtc-cmos.use_acpi_alarm=1"
+    echo "amd-pmc.enable_stb=1"
+  } >> "$1"
 }
