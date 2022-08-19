@@ -1,101 +1,5 @@
-diff --git a/Documentation/devicetree/bindings/media/mediatek,vcodec-subdev-decoder.yaml b/Documentation/devicetree/bindings/media/mediatek,vcodec-subdev-decoder.yaml
-index 6415c9f2913076e390f63737998abc52ebc2aaa6..626d85b0f547f6d3aa644b2e265d49507d1300e5 100644
---- a/Documentation/devicetree/bindings/media/mediatek,vcodec-subdev-decoder.yaml
-+++ b/Documentation/devicetree/bindings/media/mediatek,vcodec-subdev-decoder.yaml
-@@ -17,20 +17,20 @@ description: |
- 
-   About the Decoder Hardware Block Diagram, please check below:
- 
--    +---------------------------------+------------------------------------+
--    |                                 |                                    |
--    | input -> lat HW -> lat buffer --|--> lat buffer -> core HW -> output |
--    |            ||                   |                     ||             |
--    +------------||-------------------+---------------------||-------------+
--              lat workqueue           |              core workqueue     <parent>
--    -------------||-----------------------------------------||------------------
--                 ||                                         ||          <child>
--                 \/ <----------------HW index-------------->\/
--           +------------------------------------------------------+
--           |                    enable/disable                    |
--           |           clk     power    irq    iommu              |
--           |                 (lat/lat soc/core0/core1)            |
--           +------------------------------------------------------+
-+    +------------------------------------------------+-------------------------------------+
-+    |                                                |                                     |
-+    |  input -> lat soc HW -> lat HW -> lat buffer --|--> lat buffer -> core HW -> output  |
-+    |            ||             ||                   |                     ||              |
-+    +------------||-------------||-------------------+---------------------||--------------+
-+                 ||     lat     ||                   |               core workqueue  <parent>
-+    -------------||-------------||-------------------|---------------------||---------------
-+                 ||<------------||----------------HW index---------------->||        <child>
-+                 \/             \/                                         \/
-+               +-------------------------------------------------------------+
-+               |                          enable/disable                     |
-+               |                 clk     power    irq    iommu               |
-+               |                   (lat/lat soc/core0/core1)                 |
-+               +-------------------------------------------------------------+
- 
-   As above, there are parent and child devices, child mean each hardware. The child device
-   controls the information of each hardware independent which include clk/power/irq.
-@@ -45,11 +45,19 @@ description: |
-   For the smi common may not the same for each hardware, can't combine all hardware in one node,
-   or leading to iommu fault when access dram data.
- 
-+  Lat soc is a hardware which is releated with some larb(local arbiter) ports. For mt8195
-+  platform, there are some ports like RDMA, UFO in lat soc larb, need to enable its power and
-+  clock when lat start to work, don't have interrupt.
-+
-+  mt8195: lat soc HW + lat HW + core HW
-+  mt8192: lat HW + core HW
-+
- properties:
-   compatible:
-     enum:
-       - mediatek,mt8192-vcodec-dec
-       - mediatek,mt8186-vcodec-dec
-+      - mediatek,mt8195-vcodec-dec
- 
-   reg:
-     maxItems: 1
-@@ -88,7 +96,9 @@ patternProperties:
- 
-     properties:
-       compatible:
--        const: mediatek,mtk-vcodec-lat
-+        enum:
-+          - mediatek,mtk-vcodec-lat
-+          - mediatek,mtk-vcodec-lat-soc
- 
-       reg:
-         maxItems: 1
-@@ -126,7 +136,6 @@ patternProperties:
-     required:
-       - compatible
-       - reg
--      - interrupts
-       - iommus
-       - clocks
-       - clock-names
-@@ -197,6 +206,17 @@ required:
-   - dma-ranges
-   - ranges
- 
-+if:
-+  properties:
-+    compatible:
-+      contains:
-+        enum:
-+          - mediatek,mtk-vcodec-lat
-+
-+then:
-+  required:
-+    - interrupts
-+
- additionalProperties: false
- 
- examples:
 diff --git a/Documentation/devicetree/bindings/soc/mediatek/mtk-svs.yaml b/Documentation/devicetree/bindings/soc/mediatek/mtk-svs.yaml
-index d911fa2d40ef9f9e7abd71f3fbecfa42e8d8558f..4bf26a3333731d33739f4964a81a124f788713e0 100644
+index d911fa2d40ef9f9e7abd71f3fbecfa42e8d8558f..c86a5430641fae23ab6ea0f0439fe82f15464261 100644
 --- a/Documentation/devicetree/bindings/soc/mediatek/mtk-svs.yaml
 +++ b/Documentation/devicetree/bindings/soc/mediatek/mtk-svs.yaml
 @@ -10,6 +10,7 @@ maintainers:
@@ -106,16 +10,14 @@ index d911fa2d40ef9f9e7abd71f3fbecfa42e8d8558f..4bf26a3333731d33739f4964a81a124f
  
  description: |+
    The SVS engine is a piece of hardware which has several
-@@ -22,7 +23,9 @@ properties:
+@@ -22,6 +23,7 @@ properties:
    compatible:
      enum:
        - mediatek,mt8183-svs
 +      - mediatek,mt8186-svs
        - mediatek,mt8192-svs
-+      - mediatek,mt8195-svs
  
    reg:
-     maxItems: 1
 diff --git a/README b/README
 index 669ac7c32292798644b21dbb5a0dc657125f444d..dc0f0ea4da037c7ea336d73d30e6dbfae24f796f 100644
 --- a/README
@@ -849,7 +751,7 @@ index 0000000000000000000000000000000000000000..83d55fd5df4834356dc186814d5c4034
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8186-corsola-krabby.dts b/arch/arm64/boot/dts/mediatek/mt8186-corsola-krabby.dts
 new file mode 100644
-index 0000000000000000000000000000000000000000..d7babf65c3daeb47e225434c2cd5a7066a184483
+index 0000000000000000000000000000000000000000..1fd37109858d7f7bb673425e74728251daebb51e
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt8186-corsola-krabby.dts
 @@ -0,0 +1,12 @@
@@ -862,7 +764,7 @@ index 0000000000000000000000000000000000000000..d7babf65c3daeb47e225434c2cd5a706
 +#include "mt8186-corsola-krabby.dtsi"
 +
 +/ {
-+	model = "Google Kingler board";
++	model = "Google Krabby board";
 +	compatible = "google,corsola", "google,krabby", "mediatek,mt8186";
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8186-corsola-krabby.dtsi b/arch/arm64/boot/dts/mediatek/mt8186-corsola-krabby.dtsi
@@ -1237,7 +1139,7 @@ index 0000000000000000000000000000000000000000..64afeb3b79ae0bb8966d59484a1d56b1
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8186-corsola-magneton-rev2-sku393216.dts b/arch/arm64/boot/dts/mediatek/mt8186-corsola-magneton-rev2-sku393216.dts
 new file mode 100644
-index 0000000000000000000000000000000000000000..9dc2ff2b038a514956f4e0f5fc8fd904acadc987
+index 0000000000000000000000000000000000000000..26470b5539fe2780157b6d61a92c9960721297d2
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt8186-corsola-magneton-rev2-sku393216.dts
 @@ -0,0 +1,37 @@
@@ -1267,7 +1169,7 @@ index 0000000000000000000000000000000000000000..9dc2ff2b038a514956f4e0f5fc8fd904
 +		compatible = "hid-over-i2c";
 +		reg = <0x10>;
 +		interrupt-parent = <&pio>;
-+		interrupts = <12 IRQ_TYPE_EDGE_FALLING>;
++		interrupts = <12 IRQ_TYPE_LEVEL_LOW>;
 +		pinctrl-names = "default";
 +		pinctrl-0 = <&touchscreen_pins>;
 +		reset-gpios = <&pio 60 GPIO_ACTIVE_LOW>;
@@ -1323,7 +1225,7 @@ index 0000000000000000000000000000000000000000..129a2f7d975cbf54f4bc8aae0f7fa211
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8186-corsola-magneton-sku393216.dts b/arch/arm64/boot/dts/mediatek/mt8186-corsola-magneton-sku393216.dts
 new file mode 100644
-index 0000000000000000000000000000000000000000..b40213df1d8a38ba671be8208a45b52c7b4f8049
+index 0000000000000000000000000000000000000000..cd5f9348616df88012bfda42d6a4b75eb27ebc70
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt8186-corsola-magneton-sku393216.dts
 @@ -0,0 +1,38 @@
@@ -1354,7 +1256,7 @@ index 0000000000000000000000000000000000000000..b40213df1d8a38ba671be8208a45b52c
 +		compatible = "hid-over-i2c";
 +		reg = <0x10>;
 +		interrupt-parent = <&pio>;
-+		interrupts = <12 IRQ_TYPE_EDGE_FALLING>;
++		interrupts = <12 IRQ_TYPE_LEVEL_LOW>;
 +		pinctrl-names = "default";
 +		pinctrl-0 = <&touchscreen_pins>;
 +		reset-gpios = <&pio 60 GPIO_ACTIVE_LOW>;
@@ -1620,7 +1522,7 @@ index 0000000000000000000000000000000000000000..af92cea09365a18f8a8d178c8f6d1407
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8186-corsola-steelix.dtsi b/arch/arm64/boot/dts/mediatek/mt8186-corsola-steelix.dtsi
 new file mode 100644
-index 0000000000000000000000000000000000000000..92c462b39fae24123ed2e504b50defdc05b68ee5
+index 0000000000000000000000000000000000000000..1b82308e0bafbe53539b32a03f5e5dbd4dd79c10
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt8186-corsola-steelix.dtsi
 @@ -0,0 +1,417 @@
@@ -1794,7 +1696,7 @@ index 0000000000000000000000000000000000000000..92c462b39fae24123ed2e504b50defdc
 +		compatible = "goodix,gt7375p";
 +		reg = <0x5d>;
 +		interrupt-parent = <&pio>;
-+		interrupts = <12 IRQ_TYPE_EDGE_RISING>;
++		interrupts = <12 IRQ_TYPE_EDGE_FALLING>;
 +		pinctrl-names = "default";
 +		pinctrl-0 = <&touchscreen_pins>;
 +		reset-gpios = <&pio 60 GPIO_ACTIVE_LOW>;
@@ -2090,7 +1992,7 @@ index 0000000000000000000000000000000000000000..0f83799fb03973f0037792cae2cff50b
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8186-corsola.dtsi b/arch/arm64/boot/dts/mediatek/mt8186-corsola.dtsi
 new file mode 100644
-index 0000000000000000000000000000000000000000..ad5467f1e183463e19140d602b3abb63d9ab9d4c
+index 0000000000000000000000000000000000000000..c93ffa3b0db5f3a95bb446d04126c72de6ce8706
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt8186-corsola.dtsi
 @@ -0,0 +1,1581 @@
@@ -3095,7 +2997,7 @@ index 0000000000000000000000000000000000000000..ad5467f1e183463e19140d602b3abb63
 +	edp_panel_fixed_pins: edp-panel-fixed-pins {
 +		pins1 {
 +			pinmux = <PINMUX_GPIO153__FUNC_GPIO153>;
-+			output-low;
++			output-high;
 +		};
 +	};
 +
@@ -3676,10 +3578,10 @@ index 0000000000000000000000000000000000000000..ad5467f1e183463e19140d602b3abb63
 +#include <arm/cros-ec-keyboard.dtsi>
 +#include <arm/cros-ec-sbs.dtsi>
 diff --git a/arch/arm64/boot/dts/mediatek/mt8186-evb.dts b/arch/arm64/boot/dts/mediatek/mt8186-evb.dts
-index 3e8018c1e80219f918ebd28ffcfe356be5ea26c1..456d0bf5114a0ded89bef23f9b7d92702e8bdd83 100644
+index 3e8018c1e80219f918ebd28ffcfe356be5ea26c1..55c1682e0b2bbf2842249d3ceeafab27ff2323f8 100644
 --- a/arch/arm64/boot/dts/mediatek/mt8186-evb.dts
 +++ b/arch/arm64/boot/dts/mediatek/mt8186-evb.dts
-@@ -17,7 +17,7 @@
+@@ -17,206 +17,202 @@
  		stdout-path = "serial0:921600n8";
  	};
  
@@ -3688,11 +3590,22 @@ index 3e8018c1e80219f918ebd28ffcfe356be5ea26c1..456d0bf5114a0ded89bef23f9b7d9270
  		device_type = "memory";
  		reg = <0 0x40000000 0 0x80000000>;
  	};
-@@ -32,53 +32,43 @@
+ };
+ 
+ &i2c0 {
++	status = "okay";
++
++	clock-frequency = <400000>;
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&i2c0_pins>;
+-	#address-cells = <1>;
+-	#size-cells = <0>;
+-	status = "okay";
  };
  
  &i2c1 {
 +	status = "okay";
++
  	clock-frequency = <400000>;
  	i2c-scl-internal-delay-ns = <8000>;
  	pinctrl-names = "default";
@@ -3704,6 +3617,7 @@ index 3e8018c1e80219f918ebd28ffcfe356be5ea26c1..456d0bf5114a0ded89bef23f9b7d9270
  
  &i2c2 {
 +	status = "okay";
++
  	clock-frequency = <400000>;
  	i2c-scl-internal-delay-ns = <10000>;
  	pinctrl-names = "default";
@@ -3715,6 +3629,8 @@ index 3e8018c1e80219f918ebd28ffcfe356be5ea26c1..456d0bf5114a0ded89bef23f9b7d9270
  
  &i2c3 {
 +	status = "okay";
++
++	clock-frequency = <400000>;
  	pinctrl-names = "default";
  	pinctrl-0 = <&i2c3_pins>;
 -	#address-cells = <1>;
@@ -3724,6 +3640,8 @@ index 3e8018c1e80219f918ebd28ffcfe356be5ea26c1..456d0bf5114a0ded89bef23f9b7d9270
  
  &i2c4 {
 +	status = "okay";
++
++	clock-frequency = <400000>;
  	pinctrl-names = "default";
  	pinctrl-0 = <&i2c4_pins>;
 -	#address-cells = <1>;
@@ -3733,6 +3651,8 @@ index 3e8018c1e80219f918ebd28ffcfe356be5ea26c1..456d0bf5114a0ded89bef23f9b7d9270
  
  &i2c5 {
 +	status = "okay";
++
++	clock-frequency = <400000>;
  	pinctrl-names = "default";
  	pinctrl-0 = <&i2c5_pins>;
 -	#address-cells = <1>;
@@ -3742,17 +3662,26 @@ index 3e8018c1e80219f918ebd28ffcfe356be5ea26c1..456d0bf5114a0ded89bef23f9b7d9270
  
  &i2c6 {
 +	status = "okay";
++
++	clock-frequency = <400000>;
  	pinctrl-names = "default";
  	pinctrl-0 = <&i2c6_pins>;
 -	status = "okay";
  };
  
  &i2c7 {
-@@ -88,19 +78,19 @@
++	status = "okay";
++
++	clock-frequency = <400000>;
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&i2c7_pins>;
+-	status = "okay";
  };
  
  &i2c8 {
 +	status = "okay";
++
++	clock-frequency = <400000>;
  	pinctrl-names = "default";
  	pinctrl-0 = <&i2c8_pins>;
 -	status = "okay";
@@ -3760,6 +3689,8 @@ index 3e8018c1e80219f918ebd28ffcfe356be5ea26c1..456d0bf5114a0ded89bef23f9b7d9270
  
  &i2c9 {
 +	status = "okay";
++
++	clock-frequency = <400000>;
  	pinctrl-names = "default";
  	pinctrl-0 = <&i2c9_pins>;
 -	status = "okay";
@@ -3767,92 +3698,144 @@ index 3e8018c1e80219f918ebd28ffcfe356be5ea26c1..456d0bf5114a0ded89bef23f9b7d9270
  
  &pio {
 -	i2c0_pins: i2c0{
-+	i2c0_pins: i2c0-pins {
- 		pins-sda-scl {
+-		pins-sda-scl {
++	i2c0_pins: i2c0-default-pins {
++		pins-bus {
  			pinmux = <PINMUX_GPIO128__FUNC_SDA0>,
  				 <PINMUX_GPIO127__FUNC_SCL0>;
-@@ -111,7 +101,7 @@
+ 			bias-disable;
+-			mediatek,drive-strength-adv = <0>;
+-			drive-strength = <MTK_DRIVE_4mA>;
++			drive-strength-microamp = <1000>;
+ 			input-enable;
  		};
  	};
  
 -	i2c1_pins: i2c1{
-+	i2c1_pins: i2c1-pins {
- 		pins-sda-scl {
+-		pins-sda-scl {
++	i2c1_pins: i2c1-default-pins {
++		pins-bus {
  			pinmux = <PINMUX_GPIO130__FUNC_SDA1>,
  				 <PINMUX_GPIO129__FUNC_SCL1>;
-@@ -122,7 +112,7 @@
+ 			bias-disable;
+-			mediatek,drive-strength-adv = <0>;
+-			drive-strength = <MTK_DRIVE_4mA>;
++			drive-strength-microamp = <1000>;
+ 			input-enable;
  		};
  	};
  
 -	i2c2_pins: i2c2{
-+	i2c2_pins: i2c2-pins {
- 		pins-sda-scl {
+-		pins-sda-scl {
++	i2c2_pins: i2c2-default-pins {
++		pins-bus {
  			pinmux = <PINMUX_GPIO132__FUNC_SDA2>,
  				 <PINMUX_GPIO131__FUNC_SCL2>;
-@@ -133,7 +123,7 @@
+ 			bias-disable;
+-			mediatek,drive-strength-adv = <0>;
+-			drive-strength = <MTK_DRIVE_4mA>;
++			drive-strength-microamp = <1000>;
+ 			input-enable;
  		};
  	};
  
 -	i2c3_pins: i2c3{
-+	i2c3_pins: i2c3-pins {
- 		pins-sda-scl {
+-		pins-sda-scl {
++	i2c3_pins: i2c3-default-pins {
++		pins-bus {
  			pinmux = <PINMUX_GPIO134__FUNC_SDA3>,
  				 <PINMUX_GPIO133__FUNC_SCL3>;
-@@ -144,7 +134,7 @@
+ 			bias-disable;
+-			mediatek,drive-strength-adv = <0>;
+-			drive-strength = <MTK_DRIVE_4mA>;
++			drive-strength-microamp = <1000>;
+ 			input-enable;
  		};
  	};
  
 -	i2c4_pins: i2c4{
-+	i2c4_pins: i2c4-pins {
- 		pins-sda-scl {
+-		pins-sda-scl {
++	i2c4_pins: i2c4-default-pins {
++		pins-bus {
  			pinmux = <PINMUX_GPIO136__FUNC_SDA4>,
  				 <PINMUX_GPIO135__FUNC_SCL4>;
-@@ -155,7 +145,7 @@
+ 			bias-disable;
+-			mediatek,drive-strength-adv = <0>;
+-			drive-strength = <MTK_DRIVE_4mA>;
++			drive-strength-microamp = <1000>;
+ 			input-enable;
  		};
  	};
  
 -	i2c5_pins: i2c5{
-+	i2c5_pins: i2c5-pins {
- 		pins-sda-scl {
+-		pins-sda-scl {
++	i2c5_pins: i2c5-default-pins {
++		pins-bus {
  			pinmux = <PINMUX_GPIO138__FUNC_SDA5>,
  				 <PINMUX_GPIO137__FUNC_SCL5>;
-@@ -166,7 +156,7 @@
+ 			bias-disable;
+-			mediatek,drive-strength-adv = <0>;
+-			drive-strength = <MTK_DRIVE_4mA>;
++			drive-strength-microamp = <1000>;
+ 			input-enable;
  		};
  	};
  
 -	i2c6_pins: i2c6{
-+	i2c6_pins: i2c6-pins {
- 		pins-sda-scl {
+-		pins-sda-scl {
++	i2c6_pins: i2c6-default-pins {
++		pins-bus {
  			pinmux = <PINMUX_GPIO140__FUNC_SDA6>,
  				 <PINMUX_GPIO139__FUNC_SCL6>;
-@@ -177,7 +167,7 @@
+ 			bias-pull-up = <MTK_PULL_SET_RSEL_001>;
+-			mediatek,drive-strength-adv = <0>;
+-			drive-strength = <MTK_DRIVE_4mA>;
++			drive-strength-microamp = <1000>;
+ 			input-enable;
  		};
  	};
  
 -	i2c7_pins: i2c7{
-+	i2c7_pins: i2c7-pins {
- 		pins-sda-scl {
+-		pins-sda-scl {
++	i2c7_pins: i2c7-default-pins {
++		pins-bus {
  			pinmux = <PINMUX_GPIO142__FUNC_SDA7>,
  				 <PINMUX_GPIO141__FUNC_SCL7>;
-@@ -188,7 +178,7 @@
+ 			bias-disable;
+-			mediatek,drive-strength-adv = <0>;
+-			drive-strength = <MTK_DRIVE_4mA>;
++			drive-strength-microamp = <1000>;
+ 			input-enable;
  		};
  	};
  
 -	i2c8_pins: i2c8{
-+	i2c8_pins: i2c8-pins {
- 		pins-sda-scl {
+-		pins-sda-scl {
++	i2c8_pins: i2c8-default-pins {
++		pins-bus {
  			pinmux = <PINMUX_GPIO144__FUNC_SDA8>,
  				 <PINMUX_GPIO143__FUNC_SCL8>;
-@@ -199,7 +189,7 @@
+ 			bias-disable;
+-			mediatek,drive-strength-adv = <0>;
+-			drive-strength = <MTK_DRIVE_4mA>;
++			drive-strength-microamp = <1000>;
+ 			input-enable;
  		};
  	};
  
 -	i2c9_pins: i2c9{
-+	i2c9_pins: i2c9-pins {
- 		pins-sda-scl {
+-		pins-sda-scl {
++	i2c9_pins: i2c9-default-pins {
++		pins-bus {
  			pinmux = <PINMUX_GPIO146__FUNC_SDA9>,
  				 <PINMUX_GPIO145__FUNC_SCL9>;
-@@ -212,11 +202,11 @@
+ 			bias-pull-up = <MTK_PULL_SET_RSEL_001>;
+-			mediatek,drive-strength-adv = <0>;
+-			drive-strength = <MTK_DRIVE_4mA>;
++			drive-strength-microamp = <1000>;
+ 			input-enable;
+ 		};
+ 	};
  };
  
  &u3phy0 {
@@ -3867,7 +3850,7 @@ index 3e8018c1e80219f918ebd28ffcfe356be5ea26c1..456d0bf5114a0ded89bef23f9b7d9270
  
  &uart0 {
 diff --git a/arch/arm64/boot/dts/mediatek/mt8186.dtsi b/arch/arm64/boot/dts/mediatek/mt8186.dtsi
-index 35281db2e2b94ff746294b9827b6f2791e0535e9..af283c41908fd982628ae5cdadbd1e007270d24d 100644
+index 35281db2e2b94ff746294b9827b6f2791e0535e9..89d95bd11137db447aa98c7ebc32d95b66e75bd1 100644
 --- a/arch/arm64/boot/dts/mediatek/mt8186.dtsi
 +++ b/arch/arm64/boot/dts/mediatek/mt8186.dtsi
 @@ -5,12 +5,15 @@
@@ -4417,16 +4400,16 @@ index 35281db2e2b94ff746294b9827b6f2791e0535e9..af283c41908fd982628ae5cdadbd1e00
  	};
  
  	soc {
-@@ -246,7 +664,7 @@
+@@ -246,15 +664,13 @@
  
  		gic: interrupt-controller@c000000 {
  			compatible = "arm,gic-v3";
 -			#interrupt-cells = <3>;
+-			#address-cells = <2>;
+-			#size-cells = <2>;
 +			#interrupt-cells = <4>;
- 			#address-cells = <2>;
- 			#size-cells = <2>;
  			#redistributor-regions = <1>;
-@@ -254,7 +672,7 @@
+ 			interrupt-parent = <&gic>;
  			interrupt-controller;
  			reg = <0 0x0c000000 0 0x40000>,
  			      <0 0x0c040000 0 0x200000>;
@@ -4435,7 +4418,7 @@ index 35281db2e2b94ff746294b9827b6f2791e0535e9..af283c41908fd982628ae5cdadbd1e00
  
  			ppi-partitions {
  				ppi_cluster0: interrupt-partition-0 {
-@@ -283,6 +701,7 @@
+@@ -283,6 +699,7 @@
  			compatible = "mediatek,mt8186-infracfg_ao", "syscon";
  			reg = <0 0x10001000 0 0x1000>;
  			#clock-cells = <1>;
@@ -4443,7 +4426,19 @@ index 35281db2e2b94ff746294b9827b6f2791e0535e9..af283c41908fd982628ae5cdadbd1e00
  		};
  
  		pericfg: syscon@10003000 {
-@@ -306,14 +725,13 @@
+@@ -297,23 +714,22 @@
+ 			      <0 0x10002200 0 0x0200>,
+ 			      <0 0x10002400 0 0x0200>,
+ 			      <0 0x10002600 0 0x0200>,
+-			      <0 0x10002A00 0 0x0200>,
+-			      <0 0x10002C00 0 0x0200>,
+-			      <0 0x1000B000 0 0x1000>;
++			      <0 0x10002a00 0 0x0200>,
++			      <0 0x10002c00 0 0x0200>,
++			      <0 0x1000b000 0 0x1000>;
+ 			reg-names = "iocfg0", "iocfg_lt", "iocfg_lm", "iocfg_lb",
+ 				    "iocfg_bl", "iocfg_rb", "iocfg_rt", "eint";
+ 			gpio-controller;
  			#gpio-cells = <2>;
  			gpio-ranges = <&pio 0 0 185>;
  			interrupt-controller;
@@ -4454,13 +4449,13 @@ index 35281db2e2b94ff746294b9827b6f2791e0535e9..af283c41908fd982628ae5cdadbd1e00
  
  		scpsys: syscon@10006000 {
 -			compatible = "syscon", "simple-mfd";
-+			compatible = "mediatek,scpsys", "syscon", "simple-mfd";
++			compatible = "mediatek,mt8186-scpsys", "syscon", "simple-mfd";
  			reg = <0 0x10006000 0 0x1000>;
 -			#power-domain-cells = <1>;
  
  			/* System Power Manager */
  			spm: power-controller {
-@@ -326,7 +744,7 @@
+@@ -326,7 +742,7 @@
  				mfg0: power-domain@MT8186_POWER_DOMAIN_MFG0 {
  					reg = <MT8186_POWER_DOMAIN_MFG0>;
  					clocks = <&topckgen CLK_TOP_MFG>;
@@ -4469,7 +4464,7 @@ index 35281db2e2b94ff746294b9827b6f2791e0535e9..af283c41908fd982628ae5cdadbd1e00
  					#address-cells = <1>;
  					#size-cells = <0>;
  					#power-domain-cells = <1>;
-@@ -354,7 +772,7 @@
+@@ -354,7 +770,7 @@
  					reg = <MT8186_POWER_DOMAIN_CSIRX_TOP>;
  					clocks = <&topckgen CLK_TOP_SENINF>,
  						 <&topckgen CLK_TOP_SENINF1>;
@@ -4478,7 +4473,7 @@ index 35281db2e2b94ff746294b9827b6f2791e0535e9..af283c41908fd982628ae5cdadbd1e00
  					#power-domain-cells = <0>;
  				};
  
-@@ -372,7 +790,7 @@
+@@ -372,7 +788,7 @@
  					reg = <MT8186_POWER_DOMAIN_ADSP_AO>;
  					clocks = <&topckgen CLK_TOP_AUDIODSP>,
  						 <&topckgen CLK_TOP_ADSP_BUS>;
@@ -4487,7 +4482,7 @@ index 35281db2e2b94ff746294b9827b6f2791e0535e9..af283c41908fd982628ae5cdadbd1e00
  					#address-cells = <1>;
  					#size-cells = <0>;
  					#power-domain-cells = <1>;
-@@ -405,7 +823,7 @@
+@@ -405,7 +821,7 @@
  						 <&mmsys CLK_MM_SMI_COMMON>,
  						 <&mmsys CLK_MM_SMI_GALS>,
  						 <&mmsys CLK_MM_SMI_IOMMU>;
@@ -4496,7 +4491,7 @@ index 35281db2e2b94ff746294b9827b6f2791e0535e9..af283c41908fd982628ae5cdadbd1e00
  						     "dis-2", "dis-3";
  					mediatek,infracfg = <&infracfg_ao>;
  					#address-cells = <1>;
-@@ -416,7 +834,7 @@
+@@ -416,7 +832,7 @@
  						reg = <MT8186_POWER_DOMAIN_VDEC>;
  						clocks = <&topckgen CLK_TOP_VDEC>,
  							 <&vdecsys CLK_VDEC_LARB1_CKEN>;
@@ -4505,7 +4500,7 @@ index 35281db2e2b94ff746294b9827b6f2791e0535e9..af283c41908fd982628ae5cdadbd1e00
  						mediatek,infracfg = <&infracfg_ao>;
  						#power-domain-cells = <0>;
  					};
-@@ -430,7 +848,7 @@
+@@ -430,7 +846,7 @@
  							 <&topckgen CLK_TOP_SENINF3>,
  							 <&topckgen CLK_TOP_CAMTM>,
  							 <&camsys CLK_CAM2MM_GALS>;
@@ -4514,7 +4509,7 @@ index 35281db2e2b94ff746294b9827b6f2791e0535e9..af283c41908fd982628ae5cdadbd1e00
  							     "cam4", "cam5", "cam-0";
  						mediatek,infracfg = <&infracfg_ao>;
  						#address-cells = <1>;
-@@ -471,7 +889,7 @@
+@@ -471,7 +887,7 @@
  							 <&ipesys CLK_IPE_LARB20>,
  							 <&ipesys CLK_IPE_SMI_SUBCOM>,
  							 <&ipesys CLK_IPE_GALS_IPE>;
@@ -4523,7 +4518,7 @@ index 35281db2e2b94ff746294b9827b6f2791e0535e9..af283c41908fd982628ae5cdadbd1e00
  							     "ipe-3";
  						mediatek,infracfg = <&infracfg_ao>;
  						#power-domain-cells = <0>;
-@@ -481,7 +899,7 @@
+@@ -481,7 +897,7 @@
  						reg = <MT8186_POWER_DOMAIN_VENC>;
  						clocks = <&topckgen CLK_TOP_VENC>,
  							 <&vencsys CLK_VENC_CKE1_VENC>;
@@ -4532,7 +4527,7 @@ index 35281db2e2b94ff746294b9827b6f2791e0535e9..af283c41908fd982628ae5cdadbd1e00
  						mediatek,infracfg = <&infracfg_ao>;
  						#power-domain-cells = <0>;
  					};
-@@ -491,7 +909,7 @@
+@@ -491,7 +907,7 @@
  						clocks = <&topckgen CLK_TOP_WPE>,
  							 <&wpesys CLK_WPE_SMI_LARB8_CK_EN>,
  							 <&wpesys CLK_WPE_SMI_LARB8_PCLK_EN>;
@@ -4541,7 +4536,7 @@ index 35281db2e2b94ff746294b9827b6f2791e0535e9..af283c41908fd982628ae5cdadbd1e00
  						mediatek,infracfg = <&infracfg_ao>;
  						#power-domain-cells = <0>;
  					};
-@@ -513,11 +931,90 @@
+@@ -513,11 +929,90 @@
  			#clock-cells = <1>;
  		};
  
@@ -4633,7 +4628,7 @@ index 35281db2e2b94ff746294b9827b6f2791e0535e9..af283c41908fd982628ae5cdadbd1e00
  			clocks = <&infracfg_ao CLK_INFRA_AO_PMIC_AP>,
  				 <&infracfg_ao CLK_INFRA_AO_PMIC_TMR>;
  			clock-names = "spi", "wrap";
-@@ -527,20 +1024,82 @@
+@@ -527,20 +1022,65 @@
  			compatible = "mediatek,mt8186-timer",
  				     "mediatek,mt6765-timer";
  			reg = <0 0x10017000 0 0x1000>;
@@ -4642,23 +4637,6 @@ index 35281db2e2b94ff746294b9827b6f2791e0535e9..af283c41908fd982628ae5cdadbd1e00
  			clocks = <&clk13m>;
  		};
  
-+		devapc_infra_peri: devapc@10207000 {
-+			compatible = "mediatek,mt8186-devapc";
-+			reg = <0 0x10207000 0 0x1000>;
-+			vio-idx-num = <519>;
-+			interrupts = <GIC_SPI 159 IRQ_TYPE_LEVEL_HIGH 0>;
-+			clocks = <&infracfg_ao CLK_INFRA_AO_DEVICE_APC>;
-+			clock-names = "devapc-infra-clock";
-+		};
-+
-+		systracker: systracker@10208000 {
-+			compatible = "mediatek,bus_dbg-v2";
-+			reg = <0 0x10208000 0 0x1000>,
-+				<0 0x10001000 0 0x1000>;
-+			mediatek,bus_dbg_con_offset = <0x2fc>;
-+			interrupts = <GIC_SPI 158 IRQ_TYPE_LEVEL_HIGH 0>;
-+		};
-+
 +		gce: mailbox@1022c000 {
 +			compatible = "mediatek,mt8186-gce",
 +				     "mediatek,mt8192-gce";
@@ -4719,7 +4697,7 @@ index 35281db2e2b94ff746294b9827b6f2791e0535e9..af283c41908fd982628ae5cdadbd1e00
  			reg = <0 0x11000000 0 0x1000>;
  			clocks = <&topckgen CLK_TOP_SPINOR>,
  				 <&infracfg_ao CLK_INFRA_AO_SPINOR>,
-@@ -549,7 +1108,7 @@
+@@ -549,7 +1089,7 @@
  			clock-names = "spi", "sf", "axi", "axi_s";
  			assigned-clocks = <&topckgen CLK_TOP_SPINOR>;
  			assigned-clock-parents = <&topckgen CLK_TOP_UNIVPLL_D3_D8>;
@@ -4728,7 +4706,7 @@ index 35281db2e2b94ff746294b9827b6f2791e0535e9..af283c41908fd982628ae5cdadbd1e00
  			status = "disabled";
  		};
  
-@@ -565,7 +1124,7 @@
+@@ -565,7 +1105,7 @@
  			compatible = "mediatek,mt8186-uart",
  				     "mediatek,mt6577-uart";
  			reg = <0 0x11002000 0 0x1000>;
@@ -4737,7 +4715,7 @@ index 35281db2e2b94ff746294b9827b6f2791e0535e9..af283c41908fd982628ae5cdadbd1e00
  			clocks = <&clk26m>, <&infracfg_ao CLK_INFRA_AO_UART0>;
  			clock-names = "baud", "bus";
  			status = "disabled";
-@@ -575,7 +1134,7 @@
+@@ -575,7 +1115,7 @@
  			compatible = "mediatek,mt8186-uart",
  				     "mediatek,mt6577-uart";
  			reg = <0 0x11003000 0 0x1000>;
@@ -4746,7 +4724,7 @@ index 35281db2e2b94ff746294b9827b6f2791e0535e9..af283c41908fd982628ae5cdadbd1e00
  			clocks = <&clk26m>, <&infracfg_ao CLK_INFRA_AO_UART1>;
  			clock-names = "baud", "bus";
  			status = "disabled";
-@@ -585,11 +1144,13 @@
+@@ -585,11 +1125,13 @@
  			compatible = "mediatek,mt8186-i2c";
  			reg = <0 0x11007000 0 0x1000>,
  			      <0 0x10200100 0 0x100>;
@@ -4761,7 +4739,7 @@ index 35281db2e2b94ff746294b9827b6f2791e0535e9..af283c41908fd982628ae5cdadbd1e00
  			status = "disabled";
  		};
  
-@@ -597,11 +1158,13 @@
+@@ -597,11 +1139,13 @@
  			compatible = "mediatek,mt8186-i2c";
  			reg = <0 0x11008000 0 0x1000>,
  			      <0 0x10200200 0 0x100>;
@@ -4776,7 +4754,7 @@ index 35281db2e2b94ff746294b9827b6f2791e0535e9..af283c41908fd982628ae5cdadbd1e00
  			status = "disabled";
  		};
  
-@@ -609,11 +1172,13 @@
+@@ -609,11 +1153,13 @@
  			compatible = "mediatek,mt8186-i2c";
  			reg = <0 0x11009000 0 0x1000>,
  			      <0 0x10200300 0 0x180>;
@@ -4791,7 +4769,7 @@ index 35281db2e2b94ff746294b9827b6f2791e0535e9..af283c41908fd982628ae5cdadbd1e00
  			status = "disabled";
  		};
  
-@@ -621,11 +1186,13 @@
+@@ -621,11 +1167,13 @@
  			compatible = "mediatek,mt8186-i2c";
  			reg = <0 0x1100f000 0 0x1000>,
  			      <0 0x10200480 0 0x100>;
@@ -4806,7 +4784,7 @@ index 35281db2e2b94ff746294b9827b6f2791e0535e9..af283c41908fd982628ae5cdadbd1e00
  			status = "disabled";
  		};
  
-@@ -633,11 +1200,13 @@
+@@ -633,11 +1181,13 @@
  			compatible = "mediatek,mt8186-i2c";
  			reg = <0 0x11011000 0 0x1000>,
  			      <0 0x10200580 0 0x180>;
@@ -4821,7 +4799,7 @@ index 35281db2e2b94ff746294b9827b6f2791e0535e9..af283c41908fd982628ae5cdadbd1e00
  			status = "disabled";
  		};
  
-@@ -645,11 +1214,13 @@
+@@ -645,11 +1195,13 @@
  			compatible = "mediatek,mt8186-i2c";
  			reg = <0 0x11016000 0 0x1000>,
  			      <0 0x10200700 0 0x100>;
@@ -4836,7 +4814,7 @@ index 35281db2e2b94ff746294b9827b6f2791e0535e9..af283c41908fd982628ae5cdadbd1e00
  			status = "disabled";
  		};
  
-@@ -657,11 +1228,13 @@
+@@ -657,11 +1209,13 @@
  			compatible = "mediatek,mt8186-i2c";
  			reg = <0 0x1100d000 0 0x1000>,
  			      <0 0x10200800 0 0x100>;
@@ -4851,7 +4829,7 @@ index 35281db2e2b94ff746294b9827b6f2791e0535e9..af283c41908fd982628ae5cdadbd1e00
  			status = "disabled";
  		};
  
-@@ -669,11 +1242,13 @@
+@@ -669,11 +1223,13 @@
  			compatible = "mediatek,mt8186-i2c";
  			reg = <0 0x11004000 0 0x1000>,
  			      <0 0x10200900 0 0x180>;
@@ -4866,7 +4844,7 @@ index 35281db2e2b94ff746294b9827b6f2791e0535e9..af283c41908fd982628ae5cdadbd1e00
  			status = "disabled";
  		};
  
-@@ -681,11 +1256,13 @@
+@@ -681,11 +1237,13 @@
  			compatible = "mediatek,mt8186-i2c";
  			reg = <0 0x11005000 0 0x1000>,
  			      <0 0x10200A80 0 0x180>;
@@ -4881,7 +4859,7 @@ index 35281db2e2b94ff746294b9827b6f2791e0535e9..af283c41908fd982628ae5cdadbd1e00
  			status = "disabled";
  		};
  
-@@ -694,7 +1271,7 @@
+@@ -694,7 +1252,7 @@
  			#address-cells = <1>;
  			#size-cells = <0>;
  			reg = <0 0x1100a000 0 0x1000>;
@@ -4890,7 +4868,7 @@ index 35281db2e2b94ff746294b9827b6f2791e0535e9..af283c41908fd982628ae5cdadbd1e00
  			clocks = <&topckgen CLK_TOP_MAINPLL_D5>,
  				 <&topckgen CLK_TOP_SPI>,
  				 <&infracfg_ao CLK_INFRA_AO_SPI0>;
-@@ -702,10 +1279,34 @@
+@@ -702,10 +1260,34 @@
  			status = "disabled";
  		};
  
@@ -4926,7 +4904,7 @@ index 35281db2e2b94ff746294b9827b6f2791e0535e9..af283c41908fd982628ae5cdadbd1e00
  			#pwm-cells = <2>;
  			clocks = <&topckgen CLK_TOP_DISP_PWM>,
  				 <&infracfg_ao CLK_INFRA_AO_DISP_PWM>;
-@@ -718,7 +1319,7 @@
+@@ -718,7 +1300,7 @@
  			#address-cells = <1>;
  			#size-cells = <0>;
  			reg = <0 0x11010000 0 0x1000>;
@@ -4935,7 +4913,7 @@ index 35281db2e2b94ff746294b9827b6f2791e0535e9..af283c41908fd982628ae5cdadbd1e00
  			clocks = <&topckgen CLK_TOP_MAINPLL_D5>,
  				 <&topckgen CLK_TOP_SPI>,
  				 <&infracfg_ao CLK_INFRA_AO_SPI1>;
-@@ -731,7 +1332,7 @@
+@@ -731,7 +1313,7 @@
  			#address-cells = <1>;
  			#size-cells = <0>;
  			reg = <0 0x11012000 0 0x1000>;
@@ -4944,7 +4922,7 @@ index 35281db2e2b94ff746294b9827b6f2791e0535e9..af283c41908fd982628ae5cdadbd1e00
  			clocks = <&topckgen CLK_TOP_MAINPLL_D5>,
  				 <&topckgen CLK_TOP_SPI>,
  				 <&infracfg_ao CLK_INFRA_AO_SPI2>;
-@@ -744,7 +1345,7 @@
+@@ -744,7 +1326,7 @@
  			#address-cells = <1>;
  			#size-cells = <0>;
  			reg = <0 0x11013000 0 0x1000>;
@@ -4953,7 +4931,7 @@ index 35281db2e2b94ff746294b9827b6f2791e0535e9..af283c41908fd982628ae5cdadbd1e00
  			clocks = <&topckgen CLK_TOP_MAINPLL_D5>,
  				 <&topckgen CLK_TOP_SPI>,
  				 <&infracfg_ao CLK_INFRA_AO_SPI3>;
-@@ -757,7 +1358,7 @@
+@@ -757,7 +1339,7 @@
  			#address-cells = <1>;
  			#size-cells = <0>;
  			reg = <0 0x11014000 0 0x1000>;
@@ -4962,7 +4940,7 @@ index 35281db2e2b94ff746294b9827b6f2791e0535e9..af283c41908fd982628ae5cdadbd1e00
  			clocks = <&topckgen CLK_TOP_MAINPLL_D5>,
  				 <&topckgen CLK_TOP_SPI>,
  				 <&infracfg_ao CLK_INFRA_AO_SPI4>;
-@@ -770,7 +1371,7 @@
+@@ -770,7 +1352,7 @@
  			#address-cells = <1>;
  			#size-cells = <0>;
  			reg = <0 0x11015000 0 0x1000>;
@@ -4971,7 +4949,7 @@ index 35281db2e2b94ff746294b9827b6f2791e0535e9..af283c41908fd982628ae5cdadbd1e00
  			clocks = <&topckgen CLK_TOP_MAINPLL_D5>,
  				 <&topckgen CLK_TOP_SPI>,
  				 <&infracfg_ao CLK_INFRA_AO_SPI5>;
-@@ -788,7 +1389,7 @@
+@@ -788,7 +1370,7 @@
  			compatible = "mediatek,mt8186-uart",
  				     "mediatek,mt6577-uart";
  			reg = <0 0x11018000 0 0x1000>;
@@ -4980,7 +4958,7 @@ index 35281db2e2b94ff746294b9827b6f2791e0535e9..af283c41908fd982628ae5cdadbd1e00
  			clocks = <&clk26m>, <&infracfg_ao CLK_INFRA_AO_UART2>;
  			clock-names = "baud", "bus";
  			status = "disabled";
-@@ -798,11 +1399,13 @@
+@@ -798,11 +1380,13 @@
  			compatible = "mediatek,mt8186-i2c";
  			reg = <0 0x11019000 0 0x1000>,
  			      <0 0x10200c00 0 0x180>;
@@ -4995,7 +4973,7 @@ index 35281db2e2b94ff746294b9827b6f2791e0535e9..af283c41908fd982628ae5cdadbd1e00
  			status = "disabled";
  		};
  
-@@ -812,7 +1415,7 @@
+@@ -812,13 +1396,13 @@
  			reg = <0 0x11200000 0 0x1000>,
  			      <0 0x11203e00 0 0x0100>;
  			reg-names = "mac", "ippc";
@@ -5003,8 +4981,16 @@ index 35281db2e2b94ff746294b9827b6f2791e0535e9..af283c41908fd982628ae5cdadbd1e00
 +			interrupts = <GIC_SPI 294 IRQ_TYPE_LEVEL_HIGH 0>;
  			phys = <&u2port0 PHY_TYPE_USB2>;
  			clocks = <&topckgen CLK_TOP_USB_TOP>,
- 				 <&infracfg_ao CLK_INFRA_AO_SSUSB_TOP_XHCI>,
-@@ -826,17 +1429,78 @@
+-				 <&infracfg_ao CLK_INFRA_AO_SSUSB_TOP_XHCI>,
++				 <&infracfg_ao CLK_INFRA_AO_SSUSB_TOP_REF>,
+ 				 <&infracfg_ao CLK_INFRA_AO_SSUSB_TOP_HCLK>,
+ 				 <&infracfg_ao CLK_INFRA_AO_ICUSB>,
+-				 <&infracfg_ao CLK_INFRA_AO_SSUSB_TOP_REF>;
++				 <&infracfg_ao CLK_INFRA_AO_SSUSB_TOP_XHCI>;
+ 			clock-names = "sys_ck", "ref_ck", "mcu_ck", "dma_ck", "xhci_ck";
+ 			power-domains = <&spm MT8186_POWER_DOMAIN_SSUSB>;
+ 			mediatek,syscon-wakeup = <&pericfg 0x420 2>;
+@@ -826,17 +1410,78 @@
  			status = "disabled";
  		};
  
@@ -5087,7 +5073,7 @@ index 35281db2e2b94ff746294b9827b6f2791e0535e9..af283c41908fd982628ae5cdadbd1e00
  			assigned-clocks = <&topckgen CLK_TOP_MSDC50_0>;
  			assigned-clock-parents = <&apmixedsys CLK_APMIXED_MSDCPLL>;
  			status = "disabled";
-@@ -847,11 +1511,11 @@
+@@ -847,11 +1492,11 @@
  				     "mediatek,mt8183-mmc";
  			reg = <0 0x11240000 0 0x1000>,
  			      <0 0x11c90000 0 0x1000>;
@@ -5100,7 +5086,7 @@ index 35281db2e2b94ff746294b9827b6f2791e0535e9..af283c41908fd982628ae5cdadbd1e00
  			assigned-clocks = <&topckgen CLK_TOP_MSDC30_1>;
  			assigned-clock-parents = <&topckgen CLK_TOP_MSDCPLL_D2>;
  			status = "disabled";
-@@ -863,7 +1527,7 @@
+@@ -863,14 +1508,15 @@
  			reg = <0 0x11280000 0 0x1000>,
  			      <0 0x11283e00 0 0x0100>;
  			reg-names = "mac", "ippc";
@@ -5109,7 +5095,18 @@ index 35281db2e2b94ff746294b9827b6f2791e0535e9..af283c41908fd982628ae5cdadbd1e00
  			phys = <&u2port1 PHY_TYPE_USB2>,
  			       <&u3port1 PHY_TYPE_USB3>;
  			clocks = <&infracfg_ao CLK_INFRA_AO_SSUSB_TOP_P1_SYS>,
-@@ -917,6 +1581,30 @@
+-				 <&infracfg_ao CLK_INFRA_AO_SSUSB_TOP_P1_XHCI>,
++				 <&infracfg_ao CLK_INFRA_AO_SSUSB_TOP_P1_REF>,
+ 				 <&infracfg_ao CLK_INFRA_AO_SSUSB_TOP_P1_HCLK>,
+-				 <&infracfg_ao CLK_INFRA_AO_SSUSB_TOP_P1_REF>;
+-			clock-names = "sys_ck", "ref_ck", "mcu_ck", "xhci_ck";
++				 <&clk26m>,
++				 <&infracfg_ao CLK_INFRA_AO_SSUSB_TOP_P1_XHCI>;
++			clock-names = "sys_ck", "ref_ck", "mcu_ck", "dma_ck","xhci_ck";
+ 			power-domains = <&spm MT8186_POWER_DOMAIN_SSUSB_P1>;
+ 			mediatek,syscon-wakeup = <&pericfg 0x424 2>;
+ 			wakeup-source;
+@@ -917,6 +1563,30 @@
  			};
  		};
  
@@ -5140,7 +5137,7 @@ index 35281db2e2b94ff746294b9827b6f2791e0535e9..af283c41908fd982628ae5cdadbd1e00
  		mipi_tx0: dsi-phy@11cc0000 {
  			compatible = "mediatek,mt8183-mipi-tx";
  			reg = <0 0x11cc0000 0 0x1000>;
-@@ -933,17 +1621,131 @@
+@@ -933,17 +1603,131 @@
  			#clock-cells = <1>;
  		};
  
@@ -5273,7 +5270,7 @@ index 35281db2e2b94ff746294b9827b6f2791e0535e9..af283c41908fd982628ae5cdadbd1e00
  			power-domains = <&spm MT8186_POWER_DOMAIN_DIS>;
  			clocks = <&topckgen CLK_TOP_DPI>,
  				 <&mmsys CLK_MM_DISP_DPI>,
-@@ -952,25 +1754,204 @@
+@@ -952,25 +1736,204 @@
  			assigned-clocks = <&topckgen CLK_TOP_DPI>;
  			assigned-clock-parents = <&topckgen CLK_TOP_TVDPLL_D2>;
  			status = "disabled";
@@ -5281,7 +5278,7 @@ index 35281db2e2b94ff746294b9827b6f2791e0535e9..af283c41908fd982628ae5cdadbd1e00
 +			port {
 +				dpi_out: endpoint { };
 +			};
-+		};
+ 		};
 +
 +		ccorr0: ccorr@1400b000 {
 +			compatible = "mediatek,mt8186-disp-ccorr",
@@ -5291,7 +5288,7 @@ index 35281db2e2b94ff746294b9827b6f2791e0535e9..af283c41908fd982628ae5cdadbd1e00
 +			clocks = <&mmsys CLK_MM_DISP_CCORR0>;
 +			mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0xb000 0x1000>;
 +			power-domains = <&spm MT8186_POWER_DOMAIN_DIS>;
- 		};
++		};
 +
 +		aal0: aal@1400c000 {
 +			compatible = "mediatek,mt8186-disp-aal",
@@ -5478,7 +5475,7 @@ index 35281db2e2b94ff746294b9827b6f2791e0535e9..af283c41908fd982628ae5cdadbd1e00
  		vdecsys: clock-controller@1602f000 {
  			compatible = "mediatek,mt8186-vdecsys";
  			reg = <0 0x1602f000 0 0x1000>;
-@@ -983,12 +1964,103 @@
+@@ -983,12 +1946,103 @@
  			#clock-cells = <1>;
  		};
  
@@ -5582,7 +5579,7 @@ index 35281db2e2b94ff746294b9827b6f2791e0535e9..af283c41908fd982628ae5cdadbd1e00
  		camsys_rawa: clock-controller@1a04f000 {
  			compatible = "mediatek,mt8186-camsys_rawa";
  			reg = <0 0x1a04f000 0 0x1000>;
-@@ -1004,7 +2076,114 @@
+@@ -1004,7 +2058,114 @@
  		mdpsys: clock-controller@1b000000 {
  			compatible = "mediatek,mt8186-mdpsys";
  			reg = <0 0x1b000000 0 0x1000>;
@@ -5697,7 +5694,7 @@ index 35281db2e2b94ff746294b9827b6f2791e0535e9..af283c41908fd982628ae5cdadbd1e00
  		};
  
  		ipesys: clock-controller@1c000000 {
-@@ -1012,5 +2191,272 @@
+@@ -1012,5 +2173,272 @@
  			reg = <0 0x1c000000 0 0x1000>;
  			#clock-cells = <1>;
  		};
@@ -5991,7 +5988,7 @@ index d604dc2836db8365c75fb6cb69d8fee1cadcd77e..b760fbc6faf6e5d7f3a70a050422c8d2
  CONFIG_VIDEO_MEDIATEK_VPU=y
  CONFIG_VIDEO_OV02A10=m
 diff --git a/chromeos/config/chromeos/arm64/chromiumos-mediatek.flavour.config b/chromeos/config/chromeos/arm64/chromiumos-mediatek.flavour.config
-index f4ef97698477ac408fc88664425850394c6bc05a..1691f412eb89c2a10957404d292f596bcd3c37c5 100644
+index f4ef97698477ac408fc88664425850394c6bc05a..5543317087d856589a4d3354c7217f8e34a2db1d 100644
 --- a/chromeos/config/chromeos/arm64/chromiumos-mediatek.flavour.config
 +++ b/chromeos/config/chromeos/arm64/chromiumos-mediatek.flavour.config
 @@ -14,6 +14,7 @@ CONFIG_BT_MRVL_SDIO=m
@@ -6002,11 +5999,7 @@ index f4ef97698477ac408fc88664425850394c6bc05a..1691f412eb89c2a10957404d292f596b
  CONFIG_CONFIGFS_FS=y
  CONFIG_CROS_EC_RPMSG=m
  CONFIG_DRM_ANALOGIX_ANX7625=y
-@@ -44,11 +45,13 @@ CONFIG_MMC_MTK=y
- CONFIG_MT7921E=m
- CONFIG_MT7921S=m
- CONFIG_MTK_CMDQ=y
-+CONFIG_MTK_DEVAPC=y
+@@ -47,8 +48,9 @@ CONFIG_MTK_CMDQ=y
  CONFIG_MTK_EFUSE=y
  CONFIG_MTK_IOMMU=y
  CONFIG_MTK_PMIC_WRAP=y
@@ -6017,7 +6010,7 @@ index f4ef97698477ac408fc88664425850394c6bc05a..1691f412eb89c2a10957404d292f596b
  CONFIG_MWIFIEX_SDIO=m
  CONFIG_PCIEAER=y
  CONFIG_PCIEASPM_POWER_SUPERSAVE=y
-@@ -104,8 +107,10 @@ CONFIG_USB_MTU3_HOST=y
+@@ -104,6 +106,7 @@ CONFIG_USB_MTU3_HOST=y
  CONFIG_VIDEO_DW9768=m
  CONFIG_VIDEO_MEDIATEK_JPEG=m
  CONFIG_VIDEO_MEDIATEK_MDP=m
@@ -6025,10 +6018,6 @@ index f4ef97698477ac408fc88664425850394c6bc05a..1691f412eb89c2a10957404d292f596b
  CONFIG_VIDEO_MEDIATEK_VCODEC=m
  CONFIG_VIDEO_MEDIATEK_VPU=y
  CONFIG_VIDEO_OV02A10=m
- CONFIG_VIDEO_OV5695=m
- CONFIG_VIDEO_OV8856=m
-+CONFIG_MTK_SYSTRACKER_V2=y
-\ No newline at end of file
 diff --git a/drivers/clk/mediatek/Kconfig b/drivers/clk/mediatek/Kconfig
 index 2dfd66b5817a2282e6964dc39dea0778336d411f..71c008ab56f3f69085304a4505b78c31d3bed414 100644
 --- a/drivers/clk/mediatek/Kconfig
@@ -22047,26 +22036,6 @@ index 0000000000000000000000000000000000000000..5227f59fec08e3a367af12cbc0299c37
 +int gpio_get_tristate_input(unsigned int pin);
 +
 +#endif /* __PINCTRL_MTK_COMMON_V2_DEBUG_H */
-diff --git a/drivers/soc/mediatek/Kconfig b/drivers/soc/mediatek/Kconfig
-index 3c3eedea35f729b86217e92ad027b2188867c165..16a0c660ccfb7f75f81a2f6fcdf86466ac075912 100644
---- a/drivers/soc/mediatek/Kconfig
-+++ b/drivers/soc/mediatek/Kconfig
-@@ -83,4 +83,5 @@ config MTK_SVS
- 	  chip process corner, temperatures and other factors. Then DVFS
- 	  driver could apply SVS bank voltage to PMIC/Buck.
- 
-+source "drivers/soc/mediatek/systracker/Kconfig"
- endmenu
-diff --git a/drivers/soc/mediatek/Makefile b/drivers/soc/mediatek/Makefile
-index 0e9e703c931a4faf46422d9ed2107c596a71b42f..3d18c86cf88c17c0a43b415ce045526e636a1fb1 100644
---- a/drivers/soc/mediatek/Makefile
-+++ b/drivers/soc/mediatek/Makefile
-@@ -8,3 +8,4 @@ obj-$(CONFIG_MTK_SCPSYS_PM_DOMAINS) += mtk-pm-domains.o
- obj-$(CONFIG_MTK_MMSYS) += mtk-mmsys.o
- obj-$(CONFIG_MTK_MMSYS) += mtk-mutex.o
- obj-$(CONFIG_MTK_SVS) += mtk-svs.o
-+obj-$(CONFIG_MTK_SYSTRACKER_V2) += systracker/
-\ No newline at end of file
 diff --git a/drivers/soc/mediatek/mt8186-mmsys.h b/drivers/soc/mediatek/mt8186-mmsys.h
 index eb1ad9c37a9cb0177758c527569752beef8f3643..620c062e48934308eda9ad13063b00c8508475bb 100644
 --- a/drivers/soc/mediatek/mt8186-mmsys.h
@@ -22601,7 +22570,7 @@ index eda44195811d09eb99cf7626a81f075a05dfd5c5..0e4eab175f1e4a253556235cc006287d
  	  .data = &mt8192_mutex_driver_data},
  	{ .compatible = "mediatek,mt8195-disp-mutex",
 diff --git a/drivers/soc/mediatek/mtk-svs.c b/drivers/soc/mediatek/mtk-svs.c
-index 606a00a2e57d98e47c3c0224772c294c76cbc09d..3f3ef40db28638a48f83df6afd72c3658193ae8d 100644
+index 606a00a2e57d98e47c3c0224772c294c76cbc09d..663c619398c17b9a71fca9af4a71254fa2b11d16 100644
 --- a/drivers/soc/mediatek/mtk-svs.c
 +++ b/drivers/soc/mediatek/mtk-svs.c
 @@ -355,6 +355,7 @@ struct svs_platform_data {
@@ -22711,97 +22680,7 @@ index 606a00a2e57d98e47c3c0224772c294c76cbc09d..3f3ef40db28638a48f83df6afd72c365
  			break;
  		case SVSB_CCI:
  			svsb->name = "SVSB_CCI";
-@@ -1640,6 +1680,89 @@ static int svs_bank_resource_setup(struct svs_platform *svsp)
- 	return 0;
- }
- 
-+static bool svs_mt8195_efuse_parsing(struct svs_platform *svsp)
-+{
-+	struct svs_bank *svsb;
-+	struct nvmem_cell *cell;
-+	u32 idx, i, ft_pgm, vmin, golden_temp;
-+
-+	for (i = 0; i < svsp->efuse_max; i++)
-+		if (svsp->efuse[i])
-+			dev_info(svsp->dev, "M_HW_RES%d: 0x%08x\n",
-+				 i, svsp->efuse[i]);
-+
-+	if (!svsp->efuse[10]) {
-+		dev_notice(svsp->dev, "svs_efuse[10] = 0x0?\n");
-+		return false;
-+	}
-+
-+	/* Svs efuse parsing */
-+	ft_pgm = svsp->efuse[0] & GENMASK(7, 0);
-+	vmin = (svsp->efuse[19] >> 4) & GENMASK(1, 0);
-+
-+	for (idx = 0; idx < svsp->bank_max; idx++) {
-+		svsb = &svsp->banks[idx];
-+
-+		if (vmin == 0x1)
-+			svsb->vmin = 0x1e;
-+
-+		if (ft_pgm == 0)
-+			svsb->volt_flags |= SVSB_INIT01_VOLT_IGNORE;
-+
-+		if (svsb->type == SVSB_LOW) {
-+			svsb->mtdes = svsp->efuse[10] & GENMASK(7, 0);
-+			svsb->bdes = (svsp->efuse[10] >> 16) & GENMASK(7, 0);
-+			svsb->mdes = (svsp->efuse[10] >> 24) & GENMASK(7, 0);
-+			svsb->dcbdet = (svsp->efuse[8]) & GENMASK(7, 0);
-+			svsb->dcmdet = (svsp->efuse[8] >> 8) & GENMASK(7, 0);
-+		} else if (svsb->type == SVSB_HIGH) {
-+			svsb->mtdes = svsp->efuse[9] & GENMASK(7, 0);
-+			svsb->bdes = (svsp->efuse[9] >> 16) & GENMASK(7, 0);
-+			svsb->mdes = (svsp->efuse[9] >> 24) & GENMASK(7, 0);
-+			svsb->dcbdet = (svsp->efuse[8]) & GENMASK(7, 0);
-+			svsb->dcmdet = (svsp->efuse[8] >> 8) & GENMASK(7, 0);
-+		}
-+
-+		svsb->vmax += svsb->dvt_fixed;
-+	}
-+
-+	/* Thermal efuse parsing */
-+	cell = nvmem_cell_get(svsp->dev, "t-calibration-data");
-+	if (IS_ERR_OR_NULL(cell)) {
-+		dev_err(svsp->dev, "no \"t-calibration-data\"? %ld\n",
-+			PTR_ERR(cell));
-+		return false;
-+	}
-+
-+	svsp->tefuse = nvmem_cell_read(cell, &svsp->tefuse_max);
-+	if (IS_ERR(svsp->tefuse)) {
-+		dev_err(svsp->dev, "cannot read thermal efuse: %ld\n",
-+			PTR_ERR(svsp->tefuse));
-+		nvmem_cell_put(cell);
-+		return false;
-+	}
-+
-+	svsp->tefuse_max /= sizeof(u32);
-+	nvmem_cell_put(cell);
-+
-+	for (i = 0; i < svsp->tefuse_max; i++)
-+		if (svsp->tefuse[i] != 0)
-+			break;
-+
-+	if (i == svsp->tefuse_max)
-+		golden_temp = 50; /* All thermal efuse data are 0 */
-+	else
-+		golden_temp = (svsp->tefuse[0] >> 24) & GENMASK(7, 0);
-+
-+	for (idx = 0; idx < svsp->bank_max; idx++) {
-+		svsb = &svsp->banks[idx];
-+		svsb->mts = 500;
-+		svsb->bts = (((500 * golden_temp + 250460) / 1000) - 25) * 4;
-+	}
-+
-+	return true;
-+}
-+
- static bool svs_mt8192_efuse_parsing(struct svs_platform *svsp)
- {
- 	struct svs_bank *svsb;
-@@ -1719,6 +1842,103 @@ static bool svs_mt8192_efuse_parsing(struct svs_platform *svsp)
+@@ -1719,6 +1759,103 @@ static bool svs_mt8192_efuse_parsing(struct svs_platform *svsp)
  	return true;
  }
  
@@ -22905,7 +22784,7 @@ index 606a00a2e57d98e47c3c0224772c294c76cbc09d..3f3ef40db28638a48f83df6afd72c365
  static bool svs_mt8183_efuse_parsing(struct svs_platform *svsp)
  {
  	struct svs_bank *svsb;
-@@ -2037,6 +2257,50 @@ static int svs_mt8192_platform_probe(struct svs_platform *svsp)
+@@ -2037,6 +2174,50 @@ static int svs_mt8192_platform_probe(struct svs_platform *svsp)
  	return 0;
  }
  
@@ -22956,69 +22835,7 @@ index 606a00a2e57d98e47c3c0224772c294c76cbc09d..3f3ef40db28638a48f83df6afd72c365
  static int svs_mt8183_platform_probe(struct svs_platform *svsp)
  {
  	struct device *dev;
-@@ -2076,6 +2340,61 @@ static int svs_mt8183_platform_probe(struct svs_platform *svsp)
- 	return 0;
- }
- 
-+static struct svs_bank svs_mt8195_banks[] = {
-+	{
-+		.sw_id			= SVSB_GPU,
-+		.type			= SVSB_LOW,
-+		.set_freq_pct		= svs_set_bank_freq_pct_v3,
-+		.get_volts		= svs_get_bank_volts_v3,
-+		.volt_flags		= SVSB_REMOVE_DVTFIXED_VOLT,
-+		.mode_support		= SVSB_MODE_INIT02,
-+		.opp_count		= MAX_OPP_ENTRIES,
-+		.freq_base		= 640000000,
-+		.turn_freq_base		= 640000000,
-+		.volt_step		= 6250,
-+		.volt_base		= 400000,
-+		.vmax			= 0x38,
-+		.vmin			= 0x14,
-+		.age_config		= 0x555555,
-+		.dc_config		= 0x1,
-+		.dvt_fixed		= 0x1,
-+		.vco			= 0x18,
-+		.chk_shift		= 0x87,
-+		.core_sel		= 0x0fff0100,
-+		.int_st			= BIT(0),
-+		.ctl0			= 0x00540003,
-+	},
-+	{
-+		.sw_id			= SVSB_GPU,
-+		.type			= SVSB_HIGH,
-+		.set_freq_pct		= svs_set_bank_freq_pct_v3,
-+		.get_volts		= svs_get_bank_volts_v3,
-+		.tzone_name		= "gpu1",
-+		.volt_flags		= SVSB_REMOVE_DVTFIXED_VOLT |
-+					  SVSB_MON_VOLT_IGNORE,
-+		.mode_support		= SVSB_MODE_INIT02 | SVSB_MODE_MON,
-+		.opp_count		= MAX_OPP_ENTRIES,
-+		.freq_base		= 880000000,
-+		.turn_freq_base		= 640000000,
-+		.volt_step		= 6250,
-+		.volt_base		= 400000,
-+		.vmax			= 0x38,
-+		.vmin			= 0x14,
-+		.age_config		= 0x555555,
-+		.dc_config		= 0x1,
-+		.dvt_fixed		= 0x6,
-+		.vco			= 0x18,
-+		.chk_shift		= 0x87,
-+		.core_sel		= 0x0fff0101,
-+		.int_st			= BIT(1),
-+		.ctl0			= 0x00540003,
-+		.tzone_htemp		= 85000,
-+		.tzone_htemp_voffset	= 0,
-+		.tzone_ltemp		= 25000,
-+		.tzone_ltemp_voffset	= 7,
-+	},
-+};
-+
- static struct svs_bank svs_mt8192_banks[] = {
- 	{
- 		.sw_id			= SVSB_GPU,
-@@ -2131,6 +2450,149 @@ static struct svs_bank svs_mt8192_banks[] = {
+@@ -2131,6 +2312,149 @@ static struct svs_bank svs_mt8192_banks[] = {
  	},
  };
  
@@ -23168,23 +22985,7 @@ index 606a00a2e57d98e47c3c0224772c294c76cbc09d..3f3ef40db28638a48f83df6afd72c365
  static struct svs_bank svs_mt8183_banks[] = {
  	{
  		.sw_id			= SVSB_CPU_LITTLE,
-@@ -2235,6 +2697,15 @@ static struct svs_bank svs_mt8183_banks[] = {
- 	},
- };
- 
-+static const struct svs_platform_data svs_mt8195_platform_data = {
-+	.name = "mt8195-svs",
-+	.banks = svs_mt8195_banks,
-+	.efuse_parsing = svs_mt8195_efuse_parsing,
-+	.probe = svs_mt8192_platform_probe,
-+	.regs = svs_regs_v2,
-+	.bank_max = ARRAY_SIZE(svs_mt8195_banks),
-+};
-+
- static const struct svs_platform_data svs_mt8192_platform_data = {
- 	.name = "mt8192-svs",
- 	.banks = svs_mt8192_banks,
-@@ -2245,6 +2716,15 @@ static const struct svs_platform_data svs_mt8192_platform_data = {
+@@ -2245,6 +2569,15 @@ static const struct svs_platform_data svs_mt8192_platform_data = {
  	.bank_max = ARRAY_SIZE(svs_mt8192_banks),
  };
  
@@ -23200,13 +23001,8 @@ index 606a00a2e57d98e47c3c0224772c294c76cbc09d..3f3ef40db28638a48f83df6afd72c365
  static const struct svs_platform_data svs_mt8183_platform_data = {
  	.name = "mt8183-svs",
  	.banks = svs_mt8183_banks,
-@@ -2257,8 +2737,14 @@ static const struct svs_platform_data svs_mt8183_platform_data = {
- 
- static const struct of_device_id svs_of_match[] = {
+@@ -2259,6 +2592,9 @@ static const struct of_device_id svs_of_match[] = {
  	{
-+		.compatible = "mediatek,mt8195-svs",
-+		.data = &svs_mt8195_platform_data,
-+	}, {
  		.compatible = "mediatek,mt8192-svs",
  		.data = &svs_mt8192_platform_data,
 +	}, {
@@ -23215,1024 +23011,6 @@ index 606a00a2e57d98e47c3c0224772c294c76cbc09d..3f3ef40db28638a48f83df6afd72c365
  	}, {
  		.compatible = "mediatek,mt8183-svs",
  		.data = &svs_mt8183_platform_data,
-diff --git a/drivers/soc/mediatek/systracker/Kconfig b/drivers/soc/mediatek/systracker/Kconfig
-new file mode 100644
-index 0000000000000000000000000000000000000000..dc9d402a4e84732009477dfca5b09211a22892ad
---- /dev/null
-+++ b/drivers/soc/mediatek/systracker/Kconfig
-@@ -0,0 +1,8 @@
-+config MTK_SYSTRACKER_V2
-+	tristate "Enable MTK System Tracker Debugger V2"
-+	help
-+	  SYSTRACKER driver is a debugging feature.
-+	  SYSTRACKER is a hardware debugger to record timeout transaction
-+	  and trigger SLV_ERR or interrupt to notify CPU.
-+	  Support 2 stage timeout & watchpoint SLV_ERR.
-+
-diff --git a/drivers/soc/mediatek/systracker/Makefile b/drivers/soc/mediatek/systracker/Makefile
-new file mode 100644
-index 0000000000000000000000000000000000000000..b301b3a3fbc02b9e33780bfc51e357f290196090
---- /dev/null
-+++ b/drivers/soc/mediatek/systracker/Makefile
-@@ -0,0 +1,18 @@
-+#
-+# Copyright (C) 2015 MediaTek Inc.
-+#
-+# This program is free software: you can redistribute it and/or modify
-+# it under the terms of the GNU General Public License version 2 as
-+# published by the Free Software Foundation.
-+#
-+# This program is distributed in the hope that it will be useful,
-+# but WITHOUT ANY WARRANTY; without even the implied warranty of
-+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-+# GNU General Public License for more details.
-+#
-+
-+
-+obj-$(CONFIG_MTK_SYSTRACKER_V2) += systracker.o
-+
-+
-+
-diff --git a/drivers/soc/mediatek/systracker/systracker.c b/drivers/soc/mediatek/systracker/systracker.c
-new file mode 100644
-index 0000000000000000000000000000000000000000..e2e3df6e173249ab0dd49820346f75e8d7e81866
---- /dev/null
-+++ b/drivers/soc/mediatek/systracker/systracker.c
-@@ -0,0 +1,806 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Copyright (C) 2021 MediaTek Inc.
-+ */
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/device.h>
-+#include <linux/platform_device.h>
-+#include <linux/kallsyms.h>
-+#include <linux/interrupt.h>
-+#include <linux/delay.h>
-+#include <linux/sched.h>
-+#include <linux/of_address.h>
-+#include <linux/of_irq.h>
-+#include <linux/signal.h>
-+#include <linux/cpu.h>
-+#include <linux/io.h>
-+#include "systracker_v2.h"
-+
-+void __iomem *BUS_DBG_BASE;
-+void __iomem *BUS_DBG_INFRA_BASE;
-+int systracker_irq;
-+struct systracker_config_t track_config;
-+struct systracker_entry_t track_entry;
-+
-+static const struct of_device_id systracker_of_ids[] = {
-+	{ .compatible = "mediatek,bus_dbg-v2", },
-+	{}
-+};
-+
-+static struct mt_systracker_driver mt_systracker_drv = {
-+	.driver = {
-+		.driver = {
-+			.name = "systracker",
-+			.bus = &platform_bus_type,
-+			.owner = THIS_MODULE,
-+			.of_match_table = systracker_of_ids,
-+		},
-+		.probe = systracker_probe,
-+		.remove = systracker_remove,
-+		.suspend = systracker_suspend,
-+		.resume = systracker_resume,
-+	},
-+	.device = {
-+		.name = "systracker",
-+	},
-+};
-+
-+int systracker_probe(struct platform_device *pdev)
-+{
-+	void __iomem *infra_ao_base;
-+	unsigned int bus_dbg_con_offset;
-+
-+	pr_notice("systracker probe\n");
-+
-+	/* iomap register */
-+	BUS_DBG_BASE = of_iomap(pdev->dev.of_node, 0);
-+	if (!BUS_DBG_BASE) {
-+		pr_notice("can't of_iomap for systracker!!\n");
-+		return -ENOMEM;
-+	}
-+
-+	pr_notice("of_iomap for systracker @ 0x%p\n", BUS_DBG_BASE);
-+
-+	infra_ao_base = of_iomap(pdev->dev.of_node, 1);
-+	if (!infra_ao_base) {
-+		pr_notice("[systracker] bus_dbg_con is in infra\n");
-+		BUS_DBG_INFRA_BASE = BUS_DBG_BASE;
-+	} else {
-+		pr_notice("[systracker] bus_dbg_con is in infra_ao\n");
-+		if (of_property_read_u32
-+			(pdev->dev.of_node, "mediatek,bus_dbg_con_offset",
-+			&bus_dbg_con_offset)) {
-+			pr_notice
-+			("[systracker] cannot get bus_dbg_con_offset\n");
-+			return -ENODEV;
-+		}
-+		BUS_DBG_INFRA_BASE = infra_ao_base + bus_dbg_con_offset;
-+	}
-+
-+	/* get irq #  */
-+	systracker_irq = irq_of_parse_and_map(pdev->dev.of_node, 0);
-+	pr_notice("%s:%d: irq # %d\n", __func__, __LINE__, systracker_irq);
-+
-+#if IS_ENABLED(CONFIG_MTK_BUS_TRACER)
-+	pr_notice("[systracker] register isr for bus tracer\n");
-+	if (request_irq(systracker_irq, (irq_handler_t)systracker_isr,
-+				IRQF_TRIGGER_NONE, "SYSTRACKER", NULL)) {
-+		pr_notice("SYSTRACKER IRQ LINE NOT AVAILABLE!!\n");
-+		return -1;
-+	}
-+#endif
-+
-+	/* save entry info */
-+	save_entry();
-+	memset(&track_config, 0, sizeof(struct systracker_config_t));
-+
-+	track_config.enable_timeout = 1;
-+	track_config.enable_slave_err = 1;
-+	track_config.enable_irq = 1;
-+	track_config.timeout_ms = 100;
-+	track_config.timeout2_ms = 2000;
-+
-+	systracker_reset();
-+	systracker_enable();
-+
-+	return 0;
-+}
-+
-+int systracker_remove(struct platform_device *pdev)
-+{
-+	return 0;
-+}
-+
-+int systracker_suspend(struct platform_device *pdev, pm_message_t state)
-+{
-+	return 0;
-+}
-+
-+static int systracker_resume_default(struct platform_device *pdev)
-+{
-+	if (track_config.state || track_config.enable_wp)
-+		systracker_enable();
-+
-+	return 0;
-+}
-+
-+int systracker_resume(struct platform_device *pdev)
-+{
-+	return systracker_resume_default(pdev);
-+}
-+
-+void save_entry(void)
-+{
-+	int i = 0;
-+
-+	track_entry.dbg_con =  readl(BUS_DBG_CON);
-+	track_entry.dbg_con_infra =  readl(BUS_DBG_CON_INFRA);
-+
-+	for (i = 0; i < BUS_DBG_NUM_TRACKER; i++) {
-+		track_entry.ar_track_l[i]   =
-+			readl(BUS_DBG_AR_TRACK_L(i));
-+		track_entry.ar_track_h[i]   =
-+			readl(BUS_DBG_AR_TRACK_H(i));
-+		track_entry.ar_trans_tid[i] =
-+			readl(BUS_DBG_AR_TRANS_TID(i));
-+		track_entry.aw_track_l[i]   =
-+			readl(BUS_DBG_AW_TRACK_L(i));
-+		track_entry.aw_track_h[i]   =
-+			readl(BUS_DBG_AW_TRACK_H(i));
-+		track_entry.aw_trans_tid[i] =
-+			readl(BUS_DBG_AW_TRANS_TID(i));
-+	}
-+
-+	track_entry.w_track_data6 = readl(BUS_DBG_W_TRACK_DATA6);
-+	track_entry.w_track_data7 = readl(BUS_DBG_W_TRACK_DATA7);
-+	track_entry.w_track_data_valid =
-+		readl(BUS_DBG_W_TRACK_DATA_VALID);
-+}
-+
-+irqreturn_t systracker_isr(void)
-+{
-+	return IRQ_HANDLED;
-+}
-+
-+static int systracker_watchpoint_enable_default(void)
-+{
-+	unsigned int con;
-+
-+	track_config.enable_wp = 1;
-+
-+	writel(track_config.wp_phy_address, BUS_DBG_WP);
-+	writel(0x00000000, BUS_DBG_WP_MASK);
-+
-+	con = readl(BUS_DBG_CON_INFRA) | BUS_DBG_CON_WP_EN;
-+	writel(con, BUS_DBG_CON_INFRA);
-+	/* ensure access complete */
-+	mb();
-+
-+	return 0;
-+}
-+
-+int systracker_watchpoint_enable(void)
-+{
-+	return systracker_watchpoint_enable_default();
-+}
-+
-+static int systracker_watchpoint_disable_default(void)
-+{
-+	track_config.enable_wp = 0;
-+	writel(readl(BUS_DBG_CON_INFRA) & (~BUS_DBG_CON_WP_EN),
-+		BUS_DBG_CON_INFRA);
-+	/* ensure access complete */
-+	mb();
-+
-+	return 0;
-+}
-+
-+int systracker_watchpoint_disable(void)
-+{
-+	return systracker_watchpoint_disable_default();
-+}
-+
-+void systracker_reset_default(void)
-+{
-+	writel(readl(BUS_DBG_CON) |
-+		BUS_DBG_CON_SW_RST, BUS_DBG_CON);
-+	writel(readl(BUS_DBG_CON) |
-+		BUS_DBG_CON_IRQ_CLR, BUS_DBG_CON);
-+	writel(readl(BUS_DBG_CON) |
-+		BUS_DBG_CON_TIMEOUT_CLR, BUS_DBG_CON);
-+	/* ensure access complete */
-+	mb();
-+}
-+
-+void systracker_reset(void)
-+{
-+	systracker_reset_default();
-+}
-+
-+unsigned int systracker_timeout_value_default(void)
-+{
-+	/* prescale = (133 * (10 ^ 6)) / 16 = 8312500/s */
-+	return (BUS_DBG_BUS_MHZ * 1000 / 16) * track_config.timeout_ms;
-+}
-+
-+unsigned int systracker_timeout2_value_default(void)
-+{
-+	/* prescale = (133 * (10 ^ 6)) / 16 = 8312500/s */
-+	return (BUS_DBG_BUS_MHZ * 1000 / 16) * track_config.timeout2_ms;
-+}
-+
-+unsigned int systracker_timeout_value(void)
-+{
-+	return systracker_timeout_value_default();
-+}
-+
-+unsigned int systracker_timeout2_value(void)
-+{
-+	return systracker_timeout2_value_default();
-+}
-+
-+void systracker_enable_default(void)
-+{
-+	unsigned int con;
-+	unsigned int timer_control_value;
-+
-+	timer_control_value = systracker_timeout_value();
-+	writel(timer_control_value, BUS_DBG_TIMER_CON0);
-+
-+	timer_control_value = systracker_timeout2_value();
-+	writel(timer_control_value, BUS_DBG_TIMER_CON1);
-+
-+	track_config.state = 1;
-+	con = BUS_DBG_CON_BUS_DBG_EN | BUS_DBG_CON_BUS_OT_EN;
-+	if (track_config.enable_timeout)
-+		con |= BUS_DBG_CON_TIMEOUT_EN;
-+
-+	if (track_config.enable_slave_err)
-+		con |= BUS_DBG_CON_SLV_ERR_EN;
-+
-+	if (track_config.enable_irq) {
-+		con |= BUS_DBG_CON_IRQ_EN;
-+		con &= ~BUS_DBG_CON_IRQ_WP_EN;
-+	}
-+
-+	con |= BUS_DBG_CON_HALT_ON_EN;
-+	writel(con, BUS_DBG_CON_INFRA);
-+	/* ensure access complete */
-+	mb();
-+}
-+
-+void systracker_enable(void)
-+{
-+	systracker_enable_default();
-+}
-+
-+void enable_systracker(void)
-+{
-+	systracker_enable();
-+}
-+
-+static void systracker_disable_default(void)
-+{
-+	track_config.state = 0;
-+	writel(readl(BUS_DBG_CON_INFRA) &
-+		~BUS_DBG_CON_BUS_DBG_EN, BUS_DBG_CON_INFRA);
-+	/* ensure access complete */
-+	mb();
-+}
-+
-+void systracker_disable(void)
-+{
-+	systracker_disable_default();
-+}
-+
-+int systracker_test_init(void)
-+{
-+	if (mt_systracker_drv.systracker_test_init)
-+		return mt_systracker_drv.systracker_test_init();
-+
-+	pr_notice("mt_systracker_drv.%s is NULL", __func__);
-+	return -1;
-+}
-+
-+struct mt_systracker_driver *get_mt_systracker_drv(void)
-+{
-+	return &mt_systracker_drv;
-+}
-+
-+int tracker_dump(char *buf)
-+{
-+	char *ptr = buf;
-+	unsigned int reg_value;
-+	int i;
-+	unsigned int entry_valid;
-+	unsigned int entry_secure;
-+	unsigned int entry_tid;
-+	unsigned int entry_id;
-+	unsigned int entry_address;
-+	unsigned int entry_data_size;
-+	unsigned int entry_burst_length;
-+	{
-+		/* Get tracker info and save to buf */
-+
-+		/* BUS_DBG_AR_TRACK_L(__n)
-+		 * [31:0] ARADDR: DBG read tracker entry read address
-+		 */
-+
-+		/* BUS_DBG_AR_TRACK_H(__n)
-+		 * [22] Valid:DBG read tracker entry valid
-+		 * [20:8] ARID:DBG read tracker entry read ID
-+		 * [6:4] ARSIZE:DBG read tracker entry read data size
-+		 * [3:0] ARLEN: DBG read tracker entry read burst length
-+		 */
-+
-+		/* BUS_DBG_AR_TRACK_TID(__n)
-+		 * [2:0] BUS_DBG_AR_TRANS0_ENTRY_ID:
-+		 * DBG read tracker entry ID of 1st transaction
-+		 */
-+
-+		ptr += sprintf(ptr,
-+	"[TRACKER] BUS_DBG_CON = (0x%x, 0x%x), T0= 0x%x, T1 = 0x%x\n",
-+				track_entry.dbg_con,
-+				readl(BUS_DBG_CON),
-+				readl(BUS_DBG_TIMER_CON0),
-+				readl(BUS_DBG_TIMER_CON1));
-+
-+		ptr += sprintf(ptr, "BUS_DBG_CON_INFRA = (0x%x, 0x%x)\n",
-+			       track_entry.dbg_con_infra,
-+			       readl(BUS_DBG_CON_INFRA));
-+
-+		for (i = 0; i < BUS_DBG_NUM_TRACKER; i++) {
-+			entry_address       = track_entry.ar_track_l[i];
-+			reg_value           = track_entry.ar_track_h[i];
-+			entry_valid         =
-+				extract_n2mbits(reg_value, 22, 22);
-+			entry_secure         =
-+				extract_n2mbits(reg_value, 21, 21);
-+			entry_id            =
-+				extract_n2mbits(reg_value, 8, 20);
-+			entry_data_size     =
-+				extract_n2mbits(reg_value, 4, 6);
-+			entry_burst_length  =
-+				extract_n2mbits(reg_value, 0, 3);
-+			entry_tid           = track_entry.ar_trans_tid[i];
-+
-+			ptr += sprintf(ptr,
-+				"read entry = %d, valid = 0x%x, secure = 0x%x,",
-+				i, entry_valid, entry_secure);
-+			ptr += sprintf(ptr,
-+				"read id = 0x%x, address = 0x%x, data_size = 0x%x,",
-+				entry_id, entry_address, entry_data_size);
-+			ptr += sprintf(ptr, "burst_length = 0x%x\n",
-+					entry_burst_length);
-+		}
-+
-+		/* BUS_DBG_AW_TRACK_L(__n)
-+		 * [31:0] AWADDR: DBG write tracker entry write address
-+		 */
-+
-+		/* BUS_DBG_AW_TRACK_H(__n)
-+		 * [22] Valid:DBG   write tracker entry valid
-+		 * [20:8] ARID:DBG  write tracker entry write ID
-+		 * [6:4] ARSIZE:DBG write tracker entry write data size
-+		 * [3:0] ARLEN: DBG write tracker entry write burst length
-+		 */
-+
-+		/* BUS_DBG_AW_TRACK_TID(__n)
-+		 * [2:0] BUS_DBG_AW_TRANS0_ENTRY_ID:
-+		 * DBG write tracker entry ID of 1st transaction
-+		 */
-+
-+		for (i = 0; i < BUS_DBG_NUM_TRACKER; i++) {
-+			entry_address       = track_entry.aw_track_l[i];
-+			reg_value           = track_entry.aw_track_h[i];
-+			entry_valid         =
-+				extract_n2mbits(reg_value, 22, 22);
-+			entry_secure         =
-+				extract_n2mbits(reg_value, 21, 21);
-+			entry_id            =
-+				extract_n2mbits(reg_value, 8, 20);
-+			entry_data_size     =
-+				extract_n2mbits(reg_value, 4, 6);
-+			entry_burst_length  =
-+				extract_n2mbits(reg_value, 0, 3);
-+			entry_tid           = track_entry.aw_trans_tid[i];
-+
-+			ptr += sprintf(ptr,
-+				"write entry = %d, valid = 0x%x, secure = 0x%x,",
-+				i, entry_valid, entry_secure);
-+			ptr += sprintf(ptr,
-+				"read id = 0x%x, address = 0x%x, data_size = 0x%x, ",
-+				entry_id, entry_address, entry_data_size);
-+			ptr += sprintf(ptr,
-+				"burst_length = 0x%x\n",
-+				entry_burst_length);
-+		}
-+
-+		ptr += sprintf(ptr,
-+			"write entry ~ 6, valid = 0x%x, data = 0x%x\n",
-+			((track_entry.w_track_data_valid&(0x1<<6))>>6),
-+			track_entry.w_track_data6);
-+		ptr += sprintf(ptr,
-+			"write entry ~ 7, valid = 0x%x, data = 0x%x\n",
-+			((track_entry.w_track_data_valid&(0x1<<7))>>7),
-+			track_entry.w_track_data7);
-+
-+		return strlen(buf);
-+	}
-+
-+	return -1;
-+}
-+
-+static ssize_t tracker_run_show(struct device_driver *driver, char *buf)
-+{
-+	return snprintf(buf, PAGE_SIZE,
-+		"BUS_DBG_CON=0x%x, BUS_DBG_CON_INFRA=0x%x\n",
-+			readl(BUS_DBG_CON),
-+			readl(BUS_DBG_CON_INFRA));
-+}
-+
-+static ssize_t tracker_run_store(struct device_driver *driver,
-+		const char *buf, size_t count)
-+{
-+	unsigned int value;
-+
-+	if (kstrtou32(buf, 10, &value))
-+		return -EINVAL;
-+
-+	if (value == 1)
-+		systracker_enable();
-+	else if (value == 0)
-+		systracker_disable();
-+	else
-+		return -EINVAL;
-+
-+	return count;
-+}
-+
-+DRIVER_ATTR_RW(tracker_run);
-+
-+static ssize_t enable_wp_show(struct device_driver *driver, char *buf)
-+{
-+	return snprintf(buf, PAGE_SIZE, "%x\n", track_config.enable_wp);
-+}
-+
-+static ssize_t enable_wp_store(struct device_driver *driver,
-+		const char *buf, size_t count)
-+{
-+	unsigned int value;
-+
-+	if (kstrtou32(buf, 10, &value))
-+		return -EINVAL;
-+
-+	if (value == 1)
-+		systracker_watchpoint_enable();
-+	else if (value == 0)
-+		systracker_watchpoint_disable();
-+	else
-+		return -EINVAL;
-+
-+	return count;
-+}
-+
-+static DRIVER_ATTR_RW(enable_wp);
-+
-+static ssize_t set_wp_address_show(struct device_driver *driver, char *buf)
-+{
-+	return snprintf(buf, PAGE_SIZE, "%x\n", track_config.wp_phy_address);
-+}
-+
-+int systracker_set_watchpoint_addr(unsigned int addr)
-+{
-+	if (mt_systracker_drv.set_watchpoint_address)
-+		return mt_systracker_drv.set_watchpoint_address(addr);
-+
-+	track_config.wp_phy_address = addr;
-+
-+	return 0;
-+}
-+
-+static ssize_t set_wp_address_store
-+	(struct device_driver *driver, const char *buf, size_t count)
-+{
-+	unsigned int value;
-+	int ret;
-+
-+	ret = kstrtou32(buf, 16, &value);
-+	pr_debug("watch address:0x%x, ret = %d\n", value, ret);
-+	systracker_set_watchpoint_addr(value);
-+
-+	return count;
-+}
-+
-+static DRIVER_ATTR_RW(set_wp_address);
-+
-+static ssize_t tracker_entry_dump_show
-+	(struct device_driver *driver, char *buf)
-+{
-+	int ret = tracker_dump(buf);
-+
-+	if (ret == -1)
-+		pr_notice("Dump error in %s, %d\n", __func__, __LINE__);
-+
-+	return strlen(buf);
-+}
-+
-+static ssize_t tracker_swtrst_show(struct device_driver *driver, char *buf)
-+{
-+	return 0;
-+}
-+
-+static ssize_t tracker_swtrst_store
-+	(struct device_driver *driver, const char *buf, size_t count)
-+{
-+	writel(readl(BUS_DBG_CON) |
-+		BUS_DBG_CON_SW_RST, BUS_DBG_CON);
-+	return count;
-+}
-+
-+static DRIVER_ATTR_RW(tracker_swtrst);
-+
-+#ifdef SYSTRACKER_TEST_SUIT
-+/*top axi protect module control register*/
-+void __iomem *ctrl_bus_reg;
-+/*read/write this addr make bus timeout*/
-+void __iomem *test_area;
-+
-+#if IS_ENABLED(CONFIG_ARM64)
-+#define IOMEM(a)	((void __force __iomem *)((a)))
-+#endif
-+
-+unsigned int prot_reg, test_addr, bits;
-+
-+static void systracker_platform_wp_test(void)
-+{
-+	void __iomem *ptr;
-+	/* use eint reg base as our watchpoint */
-+	ptr = ioremap(test_addr, 0x4);
-+	pr_debug("%s:%d: we got p = 0x%p\n", __func__, __LINE__, ptr);
-+	systracker_set_watchpoint_addr(test_addr);
-+	systracker_watchpoint_enable();
-+	/* touch it */
-+	writel(0, ptr);
-+	pr_debug("after we touched watchpoint\n");
-+	iounmap(ptr);
-+}
-+
-+static void systracker_platform_read_timeout_test(void)
-+{
-+	/* FIXME: testing
-+	 * track_config.enable_slave_err = 0;
-+	 * systracker_enable();
-+	 */
-+	pr_notice("we are going to have read timeout\n");
-+	writel(readl(ctrl_bus_reg) | (0x1 << bits), ctrl_bus_reg);
-+	readl(test_area);
-+	writel(readl(ctrl_bus_reg) & ~(0x1 << bits), ctrl_bus_reg);
-+}
-+
-+static void systracker_platform_write_timeout_test(void)
-+{
-+	pr_notice("we are going to have write timeout\n");
-+	writel(readl(ctrl_bus_reg) | (0x1 << bits), ctrl_bus_reg);
-+	writel(0x0, test_area);
-+	writel(readl(ctrl_bus_reg) & ~(0x1 << bits), ctrl_bus_reg);
-+	pr_debug("out write timeout:%s:%d\n", __func__, __LINE__);
-+}
-+
-+static void systracker_platform_withrecord_test(void)
-+{
-+	writel(readl(IOMEM(BUS_DBG_CON)) |
-+	       BUS_DBG_CON_HALT_ON_EN, IOMEM(BUS_DBG_CON));
-+	writel(readl(ctrl_bus_reg) | (0x1 << bits), ctrl_bus_reg);
-+	readl(test_area);
-+}
-+
-+static void systracker_platform_notimeout_test(void)
-+{
-+	writel(readl(ctrl_bus_reg) | (0x1 << bits), ctrl_bus_reg);
-+	/* disable timeout */
-+	writel(readl(IOMEM(BUS_DBG_CON_INFRA)) &
-+		~(BUS_DBG_CON_TIMEOUT_EN), IOMEM(BUS_DBG_CON_INFRA));
-+	/* read it, should cause bus hang */
-+	readl(test_area);
-+	/* never come back */
-+	pr_notice("failed??\n");
-+}
-+
-+/*Before test bus timeout ,must first test_suit init*/
-+static ssize_t test_suit_init_show(struct device_driver *driver, char *buf)
-+{
-+	return snprintf(buf, PAGE_SIZE, "==Systracker test init==\n"
-+		"echo prot_reg test_addr bits >/sys/bus/platform/drivers/systracker/test_suit_init\n");
-+}
-+
-+static ssize_t test_suit_init_store
-+	(struct device_driver *driver, const char *buf, size_t count)
-+{
-+	char *p = (char *)buf, *arg;
-+	int i = 0, j = 0;
-+	unsigned long input;
-+
-+	while ((arg = strsep(&p, " ")) && (i <= 2)) {
-+		if (i <= 1)
-+			j = 16;
-+		else
-+			j = 10;
-+		if (kstrtoul(arg, j, &input) != 0) {
-+			pr_notice("%s: kstrtoul fail for %s\n", __func__, p);
-+			return 0;
-+		}
-+		switch (i) {
-+		case 0:
-+			prot_reg = input;
-+			break;
-+		case 1:
-+			test_addr = input;
-+			break;
-+		case 2:
-+			bits = input;
-+			break;
-+		default:
-+			break;
-+		}
-+		i++;
-+	}
-+	ctrl_bus_reg = ioremap(prot_reg, 0x4);
-+
-+	test_area = ioremap(test_addr, 0x4);
-+	return count;
-+}
-+
-+DRIVER_ATTR_RW(test_suit_init);
-+
-+static ssize_t test_suit_show(struct device_driver *driver, char *buf)
-+{
-+	return snprintf(buf, PAGE_SIZE, "==Systracker test==\n"
-+			"1.Systracker show dump test\n"
-+			"2.Systracker watchpoint test\n"
-+			"3.Systracker read timeout test\n"
-+			"4.Systracker write timeout test\n"
-+			"5.Systracker timeout with record test\n"
-+			"6.Systracker no timeout test\n"
-+		       );
-+}
-+
-+static ssize_t test_suit_store
-+	(struct device_driver *driver, const char *buf, size_t count)
-+{
-+	char *p = (char *)buf;
-+	unsigned long num;
-+
-+	if (kstrtoul(p, 10, &num) != 0) {
-+		pr_notice("[Tracker] kstrtoul fail for %s\n", p);
-+		return 0;
-+	}
-+	if (num == 1)
-+		return tracker_entry_dump_show(driver, p);
-+
-+	if ((prot_reg != 0) && (test_addr != 0)) {
-+		switch (num) {
-+		/* Test Systracker Function */
-+		case 2:
-+			systracker_platform_wp_test();
-+			break;
-+		case 3:
-+			systracker_platform_read_timeout_test();
-+			break;
-+		case 4:
-+			systracker_platform_write_timeout_test();
-+			break;
-+		case 5:
-+			systracker_platform_withrecord_test();
-+			break;
-+		case 6:
-+			systracker_platform_notimeout_test();
-+			break;
-+		default:
-+			break;
-+		}
-+	} else {
-+		pr_notice("please first test_suit_init\n");
-+	}
-+	return count;
-+}
-+DRIVER_ATTR_RW(test_suit);
-+#endif
-+
-+static ssize_t tracker_entry_dump_store
-+	(struct device_driver *driver, const char *buf, size_t count)
-+{
-+	return count;
-+}
-+
-+static DRIVER_ATTR_RW(tracker_entry_dump);
-+
-+static ssize_t tracker_last_status_show
-+	(struct device_driver *driver, char *buf)
-+{
-+
-+	if (track_entry.dbg_con & BUS_DBG_CON_TIMEOUT)
-+		return snprintf(buf, PAGE_SIZE, "1\n");
-+	else
-+		return snprintf(buf, PAGE_SIZE, "0\n");
-+}
-+
-+static ssize_t tracker_last_status_store
-+	(struct device_driver *driver, const char *buf, size_t count)
-+{
-+	return count;
-+}
-+
-+static DRIVER_ATTR_RW(tracker_last_status);
-+
-+/*
-+ * driver initialization entry point
-+ */
-+static int __init systracker_init(void)
-+{
-+	int err = 0;
-+	int ret = 0;
-+
-+	err = platform_driver_register(&mt_systracker_drv.driver);
-+	if (err)
-+		return err;
-+
-+	/* Create sysfs entry */
-+	ret  = driver_create_file(&mt_systracker_drv.driver.driver,
-+		&driver_attr_tracker_entry_dump);
-+	ret |= driver_create_file(&mt_systracker_drv.driver.driver,
-+		&driver_attr_tracker_run);
-+	ret |= driver_create_file(&mt_systracker_drv.driver.driver,
-+		&driver_attr_enable_wp);
-+	ret |= driver_create_file(&mt_systracker_drv.driver.driver,
-+		&driver_attr_set_wp_address);
-+	ret |= driver_create_file(&mt_systracker_drv.driver.driver,
-+		&driver_attr_tracker_swtrst);
-+	ret |= driver_create_file(&mt_systracker_drv.driver.driver,
-+		&driver_attr_tracker_last_status);
-+#ifdef SYSTRACKER_TEST_SUIT
-+	ret |= driver_create_file(&mt_systracker_drv.driver.driver,
-+		&driver_attr_test_suit_init);
-+	ret |= driver_create_file(&mt_systracker_drv.driver.driver,
-+		&driver_attr_test_suit);
-+#endif
-+	if (ret)
-+		pr_notice("Fail to create systracker_drv sysfs files");
-+
-+	pr_debug("systracker init done\n");
-+	return 0;
-+}
-+
-+/*
-+ * driver exit point
-+ */
-+static void __exit systracker_exit(void)
-+{
-+	platform_driver_unregister(&mt_systracker_drv.driver);
-+	/* remove sysfs entry */
-+	driver_remove_file(&mt_systracker_drv.driver.driver,
-+		&driver_attr_tracker_entry_dump);
-+	driver_remove_file(&mt_systracker_drv.driver.driver,
-+		&driver_attr_tracker_run);
-+	driver_remove_file(&mt_systracker_drv.driver.driver,
-+		&driver_attr_enable_wp);
-+	driver_remove_file(&mt_systracker_drv.driver.driver,
-+		&driver_attr_set_wp_address);
-+	driver_remove_file(&mt_systracker_drv.driver.driver,
-+		&driver_attr_tracker_swtrst);
-+	driver_remove_file(&mt_systracker_drv.driver.driver,
-+		&driver_attr_tracker_last_status);
-+#ifdef SYSTRACKER_TEST_SUIT
-+	driver_remove_file(&mt_systracker_drv.driver.driver,
-+		&driver_attr_test_suit_init);
-+	driver_remove_file(&mt_systracker_drv.driver.driver,
-+		&driver_attr_test_suit);
-+#endif
-+
-+	pr_debug("systracker exit done\n");
-+}
-+
-+module_init(systracker_init);
-+module_exit(systracker_exit);
-+MODULE_LICENSE("GPL v2");
-diff --git a/drivers/soc/mediatek/systracker/systracker_v2.h b/drivers/soc/mediatek/systracker/systracker_v2.h
-new file mode 100644
-index 0000000000000000000000000000000000000000..07fd8d7ee0d88e3eeee2545006a0f0b787d49545
---- /dev/null
-+++ b/drivers/soc/mediatek/systracker/systracker_v2.h
-@@ -0,0 +1,162 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/*
-+ * Copyright (C) 2021 MediaTek Inc.
-+ */
-+
-+#ifndef __SYSTRAKCER_V2_H__
-+#define __SYSTRAKCER_V2_H__
-+
-+#include <linux/platform_device.h>
-+
-+#define BUS_DBG_CON			(BUS_DBG_BASE)
-+#define BUS_DBG_CON_INFRA		(BUS_DBG_INFRA_BASE)
-+#define BUS_DBG_TIMER_CON0		(BUS_DBG_BASE + 0x0004)
-+#define BUS_DBG_TIMER_CON1		(BUS_DBG_BASE + 0x0008)
-+#define BUS_DBG_TIMER_R0		(BUS_DBG_BASE + 0x000C)
-+#define BUS_DBG_TIMER_R1		(BUS_DBG_BASE + 0x0010)
-+#define BUS_DBG_WP			(BUS_DBG_BASE + 0x0014)
-+#define BUS_DBG_WP_MASK			(BUS_DBG_BASE + 0x0018)
-+#define BUS_DBG_MON			(BUS_DBG_BASE + 0x001C)
-+#define BUS_DBG_W_TRACK_DATA_VALID	(BUS_DBG_BASE + 0x0020)
-+#define BUS_DBG_AR_TRACK_L(__n)		(BUS_DBG_BASE + 0x0100 + 8 * (__n))
-+#define BUS_DBG_AR_TRACK_H(__n)		(BUS_DBG_BASE + 0x0104 + 8 * (__n))
-+#define BUS_DBG_AR_TRANS_TID(__n)	(BUS_DBG_BASE + 0x0180 + 4 * (__n))
-+#define BUS_DBG_AW_TRACK_L(__n)		(BUS_DBG_BASE + 0x0200 + 8 * (__n))
-+#define BUS_DBG_AW_TRACK_H(__n)		(BUS_DBG_BASE + 0x0204 + 8 * (__n))
-+#define BUS_DBG_AW_TRANS_TID(__n)	(BUS_DBG_BASE + 0x0280 + 4 * (__n))
-+#define BUS_DBG_W_TRACK_DATA6		(BUS_DBG_BASE + 0x02D8)
-+#define BUS_DBG_W_TRACK_DATA7		(BUS_DBG_BASE + 0x02DC)
-+
-+#define BUS_DBG_BUS_MHZ			(156)
-+#define BUS_DBG_NUM_TRACKER		(8)
-+
-+#define BUS_DBG_CON_BUS_DBG_EN		(0x00000001)
-+#define BUS_DBG_CON_TIMEOUT_EN		(0x00000002)
-+#define BUS_DBG_CON_SLV_ERR_EN		(0x00000004)
-+#define BUS_DBG_CON_WP_EN		(0x00000108)
-+#define BUS_DBG_CON_IRQ_AR_EN		(0x00000010)
-+#define BUS_DBG_CON_IRQ_AW_EN		(0x00000020)
-+#define BUS_DBG_CON_SW_RST_DN		(0x00000040)
-+/* more human-readable register name than above one */
-+#define BUS_DBG_CON_IRQ_WP_EN		(0x00000040)
-+#define BUS_DBG_CON_IRQ_CLR		(0x00000080)
-+#define BUS_DBG_CON_IRQ_AR_STA0		(0x00000100)
-+#define BUS_DBG_CON_IRQ_AW_STA0		(0x00000200)
-+#define BUS_DBG_CON_IRQ_WP_STA		(0x00000400)
-+#define BUS_DBG_CON_WDT_RST_EN		(0x00001000)
-+#define BUS_DBG_CON_HALT_ON_EN		(0x00002000)
-+#define BUS_DBG_CON_BUS_OT_EN		(0x00004000)
-+#define BUS_DBG_CON_SW_RST		(0x00010000)
-+#define BUS_DBG_CON_IRQ_AR_STA1		(0x00100000)
-+#define BUS_DBG_CON_IRQ_AW_STA1		(0x00200000)
-+#define BUS_DBG_CON_TIMEOUT_CLR		(0x00800000)
-+/* detect all stages of timeout */
-+#define BUS_DBG_CON_TIMEOUT	\
-+	(BUS_DBG_CON_IRQ_AR_STA0 | BUS_DBG_CON_IRQ_AW_STA0| \
-+	BUS_DBG_CON_IRQ_AR_STA1 | BUS_DBG_CON_IRQ_AW_STA1)
-+
-+#define BUS_DBG_CON_IRQ_EN	\
-+	(BUS_DBG_CON_IRQ_AR_EN | BUS_DBG_CON_IRQ_AW_EN | \
-+	BUS_DBG_CON_IRQ_WP_EN)
-+
-+#define BUS_DBG_MAX_TIMEOUT_VAL	    (0xffffffff)
-+
-+static inline unsigned int extract_n2mbits(unsigned int input, int n, int m)
-+{
-+/*
-+ * 1. ~0 = 1111 1111 1111 1111 1111 1111 1111 1111
-+ * 2. ~0 << (m - n + 1) = 1111 1111 1111 1111 1100 0000 0000 0000
-+ * // assuming we are extracting 14 bits, the +1 is added
-+ * for inclusive selection
-+ * 3. ~(~0 << (m - n + 1)) = 0000 0000 0000 0000 0011 1111 1111 1111
-+ */
-+	int mask;
-+
-+	if (n > m) {
-+		n = n + m;
-+		m = n - m;
-+		n = n - m;
-+	}
-+	mask = ~(~0 << (m - n + 1));
-+	return ((input >> n) & mask);
-+}
-+
-+struct mt_systracker_driver {
-+	struct	platform_driver driver;
-+	struct	platform_device device;
-+	u32 support_2_stage_timeout;
-+	void	(*reset_systracker)(void);
-+	int	(*enable_watchpoint)(void);
-+	int	(*disable_watchpoint)(void);
-+	int	(*set_watchpoint_address)(unsigned int wp_phy_address);
-+	void	(*enable_systracker)(void);
-+	void	(*disable_systracker)(void);
-+	int	(*test_systracker)(void);
-+	int	(*systracker_probe)(struct platform_device *pdev);
-+	unsigned int (*systracker_timeout_value)(void);
-+	unsigned int (*systracker_timeout2_value)(void);
-+	int	(*systracker_remove)(struct platform_device *pdev);
-+	int	(*systracker_suspend)(struct platform_device *pdev,
-+			pm_message_t state);
-+	int	(*systracker_resume)(struct platform_device *pdev);
-+	int	(*systracker_test_init)(void);
-+	void	(*systracker_test_cleanup)(void);
-+	void	(*systracker_wp_test)(void);
-+	void	(*systracker_read_timeout_test)(void);
-+	void	(*systracker_write_timeout_test)(void);
-+	void	(*systracker_withrecord_test)(void);
-+	void	(*systracker_notimeout_test)(void);
-+};
-+
-+struct systracker_entry_t {
-+	unsigned int dbg_con;
-+	unsigned int dbg_con_infra;
-+	unsigned int ar_track_l[BUS_DBG_NUM_TRACKER];
-+	unsigned int ar_track_h[BUS_DBG_NUM_TRACKER];
-+	unsigned int ar_trans_tid[BUS_DBG_NUM_TRACKER];
-+	unsigned int aw_track_l[BUS_DBG_NUM_TRACKER];
-+	unsigned int aw_track_h[BUS_DBG_NUM_TRACKER];
-+	unsigned int aw_trans_tid[BUS_DBG_NUM_TRACKER];
-+	unsigned int w_track_data6;
-+	unsigned int w_track_data7;
-+	unsigned int w_track_data_valid;
-+};
-+
-+struct systracker_config_t {
-+	int state;
-+	int enable_timeout;
-+	int enable_slave_err;
-+	int enable_wp;
-+	int enable_irq;
-+	int timeout_ms;
-+	int timeout2_ms;
-+	int wp_phy_address;
-+};
-+
-+int tracker_dump(char *buf);
-+void save_entry(void);
-+int systracker_probe(struct platform_device *pdev);
-+int systracker_remove(struct platform_device *pdev);
-+int systracker_suspend
-+	(struct platform_device *pdev, pm_message_t state);
-+int systracker_resume(struct platform_device *pdev);
-+void systracker_reset(void);
-+void systracker_enable(void);
-+void systracker_disable(void);
-+
-+int systracker_set_watchpoint_addr(unsigned int phy_addr);
-+int systracker_watchpoint_disable(void);
-+int systracker_watchpoint_enable(void);
-+
-+extern void __iomem *BUS_DBG_BASE;
-+extern void __iomem *BUS_DBG_INFRA_BASE;
-+
-+extern struct mt_systracker_driver *get_mt_systracker_drv(void);
-+extern irqreturn_t systracker_isr(void);
-+
-+/* #define TRACKER_DEBUG 0 */
-+
-+/* enable for driver poring test suit */
-+#define SYSTRACKER_TEST_SUIT
-+
-+#endif
 diff --git a/drivers/thermal/mediatek/soc_temp_lvts.c b/drivers/thermal/mediatek/soc_temp_lvts.c
 index 81567dc192eb5b619b5f78f1f4f9a76a33c439f9..5b9a2598c84fc76d81017f778a2658d06c8ae202 100644
 --- a/drivers/thermal/mediatek/soc_temp_lvts.c
@@ -24653,3 +23431,19 @@ index 59117d970daf9cbd6f0930134382c2eae7d68278..8218a906bb87e5256b06fb3d37e4fc04
 +			       struct cmdq_pkt *cmdq_pkt);
 +
  #endif /* __MTK_MMSYS_H */
+diff --git a/sound/soc/mediatek/mt8186/mt8186-dai-adda.c b/sound/soc/mediatek/mt8186/mt8186-dai-adda.c
+old mode 100644
+new mode 100755
+index 266704556f37d923ecb827ba7e1963a64abfa0f9..094402470dc2383e8045a1991223f6c749a23156
+--- a/sound/soc/mediatek/mt8186/mt8186-dai-adda.c
++++ b/sound/soc/mediatek/mt8186/mt8186-dai-adda.c
+@@ -271,9 +271,6 @@ static int mtk_adda_ul_event(struct snd_soc_dapm_widget *w,
+ 		/* should delayed 1/fs(smallest is 8k) = 125us before afe off */
+ 		usleep_range(125, 135);
+ 		mt8186_afe_gpio_request(afe->dev, false, MT8186_DAI_ADDA, 1);
+-
+-		/* reset dmic */
+-		afe_priv->mtkaif_dmic = 0;
+ 		break;
+ 	default:
+ 		break;
