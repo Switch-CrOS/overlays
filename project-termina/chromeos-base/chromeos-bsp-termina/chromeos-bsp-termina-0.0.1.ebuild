@@ -18,4 +18,7 @@ src_install() {
 
 	insinto /etc/profile.d
 	doins "${FILESDIR}"/PS1-termina.sh
+
+	insinto /etc/maitred
+	doins "${FILESDIR}/50-mount-fonts.textproto"
 }
