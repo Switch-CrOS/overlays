@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit cros-workon udev
+inherit arc-build-constants cros-workon udev
 
 # This ebuild only cares about its own FILESDIR and ebuild file, so it tracks
 # the canonical empty project.
@@ -16,7 +16,7 @@ or portage actions."
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="-* ~arm64 ~arm"
-IUSE="cheets modemfwd"
+IUSE="arcvm cheets modemfwd"
 
 RDEPEND="
 	modemfwd? ( chromeos-base/modemfwd-helpers-herobrine )
@@ -35,10 +35,16 @@ src_install() {
 
 	# Install cpuset adjustments.
 	if use cheets; then
-		insinto "/opt/google/containers/android/vendor/etc/init/"
+		arc-build-constants-configure
+
+		insinto "${ARC_PREFIX:?}/vendor/etc/init"
 		doins "${FILESDIR}/init.cpusets.rc"
 		# See b/161399876:
-		doins "${FILESDIR}/arc-sf-config.rc"
+		if use arcvm; then
+			doins "${FILESDIR}/arcvm/arc-sf-config.rc"
+		else
+			doins "${FILESDIR}/arcpp/arc-sf-config.rc"
+		fi
 	fi
 
 	# udev rules for codecs
