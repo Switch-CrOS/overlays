@@ -12,7 +12,6 @@ SRC_URI="
 	${MIRROR_PATH}/cellular-firmware-fibocom-l850-18500.5001.00.05.27.12_Secureboot.tar.xz
 	${MIRROR_PATH}/cellular-firmware-fibocom-l850-18500.5001.00.05.27.16_Secureboot.tar.xz
 	${MIRROR_PATH}/cellular-firmware-fibocom-l850-OEM_cust.6003.02.tar.xz
-	${MIRROR_PATH}/cellular-firmware-fibocom-l850-dedede-carriers_OEM_6003-r13.tar.xz
 	${MIRROR_PATH}/cellular-firmware-fibocom-l850-zork-carriers_OEM_6003-r2.tar.xz
 	${MIRROR_PATH}/cellular-firmware-fibocom-nl668-19006.1000.00.02.79.62.tar.xz
 "
