@@ -22,6 +22,8 @@ IUSE="corsola64"
 RDEPEND="
 	chromeos-base/chromeos-bsp-baseboard-corsola
 	chromeos-base/lte_power_control
+	chromeos-base/sof-binary
+	chromeos-base/sof-topology
 "
 DEPEND="
 	${RDEPEND}
