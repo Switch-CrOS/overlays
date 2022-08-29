@@ -43,6 +43,10 @@ modify_kernel_command_line() {
   # Disable PSR2 by default.
   # (0=disabled, 1=enable up to PSR1, 2=enable up to PSR2)
   # Temporary WA until b:216826833 is root caused and fixed
-  #                and b:243060986 is root caused and fixed
+  #                and b:243060986 is root caused and fixed:
+  #                   Disable PSR2 to make panel work.
+  #                   Manufacturer: BOE (on some Redrix SKUs)
+  #                   Model: 2678
+  #                   Made in week 25 of 2021
   echo "i915.enable_psr=1" >> "$1"
 }
