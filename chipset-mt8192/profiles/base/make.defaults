@@ -5,13 +5,14 @@
 CHROMEOS_KERNEL_SPLITCONFIG="chromiumos-mediatek"
 CHROMEOS_KERNEL_ARCH="arm64"
 
-# TODO(b/150746591): upstream compiler should be able to support
-# cortex-a76.cortex-a55, we may need to switch to it if we upgrade
-# the compiler later.
-# TODO(b/139386950): We can only use flags here that are supported by both arm
-# # and aarch64 ARC++ toolchain, i.e. we need to "downgrade" cortex-a57.cortex-a53
-# # to cortex-a57. Also, we may want different optimizations for arm vs aarch64
-BOARD_COMPILER_FLAGS="-march=armv8-a+crc -mtune=cortex-a57 -mfpu=crypto-neon-fp-armv8 -mfloat-abi=hard"
+# MT8192 has 4 Cortex-A55 and 4 Cortex-A76.
+# Note that the compiler may or may not support tuning for our big.LITTLE
+# combination, so for simplicity we tune the code against the little cores,
+# which is not perfect but should give us good enough tuning granularity.
+# TODO(b/244126739): Use cortex-a76.cortex-a55 when the compiler is upgraded
+# and supports that.
+BOARD_COMPILER_FLAGS="-march=armv8-a+crc -mtune=cortex-a55 -mfpu=crypto-neon-fp-armv8 -mfloat-abi=hard"
+
 # TODO(gbiv): Porting -mtune may be interesting, but clang seems to currently
 # entirely ignore this flag for ARM (notably: not aarch64) builds.
 BOARD_RUSTFLAGS="-Ctarget-feature=+armv8-a,+crc"
