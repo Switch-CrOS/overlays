@@ -9,15 +9,17 @@ index 669ac7c32292798644b21dbb5a0dc657125f444d..dc0f0ea4da037c7ea336d73d30e6dbfa
 +
 +
 diff --git a/arch/arm64/boot/dts/mediatek/Makefile b/arch/arm64/boot/dts/mediatek/Makefile
-index 36f85aaafdf2fd13f3efcd5f44b7dea094dd412c..0170ff2cee22f1c9bb9436559555988c129fa2d2 100644
+index 36f85aaafdf2fd13f3efcd5f44b7dea094dd412c..c76743ff05fe7a716f485fe2083489f5652f538e 100644
 --- a/arch/arm64/boot/dts/mediatek/Makefile
 +++ b/arch/arm64/boot/dts/mediatek/Makefile
-@@ -48,6 +48,19 @@ dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-kukui-kodama-sku32.dtb
+@@ -48,6 +48,21 @@ dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-kukui-kodama-sku32.dtb
  dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-kukui-krane-sku0.dtb
  dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-kukui-krane-sku176.dtb
  dtb-$(CONFIG_ARCH_MEDIATEK) += mt8183-pumpkin.dtb
 +dtb-$(CONFIG_ARCH_MEDIATEK) += mt8186-corsola-kingler.dtb
 +dtb-$(CONFIG_ARCH_MEDIATEK) += mt8186-corsola-krabby.dtb
++dtb-$(CONFIG_ARCH_MEDIATEK) += mt8186-corsola-magikarp.dtb
++dtb-$(CONFIG_ARCH_MEDIATEK) += mt8186-corsola-magikarp-rev2.dtb
 +dtb-$(CONFIG_ARCH_MEDIATEK) += mt8186-corsola-magneton-rev2-sku393216.dtb
 +dtb-$(CONFIG_ARCH_MEDIATEK) += mt8186-corsola-magneton-rev2-sku393217.dtb
 +dtb-$(CONFIG_ARCH_MEDIATEK) += mt8186-corsola-magneton-sku393216.dtb
@@ -32,389 +34,6 @@ index 36f85aaafdf2fd13f3efcd5f44b7dea094dd412c..0170ff2cee22f1c9bb9436559555988c
  dtb-$(CONFIG_ARCH_MEDIATEK) += mt8186-evb.dtb
  dtb-$(CONFIG_ARCH_MEDIATEK) += mt8192-asurada-hayato-r1.dtb
  dtb-$(CONFIG_ARCH_MEDIATEK) += mt8192-asurada-spherion-r0.dtb
-diff --git a/arch/arm64/boot/dts/mediatek/mt6366.dtsi b/arch/arm64/boot/dts/mediatek/mt6366.dtsi
-new file mode 100644
-index 0000000000000000000000000000000000000000..6b7bc2b3d1c6fb7e0fb5ff4dc351070873f2f250
---- /dev/null
-+++ b/arch/arm64/boot/dts/mediatek/mt6366.dtsi
-@@ -0,0 +1,377 @@
-+// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-+/*
-+ * Copyright (c) 2022 MediaTek Inc.
-+ */
-+
-+&pwrap {
-+	pmic: mt6366 {
-+		compatible = "mediatek,mt6358",
-+			     "mediatek,mt6366";
-+		interrupt-controller;
-+		interrupt-parent = <&pio>;
-+		interrupts = <201 IRQ_TYPE_LEVEL_HIGH>;
-+		#interrupt-cells = <2>;
-+
-+		mt6366codec: mt6366codec {
-+			compatible = "mediatek,mt6366-sound",
-+				     "mediatek,mt6358-sound";
-+			avdd-supply = <&mt6366_vaud28_reg>;
-+		};
-+
-+		mt6366regulator: mt6366regulator {
-+			compatible = "mediatek,mt6366-regulator",
-+				     "mediatek,mt6358-regulator";
-+
-+			mt6366_vdram1_reg: buck_vdram1 {
-+				regulator-name = "vdram1";
-+				regulator-min-microvolt = <500000>;
-+				regulator-max-microvolt = <2087500>;
-+				regulator-ramp-delay = <12500>;
-+				regulator-enable-ramp-delay = <0>;
-+				regulator-always-on;
-+				regulator-allowed-modes = <0 1>;
-+			};
-+
-+			mt6366_vcore_reg: buck_vcore {
-+				regulator-name = "vcore";
-+				regulator-min-microvolt = <500000>;
-+				regulator-max-microvolt = <1293750>;
-+				regulator-ramp-delay = <6250>;
-+				regulator-enable-ramp-delay = <200>;
-+				regulator-always-on;
-+				regulator-allowed-modes = <0 1>;
-+			};
-+
-+			mt6366_vpa_reg: buck_vpa {
-+				regulator-name = "vpa";
-+				regulator-min-microvolt = <500000>;
-+				regulator-max-microvolt = <3650000>;
-+				regulator-ramp-delay = <50000>;
-+				regulator-enable-ramp-delay = <250>;
-+				regulator-allowed-modes = <0 1>;
-+			};
-+
-+			mt6366_vproc11_reg: buck_vproc11 {
-+				regulator-name = "vproc11";
-+				regulator-min-microvolt = <500000>;
-+				regulator-max-microvolt = <1293750>;
-+				regulator-ramp-delay = <6250>;
-+				regulator-enable-ramp-delay = <200>;
-+				regulator-always-on;
-+				regulator-allowed-modes = <0 1>;
-+			};
-+
-+			mt6366_vproc12_reg: buck_vproc12 {
-+				regulator-name = "vproc12";
-+				regulator-min-microvolt = <500000>;
-+				regulator-max-microvolt = <1293750>;
-+				regulator-ramp-delay = <6250>;
-+				regulator-enable-ramp-delay = <200>;
-+				regulator-always-on;
-+				regulator-allowed-modes = <0 1>;
-+			};
-+
-+			mt6366_vgpu_reg: buck_vgpu {
-+				regulator-name = "vgpu";
-+				regulator-min-microvolt = <500000>;
-+				regulator-max-microvolt = <1293750>;
-+				regulator-ramp-delay = <6250>;
-+				regulator-enable-ramp-delay = <200>;
-+				regulator-allowed-modes = <0 1>;
-+			};
-+
-+			mt6366_vs2_reg: buck_vs2 {
-+				regulator-name = "vs2";
-+				regulator-min-microvolt = <500000>;
-+				regulator-max-microvolt = <2087500>;
-+				regulator-ramp-delay = <12500>;
-+				regulator-enable-ramp-delay = <0>;
-+				regulator-always-on;
-+			};
-+
-+			mt6366_vmodem_reg: buck_vmodem {
-+				regulator-name = "vmodem";
-+				regulator-min-microvolt = <500000>;
-+				regulator-max-microvolt = <1293750>;
-+				regulator-ramp-delay = <6250>;
-+				regulator-enable-ramp-delay = <900>;
-+				regulator-always-on;
-+				regulator-allowed-modes = <0 1>;
-+			};
-+
-+			mt6366_vs1_reg: buck_vs1 {
-+				regulator-name = "vs1";
-+				regulator-min-microvolt = <1000000>;
-+				regulator-max-microvolt = <2587500>;
-+				regulator-ramp-delay = <12500>;
-+				regulator-enable-ramp-delay = <0>;
-+				regulator-always-on;
-+			};
-+
-+			mt6366_vdram2_reg: ldo_vdram2 {
-+				regulator-name = "vdram2";
-+				regulator-min-microvolt = <600000>;
-+				regulator-max-microvolt = <1800000>;
-+				regulator-enable-ramp-delay = <3300>;
-+				regulator-always-on;
-+			};
-+
-+			mt6366_vsim1_reg: ldo_vsim1 {
-+				regulator-name = "vsim1";
-+				regulator-min-microvolt = <1700000>;
-+				regulator-max-microvolt = <3100000>;
-+				regulator-enable-ramp-delay = <540>;
-+			};
-+
-+			mt6366_vibr_reg: ldo_vibr {
-+				regulator-name = "vibr";
-+				regulator-min-microvolt = <1200000>;
-+				regulator-max-microvolt = <3300000>;
-+				regulator-enable-ramp-delay = <60>;
-+			};
-+
-+			mt6366_vrf12_reg: ldo_vrf12 {
-+				compatible = "regulator-fixed";
-+				regulator-name = "vrf12";
-+				regulator-min-microvolt = <1200000>;
-+				regulator-max-microvolt = <1200000>;
-+				regulator-enable-ramp-delay = <120>;
-+			};
-+
-+			mt6366_vio18_reg: ldo_vio18 {
-+				compatible = "regulator-fixed";
-+				regulator-name = "vio18";
-+				regulator-min-microvolt = <1800000>;
-+				regulator-max-microvolt = <1800000>;
-+				regulator-enable-ramp-delay = <2700>;
-+				regulator-always-on;
-+			};
-+
-+			mt6366_vusb_reg: ldo_vusb {
-+				regulator-name = "vusb";
-+				regulator-min-microvolt = <3000000>;
-+				regulator-max-microvolt = <3100000>;
-+				regulator-enable-ramp-delay = <270>;
-+				regulator-always-on;
-+			};
-+
-+			mt6366_vcamio_reg: ldo_vcamio {
-+				compatible = "regulator-fixed";
-+				regulator-name = "vcamio";
-+				regulator-min-microvolt = <1800000>;
-+				regulator-max-microvolt = <1800000>;
-+				regulator-enable-ramp-delay = <325>;
-+			};
-+
-+			mt6366_vcamd_reg: ldo_vcamd {
-+				regulator-name = "vcamd";
-+				regulator-min-microvolt = <900000>;
-+				regulator-max-microvolt = <1800000>;
-+				regulator-enable-ramp-delay = <325>;
-+			};
-+
-+			mt6366_vcn18_reg: ldo_vcn18 {
-+				compatible = "regulator-fixed";
-+				regulator-name = "vcn18";
-+				regulator-min-microvolt = <1800000>;
-+				regulator-max-microvolt = <1800000>;
-+				regulator-enable-ramp-delay = <270>;
-+			};
-+
-+			mt6366_vfe28_reg: ldo_vfe28 {
-+				compatible = "regulator-fixed";
-+				regulator-name = "vfe28";
-+				regulator-min-microvolt = <2800000>;
-+				regulator-max-microvolt = <2800000>;
-+				regulator-enable-ramp-delay = <270>;
-+			};
-+
-+			mt6366_vsram_proc11_reg: ldo_vsram_proc11 {
-+				regulator-name = "vsram_proc11";
-+				regulator-min-microvolt = <500000>;
-+				regulator-max-microvolt = <1293750>;
-+				regulator-ramp-delay = <6250>;
-+				regulator-enable-ramp-delay = <240>;
-+				regulator-always-on;
-+			};
-+
-+			mt6366_vcn28_reg: ldo_vcn28 {
-+				compatible = "regulator-fixed";
-+				regulator-name = "vcn28";
-+				regulator-min-microvolt = <2800000>;
-+				regulator-max-microvolt = <2800000>;
-+				regulator-enable-ramp-delay = <270>;
-+			};
-+
-+			mt6366_vsram_others_reg: ldo_vsram_others {
-+				regulator-name = "vsram_others";
-+				regulator-min-microvolt = <500000>;
-+				regulator-max-microvolt = <1293750>;
-+				regulator-ramp-delay = <6250>;
-+				regulator-enable-ramp-delay = <240>;
-+				regulator-always-on;
-+			};
-+
-+			mt6366_vsram_gpu_reg: ldo_vsram_gpu {
-+				regulator-name = "vsram_gpu";
-+				regulator-min-microvolt = <500000>;
-+				regulator-max-microvolt = <1293750>;
-+				regulator-ramp-delay = <6250>;
-+				regulator-enable-ramp-delay = <240>;
-+			};
-+
-+			mt6366_vxo22_reg: ldo_vxo22 {
-+				compatible = "regulator-fixed";
-+				regulator-name = "vxo22";
-+				regulator-min-microvolt = <2200000>;
-+				regulator-max-microvolt = <2200000>;
-+				regulator-enable-ramp-delay = <120>;
-+				regulator-always-on;
-+			};
-+
-+			mt6366_vefuse_reg: ldo_vefuse {
-+				regulator-name = "vefuse";
-+				regulator-min-microvolt = <1700000>;
-+				regulator-max-microvolt = <1900000>;
-+				regulator-enable-ramp-delay = <270>;
-+			};
-+
-+			mt6366_vaux18_reg: ldo_vaux18 {
-+				compatible = "regulator-fixed";
-+				regulator-name = "vaux18";
-+				regulator-min-microvolt = <1800000>;
-+				regulator-max-microvolt = <1800000>;
-+				regulator-enable-ramp-delay = <270>;
-+			};
-+
-+			mt6366_vmch_reg: ldo_vmch {
-+				regulator-name = "vmch";
-+				regulator-min-microvolt = <2900000>;
-+				regulator-max-microvolt = <3300000>;
-+				regulator-enable-ramp-delay = <60>;
-+			};
-+
-+			mt6366_vbif28_reg: ldo_vbif28 {
-+				compatible = "regulator-fixed";
-+				regulator-name = "vbif28";
-+				regulator-min-microvolt = <2800000>;
-+				regulator-max-microvolt = <2800000>;
-+				regulator-enable-ramp-delay = <270>;
-+			};
-+
-+			mt6366_vsram_proc12_reg: ldo_vsram_proc12 {
-+				regulator-name = "vsram_proc12";
-+				regulator-min-microvolt = <500000>;
-+				regulator-max-microvolt = <1293750>;
-+				regulator-ramp-delay = <6250>;
-+				regulator-enable-ramp-delay = <240>;
-+				regulator-always-on;
-+			};
-+
-+			mt6366_vcama1_reg: ldo_vcama1 {
-+				regulator-name = "vcama1";
-+				regulator-min-microvolt = <1800000>;
-+				regulator-max-microvolt = <3000000>;
-+				regulator-enable-ramp-delay = <325>;
-+			};
-+
-+			mt6366_vemc_reg: ldo_vemc {
-+				regulator-name = "vemc";
-+				regulator-min-microvolt = <2900000>;
-+				regulator-max-microvolt = <3300000>;
-+				regulator-enable-ramp-delay = <60>;
-+			};
-+
-+			mt6366_vio28_reg: ldo_vio28 {
-+				compatible = "regulator-fixed";
-+				regulator-name = "vio28";
-+				regulator-min-microvolt = <2800000>;
-+				regulator-max-microvolt = <2800000>;
-+				regulator-enable-ramp-delay = <270>;
-+			};
-+
-+			mt6366_va12_reg: ldo_va12 {
-+				compatible = "regulator-fixed";
-+				regulator-name = "va12";
-+				regulator-min-microvolt = <1200000>;
-+				regulator-max-microvolt = <1200000>;
-+				regulator-enable-ramp-delay = <270>;
-+				regulator-always-on;
-+			};
-+
-+			mt6366_vrf18_reg: ldo_vrf18 {
-+				compatible = "regulator-fixed";
-+				regulator-name = "vrf18";
-+				regulator-min-microvolt = <1800000>;
-+				regulator-max-microvolt = <1800000>;
-+				regulator-enable-ramp-delay = <120>;
-+			};
-+
-+			mt6366_vcn33_bt_reg: ldo_vcn33_bt {
-+				regulator-name = "vcn33_bt";
-+				regulator-min-microvolt = <3300000>;
-+				regulator-max-microvolt = <3500000>;
-+				regulator-enable-ramp-delay = <270>;
-+			};
-+
-+			mt6366_vcn33_wifi_reg: ldo_vcn33_wifi {
-+				regulator-name = "vcn33_wifi";
-+				regulator-min-microvolt = <3300000>;
-+				regulator-max-microvolt = <3500000>;
-+				regulator-enable-ramp-delay = <270>;
-+			};
-+
-+			mt6366_vcama2_reg: ldo_vcama2 {
-+				regulator-name = "vcama2";
-+				regulator-min-microvolt = <1800000>;
-+				regulator-max-microvolt = <3000000>;
-+				regulator-enable-ramp-delay = <325>;
-+			};
-+
-+			mt6366_vmc_reg: ldo_vmc {
-+				regulator-name = "vmc";
-+				regulator-min-microvolt = <1800000>;
-+				regulator-max-microvolt = <3300000>;
-+				regulator-enable-ramp-delay = <60>;
-+			};
-+
-+			mt6366_vldo28_reg: ldo_vldo28 {
-+				regulator-name = "vldo28";
-+				regulator-min-microvolt = <2800000>;
-+				regulator-max-microvolt = <3000000>;
-+				regulator-enable-ramp-delay = <270>;
-+			};
-+
-+			mt6366_vaud28_reg: ldo_vaud28 {
-+				compatible = "regulator-fixed";
-+				regulator-name = "vaud28";
-+				regulator-min-microvolt = <2800000>;
-+				regulator-max-microvolt = <2800000>;
-+				regulator-enable-ramp-delay = <270>;
-+			};
-+
-+			mt6366_vsim2_reg: ldo_vsim2 {
-+				regulator-name = "vsim2";
-+				regulator-min-microvolt = <1700000>;
-+				regulator-max-microvolt = <3100000>;
-+				regulator-enable-ramp-delay = <540>;
-+			};
-+
-+			mt6366_vcore_sshub_reg: buck_vcore_sshub {
-+				regulator-name = "vcore_sshub";
-+				regulator-min-microvolt = <500000>;
-+				regulator-max-microvolt = <1293750>;
-+			};
-+
-+			mt6366_vsram_others_sshub_reg: ldo_vsram_others_sshub {
-+				regulator-name = "vsram_others_sshub";
-+				regulator-min-microvolt = <500000>;
-+				regulator-max-microvolt = <1293750>;
-+			};
-+		};
-+
-+		mt6366rtc: mt6366rtc {
-+			compatible = "mediatek,mt6366-rtc", "mediatek,mt6358-rtc";
-+		};
-+	};
-+};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8186-corsola-kingler.dts b/arch/arm64/boot/dts/mediatek/mt8186-corsola-kingler.dts
 new file mode 100644
 index 0000000000000000000000000000000000000000..a7399ee7a201f0360cbb1d408cd203ad44e16a62
@@ -435,10 +54,10 @@ index 0000000000000000000000000000000000000000..a7399ee7a201f0360cbb1d408cd203ad
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8186-corsola-kingler.dtsi b/arch/arm64/boot/dts/mediatek/mt8186-corsola-kingler.dtsi
 new file mode 100644
-index 0000000000000000000000000000000000000000..0c7dfbd2833492765830544b31c2e6b3628ab386
+index 0000000000000000000000000000000000000000..017e477b7065a3be12f1a2b5b43221431ed7a4d7
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt8186-corsola-kingler.dtsi
-@@ -0,0 +1,291 @@
+@@ -0,0 +1,704 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
 +/*
 + * Copyright 2022 Google LLC
@@ -446,6 +65,7 @@ index 0000000000000000000000000000000000000000..0c7dfbd2833492765830544b31c2e6b3
 +
 +/dts-v1/;
 +#include "mt8186-corsola.dtsi"
++
 +/ {
 +	dmic_codec: dmic-codec {
 +		compatible = "dmic-codec";
@@ -464,6 +84,51 @@ index 0000000000000000000000000000000000000000..0c7dfbd2833492765830544b31c2e6b3
 +
 +&btsco {
 +	status = "okay";
++};
++
++&cci {
++	proc-supply = <&mt6366_vproc12_reg>;
++	sram-supply = <&mt6366_vsram_proc12_reg>;
++};
++
++&cpu0 {
++	proc-supply = <&mt6366_vproc12_reg>;
++	sram-supply = <&mt6366_vsram_proc12_reg>;
++};
++
++&cpu1 {
++	proc-supply = <&mt6366_vproc12_reg>;
++	sram-supply = <&mt6366_vsram_proc12_reg>;
++};
++
++&cpu2 {
++	proc-supply = <&mt6366_vproc12_reg>;
++	sram-supply = <&mt6366_vsram_proc12_reg>;
++};
++
++&cpu3 {
++	proc-supply = <&mt6366_vproc12_reg>;
++	sram-supply = <&mt6366_vsram_proc12_reg>;
++};
++
++&cpu4 {
++	proc-supply = <&mt6366_vproc12_reg>;
++	sram-supply = <&mt6366_vsram_proc12_reg>;
++};
++
++&cpu5 {
++	proc-supply = <&mt6366_vproc12_reg>;
++	sram-supply = <&mt6366_vsram_proc12_reg>;
++};
++
++&cpu6 {
++	proc-supply = <&mt6366_vproc11_reg>;
++	sram-supply = <&mt6366_vsram_proc11_reg>;
++};
++
++&cpu7 {
++	proc-supply = <&mt6366_vproc11_reg>;
++	sram-supply = <&mt6366_vsram_proc11_reg>;
 +};
 +
 +&cros_ec {
@@ -693,10 +358,23 @@ index 0000000000000000000000000000000000000000..0c7dfbd2833492765830544b31c2e6b3
 +	};
 +};
 +
++&mfg0 {
++	domain-supply = <&mt6366_vgpu_reg>;
++};
++
++&mmc0 {
++	vmmc-supply = <&mt6366_vemc_reg>;
++	vqmmc-supply = <&mt6366_vio18_reg>;
++};
++
 +&mmc1_pins_uhs {
 +	pins_clk {
 +		drive-strength = <MTK_DRIVE_8mA>;
 +	};
++};
++
++&mt6366codec {
++        mediatek,dmic-mode = <1>; /* one-wire */
 +};
 +
 +&pio {
@@ -712,6 +390,360 @@ index 0000000000000000000000000000000000000000..0c7dfbd2833492765830544b31c2e6b3
 +			pinmux = <PINMUX_GPIO8__FUNC_GPIO8>;
 +			input-enable;
 +			bias-pull-up;
++		};
++	};
++};
++
++&pmic {
++	mt6366regulator: mt6366regulator {
++		compatible = "mediatek,mt6366-regulator",
++			     "mediatek,mt6358-regulator";
++
++		mt6366_vdram1_reg: buck_vdram1 {
++			regulator-name = "vdram1";
++			regulator-min-microvolt = <500000>;
++			regulator-max-microvolt = <2087500>;
++			regulator-ramp-delay = <12500>;
++			regulator-enable-ramp-delay = <0>;
++			regulator-always-on;
++			regulator-allowed-modes = <0 1>;
++		};
++
++		mt6366_vcore_reg: buck_vcore {
++			regulator-name = "vcore";
++			regulator-min-microvolt = <500000>;
++			regulator-max-microvolt = <1293750>;
++			regulator-ramp-delay = <6250>;
++			regulator-enable-ramp-delay = <200>;
++			regulator-always-on;
++			regulator-allowed-modes = <0 1>;
++		};
++
++		mt6366_vpa_reg: buck_vpa {
++			regulator-name = "vpa";
++			regulator-min-microvolt = <500000>;
++			regulator-max-microvolt = <3650000>;
++			regulator-ramp-delay = <50000>;
++			regulator-enable-ramp-delay = <250>;
++			regulator-allowed-modes = <0 1>;
++		};
++
++		mt6366_vproc11_reg: buck_vproc11 {
++			regulator-name = "vproc11";
++			regulator-min-microvolt = <500000>;
++			regulator-max-microvolt = <1293750>;
++			regulator-ramp-delay = <6250>;
++			regulator-enable-ramp-delay = <200>;
++			regulator-always-on;
++			regulator-allowed-modes = <0 1>;
++		};
++
++		mt6366_vproc12_reg: buck_vproc12 {
++			regulator-name = "vproc12";
++			regulator-min-microvolt = <500000>;
++			regulator-max-microvolt = <1293750>;
++			regulator-ramp-delay = <6250>;
++			regulator-enable-ramp-delay = <200>;
++			regulator-always-on;
++			regulator-allowed-modes = <0 1>;
++		};
++
++		mt6366_vgpu_reg: buck_vgpu {
++			regulator-name = "vgpu";
++			regulator-min-microvolt = <500000>;
++			regulator-max-microvolt = <1293750>;
++			regulator-ramp-delay = <6250>;
++			regulator-enable-ramp-delay = <200>;
++			regulator-allowed-modes = <0 1>;
++		};
++
++		mt6366_vs2_reg: buck_vs2 {
++			regulator-name = "vs2";
++			regulator-min-microvolt = <500000>;
++			regulator-max-microvolt = <2087500>;
++			regulator-ramp-delay = <12500>;
++			regulator-enable-ramp-delay = <0>;
++			regulator-always-on;
++		};
++
++		mt6366_vmodem_reg: buck_vmodem {
++			regulator-name = "vmodem";
++			regulator-min-microvolt = <500000>;
++			regulator-max-microvolt = <1293750>;
++			regulator-ramp-delay = <6250>;
++			regulator-enable-ramp-delay = <900>;
++			regulator-always-on;
++			regulator-allowed-modes = <0 1>;
++		};
++
++		mt6366_vs1_reg: buck_vs1 {
++			regulator-name = "vs1";
++			regulator-min-microvolt = <1000000>;
++			regulator-max-microvolt = <2587500>;
++			regulator-ramp-delay = <12500>;
++			regulator-enable-ramp-delay = <0>;
++			regulator-always-on;
++		};
++
++		mt6366_vdram2_reg: ldo_vdram2 {
++			regulator-name = "vdram2";
++			regulator-min-microvolt = <600000>;
++			regulator-max-microvolt = <1800000>;
++			regulator-enable-ramp-delay = <3300>;
++			regulator-always-on;
++		};
++
++		mt6366_vsim1_reg: ldo_vsim1 {
++			regulator-name = "vsim1";
++			regulator-min-microvolt = <1700000>;
++			regulator-max-microvolt = <3100000>;
++			regulator-enable-ramp-delay = <540>;
++		};
++
++		mt6366_vibr_reg: ldo_vibr {
++			regulator-name = "vibr";
++			regulator-min-microvolt = <1200000>;
++			regulator-max-microvolt = <3300000>;
++			regulator-enable-ramp-delay = <60>;
++		};
++
++		mt6366_vrf12_reg: ldo_vrf12 {
++			compatible = "regulator-fixed";
++			regulator-name = "vrf12";
++			regulator-min-microvolt = <1200000>;
++			regulator-max-microvolt = <1200000>;
++			regulator-enable-ramp-delay = <120>;
++		};
++
++		mt6366_vio18_reg: ldo_vio18 {
++			compatible = "regulator-fixed";
++			regulator-name = "vio18";
++			regulator-min-microvolt = <1800000>;
++			regulator-max-microvolt = <1800000>;
++			regulator-enable-ramp-delay = <2700>;
++			regulator-always-on;
++		};
++
++		mt6366_vusb_reg: ldo_vusb {
++			regulator-name = "vusb";
++			regulator-min-microvolt = <3000000>;
++			regulator-max-microvolt = <3100000>;
++			regulator-enable-ramp-delay = <270>;
++			regulator-always-on;
++		};
++
++		mt6366_vcamio_reg: ldo_vcamio {
++			compatible = "regulator-fixed";
++			regulator-name = "vcamio";
++			regulator-min-microvolt = <1800000>;
++			regulator-max-microvolt = <1800000>;
++			regulator-enable-ramp-delay = <325>;
++		};
++
++		mt6366_vcamd_reg: ldo_vcamd {
++			regulator-name = "vcamd";
++			regulator-min-microvolt = <900000>;
++			regulator-max-microvolt = <1800000>;
++			regulator-enable-ramp-delay = <325>;
++		};
++
++		mt6366_vcn18_reg: ldo_vcn18 {
++			compatible = "regulator-fixed";
++			regulator-name = "vcn18";
++			regulator-min-microvolt = <1800000>;
++			regulator-max-microvolt = <1800000>;
++			regulator-enable-ramp-delay = <270>;
++		};
++
++		mt6366_vfe28_reg: ldo_vfe28 {
++			compatible = "regulator-fixed";
++			regulator-name = "vfe28";
++			regulator-min-microvolt = <2800000>;
++			regulator-max-microvolt = <2800000>;
++			regulator-enable-ramp-delay = <270>;
++		};
++
++		mt6366_vsram_proc11_reg: ldo_vsram_proc11 {
++			regulator-name = "vsram_proc11";
++			regulator-min-microvolt = <500000>;
++			regulator-max-microvolt = <1293750>;
++			regulator-ramp-delay = <6250>;
++			regulator-enable-ramp-delay = <240>;
++			regulator-always-on;
++		};
++
++		mt6366_vcn28_reg: ldo_vcn28 {
++			compatible = "regulator-fixed";
++			regulator-name = "vcn28";
++			regulator-min-microvolt = <2800000>;
++			regulator-max-microvolt = <2800000>;
++			regulator-enable-ramp-delay = <270>;
++		};
++
++		mt6366_vsram_others_reg: ldo_vsram_others {
++			regulator-name = "vsram_others";
++			regulator-min-microvolt = <500000>;
++			regulator-max-microvolt = <1293750>;
++			regulator-ramp-delay = <6250>;
++			regulator-enable-ramp-delay = <240>;
++			regulator-always-on;
++		};
++
++		mt6366_vsram_gpu_reg: ldo_vsram_gpu {
++			regulator-name = "vsram_gpu";
++			regulator-min-microvolt = <500000>;
++			regulator-max-microvolt = <1293750>;
++			regulator-ramp-delay = <6250>;
++			regulator-enable-ramp-delay = <240>;
++		};
++
++		mt6366_vxo22_reg: ldo_vxo22 {
++			compatible = "regulator-fixed";
++			regulator-name = "vxo22";
++			regulator-min-microvolt = <2200000>;
++			regulator-max-microvolt = <2200000>;
++			regulator-enable-ramp-delay = <120>;
++			regulator-always-on;
++		};
++
++		mt6366_vefuse_reg: ldo_vefuse {
++			regulator-name = "vefuse";
++			regulator-min-microvolt = <1700000>;
++			regulator-max-microvolt = <1900000>;
++			regulator-enable-ramp-delay = <270>;
++		};
++
++		mt6366_vaux18_reg: ldo_vaux18 {
++			compatible = "regulator-fixed";
++			regulator-name = "vaux18";
++			regulator-min-microvolt = <1800000>;
++			regulator-max-microvolt = <1800000>;
++			regulator-enable-ramp-delay = <270>;
++		};
++
++		mt6366_vmch_reg: ldo_vmch {
++			regulator-name = "vmch";
++			regulator-min-microvolt = <2900000>;
++			regulator-max-microvolt = <3300000>;
++			regulator-enable-ramp-delay = <60>;
++		};
++
++		mt6366_vbif28_reg: ldo_vbif28 {
++			compatible = "regulator-fixed";
++			regulator-name = "vbif28";
++			regulator-min-microvolt = <2800000>;
++			regulator-max-microvolt = <2800000>;
++			regulator-enable-ramp-delay = <270>;
++		};
++
++		mt6366_vsram_proc12_reg: ldo_vsram_proc12 {
++			regulator-name = "vsram_proc12";
++			regulator-min-microvolt = <500000>;
++			regulator-max-microvolt = <1293750>;
++			regulator-ramp-delay = <6250>;
++			regulator-enable-ramp-delay = <240>;
++			regulator-always-on;
++		};
++
++		mt6366_vcama1_reg: ldo_vcama1 {
++			regulator-name = "vcama1";
++			regulator-min-microvolt = <1800000>;
++			regulator-max-microvolt = <3000000>;
++			regulator-enable-ramp-delay = <325>;
++		};
++
++		mt6366_vemc_reg: ldo_vemc {
++			regulator-name = "vemc";
++			regulator-min-microvolt = <2900000>;
++			regulator-max-microvolt = <3000000>;
++			regulator-enable-ramp-delay = <60>;
++		};
++
++		mt6366_vio28_reg: ldo_vio28 {
++			compatible = "regulator-fixed";
++			regulator-name = "vio28";
++			regulator-min-microvolt = <2800000>;
++			regulator-max-microvolt = <2800000>;
++			regulator-enable-ramp-delay = <270>;
++		};
++
++		mt6366_va12_reg: ldo_va12 {
++			compatible = "regulator-fixed";
++			regulator-name = "va12";
++			regulator-min-microvolt = <1200000>;
++			regulator-max-microvolt = <1200000>;
++			regulator-enable-ramp-delay = <270>;
++			regulator-always-on;
++		};
++
++		mt6366_vrf18_reg: ldo_vrf18 {
++			compatible = "regulator-fixed";
++			regulator-name = "vrf18";
++			regulator-min-microvolt = <1800000>;
++			regulator-max-microvolt = <1800000>;
++			regulator-enable-ramp-delay = <120>;
++		};
++
++		mt6366_vcn33_bt_reg: ldo_vcn33_bt {
++			regulator-name = "vcn33_bt";
++			regulator-min-microvolt = <3300000>;
++			regulator-max-microvolt = <3500000>;
++			regulator-enable-ramp-delay = <270>;
++		};
++
++		mt6366_vcn33_wifi_reg: ldo_vcn33_wifi {
++			regulator-name = "vcn33_wifi";
++			regulator-min-microvolt = <3300000>;
++			regulator-max-microvolt = <3500000>;
++			regulator-enable-ramp-delay = <270>;
++		};
++
++		mt6366_vcama2_reg: ldo_vcama2 {
++			regulator-name = "vcama2";
++			regulator-min-microvolt = <1800000>;
++			regulator-max-microvolt = <3000000>;
++			regulator-enable-ramp-delay = <325>;
++		};
++
++		mt6366_vmc_reg: ldo_vmc {
++			regulator-name = "vmc";
++			regulator-min-microvolt = <1800000>;
++			regulator-max-microvolt = <1800000>;
++			regulator-enable-ramp-delay = <60>;
++		};
++
++		mt6366_vldo28_reg: ldo_vldo28 {
++			regulator-name = "vldo28";
++			regulator-min-microvolt = <2800000>;
++			regulator-max-microvolt = <3000000>;
++			regulator-enable-ramp-delay = <270>;
++		};
++
++		mt6366_vaud28_reg: ldo_vaud28 {
++			compatible = "regulator-fixed";
++			regulator-name = "vaud28";
++			regulator-min-microvolt = <2800000>;
++			regulator-max-microvolt = <2800000>;
++			regulator-enable-ramp-delay = <270>;
++		};
++
++		mt6366_vsim2_reg: ldo_vsim2 {
++			regulator-name = "vsim2";
++			regulator-min-microvolt = <1700000>;
++			regulator-max-microvolt = <3100000>;
++			regulator-enable-ramp-delay = <540>;
++		};
++
++		mt6366_vcore_sshub_reg: buck_vcore_sshub {
++			regulator-name = "vcore_sshub";
++			regulator-min-microvolt = <500000>;
++			regulator-max-microvolt = <1293750>;
++		};
++
++		mt6366_vsram_others_sshub_reg: ldo_vsram_others_sshub {
++			regulator-name = "vsram_others_sshub";
++			regulator-min-microvolt = <500000>;
++			regulator-max-microvolt = <1293750>;
 +		};
 +	};
 +};
@@ -750,10 +782,10 @@ index 0000000000000000000000000000000000000000..1fd37109858d7f7bb673425e74728251
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8186-corsola-krabby.dtsi b/arch/arm64/boot/dts/mediatek/mt8186-corsola-krabby.dtsi
 new file mode 100644
-index 0000000000000000000000000000000000000000..48aa4aecfb8180758efc3d7e0474abeffc591ddf
+index 0000000000000000000000000000000000000000..f5910cc867e4ecd278fd87933986d56099e6f34b
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt8186-corsola-krabby.dtsi
-@@ -0,0 +1,365 @@
+@@ -0,0 +1,767 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
 +/*
 + * Copyright 2022 Google LLC
@@ -782,6 +814,51 @@ index 0000000000000000000000000000000000000000..48aa4aecfb8180758efc3d7e0474abef
 +
 +&btsco {
 +	status = "okay";
++};
++
++&cci {
++	proc-supply = <&mt6366_vproc12_reg>;
++	sram-supply = <&mt6366_vsram_proc12_reg>;
++};
++
++&cpu0 {
++	proc-supply = <&mt6366_vproc12_reg>;
++	sram-supply = <&mt6366_vsram_proc12_reg>;
++};
++
++&cpu1 {
++	proc-supply = <&mt6366_vproc12_reg>;
++	sram-supply = <&mt6366_vsram_proc12_reg>;
++};
++
++&cpu2 {
++	proc-supply = <&mt6366_vproc12_reg>;
++	sram-supply = <&mt6366_vsram_proc12_reg>;
++};
++
++&cpu3 {
++	proc-supply = <&mt6366_vproc12_reg>;
++	sram-supply = <&mt6366_vsram_proc12_reg>;
++};
++
++&cpu4 {
++	proc-supply = <&mt6366_vproc12_reg>;
++	sram-supply = <&mt6366_vsram_proc12_reg>;
++};
++
++&cpu5 {
++	proc-supply = <&mt6366_vproc12_reg>;
++	sram-supply = <&mt6366_vsram_proc12_reg>;
++};
++
++&cpu6 {
++	proc-supply = <&mt6366_vproc11_reg>;
++	sram-supply = <&mt6366_vsram_proc11_reg>;
++};
++
++&cpu7 {
++	proc-supply = <&mt6366_vproc11_reg>;
++	sram-supply = <&mt6366_vsram_proc11_reg>;
 +};
 +
 +&cros_ec {
@@ -1008,6 +1085,15 @@ index 0000000000000000000000000000000000000000..48aa4aecfb8180758efc3d7e0474abef
 +	};
 +};
 +
++&mfg0 {
++	domain-supply = <&mt6366_vgpu_reg>;
++};
++
++&mmc0 {
++	vmmc-supply = <&mt6366_vemc_reg>;
++	vqmmc-supply = <&mt6366_vio18_reg>;
++};
++
 +&mmc1_pins_default {
 +	pins_clk {
 +		drive-strength = <MTK_DRIVE_8mA>;
@@ -1028,14 +1114,8 @@ index 0000000000000000000000000000000000000000..48aa4aecfb8180758efc3d7e0474abef
 +	};
 +};
 +
-+&mt6366_vcn33_bt_reg {
-+	/* ps8640 3.3V power supply */
-+	regulator-max-microvolt = <3300000>;
-+};
-+
-+&mt6366_vsim2_reg {
-+	regulator-min-microvolt = <2700000>;
-+	regulator-max-microvolt = <2700000>;
++&mt6366codec {
++        mediatek,dmic-mode = <1>; /* one-wire */
 +};
 +
 +&pio {
@@ -1105,6 +1185,360 @@ index 0000000000000000000000000000000000000000..48aa4aecfb8180758efc3d7e0474abef
 +	};
 +};
 +
++&pmic {
++	mt6366regulator: mt6366regulator {
++		compatible = "mediatek,mt6366-regulator",
++			     "mediatek,mt6358-regulator";
++
++		mt6366_vdram1_reg: buck_vdram1 {
++			regulator-name = "vdram1";
++			regulator-min-microvolt = <500000>;
++			regulator-max-microvolt = <2087500>;
++			regulator-ramp-delay = <12500>;
++			regulator-enable-ramp-delay = <0>;
++			regulator-always-on;
++			regulator-allowed-modes = <0 1>;
++		};
++
++		mt6366_vcore_reg: buck_vcore {
++			regulator-name = "vcore";
++			regulator-min-microvolt = <500000>;
++			regulator-max-microvolt = <1293750>;
++			regulator-ramp-delay = <6250>;
++			regulator-enable-ramp-delay = <200>;
++			regulator-always-on;
++			regulator-allowed-modes = <0 1>;
++		};
++
++		mt6366_vpa_reg: buck_vpa {
++			regulator-name = "vpa";
++			regulator-min-microvolt = <500000>;
++			regulator-max-microvolt = <3650000>;
++			regulator-ramp-delay = <50000>;
++			regulator-enable-ramp-delay = <250>;
++			regulator-allowed-modes = <0 1>;
++		};
++
++		mt6366_vproc11_reg: buck_vproc11 {
++			regulator-name = "vproc11";
++			regulator-min-microvolt = <500000>;
++			regulator-max-microvolt = <1293750>;
++			regulator-ramp-delay = <6250>;
++			regulator-enable-ramp-delay = <200>;
++			regulator-always-on;
++			regulator-allowed-modes = <0 1>;
++		};
++
++		mt6366_vproc12_reg: buck_vproc12 {
++			regulator-name = "vproc12";
++			regulator-min-microvolt = <500000>;
++			regulator-max-microvolt = <1293750>;
++			regulator-ramp-delay = <6250>;
++			regulator-enable-ramp-delay = <200>;
++			regulator-always-on;
++			regulator-allowed-modes = <0 1>;
++		};
++
++		mt6366_vgpu_reg: buck_vgpu {
++			regulator-name = "vgpu";
++			regulator-min-microvolt = <500000>;
++			regulator-max-microvolt = <1293750>;
++			regulator-ramp-delay = <6250>;
++			regulator-enable-ramp-delay = <200>;
++			regulator-allowed-modes = <0 1>;
++		};
++
++		mt6366_vs2_reg: buck_vs2 {
++			regulator-name = "vs2";
++			regulator-min-microvolt = <500000>;
++			regulator-max-microvolt = <2087500>;
++			regulator-ramp-delay = <12500>;
++			regulator-enable-ramp-delay = <0>;
++			regulator-always-on;
++		};
++
++		mt6366_vmodem_reg: buck_vmodem {
++			regulator-name = "vmodem";
++			regulator-min-microvolt = <500000>;
++			regulator-max-microvolt = <1293750>;
++			regulator-ramp-delay = <6250>;
++			regulator-enable-ramp-delay = <900>;
++			regulator-always-on;
++			regulator-allowed-modes = <0 1>;
++		};
++
++		mt6366_vs1_reg: buck_vs1 {
++			regulator-name = "vs1";
++			regulator-min-microvolt = <1000000>;
++			regulator-max-microvolt = <2587500>;
++			regulator-ramp-delay = <12500>;
++			regulator-enable-ramp-delay = <0>;
++			regulator-always-on;
++		};
++
++		mt6366_vdram2_reg: ldo_vdram2 {
++			regulator-name = "vdram2";
++			regulator-min-microvolt = <600000>;
++			regulator-max-microvolt = <1800000>;
++			regulator-enable-ramp-delay = <3300>;
++			regulator-always-on;
++		};
++
++		mt6366_vsim1_reg: ldo_vsim1 {
++			regulator-name = "vsim1";
++			regulator-min-microvolt = <1700000>;
++			regulator-max-microvolt = <3100000>;
++			regulator-enable-ramp-delay = <540>;
++		};
++
++		mt6366_vibr_reg: ldo_vibr {
++			regulator-name = "vibr";
++			regulator-min-microvolt = <1200000>;
++			regulator-max-microvolt = <3300000>;
++			regulator-enable-ramp-delay = <60>;
++		};
++
++		mt6366_vrf12_reg: ldo_vrf12 {
++			compatible = "regulator-fixed";
++			regulator-name = "vrf12";
++			regulator-min-microvolt = <1200000>;
++			regulator-max-microvolt = <1200000>;
++			regulator-enable-ramp-delay = <120>;
++		};
++
++		mt6366_vio18_reg: ldo_vio18 {
++			compatible = "regulator-fixed";
++			regulator-name = "vio18";
++			regulator-min-microvolt = <1800000>;
++			regulator-max-microvolt = <1800000>;
++			regulator-enable-ramp-delay = <2700>;
++			regulator-always-on;
++		};
++
++		mt6366_vusb_reg: ldo_vusb {
++			regulator-name = "vusb";
++			regulator-min-microvolt = <3000000>;
++			regulator-max-microvolt = <3100000>;
++			regulator-enable-ramp-delay = <270>;
++			regulator-always-on;
++		};
++
++		mt6366_vcamio_reg: ldo_vcamio {
++			compatible = "regulator-fixed";
++			regulator-name = "vcamio";
++			regulator-min-microvolt = <1800000>;
++			regulator-max-microvolt = <1800000>;
++			regulator-enable-ramp-delay = <325>;
++		};
++
++		mt6366_vcamd_reg: ldo_vcamd {
++			regulator-name = "vcamd";
++			regulator-min-microvolt = <900000>;
++			regulator-max-microvolt = <1800000>;
++			regulator-enable-ramp-delay = <325>;
++		};
++
++		mt6366_vcn18_reg: ldo_vcn18 {
++			compatible = "regulator-fixed";
++			regulator-name = "vcn18";
++			regulator-min-microvolt = <1800000>;
++			regulator-max-microvolt = <1800000>;
++			regulator-enable-ramp-delay = <270>;
++		};
++
++		mt6366_vfe28_reg: ldo_vfe28 {
++			compatible = "regulator-fixed";
++			regulator-name = "vfe28";
++			regulator-min-microvolt = <2800000>;
++			regulator-max-microvolt = <2800000>;
++			regulator-enable-ramp-delay = <270>;
++		};
++
++		mt6366_vsram_proc11_reg: ldo_vsram_proc11 {
++			regulator-name = "vsram_proc11";
++			regulator-min-microvolt = <500000>;
++			regulator-max-microvolt = <1293750>;
++			regulator-ramp-delay = <6250>;
++			regulator-enable-ramp-delay = <240>;
++			regulator-always-on;
++		};
++
++		mt6366_vcn28_reg: ldo_vcn28 {
++			compatible = "regulator-fixed";
++			regulator-name = "vcn28";
++			regulator-min-microvolt = <2800000>;
++			regulator-max-microvolt = <2800000>;
++			regulator-enable-ramp-delay = <270>;
++		};
++
++		mt6366_vsram_others_reg: ldo_vsram_others {
++			regulator-name = "vsram_others";
++			regulator-min-microvolt = <500000>;
++			regulator-max-microvolt = <1293750>;
++			regulator-ramp-delay = <6250>;
++			regulator-enable-ramp-delay = <240>;
++			regulator-always-on;
++		};
++
++		mt6366_vsram_gpu_reg: ldo_vsram_gpu {
++			regulator-name = "vsram_gpu";
++			regulator-min-microvolt = <500000>;
++			regulator-max-microvolt = <1293750>;
++			regulator-ramp-delay = <6250>;
++			regulator-enable-ramp-delay = <240>;
++		};
++
++		mt6366_vxo22_reg: ldo_vxo22 {
++			compatible = "regulator-fixed";
++			regulator-name = "vxo22";
++			regulator-min-microvolt = <2200000>;
++			regulator-max-microvolt = <2200000>;
++			regulator-enable-ramp-delay = <120>;
++			regulator-always-on;
++		};
++
++		mt6366_vefuse_reg: ldo_vefuse {
++			regulator-name = "vefuse";
++			regulator-min-microvolt = <1700000>;
++			regulator-max-microvolt = <1900000>;
++			regulator-enable-ramp-delay = <270>;
++		};
++
++		mt6366_vaux18_reg: ldo_vaux18 {
++			compatible = "regulator-fixed";
++			regulator-name = "vaux18";
++			regulator-min-microvolt = <1800000>;
++			regulator-max-microvolt = <1800000>;
++			regulator-enable-ramp-delay = <270>;
++		};
++
++		mt6366_vmch_reg: ldo_vmch {
++			regulator-name = "vmch";
++			regulator-min-microvolt = <2900000>;
++			regulator-max-microvolt = <3300000>;
++			regulator-enable-ramp-delay = <60>;
++		};
++
++		mt6366_vbif28_reg: ldo_vbif28 {
++			compatible = "regulator-fixed";
++			regulator-name = "vbif28";
++			regulator-min-microvolt = <2800000>;
++			regulator-max-microvolt = <2800000>;
++			regulator-enable-ramp-delay = <270>;
++		};
++
++		mt6366_vsram_proc12_reg: ldo_vsram_proc12 {
++			regulator-name = "vsram_proc12";
++			regulator-min-microvolt = <500000>;
++			regulator-max-microvolt = <1293750>;
++			regulator-ramp-delay = <6250>;
++			regulator-enable-ramp-delay = <240>;
++			regulator-always-on;
++		};
++
++		mt6366_vcama1_reg: ldo_vcama1 {
++			regulator-name = "vcama1";
++			regulator-min-microvolt = <1800000>;
++			regulator-max-microvolt = <3000000>;
++			regulator-enable-ramp-delay = <325>;
++		};
++
++		mt6366_vemc_reg: ldo_vemc {
++			regulator-name = "vemc";
++			regulator-min-microvolt = <2900000>;
++			regulator-max-microvolt = <3000000>;
++			regulator-enable-ramp-delay = <60>;
++		};
++
++		mt6366_vio28_reg: ldo_vio28 {
++			compatible = "regulator-fixed";
++			regulator-name = "vio28";
++			regulator-min-microvolt = <2800000>;
++			regulator-max-microvolt = <2800000>;
++			regulator-enable-ramp-delay = <270>;
++		};
++
++		mt6366_va12_reg: ldo_va12 {
++			compatible = "regulator-fixed";
++			regulator-name = "va12";
++			regulator-min-microvolt = <1200000>;
++			regulator-max-microvolt = <1200000>;
++			regulator-enable-ramp-delay = <270>;
++			regulator-always-on;
++		};
++
++		mt6366_vrf18_reg: ldo_vrf18 {
++			compatible = "regulator-fixed";
++			regulator-name = "vrf18";
++			regulator-min-microvolt = <1800000>;
++			regulator-max-microvolt = <1800000>;
++			regulator-enable-ramp-delay = <120>;
++		};
++
++		mt6366_vcn33_bt_reg: ldo_vcn33_bt {
++			regulator-name = "vcn33_bt";
++			regulator-min-microvolt = <3300000>;
++			regulator-max-microvolt = <3500000>;
++			regulator-enable-ramp-delay = <270>;
++		};
++
++		mt6366_vcn33_wifi_reg: ldo_vcn33_wifi {
++			regulator-name = "vcn33_wifi";
++			regulator-min-microvolt = <3300000>;
++			regulator-max-microvolt = <3500000>;
++			regulator-enable-ramp-delay = <270>;
++		};
++
++		mt6366_vcama2_reg: ldo_vcama2 {
++			regulator-name = "vcama2";
++			regulator-min-microvolt = <1800000>;
++			regulator-max-microvolt = <3000000>;
++			regulator-enable-ramp-delay = <325>;
++		};
++
++		mt6366_vmc_reg: ldo_vmc {
++			regulator-name = "vmc";
++			regulator-min-microvolt = <1800000>;
++			regulator-max-microvolt = <1800000>;
++			regulator-enable-ramp-delay = <60>;
++		};
++
++		mt6366_vldo28_reg: ldo_vldo28 {
++			regulator-name = "vldo28";
++			regulator-min-microvolt = <2800000>;
++			regulator-max-microvolt = <3000000>;
++			regulator-enable-ramp-delay = <270>;
++		};
++
++		mt6366_vaud28_reg: ldo_vaud28 {
++			compatible = "regulator-fixed";
++			regulator-name = "vaud28";
++			regulator-min-microvolt = <2800000>;
++			regulator-max-microvolt = <2800000>;
++			regulator-enable-ramp-delay = <270>;
++		};
++
++		mt6366_vsim2_reg: ldo_vsim2 {
++			regulator-name = "vsim2";
++			regulator-min-microvolt = <2700000>;
++			regulator-max-microvolt = <2700000>;
++			regulator-enable-ramp-delay = <540>;
++		};
++
++		mt6366_vcore_sshub_reg: buck_vcore_sshub {
++			regulator-name = "vcore_sshub";
++			regulator-min-microvolt = <500000>;
++			regulator-max-microvolt = <1293750>;
++		};
++
++		mt6366_vsram_others_sshub_reg: ldo_vsram_others_sshub {
++			regulator-name = "vsram_others_sshub";
++			regulator-min-microvolt = <500000>;
++			regulator-max-microvolt = <1293750>;
++		};
++	};
++};
++
 +&sound {
 +	compatible = "mediatek,mt8186-mt6366-rt1019-rt5682s-sound";
 +	mediatek,adsp = <&adsp>;
@@ -1118,6 +1552,75 @@ index 0000000000000000000000000000000000000000..48aa4aecfb8180758efc3d7e0474abef
 +	headset-codec {
 +		sound-dai = <&rt5682s>;
 +	};
++};
+diff --git a/arch/arm64/boot/dts/mediatek/mt8186-corsola-magikarp-rev2.dts b/arch/arm64/boot/dts/mediatek/mt8186-corsola-magikarp-rev2.dts
+new file mode 100644
+index 0000000000000000000000000000000000000000..48ef97e3277ee5bfc7f88e083225c06c555e2e9b
+--- /dev/null
++++ b/arch/arm64/boot/dts/mediatek/mt8186-corsola-magikarp-rev2.dts
+@@ -0,0 +1,20 @@
++// SPDX-License-Identifier: (GPL-2.0 OR MIT)
++/*
++ * Copyright 2022 Google LLC
++ */
++
++/dts-v1/;
++#include "mt8186-corsola-magikarp.dtsi"
++
++/ {
++	model = "Google Magikarp board";
++	compatible = "google,magikarp-rev2", "google,corsola", "mediatek,mt8186";
++};
++
++&gpio_keys {
++	status = "okay";
++};
++
++&touchscreen {
++	status = "okay";
++};
+diff --git a/arch/arm64/boot/dts/mediatek/mt8186-corsola-magikarp.dts b/arch/arm64/boot/dts/mediatek/mt8186-corsola-magikarp.dts
+new file mode 100644
+index 0000000000000000000000000000000000000000..d7c15b9e6136ff32c8c26cd9b1b81e87026b8b19
+--- /dev/null
++++ b/arch/arm64/boot/dts/mediatek/mt8186-corsola-magikarp.dts
+@@ -0,0 +1,20 @@
++// SPDX-License-Identifier: (GPL-2.0 OR MIT)
++/*
++ * Copyright 2022 Google LLC
++ */
++
++/dts-v1/;
++#include "mt8186-corsola-magikarp.dtsi"
++
++/ {
++	model = "Google Magikarp board";
++	compatible = "google,magikarp", "google,corsola", "mediatek,mt8186";
++};
++
++&gpio_keys {
++	status = "disabled";
++};
++
++&touchscreen {
++	status = "disabled";
++};
+diff --git a/arch/arm64/boot/dts/mediatek/mt8186-corsola-magikarp.dtsi b/arch/arm64/boot/dts/mediatek/mt8186-corsola-magikarp.dtsi
+new file mode 100644
+index 0000000000000000000000000000000000000000..df6db68cf4567711f821b114639f52b94083eca7
+--- /dev/null
++++ b/arch/arm64/boot/dts/mediatek/mt8186-corsola-magikarp.dtsi
+@@ -0,0 +1,11 @@
++// SPDX-License-Identifier: (GPL-2.0 OR MIT)
++/*
++ * Copyright 2022 Google LLC
++ */
++
++/dts-v1/;
++#include "mt8186-corsola-krabby.dtsi"
++
++&sound {
++	dmic-gpios = <&pio 23 GPIO_ACTIVE_HIGH>;
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8186-corsola-magneton-rev2-sku393216.dts b/arch/arm64/boot/dts/mediatek/mt8186-corsola-magneton-rev2-sku393216.dts
 new file mode 100644
@@ -1509,10 +2012,10 @@ index 0000000000000000000000000000000000000000..af92cea09365a18f8a8d178c8f6d1407
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8186-corsola-steelix.dtsi b/arch/arm64/boot/dts/mediatek/mt8186-corsola-steelix.dtsi
 new file mode 100644
-index 0000000000000000000000000000000000000000..2181713a672672f185c8ba6f099c497205a3a8d5
+index 0000000000000000000000000000000000000000..0d92d5f8a4317dd0e5d7947ddeb6e9eaedd5f859
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt8186-corsola-steelix.dtsi
-@@ -0,0 +1,418 @@
+@@ -0,0 +1,820 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
 +/*
 + * Copyright 2022 Google LLC
@@ -1525,17 +2028,19 @@ index 0000000000000000000000000000000000000000..2181713a672672f185c8ba6f099c4972
 +
 +/ {
 +	dmic_codec: dmic-codec {
++		status = "okay";
++
 +		compatible = "dmic-codec";
 +		num-channels = <2>;
 +		wakeup-delay-ms = <50>;
-+		status = "okay";
 +	};
 +
 +	gpio_keys: gpio-keys {
++		status = "okay";
++
 +		compatible = "gpio-keys";
 +		pinctrl-names = "default";
 +		pinctrl-0 = <&pen_eject>;
-+		status = "okay";
 +
 +		pen_insert: pen-insert {
 +			label = "Pen Insert";
@@ -1549,17 +2054,23 @@ index 0000000000000000000000000000000000000000..2181713a672672f185c8ba6f099c4972
 +	};
 +
 +	rt1019p: rt1019p {
++		status = "okay";
++
 +		compatible = "realtek,rt1019p";
 +		pinctrl-names = "default";
 +		pinctrl-0 = <&rt1019p_pins_default>;
 +		sdb-gpios = <&pio 150 GPIO_ACTIVE_HIGH>;
 +		#sound-dai-cells = <0>;
-+		status = "okay";
 +	};
 +};
 +
 +&btsco {
 +	status = "okay";
++};
++
++&cci {
++	proc-supply = <&mt6366_vproc12_reg>;
++	sram-supply = <&mt6366_vsram_proc12_reg>;
 +};
 +
 +&cros_ec {
@@ -1612,6 +2123,46 @@ index 0000000000000000000000000000000000000000..2181713a672672f185c8ba6f099c4972
 +			};
 +		};
 +	};
++};
++
++&cpu0 {
++	proc-supply = <&mt6366_vproc12_reg>;
++	sram-supply = <&mt6366_vsram_proc12_reg>;
++};
++
++&cpu1 {
++	proc-supply = <&mt6366_vproc12_reg>;
++	sram-supply = <&mt6366_vsram_proc12_reg>;
++};
++
++&cpu2 {
++	proc-supply = <&mt6366_vproc12_reg>;
++	sram-supply = <&mt6366_vsram_proc12_reg>;
++};
++
++&cpu3 {
++	proc-supply = <&mt6366_vproc12_reg>;
++	sram-supply = <&mt6366_vsram_proc12_reg>;
++};
++
++&cpu4 {
++	proc-supply = <&mt6366_vproc12_reg>;
++	sram-supply = <&mt6366_vsram_proc12_reg>;
++};
++
++&cpu5 {
++	proc-supply = <&mt6366_vproc12_reg>;
++	sram-supply = <&mt6366_vsram_proc12_reg>;
++};
++
++&cpu6 {
++	proc-supply = <&mt6366_vproc11_reg>;
++	sram-supply = <&mt6366_vsram_proc11_reg>;
++};
++
++&cpu7 {
++	proc-supply = <&mt6366_vproc11_reg>;
++	sram-supply = <&mt6366_vsram_proc11_reg>;
 +};
 +
 +&dpi0 {
@@ -1812,6 +2363,15 @@ index 0000000000000000000000000000000000000000..2181713a672672f185c8ba6f099c4972
 +	>;
 +};
 +
++&mfg0 {
++	domain-supply = <&mt6366_vgpu_reg>;
++};
++
++&mmc0 {
++	vmmc-supply = <&mt6366_vemc_reg>;
++	vqmmc-supply = <&mt6366_vio18_reg>;
++};
++
 +&mmc1_pins_default {
 +	pins_clk {
 +		drive-strength = <MTK_DRIVE_8mA>;
@@ -1830,16 +2390,6 @@ index 0000000000000000000000000000000000000000..2181713a672672f185c8ba6f099c4972
 +	pins_cmd_dat {
 +		drive-strength = <MTK_DRIVE_8mA>;
 +	};
-+};
-+
-+&mt6366_vcn33_bt_reg {
-+        /* ps8640 3.3V power supply */
-+        regulator-max-microvolt = <3300000>;
-+};
-+
-+&mt6366_vsim2_reg {
-+	regulator-min-microvolt = <2700000>;
-+	regulator-max-microvolt = <2700000>;
 +};
 +
 +&pio {
@@ -1918,10 +2468,365 @@ index 0000000000000000000000000000000000000000..2181713a672672f185c8ba6f099c4972
 +	};
 +};
 +
++&pmic {
++	mt6366regulator: mt6366regulator {
++		compatible = "mediatek,mt6366-regulator",
++			     "mediatek,mt6358-regulator";
++
++		mt6366_vdram1_reg: buck_vdram1 {
++			regulator-name = "vdram1";
++			regulator-min-microvolt = <500000>;
++			regulator-max-microvolt = <2087500>;
++			regulator-ramp-delay = <12500>;
++			regulator-enable-ramp-delay = <0>;
++			regulator-always-on;
++			regulator-allowed-modes = <0 1>;
++		};
++
++		mt6366_vcore_reg: buck_vcore {
++			regulator-name = "vcore";
++			regulator-min-microvolt = <500000>;
++			regulator-max-microvolt = <1293750>;
++			regulator-ramp-delay = <6250>;
++			regulator-enable-ramp-delay = <200>;
++			regulator-always-on;
++			regulator-allowed-modes = <0 1>;
++		};
++
++		mt6366_vpa_reg: buck_vpa {
++			regulator-name = "vpa";
++			regulator-min-microvolt = <500000>;
++			regulator-max-microvolt = <3650000>;
++			regulator-ramp-delay = <50000>;
++			regulator-enable-ramp-delay = <250>;
++			regulator-allowed-modes = <0 1>;
++		};
++
++		mt6366_vproc11_reg: buck_vproc11 {
++			regulator-name = "vproc11";
++			regulator-min-microvolt = <500000>;
++			regulator-max-microvolt = <1293750>;
++			regulator-ramp-delay = <6250>;
++			regulator-enable-ramp-delay = <200>;
++			regulator-always-on;
++			regulator-allowed-modes = <0 1>;
++		};
++
++		mt6366_vproc12_reg: buck_vproc12 {
++			regulator-name = "vproc12";
++			regulator-min-microvolt = <500000>;
++			regulator-max-microvolt = <1293750>;
++			regulator-ramp-delay = <6250>;
++			regulator-enable-ramp-delay = <200>;
++			regulator-always-on;
++			regulator-allowed-modes = <0 1>;
++		};
++
++		mt6366_vgpu_reg: buck_vgpu {
++			regulator-name = "vgpu";
++			regulator-min-microvolt = <500000>;
++			regulator-max-microvolt = <1293750>;
++			regulator-ramp-delay = <6250>;
++			regulator-enable-ramp-delay = <200>;
++			regulator-allowed-modes = <0 1>;
++		};
++
++		mt6366_vs2_reg: buck_vs2 {
++			regulator-name = "vs2";
++			regulator-min-microvolt = <500000>;
++			regulator-max-microvolt = <2087500>;
++			regulator-ramp-delay = <12500>;
++			regulator-enable-ramp-delay = <0>;
++			regulator-always-on;
++		};
++
++		mt6366_vmodem_reg: buck_vmodem {
++			regulator-name = "vmodem";
++			regulator-min-microvolt = <500000>;
++			regulator-max-microvolt = <1293750>;
++			regulator-ramp-delay = <6250>;
++			regulator-enable-ramp-delay = <900>;
++			regulator-always-on;
++			regulator-allowed-modes = <0 1>;
++		};
++
++		mt6366_vs1_reg: buck_vs1 {
++			regulator-name = "vs1";
++			regulator-min-microvolt = <1000000>;
++			regulator-max-microvolt = <2587500>;
++			regulator-ramp-delay = <12500>;
++			regulator-enable-ramp-delay = <0>;
++			regulator-always-on;
++		};
++
++		mt6366_vdram2_reg: ldo_vdram2 {
++			regulator-name = "vdram2";
++			regulator-min-microvolt = <600000>;
++			regulator-max-microvolt = <1800000>;
++			regulator-enable-ramp-delay = <3300>;
++			regulator-always-on;
++		};
++
++		mt6366_vsim1_reg: ldo_vsim1 {
++			regulator-name = "vsim1";
++			regulator-min-microvolt = <1700000>;
++			regulator-max-microvolt = <3100000>;
++			regulator-enable-ramp-delay = <540>;
++		};
++
++		mt6366_vibr_reg: ldo_vibr {
++			regulator-name = "vibr";
++			regulator-min-microvolt = <1200000>;
++			regulator-max-microvolt = <3300000>;
++			regulator-enable-ramp-delay = <60>;
++		};
++
++		mt6366_vrf12_reg: ldo_vrf12 {
++			compatible = "regulator-fixed";
++			regulator-name = "vrf12";
++			regulator-min-microvolt = <1200000>;
++			regulator-max-microvolt = <1200000>;
++			regulator-enable-ramp-delay = <120>;
++		};
++
++		mt6366_vio18_reg: ldo_vio18 {
++			compatible = "regulator-fixed";
++			regulator-name = "vio18";
++			regulator-min-microvolt = <1800000>;
++			regulator-max-microvolt = <1800000>;
++			regulator-enable-ramp-delay = <2700>;
++			regulator-always-on;
++		};
++
++		mt6366_vusb_reg: ldo_vusb {
++			regulator-name = "vusb";
++			regulator-min-microvolt = <3000000>;
++			regulator-max-microvolt = <3100000>;
++			regulator-enable-ramp-delay = <270>;
++			regulator-always-on;
++		};
++
++		mt6366_vcamio_reg: ldo_vcamio {
++			compatible = "regulator-fixed";
++			regulator-name = "vcamio";
++			regulator-min-microvolt = <1800000>;
++			regulator-max-microvolt = <1800000>;
++			regulator-enable-ramp-delay = <325>;
++		};
++
++		mt6366_vcamd_reg: ldo_vcamd {
++			regulator-name = "vcamd";
++			regulator-min-microvolt = <900000>;
++			regulator-max-microvolt = <1800000>;
++			regulator-enable-ramp-delay = <325>;
++		};
++
++		mt6366_vcn18_reg: ldo_vcn18 {
++			compatible = "regulator-fixed";
++			regulator-name = "vcn18";
++			regulator-min-microvolt = <1800000>;
++			regulator-max-microvolt = <1800000>;
++			regulator-enable-ramp-delay = <270>;
++		};
++
++		mt6366_vfe28_reg: ldo_vfe28 {
++			compatible = "regulator-fixed";
++			regulator-name = "vfe28";
++			regulator-min-microvolt = <2800000>;
++			regulator-max-microvolt = <2800000>;
++			regulator-enable-ramp-delay = <270>;
++		};
++
++		mt6366_vsram_proc11_reg: ldo_vsram_proc11 {
++			regulator-name = "vsram_proc11";
++			regulator-min-microvolt = <500000>;
++			regulator-max-microvolt = <1293750>;
++			regulator-ramp-delay = <6250>;
++			regulator-enable-ramp-delay = <240>;
++			regulator-always-on;
++		};
++
++		mt6366_vcn28_reg: ldo_vcn28 {
++			compatible = "regulator-fixed";
++			regulator-name = "vcn28";
++			regulator-min-microvolt = <2800000>;
++			regulator-max-microvolt = <2800000>;
++			regulator-enable-ramp-delay = <270>;
++		};
++
++		mt6366_vsram_others_reg: ldo_vsram_others {
++			regulator-name = "vsram_others";
++			regulator-min-microvolt = <500000>;
++			regulator-max-microvolt = <1293750>;
++			regulator-ramp-delay = <6250>;
++			regulator-enable-ramp-delay = <240>;
++			regulator-always-on;
++		};
++
++		mt6366_vsram_gpu_reg: ldo_vsram_gpu {
++			regulator-name = "vsram_gpu";
++			regulator-min-microvolt = <500000>;
++			regulator-max-microvolt = <1293750>;
++			regulator-ramp-delay = <6250>;
++			regulator-enable-ramp-delay = <240>;
++		};
++
++		mt6366_vxo22_reg: ldo_vxo22 {
++			compatible = "regulator-fixed";
++			regulator-name = "vxo22";
++			regulator-min-microvolt = <2200000>;
++			regulator-max-microvolt = <2200000>;
++			regulator-enable-ramp-delay = <120>;
++			regulator-always-on;
++		};
++
++		mt6366_vefuse_reg: ldo_vefuse {
++			regulator-name = "vefuse";
++			regulator-min-microvolt = <1700000>;
++			regulator-max-microvolt = <1900000>;
++			regulator-enable-ramp-delay = <270>;
++		};
++
++		mt6366_vaux18_reg: ldo_vaux18 {
++			compatible = "regulator-fixed";
++			regulator-name = "vaux18";
++			regulator-min-microvolt = <1800000>;
++			regulator-max-microvolt = <1800000>;
++			regulator-enable-ramp-delay = <270>;
++		};
++
++		mt6366_vmch_reg: ldo_vmch {
++			regulator-name = "vmch";
++			regulator-min-microvolt = <2900000>;
++			regulator-max-microvolt = <3300000>;
++			regulator-enable-ramp-delay = <60>;
++		};
++
++		mt6366_vbif28_reg: ldo_vbif28 {
++			compatible = "regulator-fixed";
++			regulator-name = "vbif28";
++			regulator-min-microvolt = <2800000>;
++			regulator-max-microvolt = <2800000>;
++			regulator-enable-ramp-delay = <270>;
++		};
++
++		mt6366_vsram_proc12_reg: ldo_vsram_proc12 {
++			regulator-name = "vsram_proc12";
++			regulator-min-microvolt = <500000>;
++			regulator-max-microvolt = <1293750>;
++			regulator-ramp-delay = <6250>;
++			regulator-enable-ramp-delay = <240>;
++			regulator-always-on;
++		};
++
++		mt6366_vcama1_reg: ldo_vcama1 {
++			regulator-name = "vcama1";
++			regulator-min-microvolt = <1800000>;
++			regulator-max-microvolt = <3000000>;
++			regulator-enable-ramp-delay = <325>;
++		};
++
++		mt6366_vemc_reg: ldo_vemc {
++			regulator-name = "vemc";
++			regulator-min-microvolt = <2900000>;
++			regulator-max-microvolt = <3000000>;
++			regulator-enable-ramp-delay = <60>;
++		};
++
++		mt6366_vio28_reg: ldo_vio28 {
++			compatible = "regulator-fixed";
++			regulator-name = "vio28";
++			regulator-min-microvolt = <2800000>;
++			regulator-max-microvolt = <2800000>;
++			regulator-enable-ramp-delay = <270>;
++		};
++
++		mt6366_va12_reg: ldo_va12 {
++			compatible = "regulator-fixed";
++			regulator-name = "va12";
++			regulator-min-microvolt = <1200000>;
++			regulator-max-microvolt = <1200000>;
++			regulator-enable-ramp-delay = <270>;
++			regulator-always-on;
++		};
++
++		mt6366_vrf18_reg: ldo_vrf18 {
++			compatible = "regulator-fixed";
++			regulator-name = "vrf18";
++			regulator-min-microvolt = <1800000>;
++			regulator-max-microvolt = <1800000>;
++			regulator-enable-ramp-delay = <120>;
++		};
++
++		mt6366_vcn33_bt_reg: ldo_vcn33_bt {
++			regulator-name = "vcn33_bt";
++			regulator-min-microvolt = <3300000>;
++			regulator-max-microvolt = <3500000>;
++			regulator-enable-ramp-delay = <270>;
++		};
++
++		mt6366_vcn33_wifi_reg: ldo_vcn33_wifi {
++			regulator-name = "vcn33_wifi";
++			regulator-min-microvolt = <3300000>;
++			regulator-max-microvolt = <3500000>;
++			regulator-enable-ramp-delay = <270>;
++		};
++
++		mt6366_vcama2_reg: ldo_vcama2 {
++			regulator-name = "vcama2";
++			regulator-min-microvolt = <1800000>;
++			regulator-max-microvolt = <3000000>;
++			regulator-enable-ramp-delay = <325>;
++		};
++
++		mt6366_vmc_reg: ldo_vmc {
++			regulator-name = "vmc";
++			regulator-min-microvolt = <1800000>;
++			regulator-max-microvolt = <1800000>;
++			regulator-enable-ramp-delay = <60>;
++		};
++
++		mt6366_vldo28_reg: ldo_vldo28 {
++			regulator-name = "vldo28";
++			regulator-min-microvolt = <2800000>;
++			regulator-max-microvolt = <3000000>;
++			regulator-enable-ramp-delay = <270>;
++		};
++
++		mt6366_vaud28_reg: ldo_vaud28 {
++			compatible = "regulator-fixed";
++			regulator-name = "vaud28";
++			regulator-min-microvolt = <2800000>;
++			regulator-max-microvolt = <2800000>;
++			regulator-enable-ramp-delay = <270>;
++		};
++
++		mt6366_vsim2_reg: ldo_vsim2 {
++			regulator-name = "vsim2";
++			regulator-min-microvolt = <2700000>;
++			regulator-max-microvolt = <2700000>;
++			regulator-enable-ramp-delay = <540>;
++		};
++
++		mt6366_vcore_sshub_reg: buck_vcore_sshub {
++			regulator-name = "vcore_sshub";
++			regulator-min-microvolt = <500000>;
++			regulator-max-microvolt = <1293750>;
++		};
++
++		mt6366_vsram_others_sshub_reg: ldo_vsram_others_sshub {
++			regulator-name = "vsram_others_sshub";
++			regulator-min-microvolt = <500000>;
++			regulator-max-microvolt = <1293750>;
++		};
++	};
++};
++
 +&sound {
++	status = "okay";
++
 +	compatible = "mediatek,mt8186-mt6366-rt1019-rt5682s-sound";
 +	mediatek,adsp = <&adsp>;
-+	status = "okay";
 +
 +	playback-codecs {
 +		sound-dai = <&it6505dptx>,<&rt1019p>;
@@ -1980,17 +2885,16 @@ index 0000000000000000000000000000000000000000..0f83799fb03973f0037792cae2cff50b
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8186-corsola.dtsi b/arch/arm64/boot/dts/mediatek/mt8186-corsola.dtsi
 new file mode 100644
-index 0000000000000000000000000000000000000000..c93ffa3b0db5f3a95bb446d04126c72de6ce8706
+index 0000000000000000000000000000000000000000..2e721b29e41985b8aaee64ea227c13903859a3eb
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt8186-corsola.dtsi
-@@ -0,0 +1,1581 @@
+@@ -0,0 +1,1570 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
 +/*
 + * Copyright (C) 2022 MediaTek Inc.
 + */
 +/dts-v1/;
 +#include "mt8186.dtsi"
-+#include "mt6366.dtsi"
 +#include <dt-bindings/pinctrl/mt8186-pinfunc.h>
 +#include <dt-bindings/gpio/gpio.h>
 +#include <dt-bindings/input/input.h>
@@ -2013,6 +2917,15 @@ index 0000000000000000000000000000000000000000..c93ffa3b0db5f3a95bb446d04126c72d
 +		serial0 = &uart0;
 +	};
 +
++	chosen {
++		stdout-path = "serial0:115200n8";
++	};
++
++	memory@40000000 {
++		device_type = "memory";
++		reg = <0 0x40000000 0 0x80000000>;
++	};
++
 +	backlight_lcd0: backlight_lcd0 {
 +		compatible = "pwm-backlight";
 +		pwms = <&pwm0 0 500000>;
@@ -2032,12 +2945,6 @@ index 0000000000000000000000000000000000000000..c93ffa3b0db5f3a95bb446d04126c72d
 +	chosen {
 +		stdout-path = "serial0:115200n8";
 +	};
-+
-+	memory {
-+		device_type = "memory";
-+		reg = <0 0x40000000 0 0x3e605000>;
-+	};
-+
 +
 +	gpio_keys: gpio-keys {
 +		compatible = "gpio-keys";
@@ -2274,7 +3181,8 @@ index 0000000000000000000000000000000000000000..c93ffa3b0db5f3a95bb446d04126c72d
 +				"aud_gpio_tdm_off",
 +				"aud_gpio_tdm_on",
 +				"aud_gpio_pcm_off",
-+				"aud_gpio_pcm_on";
++				"aud_gpio_pcm_on",
++				"aud_gpio_dmic_sec";
 +		pinctrl-0 = <&aud_clk_mosi_off>;
 +		pinctrl-1 = <&aud_clk_mosi_on>;
 +		pinctrl-2 = <&aud_clk_miso_off>;
@@ -2295,6 +3203,7 @@ index 0000000000000000000000000000000000000000..c93ffa3b0db5f3a95bb446d04126c72d
 +		pinctrl-17 = <&aud_gpio_tdm_on>;
 +		pinctrl-18 = <&aud_gpio_pcm_off>;
 +		pinctrl-19 = <&aud_gpio_pcm_on>;
++		pinctrl-20 = <&aud_gpio_dmic_sec>;
 +		status = "disabled";
 +	};
 +
@@ -2317,55 +3226,17 @@ index 0000000000000000000000000000000000000000..c93ffa3b0db5f3a95bb446d04126c72d
 +	};
 +};
 +
++&adsp {
++	status = "okay";
++
++	memory-region = <&adsp_dma_mem_reserved>,
++			<&adsp_mem_reserved>;
++};
++
 +&afe {
 +	i2s0-share = "I2S1";
 +	i2s3-share = "I2S2";
 +	status = "okay";
-+};
-+
-+&cci {
-+	proc-supply = <&mt6366_vproc12_reg>;
-+	sram-supply = <&mt6366_vsram_proc12_reg>;
-+};
-+
-+&cpu0 {
-+	proc-supply = <&mt6366_vproc12_reg>;
-+	sram-supply = <&mt6366_vsram_proc12_reg>;
-+};
-+
-+&cpu1 {
-+	proc-supply = <&mt6366_vproc12_reg>;
-+	sram-supply = <&mt6366_vsram_proc12_reg>;
-+};
-+
-+&cpu2 {
-+	proc-supply = <&mt6366_vproc12_reg>;
-+	sram-supply = <&mt6366_vsram_proc12_reg>;
-+};
-+
-+&cpu3 {
-+	proc-supply = <&mt6366_vproc12_reg>;
-+	sram-supply = <&mt6366_vsram_proc12_reg>;
-+};
-+
-+&cpu4 {
-+	proc-supply = <&mt6366_vproc12_reg>;
-+	sram-supply = <&mt6366_vsram_proc12_reg>;
-+};
-+
-+&cpu5 {
-+	proc-supply = <&mt6366_vproc12_reg>;
-+	sram-supply = <&mt6366_vsram_proc12_reg>;
-+};
-+
-+&cpu6 {
-+	proc-supply = <&mt6366_vproc11_reg>;
-+	sram-supply = <&mt6366_vsram_proc11_reg>;
-+};
-+
-+&cpu7 {
-+	proc-supply = <&mt6366_vproc11_reg>;
-+	sram-supply = <&mt6366_vsram_proc11_reg>;
 +};
 +
 +&dpi0 {
@@ -2376,12 +3247,6 @@ index 0000000000000000000000000000000000000000..c93ffa3b0db5f3a95bb446d04126c72d
 +};
 +
 +&dsi0 {
-+	status = "okay";
-+};
-+
-+&pwm0 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&pwm0_gpio_def_cfg>;
 +	status = "okay";
 +};
 +
@@ -2407,83 +3272,89 @@ index 0000000000000000000000000000000000000000..c93ffa3b0db5f3a95bb446d04126c72d
 +};
 +
 +&i2c0 {
++	status = "okay";
++
 +	pinctrl-names = "default";
 +	pinctrl-0 = <&i2c0_pins>;
 +	#address-cells = <1>;
 +	#size-cells = <0>;
-+	status = "okay";
 +};
 +
 +&i2c1 {
++	status = "okay";
++
 +	clock-frequency = <400000>;
 +	i2c-scl-internal-delay-ns = <8000>;
 +	pinctrl-names = "default";
 +	pinctrl-0 = <&i2c1_pins>;
 +	#address-cells = <1>;
 +	#size-cells = <0>;
-+	status = "okay";
 +};
 +
 +&i2c2 {
++	status = "okay";
++
 +	clock-frequency = <400000>;
 +	i2c-scl-internal-delay-ns = <10000>;
 +	pinctrl-names = "default";
 +	pinctrl-0 = <&i2c2_pins>;
 +	#address-cells = <1>;
 +	#size-cells = <0>;
-+	status = "okay";
 +};
 +
 +&i2c3 {
++	status = "okay";
++
 +	pinctrl-names = "default";
 +	pinctrl-0 = <&i2c3_pins>;
 +	#address-cells = <1>;
 +	#size-cells = <0>;
-+	status = "okay";
 +};
 +
 +&i2c4 {
++	status = "okay";
++
 +	pinctrl-names = "default";
 +	pinctrl-0 = <&i2c4_pins>;
 +	#address-cells = <1>;
 +	#size-cells = <0>;
-+	status = "okay";
 +};
 +
 +&i2c5 {
++	status = "okay";
++
 +	pinctrl-names = "default";
 +	pinctrl-0 = <&i2c5_pins>;
 +	#address-cells = <1>;
 +	#size-cells = <0>;
-+	status = "okay";
 +};
 +
 +&i2c6 {
++	status = "okay";
++
 +	pinctrl-names = "default";
 +	pinctrl-0 = <&i2c6_pins>;
-+	status = "okay";
 +};
 +
 +&i2c7 {
++	status = "okay";
++
 +	pinctrl-names = "default";
 +	pinctrl-0 = <&i2c7_pins>;
-+	status = "okay";
 +};
 +
 +&i2c8 {
++	status = "okay";
++
 +	pinctrl-names = "default";
 +	pinctrl-0 = <&i2c8_pins>;
-+	status = "okay";
 +};
 +
 +&i2c9 {
++	status = "okay";
++
 +	pinctrl-names = "default";
 +	pinctrl-0 = <&i2c9_pins>;
-+	status = "okay";
-+};
-+
-+&mfg0 {
-+	domain-supply = <&mt6366_vgpu_reg>;
 +};
 +
 +&mipi_tx0 {
@@ -2492,6 +3363,7 @@ index 0000000000000000000000000000000000000000..c93ffa3b0db5f3a95bb446d04126c72d
 +
 +&mmc0 {
 +	status = "okay";
++
 +	pinctrl-names = "default", "state_uhs";
 +	pinctrl-0 = <&mmc0_pins_default>;
 +	pinctrl-1 = <&mmc0_pins_uhs>;
@@ -2507,12 +3379,11 @@ index 0000000000000000000000000000000000000000..c93ffa3b0db5f3a95bb446d04126c72d
 +	cap-mmc-hw-reset;
 +	hs400-ds-delay = <0x11814>;
 +	mediatek,hs400-ds-dly3 = <0x14>;
-+	vmmc-supply = <&mt6366_vemc_reg>;
-+	vqmmc-supply = <&mt6366_vio18_reg>;
 +};
 +
 +&mmc1 {
 +	status = "okay";
++
 +	interrupt-names = "msdc", "sdio_wakeup";
 +	interrupts-extended = <&gic GIC_SPI 101 IRQ_TYPE_LEVEL_HIGH 0>,
 +			      <&pio 87 IRQ_TYPE_LEVEL_LOW>;
@@ -2536,22 +3407,9 @@ index 0000000000000000000000000000000000000000..c93ffa3b0db5f3a95bb446d04126c72d
 +	mmc-pwrseq = <&wifi_pwrseq>;
 +};
 +
-+&mt6366_vemc_reg {
-+	/* eMMC max voltage set to 3.0V */
-+	regulator-max-microvolt = <3000000>;
-+};
-+
-+&mt6366_vmc_reg {
-+	/* SDIO IO power fixed to 1.8V */
-+	regulator-max-microvolt = <1800000>;
-+};
-+
-+&mt6366codec {
-+        mediatek,dmic-mode = <1>; /* one-wire */
-+};
-+
 +&nor_flash {
 +	status = "okay";
++
 +	pinctrl-names = "default";
 +	pinctrl-0 = <&nor_pins_default>;
 +	#address-cells = <1>;
@@ -2919,6 +3777,13 @@ index 0000000000000000000000000000000000000000..c93ffa3b0db5f3a95bb446d04126c72d
 +				 <PINMUX_GPIO116__FUNC_PCM_SYNC>,
 +				 <PINMUX_GPIO117__FUNC_PCM_DI>,
 +				 <PINMUX_GPIO118__FUNC_PCM_DO>;
++		};
++	};
++
++	aud_gpio_dmic_sec: aud_gpio_dmic_sec {
++		pins {
++			pinmux = <PINMUX_GPIO23__FUNC_GPIO23>;
++			output-low;
 +		};
 +	};
 +
@@ -3426,14 +4291,36 @@ index 0000000000000000000000000000000000000000..c93ffa3b0db5f3a95bb446d04126c72d
 +	};
 +};
 +
-+&adsp {
++&pwm0 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pwm0_gpio_def_cfg>;
 +	status = "okay";
-+	memory-region = <&adsp_dma_mem_reserved>,
-+			<&adsp_mem_reserved>;
++};
++
++&pwrap {
++	pmic: mt6366 {
++		compatible = "mediatek,mt6358",
++			     "mediatek,mt6366";
++		interrupt-controller;
++		interrupt-parent = <&pio>;
++		interrupts = <201 IRQ_TYPE_LEVEL_HIGH>;
++		#interrupt-cells = <2>;
++
++		mt6366codec: mt6366codec {
++			compatible = "mediatek,mt6366-sound",
++				     "mediatek,mt6358-sound";
++			avdd-supply = <&mt6366_vaud28_reg>;
++		};
++
++		mt6366rtc: mt6366rtc {
++			compatible = "mediatek,mt6366-rtc", "mediatek,mt6358-rtc";
++		};
++	};
 +};
 +
 +&scp {
 +	status = "okay";
++
 +	memory-region = <&scp_mem_reserved>;
 +	pinctrl-names = "default";
 +	pinctrl-0 = <&scp_pins>;
@@ -3445,10 +4332,11 @@ index 0000000000000000000000000000000000000000..c93ffa3b0db5f3a95bb446d04126c72d
 +};
 +
 +&spi0 {
++	status = "disabled";
++
 +	pinctrl-names = "default";
 +	pinctrl-0 = <&spi_pins_0>;
 +	mediatek,pad-select = <0>;
-+	status = "disabled";
 +
 +	spidev0: spi@0 {
 +		compatible = "mediatek,spi-mt65xx-test";
@@ -3459,6 +4347,7 @@ index 0000000000000000000000000000000000000000..c93ffa3b0db5f3a95bb446d04126c72d
 +
 +&spi1 {
 +	status = "okay";
++
 +	pinctrl-names = "default";
 +	pinctrl-0 = <&spi_pins_1>;
 +	mediatek,pad-select = <0>;
@@ -3482,11 +4371,12 @@ index 0000000000000000000000000000000000000000..c93ffa3b0db5f3a95bb446d04126c72d
 +};
 +
 +&spi2 {
++	status = "okay";
++
 +	pinctrl-names = "default";
 +	pinctrl-0 = <&spi_pins_2>;
 +	cs-gpios = <&pio 45 GPIO_ACTIVE_LOW>;
 +	mediatek,pad-select = <0>;
-+	status = "okay";
 +
 +	cr50: cr50@0 {
 +		compatible = "google,cr50";
@@ -3500,10 +4390,11 @@ index 0000000000000000000000000000000000000000..c93ffa3b0db5f3a95bb446d04126c72d
 +};
 +
 +&spi3 {
++	status = "disabled";
++
 +	pinctrl-names = "default";
 +	pinctrl-0 = <&spi_pins_3>;
 +	mediatek,pad-select = <0>;
-+	status = "disabled";
 +
 +	spidev3: spi@0 {
 +		compatible = "mediatek,spi-mt65xx-test";
@@ -3513,10 +4404,11 @@ index 0000000000000000000000000000000000000000..c93ffa3b0db5f3a95bb446d04126c72d
 +};
 +
 +&spi4 {
++	status = "disabled";
++
 +	pinctrl-names = "default";
 +	pinctrl-0 = <&spi_pins_4>;
 +	mediatek,pad-select = <0>;
-+	status = "disabled";
 +
 +	spidev4: spi@0 {
 +		compatible = "mediatek,spi-mt65xx-test";
@@ -3526,10 +4418,11 @@ index 0000000000000000000000000000000000000000..c93ffa3b0db5f3a95bb446d04126c72d
 +};
 +
 +&spi5 {
++	status = "disabled";
++
 +	pinctrl-names = "default";
 +	pinctrl-0 = <&spi_pins_5>;
 +	mediatek,pad-select = <0>;
-+	status = "disabled";
 +
 +	spidev5: spi@0 {
 +		compatible = "mediatek,spi-mt65xx-test";
@@ -3552,15 +4445,16 @@ index 0000000000000000000000000000000000000000..c93ffa3b0db5f3a95bb446d04126c72d
 +};
 +
 +&xhci0 {
-+	vbus-supply = <&pp3300_s3>;
 +	status = "okay";
++	vbus-supply = <&pp3300_s3>;
 +};
 +
 +&xhci1 {
++	status = "okay";
++
 +	#address-cells = <2>;
 +	#size-cells = <2>;
 +	vbus-supply = <&usb_p1_vbus>;
-+	status = "okay";
 +};
 +
 +#include <arm/cros-ec-keyboard.dtsi>
@@ -5344,29 +6238,11 @@ index 64693c17af9ec0545d02561322d97aa32573ef7c..114767376e72e0a06042496dbd487110
 +		};
  	};
  };
-diff --git a/chromeos/config/chromeos/arm64/chromiumos-arm64.flavour.config b/chromeos/config/chromeos/arm64/chromiumos-arm64.flavour.config
-index b760fbc6faf6e5d7f3a70a050422c8d25c74c56f..8b0c4405333a025965e1edb163c315cb4efaf10f 100644
---- a/chromeos/config/chromeos/arm64/chromiumos-arm64.flavour.config
-+++ b/chromeos/config/chromeos/arm64/chromiumos-arm64.flavour.config
-@@ -239,6 +239,7 @@ CONFIG_SERIAL_QCOM_GENI=y
- CONFIG_SERIAL_QCOM_GENI_CONSOLE=y
- CONFIG_SKGE=m
- CONFIG_SKY2=m
-+CONFIG_SND_DYNAMIC_MINORS=y
- CONFIG_SND_SOC_LPASS_VA_MACRO=y
- CONFIG_SND_SOC_MT8173=y
- CONFIG_SND_SOC_MT8173_RT5650=y
 diff --git a/chromeos/config/chromeos/arm64/chromiumos-mediatek.flavour.config b/chromeos/config/chromeos/arm64/chromiumos-mediatek.flavour.config
-index a474e089f670f40514c14e6f0b4d3f839907a512..449c61de1414c65dbc095ceefa9829b4ef33e9ed 100644
+index 83cb42225ba20b25e9b767218b25aa8616822b7f..449c61de1414c65dbc095ceefa9829b4ef33e9ed 100644
 --- a/chromeos/config/chromeos/arm64/chromiumos-mediatek.flavour.config
 +++ b/chromeos/config/chromeos/arm64/chromiumos-mediatek.flavour.config
-@@ -44,11 +44,15 @@ CONFIG_MFD_MT6397=y
- CONFIG_MMC_MTK=y
- CONFIG_MT7921E=m
- CONFIG_MT7921S=m
-+CONFIG_MTK_ADSP_IPC=y
-+CONFIG_MTK_ADSP_MBOX=y
- CONFIG_MTK_CMDQ=y
+@@ -50,7 +50,9 @@ CONFIG_MTK_CMDQ=y
  CONFIG_MTK_EFUSE=y
  CONFIG_MTK_IOMMU=y
  CONFIG_MTK_PMIC_WRAP=y
@@ -5376,53 +6252,6 @@ index a474e089f670f40514c14e6f0b4d3f839907a512..449c61de1414c65dbc095ceefa9829b4
  CONFIG_MWIFIEX_SDIO=m
  CONFIG_PCIEAER=y
  CONFIG_PCIEASPM_POWER_SUPERSAVE=y
-@@ -90,6 +94,10 @@ CONFIG_SND_SOC_MT8186_MT6366_DA7219_MAX98357=y
- CONFIG_SND_SOC_MT8186_MT6366_RT1019_RT5682S=y
- CONFIG_SND_SOC_MT8192=y
- CONFIG_SND_SOC_MT8192_MT6359_RT1015_RT5682=y
-+CONFIG_SND_SOC_SOF_MT8186=m
-+CONFIG_SND_SOC_SOF_MTK_TOPLEVEL=y
-+CONFIG_SND_SOC_SOF_OF=y
-+CONFIG_SND_SOC_SOF_TOPLEVEL=y
- CONFIG_SPI_GPIO=y
- CONFIG_SPI_MT65XX=y
- CONFIG_SPI_MTK_NOR=y
-diff --git a/chromeos/config/chromeos/arm64/chromiumos-qualcomm.flavour.config b/chromeos/config/chromeos/arm64/chromiumos-qualcomm.flavour.config
-index f2c5070d09eab18c5f8bd5c0cef8ff5233b83848..8b56b452011ee9d561faa93422d2bc003f60861e 100644
---- a/chromeos/config/chromeos/arm64/chromiumos-qualcomm.flavour.config
-+++ b/chromeos/config/chromeos/arm64/chromiumos-qualcomm.flavour.config
-@@ -140,6 +140,7 @@ CONFIG_SECURITY_LOADPIN_VERITY=y
- CONFIG_SERIAL_DEV_BUS=y
- CONFIG_SERIAL_QCOM_GENI=y
- CONFIG_SERIAL_QCOM_GENI_CONSOLE=y
-+CONFIG_SND_DYNAMIC_MINORS=y
- CONFIG_SND_SOC_LPASS_VA_MACRO=y
- CONFIG_SND_SOC_QCOM=y
- CONFIG_SND_SOC_SC7180=m
-diff --git a/chromeos/config/chromeos/arm64/chromiumos-rockchip64.flavour.config b/chromeos/config/chromeos/arm64/chromiumos-rockchip64.flavour.config
-index 5c047e79ee4f23771602d9b233dc0660cc833748..e2d96e0bd945c092b4318db708396fdb4705b69d 100644
---- a/chromeos/config/chromeos/arm64/chromiumos-rockchip64.flavour.config
-+++ b/chromeos/config/chromeos/arm64/chromiumos-rockchip64.flavour.config
-@@ -73,6 +73,7 @@ CONFIG_SERIAL_8250_CONSOLE=y
- # CONFIG_SERIAL_8250_DEPRECATED_OPTIONS is not set
- CONFIG_SERIAL_8250_DW=y
- CONFIG_SERIAL_OF_PLATFORM=y
-+CONFIG_SND_DYNAMIC_MINORS=y
- CONFIG_SND_SOC_RK3399_GRU_SOUND=y
- CONFIG_SND_SOC_ROCKCHIP=y
- CONFIG_SND_SOC_ROCKCHIP_RT5645=y
-diff --git a/chromeos/config/chromeos/arm64/common.config b/chromeos/config/chromeos/arm64/common.config
-index d52f35cf77e88172aba991e5373f65f88c77ceaa..d8b52cbefb2ddc2e30ba79c16ba549e1ec502592 100644
---- a/chromeos/config/chromeos/arm64/common.config
-+++ b/chromeos/config/chromeos/arm64/common.config
-@@ -95,7 +95,6 @@ CONFIG_SCHED_MC=y
- CONFIG_SECURITY_CHROMIUMOS=y
- CONFIG_SERIO=m
- CONFIG_SETEND_EMULATION=y
--CONFIG_SND_DYNAMIC_MINORS=y
- CONFIG_SND_SIMPLE_CARD=y
- CONFIG_SWP_EMULATION=y
- CONFIG_TCG_TIS_SPI=y
 diff --git a/drivers/clk/mediatek/Makefile b/drivers/clk/mediatek/Makefile
 index caf2ce93d6668c21b80f71434420459131279be1..4162ec034f0f6982b8deafa8e35fb5484c1c956a 100644
 --- a/drivers/clk/mediatek/Makefile
@@ -9658,7 +10487,7 @@ index 0000000000000000000000000000000000000000..e76142f733136dba990c85d487dac2f7
 +void print_regs(void);
 +void print_fmeter_all(void);
 diff --git a/drivers/gpu/drm/bridge/analogix/anx7625.c b/drivers/gpu/drm/bridge/analogix/anx7625.c
-index 152e339d08d9473d1114870b25b08b87b0ce8834..98a74c0b7f893f0bf87398bcf47d18ffd441eb74 100644
+index 6cce48c5b2253005ae37e927bd9dcdfa85b3ac05..27a39952d7ca14701c9f681b79f31dcd7e087c38 100644
 --- a/drivers/gpu/drm/bridge/analogix/anx7625.c
 +++ b/drivers/gpu/drm/bridge/analogix/anx7625.c
 @@ -15,6 +15,9 @@
@@ -9671,28 +10500,7 @@ index 152e339d08d9473d1114870b25b08b87b0ce8834..98a74c0b7f893f0bf87398bcf47d18ff
  #include <linux/workqueue.h>
  
  #include <linux/of_gpio.h>
-@@ -1440,6 +1443,20 @@ static void anx7625_start_dp_work(struct anx7625_data *ctx)
- 
- static int anx7625_read_hpd_status_p0(struct anx7625_data *ctx)
- {
-+	int ret;
-+
-+	/* Set irq detect window to 2ms */
-+	ret = anx7625_reg_write(ctx, ctx->i2c.tx_p2_client,
-+				HPD_DET_TIMER_BIT0_7, HPD_TIME & 0xFF);
-+	ret |= anx7625_reg_write(ctx, ctx->i2c.tx_p2_client,
-+				 HPD_DET_TIMER_BIT8_15,
-+				 (HPD_TIME >> 8) & 0xFF);
-+	ret |= anx7625_reg_write(ctx, ctx->i2c.tx_p2_client,
-+				 HPD_DET_TIMER_BIT16_23,
-+				 (HPD_TIME >> 16) & 0xFF);
-+	if (ret < 0)
-+		return ret;
-+
- 	return anx7625_reg_read(ctx, ctx->i2c.rx_p0_client, SYSTEM_STSTUS);
- }
- 
-@@ -1633,6 +1650,122 @@ static int anx7625_get_swing_setting(struct device *dev,
+@@ -1647,6 +1650,122 @@ static int anx7625_get_swing_setting(struct device *dev,
  	return 0;
  }
  
@@ -9815,17 +10623,17 @@ index 152e339d08d9473d1114870b25b08b87b0ce8834..98a74c0b7f893f0bf87398bcf47d18ff
  static int anx7625_parse_dt(struct device *dev,
  			    struct anx7625_platform_data *pdata)
  {
-@@ -1675,6 +1808,9 @@ static int anx7625_parse_dt(struct device *dev,
+@@ -1687,6 +1806,9 @@ static int anx7625_parse_dt(struct device *dev,
  	if (of_property_read_bool(np, "analogix,audio-enable"))
  		pdata->audio_en = 1;
  
 +	pdata->tx_rx_to_two_ports =
 +		of_property_read_bool(dev->of_node, "anx,tx-rx-to-two-ports");
 +
- 	ret = drm_of_find_panel_or_bridge(np, 1, 0, &panel, NULL);
- 	if (ret < 0) {
- 		if (ret == -ENODEV)
-@@ -2532,6 +2668,11 @@ static int __maybe_unused anx7625_runtime_pm_resume(struct device *dev)
+ 	pdata->panel_bridge = devm_drm_of_get_bridge(dev, np, 1, 0);
+ 	if (IS_ERR(pdata->panel_bridge)) {
+ 		if (PTR_ERR(pdata->panel_bridge) == -ENODEV) {
+@@ -2542,6 +2664,11 @@ static int __maybe_unused anx7625_runtime_pm_resume(struct device *dev)
  
  	anx7625_power_on_init(ctx);
  
@@ -9837,7 +10645,7 @@ index 152e339d08d9473d1114870b25b08b87b0ce8834..98a74c0b7f893f0bf87398bcf47d18ff
  	mutex_unlock(&ctx->lock);
  
  	return 0;
-@@ -2658,6 +2799,11 @@ static int anx7625_i2c_probe(struct i2c_client *client,
+@@ -2668,6 +2795,11 @@ static int anx7625_i2c_probe(struct i2c_client *client,
  	if (platform->pdata.intp_irq)
  		queue_work(platform->workqueue, &platform->work);
  
@@ -9849,7 +10657,7 @@ index 152e339d08d9473d1114870b25b08b87b0ce8834..98a74c0b7f893f0bf87398bcf47d18ff
  	platform->bridge.funcs = &anx7625_bridge_funcs;
  	platform->bridge.of_node = client->dev.of_node;
  	if (!anx7625_of_panel_on_aux_bus(&client->dev))
-@@ -2709,6 +2855,11 @@ static int anx7625_i2c_remove(struct i2c_client *client)
+@@ -2719,6 +2851,11 @@ static int anx7625_i2c_remove(struct i2c_client *client)
  
  	drm_bridge_remove(&platform->bridge);
  
@@ -9862,7 +10670,7 @@ index 152e339d08d9473d1114870b25b08b87b0ce8834..98a74c0b7f893f0bf87398bcf47d18ff
  		destroy_workqueue(platform->workqueue);
  
 diff --git a/drivers/gpu/drm/bridge/analogix/anx7625.h b/drivers/gpu/drm/bridge/analogix/anx7625.h
-index e257a84db9626a7a3c687136cd8620149c8e9004..d9af42f829de08d773197960e6b80d57bece3df1 100644
+index 14f33d6be289fca9f5495e4ee2b2d7ead837fcef..d9af42f829de08d773197960e6b80d57bece3df1 100644
 --- a/drivers/gpu/drm/bridge/analogix/anx7625.h
 +++ b/drivers/gpu/drm/bridge/analogix/anx7625.h
 @@ -55,6 +55,18 @@
@@ -9884,20 +10692,7 @@ index e257a84db9626a7a3c687136cd8620149c8e9004..d9af42f829de08d773197960e6b80d57
  /******** END of I2C Address 0x58 ********/
  
  /***************************************************************/
-@@ -132,6 +144,12 @@
- #define I2S_SLAVE_MODE 0x08
- #define AUDIO_LAYOUT   0x01
- 
-+#define HPD_DET_TIMER_BIT0_7   0xea
-+#define HPD_DET_TIMER_BIT8_15  0xeb
-+#define HPD_DET_TIMER_BIT16_23 0xec
-+/* HPD debounce time 2ms for 27M clock */
-+#define HPD_TIME               54000
-+
- #define AUDIO_CONTROL_REGISTER 0xe6
- #define TDM_TIMING_MODE 0x08
- 
-@@ -431,6 +449,7 @@ struct anx7625_platform_data {
+@@ -437,6 +449,7 @@ struct anx7625_platform_data {
  	u8 lane1_reg_data[DP_TX_SWING_REG_CNT];
  	u32 low_power_mode;
  	struct device_node *mipi_host_node;
@@ -9905,7 +10700,7 @@ index e257a84db9626a7a3c687136cd8620149c8e9004..d9af42f829de08d773197960e6b80d57
  };
  
  struct anx7625_i2c_client {
-@@ -443,6 +462,14 @@ struct anx7625_i2c_client {
+@@ -449,6 +462,14 @@ struct anx7625_i2c_client {
  	struct i2c_client *tcpc_client;
  };
  
@@ -9920,7 +10715,7 @@ index e257a84db9626a7a3c687136cd8620149c8e9004..d9af42f829de08d773197960e6b80d57
  struct anx7625_data {
  	struct anx7625_platform_data pdata;
  	struct platform_device *audio_pdev;
-@@ -473,6 +500,7 @@ struct anx7625_data {
+@@ -479,6 +500,7 @@ struct anx7625_data {
  	struct drm_connector *connector;
  	struct mipi_dsi_device *dsi;
  	struct drm_dp_aux aux;
@@ -9929,7 +10724,7 @@ index e257a84db9626a7a3c687136cd8620149c8e9004..d9af42f829de08d773197960e6b80d57
  
  #endif  /* __ANX7625_H__ */
 diff --git a/drivers/gpu/drm/bridge/ite-it6505.c b/drivers/gpu/drm/bridge/ite-it6505.c
-index 1d71f643805363ecb36a0f7bb9a9e68bef46ff02..cc2db780118b12d100bb97ef82d59a72303f5025 100644
+index 9f3992aefef1162ac97647d53cd48cf1ef9cdb7b..a283071d1a44e7549f65db3928f60b4ca6d1bebb 100644
 --- a/drivers/gpu/drm/bridge/ite-it6505.c
 +++ b/drivers/gpu/drm/bridge/ite-it6505.c
 @@ -6,7 +6,6 @@
@@ -10748,7 +11543,7 @@ index bb9dd92c9898d3ea34ecec811937c8311b663762..5e86fd48928af3b0ac35b3d44fc9e1c5
  		}
  	} else if (MTK_IOMMU_IS_TYPE(data->plat_data, MTK_IOMMU_TYPE_INFRA) &&
 diff --git a/drivers/mailbox/mtk-cmdq-mailbox.c b/drivers/mailbox/mtk-cmdq-mailbox.c
-index d941e62a7148fd5c533950454d378c8ff048aab4..33a622fc95f34bced08ef386af274209f0cf1cb5 100644
+index dc08df27e6f700e64b08e20e3db21ed7d657a9ea..33a622fc95f34bced08ef386af274209f0cf1cb5 100644
 --- a/drivers/mailbox/mtk-cmdq-mailbox.c
 +++ b/drivers/mailbox/mtk-cmdq-mailbox.c
 @@ -91,6 +91,8 @@ struct cmdq {
@@ -10807,23 +11602,7 @@ index d941e62a7148fd5c533950454d378c8ff048aab4..33a622fc95f34bced08ef386af274209
  u8 cmdq_get_shift_pa(struct mbox_chan *chan)
  {
  	struct cmdq *cmdq = container_of(chan->mbox, struct cmdq, mbox);
-@@ -202,15 +244,10 @@ static bool cmdq_thread_is_in_wfe(struct cmdq_thread *thread)
- 
- static void cmdq_task_exec_done(struct cmdq_task *task, int sta)
- {
--	struct cmdq_task_cb *cb = &task->pkt->async_cb;
- 	struct cmdq_cb_data data;
- 
- 	data.sta = sta;
--	data.data = cb->data;
- 	data.pkt = task->pkt;
--	if (cb->cb)
--		cb->cb(data);
--
- 	mbox_chan_received_data(task->thread->chan, &data);
- 
- 	list_del(&task->list_entry);
-@@ -281,7 +318,8 @@ static void cmdq_thread_irq_handler(struct cmdq *cmdq,
+@@ -276,7 +318,8 @@ static void cmdq_thread_irq_handler(struct cmdq *cmdq,
  
  	if (list_empty(&thread->task_busy_list)) {
  		cmdq_thread_disable(cmdq, thread);
@@ -10833,7 +11612,7 @@ index d941e62a7148fd5c533950454d378c8ff048aab4..33a622fc95f34bced08ef386af274209
  	}
  }
  
-@@ -370,8 +408,7 @@ static int cmdq_mbox_send_data(struct mbox_chan *chan, void *data)
+@@ -365,8 +408,7 @@ static int cmdq_mbox_send_data(struct mbox_chan *chan, void *data)
  	task->pkt = pkt;
  
  	if (list_empty(&thread->task_busy_list)) {
@@ -10843,7 +11622,7 @@ index d941e62a7148fd5c533950454d378c8ff048aab4..33a622fc95f34bced08ef386af274209
  		/*
  		 * The thread reset will clear thread related register to 0,
  		 * including pc, end, priority, irq, suspend and enable. Thus
-@@ -444,7 +481,7 @@ static void cmdq_mbox_shutdown(struct mbox_chan *chan)
+@@ -439,7 +481,7 @@ static void cmdq_mbox_shutdown(struct mbox_chan *chan)
  	}
  
  	cmdq_thread_disable(cmdq, thread);
@@ -10852,29 +11631,7 @@ index d941e62a7148fd5c533950454d378c8ff048aab4..33a622fc95f34bced08ef386af274209
  
  done:
  	/*
-@@ -459,7 +496,6 @@ static void cmdq_mbox_shutdown(struct mbox_chan *chan)
- static int cmdq_mbox_flush(struct mbox_chan *chan, unsigned long timeout)
- {
- 	struct cmdq_thread *thread = (struct cmdq_thread *)chan->con_priv;
--	struct cmdq_task_cb *cb;
- 	struct cmdq_cb_data data;
- 	struct cmdq *cmdq = dev_get_drvdata(chan->mbox->dev);
- 	struct cmdq_task *task, *tmp;
-@@ -476,13 +512,8 @@ static int cmdq_mbox_flush(struct mbox_chan *chan, unsigned long timeout)
- 
- 	list_for_each_entry_safe(task, tmp, &thread->task_busy_list,
- 				 list_entry) {
--		cb = &task->pkt->async_cb;
- 		data.sta = -ECONNABORTED;
--		data.data = cb->data;
- 		data.pkt = task->pkt;
--		if (cb->cb)
--			cb->cb(data);
--
- 		mbox_chan_received_data(task->thread->chan, &data);
- 		list_del(&task->list_entry);
- 		kfree(task);
-@@ -490,7 +521,8 @@ static int cmdq_mbox_flush(struct mbox_chan *chan, unsigned long timeout)
+@@ -479,7 +521,8 @@ static int cmdq_mbox_flush(struct mbox_chan *chan, unsigned long timeout)
  
  	cmdq_thread_resume(thread);
  	cmdq_thread_disable(cmdq, thread);
@@ -10884,7 +11641,7 @@ index d941e62a7148fd5c533950454d378c8ff048aab4..33a622fc95f34bced08ef386af274209
  
  out:
  	spin_unlock_irqrestore(&thread->chan->lock, flags);
-@@ -501,7 +533,8 @@ static int cmdq_mbox_flush(struct mbox_chan *chan, unsigned long timeout)
+@@ -490,7 +533,8 @@ static int cmdq_mbox_flush(struct mbox_chan *chan, unsigned long timeout)
  	spin_unlock_irqrestore(&thread->chan->lock, flags);
  	if (readl_poll_timeout_atomic(thread->base + CMDQ_THR_ENABLE_TASK,
  				      enable, enable == 0, 1, timeout)) {
@@ -10894,7 +11651,7 @@ index d941e62a7148fd5c533950454d378c8ff048aab4..33a622fc95f34bced08ef386af274209
  			(u32)(thread->base - cmdq->base));
  
  		return -EFAULT;
-@@ -636,6 +669,7 @@ static int cmdq_probe(struct platform_device *pdev)
+@@ -625,6 +669,7 @@ static int cmdq_probe(struct platform_device *pdev)
  
  	WARN_ON(clk_bulk_prepare(cmdq->gce_num, cmdq->clocks));
  
@@ -11266,7 +12023,7 @@ index 0000000000000000000000000000000000000000..548c7b8a4f4a79a7d6721b9ad44f2a35
 \ No newline at end of file
 diff --git a/drivers/media/platform/mediatek/mdp3/mdp_reg_tdshp.h b/drivers/media/platform/mediatek/mdp3/mdp_reg_tdshp.h
 new file mode 100644
-index 0000000000000000000000000000000000000000..d1fde071d469474e5642b1e0f59b185b91efb777
+index 0000000000000000000000000000000000000000..59ee818981b55379bfcf6554fd168b5a7fa83865
 --- /dev/null
 +++ b/drivers/media/platform/mediatek/mdp3/mdp_reg_tdshp.h
 @@ -0,0 +1,394 @@
@@ -11442,7 +12199,7 @@ index 0000000000000000000000000000000000000000..d1fde071d469474e5642b1e0f59b185b
 +#define MDP_CONTOUR_HIST_16          0x41C
 +#define MDP_DC_SKIN_RANGE1           0x424
 +#define MDP_DC_SKIN_RANGE2           0x428
-+#define MDP_DC_SKIN_RANGE3           0x42C 
++#define MDP_DC_SKIN_RANGE3           0x42C
 +#define MDP_DC_SKIN_RANGE4           0x430
 +#define MDP_DC_SKIN_RANGE5           0x434
 +#define MDP_POST_YLEV_00             0x480
@@ -11784,7 +12541,7 @@ index 3e66ebaee2da290397df947f4bb00c13ec964092..50a20aed2dfd7f20fa6173a033f9ea69
  		struct mdp_wdma_data wdma;
  		struct isp_data isp;
 diff --git a/drivers/media/platform/mediatek/mdp3/mtk-mdp3-comp.c b/drivers/media/platform/mediatek/mdp3/mtk-mdp3-comp.c
-index e62abf3587bffafb940e0c742b5e277610bf4497..c94422b6ee10b750d1cc980fc65c3033ad205413 100644
+index e62abf3587bffafb940e0c742b5e277610bf4497..122b7db272b57c9a6ecd76c409d0cd816c715c85 100644
 --- a/drivers/media/platform/mediatek/mdp3/mtk-mdp3-comp.c
 +++ b/drivers/media/platform/mediatek/mdp3/mtk-mdp3-comp.c
 @@ -17,6 +17,10 @@
@@ -11798,7 +12555,7 @@ index e62abf3587bffafb940e0c742b5e277610bf4497..c94422b6ee10b750d1cc980fc65c3033
  
  static u32 mdp_comp_alias_id[MDP_COMP_TYPE_COUNT];
  
-@@ -316,6 +320,358 @@ static const struct mdp_comp_ops rsz_ops = {
+@@ -316,6 +320,351 @@ static const struct mdp_comp_ops rsz_ops = {
  	.advance_subfrm = advance_rsz_subfrm,
  };
  
@@ -11834,10 +12591,9 @@ index e62abf3587bffafb940e0c742b5e277610bf4497..c94422b6ee10b750d1cc980fc65c3033
 +	phys_addr_t base = ctx->comp->reg_base;
 +	u16 subsys_id = ctx->comp->subsys_id;
 +	const struct img_comp_subfrm *csf = &ctx->param->subfrms[index];
-+	u32 hsize, vsize;
++	u32 hsize = csf->in.right - csf->in.left + 1;
++	u32 vsize = csf->in.bottom - csf->in.top + 1;
 +
-+	hsize = csf->in.right - csf->in.left + 1;
-+	vsize = csf->in.bottom - csf->in.top + 1;
 +        MM_REG_WRITE(cmd, subsys_id, base, MDP_AAL_SIZE,
 +		(hsize << 16) + (vsize <<  0), 0xFFFFFFFF);
 +	MM_REG_WRITE(cmd, subsys_id, base, MDP_AAL_OUT_OFFSET,
@@ -11892,10 +12648,9 @@ index e62abf3587bffafb940e0c742b5e277610bf4497..c94422b6ee10b750d1cc980fc65c3033
 +	const struct img_comp_subfrm *csf = &ctx->param->subfrms[index];
 +	phys_addr_t base = ctx->comp->reg_base;
 +	u16 subsys_id = ctx->comp->subsys_id;
-+	u32 hsize, vsize;
++	u32 hsize = csf->in.right - csf->in.left + 1;
++	u32 vsize = csf->in.bottom - csf->in.top + 1;
 +
-+	hsize = csf->in.right - csf->in.left + 1;
-+	vsize = csf->in.bottom - csf->in.top + 1;
 +	MM_REG_WRITE(cmd, subsys_id, base, MDP_HDR_SIZE_0,
 +		(vsize << 16) + (hsize <<  0), 0x1FFF1FFF);
 +
@@ -12057,20 +12812,18 @@ index e62abf3587bffafb940e0c742b5e277610bf4497..c94422b6ee10b750d1cc980fc65c3033
 +	phys_addr_t base = ctx->comp->reg_base;
 +	u16 subsys_id = ctx->comp->subsys_id;
 +	const struct img_comp_subfrm *csf = &ctx->param->subfrms[index];
-+	u32 hsize, vsize;
++	u32 hsize = csf->in.right - csf->in.left + 1;
++	u32 vsize = csf->in.bottom - csf->in.top + 1;
 +
-+	hsize = csf->in.right - csf->in.left + 1;
-+	vsize = csf->in.bottom - csf->in.top + 1;
 +	MM_REG_WRITE(cmd, subsys_id, base, MDP_TDSHP_INPUT_SIZE,
 +		     (hsize << 16) + (vsize <<  0), 0x1FFF1FFF);
-+
-+	 MM_REG_WRITE(cmd, subsys_id, base, MDP_TDSHP_OUTPUT_OFFSET,
++	MM_REG_WRITE(cmd, subsys_id, base, MDP_TDSHP_OUTPUT_OFFSET,
 +		      subfrm->clip_ofst, 0xFFFFFF);
-+	 MM_REG_WRITE(cmd, subsys_id, base, MDP_TDSHP_OUTPUT_SIZE,
++	MM_REG_WRITE(cmd, subsys_id, base, MDP_TDSHP_OUTPUT_SIZE,
 +		      subfrm->clip, 0xFFFFFF);
-+	 MM_REG_WRITE(cmd, subsys_id, base, MDP_HIST_CFG_00,
++	MM_REG_WRITE(cmd, subsys_id, base, MDP_HIST_CFG_00,
 +		      subfrm->hist_cfg_0, 0xFFFFFFFF);
-+	 MM_REG_WRITE(cmd, subsys_id, base, MDP_HIST_CFG_01,
++	MM_REG_WRITE(cmd, subsys_id, base, MDP_HIST_CFG_01,
 +		      subfrm->hist_cfg_1, 0xFFFFFFFF);
 +
 +	return 0;
@@ -12091,18 +12844,15 @@ index e62abf3587bffafb940e0c742b5e277610bf4497..c94422b6ee10b750d1cc980fc65c3033
 +	phys_addr_t base = ctx->comp->reg_base;
 +	u16 subsys_id = ctx->comp->subsys_id;
 +
-+	MM_REG_WRITE(cmd, subsys_id, base,
-+		     DISP_COLOR_START, 0x1, 0x3);
++	MM_REG_WRITE(cmd, subsys_id, base, DISP_COLOR_START, 0x1, 0x3);
 +	MM_REG_WRITE(cmd, subsys_id, base,
 +		     DISP_COLOR_WIN_X_MAIN, 0xFFFF0000, 0xFFFFFFFF);
 +	MM_REG_WRITE(cmd, subsys_id, base,
 +		     DISP_COLOR_WIN_Y_MAIN, 0xFFFF0000, 0xFFFFFFFF);
 +
 +	// R2Y/Y2R are disabled in MDP
-+	MM_REG_WRITE(cmd, subsys_id, base,
-+		     DISP_COLOR_CM1_EN, 0x0, 0x1);
-+	MM_REG_WRITE(cmd, subsys_id, base,
-+		     DISP_COLOR_CM2_EN, 0x0, 0x1);
++	MM_REG_WRITE(cmd, subsys_id, base, DISP_COLOR_CM1_EN, 0x0, 0x1);
++	MM_REG_WRITE(cmd, subsys_id, base, DISP_COLOR_CM2_EN, 0x0, 0x1);
 +
 +	//enable interrupt
 +	MM_REG_WRITE(cmd, subsys_id, base,
@@ -12157,7 +12907,7 @@ index e62abf3587bffafb940e0c742b5e277610bf4497..c94422b6ee10b750d1cc980fc65c3033
  static int init_wrot(struct mdp_comp_ctx *ctx, struct mdp_cmdq_cmd *cmd)
  {
  	phys_addr_t base = ctx->comp->reg_base;
-@@ -576,6 +932,11 @@ static const struct mdp_comp_ops *mdp_comp_ops[MDP_COMP_TYPE_COUNT] = {
+@@ -576,6 +925,11 @@ static const struct mdp_comp_ops *mdp_comp_ops[MDP_COMP_TYPE_COUNT] = {
  	[MDP_COMP_TYPE_WROT] =		&wrot_ops,
  	[MDP_COMP_TYPE_WDMA] =		&wdma_ops,
  	[MDP_COMP_TYPE_CCORR] =		&ccorr_ops,
@@ -12169,21 +12919,21 @@ index e62abf3587bffafb940e0c742b5e277610bf4497..c94422b6ee10b750d1cc980fc65c3033
  };
  
  struct mdp_comp_match {
-@@ -601,7 +962,13 @@ static const struct mdp_comp_match mdp_comp_matches[MDP_MAX_COMP_COUNT] = {
+@@ -601,7 +955,13 @@ static const struct mdp_comp_match mdp_comp_matches[MDP_MAX_COMP_COUNT] = {
  	[MDP_COMP_PATH0_SOUT] =	{ MDP_COMP_TYPE_PATH, 0 },
  	[MDP_COMP_PATH1_SOUT] =	{ MDP_COMP_TYPE_PATH, 1 },
  	[MDP_COMP_WROT0] =	{ MDP_COMP_TYPE_WROT, 0 },
 +	[MDP_COMP_WROT1] =	{ MDP_COMP_TYPE_WROT, 1 },
 +	[MDP_COMP_HDR0] =	{ MDP_COMP_TYPE_HDR, 0 },
-+	[MDP_COMP_COLOR0] = { MDP_COMP_TYPE_COLOR, 0 },
-+	[MDP_COMP_TDSHP0] = { MDP_COMP_TYPE_TDSHP, 0 },
++	[MDP_COMP_COLOR0] =	{ MDP_COMP_TYPE_COLOR, 0 },
++	[MDP_COMP_TDSHP0] =	{ MDP_COMP_TYPE_TDSHP, 0 },
 +	[MDP_COMP_AAL0] =	{ MDP_COMP_TYPE_AAL, 0 },
  	[MDP_COMP_WDMA] =	{ MDP_COMP_TYPE_WDMA, 0 },
-+	[MDP_COMP_MDPOT0] = { MDP_COMP_TYPE_MDPOT, 0 },
++	[MDP_COMP_MDPOT0] =	{ MDP_COMP_TYPE_MDPOT, 0 },
  };
  
  static const struct of_device_id mdp_comp_dt_ids[] = {
-@@ -620,6 +987,24 @@ static const struct of_device_id mdp_comp_dt_ids[] = {
+@@ -620,6 +980,24 @@ static const struct of_device_id mdp_comp_dt_ids[] = {
  	}, {
  		.compatible = "mediatek,mt8183-mdp3-wdma",
  		.data = (void *)MDP_COMP_TYPE_WDMA,
@@ -12208,14 +12958,14 @@ index e62abf3587bffafb940e0c742b5e277610bf4497..c94422b6ee10b750d1cc980fc65c3033
  	},
  	{}
  };
-@@ -648,6 +1033,11 @@ static const struct mdp_comp_info mdp_comp_dt_info[MDP_MAX_COMP_COUNT] = {
+@@ -648,6 +1026,11 @@ static const struct mdp_comp_info mdp_comp_dt_info[MDP_MAX_COMP_COUNT] = {
  	[MDP_COMP_WROT0]	= {1, 0, 0},
  	[MDP_COMP_WDMA]		= {1, 0, 0},
  	[MDP_COMP_CCORR0]	= {1, 0, 0},
 +	[MDP_COMP_TDSHP0]	= {1, 0, 0},
 +	[MDP_COMP_COLOR0]	= {1, 0, 0},
-+	[MDP_COMP_HDR0] 	= {1, 0, 0},
-+	[MDP_COMP_AAL0] 	= {1, 0, 0},
++	[MDP_COMP_HDR0]		= {1, 0, 0},
++	[MDP_COMP_AAL0]		= {1, 0, 0},
 +	[MDP_COMP_MDPOT0]	= {0, 0, 0},
  };
  
@@ -13059,187 +13809,6 @@ index 06d8e83a2cb56f5afdc25ab423083b7d733befe8..d7d17d4a9a5d5167514629d38e3107e2
  static int mtk_mmsys_reset_update(struct reset_controller_dev *rcdev, unsigned long id,
  				  bool assert)
  {
-diff --git a/drivers/soc/mediatek/mtk-pmic-wrap.c b/drivers/soc/mediatek/mtk-pmic-wrap.c
-index bf39a64f3ecc4b6548c3ac73f974ad1af08b02df..54a5300ab72bd704d0c634e27caf4639329b2b2d 100644
---- a/drivers/soc/mediatek/mtk-pmic-wrap.c
-+++ b/drivers/soc/mediatek/mtk-pmic-wrap.c
-@@ -13,6 +13,9 @@
- #include <linux/regmap.h>
- #include <linux/reset.h>
- 
-+#define PWRAP_POLL_DELAY_US	10
-+#define PWRAP_POLL_TIMEOUT_US	10000
-+
- #define PWRAP_MT8135_BRIDGE_IORD_ARB_EN		0x4
- #define PWRAP_MT8135_BRIDGE_WACS3_EN		0x10
- #define PWRAP_MT8135_BRIDGE_INIT_DONE3		0x14
-@@ -1241,27 +1244,14 @@ static bool pwrap_is_fsm_idle_and_sync_idle(struct pmic_wrapper *wrp)
- 		(val & PWRAP_STATE_SYNC_IDLE0);
- }
- 
--static int pwrap_wait_for_state(struct pmic_wrapper *wrp,
--		bool (*fp)(struct pmic_wrapper *))
--{
--	unsigned long timeout;
--
--	timeout = jiffies + usecs_to_jiffies(10000);
--
--	do {
--		if (time_after(jiffies, timeout))
--			return fp(wrp) ? 0 : -ETIMEDOUT;
--		if (fp(wrp))
--			return 0;
--	} while (1);
--}
--
- static int pwrap_read16(struct pmic_wrapper *wrp, u32 adr, u32 *rdata)
- {
-+	bool tmp;
- 	int ret;
- 	u32 val;
- 
--	ret = pwrap_wait_for_state(wrp, pwrap_is_fsm_idle);
-+	ret = readx_poll_timeout(pwrap_is_fsm_idle, wrp, tmp, tmp,
-+				 PWRAP_POLL_DELAY_US, PWRAP_POLL_TIMEOUT_US);
- 	if (ret) {
- 		pwrap_leave_fsm_vldclr(wrp);
- 		return ret;
-@@ -1273,7 +1263,8 @@ static int pwrap_read16(struct pmic_wrapper *wrp, u32 adr, u32 *rdata)
- 		val = (adr >> 1) << 16;
- 	pwrap_writel(wrp, val, PWRAP_WACS2_CMD);
- 
--	ret = pwrap_wait_for_state(wrp, pwrap_is_fsm_vldclr);
-+	ret = readx_poll_timeout(pwrap_is_fsm_vldclr, wrp, tmp, tmp,
-+				 PWRAP_POLL_DELAY_US, PWRAP_POLL_TIMEOUT_US);
- 	if (ret)
- 		return ret;
- 
-@@ -1290,11 +1281,14 @@ static int pwrap_read16(struct pmic_wrapper *wrp, u32 adr, u32 *rdata)
- 
- static int pwrap_read32(struct pmic_wrapper *wrp, u32 adr, u32 *rdata)
- {
-+	bool tmp;
- 	int ret, msb;
- 
- 	*rdata = 0;
- 	for (msb = 0; msb < 2; msb++) {
--		ret = pwrap_wait_for_state(wrp, pwrap_is_fsm_idle);
-+		ret = readx_poll_timeout(pwrap_is_fsm_idle, wrp, tmp, tmp,
-+					 PWRAP_POLL_DELAY_US, PWRAP_POLL_TIMEOUT_US);
-+
- 		if (ret) {
- 			pwrap_leave_fsm_vldclr(wrp);
- 			return ret;
-@@ -1303,7 +1297,8 @@ static int pwrap_read32(struct pmic_wrapper *wrp, u32 adr, u32 *rdata)
- 		pwrap_writel(wrp, ((msb << 30) | (adr << 16)),
- 			     PWRAP_WACS2_CMD);
- 
--		ret = pwrap_wait_for_state(wrp, pwrap_is_fsm_vldclr);
-+		ret = readx_poll_timeout(pwrap_is_fsm_vldclr, wrp, tmp, tmp,
-+					 PWRAP_POLL_DELAY_US, PWRAP_POLL_TIMEOUT_US);
- 		if (ret)
- 			return ret;
- 
-@@ -1323,9 +1318,11 @@ static int pwrap_read(struct pmic_wrapper *wrp, u32 adr, u32 *rdata)
- 
- static int pwrap_write16(struct pmic_wrapper *wrp, u32 adr, u32 wdata)
- {
-+	bool tmp;
- 	int ret;
- 
--	ret = pwrap_wait_for_state(wrp, pwrap_is_fsm_idle);
-+	ret = readx_poll_timeout(pwrap_is_fsm_idle, wrp, tmp, tmp,
-+				 PWRAP_POLL_DELAY_US, PWRAP_POLL_TIMEOUT_US);
- 	if (ret) {
- 		pwrap_leave_fsm_vldclr(wrp);
- 		return ret;
-@@ -1344,10 +1341,12 @@ static int pwrap_write16(struct pmic_wrapper *wrp, u32 adr, u32 wdata)
- 
- static int pwrap_write32(struct pmic_wrapper *wrp, u32 adr, u32 wdata)
- {
-+	bool tmp;
- 	int ret, msb, rdata;
- 
- 	for (msb = 0; msb < 2; msb++) {
--		ret = pwrap_wait_for_state(wrp, pwrap_is_fsm_idle);
-+		ret = readx_poll_timeout(pwrap_is_fsm_idle, wrp, tmp, tmp,
-+					 PWRAP_POLL_DELAY_US, PWRAP_POLL_TIMEOUT_US);
- 		if (ret) {
- 			pwrap_leave_fsm_vldclr(wrp);
- 			return ret;
-@@ -1388,6 +1387,7 @@ static int pwrap_regmap_write(void *context, u32 adr, u32 wdata)
- 
- static int pwrap_reset_spislave(struct pmic_wrapper *wrp)
- {
-+	bool tmp;
- 	int ret, i;
- 
- 	pwrap_writel(wrp, 0, PWRAP_HIPRIO_ARB_EN);
-@@ -1407,7 +1407,8 @@ static int pwrap_reset_spislave(struct pmic_wrapper *wrp)
- 		pwrap_writel(wrp, wrp->master->spi_w | PWRAP_MAN_CMD_OP_OUTS,
- 				PWRAP_MAN_CMD);
- 
--	ret = pwrap_wait_for_state(wrp, pwrap_is_sync_idle);
-+	ret = readx_poll_timeout(pwrap_is_sync_idle, wrp, tmp, tmp,
-+				 PWRAP_POLL_DELAY_US, PWRAP_POLL_TIMEOUT_US);
- 	if (ret) {
- 		dev_err(wrp->dev, "%s fail, ret=%d\n", __func__, ret);
- 		return ret;
-@@ -1458,14 +1459,15 @@ static int pwrap_init_sidly(struct pmic_wrapper *wrp)
- static int pwrap_init_dual_io(struct pmic_wrapper *wrp)
- {
- 	int ret;
-+	bool tmp;
- 	u32 rdata;
- 
- 	/* Enable dual IO mode */
- 	pwrap_write(wrp, wrp->slave->dew_regs[PWRAP_DEW_DIO_EN], 1);
- 
- 	/* Check IDLE & INIT_DONE in advance */
--	ret = pwrap_wait_for_state(wrp,
--				   pwrap_is_fsm_idle_and_sync_idle);
-+	ret = readx_poll_timeout(pwrap_is_fsm_idle_and_sync_idle, wrp, tmp, tmp,
-+				 PWRAP_POLL_DELAY_US, PWRAP_POLL_TIMEOUT_US);
- 	if (ret) {
- 		dev_err(wrp->dev, "%s fail, ret=%d\n", __func__, ret);
- 		return ret;
-@@ -1570,6 +1572,7 @@ static bool pwrap_is_pmic_cipher_ready(struct pmic_wrapper *wrp)
- static int pwrap_init_cipher(struct pmic_wrapper *wrp)
- {
- 	int ret;
-+	bool tmp;
- 	u32 rdata = 0;
- 
- 	pwrap_writel(wrp, 0x1, PWRAP_CIPHER_SWRST);
-@@ -1624,14 +1627,16 @@ static int pwrap_init_cipher(struct pmic_wrapper *wrp)
- 	}
- 
- 	/* wait for cipher data ready@AP */
--	ret = pwrap_wait_for_state(wrp, pwrap_is_cipher_ready);
-+	ret = readx_poll_timeout(pwrap_is_cipher_ready, wrp, tmp, tmp,
-+				 PWRAP_POLL_DELAY_US, PWRAP_POLL_TIMEOUT_US);
- 	if (ret) {
- 		dev_err(wrp->dev, "cipher data ready@AP fail, ret=%d\n", ret);
- 		return ret;
- 	}
- 
- 	/* wait for cipher data ready@PMIC */
--	ret = pwrap_wait_for_state(wrp, pwrap_is_pmic_cipher_ready);
-+	ret = readx_poll_timeout(pwrap_is_pmic_cipher_ready, wrp, tmp, tmp,
-+				 PWRAP_POLL_DELAY_US, PWRAP_POLL_TIMEOUT_US);
- 	if (ret) {
- 		dev_err(wrp->dev,
- 			"timeout waiting for cipher data ready@PMIC\n");
-@@ -1640,7 +1645,8 @@ static int pwrap_init_cipher(struct pmic_wrapper *wrp)
- 
- 	/* wait for cipher mode idle */
- 	pwrap_write(wrp, wrp->slave->dew_regs[PWRAP_DEW_CIPHER_MODE], 0x1);
--	ret = pwrap_wait_for_state(wrp, pwrap_is_fsm_idle_and_sync_idle);
-+	ret = readx_poll_timeout(pwrap_is_fsm_idle_and_sync_idle, wrp, tmp, tmp,
-+				 PWRAP_POLL_DELAY_US, PWRAP_POLL_TIMEOUT_US);
- 	if (ret) {
- 		dev_err(wrp->dev, "cipher mode idle fail, ret=%d\n", ret);
- 		return ret;
 diff --git a/drivers/soc/mediatek/mtk-svs.c b/drivers/soc/mediatek/mtk-svs.c
 index 606a00a2e57d98e47c3c0224772c294c76cbc09d..663c619398c17b9a71fca9af4a71254fa2b11d16 100644
 --- a/drivers/soc/mediatek/mtk-svs.c
@@ -13682,6 +14251,118 @@ index 606a00a2e57d98e47c3c0224772c294c76cbc09d..663c619398c17b9a71fca9af4a71254f
  	}, {
  		.compatible = "mediatek,mt8183-svs",
  		.data = &svs_mt8183_platform_data,
+diff --git a/drivers/spi/spi-mtk-nor.c b/drivers/spi/spi-mtk-nor.c
+index d167699a1a96bd7015a278f5345dd8e650e6e8ed..8d442a499394af76b14c17a7c0086a04096b4194 100644
+--- a/drivers/spi/spi-mtk-nor.c
++++ b/drivers/spi/spi-mtk-nor.c
+@@ -133,17 +133,55 @@ static inline void mtk_nor_rmw(struct mtk_nor *sp, u32 reg, u32 set, u32 clr)
+ 	writel(val, sp->base + reg);
+ }
+ 
++void print_nor_initial_register(struct mtk_nor *sp)
++{
++	u32 reg;
++
++	reg = readl(sp->base + MTK_NOR_REG_IRQ_EN);
++	dev_err(sp->dev, "nor MTK_NOR_REG_IRQ_EN register:0x%x\n", reg);
++
++	reg = readl(sp->base + MTK_NOR_REG_IRQ_STAT);
++	dev_err(sp->dev, "nor MTK_NOR_REG_IRQ_STAT register:0x%x\n", reg);
++
++	reg = readl(sp->base + MTK_NOR_REG_WP);
++	dev_err(sp->dev, "nor wp register:0x%x\n", reg);
++
++	reg = readl(sp->base + MTK_NOR_REG_CFG2);
++	dev_err(sp->dev, "nor MTK_NOR_REG_CFG2 register:0x%x\n", reg);
++
++	reg = readl(sp->base + MTK_NOR_REG_CFG3);
++	dev_err(sp->dev, "nor MTK_NOR_REG_CFG3 register:0x%x\n", reg);
++}
++
++u32 debug_timeout = 0;
+ static inline int mtk_nor_cmd_exec(struct mtk_nor *sp, u32 cmd, ulong clk)
+ {
+ 	ulong delay = CLK_TO_US(sp, clk);
+ 	u32 reg;
+ 	int ret;
++	u32 reg_cfg1;
+ 
+ 	writel(cmd, sp->base + MTK_NOR_REG_CMD);
+ 	ret = readl_poll_timeout(sp->base + MTK_NOR_REG_CMD, reg, !(reg & cmd),
+ 				 delay / 3, (delay + 1) * 200);
+-	if (ret < 0)
++	if (ret < 0) {
++		debug_timeout = 1;
+ 		dev_err(sp->dev, "command %u timeout.\n", cmd);
++		print_nor_initial_register(sp);
++		pr_err("stop in here(%d), set 0x11000060 as 0x1F to continue...\n", __LINE__);
++	}
++
++	reg_cfg1 = readl(sp->base + MTK_NOR_REG_CFG1);
++	while (debug_timeout) {
++		reg = readl(sp->base + MTK_NOR_REG_CFG1);
++		if ((reg & 0x1F) == 0x1F) {
++			debug_timeout = 0;
++		}
++		msleep(100);
++	};
++
++	writel(reg_cfg1, sp->base + MTK_NOR_REG_CFG1);
++
+ 	return ret;
+ }
+ 
+@@ -356,6 +394,7 @@ static int mtk_nor_dma_exec(struct mtk_nor *sp, u32 from, unsigned int length,
+ 	int ret = 0;
+ 	ulong delay;
+ 	u32 reg;
++	u32 reg_cfg1;
+ 
+ 	writel(from, sp->base + MTK_NOR_REG_DMA_FADR);
+ 	writel(dma_addr, sp->base + MTK_NOR_REG_DMA_DADR);
+@@ -387,8 +426,23 @@ static int mtk_nor_dma_exec(struct mtk_nor *sp, u32 from, unsigned int length,
+ 					 (delay + 1) * 100);
+ 	}
+ 
+-	if (ret < 0)
++	if (ret < 0) {
++		debug_timeout = 1;
+ 		dev_err(sp->dev, "dma read timeout.\n");
++		print_nor_initial_register(sp);
++		pr_err("stop in here(%d), set 0x11000060 as 0x1F to continue...\n", __LINE__);
++	}
++
++	reg_cfg1 = readl(sp->base + MTK_NOR_REG_CFG1);
++	while (debug_timeout) {
++		reg = readl(sp->base + MTK_NOR_REG_CFG1);
++		if ((reg & 0x1F) == 0x1F) {
++			debug_timeout = 0;
++		}
++		msleep(100);
++	};
++
++	writel(reg_cfg1, sp->base + MTK_NOR_REG_CFG1);
+ 
+ 	return ret;
+ }
+@@ -729,10 +783,17 @@ static int mtk_nor_enable_clk(struct mtk_nor *sp)
+ 
+ static void mtk_nor_init(struct mtk_nor *sp)
+ {
++	u32 value;
++
+ 	writel(0, sp->base + MTK_NOR_REG_IRQ_EN);
+ 	writel(MTK_NOR_IRQ_MASK, sp->base + MTK_NOR_REG_IRQ_STAT);
+ 
+ 	writel(MTK_NOR_ENABLE_SF_CMD, sp->base + MTK_NOR_REG_WP);
++	value = readl(sp->base + MTK_NOR_REG_WP);
++	if (value != MTK_NOR_ENABLE_SF_CMD) {
++		dev_err(sp->dev, "write nor wp register fail, value:0x%x\n", value);
++	}
++
+ 	mtk_nor_rmw(sp, MTK_NOR_REG_CFG2, MTK_NOR_WR_CUSTOM_OP_EN, 0);
+ 	mtk_nor_rmw(sp, MTK_NOR_REG_CFG3,
+ 		    MTK_NOR_DISABLE_WREN | MTK_NOR_DISABLE_SR_POLL, 0);
 diff --git a/drivers/thermal/mediatek/soc_temp_lvts.c b/drivers/thermal/mediatek/soc_temp_lvts.c
 index 81567dc192eb5b619b5f78f1f4f9a76a33c439f9..bb8a4443fb8f402e64ded3dafdec156d13073106 100644
 --- a/drivers/thermal/mediatek/soc_temp_lvts.c
@@ -13951,68 +14632,6 @@ index 81567dc192eb5b619b5f78f1f4f9a76a33c439f9..bb8a4443fb8f402e64ded3dafdec156d
 +MODULE_AUTHOR("Dawei Chien <dawei.chien@mediatek.com>");
  MODULE_DESCRIPTION("Mediatek soc temperature driver");
  MODULE_LICENSE("GPL v2");
-diff --git a/drivers/usb/host/xhci-mtk-sch.c b/drivers/usb/host/xhci-mtk-sch.c
-index 06a6b19acaae6869f045197aca926d744c645d5b..a17bc584ee99e3df8cac2c3741aeca763e1a979b 100644
---- a/drivers/usb/host/xhci-mtk-sch.c
-+++ b/drivers/usb/host/xhci-mtk-sch.c
-@@ -425,7 +425,6 @@ static int check_fs_bus_bw(struct mu3h_sch_ep_info *sch_ep, int offset)
- 
- static int check_sch_tt(struct mu3h_sch_ep_info *sch_ep, u32 offset)
- {
--	u32 extra_cs_count;
- 	u32 start_ss, last_ss;
- 	u32 start_cs, last_cs;
- 
-@@ -461,18 +460,12 @@ static int check_sch_tt(struct mu3h_sch_ep_info *sch_ep, u32 offset)
- 		if (last_cs > 7)
- 			return -ESCH_CS_OVERFLOW;
- 
--		if (sch_ep->ep_type == ISOC_IN_EP)
--			extra_cs_count = (last_cs == 7) ? 1 : 2;
--		else /*  ep_type : INTR IN / INTR OUT */
--			extra_cs_count = 1;
--
--		cs_count += extra_cs_count;
- 		if (cs_count > 7)
- 			cs_count = 7; /* HW limit */
- 
- 		sch_ep->cs_count = cs_count;
--		/* one for ss, the other for idle */
--		sch_ep->num_budget_microframes = cs_count + 2;
-+		/* ss, idle are ignored */
-+		sch_ep->num_budget_microframes = cs_count;
- 
- 		/*
- 		 * if interval=1, maxp >752, num_budge_micoframe is larger
-diff --git a/include/linux/mailbox/mtk-cmdq-mailbox.h b/include/linux/mailbox/mtk-cmdq-mailbox.h
-index 44365aab043cbfe104ddc57010c8286d9f64981c..a8f0070c7aa98f64c8f2578c88ce7cbd6f7dc426 100644
---- a/include/linux/mailbox/mtk-cmdq-mailbox.h
-+++ b/include/linux/mailbox/mtk-cmdq-mailbox.h
-@@ -67,24 +67,14 @@ enum cmdq_code {
- 
- struct cmdq_cb_data {
- 	int			sta;
--	void			*data;
- 	struct cmdq_pkt		*pkt;
- };
- 
--typedef void (*cmdq_async_flush_cb)(struct cmdq_cb_data data);
--
--struct cmdq_task_cb {
--	cmdq_async_flush_cb	cb;
--	void			*data;
--};
--
- struct cmdq_pkt {
- 	void			*va_base;
- 	dma_addr_t		pa_base;
- 	size_t			cmd_buf_size; /* command occupied size */
- 	size_t			buf_size; /* real buffer size */
--	struct cmdq_task_cb	cb;
--	struct cmdq_task_cb	async_cb;
- 	void			*cl;
- };
- 
 diff --git a/include/linux/soc/mediatek/mtk-mmsys.h b/include/linux/soc/mediatek/mtk-mmsys.h
 index 59117d970daf9cbd6f0930134382c2eae7d68278..7a378d247505508769ee4184bae2535d3b91cd74 100644
 --- a/include/linux/soc/mediatek/mtk-mmsys.h
@@ -14024,57 +14643,3 @@ index 59117d970daf9cbd6f0930134382c2eae7d68278..7a378d247505508769ee4184bae2535d
 +void mtk_mmsys_ddp_dpi_fmt_config(struct device *dev, u32 mask, u32 val);
 +
  #endif /* __MTK_MMSYS_H */
-diff --git a/sound/soc/sof/sof-audio.c b/sound/soc/sof/sof-audio.c
-index e83d0805bd0ad7a8cd7f7cd9a0c52dd8cb357a48..859d1f8aed111083a7cbd34998a50bc9e0f8ec2c 100644
---- a/sound/soc/sof/sof-audio.c
-+++ b/sound/soc/sof/sof-audio.c
-@@ -785,6 +785,28 @@ int sof_dai_get_bclk(struct snd_soc_pcm_runtime *rtd)
- }
- EXPORT_SYMBOL(sof_dai_get_bclk);
- 
-+static struct snd_sof_of_mach *sof_of_machine_select(struct snd_sof_dev *sdev)
-+{
-+	struct snd_sof_pdata *sof_pdata = sdev->pdata;
-+	const struct sof_dev_desc *desc = sof_pdata->desc;
-+	struct snd_sof_of_mach *mach = desc->of_machines;
-+
-+	if (!mach)
-+		return NULL;
-+
-+	for (; mach->compatible; mach++) {
-+		if (of_machine_is_compatible(mach->compatible)) {
-+			sof_pdata->tplg_filename = mach->sof_tplg_filename;
-+			if (mach->fw_filename)
-+				sof_pdata->fw_filename = mach->fw_filename;
-+
-+			return mach;
-+		}
-+	}
-+
-+	return NULL;
-+}
-+
- /*
-  * SOF Driver enumeration.
-  */
-@@ -795,6 +817,7 @@ int sof_machine_check(struct snd_sof_dev *sdev)
- 	struct snd_soc_acpi_mach *mach;
- 
- 	if (!IS_ENABLED(CONFIG_SND_SOC_SOF_FORCE_NOCODEC_MODE)) {
-+		const struct snd_sof_of_mach *of_mach;
- 
- 		/* find machine */
- 		mach = snd_sof_machine_select(sdev);
-@@ -804,6 +827,12 @@ int sof_machine_check(struct snd_sof_dev *sdev)
- 			return 0;
- 		}
- 
-+		of_mach = sof_of_machine_select(sdev);
-+		if (of_mach) {
-+			sof_pdata->of_machine = of_mach;
-+			return 0;
-+		}
-+
- 		if (!IS_ENABLED(CONFIG_SND_SOC_SOF_NOCODEC)) {
- 			dev_err(sdev->dev, "error: no matching ASoC machine driver found - aborting probe\n");
- 			return -ENODEV;
