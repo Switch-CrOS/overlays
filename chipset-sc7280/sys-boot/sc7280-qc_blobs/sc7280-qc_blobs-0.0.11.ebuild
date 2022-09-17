@@ -38,6 +38,9 @@ src_install() {
 	# overlay's sys-boot/qclib and sys-boot/qtiseclib, respectively.
 	if use internal; then
 		rm "${S}/boot/QcLib.elf"
+		rm "${S}/boot/Pmic.bin"
+		rm "${S}/boot/dcb.bin"
+		rm "${S}/shrm/shrm.elf"
 		rm "${S}/qtiseclib/libqtisec.a"
 	fi
 
