@@ -17,10 +17,6 @@ SLOT="0"
 KEYWORDS="*"
 
 S="${WORKDIR}"
-DEPEND="
-	chromeos-base/fibocom-firmware
-"
-RDEPEND="${DEPEND}"
 
 src_install() {
 	cellular_domanifest "${FILESDIR}/helper_manifest.prototxt"
