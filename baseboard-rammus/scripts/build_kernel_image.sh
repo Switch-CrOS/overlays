@@ -29,4 +29,7 @@ modify_kernel_command_line() {
 
   # Don't disable the ability to run VMs.
   echo "disablevmx=off" >> "$1"
+
+  # Mitigate risk from running untrusted VMs
+  echo "kvm-intel.vmentry_l1d_flush=always" >> "$1"
 }
