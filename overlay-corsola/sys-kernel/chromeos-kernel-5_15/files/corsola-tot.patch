@@ -8,121 +8,21 @@ index 669ac7c32292798644b21dbb5a0dc657125f444d..dc0f0ea4da037c7ea336d73d30e6dbfa
  the problems which may result by upgrading your kernel.
 +
 +
-diff --git a/arch/arm64/boot/dts/mediatek/mt8186-corsola-rusty-rev2-sku196608.dts b/arch/arm64/boot/dts/mediatek/mt8186-corsola-rusty-rev2-sku196608.dts
-index e29f179533f2e777b7d244aa7977a0fecd68106f..ebde23c0f63f71b121889449dcd1b00dd05f5702 100644
---- a/arch/arm64/boot/dts/mediatek/mt8186-corsola-rusty-rev2-sku196608.dts
-+++ b/arch/arm64/boot/dts/mediatek/mt8186-corsola-rusty-rev2-sku196608.dts
-@@ -20,3 +20,7 @@
- &touchscreen {
- 	status = "disabled";
- };
-+
-+&target {
-+	temperature = <65000>;
-+};
-diff --git a/arch/arm64/boot/dts/mediatek/mt8186-corsola-rusty.dts b/arch/arm64/boot/dts/mediatek/mt8186-corsola-rusty.dts
-index e46f3adbf6dd5942e5a181296b2c911189b23511..2840efcf5324a8407397087e3084eaf451b19c43 100644
---- a/arch/arm64/boot/dts/mediatek/mt8186-corsola-rusty.dts
-+++ b/arch/arm64/boot/dts/mediatek/mt8186-corsola-rusty.dts
-@@ -20,3 +20,7 @@
- &touchscreen {
- 	status = "disabled";
- };
-+
-+&target {
-+	temperature = <65000>;
-+};
-diff --git a/arch/arm64/boot/dts/mediatek/mt8186-corsola-steelix-rev2-sku131072.dts b/arch/arm64/boot/dts/mediatek/mt8186-corsola-steelix-rev2-sku131072.dts
-index ff35b809b7767a741c3570f208a084a72ed91a0c..cd5ecdbcaa5b0a083cd5c37a9d92ac5c890a048a 100644
---- a/arch/arm64/boot/dts/mediatek/mt8186-corsola-steelix-rev2-sku131072.dts
-+++ b/arch/arm64/boot/dts/mediatek/mt8186-corsola-steelix-rev2-sku131072.dts
-@@ -15,3 +15,7 @@
- &mt6366codec {
- 	mediatek,dmic-mode = <0>; /* two-wire */
- };
-+
-+&target {
-+	temperature = <65000>;
-+};
-diff --git a/arch/arm64/boot/dts/mediatek/mt8186-corsola-steelix-rev2-sku131073.dts b/arch/arm64/boot/dts/mediatek/mt8186-corsola-steelix-rev2-sku131073.dts
-index cf70d4f4ee3ac6b3b83bfb5855d86fdb80150a1b..2a6efbe76c1cb39efe22ed31d47747183757e99f 100644
---- a/arch/arm64/boot/dts/mediatek/mt8186-corsola-steelix-rev2-sku131073.dts
-+++ b/arch/arm64/boot/dts/mediatek/mt8186-corsola-steelix-rev2-sku131073.dts
-@@ -15,3 +15,7 @@
- &mt6366codec {
- 	mediatek,dmic-mode = <1>; /* one-wire */
- };
-+
-+&target {
-+	temperature = <65000>;
-+};
-diff --git a/arch/arm64/boot/dts/mediatek/mt8186-corsola-steelix-sku131072.dts b/arch/arm64/boot/dts/mediatek/mt8186-corsola-steelix-sku131072.dts
-index 59aa864ed304f8e9f14a05a2d5c2d85e2fef1d3a..28b765e14af6d8d65d834fd2c4a7d96d5662281a 100644
---- a/arch/arm64/boot/dts/mediatek/mt8186-corsola-steelix-sku131072.dts
-+++ b/arch/arm64/boot/dts/mediatek/mt8186-corsola-steelix-sku131072.dts
-@@ -15,3 +15,7 @@
- &mt6366codec {
- 	mediatek,dmic-mode = <0>; /* two-wire */
- };
-+
-+&target {
-+	temperature = <65000>;
-+};
-diff --git a/arch/arm64/boot/dts/mediatek/mt8186-corsola-steelix-sku131073.dts b/arch/arm64/boot/dts/mediatek/mt8186-corsola-steelix-sku131073.dts
-index af92cea09365a18f8a8d178c8f6d14077034b759..5687877f9b8a424a4ca1863df9220f3800b92ff0 100644
---- a/arch/arm64/boot/dts/mediatek/mt8186-corsola-steelix-sku131073.dts
-+++ b/arch/arm64/boot/dts/mediatek/mt8186-corsola-steelix-sku131073.dts
-@@ -15,3 +15,7 @@
- &mt6366codec {
- 	mediatek,dmic-mode = <1>; /* one-wire */
- };
-+
-+&target {
-+	temperature = <65000>;
-+};
-diff --git a/arch/arm64/boot/dts/mediatek/mt8186-corsola.dtsi b/arch/arm64/boot/dts/mediatek/mt8186-corsola.dtsi
-index 2ac1413f1b0445ee5fa655b78114bc65ce6eadac..0fc97fb2814ccaad69d58d30dad5b3a7c4c88239 100644
---- a/arch/arm64/boot/dts/mediatek/mt8186-corsola.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt8186-corsola.dtsi
-@@ -340,6 +340,19 @@
- 		/* Toggle WLAN_MODULE_RST_L to reset the chip */
- 		reset-gpios = <&pio 54 1>;
- 	};
-+
-+	wifi_wakeup: wifi-wakeup {
-+		compatible = "gpio-keys";
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&wifi_pins_wakeup>;
-+
-+		wowlan {
-+			label = "Wake on WiFi";
-+			gpios = <&pio 7 GPIO_ACTIVE_LOW>;
-+			linux,code = <KEY_WAKEUP>;
-+			wakeup-source;
-+		};
-+	};
- };
- 
- &adsp {
-@@ -1447,6 +1460,13 @@
- 			pinmux = <PINMUX_GPIO54__FUNC_GPIO54>;
- 		};
- 	};
-+
-+	wifi_pins_wakeup: wifi-pins-wakeup {
-+		pins-wifi-wakeup {
-+			pinmux = <PINMUX_GPIO7__FUNC_GPIO7>;
-+			input-enable;
-+		};
-+	};
- };
- 
- &pwm0 {
 diff --git a/arch/arm64/boot/dts/mediatek/mt8186.dtsi b/arch/arm64/boot/dts/mediatek/mt8186.dtsi
-index 9597d5958c1b92582249f01ebb0b64a89d207a52..114767376e72e0a06042496dbd487110f3957b6b 100644
+index 9597d5958c1b92582249f01ebb0b64a89d207a52..eb0218c82889eea5955a32f113aaad271f1d8ed4 100644
 --- a/arch/arm64/boot/dts/mediatek/mt8186.dtsi
 +++ b/arch/arm64/boot/dts/mediatek/mt8186.dtsi
-@@ -2356,5 +2356,10 @@
+@@ -948,8 +948,7 @@
+ 		};
+ 
+ 		gce: mailbox@1022c000 {
+-			compatible = "mediatek,mt8186-gce",
+-				     "mediatek,mt8192-gce";
++			compatible = "mediatek,mt8186-gce";
+ 			reg = <0 0X1022c000 0 0x4000>;
+ 			interrupts = <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH 0>;
+ 			#mbox-cells = <2>;
+@@ -2356,5 +2355,10 @@
  				thermal-sensors = <&lvts 9>;
  			};
  		};
@@ -4975,222 +4875,46 @@ index c3fd1a4388e813df8fd4b907693413ed0830f894..af396a5d9c0fc250135bacecfbfde26a
  
  	return 0;
  }
-diff --git a/drivers/gpu/drm/mediatek/mtk_dpi.c b/drivers/gpu/drm/mediatek/mtk_dpi.c
-index fb0b7970463691a82880522482f3d3251d7a8a3e..52bcc4114afdd9f05518493b9c6512c0bbe9a4cb 100644
---- a/drivers/gpu/drm/mediatek/mtk_dpi.c
-+++ b/drivers/gpu/drm/mediatek/mtk_dpi.c
-@@ -14,6 +14,7 @@
- #include <linux/of_graph.h>
- #include <linux/pinctrl/consumer.h>
- #include <linux/platform_device.h>
-+#include <linux/soc/mediatek/mtk-mmsys.h>
- #include <linux/types.h>
- 
- #include <video/videomode.h>
-@@ -28,6 +29,7 @@
- #include "mtk_disp_drv.h"
- #include "mtk_dpi_regs.h"
- #include "mtk_drm_ddp_comp.h"
-+#include "mtk_drm_drv.h"
- 
- enum mtk_dpi_out_bit_num {
- 	MTK_DPI_OUT_BIT_NUM_8BITS,
-@@ -58,6 +60,11 @@ enum mtk_dpi_out_color_format {
- 	MTK_DPI_COLOR_FORMAT_YCBCR_422
- };
- 
-+enum mtk_dpi_out_format_con {
-+	MTK_DPI_RGB888_DDR_CON,
-+	MTK_DPI_RGB565_SDR_CON
-+};
-+
- struct mtk_dpi {
- 	struct drm_encoder encoder;
- 	struct drm_bridge bridge;
-@@ -80,6 +87,7 @@ struct mtk_dpi {
- 	struct pinctrl_state *pins_dpi;
- 	u32 output_fmt;
- 	int refcount;
-+	struct device *mmsys_dev;
- };
- 
- static inline struct mtk_dpi *bridge_to_dpi(struct drm_bridge *b)
-@@ -133,6 +141,7 @@ struct mtk_dpi_yc_limit {
-  * @yuv422_en_bit: Enable bit of yuv422.
-  * @csc_enable_bit: Enable bit of CSC.
-  * @pixels_per_iter: Quantity of transferred pixels per iteration.
-+ * @edge_cfg_in_mmsys: If the edge configuration for DPI's output needs to be set in MMSYS.
-  */
- struct mtk_dpi_conf {
- 	unsigned int (*cal_factor)(int clock);
-@@ -151,6 +160,7 @@ struct mtk_dpi_conf {
- 	u32 yuv422_en_bit;
- 	u32 csc_enable_bit;
- 	u32 pixels_per_iter;
-+	bool edge_cfg_in_mmsys;
- };
- 
- static void mtk_dpi_mask(struct mtk_dpi *dpi, u32 offset, u32 val, u32 mask)
-@@ -447,6 +457,8 @@ static void mtk_dpi_dual_edge(struct mtk_dpi *dpi)
- 		mtk_dpi_mask(dpi, DPI_OUTPUT_SETTING,
- 			     dpi->output_fmt == MEDIA_BUS_FMT_RGB888_2X12_LE ?
- 			     EDGE_SEL : 0, EDGE_SEL);
-+		if (dpi->conf->edge_cfg_in_mmsys)
-+			mtk_mmsys_ddp_dpi_fmt_config(dpi->mmsys_dev, MTK_DPI_RGB888_DDR_CON);
- 	} else {
- 		mtk_dpi_mask(dpi, DPI_DDR_SETTING, DDR_EN | DDR_4PHASE, 0);
- 	}
-@@ -776,8 +788,10 @@ static int mtk_dpi_bind(struct device *dev, struct device *master, void *data)
- {
- 	struct mtk_dpi *dpi = dev_get_drvdata(dev);
- 	struct drm_device *drm_dev = data;
-+	struct mtk_drm_private *priv = drm_dev->dev_private;
- 	int ret;
- 
-+	dpi->mmsys_dev = priv->mmsys_dev;
- 	ret = drm_simple_encoder_init(drm_dev, &dpi->encoder,
- 				      DRM_MODE_ENCODER_TMDS);
- 	if (ret) {
-@@ -928,6 +942,24 @@ static const struct mtk_dpi_conf mt8183_conf = {
- 	.csc_enable_bit = CSC_ENABLE,
- };
- 
-+static const struct mtk_dpi_conf mt8186_conf = {
-+	.cal_factor = mt8183_calculate_factor,
-+	.reg_h_fre_con = 0xe0,
-+	.max_clock_khz = 150000,
-+	.output_fmts = mt8183_output_fmts,
-+	.num_output_fmts = ARRAY_SIZE(mt8183_output_fmts),
-+	.edge_cfg_in_mmsys = true,
-+	.pixels_per_iter = 1,
-+	.is_ck_de_pol = true,
-+	.swap_input_support = true,
-+	.support_direct_pin = true,
-+	.dimension_mask = HPW_MASK,
-+	.hvsize_mask = HSIZE_MASK,
-+	.channel_swap_shift = CH_SWAP,
-+	.yuv422_en_bit = YUV422_EN,
-+	.csc_enable_bit = CSC_ENABLE,
-+};
-+
- static const struct mtk_dpi_conf mt8192_conf = {
- 	.cal_factor = mt8183_calculate_factor,
- 	.reg_h_fre_con = 0xe0,
-@@ -1078,6 +1110,9 @@ static const struct of_device_id mtk_dpi_of_ids[] = {
- 	{ .compatible = "mediatek,mt8183-dpi",
- 	  .data = &mt8183_conf,
- 	},
-+	{ .compatible = "mediatek,mt8186-dpi",
-+	  .data = &mt8186_conf,
-+	},
- 	{ .compatible = "mediatek,mt8192-dpi",
- 	  .data = &mt8192_conf,
- 	},
-diff --git a/drivers/gpu/drm/mediatek/mtk_drm_drv.c b/drivers/gpu/drm/mediatek/mtk_drm_drv.c
-index 546b794128154233baab1b0b9663eef79eb6b493..3d32fbc66ac1c4a11f058a66f52c2baa67744b7f 100644
---- a/drivers/gpu/drm/mediatek/mtk_drm_drv.c
-+++ b/drivers/gpu/drm/mediatek/mtk_drm_drv.c
-@@ -646,6 +646,8 @@ static const struct of_device_id mtk_ddp_comp_dt_ids[] = {
- 	  .data = (void *)MTK_DPI },
- 	{ .compatible = "mediatek,mt8183-dpi",
- 	  .data = (void *)MTK_DPI },
-+	{ .compatible = "mediatek,mt8186-dpi",
-+	  .data = (void *)MTK_DPI },
- 	{ .compatible = "mediatek,mt8192-dpi",
- 	  .data = (void *)MTK_DPI },
- 	{ .compatible = "mediatek,mt8195-dp-intf",
-diff --git a/drivers/gpu/drm/mediatek/mtk_dsi.c b/drivers/gpu/drm/mediatek/mtk_dsi.c
-index 5b624e0f5b0a68e6dedf8cc17c2bfb6114cd94ca..3b7d13028fb6b7577111b0dfac42a1338cfbfd8b 100644
---- a/drivers/gpu/drm/mediatek/mtk_dsi.c
-+++ b/drivers/gpu/drm/mediatek/mtk_dsi.c
-@@ -685,6 +685,16 @@ static void mtk_dsi_poweroff(struct mtk_dsi *dsi)
- 	if (--dsi->refcount != 0)
- 		return;
- 
-+	/*
-+	 * mtk_dsi_stop() and mtk_dsi_start() is asymmetric, since
-+	 * mtk_dsi_stop() should be called after mtk_drm_crtc_atomic_disable(),
-+	 * which needs irq for vblank, and mtk_dsi_stop() will disable irq.
-+	 * mtk_dsi_start() needs to be called in mtk_output_dsi_enable(),
-+	 * after dsi is fully set.
-+	 */
-+	mtk_dsi_stop(dsi);
-+
-+	mtk_dsi_switch_to_cmd_mode(dsi, VM_DONE_INT_FLAG, 500);
- 	mtk_dsi_reset_engine(dsi);
- 	mtk_dsi_lane0_ulp_mode_enter(dsi);
- 	mtk_dsi_clk_ulp_mode_enter(dsi);
-@@ -735,17 +745,6 @@ static void mtk_output_dsi_disable(struct mtk_dsi *dsi)
- 	if (!dsi->enabled)
- 		return;
- 
--	/*
--	 * mtk_dsi_stop() and mtk_dsi_start() is asymmetric, since
--	 * mtk_dsi_stop() should be called after mtk_drm_crtc_atomic_disable(),
--	 * which needs irq for vblank, and mtk_dsi_stop() will disable irq.
--	 * mtk_dsi_start() needs to be called in mtk_output_dsi_enable(),
--	 * after dsi is fully set.
--	 */
--	mtk_dsi_stop(dsi);
--
--	mtk_dsi_switch_to_cmd_mode(dsi, VM_DONE_INT_FLAG, 500);
--
- 	dsi->enabled = false;
- }
- 
 diff --git a/drivers/mailbox/mtk-cmdq-mailbox.c b/drivers/mailbox/mtk-cmdq-mailbox.c
-index dc08df27e6f700e64b08e20e3db21ed7d657a9ea..33a622fc95f34bced08ef386af274209f0cf1cb5 100644
+index dc08df27e6f700e64b08e20e3db21ed7d657a9ea..8627520125b0abbfbbda9a7b008f90ef2a9aae56 100644
 --- a/drivers/mailbox/mtk-cmdq-mailbox.c
 +++ b/drivers/mailbox/mtk-cmdq-mailbox.c
-@@ -91,6 +91,8 @@ struct cmdq {
+@@ -39,6 +39,8 @@
+ #define CMDQ_THR_INSTN_TIMEOUT_CYCLES	0x50
+ 
+ #define GCE_GCTL_VALUE			0x48
++#define GCE_CTRL_BY_SW				GENMASK(2, 0)
++#define GCE_DDR_EN				GENMASK(18, 16)
+ 
+ #define CMDQ_THR_ACTIVE_SLOT_CYCLES	0x3200
+ #define CMDQ_THR_ENABLED		0x1
+@@ -90,6 +92,7 @@ struct cmdq {
+ 	bool			suspended;
  	u8			shift_pa;
  	bool			control_by_sw;
++	bool			sw_ddr_en;
  	u32			gce_num;
-+	atomic_t		usage;
-+	spinlock_t		lock;
  };
  
- struct gce_plat {
-@@ -100,6 +102,46 @@ struct gce_plat {
+@@ -97,9 +100,25 @@ struct gce_plat {
+ 	u32 thread_nr;
+ 	u8 shift;
+ 	bool control_by_sw;
++	bool sw_ddr_en;
  	u32 gce_num;
  };
  
-+static s32 cmdq_clk_enable(struct cmdq *cmdq)
++static void cmdq_sw_ddr_enable(struct cmdq *cmdq, bool enable)
 +{
-+	s32 usage, ret;
-+	unsigned long flags;
++	if (!cmdq->sw_ddr_en)
++		return;
 +
-+	spin_lock_irqsave(&cmdq->lock, flags);
++	WARN_ON(clk_bulk_enable(cmdq->gce_num, cmdq->clocks));
 +
-+	usage = atomic_inc_return(&cmdq->usage);
-+
-+	ret = clk_bulk_enable(cmdq->gce_num, cmdq->clocks);
-+	if (usage <=0 || ret < 0) {
-+		dev_err(cmdq->mbox.dev, "ref count %d ret %d suspend %d\n",
-+			usage, ret, cmdq->suspended);
-+	} else if (usage == 1) {
-+		if (cmdq->control_by_sw)
-+			writel((0x7 << 16) + 0x7, cmdq->base + GCE_GCTL_VALUE);
-+	}
-+
-+	spin_unlock_irqrestore(&cmdq->lock, flags);
-+
-+	return ret;
-+}
-+
-+static void cmdq_clk_disable(struct cmdq *cmdq)
-+{
-+	s32 usage;
-+
-+	usage = atomic_dec_return(&cmdq->usage);
-+
-+	if (usage < 0) {
-+		dev_err(cmdq->mbox.dev, "ref count %d suspend %d\n",
-+			usage, cmdq->suspended);
-+	} else if (usage == 0) {
-+		if (cmdq->control_by_sw)
-+			writel(0x7, cmdq->base + GCE_GCTL_VALUE);
-+	}
++	if (enable)
++		writel(GCE_DDR_EN | GCE_CTRL_BY_SW, cmdq->base + GCE_GCTL_VALUE);
++	else
++		writel(GCE_CTRL_BY_SW, cmdq->base + GCE_GCTL_VALUE);
 +
 +	clk_bulk_disable(cmdq->gce_num, cmdq->clocks);
 +}
@@ -5198,63 +4922,74 @@ index dc08df27e6f700e64b08e20e3db21ed7d657a9ea..33a622fc95f34bced08ef386af274209
  u8 cmdq_get_shift_pa(struct mbox_chan *chan)
  {
  	struct cmdq *cmdq = container_of(chan->mbox, struct cmdq, mbox);
-@@ -276,7 +318,8 @@ static void cmdq_thread_irq_handler(struct cmdq *cmdq,
+@@ -139,7 +158,11 @@ static void cmdq_init(struct cmdq *cmdq)
  
- 	if (list_empty(&thread->task_busy_list)) {
- 		cmdq_thread_disable(cmdq, thread);
--		clk_bulk_disable(cmdq->gce_num, cmdq->clocks);
+ 	WARN_ON(clk_bulk_enable(cmdq->gce_num, cmdq->clocks));
+ 	if (cmdq->control_by_sw)
+-		writel(0x7, cmdq->base + GCE_GCTL_VALUE);
++		writel(GCE_CTRL_BY_SW, cmdq->base + GCE_GCTL_VALUE);
 +
-+		cmdq_clk_disable(cmdq);
- 	}
- }
- 
-@@ -365,8 +408,7 @@ static int cmdq_mbox_send_data(struct mbox_chan *chan, void *data)
- 	task->pkt = pkt;
- 
- 	if (list_empty(&thread->task_busy_list)) {
--		WARN_ON(clk_bulk_enable(cmdq->gce_num, cmdq->clocks));
--
-+		WARN_ON(cmdq_clk_enable(cmdq) < 0);
- 		/*
- 		 * The thread reset will clear thread related register to 0,
- 		 * including pc, end, priority, irq, suspend and enable. Thus
-@@ -439,7 +481,7 @@ static void cmdq_mbox_shutdown(struct mbox_chan *chan)
- 	}
- 
- 	cmdq_thread_disable(cmdq, thread);
--	clk_bulk_disable(cmdq->gce_num, cmdq->clocks);
-+	cmdq_clk_disable(cmdq);
- 
- done:
- 	/*
-@@ -479,7 +521,8 @@ static int cmdq_mbox_flush(struct mbox_chan *chan, unsigned long timeout)
- 
- 	cmdq_thread_resume(thread);
- 	cmdq_thread_disable(cmdq, thread);
--	clk_bulk_disable(cmdq->gce_num, cmdq->clocks);
++	if (cmdq->sw_ddr_en)
++		writel(GCE_DDR_EN | GCE_CTRL_BY_SW, cmdq->base + GCE_GCTL_VALUE);
 +
-+	cmdq_clk_disable(cmdq);
+ 	writel(CMDQ_THR_ACTIVE_SLOT_CYCLES, cmdq->base + CMDQ_THR_SLOT_CYCLES);
+ 	for (i = 0; i <= CMDQ_MAX_EVENT; i++)
+ 		writel(i, cmdq->base + CMDQ_SYNC_TOKEN_UPDATE);
+@@ -321,6 +344,8 @@ static int cmdq_suspend(struct device *dev)
+ 	if (task_running)
+ 		dev_warn(dev, "exist running task(s) in suspend\n");
  
- out:
- 	spin_unlock_irqrestore(&thread->chan->lock, flags);
-@@ -490,7 +533,8 @@ static int cmdq_mbox_flush(struct mbox_chan *chan, unsigned long timeout)
- 	spin_unlock_irqrestore(&thread->chan->lock, flags);
- 	if (readl_poll_timeout_atomic(thread->base + CMDQ_THR_ENABLE_TASK,
- 				      enable, enable == 0, 1, timeout)) {
--		dev_err(cmdq->mbox.dev, "Fail to wait GCE thread 0x%x done\n",
-+		dev_err(cmdq->mbox.dev,
-+			"Fail to wait GCE thread 0x%x done\n",
- 			(u32)(thread->base - cmdq->base));
- 
- 		return -EFAULT;
-@@ -625,6 +669,7 @@ static int cmdq_probe(struct platform_device *pdev)
- 
- 	WARN_ON(clk_bulk_prepare(cmdq->gce_num, cmdq->clocks));
- 
-+	spin_lock_init(&cmdq->lock);
- 	cmdq_init(cmdq);
++	cmdq_sw_ddr_enable(cmdq, false);
++
+ 	clk_bulk_unprepare(cmdq->gce_num, cmdq->clocks);
  
  	return 0;
+@@ -332,6 +357,9 @@ static int cmdq_resume(struct device *dev)
+ 
+ 	WARN_ON(clk_bulk_prepare(cmdq->gce_num, cmdq->clocks));
+ 	cmdq->suspended = false;
++
++	cmdq_sw_ddr_enable(cmdq, true);
++
+ 	return 0;
+ }
+ 
+@@ -339,6 +367,8 @@ static int cmdq_remove(struct platform_device *pdev)
+ {
+ 	struct cmdq *cmdq = platform_get_drvdata(pdev);
+ 
++	cmdq_sw_ddr_enable(cmdq, false);
++
+ 	clk_bulk_unprepare(cmdq->gce_num, cmdq->clocks);
+ 	return 0;
+ }
+@@ -556,6 +586,7 @@ static int cmdq_probe(struct platform_device *pdev)
+ 	cmdq->thread_nr = plat_data->thread_nr;
+ 	cmdq->shift_pa = plat_data->shift;
+ 	cmdq->control_by_sw = plat_data->control_by_sw;
++	cmdq->sw_ddr_en = plat_data->sw_ddr_en;
+ 	cmdq->gce_num = plat_data->gce_num;
+ 	cmdq->irq_mask = GENMASK(cmdq->thread_nr - 1, 0);
+ 	err = devm_request_irq(dev, cmdq->irq, cmdq_irq_handler, IRQF_SHARED,
+@@ -670,9 +701,18 @@ static const struct gce_plat gce_plat_v6 = {
+ 	.gce_num = 2
+ };
+ 
++static const struct gce_plat gce_plat_v7 = {
++	.thread_nr = 24,
++	.shift = 3,
++	.control_by_sw = true,
++	.sw_ddr_en = true,
++	.gce_num = 1
++};
++
+ static const struct of_device_id cmdq_of_ids[] = {
+ 	{.compatible = "mediatek,mt8173-gce", .data = (void *)&gce_plat_v2},
+ 	{.compatible = "mediatek,mt8183-gce", .data = (void *)&gce_plat_v3},
++	{.compatible = "mediatek,mt8186-gce", .data = (void *)&gce_plat_v7},
+ 	{.compatible = "mediatek,mt6779-gce", .data = (void *)&gce_plat_v4},
+ 	{.compatible = "mediatek,mt8192-gce", .data = (void *)&gce_plat_v5},
+ 	{.compatible = "mediatek,mt8195-gce", .data = (void *)&gce_plat_v6},
 diff --git a/drivers/media/platform/mediatek/mdp3/mdp_reg_aal.h b/drivers/media/platform/mediatek/mdp3/mdp_reg_aal.h
 new file mode 100644
 index 0000000000000000000000000000000000000000..56ed7555f23a51b5593068d40819ae9b7a777dea
@@ -6136,6 +5871,26 @@ index 3e66ebaee2da290397df947f4bb00c13ec964092..50a20aed2dfd7f20fa6173a033f9ea69
  		struct mdp_wrot_data wrot;
  		struct mdp_wdma_data wdma;
  		struct isp_data isp;
+diff --git a/drivers/media/platform/mediatek/mdp3/mtk-mdp3-cmdq.c b/drivers/media/platform/mediatek/mdp3/mtk-mdp3-cmdq.c
+index 29f6c1cd3de792a707d273393165072fcb35972b..7bf3cd15f6f32234b11adef853a13170952f3597 100644
+--- a/drivers/media/platform/mediatek/mdp3/mtk-mdp3-cmdq.c
++++ b/drivers/media/platform/mediatek/mdp3/mtk-mdp3-cmdq.c
+@@ -209,6 +209,15 @@ static int mdp_path_config(struct mdp_dev *mdp, struct mdp_cmdq_cmd *cmd,
+ 	const struct img_config *config = path->config;
+ 	struct mdp_comp_ctx *ctx;
+ 	int index, count, ret;
++	s32 event;
++
++	/* Init EOF event for each components to avoid uninitialized variables in SRAM*/
++	for (index = 0; index < config->num_components; index++) {
++		ctx = &path->comps[index];
++		event = ctx->comp->gce_event[MDP_GCE_EVENT_EOF];
++		if (event != MDP_GCE_NO_EVENT)
++			MM_REG_CLEAR(cmd, event);
++	}
+ 
+ 	/* Config path frame */
+ 	/* Reset components */
 diff --git a/drivers/media/platform/mediatek/mdp3/mtk-mdp3-comp.c b/drivers/media/platform/mediatek/mdp3/mtk-mdp3-comp.c
 index e62abf3587bffafb940e0c742b5e277610bf4497..122b7db272b57c9a6ecd76c409d0cd816c715c85 100644
 --- a/drivers/media/platform/mediatek/mdp3/mtk-mdp3-comp.c
@@ -6675,20 +6430,6 @@ index 2ef5fbc4f25a88e62fa963109eb84653642c92af..19e367d1d57d6156d0e3b1cdaecb9df6
  };
  
  /* indicate which mutex is used by each pipepline */
-diff --git a/drivers/media/platform/mediatek/vcodec/venc/venc_h264_if.c b/drivers/media/platform/mediatek/vcodec/venc/venc_h264_if.c
-index 4d9b8798dffe18330b96f58455eae31157d2c45c..8efcd89b5477d02d7956a10dccebf4b91ff190db 100644
---- a/drivers/media/platform/mediatek/vcodec/venc/venc_h264_if.c
-+++ b/drivers/media/platform/mediatek/vcodec/venc/venc_h264_if.c
-@@ -174,8 +174,7 @@ static unsigned int h264_get_profile(struct venc_h264_inst *inst,
- 		mtk_vcodec_err(inst, "unsupported CONSTRAINED_BASELINE");
- 		return 0;
- 	case V4L2_MPEG_VIDEO_H264_PROFILE_EXTENDED:
--		mtk_vcodec_err(inst, "unsupported EXTENDED");
--		return 0;
-+		return 88;
- 	default:
- 		mtk_vcodec_debug(inst, "unsupported profile %d", profile);
- 		return 100;
 diff --git a/drivers/mmc/host/mtk-sd.c b/drivers/mmc/host/mtk-sd.c
 index 39f6674b3f3c3f93999d9fa07105262a5ea461cf..b276f1161112b90012ae735c186a2015783e1a47 100644
 --- a/drivers/mmc/host/mtk-sd.c
@@ -7405,3 +7146,580 @@ index d167699a1a96bd7015a278f5345dd8e650e6e8ed..8690ed1820292678501abbe5b6585fed
  	mtk_nor_rmw(sp, MTK_NOR_REG_CFG2, MTK_NOR_WR_CUSTOM_OP_EN, 0);
  	mtk_nor_rmw(sp, MTK_NOR_REG_CFG3,
  		    MTK_NOR_DISABLE_WREN | MTK_NOR_DISABLE_SR_POLL, 0);
+diff --git a/drivers/spmi/Kconfig b/drivers/spmi/Kconfig
+index 2874b6c26028b45136bd3dc2b2c3ebff95ae94ea..73780204631463631cabcbad5bf83e8dbbee94ce 100644
+--- a/drivers/spmi/Kconfig
++++ b/drivers/spmi/Kconfig
+@@ -34,4 +34,15 @@ config SPMI_MSM_PMIC_ARB
+ 	  This is required for communicating with Qualcomm PMICs and
+ 	  other devices that have the SPMI interface.
+ 
++config SPMI_MTK_PMIF
++	tristate "Mediatek SPMI Controller (PMIC Arbiter)"
++	depends on ARCH_MEDIATEK || COMPILE_TEST
++	help
++	  If you say yes to this option, support will be included for the
++	  built-in SPMI PMIC Arbiter interface on Mediatek family
++	  processors.
++
++	  This is required for communicating with Mediatek PMICs and
++	  other devices that have the SPMI interface.
++
+ endif
+diff --git a/drivers/spmi/Makefile b/drivers/spmi/Makefile
+index 6e092e6f290c0c71b1851551440214e63a037c48..9d974424c8c183d837162b1283dc1953561e43c4 100644
+--- a/drivers/spmi/Makefile
++++ b/drivers/spmi/Makefile
+@@ -6,3 +6,4 @@ obj-$(CONFIG_SPMI)	+= spmi.o
+ 
+ obj-$(CONFIG_SPMI_HISI3670)	+= hisi-spmi-controller.o
+ obj-$(CONFIG_SPMI_MSM_PMIC_ARB)	+= spmi-pmic-arb.o
++obj-$(CONFIG_SPMI_MTK_PMIF)	+= spmi-mtk-pmif.o
+diff --git a/drivers/spmi/spmi-mtk-pmif.c b/drivers/spmi/spmi-mtk-pmif.c
+new file mode 100644
+index 0000000000000000000000000000000000000000..ad511f2c3324ef158c9290f4a5785edc0aa8e5e3
+--- /dev/null
++++ b/drivers/spmi/spmi-mtk-pmif.c
+@@ -0,0 +1,542 @@
++// SPDX-License-Identifier: GPL-2.0
++//
++// Copyright (c) 2021 MediaTek Inc.
++
++#include <linux/clk.h>
++#include <linux/iopoll.h>
++#include <linux/module.h>
++#include <linux/of.h>
++#include <linux/platform_device.h>
++#include <linux/property.h>
++#include <linux/spmi.h>
++
++#define SWINF_IDLE	0x00
++#define SWINF_WFVLDCLR	0x06
++
++#define GET_SWINF(x)	(((x) >> 1) & 0x7)
++
++#define PMIF_CMD_REG_0		0
++#define PMIF_CMD_REG		1
++#define PMIF_CMD_EXT_REG	2
++#define PMIF_CMD_EXT_REG_LONG	3
++
++#define PMIF_DELAY_US   10
++#define PMIF_TIMEOUT_US (10 * 1000)
++
++#define PMIF_CHAN_OFFSET 0x5
++
++#define PMIF_MAX_CLKS	3
++
++#define SPMI_OP_ST_BUSY 1
++
++struct ch_reg {
++	u32 ch_sta;
++	u32 wdata;
++	u32 rdata;
++	u32 ch_send;
++	u32 ch_rdy;
++};
++
++struct pmif_data {
++	const u32	*regs;
++	const u32	*spmimst_regs;
++	u32	soc_chan;
++};
++
++struct pmif {
++	void __iomem	*base;
++	void __iomem	*spmimst_base;
++	struct ch_reg	chan;
++	struct clk_bulk_data clks[PMIF_MAX_CLKS];
++	size_t nclks;
++	const struct pmif_data *data;
++};
++
++static const char * const pmif_clock_names[] = {
++	"pmif_sys_ck", "pmif_tmr_ck", "spmimst_clk_mux",
++};
++
++enum pmif_regs {
++	PMIF_INIT_DONE,
++	PMIF_INF_EN,
++	PMIF_ARB_EN,
++	PMIF_CMDISSUE_EN,
++	PMIF_TIMER_CTRL,
++	PMIF_SPI_MODE_CTRL,
++	PMIF_IRQ_EVENT_EN_0,
++	PMIF_IRQ_FLAG_0,
++	PMIF_IRQ_CLR_0,
++	PMIF_IRQ_EVENT_EN_1,
++	PMIF_IRQ_FLAG_1,
++	PMIF_IRQ_CLR_1,
++	PMIF_IRQ_EVENT_EN_2,
++	PMIF_IRQ_FLAG_2,
++	PMIF_IRQ_CLR_2,
++	PMIF_IRQ_EVENT_EN_3,
++	PMIF_IRQ_FLAG_3,
++	PMIF_IRQ_CLR_3,
++	PMIF_IRQ_EVENT_EN_4,
++	PMIF_IRQ_FLAG_4,
++	PMIF_IRQ_CLR_4,
++	PMIF_WDT_EVENT_EN_0,
++	PMIF_WDT_FLAG_0,
++	PMIF_WDT_EVENT_EN_1,
++	PMIF_WDT_FLAG_1,
++	PMIF_SWINF_0_STA,
++	PMIF_SWINF_0_WDATA_31_0,
++	PMIF_SWINF_0_RDATA_31_0,
++	PMIF_SWINF_0_ACC,
++	PMIF_SWINF_0_VLD_CLR,
++	PMIF_SWINF_1_STA,
++	PMIF_SWINF_1_WDATA_31_0,
++	PMIF_SWINF_1_RDATA_31_0,
++	PMIF_SWINF_1_ACC,
++	PMIF_SWINF_1_VLD_CLR,
++	PMIF_SWINF_2_STA,
++	PMIF_SWINF_2_WDATA_31_0,
++	PMIF_SWINF_2_RDATA_31_0,
++	PMIF_SWINF_2_ACC,
++	PMIF_SWINF_2_VLD_CLR,
++	PMIF_SWINF_3_STA,
++	PMIF_SWINF_3_WDATA_31_0,
++	PMIF_SWINF_3_RDATA_31_0,
++	PMIF_SWINF_3_ACC,
++	PMIF_SWINF_3_VLD_CLR,
++};
++
++static const u32 mt6873_regs[] = {
++	[PMIF_INIT_DONE] = 0x0000,
++	[PMIF_INF_EN] = 0x0024,
++	[PMIF_ARB_EN] = 0x0150,
++	[PMIF_CMDISSUE_EN] = 0x03B4,
++	[PMIF_TIMER_CTRL] = 0x03E0,
++	[PMIF_SPI_MODE_CTRL] = 0x0400,
++	[PMIF_IRQ_EVENT_EN_0] = 0x0418,
++	[PMIF_IRQ_FLAG_0] = 0x0420,
++	[PMIF_IRQ_CLR_0] = 0x0424,
++	[PMIF_IRQ_EVENT_EN_1] = 0x0428,
++	[PMIF_IRQ_FLAG_1] = 0x0430,
++	[PMIF_IRQ_CLR_1] = 0x0434,
++	[PMIF_IRQ_EVENT_EN_2] = 0x0438,
++	[PMIF_IRQ_FLAG_2] = 0x0440,
++	[PMIF_IRQ_CLR_2] = 0x0444,
++	[PMIF_IRQ_EVENT_EN_3] = 0x0448,
++	[PMIF_IRQ_FLAG_3] = 0x0450,
++	[PMIF_IRQ_CLR_3] = 0x0454,
++	[PMIF_IRQ_EVENT_EN_4] = 0x0458,
++	[PMIF_IRQ_FLAG_4] = 0x0460,
++	[PMIF_IRQ_CLR_4] = 0x0464,
++	[PMIF_WDT_EVENT_EN_0] = 0x046C,
++	[PMIF_WDT_FLAG_0] = 0x0470,
++	[PMIF_WDT_EVENT_EN_1] = 0x0474,
++	[PMIF_WDT_FLAG_1] = 0x0478,
++	[PMIF_SWINF_0_ACC] = 0x0C00,
++	[PMIF_SWINF_0_WDATA_31_0] = 0x0C04,
++	[PMIF_SWINF_0_RDATA_31_0] = 0x0C14,
++	[PMIF_SWINF_0_VLD_CLR] = 0x0C24,
++	[PMIF_SWINF_0_STA] = 0x0C28,
++	[PMIF_SWINF_1_ACC] = 0x0C40,
++	[PMIF_SWINF_1_WDATA_31_0] = 0x0C44,
++	[PMIF_SWINF_1_RDATA_31_0] = 0x0C54,
++	[PMIF_SWINF_1_VLD_CLR] = 0x0C64,
++	[PMIF_SWINF_1_STA] = 0x0C68,
++	[PMIF_SWINF_2_ACC] = 0x0C80,
++	[PMIF_SWINF_2_WDATA_31_0] = 0x0C84,
++	[PMIF_SWINF_2_RDATA_31_0] = 0x0C94,
++	[PMIF_SWINF_2_VLD_CLR] = 0x0CA4,
++	[PMIF_SWINF_2_STA] = 0x0CA8,
++	[PMIF_SWINF_3_ACC] = 0x0CC0,
++	[PMIF_SWINF_3_WDATA_31_0] = 0x0CC4,
++	[PMIF_SWINF_3_RDATA_31_0] = 0x0CD4,
++	[PMIF_SWINF_3_VLD_CLR] = 0x0CE4,
++	[PMIF_SWINF_3_STA] = 0x0CE8,
++};
++
++static const u32 mt8195_regs[] = {
++	[PMIF_INIT_DONE] = 0x0000,
++	[PMIF_INF_EN] = 0x0024,
++	[PMIF_ARB_EN] = 0x0150,
++	[PMIF_CMDISSUE_EN] = 0x03B8,
++	[PMIF_TIMER_CTRL] = 0x03E4,
++	[PMIF_SPI_MODE_CTRL] = 0x0408,
++	[PMIF_IRQ_EVENT_EN_0] = 0x0420,
++	[PMIF_IRQ_FLAG_0] = 0x0428,
++	[PMIF_IRQ_CLR_0] = 0x042C,
++	[PMIF_IRQ_EVENT_EN_1] = 0x0430,
++	[PMIF_IRQ_FLAG_1] = 0x0438,
++	[PMIF_IRQ_CLR_1] = 0x043C,
++	[PMIF_IRQ_EVENT_EN_2] = 0x0440,
++	[PMIF_IRQ_FLAG_2] = 0x0448,
++	[PMIF_IRQ_CLR_2] = 0x044C,
++	[PMIF_IRQ_EVENT_EN_3] = 0x0450,
++	[PMIF_IRQ_FLAG_3] = 0x0458,
++	[PMIF_IRQ_CLR_3] = 0x045C,
++	[PMIF_IRQ_EVENT_EN_4] = 0x0460,
++	[PMIF_IRQ_FLAG_4] = 0x0468,
++	[PMIF_IRQ_CLR_4] = 0x046C,
++	[PMIF_WDT_EVENT_EN_0] = 0x0474,
++	[PMIF_WDT_FLAG_0] = 0x0478,
++	[PMIF_WDT_EVENT_EN_1] = 0x047C,
++	[PMIF_WDT_FLAG_1] = 0x0480,
++	[PMIF_SWINF_0_ACC] = 0x0800,
++	[PMIF_SWINF_0_WDATA_31_0] = 0x0804,
++	[PMIF_SWINF_0_RDATA_31_0] = 0x0814,
++	[PMIF_SWINF_0_VLD_CLR] = 0x0824,
++	[PMIF_SWINF_0_STA] = 0x0828,
++	[PMIF_SWINF_1_ACC] = 0x0840,
++	[PMIF_SWINF_1_WDATA_31_0] = 0x0844,
++	[PMIF_SWINF_1_RDATA_31_0] = 0x0854,
++	[PMIF_SWINF_1_VLD_CLR] = 0x0864,
++	[PMIF_SWINF_1_STA] = 0x0868,
++	[PMIF_SWINF_2_ACC] = 0x0880,
++	[PMIF_SWINF_2_WDATA_31_0] = 0x0884,
++	[PMIF_SWINF_2_RDATA_31_0] = 0x0894,
++	[PMIF_SWINF_2_VLD_CLR] = 0x08A4,
++	[PMIF_SWINF_2_STA] = 0x08A8,
++	[PMIF_SWINF_3_ACC] = 0x08C0,
++	[PMIF_SWINF_3_WDATA_31_0] = 0x08C4,
++	[PMIF_SWINF_3_RDATA_31_0] = 0x08D4,
++	[PMIF_SWINF_3_VLD_CLR] = 0x08E4,
++	[PMIF_SWINF_3_STA] = 0x08E8,
++};
++
++enum spmi_regs {
++	SPMI_OP_ST_CTRL,
++	SPMI_GRP_ID_EN,
++	SPMI_OP_ST_STA,
++	SPMI_MST_SAMPL,
++	SPMI_MST_REQ_EN,
++	SPMI_REC_CTRL,
++	SPMI_REC0,
++	SPMI_REC1,
++	SPMI_REC2,
++	SPMI_REC3,
++	SPMI_REC4,
++	SPMI_MST_DBG,
++
++	/* MT8195 spmi regs */
++	SPMI_MST_RCS_CTRL,
++	SPMI_SLV_3_0_EINT,
++	SPMI_SLV_7_4_EINT,
++	SPMI_SLV_B_8_EINT,
++	SPMI_SLV_F_C_EINT,
++	SPMI_REC_CMD_DEC,
++	SPMI_DEC_DBG,
++};
++
++static const u32 mt6873_spmi_regs[] = {
++	[SPMI_OP_ST_CTRL] = 0x0000,
++	[SPMI_GRP_ID_EN] = 0x0004,
++	[SPMI_OP_ST_STA] = 0x0008,
++	[SPMI_MST_SAMPL] = 0x000c,
++	[SPMI_MST_REQ_EN] = 0x0010,
++	[SPMI_REC_CTRL] = 0x0040,
++	[SPMI_REC0] = 0x0044,
++	[SPMI_REC1] = 0x0048,
++	[SPMI_REC2] = 0x004c,
++	[SPMI_REC3] = 0x0050,
++	[SPMI_REC4] = 0x0054,
++	[SPMI_MST_DBG] = 0x00fc,
++};
++
++static const u32 mt8195_spmi_regs[] = {
++	[SPMI_OP_ST_CTRL] = 0x0000,
++	[SPMI_GRP_ID_EN] = 0x0004,
++	[SPMI_OP_ST_STA] = 0x0008,
++	[SPMI_MST_SAMPL] = 0x000C,
++	[SPMI_MST_REQ_EN] = 0x0010,
++	[SPMI_MST_RCS_CTRL] = 0x0014,
++	[SPMI_SLV_3_0_EINT] = 0x0020,
++	[SPMI_SLV_7_4_EINT] = 0x0024,
++	[SPMI_SLV_B_8_EINT] = 0x0028,
++	[SPMI_SLV_F_C_EINT] = 0x002C,
++	[SPMI_REC_CTRL] = 0x0040,
++	[SPMI_REC0] = 0x0044,
++	[SPMI_REC1] = 0x0048,
++	[SPMI_REC2] = 0x004C,
++	[SPMI_REC3] = 0x0050,
++	[SPMI_REC4] = 0x0054,
++	[SPMI_REC_CMD_DEC] = 0x005C,
++	[SPMI_DEC_DBG] = 0x00F8,
++	[SPMI_MST_DBG] = 0x00FC,
++};
++
++static u32 pmif_readl(struct pmif *arb, enum pmif_regs reg)
++{
++	return readl(arb->base + arb->data->regs[reg]);
++}
++
++static void pmif_writel(struct pmif *arb, u32 val, enum pmif_regs reg)
++{
++	writel(val, arb->base + arb->data->regs[reg]);
++}
++
++static void mtk_spmi_writel(struct pmif *arb, u32 val, enum spmi_regs reg)
++{
++	writel(val, arb->spmimst_base + arb->data->spmimst_regs[reg]);
++}
++
++static bool pmif_is_fsm_vldclr(struct pmif *arb)
++{
++	u32 reg_rdata;
++
++	reg_rdata = pmif_readl(arb, arb->chan.ch_sta);
++
++	return GET_SWINF(reg_rdata) == SWINF_WFVLDCLR;
++}
++
++static int pmif_arb_cmd(struct spmi_controller *ctrl, u8 opc, u8 sid)
++{
++	struct pmif *arb = spmi_controller_get_drvdata(ctrl);
++	u32 rdata, cmd;
++	int ret;
++
++	/* Check the opcode */
++	if (opc < SPMI_CMD_RESET || opc > SPMI_CMD_WAKEUP)
++		return -EINVAL;
++
++	cmd = opc - SPMI_CMD_RESET;
++
++	mtk_spmi_writel(arb, (cmd << 0x4) | sid, SPMI_OP_ST_CTRL);
++	ret = readl_poll_timeout_atomic(arb->spmimst_base + arb->data->spmimst_regs[SPMI_OP_ST_STA],
++					rdata, (rdata & SPMI_OP_ST_BUSY) == SPMI_OP_ST_BUSY,
++					PMIF_DELAY_US, PMIF_TIMEOUT_US);
++	if (ret < 0)
++		dev_err(&ctrl->dev, "timeout, err = %d\n", ret);
++
++	return ret;
++}
++
++static int pmif_spmi_read_cmd(struct spmi_controller *ctrl, u8 opc, u8 sid,
++			      u16 addr, u8 *buf, size_t len)
++{
++	struct pmif *arb = spmi_controller_get_drvdata(ctrl);
++	struct ch_reg *inf_reg;
++	int ret;
++	u32 data, cmd;
++
++	/* Check for argument validation. */
++	if (sid & ~0xf) {
++		dev_err(&ctrl->dev, "exceed the max slv id\n");
++		return -EINVAL;
++	}
++
++	if (len > 4) {
++		dev_err(&ctrl->dev, "pmif supports 1..4 bytes per trans, but:%zu requested", len);
++
++		return -EINVAL;
++	}
++
++	if (opc >= 0x60 && opc <= 0x7f)
++		opc = PMIF_CMD_REG;
++	else if ((opc >= 0x20 && opc <= 0x2f) || (opc >= 0x38 && opc <= 0x3f))
++		opc = PMIF_CMD_EXT_REG_LONG;
++	else
++		return -EINVAL;
++
++	/* Wait for Software Interface FSM state to be IDLE. */
++	inf_reg = &arb->chan;
++	ret = readl_poll_timeout_atomic(arb->base + arb->data->regs[inf_reg->ch_sta],
++					data, GET_SWINF(data) == SWINF_IDLE,
++					PMIF_DELAY_US, PMIF_TIMEOUT_US);
++	if (ret < 0) {
++		/* set channel ready if the data has transferred */
++		if (pmif_is_fsm_vldclr(arb))
++			pmif_writel(arb, 1, inf_reg->ch_rdy);
++		dev_err(&ctrl->dev, "failed to wait for SWINF_IDLE\n");
++		return ret;
++	}
++
++	/* Send the command. */
++	cmd = (opc << 30) | (sid << 24) | ((len - 1) << 16) | addr;
++	pmif_writel(arb, cmd, inf_reg->ch_send);
++
++	/*
++	 * Wait for Software Interface FSM state to be WFVLDCLR,
++	 * read the data and clear the valid flag.
++	 */
++	ret = readl_poll_timeout_atomic(arb->base + arb->data->regs[inf_reg->ch_sta],
++					data, GET_SWINF(data) == SWINF_WFVLDCLR,
++					PMIF_DELAY_US, PMIF_TIMEOUT_US);
++	if (ret < 0) {
++		dev_err(&ctrl->dev, "failed to wait for SWINF_WFVLDCLR\n");
++		return ret;
++	}
++
++	data = pmif_readl(arb, inf_reg->rdata);
++	memcpy(buf, &data, len);
++	pmif_writel(arb, 1, inf_reg->ch_rdy);
++
++	return 0;
++}
++
++static int pmif_spmi_write_cmd(struct spmi_controller *ctrl, u8 opc, u8 sid,
++			       u16 addr, const u8 *buf, size_t len)
++{
++	struct pmif *arb = spmi_controller_get_drvdata(ctrl);
++	struct ch_reg *inf_reg;
++	int ret;
++	u32 data, cmd;
++
++	if (len > 4) {
++		dev_err(&ctrl->dev, "pmif supports 1..4 bytes per trans, but:%zu requested", len);
++
++		return -EINVAL;
++	}
++
++	/* Check the opcode */
++	if (opc >= 0x40 && opc <= 0x5F)
++		opc = PMIF_CMD_REG;
++	else if ((opc <= 0xF) || (opc >= 0x30 && opc <= 0x37))
++		opc = PMIF_CMD_EXT_REG_LONG;
++	else if (opc >= 0x80)
++		opc = PMIF_CMD_REG_0;
++	else
++		return -EINVAL;
++
++	/* Wait for Software Interface FSM state to be IDLE. */
++	inf_reg = &arb->chan;
++	ret = readl_poll_timeout_atomic(arb->base + arb->data->regs[inf_reg->ch_sta],
++					data, GET_SWINF(data) == SWINF_IDLE,
++					PMIF_DELAY_US, PMIF_TIMEOUT_US);
++	if (ret < 0) {
++		/* set channel ready if the data has transferred */
++		if (pmif_is_fsm_vldclr(arb))
++			pmif_writel(arb, 1, inf_reg->ch_rdy);
++		dev_err(&ctrl->dev, "failed to wait for SWINF_IDLE\n");
++		return ret;
++	}
++
++	/* Set the write data. */
++	memcpy(&data, buf, len);
++	pmif_writel(arb, data, inf_reg->wdata);
++
++	/* Send the command. */
++	cmd = (opc << 30) | BIT(29) | (sid << 24) | ((len - 1) << 16) | addr;
++	pmif_writel(arb, cmd, inf_reg->ch_send);
++
++	return 0;
++}
++
++static const struct pmif_data mt6873_pmif_arb = {
++	.regs = mt6873_regs,
++	.spmimst_regs = mt6873_spmi_regs,
++	.soc_chan = 2,
++};
++
++static const struct pmif_data mt8195_pmif_arb = {
++	.regs = mt8195_regs,
++	.spmimst_regs = mt8195_spmi_regs,
++	.soc_chan = 2,
++};
++
++static int mtk_spmi_probe(struct platform_device *pdev)
++{
++	struct pmif *arb;
++	struct spmi_controller *ctrl;
++	int err, i;
++	u32 chan_offset;
++
++	ctrl = spmi_controller_alloc(&pdev->dev, sizeof(*arb));
++	if (!ctrl)
++		return -ENOMEM;
++
++	arb = spmi_controller_get_drvdata(ctrl);
++	arb->data = device_get_match_data(&pdev->dev);
++	if (!arb->data) {
++		err = -EINVAL;
++		dev_err(&pdev->dev, "Cannot get drv_data\n");
++		goto err_put_ctrl;
++	}
++
++	arb->base = devm_platform_ioremap_resource_byname(pdev, "pmif");
++	if (IS_ERR(arb->base)) {
++		err = PTR_ERR(arb->base);
++		goto err_put_ctrl;
++	}
++
++	arb->spmimst_base = devm_platform_ioremap_resource_byname(pdev, "spmimst");
++	if (IS_ERR(arb->spmimst_base)) {
++		err = PTR_ERR(arb->spmimst_base);
++		goto err_put_ctrl;
++	}
++
++	arb->nclks = ARRAY_SIZE(pmif_clock_names);
++	for (i = 0; i < arb->nclks; i++)
++		arb->clks[i].id = pmif_clock_names[i];
++
++	err = devm_clk_bulk_get(&pdev->dev, arb->nclks, arb->clks);
++	if (err) {
++		dev_err(&pdev->dev, "Failed to get clocks: %d\n", err);
++		goto err_put_ctrl;
++	}
++
++	err = clk_bulk_prepare_enable(arb->nclks, arb->clks);
++	if (err) {
++		dev_err(&pdev->dev, "Failed to enable clocks: %d\n", err);
++		goto err_put_ctrl;
++	}
++
++	ctrl->cmd = pmif_arb_cmd;
++	ctrl->read_cmd = pmif_spmi_read_cmd;
++	ctrl->write_cmd = pmif_spmi_write_cmd;
++
++	chan_offset = PMIF_CHAN_OFFSET * arb->data->soc_chan;
++	arb->chan.ch_sta = PMIF_SWINF_0_STA + chan_offset;
++	arb->chan.wdata = PMIF_SWINF_0_WDATA_31_0 + chan_offset;
++	arb->chan.rdata = PMIF_SWINF_0_RDATA_31_0 + chan_offset;
++	arb->chan.ch_send = PMIF_SWINF_0_ACC + chan_offset;
++	arb->chan.ch_rdy = PMIF_SWINF_0_VLD_CLR + chan_offset;
++
++	platform_set_drvdata(pdev, ctrl);
++
++	err = spmi_controller_add(ctrl);
++	if (err)
++		goto err_domain_remove;
++
++	return 0;
++
++err_domain_remove:
++	clk_bulk_disable_unprepare(arb->nclks, arb->clks);
++err_put_ctrl:
++	spmi_controller_put(ctrl);
++	return err;
++}
++
++static int mtk_spmi_remove(struct platform_device *pdev)
++{
++	struct spmi_controller *ctrl = platform_get_drvdata(pdev);
++	struct pmif *arb = spmi_controller_get_drvdata(ctrl);
++
++	clk_bulk_disable_unprepare(arb->nclks, arb->clks);
++	spmi_controller_remove(ctrl);
++	spmi_controller_put(ctrl);
++	return 0;
++}
++
++static const struct of_device_id mtk_spmi_match_table[] = {
++	{
++		.compatible = "mediatek,mt6873-spmi",
++		.data = &mt6873_pmif_arb,
++	}, {
++		.compatible = "mediatek,mt8195-spmi",
++		.data = &mt8195_pmif_arb,
++	}, {
++		/* sentinel */
++	},
++};
++MODULE_DEVICE_TABLE(of, mtk_spmi_match_table);
++
++static struct platform_driver mtk_spmi_driver = {
++	.driver		= {
++		.name	= "spmi-mtk",
++		.of_match_table = of_match_ptr(mtk_spmi_match_table),
++	},
++	.probe		= mtk_spmi_probe,
++	.remove		= mtk_spmi_remove,
++};
++module_platform_driver(mtk_spmi_driver);
++
++MODULE_AUTHOR("Hsin-Hsiung Wang <hsin-hsiung.wang@mediatek.com>");
++MODULE_DESCRIPTION("MediaTek SPMI Driver");
++MODULE_LICENSE("GPL");
