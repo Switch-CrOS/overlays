@@ -56,12 +56,12 @@ CONFIG_ENTRY_VALUE(30, MINT32)
 CONFIG_METADATA_END()
 //==========================================================================
 CONFIG_METADATA_BEGIN(MTK_CONTROL_AE_COMPENSATION_RANGE)
-CONFIG_ENTRY_VALUE(-4, MINT32)
-CONFIG_ENTRY_VALUE(4, MINT32)
+CONFIG_ENTRY_VALUE(0, MINT32)
+CONFIG_ENTRY_VALUE(0, MINT32)
 CONFIG_METADATA_END()
 //==========================================================================
 CONFIG_METADATA_BEGIN(MTK_CONTROL_AE_COMPENSATION_STEP)
-CONFIG_ENTRY_VALUE(MRational(1, 2), MRational)
+CONFIG_ENTRY_VALUE(MRational(0, 2), MRational)
 CONFIG_METADATA_END()
 //==========================================================================
 CONFIG_METADATA_BEGIN(MTK_CONTROL_AF_AVAILABLE_MODES)
