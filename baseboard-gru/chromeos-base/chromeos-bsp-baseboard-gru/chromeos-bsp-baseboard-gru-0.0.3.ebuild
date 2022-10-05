@@ -11,7 +11,7 @@ or portage actions."
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="-* arm64 arm"
-IUSE="cheets kernel-4_4"
+IUSE="cheets"
 S="${WORKDIR}"
 
 RDEPEND="
@@ -25,20 +25,12 @@ DEPEND="${RDEPEND}"
 src_install() {
 	# Override default CPU clock speed governor.
 	insinto "/etc"
-	if use kernel-4_4; then
-		doins "${FILESDIR}/4.4/cpufreq.conf"
-	else
-		doins "${FILESDIR}/5.10/cpufreq.conf"
-	fi
+	doins "${FILESDIR}/5.10/cpufreq.conf"
 
 	# Install cpuset adjustments.
 	if use cheets; then
 		insinto "/opt/google/containers/android/vendor/etc/init/"
-		if use kernel-4_4; then
-			doins "${FILESDIR}/4.4/init.cpusets.rc"
-		else
-			doins "${FILESDIR}/5.10/init.cpusets.rc"
-		fi
+		doins "${FILESDIR}/5.10/init.cpusets.rc"
 	fi
 
 	# Install platform specific triggers and udev rules for codecs.

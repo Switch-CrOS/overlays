@@ -10,7 +10,6 @@ or portage actions."
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="-* arm64 arm"
-IUSE="kernel-4_4"
 S="${WORKDIR}"
 
 # Add dependencies on other ebuilds from within this board overlay
@@ -23,11 +22,7 @@ src_install() {
 	doappid "{564AC308-CBD5-485D-9EF5-EB97DBB5F264}" "CHROMEBOOK"
 
 	# Install audio config files
-	if use kernel-4_4; then
-		local audio_config_dir="${FILESDIR}/audio-config-4.4"
-	else
-		local audio_config_dir="${FILESDIR}/audio-config"
-	fi
+	local audio_config_dir="${FILESDIR}/audio-config"
 	install_audio_configs bob "${audio_config_dir}"
 
 	# Install platform specific config files for power_manager.

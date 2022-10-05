@@ -12,12 +12,5 @@
 # See crrev.com/i/216896 as an example.
 
 modify_kernel_command_line() {
-  # TODO(b/231167263): drop conditionals once kernel 4.4 is gone. Kernel 4.4
-  # doesn't have TEO governor.
-
-  # FLAGS_* are set by parent script.
-  # shellcheck disable=SC2154
-  if ! has "kernel-4_4" "$("portageq-${FLAGS_board}" envvar USE)"; then
-    echo "cpuidle.governor=teo" >> "$1"
-  fi
+  echo "cpuidle.governor=teo" >> "$1"
 }
