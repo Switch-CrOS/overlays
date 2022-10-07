@@ -5,12 +5,41 @@
   },
   "parent": "disk_layout_v3.json",
   "layouts": {
-    # common is the standard layout template.
-    "common": [
+    # base is the fixed device layout template.
+    "base": [
+      {
+        "num": 3,
+        "fs_size": "2800 MiB"
+      }
+    ],
+    "usb": [
       {
         "num": 3,
         "fs_size": "2800 MiB",
-        "size": "4 GiB"
+        "size": "3 GiB"
+      }
+    ],
+    "usb-updatable": [
+      {
+        "num": 3,
+        "fs_size": "2800 MiB",
+        "size": "3 GiB"
+      },
+      {
+        "num": 5,
+        "size": "3 GiB"
+      }
+    ],
+    "recovery": [
+      {
+        # Shrunken rootfs partition to support smaller USB sticks,
+        # and smaller recovery downloads.
+        # Installation will expand this to size from base.
+        # The offset to the beginning of this partition, and the FS
+        # size must match base exactly to allow secure boot.
+        "num": 3,
+        "fs_size": "2800 MiB",
+        "size": "3 GiB"
       }
     ]
   }
