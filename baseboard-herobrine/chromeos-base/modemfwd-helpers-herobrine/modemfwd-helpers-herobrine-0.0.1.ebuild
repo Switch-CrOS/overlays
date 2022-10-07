@@ -16,7 +16,12 @@ IUSE="internal"
 
 S="${WORKDIR}"
 DEPEND="
-internal? ( chromeos-base/modem-fw-dlc-villager )
+internal? (	chromeos-base/modem-fw-dlc-piglin
+		chromeos-base/modem-fw-dlc-herobrine
+		chromeos-base/modem-fw-dlc-hoglin
+		chromeos-base/modem-fw-dlc-zoglin
+		chromeos-base/modem-fw-dlc-evoker
+		chromeos-base/modem-fw-dlc-villager )
 chromeos-base/qc-modemfwd-helper
 "
 RDEPEND="${DEPEND}"
