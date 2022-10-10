@@ -8,7 +8,7 @@ EAPI=7
 CROS_WORKON_PROJECT="chromiumos/infra/build/empty-project"
 CROS_WORKON_LOCALNAME="platform/empty-project"
 
-inherit appid cros-unibuild cros-workon
+inherit appid cros-unibuild cros-workon udev
 
 DESCRIPTION="Ebuild which pulls in any necessary ebuilds as dependencies
 or portage actions."
@@ -38,4 +38,7 @@ src_install() {
 	fi
 	# Install audio config files
 	unibuild_install_files audio-files
+
+	# Install Proximity sensor rules
+	udev_dorules "${FILESDIR}"/common/udev/*.rules
 }
