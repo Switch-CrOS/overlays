@@ -36,7 +36,7 @@ DEFINE_string ver '5.15' \
   "Kernel version string, for example '5.15'"
 DEFINE_integer bugid 245739330 \
   "Bug ID in the commit message."
-DEFINE_integer cl 3787742 \
+DEFINE_integer cl 3909467 \
   "ChromiumOS Gerrit CL ID."
 DEFINE_integer ps 0 \
   "Patchset number, 0 for the latest version."
@@ -52,8 +52,8 @@ base=""
 tree=""
 cl_commit=""
 
-# TODO: workaround for the tentative 5.19 branch
-KER_5_19_RC7="cros/merge/continuous/chromeos-kernelupstream-5.19-rc7"
+# TODO: workaround for the tentative 6.0 branch
+KER_6_0_RC4="cros/merge/continuous/chromeos-kernelupstream-6.0-rc4"
 
 generate_new_squash() {
   info "Running \`git fetch cros\` in ${KERNEL_DIR}..."
@@ -72,9 +72,9 @@ generate_new_squash() {
     "https://chromium.googlesource.com/chromiumos/third_party/kernel" \
     "refs/changes/${FLAGS_cl: -2}/${FLAGS_cl}/${FLAGS_ps}"
 
-  # TODO: workaround for the tentative 5.19 branch
+  # TODO: workaround for the tentative 6.0 branch
   # base="$(git merge-base "cros/chromeos-${FLAGS_ver}" FETCH_HEAD)"
-  base="$(git merge-base "${KER_5_19_RC7}" FETCH_HEAD)"
+  base="$(git merge-base "${KER_6_0_RC4}" FETCH_HEAD)"
   tree="$(git rev-parse "${base}:")"
 
   # They are used to generate the commit message later
@@ -149,11 +149,11 @@ commit_change() {
   git add "${EBUILD_DIR}/files/scmversion.patch"
 
   git commit --edit -m "$(cat <<EOM
-${FLAGS_board}: Update to private kernel ToT #${FLAGS_ps}
+${FLAGS_board}: sys-kernel: Update to private kernel ToT #${FLAGS_ps}
 
-NOTE: This is a temporary hack to build from the experimental 5.19 branch.
+NOTE: This is a temporary hack to build from the experimental 6.0 branch.
 The package name is 5.15 but it's actually based on the
-${KER_5_19_RC7} branch.
+${KER_6_0_RC4} branch.
 
 The following message is auto generated and could be partially wrong.
 
