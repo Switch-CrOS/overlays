@@ -19,5 +19,4 @@ src_install() {
 	dodoc README
 
 	dosym sof-acp-rmb.tplg /lib/firmware/amd/sof-tplg/sof-rmb-rt5682s-rt1019.tplg
-	dosym sof-acp-rmb.tplg /lib/firmware/amd/sof-tplg/sof-rmb-nau8825-max98360.tplg
 }
