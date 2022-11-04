@@ -40,10 +40,6 @@ src_install() {
 	local audio_config_dir="${FILESDIR}/audio-config"
 	install_audio_configs hana "${audio_config_dir}"
 
-	# Install platform specific config files for power_manager.
-	insinto "/usr/share/power_manager/board_specific"
-	doins "${FILESDIR}"/powerd_prefs/*
-
 	# Install rules to enable WoWLAN on startup.
 	udev_dorules "${FILESDIR}/99-mwifiex-wowlan.rules"
 
