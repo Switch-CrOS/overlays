@@ -17,11 +17,13 @@ eval set -- "${FLAGS_ARGV}"
 # determine which panel from the SKU ID.
 main() {
   local sku_id
-  sku_id="$(mosys platform sku)"
-  # Initial builds didn't support 'mosys platform sku'; assume SKU7.
-  [ $? -ne 0 ] && sku_id=7
+  sku_id="$(crosid -f SKU)"
 
   case "${sku_id}" in
+    # Initial builds didn't have a SKU ID.  Assume SKU 7.
+    "none")
+      echo "sku7"
+      ;;
     # Product IDs are the same. Just make something up.
     "0"|"6"|"7")
       echo "sku${sku_id}"
