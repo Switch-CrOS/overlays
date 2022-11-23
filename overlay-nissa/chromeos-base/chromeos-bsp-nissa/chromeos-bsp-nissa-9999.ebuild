@@ -41,7 +41,4 @@ src_install() {
 
 	# Install Proximity sensor rules
 	udev_dorules "${FILESDIR}"/common/udev/*.rules
-
-	insinto /etc/modprobe.d
-	doins "${FILESDIR}/common/ish/ish.conf"
 }
