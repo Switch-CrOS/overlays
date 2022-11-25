@@ -1,0 +1,1 @@
+intel-ipu6ep-camera-bins-20221124.ebuild
