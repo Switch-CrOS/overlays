@@ -18,3 +18,9 @@ IUSE=""
 DEPEND=""
 RDEPEND="${DEPEND}"
 BDEPEND=""
+
+src_install() {
+	# Override default CPUFreq governor
+	insinto "/etc"
+	doins "${FILESDIR}/cpufreq.conf"
+}
