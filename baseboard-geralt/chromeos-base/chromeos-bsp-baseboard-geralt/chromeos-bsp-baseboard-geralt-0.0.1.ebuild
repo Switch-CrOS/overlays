@@ -17,7 +17,10 @@ KEYWORDS="-* arm64 arm"
 S="${WORKDIR}"
 IUSE=""
 
-DEPEND=""
+# Add dependencies on other ebuilds from within this board overlay
+DEPEND="
+	chromeos-base/chromeos-scp-firmware-geralt
+"
 RDEPEND="${DEPEND}"
 BDEPEND=""
 
