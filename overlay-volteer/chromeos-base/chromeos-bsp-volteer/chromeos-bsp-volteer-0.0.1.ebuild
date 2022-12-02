@@ -16,6 +16,7 @@ IUSE="volteer-borealis volteer-kernelnext volteer-manatee zephyr_ec"
 
 # Add dependencies on other ebuilds from within this board overlay
 RDEPEND="
+	!<chromeos-base/gestures-conf-0.0.2
 	chromeos-base/chromeos-bsp-baseboard-volteer
 	chromeos-base/sof-binary
 	chromeos-base/sof-topology
@@ -29,6 +30,9 @@ DEPEND="
 "
 
 src_install() {
+	insinto "/etc/gesture"
+	doins "${FILESDIR}"/gesture/*
+
 	if use zephyr_ec; then
 		doappid "{19D32B09-8ECB-4020-AAB1-BA88AB8CE028}" "CHROMEBOOK"
 	elif use volteer-borealis; then

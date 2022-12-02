@@ -16,11 +16,15 @@ S="${WORKDIR}"
 
 # Add dependencies on other ebuilds from within this board overlay
 RDEPEND="
+	!<chromeos-base/gestures-conf-0.0.2
 	chromeos-base/chromeos-bsp-baseboard-reef
 "
 DEPEND="${RDEPEND}"
 
 src_install() {
+	insinto "/etc/gesture"
+	doins "${FILESDIR}"/gesture/*
+
 	if use snappy-kernelnext; then
 		doappid "{6C77510C-923F-11EB-B7C0-4323D910C0BE}" "CHROMEBOOK"
 	else

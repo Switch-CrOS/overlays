@@ -17,6 +17,7 @@ S="${WORKDIR}"
 
 # Add dependencies on other ebuilds from within this board overlay
 RDEPEND="
+	!<chromeos-base/gestures-conf-0.0.2
 	chromeos-base/chromeos-bsp-baseboard-glados
 	sys-kernel/linux-firmware
 	chromeos-base/chromeos-touch-config-caroline
@@ -24,6 +25,9 @@ RDEPEND="
 DEPEND="${RDEPEND}"
 
 src_install() {
+	insinto "/etc/gesture"
+	doins "${FILESDIR}"/gesture/*
+
 	if use caroline-userdebug; then
 		doappid "{D5CF3BCD-7093-49E6-8E31-0990E21730F8}" "CHROMEBOOK"
 	elif use caroline-arc64; then

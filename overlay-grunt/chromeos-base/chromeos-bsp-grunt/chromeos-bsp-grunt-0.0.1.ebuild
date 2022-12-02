@@ -17,6 +17,7 @@ S="${WORKDIR}"
 
 # Add dependencies on other ebuilds from within this board overlay
 RDEPEND="
+	!<chromeos-base/gestures-conf-0.0.2
 	chromeos-base/chromeos-bsp-baseboard-grunt
 	chromeos-base/chromeos-config
 	chromeos-base/touch_updater
@@ -24,6 +25,9 @@ RDEPEND="
 DEPEND="${RDEPEND}"
 
 src_install() {
+	insinto "/etc/gesture"
+	doins "${FILESDIR}"/gesture/*
+
 	if use grunt-arc-r; then
 		doappid "{602B22F1-BA1A-443E-9C4B-389E513DF9C0}" "CHROMEBOOK"
 	elif use grunt-kernelnext; then

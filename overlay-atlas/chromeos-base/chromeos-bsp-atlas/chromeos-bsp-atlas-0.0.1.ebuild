@@ -23,10 +23,14 @@ DEPEND="
 "
 
 RDEPEND="${DEPEND}
+	!<chromeos-base/gestures-conf-0.0.2
 	chromeos-base/chromeos-tcon-updater-atlas
 "
 
 src_install() {
+	insinto "/etc/gesture"
+	doins "${FILESDIR}"/gesture/*
+
 	if use atlas-kvm; then
 		doappid "{ED3D806C-3D7A-46E2-9604-13382FC1D55B}" "CHROMEBOOK"
 	elif use atlas-connectivitynext; then

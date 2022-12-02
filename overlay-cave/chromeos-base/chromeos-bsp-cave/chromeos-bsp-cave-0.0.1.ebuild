@@ -15,11 +15,15 @@ S="${WORKDIR}"
 
 # Add dependencies on other ebuilds from within this board overlay
 RDEPEND="
+	!<chromeos-base/gestures-conf-0.0.2
 	chromeos-base/chromeos-bsp-baseboard-glados
 "
 DEPEND="${RDEPEND}"
 
 src_install() {
+	insinto "/etc/gesture"
+	doins "${FILESDIR}"/gesture/*
+
 	doappid "{B00DD0BC-D2C9-BAB4-E66C-81AE3F5A7CED}" "CHROMEBOOK"
 
 	# Install audio configs.

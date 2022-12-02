@@ -16,6 +16,7 @@ S="${WORKDIR}"
 
 # Add dependencies on other ebuilds from within this board overlay
 RDEPEND="
+	!<chromeos-base/gestures-conf-0.0.2
 	kernel-4_19? ( chromeos-base/sof-binary chromeos-base/sof-topology )
 	!kernel-4_19? ( sys-firmware/sof-firmware )
 	media-sound/sound_card_init
@@ -26,6 +27,9 @@ DEPEND="
 "
 
 src_install() {
+	insinto "/etc/gesture"
+	doins "${FILESDIR}"/gesture/*
+
 	if use aurora-borealis; then
 		doappid "{567CE7C6-688F-897C-6C1A-0F4C15CC24E7}" "CHROMEBOOK"
 	elif use aurora; then

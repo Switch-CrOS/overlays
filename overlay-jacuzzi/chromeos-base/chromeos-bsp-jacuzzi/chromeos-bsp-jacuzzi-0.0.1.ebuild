@@ -17,12 +17,16 @@ S="${WORKDIR}"
 
 # Add dependencies on other ebuilds from within this board overlay
 RDEPEND="
+	!<chromeos-base/gestures-conf-0.0.2
 	chromeos-base/chromeos-bsp-baseboard-kukui
 	chromeos-base/chromeos-config
 "
 DEPEND="${RDEPEND}"
 
 src_install() {
+	insinto "/etc/gesture"
+	doins "${FILESDIR}"/gesture/*
+
 	if use jacuzzi-kernelnext; then
 		doappid "{94AE1860-91C5-11EB-BAEA-C76F2B34FA33}" "CHROMEBOOK"
 	else

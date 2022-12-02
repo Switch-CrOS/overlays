@@ -19,6 +19,7 @@ IUSE="sarien-kvm sarien-kernelnext modemfwd"
 
 # Add dependencies on other ebuilds from within this board overlay
 RDEPEND="
+	!<chromeos-base/gestures-conf-0.0.2
 	modemfwd? ( chromeos-base/modemfwd-helpers )
 "
 DEPEND="
@@ -27,6 +28,9 @@ DEPEND="
 "
 
 src_install() {
+	insinto "/etc/gesture"
+	doins "${FILESDIR}"/gesture/*
+
 
 	if use sarien-kvm; then
 		doappid "{3774C742-22BD-4BC5-A052-554CB624433C}" "CHROMEBOOK"
