@@ -32,8 +32,3 @@ DEPEND="${RDEPEND}
 	sys-kernel/linux-headers
 	virtual/jpeg:0
 	virtual/pkgconfig"
-
-src_install() {
-	dolib.so "${OUT}/lib/libcam_algo.so"
-	cros-camera_dohal "${OUT}/lib/libcamera_hal.so" intel-ipu3.so
-}
