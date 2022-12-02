@@ -2,11 +2,41 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+CHROMEOS_KERNEL_SPLITCONFIG="chromeos-x86_64-reven"
+
+# We assume that our 64bit baseline CPU supports at least
+# MMX, SSE, SSE2, and SSE3.
+BOARD_COMPILER_FLAGS="-march=x86-64 -msse3"
+BOARD_RUSTFLAGS="-Ctarget-cpu=x86-64 -Ctarget-feature=+sse3"
+
+# Use LLVM amdgpu target when building LLVM.
+LLVM_TARGETS="AMDGPU X86"
+
 # Initial value just for style purposes.
 USE=""
+
+# Use ext4 crypto.
+USE="${USE} direncryption"
+
+# Assume a "legacy" (non-chromebook) keyboard with a caps-lock key.
+USE="${USE} legacy_keyboard"
+
+# Enable the OS installation feature
+USE="${USE} os_install_service"
 
 # Use kernel 5.10
 USE="${USE} -kernel-4_14 -kernel-5_4 kernel-5_10"
 
 # Enable fscrypt v2 usage on 5.4+
 USE="${USE} direncription_allow_v2"
+
+# Enable libinput to handle touchpad if the gestures library is not working
+# well.
+USE="${USE} libinput"
+
+# Enable management of EFI boot entries when installing/updating.
+USE="${USE} manage_efi_boot_entries"
+
+# Enable chromeos postinstall to configure both efi
+# and syslinux configuration files on install.
+USE="${USE} postinstall_config_efi_and_legacy"
