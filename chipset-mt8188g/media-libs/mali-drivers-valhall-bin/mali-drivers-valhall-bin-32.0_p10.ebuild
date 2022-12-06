@@ -6,13 +6,13 @@ EAPI=7
 
 inherit unpacker
 
-DESCRIPTION="Mali Bifrost user space prebuilt binaries for external builds"
+DESCRIPTION="Mali Valhall user space prebuilt binaries for external builds"
 HOMEPAGE=""
 SRC_URI="http://commondatastorage.googleapis.com/chromeos-localmirror/distfiles/mali-drivers-valhall-geralt-${PV}.run"
 
 LICENSE="Google-TOS"
 SLOT="0"
-KEYWORDS="-* arm64 arm"
+KEYWORDS="-* arm64"
 
 RDEPEND="
 	>=x11-libs/libdrm-2.4.97
