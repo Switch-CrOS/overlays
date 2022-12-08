@@ -44,6 +44,13 @@ USE="${USE} postinstall_config_efi_and_legacy"
 # Used by mesa.
 USE="${USE} llvm"
 
+# Enable libglvnd for big GL support
+USE="${USE} libglvnd"
+
+# TODO(b/200187231): Reexamine if early sandbox initialization is required
+# once mesa-reven uprevs past version 21.3.
+USE="${USE} -gpu_sandbox_start_early"
+
 # Intel graphics
 VIDEO_CARDS="i965 intel iris iHD iHD_g8 iHD_g9 iHD_g11 iHD_g12"
 
@@ -55,3 +62,23 @@ VIDEO_CARDS="${VIDEO_CARDS} amdgpu radeon radeonsi"
 
 # Misc graphics (virtual machines, software rendering, etc)
 VIDEO_CARDS="${VIDEO_CARDS} llvmpipe virgl vmware"
+
+# TODO(b/193039888): these values match amd64-generic. We will need to evaluate
+# these to figure out which ones we really want in reven.
+USE="${USE} -video_capture_use_gpu_memory_buffer"
+USE="${USE} legacy_firmware_ui legacy_power_button"
+
+# b/195140252: Do not run the factory tasts.
+USE="${USE} no_factory_flow"
+
+# Enable runtime TPM selection
+USE="${USE} tpm_dynamic tpm tpm2"
+
+# Enable software fallback for TPM related features
+USE="${USE} tpm_insecure_fallback"
+
+# The rgbkbd service crashes constantly. b/243560151
+USE="${USE} -rgbkbd"
+
+# For externally-compiled libraries to support old devices.
+USE="${USE} legacy_amd64_cpu_support"
