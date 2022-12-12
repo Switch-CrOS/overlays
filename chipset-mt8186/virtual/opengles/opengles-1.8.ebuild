@@ -7,7 +7,7 @@ DESCRIPTION="Virtual for OpenGLES implementations"
 
 LICENSE="metapackage"
 SLOT="0"
-KEYWORDS="-* arm"
+KEYWORDS="-* arm arm64"
 IUSE=""
 
 DEPEND="

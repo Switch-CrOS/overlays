@@ -1,0 +1,1 @@
+chipset-mt8195/virtual/opengles/opengles-1.8.ebuild
