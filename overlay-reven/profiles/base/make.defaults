@@ -27,6 +27,9 @@ USE="${USE} os_install_service"
 # Use kernel 5.10
 USE="${USE} -kernel-4_14 -kernel-5_4 kernel-5_10"
 
+# Include the kernel in the base image.
+USE="${USE} include_vmlinuz"
+
 # Enable fscrypt v2 usage on 5.4+
 USE="${USE} direncription_allow_v2"
 
@@ -82,3 +85,13 @@ USE="${USE} -rgbkbd"
 
 # For externally-compiled libraries to support old devices.
 USE="${USE} legacy_amd64_cpu_support"
+
+# Enable crosvm GPU support.
+USE="${USE} containers kvm_host crosvm-gpu virtio_gpu"
+
+# Pack AMD microcode updates into the kernel binary.
+USE="${USE} builtin_fw_x86_amd_ucode"
+LINUX_FIRMWARE="${LINUX_FIRMWARE} amd_ucode"
+
+# Pack Intel microcode updates into the kernel binary.
+USE="${USE} builtin_fw_x86_intel_ucode"
