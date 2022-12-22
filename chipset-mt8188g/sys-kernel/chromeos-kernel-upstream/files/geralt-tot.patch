@@ -1,3 +1,17 @@
+diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mmsys.yaml b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mmsys.yaml
+index 6ad023eec193a6d69cdafa56e055dfaab90326e6..85e6f4f621fc184d614dc9b5e485c74663b88d27 100644
+--- a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mmsys.yaml
++++ b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mmsys.yaml
+@@ -52,7 +52,8 @@ properties:
+     description:
+       Using mailbox to communicate with GCE, it should have this
+       property and list of phandle, mailbox specifiers. See
+-      Documentation/devicetree/bindings/mailbox/mtk-gce.txt for details.
++      Documentation/devicetree/bindings/mailbox/mediatek,gce-mailbox.yaml
++      for details.
+     $ref: /schemas/types.yaml#/definitions/phandle-array
+ 
+   mediatek,gce-client-reg:
 diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt8188-clock.yaml b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mt8188-clock.yaml
 new file mode 100644
 index 0000000000000000000000000000000000000000..49dc681e6601306dd2832d3f07b8699a157e1448
@@ -514,6 +528,186 @@ index fee0241b509880c84e9e0f92001a3e7215e35e0e..c03a001d3bab313d42d340c97be05d3b
  
      then:
        required:
+diff --git a/Documentation/devicetree/bindings/mailbox/mediatek,gce-mailbox.yaml b/Documentation/devicetree/bindings/mailbox/mediatek,gce-mailbox.yaml
+new file mode 100644
+index 0000000000000000000000000000000000000000..d383b2ab3ce86df09cb0c26217d4bceead6a15e3
+--- /dev/null
++++ b/Documentation/devicetree/bindings/mailbox/mediatek,gce-mailbox.yaml
+@@ -0,0 +1,86 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/mailbox/mediatek,gce-mailbox.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Mediatek Global Command Engine Mailbox
++
++maintainers:
++  - Houlong Wei <houlong.wei@mediatek.com>
++
++description:
++  The Global Command Engine (GCE) is used to help read/write registers with
++  critical time limitation, such as updating display configuration during the
++  vblank. The GCE can be used to implement the Command Queue (CMDQ) driver.
++
++properties:
++  compatible:
++    enum:
++      - mediatek,mt6779-gce
++      - mediatek,mt8173-gce
++      - mediatek,mt8183-gce
++      - mediatek,mt8186-gce
++      - mediatek,mt8188-gce
++      - mediatek,mt8192-gce
++      - mediatek,mt8195-gce
++
++  "#mbox-cells":
++    const: 2
++    description:
++      The first cell describes the Thread ID of the GCE,
++      the second cell describes the priority of the GCE thread
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++
++  clocks:
++    items:
++      - description: Global Command Engine clock
++
++  clock-names:
++    items:
++      - const: gce
++
++required:
++  - compatible
++  - "#mbox-cells"
++  - reg
++  - interrupts
++  - clocks
++
++allOf:
++  - if:
++      not:
++        properties:
++          compatible:
++            contains:
++              const: mediatek,mt8195-gce
++    then:
++      required:
++        - clock-names
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/clock/mt8173-clk.h>
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++    #include <dt-bindings/interrupt-controller/irq.h>
++
++    soc {
++        #address-cells = <2>;
++        #size-cells = <2>;
++
++        gce: mailbox@10212000 {
++            compatible = "mediatek,mt8173-gce";
++            reg = <0 0x10212000 0 0x1000>;
++            interrupts = <GIC_SPI 135 IRQ_TYPE_LEVEL_LOW>;
++            #mbox-cells = <2>;
++            clocks = <&infracfg CLK_INFRA_GCE>;
++            clock-names = "gce";
++        };
++    };
+diff --git a/Documentation/devicetree/bindings/mailbox/mtk-gce.txt b/Documentation/devicetree/bindings/mailbox/mtk-gce.txt
+deleted file mode 100644
+index c2aeba63bd47dd13232122cf23525101d9b291b3..0000000000000000000000000000000000000000
+--- a/Documentation/devicetree/bindings/mailbox/mtk-gce.txt
++++ /dev/null
+@@ -1,82 +0,0 @@
+-MediaTek GCE
+-===============
+-
+-The Global Command Engine (GCE) is used to help read/write registers with
+-critical time limitation, such as updating display configuration during the
+-vblank. The GCE can be used to implement the Command Queue (CMDQ) driver.
+-
+-CMDQ driver uses mailbox framework for communication. Please refer to
+-mailbox.txt for generic information about mailbox device-tree bindings.
+-
+-Required properties:
+-- compatible: can be "mediatek,mt8173-gce", "mediatek,mt8183-gce",
+-  "mediatek,mt8186-gce", "mediatek,mt8192-gce", "mediatek,mt8195-gce" or
+-  "mediatek,mt6779-gce".
+-- reg: Address range of the GCE unit
+-- interrupts: The interrupt signal from the GCE block
+-- clock: Clocks according to the common clock binding
+-- clock-names: Must be "gce" to stand for GCE clock
+-- #mbox-cells: Should be 2.
+-	<&phandle channel priority>
+-	phandle: Label name of a gce node.
+-	channel: Channel of mailbox. Be equal to the thread id of GCE.
+-	priority: Priority of GCE thread.
+-
+-Required properties for a client device:
+-- mboxes: Client use mailbox to communicate with GCE, it should have this
+-  property and list of phandle, mailbox specifiers.
+-Optional properties for a client device:
+-- mediatek,gce-client-reg: Specify the sub-system id which is corresponding
+-  to the register address, it should have this property and list of phandle,
+-  sub-system specifiers.
+-  <&phandle subsys_number start_offset size>
+-  phandle: Label name of a gce node.
+-  subsys_number: specify the sub-system id which is corresponding
+-                 to the register address.
+-  start_offset: the start offset of register address that GCE can access.
+-  size: the total size of register address that GCE can access.
+-
+-Optional properties for a client mutex node:
+-- mediatek,gce-events: GCE events used by clients. The event numbers are
+-  defined in 'dt-bindings/gce/<chip>-gce.h'.
+-
+-Some vaules of properties are defined in 'dt-bindings/gce/mt8173-gce.h',
+-'dt-bindings/gce/mt8183-gce.h', 'dt-bindings/gce/mt8186-gce.h'
+-'dt-bindings/gce/mt8192-gce.h', 'dt-bindings/gce/mt8195-gce.h' or
+-'dt-bindings/gce/mt6779-gce.h'.
+-Such as sub-system ids, thread priority, event ids.
+-
+-Example:
+-
+-	gce: gce@10212000 {
+-		compatible = "mediatek,mt8173-gce";
+-		reg = <0 0x10212000 0 0x1000>;
+-		interrupts = <GIC_SPI 135 IRQ_TYPE_LEVEL_LOW>;
+-		clocks = <&infracfg CLK_INFRA_GCE>;
+-		clock-names = "gce";
+-		#mbox-cells = <2>;
+-	};
+-
+-Example for a client device:
+-
+-	mmsys: clock-controller@14000000 {
+-		compatible = "mediatek,mt8173-mmsys";
+-		mboxes = <&gce 0 CMDQ_THR_PRIO_LOWEST>,
+-			 <&gce 1 CMDQ_THR_PRIO_LOWEST>;
+-		mutex-event-eof = <CMDQ_EVENT_MUTEX0_STREAM_EOF
+-				CMDQ_EVENT_MUTEX1_STREAM_EOF>;
+-		mediatek,gce-client-reg = <&gce SUBSYS_1400XXXX 0x3000 0x1000>,
+-					  <&gce SUBSYS_1401XXXX 0x2000 0x100>;
+-		...
+-	};
+-
+-Example for a client mutex node:
+-	mutex: mutex@14020000 {
+-		compatible = "mediatek,mt8173-disp-mutex";
+-		reg = <0 0x14020000 0 0x1000>;
+-		interrupts = <GIC_SPI 169 IRQ_TYPE_LEVEL_LOW>;
+-		power-domains = <&scpsys MT8173_POWER_DOMAIN_MM>;
+-		clocks = <&mmsys CLK_MM_MUTEX_32K>;
+-		mediatek,gce-events = <CMDQ_EVENT_MUTEX0_STREAM_EOF>,
+-				      <CMDQ_EVENT_MUTEX1_STREAM_EOF>;
+-	};
 diff --git a/Documentation/devicetree/bindings/media/mediatek,vcodec-encoder.yaml b/Documentation/devicetree/bindings/media/mediatek,vcodec-encoder.yaml
 index d36fcca04cbc7249f92e4ec7c132e8e0d69a51ca..32aee09aea333af273e4c0f95e12dd0f14180271 100644
 --- a/Documentation/devicetree/bindings/media/mediatek,vcodec-encoder.yaml
@@ -3483,10 +3677,10 @@ index 0000000000000000000000000000000000000000..093fd4b79bf457cbba9b29ae0454aed1
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8188.dtsi b/arch/arm64/boot/dts/mediatek/mt8188.dtsi
 new file mode 100644
-index 0000000000000000000000000000000000000000..dd76b72d3c7770b7efb4e495c6fed9cad508c8d9
+index 0000000000000000000000000000000000000000..1bcb322034a7219a9a7c2fbd6058f98105c777ad
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt8188.dtsi
-@@ -0,0 +1,3205 @@
+@@ -0,0 +1,3299 @@
 +// SPDX-License-Identifier: GPL-2.0+
 +/*
 + * Copyright (c) 2022 MediaTek Inc.
@@ -3495,10 +3689,10 @@ index 0000000000000000000000000000000000000000..dd76b72d3c7770b7efb4e495c6fed9ca
 +
 +/dts-v1/;
 +#include <dt-bindings/clock/mediatek,mt8188-clk.h>
-+#include <dt-bindings/gce/mt8188-gce.h>
 +#include <dt-bindings/power/mt8188-power.h>
 +#include <dt-bindings/interrupt-controller/arm-gic.h>
 +#include <dt-bindings/interrupt-controller/irq.h>
++#include <dt-bindings/mailbox/mediatek,mt8188-gce.h>
 +#include <dt-bindings/memory/mt8188-memory-port.h>
 +#include <dt-bindings/phy/phy.h>
 +#include <dt-bindings/pinctrl/mediatek,mt8188-pinfunc.h>
@@ -3928,6 +4122,11 @@ index 0000000000000000000000000000000000000000..dd76b72d3c7770b7efb4e495c6fed9ca
 +		status = "disabled";
 +	};
 +
++	 vtemp: vtemp {
++		compatible = "mediatek,virtual-temp";
++		#thermal-sensor-cells = <1>;
++	};
++
 +	thermal_zones: thermal-zones {
 +		cpu_little1 {
 +			polling-delay = <0>; /* milliseconds */
@@ -4011,6 +4210,69 @@ index 0000000000000000000000000000000000000000..dd76b72d3c7770b7efb4e495c6fed9ca
 +			polling-delay = <0>; /* milliseconds */
 +			polling-delay-passive = <0>; /* milliseconds */
 +			thermal-sensors = <&lvtsap 7>;
++		};
++
++		soc_max {
++			polling-delay = <1000>; /* milliseconds */
++			polling-delay-passive = <100>; /* milliseconds */
++			thermal-sensors = <&vtemp 0>;
++			sustainable-power = <1500>;
++
++			trips {
++				threshold: trip-point@0 {
++					temperature = <68000>;
++					hysteresis = <2000>;
++					type = "passive";
++				};
++
++				target: target@1 {
++					temperature = <85000>;
++					hysteresis = <2000>;
++					type = "passive";
++				};
++
++				soc_max_crit: soc_max_crit@0 {
++					temperature = <115000>;
++					hysteresis = <2000>;
++					type = "critical";
++				};
++			};
++
++			cooling_map: cooling-maps {
++				map0 {
++					trip = <&target>;
++					cooling-device = <&cpu0
++						THERMAL_NO_LIMIT
++						THERMAL_NO_LIMIT>,
++							<&cpu1
++						THERMAL_NO_LIMIT
++						THERMAL_NO_LIMIT>,
++							<&cpu2
++						THERMAL_NO_LIMIT
++						THERMAL_NO_LIMIT>,
++							<&cpu3
++						THERMAL_NO_LIMIT
++						THERMAL_NO_LIMIT>,
++							<&cpu4
++						THERMAL_NO_LIMIT
++						THERMAL_NO_LIMIT>,
++							<&cpu5
++						THERMAL_NO_LIMIT
++						THERMAL_NO_LIMIT>;
++					contribution = <2345>;
++				};
++
++				map1 {
++					trip = <&target>;
++					cooling-device = <&cpu6
++						THERMAL_NO_LIMIT
++						THERMAL_NO_LIMIT>,
++							<&cpu7
++						THERMAL_NO_LIMIT
++						THERMAL_NO_LIMIT>;
++					contribution = <1024>;
++				};
++			};
 +		};
 +	};
 +
@@ -5043,6 +5305,17 @@ index 0000000000000000000000000000000000000000..dd76b72d3c7770b7efb4e495c6fed9ca
 +				clock-names = "ref";
 +				#phy-cells = <1>;
 +			};
++		};
++
++		mipi_tx_config0: mipi_dphy0@11c80000 {
++			compatible = "mediatek,mt8188-mipi-tx",
++				     "mediatek,mt8183-mipi-tx";
++			reg = <0 0x11c80000 0 0x1000>;
++			clocks = <&clk26m>;
++			#clock-cells = <0>;
++			#phy-cells = <0>;
++			clock-output-names = "mipi_tx0_pll";
++			status = "disabled";
 +		};
 +
 +		i2c1: i2c@11e00000 {
@@ -6236,6 +6509,21 @@ index 0000000000000000000000000000000000000000..dd76b72d3c7770b7efb4e495c6fed9ca
 +				 <&gce0 SUBSYS_1c00XXXX 0x7000 0x1000>;
 +		};
 +
++		disp_dsi0: disp_dsi0@1c008000 {
++			compatible = "mediatek,mt8188-dsi",
++				     "mediatek,mt8186-dsi";
++			reg = <0 0x1c008000 0 0x1000>, <0 0x1c01d000 0 0x1000>;
++			interrupts = <GIC_SPI 644 IRQ_TYPE_LEVEL_HIGH 0>;
++			power-domains = <&spm MT8188_POWER_DOMAIN_VDOSYS0>;
++			clocks = <&vdosys0 CLK_VDO0_DSI0>,
++				 <&vdosys0 CLK_VDO0_DSI0_DSI>,
++				 <&mipi_tx_config0>;
++			clock-names = "engine", "digital", "hs";
++			phys = <&mipi_tx_config0>;
++			phy-names = "dphy";
++			status = "disabled";
++		};
++
 +		dp_intf0: dp-intf@1c015000 {
 +			status = "disabled";
 +			compatible = "mediatek,mt8188-dp-intf";
@@ -6793,6 +7081,95 @@ index 7af1fec79b6d8ae26997cb30ac89e9c3c7afbfc3..d08b479223d8431af7a69cb5188be843
  CONFIG_VIDEO_OV02A10=m
  CONFIG_VIDEO_OV5695=m
  CONFIG_VIDEO_OV8856=m
+diff --git a/drivers/clk/clk.c b/drivers/clk/clk.c
+index 4cc5af45971cb824436791fc3543b98355435955..fd6ef30a1f1069d1777c27db0e03cc3bcd2bfe5a 100644
+--- a/drivers/clk/clk.c
++++ b/drivers/clk/clk.c
+@@ -196,6 +196,9 @@ static bool clk_core_rate_is_protected(struct clk_core *core)
+ 	return core->protect_count;
+ }
+ 
++static int clk_core_prepare_enable(struct clk_core *core);
++static void clk_core_disable_unprepare(struct clk_core *core);
++
+ static bool clk_core_is_prepared(struct clk_core *core)
+ {
+ 	bool ret = false;
+@@ -208,7 +211,11 @@ static bool clk_core_is_prepared(struct clk_core *core)
+ 		return core->prepare_count;
+ 
+ 	if (!clk_pm_runtime_get(core)) {
++		if (core->flags & CLK_OPS_PARENT_ENABLE)
++			clk_core_prepare_enable(core->parent);
+ 		ret = core->ops->is_prepared(core->hw);
++		if (core->flags & CLK_OPS_PARENT_ENABLE)
++			clk_core_disable_unprepare(core->parent);
+ 		clk_pm_runtime_put(core);
+ 	}
+ 
+@@ -244,7 +251,13 @@ static bool clk_core_is_enabled(struct clk_core *core)
+ 		}
+ 	}
+ 
++	if (core->flags & CLK_OPS_PARENT_ENABLE)
++		clk_core_prepare_enable(core->parent);
++
+ 	ret = core->ops->is_enabled(core->hw);
++
++	if (core->flags & CLK_OPS_PARENT_ENABLE)
++		clk_core_disable_unprepare(core->parent);
+ done:
+ 	if (core->rpm_enabled)
+ 		pm_runtime_put(core->dev);
+@@ -812,6 +825,9 @@ int clk_rate_exclusive_get(struct clk *clk)
+ }
+ EXPORT_SYMBOL_GPL(clk_rate_exclusive_get);
+ 
++static int clk_core_enable_lock(struct clk_core *core);
++static void clk_core_disable_lock(struct clk_core *core);
++
+ static void clk_core_unprepare(struct clk_core *core)
+ {
+ 	lockdep_assert_held(&prepare_lock);
+@@ -835,12 +851,18 @@ static void clk_core_unprepare(struct clk_core *core)
+ 
+ 	WARN(core->enable_count > 0, "Unpreparing enabled %s\n", core->name);
+ 
++	if (core->flags & CLK_OPS_PARENT_ENABLE)
++		clk_core_enable_lock(core->parent);
++
+ 	trace_clk_unprepare(core);
+ 
+ 	if (core->ops->unprepare)
+ 		core->ops->unprepare(core->hw);
+ 
+ 	trace_clk_unprepare_complete(core);
++
++	if (core->flags & CLK_OPS_PARENT_ENABLE)
++		clk_core_disable_lock(core->parent);
+ 	clk_core_unprepare(core->parent);
+ 	clk_pm_runtime_put(core);
+ }
+@@ -890,6 +912,9 @@ static int clk_core_prepare(struct clk_core *core)
+ 		if (ret)
+ 			goto runtime_put;
+ 
++		if (core->flags & CLK_OPS_PARENT_ENABLE)
++			clk_core_enable_lock(core->parent);
++
+ 		trace_clk_prepare(core);
+ 
+ 		if (core->ops->prepare)
+@@ -897,6 +922,9 @@ static int clk_core_prepare(struct clk_core *core)
+ 
+ 		trace_clk_prepare_complete(core);
+ 
++		if (core->flags & CLK_OPS_PARENT_ENABLE)
++			clk_core_disable_lock(core->parent);
++
+ 		if (ret)
+ 			goto unprepare;
+ 	}
 diff --git a/drivers/clk/mediatek/Kconfig b/drivers/clk/mediatek/Kconfig
 index d5936cfb3beeee582fb885f354b1f8e839061452..17018fad8c4f85276f2c0b19d8309a6aec2c9c26 100644
 --- a/drivers/clk/mediatek/Kconfig
@@ -7993,10 +8370,10 @@ index 0000000000000000000000000000000000000000..cc4e7f4e8a6956e6e96887a43ce3fc22
 +builtin_platform_driver(clk_mt8188_peri_ao_drv);
 diff --git a/drivers/clk/mediatek/clk-mt8188-topckgen.c b/drivers/clk/mediatek/clk-mt8188-topckgen.c
 new file mode 100644
-index 0000000000000000000000000000000000000000..c6ac6c2558aeb1dd393da4eb971af85066a8d149
+index 0000000000000000000000000000000000000000..82ee3659b3214ee21fd4d25c3336295826f9bd29
 --- /dev/null
 +++ b/drivers/clk/mediatek/clk-mt8188-topckgen.c
-@@ -0,0 +1,1337 @@
+@@ -0,0 +1,1395 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +//
 +// Copyright (c) 2022 MediaTek Inc.
@@ -8082,16 +8459,14 @@ index 0000000000000000000000000000000000000000..c6ac6c2558aeb1dd393da4eb971af850
 +	FACTOR(CLK_TOP_MMPLL_D6_D2, "mmpll_d6_d2", "mmpll_d6", 1, 2),
 +	FACTOR(CLK_TOP_MMPLL_D7, "mmpll_d7", "mmpll_ck", 1, 7),
 +	FACTOR(CLK_TOP_MMPLL_D9, "mmpll_d9", "mmpll_ck", 1, 9),
-+	FACTOR(CLK_TOP_TVDPLL1, "tvdpll1_ck", "tvdpll1", 1, 1),
-+	FACTOR(CLK_TOP_TVDPLL1_D2, "tvdpll1_d2", "tvdpll1_ck", 1, 2),
-+	FACTOR(CLK_TOP_TVDPLL1_D4, "tvdpll1_d4", "tvdpll1_ck", 1, 4),
-+	FACTOR(CLK_TOP_TVDPLL1_D8, "tvdpll1_d8", "tvdpll1_ck", 1, 8),
-+	FACTOR(CLK_TOP_TVDPLL1_D16, "tvdpll1_d16", "tvdpll1_ck", 1, 16),
-+	FACTOR(CLK_TOP_TVDPLL2, "tvdpll2_ck", "tvdpll2", 1, 1),
-+	FACTOR(CLK_TOP_TVDPLL2_D2, "tvdpll2_d2", "tvdpll2_ck", 1, 2),
-+	FACTOR(CLK_TOP_TVDPLL2_D4, "tvdpll2_d4", "tvdpll2_ck", 1, 4),
-+	FACTOR(CLK_TOP_TVDPLL2_D8, "tvdpll2_d8", "tvdpll2_ck", 1, 8),
-+	FACTOR(CLK_TOP_TVDPLL2_D16, "tvdpll2_d16", "tvdpll2_ck", 1, 16),
++	FACTOR(CLK_TOP_TVDPLL1_D2, "tvdpll1_d2", "tvdpll1", 1, 2),
++	FACTOR(CLK_TOP_TVDPLL1_D4, "tvdpll1_d4", "tvdpll1", 1, 4),
++	FACTOR(CLK_TOP_TVDPLL1_D8, "tvdpll1_d8", "tvdpll1", 1, 8),
++	FACTOR(CLK_TOP_TVDPLL1_D16, "tvdpll1_d16", "tvdpll1", 1, 16),
++	FACTOR(CLK_TOP_TVDPLL2_D2, "tvdpll2_d2", "tvdpll2", 1, 2),
++	FACTOR(CLK_TOP_TVDPLL2_D4, "tvdpll2_d4", "tvdpll2", 1, 4),
++	FACTOR(CLK_TOP_TVDPLL2_D8, "tvdpll2_d8", "tvdpll2", 1, 8),
++	FACTOR(CLK_TOP_TVDPLL2_D16, "tvdpll2_d16", "tvdpll2", 1, 16),
 +	FACTOR(CLK_TOP_MSDCPLL, "msdcpll_ck", "msdcpll", 1, 1),
 +	FACTOR(CLK_TOP_MSDCPLL_D2, "msdcpll_d2", "msdcpll_ck", 1, 2),
 +	FACTOR(CLK_TOP_MSDCPLL_D16, "msdcpll_d16", "msdcpll_ck", 1, 16),
@@ -8160,8 +8535,8 @@ index 0000000000000000000000000000000000000000..c6ac6c2558aeb1dd393da4eb971af850
 +	"univpll_d6",
 +	"mainpll_d4",
 +	"mmpll_d5",
-+	"tvdpll1_ck",
-+	"tvdpll2_ck",
++	"tvdpll1",
++	"tvdpll2",
 +	"univpll_d4",
 +	"mmpll_d4"
 +};
@@ -8178,8 +8553,8 @@ index 0000000000000000000000000000000000000000..c6ac6c2558aeb1dd393da4eb971af850
 +	"univpll_d6",
 +	"mainpll_d4",
 +	"mmpll_d5_d4",
-+	"tvdpll1_ck",
-+	"tvdpll2_ck",
++	"tvdpll1",
++	"tvdpll2",
 +	"univpll_d4",
 +	"mmpll_d4"
 +};
@@ -8201,7 +8576,7 @@ index 0000000000000000000000000000000000000000..c6ac6c2558aeb1dd393da4eb971af850
 +
 +static const char * const cam_parents[] = {
 +	"clk26m",
-+	"tvdpll1_ck",
++	"tvdpll1",
 +	"mainpll_d4",
 +	"mmpll_d4",
 +	"univpll_d4",
@@ -8495,6 +8870,64 @@ index 0000000000000000000000000000000000000000..c6ac6c2558aeb1dd393da4eb971af850
 +	"tvdpll2_d16"
 +};
 +
++static int mt8188_dp_clk_determine_rate(struct clk_hw *hw,
++					   struct clk_rate_request *req)
++{
++	const char *clk_hw_name = clk_hw_get_name(hw);
++	unsigned int pow, parent_id, is_edp = 0;
++	struct clk_rate_request parent_req = *req;
++	struct clk_hw *parent_hw = clk_hw_get_parent(hw);
++	unsigned long parent_rate = clk_hw_get_rate(parent_hw);
++	int ret = 0;
++
++	if (!strncmp(clk_hw_name, "top_edp", 7))
++		is_edp = 1;
++
++	if(req->rate < 7000000)
++		pow = 4; //D16
++	else if (req->rate < 200000000)
++		pow = 3; //D8
++	else
++		pow = 2; //D4
++
++	if (is_edp)
++		parent_id = (pow << 1) - 1; // 3, 5, 7
++	else
++		parent_id = pow << 1; // 4, 6, 8
++
++	// re-parenting and determine rate
++	if (clk_hw_can_set_rate_parent(hw)) {
++		parent_hw = clk_hw_get_parent_by_index(hw, parent_id);
++		ret = __clk_determine_rate(parent_hw, &parent_req);
++		if (ret)
++			return ret;
++
++		req->best_parent_hw = parent_hw;
++		req->rate = req->best_parent_rate = parent_req.rate;
++	} else {
++		req->best_parent_hw = parent_hw;
++		req->rate = req->best_parent_rate = parent_rate;
++	}
++
++	return ret;
++}
++
++static struct clk_ops mt8188_dp_clk_ops;
++
++static void mt8188_dp_clk_ops_init(void) {
++	mt8188_dp_clk_ops = mtk_mux_gate_clr_set_upd_ops;
++	mt8188_dp_clk_ops.determine_rate = mt8188_dp_clk_determine_rate;
++}
++
++#define MT8188_DP_MUX(_id, _name, _parents, _mux_ofs, _mux_set_ofs,	\
++			 _mux_clr_ofs, _shift, _width, _gate, _upd_ofs, \
++			 _upd)	\
++		GATE_CLR_SET_UPD_FLAGS(_id, _name, _parents, _mux_ofs,		\
++			_mux_set_ofs, _mux_clr_ofs, _shift, _width,		\
++			_gate, _upd_ofs, _upd, CLK_SET_RATE_PARENT,		\
++			mt8188_dp_clk_ops)
++
++
 +static const char * const edp_parents[] = {
 +	"clk26m",
 +	"tvdpll1_d2",
@@ -8645,7 +9078,7 @@ index 0000000000000000000000000000000000000000..c6ac6c2558aeb1dd393da4eb971af850
 +	"univpll_d5",
 +	"mmpll_d6",
 +	"mainpll_d4",
-+	"tvdpll2_ck",
++	"tvdpll2",
 +	"univpll_d4",
 +	"imgpll_ck",
 +	"univpll_d6_d2",
@@ -8734,7 +9167,7 @@ index 0000000000000000000000000000000000000000..c6ac6c2558aeb1dd393da4eb971af850
 +	"mainpll_d5",
 +	"univpll_d5",
 +	"mainpll_d4",
-+	"tvdpll1_ck",
++	"tvdpll1",
 +	"univpll_d4"
 +};
 +
@@ -9042,9 +9475,9 @@ index 0000000000000000000000000000000000000000..c6ac6c2558aeb1dd393da4eb971af850
 +	MUX_GATE_CLR_SET_UPD(CLK_TOP_SSPM, "top_sspm",
 +			     sspm_parents, 0x080, 0x084, 0x088, 24, 4, 31, 0x08, 3),
 +	/* CLK_CFG_9 */
-+	MUX_GATE_CLR_SET_UPD(CLK_TOP_DP, "top_dp",
++	MT8188_DP_MUX(CLK_TOP_DP, "top_dp",
 +			     dp_parents, 0x08C, 0x090, 0x094, 0, 4, 7, 0x08, 4),
-+	MUX_GATE_CLR_SET_UPD(CLK_TOP_EDP, "top_edp",
++	MT8188_DP_MUX(CLK_TOP_EDP, "top_edp",
 +			     edp_parents, 0x08C, 0x090, 0x094, 8, 4, 15, 0x08, 5),
 +	MUX_GATE_CLR_SET_UPD(CLK_TOP_DPI, "top_dpi",
 +			     dpi_parents, 0x08C, 0x090, 0x094, 16, 4, 23, 0x08, 6),
@@ -9255,6 +9688,8 @@ index 0000000000000000000000000000000000000000..c6ac6c2558aeb1dd393da4eb971af850
 +		goto free_top_data;
 +	}
 +
++	mt8188_dp_clk_ops_init();
++
 +	r = mtk_clk_register_fixed_clks(top_fixed_clks, ARRAY_SIZE(top_fixed_clks),
 +					top_clk_data);
 +	if (r)
@@ -9438,10 +9873,10 @@ index 0000000000000000000000000000000000000000..f09d26ffca8d3e966e7342b512ee2bcb
 +MODULE_LICENSE("GPL");
 diff --git a/drivers/clk/mediatek/clk-mt8188-vdo0.c b/drivers/clk/mediatek/clk-mt8188-vdo0.c
 new file mode 100644
-index 0000000000000000000000000000000000000000..3b65ec9eef351fec94a445c4facb49278ecec4e4
+index 0000000000000000000000000000000000000000..f9ae25640f95bde727152b0c5c49da4e53343473
 --- /dev/null
 +++ b/drivers/clk/mediatek/clk-mt8188-vdo0.c
-@@ -0,0 +1,129 @@
+@@ -0,0 +1,133 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +//
 +// Copyright (c) 2022 MediaTek Inc.
@@ -9481,6 +9916,10 @@ index 0000000000000000000000000000000000000000..3b65ec9eef351fec94a445c4facb4927
 +#define GATE_VDO0_2(_id, _name, _parent, _shift)			\
 +	GATE_MTK(_id, _name, _parent, &vdo0_2_cg_regs, _shift, &mtk_clk_gate_ops_setclr)
 +
++#define GATE_VDO0_2_FLAGS(_id, _name, _parent, _shift, _flags)		\
++	GATE_MTK_FLAGS(_id, _name, _parent, &vdo0_2_cg_regs, _shift,	\
++	&mtk_clk_gate_ops_setclr, _flags)
++
 +static const struct mtk_gate vdo0_clks[] = {
 +	/* VDO0_0 */
 +	GATE_VDO0_0(CLK_VDO0_DISP_OVL0, "vdo0_disp_ovl0", "top_vpp", 0),
@@ -9517,7 +9956,7 @@ index 0000000000000000000000000000000000000000..3b65ec9eef351fec94a445c4facb4927
 +	/* VDO0_2 */
 +	GATE_VDO0_2(CLK_VDO0_DSI0_DSI, "vdo0_dsi0_dsi", "top_dsi_occ", 0),
 +	GATE_VDO0_2(CLK_VDO0_DSI1_DSI, "vdo0_dsi1_dsi", "top_dsi_occ", 8),
-+	GATE_VDO0_2(CLK_VDO0_DP_INTF0_DP_INTF, "vdo0_dp_intf0_dp_intf", "top_edp", 16),
++	GATE_VDO0_2_FLAGS(CLK_VDO0_DP_INTF0_DP_INTF, "vdo0_dp_intf0_dp_intf", "top_edp", 16, CLK_SET_RATE_PARENT),
 +};
 +
 +static int clk_mt8188_vdo0_probe(struct platform_device *pdev)
@@ -9573,10 +10012,10 @@ index 0000000000000000000000000000000000000000..3b65ec9eef351fec94a445c4facb4927
 +builtin_platform_driver(clk_mt8188_vdo0_drv);
 diff --git a/drivers/clk/mediatek/clk-mt8188-vdo1.c b/drivers/clk/mediatek/clk-mt8188-vdo1.c
 new file mode 100644
-index 0000000000000000000000000000000000000000..7e45046ede0dd33981bd9be7684fa81d389204e8
+index 0000000000000000000000000000000000000000..be658c6a95bf2565fe0e2a90fa58206ab1727b60
 --- /dev/null
 +++ b/drivers/clk/mediatek/clk-mt8188-vdo1.c
-@@ -0,0 +1,177 @@
+@@ -0,0 +1,181 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +//
 +// Copyright (c) 2022 MediaTek Inc.
@@ -9630,6 +10069,10 @@ index 0000000000000000000000000000000000000000..7e45046ede0dd33981bd9be7684fa81d
 +
 +#define GATE_VDO1_3(_id, _name, _parent, _shift)			\
 +	GATE_MTK(_id, _name, _parent, &vdo1_3_cg_regs, _shift, &mtk_clk_gate_ops_setclr)
++
++#define GATE_VDO1_3_FLAGS(_id, _name, _parent, _shift, _flags)		\
++	GATE_MTK_FLAGS(_id, _name, _parent, &vdo1_3_cg_regs, _shift,	\
++		       &mtk_clk_gate_ops_setclr, _flags)
 +
 +#define GATE_VDO1_4(_id, _name, _parent, _shift)			\
 +	GATE_MTK(_id, _name, _parent, &vdo1_4_cg_regs, _shift, &mtk_clk_gate_ops_setclr)
@@ -9697,7 +10140,7 @@ index 0000000000000000000000000000000000000000..7e45046ede0dd33981bd9be7684fa81d
 +	GATE_VDO1_3(CLK_VDO1_DISP_MONITOR_DPI0, "vdo1_disp_monitor_dpi0_ck", "top_vpp", 1),
 +	GATE_VDO1_3(CLK_VDO1_DPI1, "vdo1_dpi1_ck", "top_vpp", 8),
 +	GATE_VDO1_3(CLK_VDO1_DISP_MONITOR_DPI1, "vdo1_disp_monitor_dpi1_ck", "top_vpp", 9),
-+	GATE_VDO1_3(CLK_VDO1_DPINTF, "vdo1_dpintf_ck", "top_vpp", 16),
++	GATE_VDO1_3_FLAGS(CLK_VDO1_DPINTF, "vdo1_dpintf", "top_dp", 16, CLK_SET_RATE_PARENT),
 +	GATE_VDO1_3(CLK_VDO1_DISP_MONITOR_DPINTF, "vdo1_disp_monitor_dpintf_ck", "top_vpp", 17),
 +	/* VDO1_4 */
 +	GATE_VDO1_4(CLK_VDO1_26M_SLOW, "vdo1_26m_slow_ck", "clk26m", 8),
@@ -10224,7 +10667,7 @@ index 0000000000000000000000000000000000000000..e7932fecfeb8f4d6a0f7f60c034cd563
 +MODULE_LICENSE("GPL");
 diff --git a/drivers/clk/mediatek/clkdbg-mt8188.c b/drivers/clk/mediatek/clkdbg-mt8188.c
 new file mode 100644
-index 0000000000000000000000000000000000000000..35976c7766dd029b029accdecf3e77777929783d
+index 0000000000000000000000000000000000000000..bb9d7cfb3a9cdc703e841336043daadb3c838740
 --- /dev/null
 +++ b/drivers/clk/mediatek/clkdbg-mt8188.c
 @@ -0,0 +1,1392 @@
@@ -10900,12 +11343,12 @@ index 0000000000000000000000000000000000000000..35976c7766dd029b029accdecf3e7777
 +	"mmpll_d6_d2",
 +	"mmpll_d7",
 +	"mmpll_d9",
-+	"tvdpll1_ck",
++	"tvdpll1",
 +	"tvdpll1_d2",
 +	"tvdpll1_d4",
 +	"tvdpll1_d8",
 +	"tvdpll1_d16",
-+	"tvdpll2_ck",
++	"tvdpll2",
 +	"tvdpll2_d2",
 +	"tvdpll2_d4",
 +	"tvdpll2_d8",
@@ -11415,7 +11858,7 @@ index 0000000000000000000000000000000000000000..35976c7766dd029b029accdecf3e7777
 +	"vdo1_disp_monitor_dpi0_ck",
 +	"vdo1_dpi1_ck",
 +	"vdo1_disp_monitor_dpi1_ck",
-+	"vdo1_dpintf_ck",
++	"vdo1_dpintf",
 +	"vdo1_disp_monitor_dpintf_ck",
 +	"vdo1_26m_slow_ck",
 +	NULL,
@@ -19979,6 +20422,34 @@ index 7e363b1f24dfe078a4c4c1ecea4def3f782de82b..9ca4414d00be1711a33a78e6c27e79b5
  	{ .compatible = "mediatek,mt8192-m4u", .data = &mt8192_data},
  	{ .compatible = "mediatek,mt8195-iommu-infra", .data = &mt8195_data_infra},
  	{ .compatible = "mediatek,mt8195-iommu-vdo",   .data = &mt8195_data_vdo},
+diff --git a/drivers/media/mc/mc-device.c b/drivers/media/mc/mc-device.c
+index b8176a3b76d3b34f7b5610a5d79ced2dfb033f24..f17036d6b176c60d9c9ecdb1e7db430ef96e993e 100644
+--- a/drivers/media/mc/mc-device.c
++++ b/drivers/media/mc/mc-device.c
+@@ -203,6 +203,7 @@ static long media_device_setup_link(struct media_device *mdev, void *arg)
+ 	struct media_link *link = NULL;
+ 	struct media_entity *source;
+ 	struct media_entity *sink;
++	int ret;
+ 
+ 	/* Find the source and sink entities and link.
+ 	 */
+@@ -221,10 +222,14 @@ static long media_device_setup_link(struct media_device *mdev, void *arg)
+ 	if (link == NULL)
+ 		return -EINVAL;
+ 
++	link->request_fd = linkd->request_fd;
+ 	memset(linkd->reserved, 0, sizeof(linkd->reserved));
+ 
+ 	/* Setup the link on both entities. */
+-	return __media_entity_setup_link(link, linkd->flags);
++	ret = __media_entity_setup_link(link, linkd->flags);
++	link->request_fd = 0;
++
++	return ret;
+ }
+ 
+ static long media_device_get_topology(struct media_device *mdev, void *arg)
 diff --git a/drivers/media/platform/mediatek/mdp3/mdp_reg_aal.h b/drivers/media/platform/mediatek/mdp3/mdp_reg_aal.h
 new file mode 100644
 index 0000000000000000000000000000000000000000..2275a06fbdf9393d8961c34d60f47c1d711aaf1e
@@ -29916,10 +30387,108 @@ index 0797a13a3048de73ed032e7139b75e370363d83c..9721d1d95bd9ddea63ecbed987277e62
  		*type = V4L2_CTRL_TYPE_AREA;
  		*flags |= V4L2_CTRL_FLAG_READ_ONLY;
 diff --git a/drivers/media/v4l2-core/v4l2-ioctl.c b/drivers/media/v4l2-core/v4l2-ioctl.c
-index 935dbf34171d35d0ab412a22680847bf84e402e0..73994108e0e37f68659a44990766e3d9a7b71796 100644
+index 935dbf34171d35d0ab412a22680847bf84e402e0..9e23e588e4d5018387004961406e0ff3e871c830 100644
 --- a/drivers/media/v4l2-core/v4l2-ioctl.c
 +++ b/drivers/media/v4l2-core/v4l2-ioctl.c
-@@ -1498,6 +1498,7 @@ static void v4l_fill_fmtdesc(struct v4l2_fmtdesc *fmt)
+@@ -1329,6 +1329,14 @@ static void v4l_fill_fmtdesc(struct v4l2_fmtdesc *fmt)
+ 	case V4L2_PIX_FMT_YVYU:		descr = "YVYU 4:2:2"; break;
+ 	case V4L2_PIX_FMT_UYVY:		descr = "UYVY 4:2:2"; break;
+ 	case V4L2_PIX_FMT_VYUY:		descr = "VYUY 4:2:2"; break;
++	case V4L2_PIX_FMT_YUYV10:	descr = "YUYV 4:2:2 10 bits"; break;
++	case V4L2_PIX_FMT_YVYU10:	descr = "YVYU 4:2:2 10 bits"; break;
++	case V4L2_PIX_FMT_UYVY10:	descr = "UYVY 4:2:2 10 bits"; break;
++	case V4L2_PIX_FMT_VYUY10:	descr = "VYUY 4:2:2 10 bits"; break;
++	case V4L2_PIX_FMT_YUYV12:	descr = "YUYV 4:2:2 12 bits"; break;
++	case V4L2_PIX_FMT_YVYU12:	descr = "YVYU 4:2:2 12 bits"; break;
++	case V4L2_PIX_FMT_UYVY12:	descr = "UYVY 4:2:2 12 bits"; break;
++	case V4L2_PIX_FMT_VYUY12:	descr = "VYUY 4:2:2 12 bits"; break;
+ 	case V4L2_PIX_FMT_YUV422P:	descr = "Planar YUV 4:2:2"; break;
+ 	case V4L2_PIX_FMT_YUV411P:	descr = "Planar YUV 4:1:1"; break;
+ 	case V4L2_PIX_FMT_Y41P:		descr = "YUV 4:1:1 (Packed)"; break;
+@@ -1358,6 +1366,14 @@ static void v4l_fill_fmtdesc(struct v4l2_fmtdesc *fmt)
+ 	case V4L2_PIX_FMT_NV12_16L16:	descr = "Y/CbCr 4:2:0 (16x16 Linear)"; break;
+ 	case V4L2_PIX_FMT_NV12_32L32:   descr = "Y/CbCr 4:2:0 (32x32 Linear)"; break;
+ 	case V4L2_PIX_FMT_P010_4L4:	descr = "10-bit Y/CbCr 4:2:0 (4x4 Linear)"; break;
++	case V4L2_PIX_FMT_NV12_10:	descr = "Y/CbCr 4:2:0 10 bits"; break;
++	case V4L2_PIX_FMT_NV21_10:	descr = "Y/CrCb 4:2:0 10 bits"; break;
++	case V4L2_PIX_FMT_NV16_10:	descr = "Y/CbCr 4:2:2 10 bits"; break;
++	case V4L2_PIX_FMT_NV61_10:	descr = "Y/CrCb 4:2:2 10 bits"; break;
++	case V4L2_PIX_FMT_NV12_12:	descr = "Y/CbCr 4:2:0 12 bits"; break;
++	case V4L2_PIX_FMT_NV21_12:	descr = "Y/CrCb 4:2:0 12 bits"; break;
++	case V4L2_PIX_FMT_NV16_12:	descr = "Y/CbCr 4:2:2 12 bits"; break;
++	case V4L2_PIX_FMT_NV61_12:	descr = "Y/CrCb 4:2:2 12 bits"; break;
+ 	case V4L2_PIX_FMT_NV12_UBWC:	descr = "Y/CbCr 4:2:0 UBWC"; break;
+ 	case V4L2_PIX_FMT_NV12M:	descr = "Y/CbCr 4:2:0 (N-C)"; break;
+ 	case V4L2_PIX_FMT_NV21M:	descr = "Y/CrCb 4:2:0 (N-C)"; break;
+@@ -1426,6 +1442,67 @@ static void v4l_fill_fmtdesc(struct v4l2_fmtdesc *fmt)
+ 	case V4L2_PIX_FMT_MM21:		descr = "Mediatek 8-bit Block Format"; break;
+ 	case V4L2_PIX_FMT_HSV24:	descr = "24-bit HSV 8-8-8"; break;
+ 	case V4L2_PIX_FMT_HSV32:	descr = "32-bit XHSV 8-8-8-8"; break;
++	case V4L2_PIX_FMT_MTISP_SBGGR8: descr = "8-bit Bayer BGGR MTISP Packed"; break;
++	case V4L2_PIX_FMT_MTISP_SGBRG8: descr = "8-bit Bayer GBRG MTISP Packed"; break;
++	case V4L2_PIX_FMT_MTISP_SGRBG8: descr = "8-bit Bayer GRBG MTISP Packed"; break;
++	case V4L2_PIX_FMT_MTISP_SRGGB8: descr = "8-bit Bayer RGGB MTISP Packed"; break;
++	case V4L2_PIX_FMT_MTISP_SBGGR10: descr = "10-bit Bayer BGGR MTISP Packed"; break;
++	case V4L2_PIX_FMT_MTISP_SGBRG10: descr = "10-bit Bayer GBRG MTISP Packed"; break;
++	case V4L2_PIX_FMT_MTISP_SGRBG10: descr = "10-bit Bayer GRBG MTISP Packed"; break;
++	case V4L2_PIX_FMT_MTISP_SRGGB10: descr = "10-bit Bayer RGGB MTISP Packed"; break;
++	case V4L2_PIX_FMT_MTISP_SBGGR12: descr = "12-bit Bayer BGGR MTISP Packed"; break;
++	case V4L2_PIX_FMT_MTISP_SGBRG12: descr = "12-bit Bayer GBRG MTISP Packed"; break;
++	case V4L2_PIX_FMT_MTISP_SGRBG12: descr = "12-bit Bayer GRBG MTISP Packed"; break;
++	case V4L2_PIX_FMT_MTISP_SRGGB12: descr = "12-bit Bayer RGGB MTISP Packed"; break;
++	case V4L2_PIX_FMT_MTISP_SBGGR14: descr = "14-bit Bayer BGGR MTISP Packed"; break;
++	case V4L2_PIX_FMT_MTISP_SGBRG14: descr = "14-bit Bayer GBRG MTISP Packed"; break;
++	case V4L2_PIX_FMT_MTISP_SGRBG14: descr = "14-bit Bayer GRBG MTISP Packed"; break;
++	case V4L2_PIX_FMT_MTISP_SRGGB14: descr = "14-bit Bayer RGGB MTISP Packed"; break;
++	case V4L2_PIX_FMT_MTISP_SBGGR8F: descr = "8-bit Full-G Bayer BGGR Packed"; break;
++	case V4L2_PIX_FMT_MTISP_SGBRG8F: descr = "8-bit Full-G Bayer GBRG Packed"; break;
++	case V4L2_PIX_FMT_MTISP_SGRBG8F: descr = "8-bit Full-G Bayer GRBG Packed"; break;
++	case V4L2_PIX_FMT_MTISP_SRGGB8F: descr = "8-bit Full-G Bayer RGGB Packed"; break;
++	case V4L2_PIX_FMT_MTISP_SBGGR10F: descr = "10-bit Full-G Bayer BGGR Packed"; break;
++	case V4L2_PIX_FMT_MTISP_SGBRG10F: descr = "10-bit Full-G Bayer GBRG Packed"; break;
++	case V4L2_PIX_FMT_MTISP_SGRBG10F: descr = "10-bit Full-G Bayer GRBG Packed"; break;
++	case V4L2_PIX_FMT_MTISP_SRGGB10F: descr = "10-bit Full-G Bayer RGGB Packed"; break;
++	case V4L2_PIX_FMT_MTISP_SBGGR12F: descr = "12-bit Full-G Bayer BGGR Packed"; break;
++	case V4L2_PIX_FMT_MTISP_SGBRG12F: descr = "12-bit Full-G Bayer GBRG Packed"; break;
++	case V4L2_PIX_FMT_MTISP_SGRBG12F: descr = "12-bit Full-G Bayer GRBG Packed"; break;
++	case V4L2_PIX_FMT_MTISP_SRGGB12F: descr = "12-bit Full-G Bayer RGGB Packed"; break;
++	case V4L2_PIX_FMT_MTISP_SBGGR14F: descr = "14-bit Full-G Bayer BGGR Packed"; break;
++	case V4L2_PIX_FMT_MTISP_SGBRG14F: descr = "14-bit Full-G Bayer GBRG Packed"; break;
++	case V4L2_PIX_FMT_MTISP_SGRBG14F: descr = "14-bit Full-G Bayer GRBG Packed"; break;
++	case V4L2_PIX_FMT_MTISP_SRGGB14F: descr = "14-bit Full-G Bayer RGGB Packed"; break;
++	case V4L2_PIX_FMT_MTISP_NV12_10P: descr = "Y/CbCr 4:2:0 10 bits packed"; break;
++	case V4L2_PIX_FMT_MTISP_NV21_10P: descr = "Y/CrCb 4:2:0 10 bits packed"; break;
++	case V4L2_PIX_FMT_MTISP_NV16_10P: descr = "Y/CbCr 4:2:2 10 bits packed"; break;
++	case V4L2_PIX_FMT_MTISP_NV61_10P: descr = "Y/CrCb 4:2:2 10 bits packed"; break;
++	case V4L2_PIX_FMT_MTISP_YUYV10P: descr = "YUYV 4:2:2 10 bits packed"; break;
++	case V4L2_PIX_FMT_MTISP_YVYU10P: descr = "YVYU 4:2:2 10 bits packed"; break;
++	case V4L2_PIX_FMT_MTISP_UYVY10P: descr = "UYVY 4:2:2 10 bits packed"; break;
++	case V4L2_PIX_FMT_MTISP_VYUY10P: descr = "VYUY 4:2:2 10 bits packed"; break;
++	case V4L2_PIX_FMT_MTISP_NV12_12P: descr = "Y/CbCr 4:2:0 12 bits packed"; break;
++	case V4L2_PIX_FMT_MTISP_NV21_12P: descr = "Y/CrCb 4:2:0 12 bits packed"; break;
++	case V4L2_PIX_FMT_MTISP_NV16_12P: descr = "Y/CbCr 4:2:2 12 bits packed"; break;
++	case V4L2_PIX_FMT_MTISP_NV61_12P: descr = "Y/CrCb 4:2:2 12 bits packed"; break;
++	case V4L2_PIX_FMT_MTISP_YUYV12P: descr = "YUYV 4:2:2 12 bits packed"; break;
++	case V4L2_PIX_FMT_MTISP_YVYU12P: descr = "YVYU 4:2:2 12 bits packed"; break;
++	case V4L2_PIX_FMT_MTISP_UYVY12P: descr = "UYVY 4:2:2 12 bits packed"; break;
++	case V4L2_PIX_FMT_MTISP_VYUY12P: descr = "VYUY 4:2:2 12 bits packed"; break;
++	case V4L2_PIX_FMT_MTISP_NV12_UFBC: descr = "YCbCr 420 8 bits compress"; break;
++	case V4L2_PIX_FMT_MTISP_NV21_UFBC: descr = "YCrCb 420 8 bits compress"; break;
++	case V4L2_PIX_FMT_MTISP_NV12_10_UFBC: descr = "YCbCr 420 10 bits compress"; break;
++        case V4L2_PIX_FMT_MTISP_NV21_10_UFBC: descr = "YCrCb 420 10 bits compress"; break;
++	case V4L2_PIX_FMT_MTISP_NV12_12_UFBC: descr = "YCbCr 420 12 bits compress"; break;
++	case V4L2_PIX_FMT_MTISP_NV21_12_UFBC: descr = "YCrCb 420 12 bits compress"; break;
++	case V4L2_PIX_FMT_MTISP_BAYER8_UFBC: descr = "RAW 8 bits compress"; break;
++	case V4L2_PIX_FMT_MTISP_BAYER10_UFBC: descr = "RAW 10 bits compress"; break;
++	case V4L2_PIX_FMT_MTISP_BAYER12_UFBC: descr = "RAW 12 bits compress"; break;
++	case V4L2_PIX_FMT_MTISP_BAYER14_UFBC: descr = "RAW 14 bits compress"; break;
++	case V4L2_PIX_FMT_MTISP_SGRB8F: descr = "8-bit 3 plane GRB Packed"; break;
++	case V4L2_PIX_FMT_MTISP_SGRB10F: descr = "10-bit 3 plane GRB Packed"; break;
++	case V4L2_PIX_FMT_MTISP_SGRB12F: descr = "12-bit 3 plane GRB Packed"; break;
+ 	case V4L2_SDR_FMT_CU8:		descr = "Complex U8"; break;
+ 	case V4L2_SDR_FMT_CU16LE:	descr = "Complex U16LE"; break;
+ 	case V4L2_SDR_FMT_CS8:		descr = "Complex S8"; break;
+@@ -1498,6 +1575,7 @@ static void v4l_fill_fmtdesc(struct v4l2_fmtdesc *fmt)
  		case V4L2_PIX_FMT_MT21C:	descr = "Mediatek Compressed Format"; break;
  		case V4L2_PIX_FMT_QC08C:	descr = "QCOM Compressed 8-bit Format"; break;
  		case V4L2_PIX_FMT_QC10C:	descr = "QCOM Compressed 10-bit Format"; break;
@@ -29927,6 +30496,42 @@ index 935dbf34171d35d0ab412a22680847bf84e402e0..73994108e0e37f68659a44990766e3d9
  		default:
  			if (fmt->description[0])
  				return;
+@@ -1716,7 +1794,7 @@ static int v4l_s_fmt(const struct v4l2_ioctl_ops *ops,
+ 	case V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE:
+ 		if (unlikely(!ops->vidioc_s_fmt_vid_cap_mplane))
+ 			break;
+-		CLEAR_AFTER_FIELD(p, fmt.pix_mp.xfer_func);
++		CLEAR_AFTER_FIELD(p, fmt.pix_mp.request_fd);
+ 		for (i = 0; i < p->fmt.pix_mp.num_planes; i++)
+ 			CLEAR_AFTER_FIELD(&p->fmt.pix_mp.plane_fmt[i],
+ 					  bytesperline);
+@@ -1747,7 +1825,7 @@ static int v4l_s_fmt(const struct v4l2_ioctl_ops *ops,
+ 	case V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE:
+ 		if (unlikely(!ops->vidioc_s_fmt_vid_out_mplane))
+ 			break;
+-		CLEAR_AFTER_FIELD(p, fmt.pix_mp.xfer_func);
++		CLEAR_AFTER_FIELD(p, fmt.pix_mp.request_fd);
+ 		for (i = 0; i < p->fmt.pix_mp.num_planes; i++)
+ 			CLEAR_AFTER_FIELD(&p->fmt.pix_mp.plane_fmt[i],
+ 					  bytesperline);
+@@ -1818,7 +1896,7 @@ static int v4l_try_fmt(const struct v4l2_ioctl_ops *ops,
+ 	case V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE:
+ 		if (unlikely(!ops->vidioc_try_fmt_vid_cap_mplane))
+ 			break;
+-		CLEAR_AFTER_FIELD(p, fmt.pix_mp.xfer_func);
++		CLEAR_AFTER_FIELD(p, fmt.pix_mp.request_fd);
+ 		for (i = 0; i < p->fmt.pix_mp.num_planes; i++)
+ 			CLEAR_AFTER_FIELD(&p->fmt.pix_mp.plane_fmt[i],
+ 					  bytesperline);
+@@ -1849,7 +1927,7 @@ static int v4l_try_fmt(const struct v4l2_ioctl_ops *ops,
+ 	case V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE:
+ 		if (unlikely(!ops->vidioc_try_fmt_vid_out_mplane))
+ 			break;
+-		CLEAR_AFTER_FIELD(p, fmt.pix_mp.xfer_func);
++		CLEAR_AFTER_FIELD(p, fmt.pix_mp.request_fd);
+ 		for (i = 0; i < p->fmt.pix_mp.num_planes; i++)
+ 			CLEAR_AFTER_FIELD(&p->fmt.pix_mp.plane_fmt[i],
+ 					  bytesperline);
 diff --git a/drivers/memory/mtk-smi.c b/drivers/memory/mtk-smi.c
 index d7cb7ead2ac7fc04f52af23b14f3fcb76cdd42e9..db66a96f91b14711f6b19016541eb4bf7258401b 100644
 --- a/drivers/memory/mtk-smi.c
@@ -36292,14 +36897,14 @@ index d716d0372e1ea36daaf805d9d2a776489072ba80..6dfb9c70b33fe9351aca96ce83466e0d
 +
  endif
 diff --git a/drivers/thermal/mediatek/Makefile b/drivers/thermal/mediatek/Makefile
-index 16ce166e59162e3d5649650ddaf5c699ea6cf647..97d3d240691c2cefa5ab1a9d005e958fa49fa28b 100644
+index 16ce166e59162e3d5649650ddaf5c699ea6cf647..151368fa7edc6559d7d118f2e2bdeaff6400b778 100644
 --- a/drivers/thermal/mediatek/Makefile
 +++ b/drivers/thermal/mediatek/Makefile
 @@ -1,2 +1,5 @@
 -obj-$(CONFIG_MTK_SOC_THERMAL)	+= soc_temp.o
 +obj-$(CONFIG_MTK_SOC_THERMAL)		+= soc_temp.o
  obj-$(CONFIG_MTK_SOC_THERMAL_LVTS)	+= soc_temp_lvts.o
-+obj-$(CONFIG_LVTS_MT8188)			+= lvts_mt8188.o
++obj-$(CONFIG_LVTS_MT8188)			+= lvts_mt8188.o virtual_temp.o
 +obj-$(CONFIG_LVTS_MT8192)			+= lvts_mt8192.o
 +obj-$(CONFIG_LVTS_MT8195)			+= lvts_mt8195.o
 diff --git a/drivers/thermal/mediatek/lvts_mt8188.c b/drivers/thermal/mediatek/lvts_mt8188.c
@@ -39146,6 +39751,161 @@ index 1d90bdec53c6f1cd664fd5fcfe5cc4613bc2fed5..5ba2cf7e8c9e00c612fa655bfaa71084
 -#define THERMAL_PROTECTION_STAGE_2		0x40000000
 -#define THERMAL_PROTECTION_STAGE_3		0x80000000
  #endif /* __MTK_SOC_TEMP_LVTS_H__ */
+diff --git a/drivers/thermal/mediatek/virtual_temp.c b/drivers/thermal/mediatek/virtual_temp.c
+new file mode 100644
+index 0000000000000000000000000000000000000000..7d7bf61dda40360f0472efa6baff53c892fbe03f
+--- /dev/null
++++ b/drivers/thermal/mediatek/virtual_temp.c
+@@ -0,0 +1,149 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Copyright (c) 2021 MediaTek Inc.
++ */
++#include <linux/bits.h>
++#include <linux/device.h>
++#include <linux/io.h>
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/of.h>
++#include <linux/of_platform.h>
++#include <linux/regmap.h>
++#include <linux/slab.h>
++#include <linux/thermal.h>
++
++struct thermal_zone_device *tzd_cpu_little1;
++struct thermal_zone_device *tzd_cpu_little2;
++struct thermal_zone_device *tzd_cpu_little3;
++struct thermal_zone_device *tzd_cpu_little4;
++struct thermal_zone_device *tzd_cpu_big0;
++struct thermal_zone_device *tzd_cpu_big1;
++struct thermal_zone_device *tzd_apu;
++struct thermal_zone_device *tzd_gpu1;
++struct thermal_zone_device *tzd_gpu2;
++struct thermal_zone_device *tzd_soc1;
++struct thermal_zone_device *tzd_soc2;
++struct thermal_zone_device *tzd_soc3;
++struct thermal_zone_device *tzd_cam1;
++struct thermal_zone_device *tzd_cam2;
++
++static int vtemp_get_temp(void *data, int *temp)
++{
++	int tz_temp0=0;
++	int tz_temp_max=0;
++
++	thermal_zone_get_temp(tzd_cpu_little1, &tz_temp0);
++	if(tz_temp0 > tz_temp_max)
++		tz_temp_max = tz_temp0;
++
++	thermal_zone_get_temp(tzd_cpu_little2, &tz_temp0);
++	if(tz_temp0 > tz_temp_max)
++		tz_temp_max = tz_temp0;
++
++	thermal_zone_get_temp(tzd_cpu_little3, &tz_temp0);
++	if(tz_temp0 > tz_temp_max)
++		tz_temp_max = tz_temp0;
++
++	thermal_zone_get_temp(tzd_cpu_little4, &tz_temp0);
++	if(tz_temp0 > tz_temp_max)
++		tz_temp_max = tz_temp0;
++
++	thermal_zone_get_temp(tzd_cpu_big0, &tz_temp0);
++	if(tz_temp0 > tz_temp_max)
++		tz_temp_max = tz_temp0;
++
++	thermal_zone_get_temp(tzd_cpu_big1, &tz_temp0);
++	if(tz_temp0 > tz_temp_max)
++		tz_temp_max = tz_temp0;
++
++	thermal_zone_get_temp(tzd_apu, &tz_temp0);
++	if(tz_temp0 > tz_temp_max)
++		tz_temp_max = tz_temp0;
++
++	thermal_zone_get_temp(tzd_gpu1, &tz_temp0);
++	if(tz_temp0 > tz_temp_max)
++		tz_temp_max = tz_temp0;
++
++	thermal_zone_get_temp(tzd_gpu2, &tz_temp0);
++	if(tz_temp0 > tz_temp_max)
++		tz_temp_max = tz_temp0;
++
++	thermal_zone_get_temp(tzd_soc1, &tz_temp0);
++	if(tz_temp0 > tz_temp_max)
++		tz_temp_max = tz_temp0;
++
++	thermal_zone_get_temp(tzd_soc2, &tz_temp0);
++	if(tz_temp0 > tz_temp_max)
++		tz_temp_max = tz_temp0;
++
++	thermal_zone_get_temp(tzd_soc3, &tz_temp0);
++	if(tz_temp0 > tz_temp_max)
++		tz_temp_max = tz_temp0;
++
++	thermal_zone_get_temp(tzd_cam1, &tz_temp0);
++	if(tz_temp0 > tz_temp_max)
++		tz_temp_max = tz_temp0;
++
++	thermal_zone_get_temp(tzd_cam2, &tz_temp0);
++	if(tz_temp0 > tz_temp_max)
++		tz_temp_max = tz_temp0;
++
++	*temp = tz_temp_max;
++
++	/* printk("[thermal_zone_get_temp] *temp:%d\n", *temp); */
++
++	return 0;
++}
++
++static const struct thermal_zone_of_device_ops vtemp_ops = {
++	.get_temp = vtemp_get_temp,
++};
++
++static int vtemp_probe(struct platform_device *pdev)
++{
++	struct device *dev = &pdev->dev;
++	struct thermal_zone_device *tzdev;
++
++	tzdev = devm_thermal_zone_of_sensor_register(dev, 0,
++			NULL, &vtemp_ops);
++
++	tzd_cpu_little1 = thermal_zone_get_zone_by_name("cpu_little1");
++	tzd_cpu_little2 = thermal_zone_get_zone_by_name("cpu_little2");
++	tzd_cpu_little3 = thermal_zone_get_zone_by_name("cpu_little3");
++	tzd_cpu_little4 = thermal_zone_get_zone_by_name("cpu_little4");
++	tzd_cpu_big0 = thermal_zone_get_zone_by_name("cpu_big0");
++	tzd_cpu_big1 = thermal_zone_get_zone_by_name("cpu_big1");
++	tzd_apu = thermal_zone_get_zone_by_name("apu");
++	tzd_gpu1 = thermal_zone_get_zone_by_name("gpu1");
++	tzd_gpu2 = thermal_zone_get_zone_by_name("gpu2");
++	tzd_soc1 = thermal_zone_get_zone_by_name("soc1");
++	tzd_soc2 = thermal_zone_get_zone_by_name("soc2");
++	tzd_soc3 = thermal_zone_get_zone_by_name("soc3");
++	tzd_cam1 = thermal_zone_get_zone_by_name("cam1");
++	tzd_cam2 = thermal_zone_get_zone_by_name("cam2");
++
++	return 0;
++}
++
++static const struct of_device_id vtemp_of_match[] = {
++	{
++		.compatible = "mediatek,virtual-temp",
++	},
++	{},
++};
++MODULE_DEVICE_TABLE(of, vtemp_of_match);
++
++static struct platform_driver vtemp_driver = {
++	.probe = vtemp_probe,
++	.driver = {
++		.name = "mtk-virtual-temp",
++		.of_match_table = vtemp_of_match,
++	},
++};
++
++module_platform_driver(vtemp_driver);
++
++MODULE_AUTHOR("Example");
++MODULE_DESCRIPTION("Example on virtual temp driver");
++MODULE_LICENSE("GPL v2");
 diff --git a/drivers/video/hdmi.c b/drivers/video/hdmi.c
 index 947be761dfa400739620ea8b2b22866cd72b5079..03c7f27dde4951e9078c406f21c75d399bcdacd8 100644
 --- a/drivers/video/hdmi.c
@@ -40060,131 +40820,93 @@ index 0000000000000000000000000000000000000000..3e37373ca459dabf2b6e0a34342642ba
 +#define CLK_VDO1_NR_CLK				61
 +
 +#endif /* _DT_BINDINGS_CLK_MT8188_H */
-diff --git a/include/dt-bindings/gce/mt8188-gce.h b/include/dt-bindings/gce/mt8188-gce.h
+diff --git a/include/dt-bindings/mailbox/mediatek,mt8188-gce.h b/include/dt-bindings/mailbox/mediatek,mt8188-gce.h
 new file mode 100644
-index 0000000000000000000000000000000000000000..b15e965fe67189844f1284a73e68ab083c4008aa
+index 0000000000000000000000000000000000000000..119865787b47c3bdf76686d94bb91d00d4ef3855
 --- /dev/null
-+++ b/include/dt-bindings/gce/mt8188-gce.h
-@@ -0,0 +1,1079 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
++++ b/include/dt-bindings/mailbox/mediatek,mt8188-gce.h
+@@ -0,0 +1,967 @@
++/* SPDX-License-Identifier: GPL-2.0 OR BSD-2-Clause */
 +/*
-+ * Copyright (c) 2018 MediaTek Inc.
++ * Copyright (c) 2022 MediaTek Inc.
 + *
 + */
 +#ifndef _DT_BINDINGS_GCE_MT8188_H
 +#define _DT_BINDINGS_GCE_MT8188_H
 +
-+/* assign timeout 0 also means default */
-+#define CMDQ_NO_TIMEOUT		0xffffffff
-+#define CMDQ_TIMEOUT_DEFAULT	1000
++#define CMDQ_THR_PRIO_LOWEST		0
++#define CMDQ_THR_PRIO_1			1
++#define CMDQ_THR_PRIO_2			2
++#define CMDQ_THR_PRIO_3			3
++#define CMDQ_THR_PRIO_4			4
++#define CMDQ_THR_PRIO_5			5
++#define CMDQ_THR_PRIO_6			6
++#define CMDQ_THR_PRIO_HIGHEST		7
 +
-+/* GCE thread priority */
-+#define CMDQ_THR_PRIO_LOWEST	0
-+#define CMDQ_THR_PRIO_1		1
-+#define CMDQ_THR_PRIO_2		2
-+#define CMDQ_THR_PRIO_3		3
-+#define CMDQ_THR_PRIO_4		4
-+#define CMDQ_THR_PRIO_5		5
-+#define CMDQ_THR_PRIO_6		6
-+#define CMDQ_THR_PRIO_HIGHEST	7
++#define SUBSYS_1400XXXX                 0
++#define SUBSYS_1401XXXX			1
++#define SUBSYS_1402XXXX			2
++#define SUBSYS_1c00XXXX			3
++#define SUBSYS_1c01XXXX			4
++#define SUBSYS_1c02XXXX			5
++#define SUBSYS_1c10XXXX			6
++#define SUBSYS_1c11XXXX			7
++#define SUBSYS_1c12XXXX			8
++#define SUBSYS_14f0XXXX			9
++#define SUBSYS_14f1XXXX			10
++#define SUBSYS_14f2XXXX			11
++#define SUBSYS_1800XXXX			12
++#define SUBSYS_1801XXXX			13
++#define SUBSYS_1802XXXX			14
++#define SUBSYS_1803XXXX			15
++#define SUBSYS_1032XXXX			16
++#define SUBSYS_1033XXXX			17
++#define SUBSYS_1600XXXX			18
++#define SUBSYS_1601XXXX			19
++#define SUBSYS_14e0XXXX			20
++#define SUBSYS_1c20XXXX			21
++#define SUBSYS_1c30XXXX			22
++#define SUBSYS_1c40XXXX			23
++#define SUBSYS_1c50XXXX			24
++#define SUBSYS_1c60XXXX			25
++#define SUBSYS_NO_SUPPORT		99
 +
-+/* CPR count in 32bit register */
-+#define GCE_CPR_COUNT		1312
-+
-+/* GCE subsys table */
-+#define SUBSYS_1400XXXX		0
-+#define SUBSYS_1401XXXX		1
-+#define SUBSYS_1402XXXX		2
-+#define SUBSYS_1c00XXXX		3
-+#define SUBSYS_1c01XXXX		4
-+#define SUBSYS_1c02XXXX		5
-+#define SUBSYS_1c10XXXX		6
-+#define SUBSYS_1c11XXXX		7
-+#define SUBSYS_1c12XXXX		8
-+#define SUBSYS_14f0XXXX		9
-+#define SUBSYS_14f1XXXX		10
-+#define SUBSYS_14f2XXXX		11
-+#define SUBSYS_1800XXXX		12
-+#define SUBSYS_1801XXXX		13
-+#define SUBSYS_1802XXXX		14
-+#define SUBSYS_1803XXXX		15
-+#define SUBSYS_1032XXXX		16
-+#define SUBSYS_1033XXXX		17
-+#define SUBSYS_1600XXXX		18
-+#define SUBSYS_1601XXXX		19
-+#define SUBSYS_14e0XXXX		20
-+#define SUBSYS_1c20XXXX		21
-+#define SUBSYS_1c30XXXX		22
-+#define SUBSYS_1c40XXXX		23
-+#define SUBSYS_1c50XXXX		24
-+#define SUBSYS_1c60XXXX		25
-+#define SUBSYS_NO_SUPPORT	99
-+
-+/* GCE General Purpose Register (GPR) support
-+ * Leave note for scenario usage here
-+ */
-+/* GCE: write mask */
-+#define GCE_GPR_R00		0x00
-+#define GCE_GPR_R01		0x01
-+/* MDP: P1: JPEG dest */
-+#define GCE_GPR_R02		0x02
-+#define GCE_GPR_R03		0x03
-+/* MDP: PQ color */
-+#define GCE_GPR_R04		0x04
-+/* MDP:2D sharpness */
-+#define GCE_GPR_R05		0x05
-+/* DISP: poll esd */
-+#define GCE_GPR_R06		0x06
-+#define GCE_GPR_R07		0x07
-+/* MDP: P4: 2D sharpness dst */
-+#define GCE_GPR_R08		0x08
-+#define GCE_GPR_R09		0x09
-+/* VCU: poll with timeout for GPR timer */
-+#define GCE_GPR_R10		0x0A
-+#define GCE_GPR_R11		0x0B
-+/* CMDQ: debug */
-+#define GCE_GPR_R12		0x0C
-+#define GCE_GPR_R13		0x0D
-+/* CMDQ: P7: debug */
-+#define GCE_GPR_R14		0x0E
-+#define GCE_GPR_R15		0x0F
-+
-+#define CMDQ_EVENT_IMG_SOF		0
-+#define CMDQ_EVENT_IMG_TRAW0_CQ_THR_DONE_0	1
-+#define CMDQ_EVENT_IMG_TRAW0_CQ_THR_DONE_1	2
-+#define CMDQ_EVENT_IMG_TRAW0_CQ_THR_DONE_2	3
-+#define CMDQ_EVENT_IMG_TRAW0_CQ_THR_DONE_3	4
-+#define CMDQ_EVENT_IMG_TRAW0_CQ_THR_DONE_4	5
-+#define CMDQ_EVENT_IMG_TRAW0_CQ_THR_DONE_5	6
-+#define CMDQ_EVENT_IMG_TRAW0_CQ_THR_DONE_6	7
-+#define CMDQ_EVENT_IMG_TRAW0_CQ_THR_DONE_7	8
-+#define CMDQ_EVENT_IMG_TRAW0_CQ_THR_DONE_8	9
-+#define CMDQ_EVENT_IMG_TRAW0_CQ_THR_DONE_9	10
-+#define CMDQ_EVENT_IMG_TRAW0_DMA_ERROR_INT	11
-+#define CMDQ_EVENT_IMG_TRAW1_CQ_THR_DONE_0	12
-+#define CMDQ_EVENT_IMG_TRAW1_CQ_THR_DONE_1	13
-+#define CMDQ_EVENT_IMG_TRAW1_CQ_THR_DONE_2	14
-+#define CMDQ_EVENT_IMG_TRAW1_CQ_THR_DONE_3	15
-+#define CMDQ_EVENT_IMG_TRAW1_CQ_THR_DONE_4	16
-+#define CMDQ_EVENT_IMG_TRAW1_CQ_THR_DONE_5	17
-+#define CMDQ_EVENT_IMG_TRAW1_CQ_THR_DONE_6	18
-+#define CMDQ_EVENT_IMG_TRAW1_CQ_THR_DONE_7	19
-+#define CMDQ_EVENT_IMG_TRAW1_CQ_THR_DONE_8	20
-+#define CMDQ_EVENT_IMG_TRAW1_CQ_THR_DONE_9	21
-+#define CMDQ_EVENT_IMG_TRAW1_DMA_ERROR_INT	22
++#define CMDQ_EVENT_IMG_SOF				0
++#define CMDQ_EVENT_IMG_TRAW0_CQ_THR_DONE_0		1
++#define CMDQ_EVENT_IMG_TRAW0_CQ_THR_DONE_1		2
++#define CMDQ_EVENT_IMG_TRAW0_CQ_THR_DONE_2		3
++#define CMDQ_EVENT_IMG_TRAW0_CQ_THR_DONE_3		4
++#define CMDQ_EVENT_IMG_TRAW0_CQ_THR_DONE_4		5
++#define CMDQ_EVENT_IMG_TRAW0_CQ_THR_DONE_5		6
++#define CMDQ_EVENT_IMG_TRAW0_CQ_THR_DONE_6		7
++#define CMDQ_EVENT_IMG_TRAW0_CQ_THR_DONE_7		8
++#define CMDQ_EVENT_IMG_TRAW0_CQ_THR_DONE_8		9
++#define CMDQ_EVENT_IMG_TRAW0_CQ_THR_DONE_9		10
++#define CMDQ_EVENT_IMG_TRAW0_DMA_ERROR_INT		11
++#define CMDQ_EVENT_IMG_TRAW1_CQ_THR_DONE_0		12
++#define CMDQ_EVENT_IMG_TRAW1_CQ_THR_DONE_1		13
++#define CMDQ_EVENT_IMG_TRAW1_CQ_THR_DONE_2		14
++#define CMDQ_EVENT_IMG_TRAW1_CQ_THR_DONE_3		15
++#define CMDQ_EVENT_IMG_TRAW1_CQ_THR_DONE_4		16
++#define CMDQ_EVENT_IMG_TRAW1_CQ_THR_DONE_5		17
++#define CMDQ_EVENT_IMG_TRAW1_CQ_THR_DONE_6		18
++#define CMDQ_EVENT_IMG_TRAW1_CQ_THR_DONE_7		19
++#define CMDQ_EVENT_IMG_TRAW1_CQ_THR_DONE_8		20
++#define CMDQ_EVENT_IMG_TRAW1_CQ_THR_DONE_9		21
++#define CMDQ_EVENT_IMG_TRAW1_DMA_ERROR_INT		22
 +#define CMDQ_EVENT_IMG_ADL_RESERVED			23
-+#define CMDQ_EVENT_IMG_DIP_CQ_THR_DONE_0	24
-+#define CMDQ_EVENT_IMG_DIP_CQ_THR_DONE_1	25
-+#define CMDQ_EVENT_IMG_DIP_CQ_THR_DONE_2	26
-+#define CMDQ_EVENT_IMG_DIP_CQ_THR_DONE_3	27
-+#define CMDQ_EVENT_IMG_DIP_CQ_THR_DONE_4	28
-+#define CMDQ_EVENT_IMG_DIP_CQ_THR_DONE_5	29
-+#define CMDQ_EVENT_IMG_DIP_CQ_THR_DONE_6	30
-+#define CMDQ_EVENT_IMG_DIP_CQ_THR_DONE_7	31
-+#define CMDQ_EVENT_IMG_DIP_CQ_THR_DONE_8	32
-+#define CMDQ_EVENT_IMG_DIP_CQ_THR_DONE_9	33
-+#define CMDQ_EVENT_IMG_DIP_DMA_ERR	34
-+#define CMDQ_EVENT_IMG_DIP_NR_DMA_ERR		35
++#define CMDQ_EVENT_IMG_DIP_CQ_THR_DONE_0		24
++#define CMDQ_EVENT_IMG_DIP_CQ_THR_DONE_1		25
++#define CMDQ_EVENT_IMG_DIP_CQ_THR_DONE_2		26
++#define CMDQ_EVENT_IMG_DIP_CQ_THR_DONE_3		27
++#define CMDQ_EVENT_IMG_DIP_CQ_THR_DONE_4		28
++#define CMDQ_EVENT_IMG_DIP_CQ_THR_DONE_5		29
++#define CMDQ_EVENT_IMG_DIP_CQ_THR_DONE_6		30
++#define CMDQ_EVENT_IMG_DIP_CQ_THR_DONE_7		31
++#define CMDQ_EVENT_IMG_DIP_CQ_THR_DONE_8		32
++#define CMDQ_EVENT_IMG_DIP_CQ_THR_DONE_9		33
++#define CMDQ_EVENT_IMG_DIP_DMA_ERR			34
++#define CMDQ_EVENT_IMG_DIP_NR_DMA_ERR			35
 +#define CMDQ_EVENT_DIP_DUMMY_0				36
 +#define CMDQ_EVENT_DIP_DUMMY_1				37
 +#define CMDQ_EVENT_DIP_DUMMY_2				38
@@ -40210,7 +40932,7 @@ index 0000000000000000000000000000000000000000..b15e965fe67189844f1284a73e68ab08
 +#define CMDQ_EVENT_IMG_PQDIP_A_CQ_THR_DONE_7	58
 +#define CMDQ_EVENT_IMG_PQDIP_A_CQ_THR_DONE_8	59
 +#define CMDQ_EVENT_IMG_PQDIP_A_CQ_THR_DONE_9	60
-+#define CMDQ_EVENT_IMG_PQDIP_A_DMA_ERR	61
++#define CMDQ_EVENT_IMG_PQDIP_A_DMA_ERR		61
 +#define CMDQ_EVENT_WPE0_DUMMY_0			62
 +#define CMDQ_EVENT_WPE0_DUMMY_1			63
 +#define CMDQ_EVENT_WPE0_DUMMY_2			64
@@ -40236,10 +40958,10 @@ index 0000000000000000000000000000000000000000..b15e965fe67189844f1284a73e68ab08
 +#define CMDQ_EVENT_IMG_PQDIP_B_CQ_THR_DONE_7	84
 +#define CMDQ_EVENT_IMG_PQDIP_B_CQ_THR_DONE_8	85
 +#define CMDQ_EVENT_IMG_PQDIP_B_CQ_THR_DONE_9	86
-+#define CMDQ_EVENT_IMG_PQDIP_B_DMA_ERR	87
-+#define CMDQ_EVENT_WPE1_DUMMY_0		88
-+#define CMDQ_EVENT_WPE1_DUMMY_1		89
-+#define CMDQ_EVENT_WPE1_DUMMY_2		90
++#define CMDQ_EVENT_IMG_PQDIP_B_DMA_ERR		87
++#define CMDQ_EVENT_WPE1_DUMMY_0			88
++#define CMDQ_EVENT_WPE1_DUMMY_1			89
++#define CMDQ_EVENT_WPE1_DUMMY_2			90
 +#define CMDQ_EVENT_IMG_WPE_LITE_GCE_FRAME_DONE	91
 +#define CMDQ_EVENT_IMG_WPE_LITE_DONE_SYNC_OUT	92
 +#define CMDQ_EVENT_IMG_WPE_LITE_CQ_THR_DONE_0	93
@@ -40252,32 +40974,30 @@ index 0000000000000000000000000000000000000000..b15e965fe67189844f1284a73e68ab08
 +#define CMDQ_EVENT_IMG_WPE_LITE_CQ_THR_DONE_7	100
 +#define CMDQ_EVENT_IMG_WPE_LITE_CQ_THR_DONE_8	101
 +#define CMDQ_EVENT_IMG_WPE_LITE_CQ_THR_DONE_9	102
-+#define CMDQ_EVENT_IMG_XTRAW_CQ_THR_DONE_0		103
-+#define CMDQ_EVENT_IMG_XTRAW_CQ_THR_DONE_1		104
-+#define CMDQ_EVENT_IMG_XTRAW_CQ_THR_DONE_2		105
-+#define CMDQ_EVENT_IMG_XTRAW_CQ_THR_DONE_3		106
-+#define CMDQ_EVENT_IMG_XTRAW_CQ_THR_DONE_4		107
-+#define CMDQ_EVENT_IMG_XTRAW_CQ_THR_DONE_5		108
-+#define CMDQ_EVENT_IMG_XTRAW_CQ_THR_DONE_6		109
-+#define CMDQ_EVENT_IMG_XTRAW_CQ_THR_DONE_7		110
-+#define CMDQ_EVENT_IMG_XTRAW_CQ_THR_DONE_8		111
-+#define CMDQ_EVENT_IMG_XTRAW_CQ_THR_DONE_9		112
-+#define CMDQ_EVENT_IMG_XTRAW_DMA_ERR_EVENT		113
-+#define CMDQ_EVENT_WPE2_DUMMY_0		114
-+#define CMDQ_EVENT_WPE2_DUMMY_1		115
-+#define CMDQ_EVENT_WPE2_DUMMY_2		116
-+#define CMDQ_EVENT_IMG_IMGSYS_IPE_DUMMY	117
++#define CMDQ_EVENT_IMG_XTRAW_CQ_THR_DONE_0	103
++#define CMDQ_EVENT_IMG_XTRAW_CQ_THR_DONE_1	104
++#define CMDQ_EVENT_IMG_XTRAW_CQ_THR_DONE_2	105
++#define CMDQ_EVENT_IMG_XTRAW_CQ_THR_DONE_3	106
++#define CMDQ_EVENT_IMG_XTRAW_CQ_THR_DONE_4	107
++#define CMDQ_EVENT_IMG_XTRAW_CQ_THR_DONE_5	108
++#define CMDQ_EVENT_IMG_XTRAW_CQ_THR_DONE_6	109
++#define CMDQ_EVENT_IMG_XTRAW_CQ_THR_DONE_7	110
++#define CMDQ_EVENT_IMG_XTRAW_CQ_THR_DONE_8	111
++#define CMDQ_EVENT_IMG_XTRAW_CQ_THR_DONE_9	112
++#define CMDQ_EVENT_IMG_XTRAW_DMA_ERR_EVENT	113
++#define CMDQ_EVENT_WPE2_DUMMY_0			114
++#define CMDQ_EVENT_WPE2_DUMMY_1			115
++#define CMDQ_EVENT_WPE2_DUMMY_2			116
++#define CMDQ_EVENT_IMG_IMGSYS_IPE_DUMMY		117
 +#define CMDQ_EVENT_IMG_IMGSYS_IPE_FDVT_DONE	118
 +#define CMDQ_EVENT_IMG_IMGSYS_IPE_ME_DONE	119
 +#define CMDQ_EVENT_IMG_IMGSYS_IPE_DVS_DONE	120
 +#define CMDQ_EVENT_IMG_IMGSYS_IPE_DVP_DONE	121
-+#define CMDQ_EVENT_FDVT1_RESERVED			122
-+#define CMDQ_EVENT_IMG_ENG_EVENT			123
-+
-+
-+#define CMDQ_EVENT_CAMSUBA_SW_PASS1_DONE	129
-+#define CMDQ_EVENT_CAMSUBB_SW_PASS1_DONE	130
-+#define CMDQ_EVENT_CAMSUBC_SW_PASS1_DONE	131
++#define CMDQ_EVENT_FDVT1_RESERVED		122
++#define CMDQ_EVENT_IMG_ENG_EVENT		123
++#define CMDQ_EVENT_CAMSUBA_SW_PASS1_DONE		129
++#define CMDQ_EVENT_CAMSUBB_SW_PASS1_DONE		130
++#define CMDQ_EVENT_CAMSUBC_SW_PASS1_DONE		131
 +#define CMDQ_EVENT_GCAMSV_A_1_SW_PASS1_DONE		132
 +#define CMDQ_EVENT_GCAMSV_A_2_SW_PASS1_DONE		133
 +#define CMDQ_EVENT_GCAMSV_B_1_SW_PASS1_DONE		134
@@ -40298,59 +41018,59 @@ index 0000000000000000000000000000000000000000..b15e965fe67189844f1284a73e68ab08
 +#define CMDQ_EVENT_GCAMSV_I_2_SW_PASS1_DONE		149
 +#define CMDQ_EVENT_GCAMSV_J_1_SW_PASS1_DONE		150
 +#define CMDQ_EVENT_GCAMSV_J_2_SW_PASS1_DONE		151
-+#define CMDQ_EVENT_MRAW_0_SW_PASS1_DONE		152
-+#define CMDQ_EVENT_MRAW_1_SW_PASS1_DONE		153
-+#define CMDQ_EVENT_MRAW_2_SW_PASS1_DONE		154
-+#define CMDQ_EVENT_MRAW_3_SW_PASS1_DONE		155
-+#define CMDQ_EVENT_SENINF_CAM0_FIFO_FULL	156
-+#define CMDQ_EVENT_SENINF_CAM1_FIFO_FULL	157
-+#define CMDQ_EVENT_SENINF_CAM2_FIFO_FULL	158
-+#define CMDQ_EVENT_SENINF_CAM3_FIFO_FULL	159
-+#define CMDQ_EVENT_SENINF_CAM4_FIFO_FULL	160
-+#define CMDQ_EVENT_SENINF_CAM5_FIFO_FULL	161
-+#define CMDQ_EVENT_SENINF_CAM6_FIFO_FULL	162
-+#define CMDQ_EVENT_SENINF_CAM7_FIFO_FULL	163
-+#define CMDQ_EVENT_SENINF_CAM8_FIFO_FULL	164
-+#define CMDQ_EVENT_SENINF_CAM9_FIFO_FULL	165
-+#define CMDQ_EVENT_SENINF_CAM10_FIFO_FULL	166
-+#define CMDQ_EVENT_SENINF_CAM11_FIFO_FULL	167
-+#define CMDQ_EVENT_SENINF_CAM12_FIFO_FULL	168
-+#define CMDQ_EVENT_SENINF_CAM13_FIFO_FULL	169
-+#define CMDQ_EVENT_SENINF_CAM14_FIFO_FULL	170
-+#define CMDQ_EVENT_SENINF_CAM15_FIFO_FULL	171
-+#define CMDQ_EVENT_SENINF_CAM16_FIFO_FULL	172
-+#define CMDQ_EVENT_SENINF_CAM17_FIFO_FULL	173
-+#define CMDQ_EVENT_SENINF_CAM18_FIFO_FULL	174
-+#define CMDQ_EVENT_SENINF_CAM19_FIFO_FULL	175
-+#define CMDQ_EVENT_SENINF_CAM20_FIFO_FULL	176
-+#define CMDQ_EVENT_SENINF_CAM21_FIFO_FULL	177
-+#define CMDQ_EVENT_SENINF_CAM22_FIFO_FULL	178
-+#define CMDQ_EVENT_SENINF_CAM23_FIFO_FULL	179
-+#define CMDQ_EVENT_SENINF_CAM24_FIFO_FULL	180
-+#define CMDQ_EVENT_SENINF_CAM25_FIFO_FULL	181
-+#define CMDQ_EVENT_SENINF_CAM26_FIFO_FULL	182
-+#define CMDQ_EVENT_TG_OVRUN_MRAW0_INT	183
-+#define CMDQ_EVENT_TG_OVRUN_MRAW1_INT	184
-+#define CMDQ_EVENT_TG_OVRUN_MRAW2_INT	185
-+#define CMDQ_EVENT_TG_OVRUN_MRAW3_INT	186
-+#define CMDQ_EVENT_DMA_R1_ERROR_MRAW0_INT	187
-+#define CMDQ_EVENT_DMA_R1_ERROR_MRAW1_INT	188
-+#define CMDQ_EVENT_DMA_R1_ERROR_MRAW2_INT	189
-+#define CMDQ_EVENT_DMA_R1_ERROR_MRAW3_INT	190
-+#define CMDQ_EVENT_PDA0_IRQO_EVENT_DONE_D1	191
++#define CMDQ_EVENT_MRAW_0_SW_PASS1_DONE			152
++#define CMDQ_EVENT_MRAW_1_SW_PASS1_DONE			153
++#define CMDQ_EVENT_MRAW_2_SW_PASS1_DONE			154
++#define CMDQ_EVENT_MRAW_3_SW_PASS1_DONE			155
++#define CMDQ_EVENT_SENINF_CAM0_FIFO_FULL		156
++#define CMDQ_EVENT_SENINF_CAM1_FIFO_FULL		157
++#define CMDQ_EVENT_SENINF_CAM2_FIFO_FULL		158
++#define CMDQ_EVENT_SENINF_CAM3_FIFO_FULL		159
++#define CMDQ_EVENT_SENINF_CAM4_FIFO_FULL		160
++#define CMDQ_EVENT_SENINF_CAM5_FIFO_FULL		161
++#define CMDQ_EVENT_SENINF_CAM6_FIFO_FULL		162
++#define CMDQ_EVENT_SENINF_CAM7_FIFO_FULL		163
++#define CMDQ_EVENT_SENINF_CAM8_FIFO_FULL		164
++#define CMDQ_EVENT_SENINF_CAM9_FIFO_FULL		165
++#define CMDQ_EVENT_SENINF_CAM10_FIFO_FULL		166
++#define CMDQ_EVENT_SENINF_CAM11_FIFO_FULL		167
++#define CMDQ_EVENT_SENINF_CAM12_FIFO_FULL		168
++#define CMDQ_EVENT_SENINF_CAM13_FIFO_FULL		169
++#define CMDQ_EVENT_SENINF_CAM14_FIFO_FULL		170
++#define CMDQ_EVENT_SENINF_CAM15_FIFO_FULL		171
++#define CMDQ_EVENT_SENINF_CAM16_FIFO_FULL		172
++#define CMDQ_EVENT_SENINF_CAM17_FIFO_FULL		173
++#define CMDQ_EVENT_SENINF_CAM18_FIFO_FULL		174
++#define CMDQ_EVENT_SENINF_CAM19_FIFO_FULL		175
++#define CMDQ_EVENT_SENINF_CAM20_FIFO_FULL		176
++#define CMDQ_EVENT_SENINF_CAM21_FIFO_FULL		177
++#define CMDQ_EVENT_SENINF_CAM22_FIFO_FULL		178
++#define CMDQ_EVENT_SENINF_CAM23_FIFO_FULL		179
++#define CMDQ_EVENT_SENINF_CAM24_FIFO_FULL		180
++#define CMDQ_EVENT_SENINF_CAM25_FIFO_FULL		181
++#define CMDQ_EVENT_SENINF_CAM26_FIFO_FULL		182
++#define CMDQ_EVENT_TG_OVRUN_MRAW0_INT			183
++#define CMDQ_EVENT_TG_OVRUN_MRAW1_INT			184
++#define CMDQ_EVENT_TG_OVRUN_MRAW2_INT			185
++#define CMDQ_EVENT_TG_OVRUN_MRAW3_INT			186
++#define CMDQ_EVENT_DMA_R1_ERROR_MRAW0_INT		187
++#define CMDQ_EVENT_DMA_R1_ERROR_MRAW1_INT		188
++#define CMDQ_EVENT_DMA_R1_ERROR_MRAW2_INT		189
++#define CMDQ_EVENT_DMA_R1_ERROR_MRAW3_INT		190
++#define CMDQ_EVENT_PDA0_IRQO_EVENT_DONE_D1		191
 +#define CMDQ_EVENT_PDA1_IRQO_EVENT_DONE_D1		192
-+#define CMDQ_EVENT_CAM_SUBA_TG_INT1		193
-+#define CMDQ_EVENT_CAM_SUBA_TG_INT2		194
-+#define CMDQ_EVENT_CAM_SUBA_TG_INT3		195
-+#define CMDQ_EVENT_CAM_SUBA_TG_INT4		196
-+#define CMDQ_EVENT_CAM_SUBB_TG_INT1		197
-+#define CMDQ_EVENT_CAM_SUBB_TG_INT2		198
-+#define CMDQ_EVENT_CAM_SUBB_TG_INT3		199
-+#define CMDQ_EVENT_CAM_SUBB_TG_INT4		200
-+#define CMDQ_EVENT_CAM_SUBC_TG_INT1		201
-+#define CMDQ_EVENT_CAM_SUBC_TG_INT2		202
-+#define CMDQ_EVENT_CAM_SUBC_TG_INT3		203
-+#define CMDQ_EVENT_CAM_SUBC_TG_INT4		204
++#define CMDQ_EVENT_CAM_SUBA_TG_INT1				193
++#define CMDQ_EVENT_CAM_SUBA_TG_INT2				194
++#define CMDQ_EVENT_CAM_SUBA_TG_INT3				195
++#define CMDQ_EVENT_CAM_SUBA_TG_INT4				196
++#define CMDQ_EVENT_CAM_SUBB_TG_INT1				197
++#define CMDQ_EVENT_CAM_SUBB_TG_INT2				198
++#define CMDQ_EVENT_CAM_SUBB_TG_INT3				199
++#define CMDQ_EVENT_CAM_SUBB_TG_INT4				200
++#define CMDQ_EVENT_CAM_SUBC_TG_INT1				201
++#define CMDQ_EVENT_CAM_SUBC_TG_INT2				202
++#define CMDQ_EVENT_CAM_SUBC_TG_INT3				203
++#define CMDQ_EVENT_CAM_SUBC_TG_INT4				204
 +#define CMDQ_EVENT_CAM_SUBA_IMGO_R1_LOW_LATENCY_LINE_CNT_INT	205
 +#define CMDQ_EVENT_CAM_SUBA_YUVO_R1_LOW_LATENCY_LINE_CNT_INT	206
 +#define CMDQ_EVENT_CAM_SUBA_YUVO_R3_LOW_LATENCY_LINE_CNT_INT	207
@@ -40363,165 +41083,158 @@ index 0000000000000000000000000000000000000000..b15e965fe67189844f1284a73e68ab08
 +#define CMDQ_EVENT_CAM_SUBC_YUVO_R1_LOW_LATENCY_LINE_CNT_INT	214
 +#define CMDQ_EVENT_CAM_SUBC_YUVO_R3_LOW_LATENCY_LINE_CNT_INT	215
 +#define CMDQ_EVENT_CAM_SUBC_DRZS4NO_R1_LOW_LATENCY_LINE_CNT_INT	216
-+#define CMDQ_EVENT_RAW_SEL_SOF_SUBA		217
-+#define CMDQ_EVENT_RAW_SEL_SOF_SUBB		218
-+#define CMDQ_EVENT_RAW_SEL_SOF_SUBC		219
++#define CMDQ_EVENT_RAW_SEL_SOF_SUBA				217
++#define CMDQ_EVENT_RAW_SEL_SOF_SUBB				218
++#define CMDQ_EVENT_RAW_SEL_SOF_SUBC				219
 +#define CMDQ_EVENT_CAM_SUBA_RING_BUFFER_OVERFLOW_INT_IN		220
 +#define CMDQ_EVENT_CAM_SUBB_RING_BUFFER_OVERFLOW_INT_IN		221
 +#define CMDQ_EVENT_CAM_SUBC_RING_BUFFER_OVERFLOW_INT_IN		222
-+
-+#define CMDQ_EVENT_VPP0_MDP_RDMA_SOF	256
-+#define CMDQ_EVENT_VPP0_MDP_FG_SOF	257
-+#define CMDQ_EVENT_VPP0_STITCH_SOF	258
-+#define CMDQ_EVENT_VPP0_MDP_HDR_SOF	259
-+#define CMDQ_EVENT_VPP0_MDP_AAL_SOF	260
-+#define CMDQ_EVENT_VPP0_MDP_RSZ_IN_RSZ_SOF	261
-+#define CMDQ_EVENT_VPP0_MDP_TDSHP_SOF	262
-+#define CMDQ_EVENT_VPP0_DISP_COLOR_SOF	263
-+#define CMDQ_EVENT_VPP0_DISP_OVL_NOAFBC_SOF	264
-+#define CMDQ_EVENT_VPP0_VPP_PADDING_IN_PADDING_SOF	265
-+#define CMDQ_EVENT_VPP0_MDP_TCC_IN_SOF	266
-+#define CMDQ_EVENT_VPP0_MDP_WROT_SOF	267
-+
-+#define CMDQ_EVENT_VPP0_WARP0_MMSYS_TOP_RELAY_SOF_PRE	269
-+#define CMDQ_EVENT_VPP0_WARP1_MMSYS_TOP_RELAY_SOF_PRE	270
-+#define CMDQ_EVENT_VPP0_VPP1_MMSYS_TOP_RELAY_SOF	271
-+#define CMDQ_EVENT_VPP0_VPP1_IN_MMSYS_TOP_RELAY_SOF_PRE	272
-+#define CMDQ_EVENT_VPP0_DISP_RDMA_SOF	273
-+#define CMDQ_EVENT_VPP0_DISP_WDMA_SOF	274
-+#define CMDQ_EVENT_VPP0_MDP_HMS_SOF		275
-+#define CMDQ_EVENT_VPP0_MDP_RDMA_FRAME_DONE	288
-+#define CMDQ_EVENT_VPP0_MDP_FG_TILE_DONE	289
-+#define CMDQ_EVENT_VPP0_STITCH_FRAME_DONE	290
-+#define CMDQ_EVENT_VPP0_MDP_HDR_FRAME_DONE	291
-+#define CMDQ_EVENT_VPP0_MDP_AAL_FRAME_DONE	292
-+#define CMDQ_EVENT_VPP0_MDP_RSZ_FRAME_DONE	293
-+#define CMDQ_EVENT_VPP0_MDP_TDSHP_FRAME_DONE	294
-+#define CMDQ_EVENT_VPP0_DISP_COLOR_FRAME_DONE	295
-+#define CMDQ_EVENT_VPP0_DISP_OVL_NOAFBC_FRAME_DONE	296
++#define CMDQ_EVENT_VPP0_MDP_RDMA_SOF				256
++#define CMDQ_EVENT_VPP0_MDP_FG_SOF				257
++#define CMDQ_EVENT_VPP0_STITCH_SOF				258
++#define CMDQ_EVENT_VPP0_MDP_HDR_SOF				259
++#define CMDQ_EVENT_VPP0_MDP_AAL_SOF				260
++#define CMDQ_EVENT_VPP0_MDP_RSZ_IN_RSZ_SOF			261
++#define CMDQ_EVENT_VPP0_MDP_TDSHP_SOF				262
++#define CMDQ_EVENT_VPP0_DISP_COLOR_SOF				263
++#define CMDQ_EVENT_VPP0_DISP_OVL_NOAFBC_SOF			264
++#define CMDQ_EVENT_VPP0_VPP_PADDING_IN_PADDING_SOF		265
++#define CMDQ_EVENT_VPP0_MDP_TCC_IN_SOF				266
++#define CMDQ_EVENT_VPP0_MDP_WROT_SOF				267
++#define CMDQ_EVENT_VPP0_WARP0_MMSYS_TOP_RELAY_SOF_PRE		269
++#define CMDQ_EVENT_VPP0_WARP1_MMSYS_TOP_RELAY_SOF_PRE		270
++#define CMDQ_EVENT_VPP0_VPP1_MMSYS_TOP_RELAY_SOF		271
++#define CMDQ_EVENT_VPP0_VPP1_IN_MMSYS_TOP_RELAY_SOF_PRE		272
++#define CMDQ_EVENT_VPP0_DISP_RDMA_SOF				273
++#define CMDQ_EVENT_VPP0_DISP_WDMA_SOF				274
++#define CMDQ_EVENT_VPP0_MDP_HMS_SOF				275
++#define CMDQ_EVENT_VPP0_MDP_RDMA_FRAME_DONE			288
++#define CMDQ_EVENT_VPP0_MDP_FG_TILE_DONE			289
++#define CMDQ_EVENT_VPP0_STITCH_FRAME_DONE			290
++#define CMDQ_EVENT_VPP0_MDP_HDR_FRAME_DONE			291
++#define CMDQ_EVENT_VPP0_MDP_AAL_FRAME_DONE			292
++#define CMDQ_EVENT_VPP0_MDP_RSZ_FRAME_DONE			293
++#define CMDQ_EVENT_VPP0_MDP_TDSHP_FRAME_DONE			294
++#define CMDQ_EVENT_VPP0_DISP_COLOR_FRAME_DONE			295
++#define CMDQ_EVENT_VPP0_DISP_OVL_NOAFBC_FRAME_DONE		296
 +#define CMDQ_EVENT_VPP0_VPP_PADDING_IN_PADDING_FRAME_DONE	297
-+#define CMDQ_EVENT_VPP0_MDP_TCC_TCC_FRAME_DONE	298
-+#define CMDQ_EVENT_VPP0_MDP_WROT_VIDO_WDONE	299
-+#define CMDQ_EVENT_VPP0_DISP_RDMA_FRAME_DONE	305
-+#define CMDQ_EVENT_VPP0_DISP_WDMA_FRAME_DONE	306
-+#define CMDQ_EVENT_VPP0_MDP_HMS_FRAME_DONE		307
-+
-+#define CMDQ_EVENT_VPP0_DISP_MUTEX_STREAM_DONE_0	320
-+#define CMDQ_EVENT_VPP0_DISP_MUTEX_STREAM_DONE_1	321
-+#define CMDQ_EVENT_VPP0_DISP_MUTEX_STREAM_DONE_2	322
-+#define CMDQ_EVENT_VPP0_DISP_MUTEX_STREAM_DONE_3	323
-+#define CMDQ_EVENT_VPP0_DISP_MUTEX_STREAM_DONE_4	324
-+#define CMDQ_EVENT_VPP0_DISP_MUTEX_STREAM_DONE_5	325
-+#define CMDQ_EVENT_VPP0_DISP_MUTEX_STREAM_DONE_6	326
-+#define CMDQ_EVENT_VPP0_DISP_MUTEX_STREAM_DONE_7	327
-+#define CMDQ_EVENT_VPP0_DISP_MUTEX_STREAM_DONE_8	328
-+#define CMDQ_EVENT_VPP0_DISP_MUTEX_STREAM_DONE_9	329
-+#define CMDQ_EVENT_VPP0_DISP_MUTEX_STREAM_DONE_10	330
-+#define CMDQ_EVENT_VPP0_DISP_MUTEX_STREAM_DONE_11	331
-+#define CMDQ_EVENT_VPP0_DISP_MUTEX_STREAM_DONE_12	332
-+#define CMDQ_EVENT_VPP0_DISP_MUTEX_STREAM_DONE_13	333
-+#define CMDQ_EVENT_VPP0_DISP_MUTEX_STREAM_DONE_14	334
-+#define CMDQ_EVENT_VPP0_DISP_MUTEX_STREAM_DONE_15	335
-+
-+#define CMDQ_EVENT_VPP0_DISP_RDMA_0_UNDERRUN	336
-+#define CMDQ_EVENT_VPP0_DISP_RDMA_1_UNDERRUN	337
-+#define CMDQ_EVENT_VPP0_U_MERGE4_UNDERRUN 338
-+#define CMDQ_EVENT_VPP0_U_VPP_SPLIT_VIDEO_0_OVERFLOW	339
-+#define CMDQ_EVENT_VPP0_U_VPP_SPLIT_VIDEO_1_OVERFLOW	340
-+#define CMDQ_EVENT_VPP0_DSI_0_UNDERRUN	341
-+#define CMDQ_EVENT_VPP0_DSI_1_UNDERRUN	342
-+#define CMDQ_EVENT_VPP0_DP_INTF_0 343
-+#define CMDQ_EVENT_VPP0_DP_INTF_1 344
-+#define CMDQ_EVENT_VPP0_DPI_0 345
-+#define CMDQ_EVENT_VPP0_DPI_1 346
-+#define CMDQ_EVENT_VPP0_MDP_RDMA_SW_RST_DONE	352
-+#define CMDQ_EVENT_VPP0_MDP_RDMA_PM_VALID_EVENT		353
-+#define CMDQ_EVENT_VPP0_DISP_OVL_NOAFBC_FRAME_RESET_DONE_PULSE		354
-+#define CMDQ_EVENT_VPP0_MDP_WROT_SW_RST_DONE	355
-+
-+#define CMDQ_EVENT_VPP0_DISP_OVL_NOAFBC_TARGET_MATCH_0	356
-+#define CMDQ_EVENT_VPP0_DISP_OVL_NOAFBC_TARGET_MATCH_1	357
-+#define CMDQ_EVENT_VPP0_DISP_OVL_NOAFBC_TARGET_MATCH_2	358
-+#define CMDQ_EVENT_VPP0_DISP_OVL_NOAFBC_TARGET_MATCH_3	359
-+#define CMDQ_EVENT_VPP0_DISP_OVL_NOAFBC_TARGET_MATCH_4	360
-+#define CMDQ_EVENT_VPP0_DISP_OVL_NOAFBC_TARGET_MATCH_5	361
-+#define CMDQ_EVENT_VPP0_DISP_OVL_NOAFBC_TARGET_MATCH_6	362
-+
++#define CMDQ_EVENT_VPP0_MDP_TCC_TCC_FRAME_DONE			298
++#define CMDQ_EVENT_VPP0_MDP_WROT_VIDO_WDONE			299
++#define CMDQ_EVENT_VPP0_DISP_RDMA_FRAME_DONE			305
++#define CMDQ_EVENT_VPP0_DISP_WDMA_FRAME_DONE			306
++#define CMDQ_EVENT_VPP0_MDP_HMS_FRAME_DONE			307
++#define CMDQ_EVENT_VPP0_DISP_MUTEX_STREAM_DONE_0		320
++#define CMDQ_EVENT_VPP0_DISP_MUTEX_STREAM_DONE_1		321
++#define CMDQ_EVENT_VPP0_DISP_MUTEX_STREAM_DONE_2		322
++#define CMDQ_EVENT_VPP0_DISP_MUTEX_STREAM_DONE_3		323
++#define CMDQ_EVENT_VPP0_DISP_MUTEX_STREAM_DONE_4		324
++#define CMDQ_EVENT_VPP0_DISP_MUTEX_STREAM_DONE_5		325
++#define CMDQ_EVENT_VPP0_DISP_MUTEX_STREAM_DONE_6		326
++#define CMDQ_EVENT_VPP0_DISP_MUTEX_STREAM_DONE_7		327
++#define CMDQ_EVENT_VPP0_DISP_MUTEX_STREAM_DONE_8		328
++#define CMDQ_EVENT_VPP0_DISP_MUTEX_STREAM_DONE_9		329
++#define CMDQ_EVENT_VPP0_DISP_MUTEX_STREAM_DONE_10		330
++#define CMDQ_EVENT_VPP0_DISP_MUTEX_STREAM_DONE_11		331
++#define CMDQ_EVENT_VPP0_DISP_MUTEX_STREAM_DONE_12		332
++#define CMDQ_EVENT_VPP0_DISP_MUTEX_STREAM_DONE_13		333
++#define CMDQ_EVENT_VPP0_DISP_MUTEX_STREAM_DONE_14		334
++#define CMDQ_EVENT_VPP0_DISP_MUTEX_STREAM_DONE_15		335
++#define CMDQ_EVENT_VPP0_DISP_RDMA_0_UNDERRUN			336
++#define CMDQ_EVENT_VPP0_DISP_RDMA_1_UNDERRUN			337
++#define CMDQ_EVENT_VPP0_U_MERGE4_UNDERRUN			338
++#define CMDQ_EVENT_VPP0_U_VPP_SPLIT_VIDEO_0_OVERFLOW		339
++#define CMDQ_EVENT_VPP0_U_VPP_SPLIT_VIDEO_1_OVERFLOW		340
++#define CMDQ_EVENT_VPP0_DSI_0_UNDERRUN				341
++#define CMDQ_EVENT_VPP0_DSI_1_UNDERRUN				342
++#define CMDQ_EVENT_VPP0_DP_INTF_0				343
++#define CMDQ_EVENT_VPP0_DP_INTF_1				344
++#define CMDQ_EVENT_VPP0_DPI_0					345
++#define CMDQ_EVENT_VPP0_DPI_1					346
++#define CMDQ_EVENT_VPP0_MDP_RDMA_SW_RST_DONE			352
++#define CMDQ_EVENT_VPP0_MDP_RDMA_PM_VALID_EVENT			353
++#define CMDQ_EVENT_VPP0_DISP_OVL_NOAFBC_FRAME_RESET_DONE_PULSE	354
++#define CMDQ_EVENT_VPP0_MDP_WROT_SW_RST_DONE			355
++#define CMDQ_EVENT_VPP0_DISP_OVL_NOAFBC_TARGET_MATCH_0		356
++#define CMDQ_EVENT_VPP0_DISP_OVL_NOAFBC_TARGET_MATCH_1		357
++#define CMDQ_EVENT_VPP0_DISP_OVL_NOAFBC_TARGET_MATCH_2		358
++#define CMDQ_EVENT_VPP0_DISP_OVL_NOAFBC_TARGET_MATCH_3		359
++#define CMDQ_EVENT_VPP0_DISP_OVL_NOAFBC_TARGET_MATCH_4		360
++#define CMDQ_EVENT_VPP0_DISP_OVL_NOAFBC_TARGET_MATCH_5		361
++#define CMDQ_EVENT_VPP0_DISP_OVL_NOAFBC_TARGET_MATCH_6		362
 +#define CMDQ_EVENT_VPP0_DISP_RDMA_DISP_RDMA_VALID_EVENT		363
 +#define CMDQ_EVENT_VPP0_DISP_RDMA_DISP_RDMA_TARGET_LINE_EVENT	364
-+#define CMDQ_EVENT_VPP0_DISP_WDMA_SW_RST_DONE	365
-+#define CMDQ_EVENT_VPP0_DISP_WDMA_WDMA_VALID_EVENT			366
++#define CMDQ_EVENT_VPP0_DISP_WDMA_SW_RST_DONE			365
++#define CMDQ_EVENT_VPP0_DISP_WDMA_WDMA_VALID_EVENT		366
 +#define CMDQ_EVENT_VPP0_DISP_WDMA_WDMA_TARGET_LINE_EVENT	367
-+
-+#define CMDQ_EVENT_VPP1_HDMI_META_SOF		384
-+#define CMDQ_EVENT_VPP1_DGI_SOF				385
-+#define CMDQ_EVENT_VPP1_VPP_SPLIT_SOF		386
-+#define CMDQ_EVENT_VPP1_SVPP1_MDP_TCC_SOF	387
-+#define CMDQ_EVENT_VPP1_SVPP1_MDP_RDMA_SOF	388
-+#define CMDQ_EVENT_VPP1_SVPP2_MDP_RDMA_SOF	389
-+#define CMDQ_EVENT_VPP1_SVPP3_MDP_RDMA_SOF	390
-+#define CMDQ_EVENT_VPP1_SVPP1_MDP_FG_SOF	391
-+#define CMDQ_EVENT_VPP1_SVPP2_MDP_FG_SOF	392
-+#define CMDQ_EVENT_VPP1_SVPP3_MDP_FG_SOF	393
-+#define CMDQ_EVENT_VPP1_SVPP1_MDP_HDR_SOF	394
-+#define CMDQ_EVENT_VPP1_SVPP2_MDP_HDR_SOF	395
-+#define CMDQ_EVENT_VPP1_SVPP3_MDP_HDR_SOF	396
-+#define CMDQ_EVENT_VPP1_SVPP1_MDP_AAL_SOF	397
-+#define CMDQ_EVENT_VPP1_SVPP2_MDP_AAL_SOF	398
-+#define CMDQ_EVENT_VPP1_SVPP3_MDP_AAL_SOF	399
-+#define CMDQ_EVENT_VPP1_SVPP1_MDP_RSZ_SOF	400
-+#define CMDQ_EVENT_VPP1_SVPP2_MDP_RSZ_SOF	401
-+#define CMDQ_EVENT_VPP1_SVPP3_MDP_RSZ_SOF	402
-+#define CMDQ_EVENT_VPP1_SVPP1_MDP_TDSHP_SOF	403
-+#define CMDQ_EVENT_VPP1_SVPP2_MDP_TDSHP_SOF	404
-+#define CMDQ_EVENT_VPP1_SVPP3_MDP_TDSHP_SOF	405
-+#define CMDQ_EVENT_VPP1_SVPP2_VPP_MERGE_SOF	406
-+#define CMDQ_EVENT_VPP1_SVPP3_VPP_MERGE_SOF	407
-+#define CMDQ_EVENT_VPP1_SVPP1_MDP_COLOR_SOF	408
-+#define CMDQ_EVENT_VPP1_SVPP2_MDP_COLOR_SOF	409
-+#define CMDQ_EVENT_VPP1_SVPP3_MDP_COLOR_SOF	410
-+#define CMDQ_EVENT_VPP1_SVPP1_MDP_OVL_SOF	411
-+#define CMDQ_EVENT_VPP1_SVPP1_VPP_PAD_SOF	412
-+#define CMDQ_EVENT_VPP1_SVPP2_VPP_PAD_SOF	413
-+#define CMDQ_EVENT_VPP1_SVPP3_VPP_PAD_SOF	414
-+#define CMDQ_EVENT_VPP1_SVPP1_MDP_WROT_SOF	415
-+#define CMDQ_EVENT_VPP1_SVPP2_MDP_WROT_SOF	416
-+#define CMDQ_EVENT_VPP1_SVPP3_MDP_WROT_SOF	417
-+#define CMDQ_EVENT_VPP1_VPP0_DL_IRLY_SOF	418
-+#define CMDQ_EVENT_VPP1_VPP0_DL_ORLY_SOF	419
-+#define CMDQ_EVENT_VPP1_VDO0_DL_ORLY_0_SOF	420
-+#define CMDQ_EVENT_VPP1_VDO0_DL_ORLY_1_SOF	421
-+#define CMDQ_EVENT_VPP1_VDO1_DL_ORLY_0_SOF	422
-+#define CMDQ_EVENT_VPP1_VDO1_DL_ORLY_1_SOF	423
-+#define CMDQ_EVENT_VPP1_SVPP1_MDP_RDMA_FRAME_DONE	424
-+#define CMDQ_EVENT_VPP1_SVPP2_MDP_RDMA_FRAME_DONE	425
-+#define CMDQ_EVENT_VPP1_SVPP3_MDP_RDMA_FRAME_DONE	426
-+#define CMDQ_EVENT_VPP1_SVPP1_MDP_WROT_FRAME_DONE	427
-+#define CMDQ_EVENT_VPP1_SVPP2_MDP_WROT_FRAME_DONE	428
-+#define CMDQ_EVENT_VPP1_SVPP3_MDP_WROT_FRAME_DONE	429
-+#define CMDQ_EVENT_VPP1_SVPP1_MDP_OVL_FRAME_DONE	430
-+#define CMDQ_EVENT_VPP1_SVPP1_MDP_RSZ_FRAME_DONE	431
-+#define CMDQ_EVENT_VPP1_SVPP2_MDP_RSZ_FRAME_DONE	432
-+#define CMDQ_EVENT_VPP1_SVPP3_MDP_RSZ_FRAME_DONE	433
-+#define CMDQ_EVENT_VPP1_SVPP1_MDP_FG_TILE_DONE		434
-+#define CMDQ_EVENT_VPP1_SVPP2_MDP_FG_TILE_DONE		435
-+#define CMDQ_EVENT_VPP1_SVPP3_MDP_FG_TILE_DONE		436
-+#define CMDQ_EVENT_VPP1_SVPP1_MDP_HDR_FRAME_DONE	437
-+#define CMDQ_EVENT_VPP1_SVPP2_MDP_HDR_FRAME_DONE	438
-+#define CMDQ_EVENT_VPP1_SVPP3_MDP_HDR_FRAME_DONE	439
-+#define CMDQ_EVENT_VPP1_SVPP1_MDP_AAL_FRAME_DONE	440
-+#define CMDQ_EVENT_VPP1_SVPP2_MDP_AAL_FRAME_DONE	441
-+#define CMDQ_EVENT_VPP1_SVPP3_MDP_AAL_FRAME_DONE	442
++#define CMDQ_EVENT_VPP1_HDMI_META_SOF				384
++#define CMDQ_EVENT_VPP1_DGI_SOF					385
++#define CMDQ_EVENT_VPP1_VPP_SPLIT_SOF				386
++#define CMDQ_EVENT_VPP1_SVPP1_MDP_TCC_SOF			387
++#define CMDQ_EVENT_VPP1_SVPP1_MDP_RDMA_SOF			388
++#define CMDQ_EVENT_VPP1_SVPP2_MDP_RDMA_SOF			389
++#define CMDQ_EVENT_VPP1_SVPP3_MDP_RDMA_SOF			390
++#define CMDQ_EVENT_VPP1_SVPP1_MDP_FG_SOF			391
++#define CMDQ_EVENT_VPP1_SVPP2_MDP_FG_SOF			392
++#define CMDQ_EVENT_VPP1_SVPP3_MDP_FG_SOF			393
++#define CMDQ_EVENT_VPP1_SVPP1_MDP_HDR_SOF			394
++#define CMDQ_EVENT_VPP1_SVPP2_MDP_HDR_SOF			395
++#define CMDQ_EVENT_VPP1_SVPP3_MDP_HDR_SOF			396
++#define CMDQ_EVENT_VPP1_SVPP1_MDP_AAL_SOF			397
++#define CMDQ_EVENT_VPP1_SVPP2_MDP_AAL_SOF			398
++#define CMDQ_EVENT_VPP1_SVPP3_MDP_AAL_SOF			399
++#define CMDQ_EVENT_VPP1_SVPP1_MDP_RSZ_SOF			400
++#define CMDQ_EVENT_VPP1_SVPP2_MDP_RSZ_SOF			401
++#define CMDQ_EVENT_VPP1_SVPP3_MDP_RSZ_SOF			402
++#define CMDQ_EVENT_VPP1_SVPP1_MDP_TDSHP_SOF			403
++#define CMDQ_EVENT_VPP1_SVPP2_MDP_TDSHP_SOF			404
++#define CMDQ_EVENT_VPP1_SVPP3_MDP_TDSHP_SOF			405
++#define CMDQ_EVENT_VPP1_SVPP2_VPP_MERGE_SOF			406
++#define CMDQ_EVENT_VPP1_SVPP3_VPP_MERGE_SOF			407
++#define CMDQ_EVENT_VPP1_SVPP1_MDP_COLOR_SOF			408
++#define CMDQ_EVENT_VPP1_SVPP2_MDP_COLOR_SOF			409
++#define CMDQ_EVENT_VPP1_SVPP3_MDP_COLOR_SOF			410
++#define CMDQ_EVENT_VPP1_SVPP1_MDP_OVL_SOF			411
++#define CMDQ_EVENT_VPP1_SVPP1_VPP_PAD_SOF			412
++#define CMDQ_EVENT_VPP1_SVPP2_VPP_PAD_SOF			413
++#define CMDQ_EVENT_VPP1_SVPP3_VPP_PAD_SOF			414
++#define CMDQ_EVENT_VPP1_SVPP1_MDP_WROT_SOF			415
++#define CMDQ_EVENT_VPP1_SVPP2_MDP_WROT_SOF			416
++#define CMDQ_EVENT_VPP1_SVPP3_MDP_WROT_SOF			417
++#define CMDQ_EVENT_VPP1_VPP0_DL_IRLY_SOF			418
++#define CMDQ_EVENT_VPP1_VPP0_DL_ORLY_SOF			419
++#define CMDQ_EVENT_VPP1_VDO0_DL_ORLY_0_SOF			420
++#define CMDQ_EVENT_VPP1_VDO0_DL_ORLY_1_SOF			421
++#define CMDQ_EVENT_VPP1_VDO1_DL_ORLY_0_SOF			422
++#define CMDQ_EVENT_VPP1_VDO1_DL_ORLY_1_SOF			423
++#define CMDQ_EVENT_VPP1_SVPP1_MDP_RDMA_FRAME_DONE		424
++#define CMDQ_EVENT_VPP1_SVPP2_MDP_RDMA_FRAME_DONE		425
++#define CMDQ_EVENT_VPP1_SVPP3_MDP_RDMA_FRAME_DONE		426
++#define CMDQ_EVENT_VPP1_SVPP1_MDP_WROT_FRAME_DONE		427
++#define CMDQ_EVENT_VPP1_SVPP2_MDP_WROT_FRAME_DONE		428
++#define CMDQ_EVENT_VPP1_SVPP3_MDP_WROT_FRAME_DONE		429
++#define CMDQ_EVENT_VPP1_SVPP1_MDP_OVL_FRAME_DONE		430
++#define CMDQ_EVENT_VPP1_SVPP1_MDP_RSZ_FRAME_DONE		431
++#define CMDQ_EVENT_VPP1_SVPP2_MDP_RSZ_FRAME_DONE		432
++#define CMDQ_EVENT_VPP1_SVPP3_MDP_RSZ_FRAME_DONE		433
++#define CMDQ_EVENT_VPP1_SVPP1_MDP_FG_TILE_DONE			434
++#define CMDQ_EVENT_VPP1_SVPP2_MDP_FG_TILE_DONE			435
++#define CMDQ_EVENT_VPP1_SVPP3_MDP_FG_TILE_DONE			436
++#define CMDQ_EVENT_VPP1_SVPP1_MDP_HDR_FRAME_DONE		437
++#define CMDQ_EVENT_VPP1_SVPP2_MDP_HDR_FRAME_DONE		438
++#define CMDQ_EVENT_VPP1_SVPP3_MDP_HDR_FRAME_DONE		439
++#define CMDQ_EVENT_VPP1_SVPP1_MDP_AAL_FRAME_DONE		440
++#define CMDQ_EVENT_VPP1_SVPP2_MDP_AAL_FRAME_DONE		441
++#define CMDQ_EVENT_VPP1_SVPP3_MDP_AAL_FRAME_DONE		442
 +#define CMDQ_EVENT_VPP1_SVPP1_MDP_TDSHP_FRAME_DONE		443
 +#define CMDQ_EVENT_VPP1_SVPP2_MDP_TDSHP_FRAME_DONE		444
 +#define CMDQ_EVENT_VPP1_SVPP3_MDP_TDSHP_FRAME_DONE		445
 +#define CMDQ_EVENT_VPP1_SVPP1_MDP_COLOR_FRAME_DONE		446
 +#define CMDQ_EVENT_VPP1_SVPP2_MDP_COLOR_FRAME_DONE		447
 +#define CMDQ_EVENT_VPP1_SVPP3_MDP_COLOR_FRAME_DONE		448
-+#define CMDQ_EVENT_VPP1_SVPP1_VPP_PAD_FRAME_DONE	449
-+#define CMDQ_EVENT_VPP1_SVPP2_VPP_PAD_FRAME_DONE	450
-+#define CMDQ_EVENT_VPP1_SVPP3_VPP_PAD_FRAME_DONE	451
-+#define CMDQ_EVENT_VPP1_SVPP1_MDP_TCC_FRAME_DONE	452
++#define CMDQ_EVENT_VPP1_SVPP1_VPP_PAD_FRAME_DONE		449
++#define CMDQ_EVENT_VPP1_SVPP2_VPP_PAD_FRAME_DONE		450
++#define CMDQ_EVENT_VPP1_SVPP3_VPP_PAD_FRAME_DONE		451
++#define CMDQ_EVENT_VPP1_SVPP1_MDP_TCC_FRAME_DONE		452
 +#define CMDQ_EVENT_VPP1_MUTEX_STREAM_DONE_GCE_EVENT_0		456
 +#define CMDQ_EVENT_VPP1_MUTEX_STREAM_DONE_GCE_EVENT_1		457
 +#define CMDQ_EVENT_VPP1_MUTEX_STREAM_DONE_GCE_EVENT_2		458
@@ -40532,90 +41245,86 @@ index 0000000000000000000000000000000000000000..b15e965fe67189844f1284a73e68ab08
 +#define CMDQ_EVENT_VPP1_MUTEX_STREAM_DONE_GCE_EVENT_7		463
 +#define CMDQ_EVENT_VPP1_MUTEX_STREAM_DONE_GCE_EVENT_8		464
 +#define CMDQ_EVENT_VPP1_MUTEX_STREAM_DONE_GCE_EVENT_9		465
-+#define CMDQ_EVENT_VPP1_MUTEX_STREAM_DONE_GCE_EVENT_10	466
-+#define CMDQ_EVENT_VPP1_MUTEX_STREAM_DONE_GCE_EVENT_11	467
-+#define CMDQ_EVENT_VPP1_MUTEX_STREAM_DONE_GCE_EVENT_12	468
-+#define CMDQ_EVENT_VPP1_MUTEX_STREAM_DONE_GCE_EVENT_13	469
-+#define CMDQ_EVENT_VPP1_MUTEX_STREAM_DONE_GCE_EVENT_14	470
-+#define CMDQ_EVENT_VPP1_MUTEX_STREAM_DONE_GCE_EVENT_15	471
-+#define CMDQ_EVENT_VPP1_MUTEX_BUF_UNDERRUN_GCE_EVENT_0	472
-+#define CMDQ_EVENT_VPP1_MUTEX_BUF_UNDERRUN_GCE_EVENT_1	473
-+#define CMDQ_EVENT_VPP1_MUTEX_BUF_UNDERRUN_GCE_EVENT_2	474
-+#define CMDQ_EVENT_VPP1_MUTEX_BUF_UNDERRUN_GCE_EVENT_3	475
-+#define CMDQ_EVENT_VPP1_MUTEX_BUF_UNDERRUN_GCE_EVENT_4	476
-+#define CMDQ_EVENT_VPP1_MUTEX_BUF_UNDERRUN_GCE_EVENT_5	477
-+#define CMDQ_EVENT_VPP1_MUTEX_BUF_UNDERRUN_GCE_EVENT_6	478
-+#define CMDQ_EVENT_VPP1_MUTEX_BUF_UNDERRUN_GCE_EVENT_7	479
-+#define CMDQ_EVENT_VPP1_MUTEX_BUF_UNDERRUN_GCE_EVENT_8	480
-+#define CMDQ_EVENT_VPP1_MUTEX_BUF_UNDERRUN_GCE_EVENT_9	481
-+#define CMDQ_EVENT_VPP1_MUTEX_BUF_UNDERRUN_GCE_EVENT_10	 482
-+#define CMDQ_EVENT_VPP1_MUTEX_BUF_UNDERRUN_GCE_EVENT_11	 483
-+#define CMDQ_EVENT_VPP1_MUTEX_BUF_UNDERRUN_GCE_EVENT_12	 484
-+#define CMDQ_EVENT_VPP1_MUTEX_BUF_UNDERRUN_GCE_EVENT_13	 485
-+#define CMDQ_EVENT_VPP1_MUTEX_BUF_UNDERRUN_GCE_EVENT_14	 486
-+#define CMDQ_EVENT_VPP1_MUTEX_BUF_UNDERRUN_GCE_EVENT_15	 487
-+#define CMDQ_EVENT_VPP1_DGI_SYNC_EVENT_0	488
-+#define CMDQ_EVENT_VPP1_DGI_SYNC_EVENT_1	489
-+#define CMDQ_EVENT_VPP1_DGI_SYNC_EVENT_2	490
-+#define CMDQ_EVENT_VPP1_DGI_SYNC_EVENT_3	491
-+#define CMDQ_EVENT_VPP1_DGI_SYNC_EVENT_4	492
-+#define CMDQ_EVENT_VPP1_DGI_SYNC_EVENT_5	493
-+#define CMDQ_EVENT_VPP1_DGI_SYNC_EVENT_6	494
-+#define CMDQ_EVENT_VPP1_DGI_SYNC_EVENT_7	495
-+#define CMDQ_EVENT_VPP1_DGI_SYNC_EVENT_8	496
-+#define CMDQ_EVENT_VPP1_DGI_SYNC_EVENT_9	497
-+#define CMDQ_EVENT_VPP1_DGI_SYNC_EVENT_10		498
-+#define CMDQ_EVENT_VPP1_DGI_SYNC_EVENT_11		499
-+#define CMDQ_EVENT_VPP1_DGI_SYNC_EVENT_12		500
-+#define CMDQ_EVENT_VPP1_DGI_SYNC_EVENT_13		501
-+
-+#define CMDQ_EVENT_VPP1_SVPP3_VPP_MERGE_GCE_EVENT	502
-+#define CMDQ_EVENT_VPP1_SVPP2_VPP_MERGE_GCE_EVENT	503
-+#define CMDQ_EVENT_VPP1_SVPP1_MDP_OVL_GCE_EVENT		504
-+#define CMDQ_EVENT_VPP1_VPP_SPLIT_DGI_GCE_EVENT		505
-+#define CMDQ_EVENT_VPP1_VPP_SPLIT_HDMI_GCE_EVENT	506
++#define CMDQ_EVENT_VPP1_MUTEX_STREAM_DONE_GCE_EVENT_10		466
++#define CMDQ_EVENT_VPP1_MUTEX_STREAM_DONE_GCE_EVENT_11		467
++#define CMDQ_EVENT_VPP1_MUTEX_STREAM_DONE_GCE_EVENT_12		468
++#define CMDQ_EVENT_VPP1_MUTEX_STREAM_DONE_GCE_EVENT_13		469
++#define CMDQ_EVENT_VPP1_MUTEX_STREAM_DONE_GCE_EVENT_14		470
++#define CMDQ_EVENT_VPP1_MUTEX_STREAM_DONE_GCE_EVENT_15		471
++#define CMDQ_EVENT_VPP1_MUTEX_BUF_UNDERRUN_GCE_EVENT_0		472
++#define CMDQ_EVENT_VPP1_MUTEX_BUF_UNDERRUN_GCE_EVENT_1		473
++#define CMDQ_EVENT_VPP1_MUTEX_BUF_UNDERRUN_GCE_EVENT_2		474
++#define CMDQ_EVENT_VPP1_MUTEX_BUF_UNDERRUN_GCE_EVENT_3		475
++#define CMDQ_EVENT_VPP1_MUTEX_BUF_UNDERRUN_GCE_EVENT_4		476
++#define CMDQ_EVENT_VPP1_MUTEX_BUF_UNDERRUN_GCE_EVENT_5		477
++#define CMDQ_EVENT_VPP1_MUTEX_BUF_UNDERRUN_GCE_EVENT_6		478
++#define CMDQ_EVENT_VPP1_MUTEX_BUF_UNDERRUN_GCE_EVENT_7		479
++#define CMDQ_EVENT_VPP1_MUTEX_BUF_UNDERRUN_GCE_EVENT_8		480
++#define CMDQ_EVENT_VPP1_MUTEX_BUF_UNDERRUN_GCE_EVENT_9		481
++#define CMDQ_EVENT_VPP1_MUTEX_BUF_UNDERRUN_GCE_EVENT_10		482
++#define CMDQ_EVENT_VPP1_MUTEX_BUF_UNDERRUN_GCE_EVENT_11		483
++#define CMDQ_EVENT_VPP1_MUTEX_BUF_UNDERRUN_GCE_EVENT_12		484
++#define CMDQ_EVENT_VPP1_MUTEX_BUF_UNDERRUN_GCE_EVENT_13		485
++#define CMDQ_EVENT_VPP1_MUTEX_BUF_UNDERRUN_GCE_EVENT_14		486
++#define CMDQ_EVENT_VPP1_MUTEX_BUF_UNDERRUN_GCE_EVENT_15		487
++#define CMDQ_EVENT_VPP1_DGI_SYNC_EVENT_0			488
++#define CMDQ_EVENT_VPP1_DGI_SYNC_EVENT_1			489
++#define CMDQ_EVENT_VPP1_DGI_SYNC_EVENT_2			490
++#define CMDQ_EVENT_VPP1_DGI_SYNC_EVENT_3			491
++#define CMDQ_EVENT_VPP1_DGI_SYNC_EVENT_4			492
++#define CMDQ_EVENT_VPP1_DGI_SYNC_EVENT_5			493
++#define CMDQ_EVENT_VPP1_DGI_SYNC_EVENT_6			494
++#define CMDQ_EVENT_VPP1_DGI_SYNC_EVENT_7			495
++#define CMDQ_EVENT_VPP1_DGI_SYNC_EVENT_8			496
++#define CMDQ_EVENT_VPP1_DGI_SYNC_EVENT_9			497
++#define CMDQ_EVENT_VPP1_DGI_SYNC_EVENT_10			498
++#define CMDQ_EVENT_VPP1_DGI_SYNC_EVENT_11			499
++#define CMDQ_EVENT_VPP1_DGI_SYNC_EVENT_12			500
++#define CMDQ_EVENT_VPP1_DGI_SYNC_EVENT_13			501
++#define CMDQ_EVENT_VPP1_SVPP3_VPP_MERGE_GCE_EVENT		502
++#define CMDQ_EVENT_VPP1_SVPP2_VPP_MERGE_GCE_EVENT		503
++#define CMDQ_EVENT_VPP1_SVPP1_MDP_OVL_GCE_EVENT			504
++#define CMDQ_EVENT_VPP1_VPP_SPLIT_DGI_GCE_EVENT			505
++#define CMDQ_EVENT_VPP1_VPP_SPLIT_HDMI_GCE_EVENT		506
 +#define CMDQ_EVENT_VPP1_SVPP3_MDP_WROT_SW_RST_DONE_GCE_EVENT	507
 +#define CMDQ_EVENT_VPP1_SVPP2_MDP_WROT_SW_RST_DONE_GCE_EVENT	508
 +#define CMDQ_EVENT_VPP1_SVPP1_MDP_WROT_SW_RST_DONE_GCE_EVENT	509
-+
 +#define CMDQ_EVENT_VPP1_SVPP1_MDP_OVL_NEW_EVENT_0		510
 +#define CMDQ_EVENT_VPP1_SVPP1_MDP_OVL_NEW_EVENT_1		511
-+
-+#define CMDQ_EVENT_VDO0_DISP_OVL0_SOF	512
-+#define CMDQ_EVENT_VDO0_DISP_WDMA0_SOF	513
-+#define CMDQ_EVENT_VDO0_DISP_RDMA0_SOF	514
-+#define CMDQ_EVENT_VDO0_DISP_COLOR0_SOF	515
-+#define CMDQ_EVENT_VDO0_DISP_CCORR0_SOF	516
-+#define CMDQ_EVENT_VDO0_DISP_AAL0_SOF	517
-+#define CMDQ_EVENT_VDO0_DISP_GAMMA0_SOF	518
-+#define CMDQ_EVENT_VDO0_DISP_DITHER0_SOF	519
-+#define CMDQ_EVENT_VDO0_DSI0_SOF	520
-+#define CMDQ_EVENT_VDO0_DSC_WRAP0C0_SOF	521
-+#define CMDQ_EVENT_VDO0_DISP_OVL1_SOF	522
-+#define CMDQ_EVENT_VDO0_DISP_WDMA1_SOF	523
-+#define CMDQ_EVENT_VDO0_DISP_RDMA1_SOF	524
-+#define CMDQ_EVENT_VDO0_DISP_COLOR1_SOF	525
-+#define CMDQ_EVENT_VDO0_DISP_CCORR1_SOF	526
-+#define CMDQ_EVENT_VDO0_DISP_AAL1_SOF	527
-+#define CMDQ_EVENT_VDO0_DISP_GAMMA1_SOF	528
-+#define CMDQ_EVENT_VDO0_DISP_DITHER1_SOF	529
-+#define CMDQ_EVENT_VDO0_DSI1_SOF	530
-+#define CMDQ_EVENT_VDO0_DSC_WRAP0C1_SOF	531
-+#define CMDQ_EVENT_VDO0_VPP_MERGE0_SOF	532
-+#define CMDQ_EVENT_VDO0_DP_INTF0_SOF	533
-+#define CMDQ_EVENT_VDO0_DISP_DPI0_SOF	   534
-+#define CMDQ_EVENT_VDO0_DISP_DPI1_SOF	   535
++#define CMDQ_EVENT_VDO0_DISP_OVL0_SOF				512
++#define CMDQ_EVENT_VDO0_DISP_WDMA0_SOF				513
++#define CMDQ_EVENT_VDO0_DISP_RDMA0_SOF				514
++#define CMDQ_EVENT_VDO0_DISP_COLOR0_SOF				515
++#define CMDQ_EVENT_VDO0_DISP_CCORR0_SOF				516
++#define CMDQ_EVENT_VDO0_DISP_AAL0_SOF				517
++#define CMDQ_EVENT_VDO0_DISP_GAMMA0_SOF				518
++#define CMDQ_EVENT_VDO0_DISP_DITHER0_SOF			519
++#define CMDQ_EVENT_VDO0_DSI0_SOF				520
++#define CMDQ_EVENT_VDO0_DSC_WRAP0C0_SOF			521
++#define CMDQ_EVENT_VDO0_DISP_OVL1_SOF			522
++#define CMDQ_EVENT_VDO0_DISP_WDMA1_SOF			523
++#define CMDQ_EVENT_VDO0_DISP_RDMA1_SOF			524
++#define CMDQ_EVENT_VDO0_DISP_COLOR1_SOF			525
++#define CMDQ_EVENT_VDO0_DISP_CCORR1_SOF			526
++#define CMDQ_EVENT_VDO0_DISP_AAL1_SOF			527
++#define CMDQ_EVENT_VDO0_DISP_GAMMA1_SOF			528
++#define CMDQ_EVENT_VDO0_DISP_DITHER1_SOF		529
++#define CMDQ_EVENT_VDO0_DSI1_SOF			530
++#define CMDQ_EVENT_VDO0_DSC_WRAP0C1_SOF			531
++#define CMDQ_EVENT_VDO0_VPP_MERGE0_SOF			532
++#define CMDQ_EVENT_VDO0_DP_INTF0_SOF			533
++#define CMDQ_EVENT_VDO0_DISP_DPI0_SOF			534
++#define CMDQ_EVENT_VDO0_DISP_DPI1_SOF			535
 +#define CMDQ_EVENT_VDO0_DISP_POSTMASK0_SOF		536
-+#define CMDQ_EVENT_VDO0_MDP_WROT0_SOF	537
-+#define CMDQ_EVENT_VDO0_DISP_RSZ0_SOF	538
++#define CMDQ_EVENT_VDO0_MDP_WROT0_SOF			537
++#define CMDQ_EVENT_VDO0_DISP_RSZ0_SOF			538
 +#define CMDQ_EVENT_VDO0_VPP1_DL_RELAY0_SOF		539
 +#define CMDQ_EVENT_VDO0_VPP1_DL_RELAY1_SOF		540
 +#define CMDQ_EVENT_VDO0_VDO1_DL_RELAY2_SOF		541
 +#define CMDQ_EVENT_VDO0_VDO0_DL_RELAY3_SOF		542
 +#define CMDQ_EVENT_VDO0_VDO0_DL_RELAY4_SOF		543
-+#define CMDQ_EVENT_VDO0_DISP_PWM0_SOF	544
-+#define CMDQ_EVENT_VDO0_DISP_PWM1_SOF	545
-+
++#define CMDQ_EVENT_VDO0_DISP_PWM0_SOF			544
++#define CMDQ_EVENT_VDO0_DISP_PWM1_SOF			545
 +#define CMDQ_EVENT_VDO0_DISP_OVL0_O_FRAME_DONE		546
 +#define CMDQ_EVENT_VDO0_DISP_WDMA0_FRAME_DONE		547
 +#define CMDQ_EVENT_VDO0_DISP_RDMA0_FRAME_DONE		548
@@ -40624,7 +41333,7 @@ index 0000000000000000000000000000000000000000..b15e965fe67189844f1284a73e68ab08
 +#define CMDQ_EVENT_VDO0_DISP_AAL0_O_FRAME_DONE		551
 +#define CMDQ_EVENT_VDO0_DISP_GAMMA0_O_FRAME_DONE	552
 +#define CMDQ_EVENT_VDO0_DISP_DITHER0_O_FRAME_DONE	553
-+#define CMDQ_EVENT_VDO0_DSI0_FRAME_DONE	554
++#define CMDQ_EVENT_VDO0_DSI0_FRAME_DONE			554
 +#define CMDQ_EVENT_VDO0_DSC_WRAP0_O_FRAME_DONE_0	555
 +#define CMDQ_EVENT_VDO0_DISP_OVL1_O_FRAME_DONE		556
 +#define CMDQ_EVENT_VDO0_DISP_WDMA1_O_FRAME_DONE		557
@@ -40634,17 +41343,14 @@ index 0000000000000000000000000000000000000000..b15e965fe67189844f1284a73e68ab08
 +#define CMDQ_EVENT_VDO0_DISP_AAL1_O_FRAME_DONE		561
 +#define CMDQ_EVENT_VDO0_DISP_GAMMA1_O_FRAME_DONE	562
 +#define CMDQ_EVENT_VDO0_DISP_DITHER1_O_FRAME_DONE	563
-+#define CMDQ_EVENT_VDO0_DSI1_FRAME_DONE	564
++#define CMDQ_EVENT_VDO0_DSI1_FRAME_DONE			564
 +#define CMDQ_EVENT_VDO0_DSC_WRAP0_O_FRAME_DONE_1	565
-+
-+#define CMDQ_EVENT_VDO0_DP_INTF0_FRAME_DONE	567
++#define CMDQ_EVENT_VDO0_DP_INTF0_FRAME_DONE		567
 +#define CMDQ_EVENT_VDO0_DISP_DPI0_O_FRAME_DONE		568
 +#define CMDQ_EVENT_VDO0_DISP_DPI1_O_FRAME_DONE		569
 +#define CMDQ_EVENT_VDO0_DISP_POSTMASK0_O_FRAME_DONE	570
 +#define CMDQ_EVENT_VDO0_MDP_WROT0_O_FRAME_DONE		571
 +#define CMDQ_EVENT_VDO0_DISP_RSZ0_O_FRAME_DONE		572
-+
-+
 +#define CMDQ_EVENT_VDO0_DISP_STREAM_DONE_0		574
 +#define CMDQ_EVENT_VDO0_DISP_STREAM_DONE_1		575
 +#define CMDQ_EVENT_VDO0_DISP_STREAM_DONE_2		576
@@ -40655,24 +41361,21 @@ index 0000000000000000000000000000000000000000..b15e965fe67189844f1284a73e68ab08
 +#define CMDQ_EVENT_VDO0_DISP_STREAM_DONE_7		581
 +#define CMDQ_EVENT_VDO0_DISP_STREAM_DONE_8		582
 +#define CMDQ_EVENT_VDO0_DISP_STREAM_DONE_9		583
-+#define CMDQ_EVENT_VDO0_DISP_STREAM_DONE_10	584
-+#define CMDQ_EVENT_VDO0_DISP_STREAM_DONE_11	585
-+#define CMDQ_EVENT_VDO0_DISP_STREAM_DONE_12	586
-+#define CMDQ_EVENT_VDO0_DISP_STREAM_DONE_13	587
-+#define CMDQ_EVENT_VDO0_DISP_STREAM_DONE_14	588
-+#define CMDQ_EVENT_VDO0_DISP_STREAM_DONE_15	589
-+
-+#define CMDQ_EVENT_VDO0_DISP_RDMA_0_UNDERRUN	590
-+#define CMDQ_EVENT_VDO0_DISP_RDMA_1_UNDERRUN	591
-+#define CMDQ_EVENT_VDO0_U_MERGE4_UNDERRUN	592
-+
-+#define CMDQ_EVENT_VDO0_DSI_0_UNDERRUN	595
-+#define CMDQ_EVENT_VDO0_DSI_1_UNDERRUN	596
-+#define CMDQ_EVENT_VDO0_DP_INTF_0	597
-+#define CMDQ_EVENT_VDO0_DP_INTF_1	598
-+#define CMDQ_EVENT_VDO0_DPI_0		599
-+#define CMDQ_EVENT_VDO0_DPI_1	600
-+
++#define CMDQ_EVENT_VDO0_DISP_STREAM_DONE_10		584
++#define CMDQ_EVENT_VDO0_DISP_STREAM_DONE_11		585
++#define CMDQ_EVENT_VDO0_DISP_STREAM_DONE_12		586
++#define CMDQ_EVENT_VDO0_DISP_STREAM_DONE_13		587
++#define CMDQ_EVENT_VDO0_DISP_STREAM_DONE_14		588
++#define CMDQ_EVENT_VDO0_DISP_STREAM_DONE_15		589
++#define CMDQ_EVENT_VDO0_DISP_RDMA_0_UNDERRUN		590
++#define CMDQ_EVENT_VDO0_DISP_RDMA_1_UNDERRUN		591
++#define CMDQ_EVENT_VDO0_U_MERGE4_UNDERRUN		592
++#define CMDQ_EVENT_VDO0_DSI_0_UNDERRUN			595
++#define CMDQ_EVENT_VDO0_DSI_1_UNDERRUN			596
++#define CMDQ_EVENT_VDO0_DP_INTF_0			597
++#define CMDQ_EVENT_VDO0_DP_INTF_1			598
++#define CMDQ_EVENT_VDO0_DPI_0				599
++#define CMDQ_EVENT_VDO0_DPI_1				600
 +#define CMDQ_EVENT_VDO0_DISP_SMIASSERT_ENG_EVENT	606
 +#define CMDQ_EVENT_VDO0_DSI0_O_DSI_IRQ_EVENT_MM		607
 +#define CMDQ_EVENT_VDO0_DSI0_TE_ENG_EVENT_MM		608
@@ -40683,71 +41386,70 @@ index 0000000000000000000000000000000000000000..b15e965fe67189844f1284a73e68ab08
 +#define CMDQ_EVENT_VDO0_DSI1_O_DSI_DONE_EVENT_MM	613
 +#define CMDQ_EVENT_VDO0_DSI1_O_DSI_VACTL_EVENT_MM	614
 +#define CMDQ_EVENT_VDO0_DP_INTF0_O_DP_VSYNC_START_EVENT_MM		615
-+#define CMDQ_EVENT_VDO0_DP_INTF0_O_DP_VSYNC_END_EVENT_MM	616
-+#define CMDQ_EVENT_VDO0_DP_INTF0_O_DP_VDE_START_EVENT_MM	617
-+#define CMDQ_EVENT_VDO0_DP_INTF0_O_DP_VDE_END_EVENT_MM		618
-+#define CMDQ_EVENT_VDO0_DP_INTF0_O_VACT_TARGET_LINE_EVENT_MM	619
++#define CMDQ_EVENT_VDO0_DP_INTF0_O_DP_VSYNC_END_EVENT_MM		616
++#define CMDQ_EVENT_VDO0_DP_INTF0_O_DP_VDE_START_EVENT_MM		617
++#define CMDQ_EVENT_VDO0_DP_INTF0_O_DP_VDE_END_EVENT_MM			618
++#define CMDQ_EVENT_VDO0_DP_INTF0_O_VACT_TARGET_LINE_EVENT_MM		619
 +#define CMDQ_EVENT_VDO0_DP_INTF0_O_LAST_SAFE_BLANK_EVENT_MM		620
-+#define CMDQ_EVENT_VDO0_DP_INTF0_O_LAST_LINE_EVENT_MM	621
++#define CMDQ_EVENT_VDO0_DP_INTF0_O_LAST_LINE_EVENT_MM			621
 +#define CMDQ_EVENT_VDO0_DP_INTF0_O_TRIGGER_LOOP_CLEAR_EVENT_MM		622
-+#define CMDQ_EVENT_VDO0_DP_INTF0_O_TARGET_LINE_0_EVENT_MM	623
-+#define CMDQ_EVENT_VDO0_DP_INTF0_O_TARGET_LINE_1_EVENT_MM	624
++#define CMDQ_EVENT_VDO0_DP_INTF0_O_TARGET_LINE_0_EVENT_MM		623
++#define CMDQ_EVENT_VDO0_DP_INTF0_O_TARGET_LINE_1_EVENT_MM		624
 +#define CMDQ_EVENT_VDO0_DISP_POSTMASK0_O_FRAME_RESET_DONE_PULSE		625
-+#define CMDQ_EVENT_VDO0_VPP_MERGE0_O_VPP_MERGE_EVENT	626
++#define CMDQ_EVENT_VDO0_VPP_MERGE0_O_VPP_MERGE_EVENT			626
 +#define CMDQ_EVENT_VDO0_DISP_OVL0_O_FRAME_RESET_DONE_PULSE		627
 +#define CMDQ_EVENT_VDO0_DISP_RDMA0_O_DISP_RDMA_TARGET_LINE_EVENT	628
 +#define CMDQ_EVENT_VDO0_DISP_WDMA0_O_WDMA_TARGET_LINE_EVENT		629
-+#define CMDQ_EVENT_VDO0_DISP_WDMA0_O_SW_RST_DONE	630
-+
-+#define CMDQ_EVENT_VDO0_DISP_OVL0_O_TARGET_MATCH_EVENT_0	631
-+#define CMDQ_EVENT_VDO0_DISP_OVL0_O_TARGET_MATCH_EVENT_1	632
-+#define CMDQ_EVENT_VDO0_DISP_OVL0_O_TARGET_MATCH_EVENT_2	633
-+#define CMDQ_EVENT_VDO0_DISP_OVL0_O_TARGET_MATCH_EVENT_3	634
-+#define CMDQ_EVENT_VDO0_DISP_OVL0_O_TARGET_MATCH_EVENT_4	635
-+#define CMDQ_EVENT_VDO0_DISP_OVL0_O_TARGET_MATCH_EVENT_5	636
-+#define CMDQ_EVENT_VDO0_DISP_OVL0_O_TARGET_MATCH_EVENT_6	637
-+#define CMDQ_EVENT_VDO0_MDP_WROT0_O_SW_RST_DONE		638
-+#define CMDQ_EVENT_VDO0_RESERVED 639
-+#define CMDQ_EVENT_VDO1_MDP_RDMA0_SOF	640
-+#define CMDQ_EVENT_VDO1_MDP_RDMA1_SOF	641
-+#define CMDQ_EVENT_VDO1_MDP_RDMA2_SOF	642
-+#define CMDQ_EVENT_VDO1_MDP_RDMA3_SOF	643
-+#define CMDQ_EVENT_VDO1_MDP_RDMA4_SOF	644
-+#define CMDQ_EVENT_VDO1_MDP_RDMA5_SOF	645
-+#define CMDQ_EVENT_VDO1_MDP_RDMA6_SOF	646
-+#define CMDQ_EVENT_VDO1_MDP_RDMA7_SOF	647
-+#define CMDQ_EVENT_VDO1_DISP_PADDING0_SOF	648
-+#define CMDQ_EVENT_VDO1_DISP_PADDING1_SOF	649
-+#define CMDQ_EVENT_VDO1_DISP_PADDING2_SOF	650
-+#define CMDQ_EVENT_VDO1_DISP_PADDING3_SOF	651
-+#define CMDQ_EVENT_VDO1_DISP_PADDING4_SOF	652
-+#define CMDQ_EVENT_VDO1_DISP_PADDING5_SOF	653
-+#define CMDQ_EVENT_VDO1_DISP_PADDING6_SOF	654
-+#define CMDQ_EVENT_VDO1_DISP_PADDING7_SOF	655
-+#define CMDQ_EVENT_VDO1_DISP_RSZ0_SOF	656
-+#define CMDQ_EVENT_VDO1_DISP_RSZ1_SOF	657
-+#define CMDQ_EVENT_VDO1_DISP_RSZ2_SOF	658
-+#define CMDQ_EVENT_VDO1_DISP_RSZ3_SOF	659
-+#define CMDQ_EVENT_VDO1_VPP_MERGE0_SOF	660
-+#define CMDQ_EVENT_VDO1_VPP_MERGE1_SOF	661
-+#define CMDQ_EVENT_VDO1_VPP_MERGE2_SOF	662
-+#define CMDQ_EVENT_VDO1_VPP_MERGE3_SOF	663
-+#define CMDQ_EVENT_VDO1_VPP_MERGE4_SOF	664
-+#define CMDQ_EVENT_VDO1_VPP2_DL_RELAY_SOF	665
-+#define CMDQ_EVENT_VDO1_VPP3_DL_RELAY_SOF	666
-+#define CMDQ_EVENT_VDO0_DSC_DL_ASYNC_SOF	667
-+#define CMDQ_EVENT_VDO0_MERGE_DL_ASYNC_SOF		668
-+#define CMDQ_EVENT_VDO1_OUT_DL_RELAY_SOF	669
-+#define CMDQ_EVENT_VDO1_DISP_MIXER_SOF	670
-+#define CMDQ_EVENT_VDO1_HDR_VDO_FE0_SOF		671
-+#define CMDQ_EVENT_VDO1_HDR_VDO_FE1_SOF		672
-+#define CMDQ_EVENT_VDO1_HDR_GFX_FE0_SOF		673
-+#define CMDQ_EVENT_VDO1_HDR_GFX_FE1_SOF		674
-+#define CMDQ_EVENT_VDO1_HDR_VDO_BE0_SOF		675
-+#define CMDQ_EVENT_VDO1_HDR_MLOAD_SOF	676
-+#define CMDQ_EVENT_VDO1_DPI0_EXT_SOF		677
-+#define CMDQ_EVENT_VDO1_DPI1_EXT_SOF		678
-+#define CMDQ_EVENT_VDO1_DP_INTF_EXT_EXT_SOF		679
++#define CMDQ_EVENT_VDO0_DISP_WDMA0_O_SW_RST_DONE			630
++#define CMDQ_EVENT_VDO0_DISP_OVL0_O_TARGET_MATCH_EVENT_0		631
++#define CMDQ_EVENT_VDO0_DISP_OVL0_O_TARGET_MATCH_EVENT_1		632
++#define CMDQ_EVENT_VDO0_DISP_OVL0_O_TARGET_MATCH_EVENT_2		633
++#define CMDQ_EVENT_VDO0_DISP_OVL0_O_TARGET_MATCH_EVENT_3		634
++#define CMDQ_EVENT_VDO0_DISP_OVL0_O_TARGET_MATCH_EVENT_4		635
++#define CMDQ_EVENT_VDO0_DISP_OVL0_O_TARGET_MATCH_EVENT_5		636
++#define CMDQ_EVENT_VDO0_DISP_OVL0_O_TARGET_MATCH_EVENT_6		637
++#define CMDQ_EVENT_VDO0_MDP_WROT0_O_SW_RST_DONE				638
++#define CMDQ_EVENT_VDO0_RESERVED					639
++#define CMDQ_EVENT_VDO1_MDP_RDMA0_SOF				640
++#define CMDQ_EVENT_VDO1_MDP_RDMA1_SOF				641
++#define CMDQ_EVENT_VDO1_MDP_RDMA2_SOF				642
++#define CMDQ_EVENT_VDO1_MDP_RDMA3_SOF				643
++#define CMDQ_EVENT_VDO1_MDP_RDMA4_SOF				644
++#define CMDQ_EVENT_VDO1_MDP_RDMA5_SOF				645
++#define CMDQ_EVENT_VDO1_MDP_RDMA6_SOF				646
++#define CMDQ_EVENT_VDO1_MDP_RDMA7_SOF				647
++#define CMDQ_EVENT_VDO1_DISP_PADDING0_SOF			648
++#define CMDQ_EVENT_VDO1_DISP_PADDING1_SOF			649
++#define CMDQ_EVENT_VDO1_DISP_PADDING2_SOF			650
++#define CMDQ_EVENT_VDO1_DISP_PADDING3_SOF			651
++#define CMDQ_EVENT_VDO1_DISP_PADDING4_SOF			652
++#define CMDQ_EVENT_VDO1_DISP_PADDING5_SOF			653
++#define CMDQ_EVENT_VDO1_DISP_PADDING6_SOF			654
++#define CMDQ_EVENT_VDO1_DISP_PADDING7_SOF			655
++#define CMDQ_EVENT_VDO1_DISP_RSZ0_SOF				656
++#define CMDQ_EVENT_VDO1_DISP_RSZ1_SOF				657
++#define CMDQ_EVENT_VDO1_DISP_RSZ2_SOF				658
++#define CMDQ_EVENT_VDO1_DISP_RSZ3_SOF				659
++#define CMDQ_EVENT_VDO1_VPP_MERGE0_SOF				660
++#define CMDQ_EVENT_VDO1_VPP_MERGE1_SOF				661
++#define CMDQ_EVENT_VDO1_VPP_MERGE2_SOF				662
++#define CMDQ_EVENT_VDO1_VPP_MERGE3_SOF				663
++#define CMDQ_EVENT_VDO1_VPP_MERGE4_SOF				664
++#define CMDQ_EVENT_VDO1_VPP2_DL_RELAY_SOF			665
++#define CMDQ_EVENT_VDO1_VPP3_DL_RELAY_SOF			666
++#define CMDQ_EVENT_VDO0_DSC_DL_ASYNC_SOF			667
++#define CMDQ_EVENT_VDO0_MERGE_DL_ASYNC_SOF			668
++#define CMDQ_EVENT_VDO1_OUT_DL_RELAY_SOF			669
++#define CMDQ_EVENT_VDO1_DISP_MIXER_SOF				670
++#define CMDQ_EVENT_VDO1_HDR_VDO_FE0_SOF				671
++#define CMDQ_EVENT_VDO1_HDR_VDO_FE1_SOF				672
++#define CMDQ_EVENT_VDO1_HDR_GFX_FE0_SOF				673
++#define CMDQ_EVENT_VDO1_HDR_GFX_FE1_SOF				674
++#define CMDQ_EVENT_VDO1_HDR_VDO_BE0_SOF				675
++#define CMDQ_EVENT_VDO1_HDR_MLOAD_SOF				676
++#define CMDQ_EVENT_VDO1_DPI0_EXT_SOF				677
++#define CMDQ_EVENT_VDO1_DPI1_EXT_SOF				678
++#define CMDQ_EVENT_VDO1_DP_INTF_EXT_EXT_SOF			679
 +#define CMDQ_EVENT_VDO1_MDP_RDMA0_FRAME_DONE		680
 +#define CMDQ_EVENT_VDO1_MDP_RDMA1_FRAME_DONE		681
 +#define CMDQ_EVENT_VDO1_MDP_RDMA2_FRAME_DONE		682
@@ -40756,67 +41458,66 @@ index 0000000000000000000000000000000000000000..b15e965fe67189844f1284a73e68ab08
 +#define CMDQ_EVENT_VDO1_MDP_RDMA5_FRAME_DONE		685
 +#define CMDQ_EVENT_VDO1_MDP_RDMA6_FRAME_DONE		686
 +#define CMDQ_EVENT_VDO1_MDP_RDMA7_FRAME_DONE		687
-+#define CMDQ_EVENT_VDO1_DISP_PADDING0_FRAME_DONE		688
-+#define CMDQ_EVENT_VDO1_DISP_PADDING1_FRAME_DONE		689
-+#define CMDQ_EVENT_VDO1_DISP_PADDING2_FRAME_DONE		690
-+#define CMDQ_EVENT_VDO1_DISP_PADDING3_FRAME_DONE		691
-+#define CMDQ_EVENT_VDO1_DISP_PADDING4_FRAME_DONE		692
-+#define CMDQ_EVENT_VDO1_DISP_PADDING5_FRAME_DONE		693
-+#define CMDQ_EVENT_VDO1_DISP_PADDING6_FRAME_DONE		694
-+#define CMDQ_EVENT_VDO1_DISP_PADDING7_FRAME_DONE		695
++#define CMDQ_EVENT_VDO1_DISP_PADDING0_FRAME_DONE	688
++#define CMDQ_EVENT_VDO1_DISP_PADDING1_FRAME_DONE	689
++#define CMDQ_EVENT_VDO1_DISP_PADDING2_FRAME_DONE	690
++#define CMDQ_EVENT_VDO1_DISP_PADDING3_FRAME_DONE	691
++#define CMDQ_EVENT_VDO1_DISP_PADDING4_FRAME_DONE	692
++#define CMDQ_EVENT_VDO1_DISP_PADDING5_FRAME_DONE	693
++#define CMDQ_EVENT_VDO1_DISP_PADDING6_FRAME_DONE	694
++#define CMDQ_EVENT_VDO1_DISP_PADDING7_FRAME_DONE	695
 +#define CMDQ_EVENT_VDO1_DISP_RSZ0_FRAME_DONE		696
 +#define CMDQ_EVENT_VDO1_DISP_RSZ1_FRAME_DONE		697
 +#define CMDQ_EVENT_VDO1_DISP_RSZ2_FRAME_DONE		698
 +#define CMDQ_EVENT_VDO1_DISP_RSZ3_FRAME_DONE		699
-+#define CMDQ_EVENT_VDO1_VPP_MERGE0_FRAME_DONE	700
-+#define CMDQ_EVENT_VDO1_VPP_MERGE1_FRAME_DONE	701
-+#define CMDQ_EVENT_VDO1_VPP_MERGE2_FRAME_DONE	702
-+#define CMDQ_EVENT_VDO1_VPP_MERGE3_FRAME_DONE	703
-+#define CMDQ_EVENT_VDO1_VPP_MERGE4_FRAME_DONE	704
++#define CMDQ_EVENT_VDO1_VPP_MERGE0_FRAME_DONE		700
++#define CMDQ_EVENT_VDO1_VPP_MERGE1_FRAME_DONE		701
++#define CMDQ_EVENT_VDO1_VPP_MERGE2_FRAME_DONE		702
++#define CMDQ_EVENT_VDO1_VPP_MERGE3_FRAME_DONE		703
++#define CMDQ_EVENT_VDO1_VPP_MERGE4_FRAME_DONE		704
 +#define CMDQ_EVENT_VDO1_DPI0_FRAME_DONE			705
 +#define CMDQ_EVENT_VDO1_DPI1_FRAME_DONE			706
 +#define CMDQ_EVENT_VDO1_DP_INTF0_FRAME_DONE		707
 +#define CMDQ_EVENT_VDO1_DISP_MIXER_FRAME_DONE_MM	708
-+
-+#define CMDQ_EVENT_VDO1_STREAM_DONE_ENG_0	709
-+#define CMDQ_EVENT_VDO1_STREAM_DONE_ENG_1	710
-+#define CMDQ_EVENT_VDO1_STREAM_DONE_ENG_2	711
-+#define CMDQ_EVENT_VDO1_STREAM_DONE_ENG_3	712
-+#define CMDQ_EVENT_VDO1_STREAM_DONE_ENG_4	713
-+#define CMDQ_EVENT_VDO1_STREAM_DONE_ENG_5	714
-+#define CMDQ_EVENT_VDO1_STREAM_DONE_ENG_6	715
-+#define CMDQ_EVENT_VDO1_STREAM_DONE_ENG_7	716
-+#define CMDQ_EVENT_VDO1_STREAM_DONE_ENG_8	717
-+#define CMDQ_EVENT_VDO1_STREAM_DONE_ENG_9	718
-+#define CMDQ_EVENT_VDO1_STREAM_DONE_ENG_10	719
-+#define CMDQ_EVENT_VDO1_STREAM_DONE_ENG_11	720
-+#define CMDQ_EVENT_VDO1_STREAM_DONE_ENG_12	721
-+#define CMDQ_EVENT_VDO1_STREAM_DONE_ENG_13	722
-+#define CMDQ_EVENT_VDO1_STREAM_DONE_ENG_14	723
-+#define CMDQ_EVENT_VDO1_STREAM_DONE_ENG_15	724
-+#define CMDQ_EVENT_VDO1_DISP_RDMA_0_UNDERRUN	725
-+#define CMDQ_EVENT_VDO1_DISP_RDMA_1_UNDERRUN 726
-+#define CMDQ_EVENT_VDO1_U_MERGE4_UNDERRUN	727
-+#define CMDQ_EVENT_VDO1_U_VPP_SPLIT_VIDEO_0_OVERFLOW 728
-+#define CMDQ_EVENT_VDO1_U_VPP_SPLIT_VIDEO_1_OVERFLOW 729
-+#define CMDQ_EVENT_VDO1_DSI_0_UNDERRUN 730
-+#define CMDQ_EVENT_VDO1_DSI_1_UNDERRUN 731
-+#define CMDQ_EVENT_VDO1_DP_INTF_0	732
-+#define CMDQ_EVENT_VDO1_DP_INTF_1	733
-+#define CMDQ_EVENT_VDO1_DPI_0	734
-+#define CMDQ_EVENT_VDO1_DPI_1	735
-+#define CMDQ_EVENT_VDO1_MDP_RDMA0_SW_RST_DONE	741
-+#define CMDQ_EVENT_VDO1_MDP_RDMA1_SW_RST_DONE	742
-+#define CMDQ_EVENT_VDO1_MDP_RDMA2_SW_RST_DONE	743
-+#define CMDQ_EVENT_VDO1_MDP_RDMA3_SW_RST_DONE	744
-+#define CMDQ_EVENT_VDO1_MDP_RDMA4_SW_RST_DONE	745
-+#define CMDQ_EVENT_VDO1_MDP_RDMA5_SW_RST_DONE	746
-+#define CMDQ_EVENT_VDO1_MDP_RDMA6_SW_RST_DONE	747
-+#define CMDQ_EVENT_VDO1_MDP_RDMA7_SW_RST_DONE	748
++#define CMDQ_EVENT_VDO1_STREAM_DONE_ENG_0		709
++#define CMDQ_EVENT_VDO1_STREAM_DONE_ENG_1		710
++#define CMDQ_EVENT_VDO1_STREAM_DONE_ENG_2		711
++#define CMDQ_EVENT_VDO1_STREAM_DONE_ENG_3		712
++#define CMDQ_EVENT_VDO1_STREAM_DONE_ENG_4		713
++#define CMDQ_EVENT_VDO1_STREAM_DONE_ENG_5		714
++#define CMDQ_EVENT_VDO1_STREAM_DONE_ENG_6		715
++#define CMDQ_EVENT_VDO1_STREAM_DONE_ENG_7		716
++#define CMDQ_EVENT_VDO1_STREAM_DONE_ENG_8		717
++#define CMDQ_EVENT_VDO1_STREAM_DONE_ENG_9		718
++#define CMDQ_EVENT_VDO1_STREAM_DONE_ENG_10		719
++#define CMDQ_EVENT_VDO1_STREAM_DONE_ENG_11		720
++#define CMDQ_EVENT_VDO1_STREAM_DONE_ENG_12		721
++#define CMDQ_EVENT_VDO1_STREAM_DONE_ENG_13		722
++#define CMDQ_EVENT_VDO1_STREAM_DONE_ENG_14		723
++#define CMDQ_EVENT_VDO1_STREAM_DONE_ENG_15		724
++#define CMDQ_EVENT_VDO1_DISP_RDMA_0_UNDERRUN		725
++#define CMDQ_EVENT_VDO1_DISP_RDMA_1_UNDERRUN		726
++#define CMDQ_EVENT_VDO1_U_MERGE4_UNDERRUN		727
++#define CMDQ_EVENT_VDO1_U_VPP_SPLIT_VIDEO_0_OVERFLOW	728
++#define CMDQ_EVENT_VDO1_U_VPP_SPLIT_VIDEO_1_OVERFLOW	729
++#define CMDQ_EVENT_VDO1_DSI_0_UNDERRUN			730
++#define CMDQ_EVENT_VDO1_DSI_1_UNDERRUN			731
++#define CMDQ_EVENT_VDO1_DP_INTF_0			732
++#define CMDQ_EVENT_VDO1_DP_INTF_1			733
++#define CMDQ_EVENT_VDO1_DPI_0				734
++#define CMDQ_EVENT_VDO1_DPI_1				735
++#define CMDQ_EVENT_VDO1_MDP_RDMA0_SW_RST_DONE		741
++#define CMDQ_EVENT_VDO1_MDP_RDMA1_SW_RST_DONE		742
++#define CMDQ_EVENT_VDO1_MDP_RDMA2_SW_RST_DONE		743
++#define CMDQ_EVENT_VDO1_MDP_RDMA3_SW_RST_DONE		744
++#define CMDQ_EVENT_VDO1_MDP_RDMA4_SW_RST_DONE		745
++#define CMDQ_EVENT_VDO1_MDP_RDMA5_SW_RST_DONE		746
++#define CMDQ_EVENT_VDO1_MDP_RDMA6_SW_RST_DONE		747
++#define CMDQ_EVENT_VDO1_MDP_RDMA7_SW_RST_DONE		748
 +#define CMDQ_EVENT_VDO1_DP0_VDE_END_ENG_EVENT_MM	749
 +#define CMDQ_EVENT_VDO1_DP0_VDE_START_ENG_EVENT_MM	750
 +#define CMDQ_EVENT_VDO1_DP0_VSYNC_END_ENG_EVENT_MM	751
-+#define CMDQ_EVENT_VDO1_DP0_VSYNC_START_ENG_EVENT_MM 752
++#define CMDQ_EVENT_VDO1_DP0_VSYNC_START_ENG_EVENT_MM	752
 +#define CMDQ_EVENT_VDO1_DP0_TARGET_LINE_ENG_EVENT_MM	753
 +#define CMDQ_EVENT_VDO1_VPP_MERGE0_EVENT		754
 +#define CMDQ_EVENT_VDO1_VPP_MERGE1_EVENT		755
@@ -40826,12 +41527,12 @@ index 0000000000000000000000000000000000000000..b15e965fe67189844f1284a73e68ab08
 +#define CMDQ_EVENT_VDO1_HDMITX_EVENT			759
 +#define CMDQ_EVENT_VDO1_HDR_VDO_BE0_ADL_TRIG_EVENT_MM		760
 +#define CMDQ_EVENT_VDO1_HDR_GFX_FE1_THDR_ADL_TRIG_EVENT_MM	761
-+#define CMDQ_EVENT_VDO1_HDR_GFX_FE1_DM_ADL_TRIG_EVENT_MM		762
++#define CMDQ_EVENT_VDO1_HDR_GFX_FE1_DM_ADL_TRIG_EVENT_MM	762
 +#define CMDQ_EVENT_VDO1_HDR_GFX_FE0_THDR_ADL_TRIG_EVENT_MM	763
-+#define CMDQ_EVENT_VDO1_HDR_GFX_FE0_DM_ADL_TRIG_EVENT_MM		764
++#define CMDQ_EVENT_VDO1_HDR_GFX_FE0_DM_ADL_TRIG_EVENT_MM	764
 +#define CMDQ_EVENT_VDO1_HDR_VDO_FE1_ADL_TRIG_EVENT_MM		765
 +#define CMDQ_EVENT_VDO1_HDR_VDO_FE1_AD0_TRIG_EVENT_MM		766
-+#define CMDQ_EVENT_VDO1_DPI0_TARGET_LINE_1_EVENT_MM			767
++#define CMDQ_EVENT_VDO1_DPI0_TARGET_LINE_1_EVENT_MM		767
 +#define CMDQ_EVENT_HANDSHAKE_0		768
 +#define CMDQ_EVENT_HANDSHAKE_1		769
 +#define CMDQ_EVENT_HANDSHAKE_2		770
@@ -40848,16 +41549,16 @@ index 0000000000000000000000000000000000000000..b15e965fe67189844f1284a73e68ab08
 +#define CMDQ_EVENT_HANDSHAKE_13		781
 +#define CMDQ_EVENT_HANDSHAKE_14		782
 +#define CMDQ_EVENT_HANDSHAKE_15		783
-+#define CMDQ_EVENT_VDEC_SOC_EVENT_0		800
-+#define CMDQ_EVENT_VDEC_SOC_EVENT_1		801
-+#define CMDQ_EVENT_VDEC_SOC_EVENT_2		802
-+#define CMDQ_EVENT_VDEC_SOC_EVENT_3		803
-+#define CMDQ_EVENT_VDEC_SOC_EVENT_4		804
-+#define CMDQ_EVENT_VDEC_SOC_EVENT_5		805
-+#define CMDQ_EVENT_VDEC_SOC_EVENT_6		806
-+#define CMDQ_EVENT_VDEC_SOC_EVENT_7		807
-+#define CMDQ_EVENT_VDEC_SOC_EVENT_8		808
-+#define CMDQ_EVENT_VDEC_SOC_EVENT_9		809
++#define CMDQ_EVENT_VDEC_SOC_EVENT_0	800
++#define CMDQ_EVENT_VDEC_SOC_EVENT_1	801
++#define CMDQ_EVENT_VDEC_SOC_EVENT_2	802
++#define CMDQ_EVENT_VDEC_SOC_EVENT_3	803
++#define CMDQ_EVENT_VDEC_SOC_EVENT_4	804
++#define CMDQ_EVENT_VDEC_SOC_EVENT_5	805
++#define CMDQ_EVENT_VDEC_SOC_EVENT_6	806
++#define CMDQ_EVENT_VDEC_SOC_EVENT_7	807
++#define CMDQ_EVENT_VDEC_SOC_EVENT_8	808
++#define CMDQ_EVENT_VDEC_SOC_EVENT_9	809
 +#define CMDQ_EVENT_VDEC_SOC_EVENT_10	810
 +#define CMDQ_EVENT_VDEC_SOC_EVENT_11	811
 +#define CMDQ_EVENT_VDEC_SOC_EVENT_12	812
@@ -40880,83 +41581,76 @@ index 0000000000000000000000000000000000000000..b15e965fe67189844f1284a73e68ab08
 +#define CMDQ_EVENT_VDEC_CORE0_EVENT_13	845
 +#define CMDQ_EVENT_VDEC_CORE0_EVENT_14	846
 +#define CMDQ_EVENT_VDEC_CORE0_EVENT_15	847
-+
 +#define CMDQ_EVENT_VENC_TOP_VENC_FRAME_DONE		865
 +#define CMDQ_EVENT_VENC_TOP_VENC_PAUSE_DONE		866
 +#define CMDQ_EVENT_VENC_TOP_JPGENC_DONE			867
 +#define CMDQ_EVENT_VENC_TOP_VENC_MB_DONE		868
-+#define CMDQ_EVENT_VENC_TOP_VENC_128BYTE_DONE	869
++#define CMDQ_EVENT_VENC_TOP_VENC_128BYTE_DONE		869
 +#define CMDQ_EVENT_VENC_TOP_JPGDEC_DONE			870
 +#define CMDQ_EVENT_VENC_TOP_VENC_SLICE_DONE		871
 +#define CMDQ_EVENT_VENC_TOP_JPGDEC_INSUFF_DONE		872
-+
-+#define CMDQ_EVENT_VENC_TOP_WP_2ND_STAGE_DONE	874
-+#define CMDQ_EVENT_VENC_TOP_WP_3RD_STAGE_DONE	875
++#define CMDQ_EVENT_VENC_TOP_WP_2ND_STAGE_DONE		874
++#define CMDQ_EVENT_VENC_TOP_WP_3RD_STAGE_DONE		875
 +#define CMDQ_EVENT_VENC_TOP_PPS_HEADER_DONE		876
 +#define CMDQ_EVENT_VENC_TOP_SPS_HEADER_DONE		877
 +#define CMDQ_EVENT_VENC_TOP_VPS_HEADER_DONE		878
-+
 +#define CMDQ_EVENT_WPE_VPP0_WPE_GCE_FRAME_DONE		882
 +#define CMDQ_EVENT_WPE_VPP0_WPE_DONE_SYNC_OUT		883
-+
-+#define CMDQ_EVENT_SVPP1_MDP_OVL_NEW_EVENT_2	896
-+#define CMDQ_EVENT_SVPP1_MDP_OVL_NEW_EVENT_3	897
-+#define CMDQ_EVENT_SVPP1_MDP_OVL_NEW_EVENT_4	898
-+#define CMDQ_EVENT_SVPP1_MDP_OVL_NEW_EVENT_5	899
-+#define CMDQ_EVENT_SVPP1_MDP_OVL_NEW_EVENT_6	900
-+
++#define CMDQ_EVENT_SVPP1_MDP_OVL_NEW_EVENT_2		896
++#define CMDQ_EVENT_SVPP1_MDP_OVL_NEW_EVENT_3		897
++#define CMDQ_EVENT_SVPP1_MDP_OVL_NEW_EVENT_4		898
++#define CMDQ_EVENT_SVPP1_MDP_OVL_NEW_EVENT_5		899
++#define CMDQ_EVENT_SVPP1_MDP_OVL_NEW_EVENT_6		900
 +#define CMDQ_EVENT_VDO1_DPI0_TARGET_LINE_0_EVENT_MM		928
 +#define CMDQ_EVENT_VDO1_DPI0_TRIGGER_LOOP_CLEAR_EVENT_MM	929
-+#define CMDQ_EVENT_VDO1_DPI0_LAST_LINE_EVENT_MM		930
-+#define CMDQ_EVENT_VDO1_DPI0_LAST_SAFE_BLANK_EVENT_MM	931
-+#define CMDQ_EVENT_VDO1_DPI0_VSYNC_START_EVENT_MM	932
++#define CMDQ_EVENT_VDO1_DPI0_LAST_LINE_EVENT_MM			930
++#define CMDQ_EVENT_VDO1_DPI0_LAST_SAFE_BLANK_EVENT_MM		931
++#define CMDQ_EVENT_VDO1_DPI0_VSYNC_START_EVENT_MM		932
 +#define CMDQ_EVENT_VDO1_DPI1_TARGET_LINE_1_EVENT_MM		933
 +#define CMDQ_EVENT_VDO1_DPI1_TARGET_LINE_0_EVENT_MM		934
-+#define CMDQ_EVENT_VDO1_DPI1_TRIGGER_LOOP_CLEAR_EVENT_MM		935
-+#define CMDQ_EVENT_VDO1_DPI1_LAST_LINE_EVENT_MM		936
-+#define CMDQ_EVENT_VDO1_DPI1_LAST_SAFE_BLANK_EVENT_MM	937
-+#define CMDQ_EVENT_VDO1_DPI1_VSYNC_START_EVENT_MM	938
-+#define CMDQ_EVENT_VDO1_DP_INTF_TARGET_LINE_1_EVENT_MM	939
-+#define CMDQ_EVENT_VDO1_DP_INTF_TARGET_LINE_0_EVENT_MM	940
-+#define CMDQ_EVENT_VDO1_DP_INTF_TRIGGER_LOOP_CLEAR_EVENT_MM		941
-+#define CMDQ_EVENT_VDO1_DP_INTF_LAST_LINE_EVENT_MM	942
-+#define CMDQ_EVENT_VDO1_DP_INTF_LAST_SAFE_BLANK_EVENT_MM		943
-+#define CMDQ_EVENT_VBLANK_FALLING	946
-+#define CMDQ_EVENT_VSC_FINISH	 947
-+#define CMDQ_EVENT_TPR_0		962
-+#define CMDQ_EVENT_TPR_1		963
-+#define CMDQ_EVENT_TPR_2		964
-+#define CMDQ_EVENT_TPR_3		965
-+#define CMDQ_EVENT_TPR_4		966
-+#define CMDQ_EVENT_TPR_5		967
-+#define CMDQ_EVENT_TPR_6		968
-+#define CMDQ_EVENT_TPR_7		969
-+#define CMDQ_EVENT_TPR_8		970
-+#define CMDQ_EVENT_TPR_9		971
-+#define CMDQ_EVENT_TPR_10		972
-+#define CMDQ_EVENT_TPR_11		973
-+#define CMDQ_EVENT_TPR_12		974
-+#define CMDQ_EVENT_TPR_13		975
-+#define CMDQ_EVENT_TPR_14		976
-+#define CMDQ_EVENT_TPR_15		977
-+#define CMDQ_EVENT_TPR_16		978
-+#define CMDQ_EVENT_TPR_17		979
-+#define CMDQ_EVENT_TPR_18		980
-+#define CMDQ_EVENT_TPR_19		981
-+#define CMDQ_EVENT_TPR_20		982
-+#define CMDQ_EVENT_TPR_21		983
-+#define CMDQ_EVENT_TPR_22		984
-+#define CMDQ_EVENT_TPR_23		985
-+#define CMDQ_EVENT_TPR_24		986
-+#define CMDQ_EVENT_TPR_25		987
-+#define CMDQ_EVENT_TPR_26		988
-+#define CMDQ_EVENT_TPR_27		989
-+#define CMDQ_EVENT_TPR_28		990
-+#define CMDQ_EVENT_TPR_29		991
-+#define CMDQ_EVENT_TPR_30		992
-+#define CMDQ_EVENT_TPR_31		993
-+
-+/* Event for gpr timer, used in sleep and poll with timeout */
++#define CMDQ_EVENT_VDO1_DPI1_TRIGGER_LOOP_CLEAR_EVENT_MM	935
++#define CMDQ_EVENT_VDO1_DPI1_LAST_LINE_EVENT_MM			936
++#define CMDQ_EVENT_VDO1_DPI1_LAST_SAFE_BLANK_EVENT_MM		937
++#define CMDQ_EVENT_VDO1_DPI1_VSYNC_START_EVENT_MM		938
++#define CMDQ_EVENT_VDO1_DP_INTF_TARGET_LINE_1_EVENT_MM		939
++#define CMDQ_EVENT_VDO1_DP_INTF_TARGET_LINE_0_EVENT_MM		940
++#define CMDQ_EVENT_VDO1_DP_INTF_TRIGGER_LOOP_CLEAR_EVENT_MM	941
++#define CMDQ_EVENT_VDO1_DP_INTF_LAST_LINE_EVENT_MM		942
++#define CMDQ_EVENT_VDO1_DP_INTF_LAST_SAFE_BLANK_EVENT_MM	943
++#define CMDQ_EVENT_VBLANK_FALLING		946
++#define CMDQ_EVENT_VSC_FINISH			947
++#define CMDQ_EVENT_TPR_0			962
++#define CMDQ_EVENT_TPR_1			963
++#define CMDQ_EVENT_TPR_2			964
++#define CMDQ_EVENT_TPR_3			965
++#define CMDQ_EVENT_TPR_4			966
++#define CMDQ_EVENT_TPR_5			967
++#define CMDQ_EVENT_TPR_6			968
++#define CMDQ_EVENT_TPR_7			969
++#define CMDQ_EVENT_TPR_8			970
++#define CMDQ_EVENT_TPR_9			971
++#define CMDQ_EVENT_TPR_10			972
++#define CMDQ_EVENT_TPR_11			973
++#define CMDQ_EVENT_TPR_12			974
++#define CMDQ_EVENT_TPR_13			975
++#define CMDQ_EVENT_TPR_14			976
++#define CMDQ_EVENT_TPR_15			977
++#define CMDQ_EVENT_TPR_16			978
++#define CMDQ_EVENT_TPR_17			979
++#define CMDQ_EVENT_TPR_18			980
++#define CMDQ_EVENT_TPR_19			981
++#define CMDQ_EVENT_TPR_20			982
++#define CMDQ_EVENT_TPR_21			983
++#define CMDQ_EVENT_TPR_22			984
++#define CMDQ_EVENT_TPR_23			985
++#define CMDQ_EVENT_TPR_24			986
++#define CMDQ_EVENT_TPR_25			987
++#define CMDQ_EVENT_TPR_26			988
++#define CMDQ_EVENT_TPR_27			989
++#define CMDQ_EVENT_TPR_28			990
++#define CMDQ_EVENT_TPR_29			991
++#define CMDQ_EVENT_TPR_30			992
++#define CMDQ_EVENT_TPR_31			993
 +#define CMDQ_EVENT_TPR_TIMEOUT_0	994
 +#define CMDQ_EVENT_TPR_TIMEOUT_1	995
 +#define CMDQ_EVENT_TPR_TIMEOUT_2	996
@@ -40973,23 +41667,14 @@ index 0000000000000000000000000000000000000000..b15e965fe67189844f1284a73e68ab08
 +#define CMDQ_EVENT_TPR_TIMEOUT_13	1007
 +#define CMDQ_EVENT_TPR_TIMEOUT_14	1008
 +#define CMDQ_EVENT_TPR_TIMEOUT_15	1009
++#define CMDQ_EVENT_OUTPIN_0		1018
++#define CMDQ_EVENT_OUTPIN_1		1019
 +
-+#define CMDQ_EVENT_OUTPIN_0	1018 /* exception */
-+#define CMDQ_EVENT_OUTPIN_1	1019 /* exception */
-+
-+/* end of hw event */
-+#define CMDQ_MAX_HW_EVENT				1019
-+
-+/* sw token should use the unused event id from 0 to 1023 */
-+#define CMDQ_SYNC_TOKEN_INVALID				(-1)
-+
-+/* Event for imgsys flow control */
 +#define CMDQ_SYNC_TOKEN_IMGSYS_WPE_EIS			124
 +#define CMDQ_SYNC_TOKEN_IMGSYS_WPE_TNR			125
-+#define CMDQ_SYNC_TOKEN_IMGSYS_WPE_LITE		126
++#define CMDQ_SYNC_TOKEN_IMGSYS_WPE_LITE			126
 +#define CMDQ_SYNC_TOKEN_IMGSYS_TRAW			127
 +#define CMDQ_SYNC_TOKEN_IMGSYS_LTRAW			128
-+
 +#define CMDQ_SYNC_TOKEN_CAMSYS_POOL_1			223
 +#define CMDQ_SYNC_TOKEN_CAMSYS_POOL_2			224
 +#define CMDQ_SYNC_TOKEN_CAMSYS_POOL_3			225
@@ -41000,12 +41685,10 @@ index 0000000000000000000000000000000000000000..b15e965fe67189844f1284a73e68ab08
 +#define CMDQ_SYNC_TOKEN_CAMSYS_POOL_8			230
 +#define CMDQ_SYNC_TOKEN_CAMSYS_POOL_9			231
 +#define CMDQ_SYNC_TOKEN_CAMSYS_POOL_10			232
-+
 +#define CMDQ_SYNC_TOKEN_IMGSYS_XTRAW			233
 +#define CMDQ_SYNC_TOKEN_IMGSYS_DIP			234
 +#define CMDQ_SYNC_TOKEN_IMGSYS_PQDIP_A			235
 +#define CMDQ_SYNC_TOKEN_IMGSYS_PQDIP_B			236
-+
 +#define CMDQ_SYNC_TOKEN_IMGSYS_POOL_1			237
 +#define CMDQ_SYNC_TOKEN_IMGSYS_POOL_2			238
 +#define CMDQ_SYNC_TOKEN_IMGSYS_POOL_3			239
@@ -41025,7 +41708,6 @@ index 0000000000000000000000000000000000000000..b15e965fe67189844f1284a73e68ab08
 +#define CMDQ_SYNC_TOKEN_IMGSYS_POOL_17			253
 +#define CMDQ_SYNC_TOKEN_IMGSYS_POOL_18			254
 +#define CMDQ_SYNC_TOKEN_IMGSYS_POOL_19			255
-+
 +#define CMDQ_SYNC_TOKEN_IMGSYS_POOL_20			276
 +#define CMDQ_SYNC_TOKEN_IMGSYS_POOL_21			277
 +#define CMDQ_SYNC_TOKEN_IMGSYS_POOL_22			278
@@ -41038,13 +41720,11 @@ index 0000000000000000000000000000000000000000..b15e965fe67189844f1284a73e68ab08
 +#define CMDQ_SYNC_TOKEN_IMGSYS_POOL_29			285
 +#define CMDQ_SYNC_TOKEN_IMGSYS_POOL_30			286
 +#define CMDQ_SYNC_TOKEN_IMGSYS_POOL_31			287
-+
 +#define CMDQ_SYNC_TOKEN_IPESYS_ME			300
 +#define CMDQ_SYNC_TOKEN_IMGSYS_VSS_TRAW			301
 +#define CMDQ_SYNC_TOKEN_IMGSYS_VSS_LTRAW		302
 +#define CMDQ_SYNC_TOKEN_IMGSYS_VSS_XTRAW		303
 +#define CMDQ_SYNC_TOKEN_IMGSYS_VSS_DIP			304
-+
 +#define CMDQ_SYNC_TOKEN_IMGSYS_POOL_32			308
 +#define CMDQ_SYNC_TOKEN_IMGSYS_POOL_33			309
 +#define CMDQ_SYNC_TOKEN_IMGSYS_POOL_34			310
@@ -41054,7 +41734,6 @@ index 0000000000000000000000000000000000000000..b15e965fe67189844f1284a73e68ab08
 +#define CMDQ_SYNC_TOKEN_IMGSYS_POOL_38			314
 +#define CMDQ_SYNC_TOKEN_IMGSYS_POOL_39			315
 +#define CMDQ_SYNC_TOKEN_IMGSYS_POOL_40			316
-+
 +#define CMDQ_SYNC_TOKEN_IMGSYS_POOL_41			370
 +#define CMDQ_SYNC_TOKEN_IMGSYS_POOL_42			371
 +#define CMDQ_SYNC_TOKEN_IMGSYS_POOL_43			372
@@ -41065,10 +41744,8 @@ index 0000000000000000000000000000000000000000..b15e965fe67189844f1284a73e68ab08
 +#define CMDQ_SYNC_TOKEN_IMGSYS_POOL_48			377
 +#define CMDQ_SYNC_TOKEN_IMGSYS_POOL_49			378
 +#define CMDQ_SYNC_TOKEN_IMGSYS_POOL_50			379
-+
 +#define CMDQ_SYNC_TOKEN_TZMP_ISP_WAIT			380
 +#define CMDQ_SYNC_TOKEN_TZMP_ISP_SET			381
-+
 +#define CMDQ_SYNC_TOKEN_IMGSYS_POOL_51			790
 +#define CMDQ_SYNC_TOKEN_IMGSYS_POOL_52			791
 +#define CMDQ_SYNC_TOKEN_IMGSYS_POOL_53			792
@@ -41079,71 +41756,42 @@ index 0000000000000000000000000000000000000000..b15e965fe67189844f1284a73e68ab08
 +#define CMDQ_SYNC_TOKEN_IMGSYS_POOL_58			797
 +#define CMDQ_SYNC_TOKEN_IMGSYS_POOL_59			798
 +#define CMDQ_SYNC_TOKEN_IMGSYS_POOL_60			799
-+
-+/* SW token for ATF prebuilt */
-+#define CMDQ_SYNC_TOKEN_PREBUILT_MDP_WAIT			816
-+#define CMDQ_SYNC_TOKEN_PREBUILT_MDP_SET			817
-+#define CMDQ_SYNC_TOKEN_PREBUILT_MDP_LOCK			818
-+#define CMDQ_SYNC_TOKEN_PREBUILT_MML_WAIT			819
-+#define CMDQ_SYNC_TOKEN_PREBUILT_MML_SET			820
-+#define CMDQ_SYNC_TOKEN_PREBUILT_MML_LOCK			821
-+#define CMDQ_SYNC_TOKEN_PREBUILT_VFMT_WAIT			822
-+#define CMDQ_SYNC_TOKEN_PREBUILT_VFMT_SET			823
-+#define CMDQ_SYNC_TOKEN_PREBUILT_VFMT_LOCK			824
-+#define CMDQ_SYNC_TOKEN_PREBUILT_DISP_WAIT			825
-+#define CMDQ_SYNC_TOKEN_PREBUILT_DISP_SET			826
-+#define CMDQ_SYNC_TOKEN_PREBUILT_DISP_LOCK			827
-+
-+/* Config thread notify trigger thread */
++#define CMDQ_SYNC_TOKEN_PREBUILT_MDP_WAIT		816
++#define CMDQ_SYNC_TOKEN_PREBUILT_MDP_SET		817
++#define CMDQ_SYNC_TOKEN_PREBUILT_MDP_LOCK		818
++#define CMDQ_SYNC_TOKEN_PREBUILT_MML_WAIT		819
++#define CMDQ_SYNC_TOKEN_PREBUILT_MML_SET		820
++#define CMDQ_SYNC_TOKEN_PREBUILT_MML_LOCK		821
++#define CMDQ_SYNC_TOKEN_PREBUILT_VFMT_WAIT		822
++#define CMDQ_SYNC_TOKEN_PREBUILT_VFMT_SET		823
++#define CMDQ_SYNC_TOKEN_PREBUILT_VFMT_LOCK		824
++#define CMDQ_SYNC_TOKEN_PREBUILT_DISP_WAIT		825
++#define CMDQ_SYNC_TOKEN_PREBUILT_DISP_SET		826
++#define CMDQ_SYNC_TOKEN_PREBUILT_DISP_LOCK		827
 +#define CMDQ_SYNC_TOKEN_CONFIG_DIRTY			848
-+/* Trigger thread notify config thread */
 +#define CMDQ_SYNC_TOKEN_STREAM_EOF			849
-+/* Block Trigger thread until the ESD check finishes. */
 +#define CMDQ_SYNC_TOKEN_ESD_EOF				850
 +#define CMDQ_SYNC_TOKEN_STREAM_BLOCK			851
-+/* check CABC setup finish */
 +#define CMDQ_SYNC_TOKEN_CABC_EOF			852
-+/* Pass-2 notifies VENC frame is ready to be encoded */
 +#define CMDQ_SYNC_TOKEN_VENC_INPUT_READY		853
-+/* VENC notifies Pass-2 encode done so next frame may start */
 +#define CMDQ_SYNC_TOKEN_VENC_EOF			854
-+
-+/* Notify normal CMDQ there are some secure task done
-+ * MUST NOT CHANGE, this token sync with secure world
-+ */
 +#define CMDQ_SYNC_TOKEN_SECURE_THR_EOF			855
-+
-+/* CMDQ use sw token */
 +#define CMDQ_SYNC_TOKEN_USER_0				856
 +#define CMDQ_SYNC_TOKEN_USER_1				857
 +#define CMDQ_SYNC_TOKEN_POLL_MONITOR			858
-+#define CMDQ_TOKEN_TPR_LOCK			859
-+
-+/* ISP sw token */
++#define CMDQ_TOKEN_TPR_LOCK				859
 +#define CMDQ_SYNC_TOKEN_MSS				860
 +#define CMDQ_SYNC_TOKEN_MSF				861
-+
-+/* GPR access tokens (for register backup)
-+ * There are 15 32-bit GPR, 3 GPR form a set
-+ * (64-bit for address, 32-bit for value)
-+ * MUST NOT CHANGE, these tokens sync with MDP
-+ */
 +#define CMDQ_SYNC_TOKEN_GPR_SET_0			884
 +#define CMDQ_SYNC_TOKEN_GPR_SET_1			885
 +#define CMDQ_SYNC_TOKEN_GPR_SET_2			886
 +#define CMDQ_SYNC_TOKEN_GPR_SET_3			887
 +#define CMDQ_SYNC_TOKEN_GPR_SET_4			888
-+
-+/* Resource lock event to control resource in GCE thread */
 +#define CMDQ_SYNC_RESOURCE_WROT0			889
 +#define CMDQ_SYNC_RESOURCE_WROT1			890
-+
-+/* SW token for ATF display va */
-+#define CMDQ_SYNC_TOKEN_DISP_VA_START		1012
++#define CMDQ_SYNC_TOKEN_DISP_VA_START			1012
 +#define CMDQ_SYNC_TOKEN_DISP_VA_END			1013
 +
-+/* end of hw event */
-+#define CMDQ_MAX_HW_EVENT					1013
 +#endif
 diff --git a/include/dt-bindings/memory/mt8188-memory-port.h b/include/dt-bindings/memory/mt8188-memory-port.h
 new file mode 100644
@@ -43338,6 +43986,27 @@ index 082398e0cfb16e6cbc2cdab4b8f2acd3bc3b5742..0761128b435477826deb150b1e2a4f51
 +#define MTK_SIP_KERNEL_IOMMU_CONTROL	MTK_SIP_SMC_CMD(0x514)
 +
  #endif
+diff --git a/include/media/media-entity.h b/include/media/media-entity.h
+index f16ffe70f7a641a75d50b665747b45a51f954b17..f92096e8b40b4c25a308f1ae2eaf8e8bc375f161 100644
+--- a/include/media/media-entity.h
++++ b/include/media/media-entity.h
+@@ -129,6 +129,8 @@ struct media_pipeline {
+  *		link.
+  * @flags:	Link flags, as defined in uapi/media.h (MEDIA_LNK_FL_*)
+  * @is_backlink: Indicate if the link is a backlink.
++ * @request_fd: The media request triggered the media link change, it is only
++ *		meaningful in media_device_setup_link()
+  */
+ struct media_link {
+ 	struct media_gobj graph_obj;
+@@ -146,6 +148,7 @@ struct media_link {
+ 	struct media_link *reverse;
+ 	unsigned long flags;
+ 	bool is_backlink;
++	int request_fd;
+ };
+ 
+ /**
 diff --git a/include/media/v4l2-ctrls.h b/include/media/v4l2-ctrls.h
 index 00828a4f9404aee934a254ebf3aef570e1dedecf..d39d4eec2a977298a527a0a66776fc6c12585957 100644
 --- a/include/media/v4l2-ctrls.h
@@ -43386,11 +44055,112 @@ index 11f7d6b5964269cfe58bfadeb18358586c5b339b..8bbf6ad18fd6245186c127989f669803
  
  #if IS_ENABLED(CONFIG_MTK_SMI)
  
+diff --git a/include/uapi/linux/media.h b/include/uapi/linux/media.h
+index 3ddadaea849f945913ebfc80d6725cd4d410e086..f6810ce1c0168392b484ba1d510cfc274679d6ec 100644
+--- a/include/uapi/linux/media.h
++++ b/include/uapi/linux/media.h
+@@ -229,7 +229,8 @@ struct media_link_desc {
+ 	struct media_pad_desc source;
+ 	struct media_pad_desc sink;
+ 	__u32 flags;
+-	__u32 reserved[2];
++	__s32 request_fd;
++	__u32 reserved[1];
+ };
+ 
+ struct media_links_enum {
 diff --git a/include/uapi/linux/v4l2-controls.h b/include/uapi/linux/v4l2-controls.h
-index 93bb5c3f8666146c29ff287b492a417975758424..4fe844899fa4ca52927511e3a74a7e8f90226c61 100644
+index 93bb5c3f8666146c29ff287b492a417975758424..6f6b7db377ed6931ff094eeb7a3c98f1d42f799d 100644
 --- a/include/uapi/linux/v4l2-controls.h
 +++ b/include/uapi/linux/v4l2-controls.h
-@@ -2792,6 +2792,720 @@ struct v4l2_ctrl_vp9_compressed_hdr {
+@@ -197,6 +197,30 @@ enum v4l2_colorfx {
+  * We reserve 16 controls for this driver. */
+ #define V4L2_CID_USER_IMX_BASE			(V4L2_CID_USER_BASE + 0x10b0)
+ 
++/* The base for the mediatek camsys driver controls */
++/* We reserve 48 controls for this driver. */
++#define V4L2_CID_USER_MTK_CAM_BASE		(V4L2_CID_USER_BASE + 0x10d0)
++#define V4L2_CID_MTK_CAM_USED_ENGINE_LIMIT	(V4L2_CID_USER_MTK_CAM_BASE + 1)
++#define V4L2_CID_MTK_CAM_BIN_LIMIT		(V4L2_CID_USER_MTK_CAM_BASE + 2)
++#define V4L2_CID_MTK_CAM_FRZ_LIMIT		(V4L2_CID_USER_MTK_CAM_BASE + 3)
++#define V4L2_CID_MTK_CAM_RESOURCE_PLAN_POLICY	(V4L2_CID_USER_MTK_CAM_BASE + 4)
++#define V4L2_CID_MTK_CAM_USED_ENGINE		(V4L2_CID_USER_MTK_CAM_BASE + 5)
++#define V4L2_CID_MTK_CAM_BIN			(V4L2_CID_USER_MTK_CAM_BASE + 6)
++#define V4L2_CID_MTK_CAM_FRZ			(V4L2_CID_USER_MTK_CAM_BASE + 7)
++#define V4L2_CID_MTK_CAM_USED_ENGINE_TRY	(V4L2_CID_USER_MTK_CAM_BASE + 8)
++#define V4L2_CID_MTK_CAM_BIN_TRY		(V4L2_CID_USER_MTK_CAM_BASE + 9)
++#define V4L2_CID_MTK_CAM_FRZ_TRY		(V4L2_CID_USER_MTK_CAM_BASE + 10)
++#define V4L2_CID_MTK_CAM_PIXEL_RATE		(V4L2_CID_USER_MTK_CAM_BASE + 11)
++#define V4L2_CID_MTK_CAM_FEATURE		(V4L2_CID_USER_MTK_CAM_BASE + 12)
++#define V4L2_CID_MTK_CAM_SYNC_ID		(V4L2_CID_USER_MTK_CAM_BASE + 13)
++#define V4L2_CID_MTK_CAM_RAW_PATH_SELECT	(V4L2_CID_USER_MTK_CAM_BASE + 14)
++#define V4L2_CID_MTK_CAM_HSF_EN			(V4L2_CID_USER_MTK_CAM_BASE + 15)
++#define V4L2_CID_MTK_CAM_PDE_INFO		(V4L2_CID_USER_MTK_CAM_BASE + 16)
++#define V4L2_CID_MTK_CAM_MSTREAM_EXPOSURE	(V4L2_CID_USER_MTK_CAM_BASE + 17)
++#define V4L2_CID_MTK_CAM_RAW_RESOURCE_CALC	(V4L2_CID_USER_MTK_CAM_BASE + 18)
++#define V4L2_CID_MTK_CAM_TG_FLASH_CFG		(V4L2_CID_USER_MTK_CAM_BASE + 19)
++#define V4L2_CID_MTK_CAM_RAW_RESOURCE_UPDATE	(V4L2_CID_USER_MTK_CAM_BASE + 20)
++#define V4L2_CID_MTK_CAM_CAMSYS_HW_MODE		(V4L2_CID_USER_MTK_CAM_BASE + 21)
+ /*
+  * The base for the atmel isc driver controls.
+  * We reserve 32 controls for this driver.
+@@ -225,6 +249,46 @@ enum v4l2_colorfx {
+  */
+ #define V4L2_CID_USER_ISL7998X_BASE		(V4L2_CID_USER_BASE + 0x1180)
+ 
++/* The base for the mediatek sensor driver controls */
++/* We reserve 48 controls for this driver. */
++#define V4L2_CID_USER_MTK_SENSOR_BASE		(V4L2_CID_USER_BASE + 0x1100)
++#define V4L2_CID_MTK_TEMPERATURE		(V4L2_CID_USER_MTK_SENSOR_BASE + 1)
++#define V4L2_CID_MTK_ANTI_FLICKER		(V4L2_CID_USER_MTK_SENSOR_BASE + 2)
++#define V4L2_CID_MTK_AWB_GAIN			(V4L2_CID_USER_MTK_SENSOR_BASE + 3)
++#define V4L2_CID_MTK_SHUTTER_GAIN_SYNC		(V4L2_CID_USER_MTK_SENSOR_BASE + 4)
++#define V4L2_CID_MTK_DUAL_GAIN			(V4L2_CID_USER_MTK_SENSOR_BASE + 5)
++#define V4L2_CID_MTK_IHDR_SHUTTER_GAIN		(V4L2_CID_USER_MTK_SENSOR_BASE + 6)
++#define V4L2_CID_MTK_HDR_SHUTTER		(V4L2_CID_USER_MTK_SENSOR_BASE + 7)
++#define V4L2_CID_MTK_SHUTTER_FRAME_LENGTH	(V4L2_CID_USER_MTK_SENSOR_BASE + 8)
++#define V4L2_CID_MTK_PDFOCUS_AREA		(V4L2_CID_USER_MTK_SENSOR_BASE + 9)
++#define V4L2_CID_MTK_HDR_ATR			(V4L2_CID_USER_MTK_SENSOR_BASE + 10)
++#define V4L2_CID_MTK_HDR_TRI_SHUTTER		(V4L2_CID_USER_MTK_SENSOR_BASE + 11)
++#define V4L2_CID_MTK_HDR_TRI_GAIN		(V4L2_CID_USER_MTK_SENSOR_BASE + 12)
++#define V4L2_CID_FRAME_SYNC			(V4L2_CID_USER_MTK_SENSOR_BASE + 13)
++#define V4L2_CID_MTK_MAX_FPS			(V4L2_CID_USER_MTK_SENSOR_BASE + 14)
++#define V4L2_CID_MTK_STAGGER_AE_CTRL		(V4L2_CID_USER_MTK_SENSOR_BASE + 15)
++#define V4L2_CID_SEAMLESS_SCENARIOS		(V4L2_CID_USER_MTK_SENSOR_BASE + 16)
++#define V4L2_CID_MTK_STAGGER_INFO		(V4L2_CID_USER_MTK_SENSOR_BASE + 17)
++#define V4L2_CID_STAGGER_TARGET_SCENARIO	(V4L2_CID_USER_MTK_SENSOR_BASE + 18)
++#define V4L2_CID_START_SEAMLESS_SWITCH		(V4L2_CID_USER_MTK_SENSOR_BASE + 19)
++#define V4L2_CID_MTK_DEBUG_CMD			(V4L2_CID_USER_MTK_SENSOR_BASE + 20)
++#define V4L2_CID_MAX_EXP_TIME			(V4L2_CID_USER_MTK_SENSOR_BASE + 21)
++#define V4L2_CID_MTK_SENSOR_PIXEL_RATE		(V4L2_CID_USER_MTK_SENSOR_BASE + 22)
++#define V4L2_CID_MTK_FRAME_DESC			(V4L2_CID_USER_MTK_SENSOR_BASE + 23)
++#define V4L2_CID_MTK_SENSOR_STATIC_PARAM	(V4L2_CID_USER_MTK_SENSOR_BASE + 24)
++#define V4L2_CID_MTK_SENSOR_POWER		(V4L2_CID_USER_MTK_SENSOR_BASE + 25)
++#define V4L2_CID_MTK_MSTREAM_MODE		(V4L2_CID_USER_MTK_SENSOR_BASE + 26)
++#define V4L2_CID_MTK_N_1_MODE			(V4L2_CID_USER_MTK_SENSOR_BASE + 27)
++#define V4L2_CID_MTK_CUST_SENSOR_PIXEL_RATE	(V4L2_CID_USER_MTK_SENSOR_BASE + 28)
++#define V4L2_CID_MTK_CSI_PARAM			(V4L2_CID_USER_MTK_SENSOR_BASE + 29)
++#define V4L2_CID_MTK_SENSOR_TEST_PATTERN_DATA	(V4L2_CID_USER_MTK_SENSOR_BASE + 30)
++#define V4L2_CID_MTK_SENSOR_RESET		(V4L2_CID_USER_MTK_SENSOR_BASE + 31)
++#define V4L2_CID_MTK_SENSOR_INIT		(V4L2_CID_USER_MTK_SENSOR_BASE + 32)
++#define V4L2_CID_MTK_SOF_TIMEOUT_VALUE		(V4L2_CID_USER_MTK_SENSOR_BASE + 33)
++
++#define V4L2_CID_USER_MTK_SENINF_BASE		(V4L2_CID_USER_BASE + 0x1200)
++#define V4L2_CID_MTK_SENINF_S_STREAM		(V4L2_CID_USER_MTK_SENINF_BASE + 1)
++
+ /* MPEG-class control IDs */
+ /* The MPEG controls are applicable to all codec controls
+  * and the 'MPEG' part of the define is historical */
+@@ -1011,6 +1075,8 @@ enum v4l2_auto_focus_range {
+ #define V4L2_CAMERA_ORIENTATION_EXTERNAL	2
+ 
+ #define V4L2_CID_CAMERA_SENSOR_ROTATION		(V4L2_CID_CAMERA_CLASS_BASE+35)
++#define V4L2_CID_FSYNC_MAP_ID			(V4L2_CID_CAMERA_CLASS_BASE+36)
++#define V4L2_CID_VSYNC_NOTIFY			(V4L2_CID_CAMERA_CLASS_BASE+37)
+ 
+ /*
+  * senozhatsky@ b:191930245
+@@ -2792,6 +2858,720 @@ struct v4l2_ctrl_vp9_compressed_hdr {
  	struct v4l2_vp9_mv_probs mv;
  };
  
@@ -44111,11 +44881,55 @@ index 93bb5c3f8666146c29ff287b492a417975758424..4fe844899fa4ca52927511e3a74a7e8f
  /* MPEG-compression definitions kept for backwards compatibility */
  #ifndef __KERNEL__
  #define V4L2_CTRL_CLASS_MPEG            V4L2_CTRL_CLASS_CODEC
+diff --git a/include/uapi/linux/v4l2-subdev.h b/include/uapi/linux/v4l2-subdev.h
+index 658106f5b5dc9682ab169b3f3666196412567869..d6ffd5981c68914c94cf27832fba125ab073ddc0 100644
+--- a/include/uapi/linux/v4l2-subdev.h
++++ b/include/uapi/linux/v4l2-subdev.h
+@@ -50,7 +50,8 @@ struct v4l2_subdev_format {
+ 	__u32 which;
+ 	__u32 pad;
+ 	struct v4l2_mbus_framefmt format;
+-	__u32 reserved[8];
++	__s32 request_fd;
++	__u32 reserved[7];
+ };
+ 
+ /**
 diff --git a/include/uapi/linux/videodev2.h b/include/uapi/linux/videodev2.h
-index abaadaf8c1d8a2121ad72b1e22e6413ae9bebdc0..6c6c26b41838d907e3ed220fc56b06c1912140ce 100644
+index abaadaf8c1d8a2121ad72b1e22e6413ae9bebdc0..5ae95e3acdc0d001a6be730dd111a15c593ec21e 100644
 --- a/include/uapi/linux/videodev2.h
 +++ b/include/uapi/linux/videodev2.h
-@@ -741,6 +741,7 @@ struct v4l2_pix_format {
+@@ -618,6 +618,14 @@ struct v4l2_pix_format {
+ #define V4L2_PIX_FMT_YUVA32  v4l2_fourcc('Y', 'U', 'V', 'A') /* 32  YUVA-8-8-8-8  */
+ #define V4L2_PIX_FMT_YUVX32  v4l2_fourcc('Y', 'U', 'V', 'X') /* 32  YUVX-8-8-8-8  */
+ #define V4L2_PIX_FMT_M420    v4l2_fourcc('M', '4', '2', '0') /* 12  YUV 4:2:0 2 lines y, 1 line uv interleaved */
++#define V4L2_PIX_FMT_YUYV10  v4l2_fourcc('Y', 'U', 'Y', 'A') /* 16  YUV 4:2:2 10-bit */
++#define V4L2_PIX_FMT_YVYU10  v4l2_fourcc('Y', 'V', 'Y', 'A') /* 16  YUV 4:2:2 10-bit */
++#define V4L2_PIX_FMT_UYVY10  v4l2_fourcc('U', 'Y', 'V', 'A') /* 16  YUV 4:2:2 10-bit */
++#define V4L2_PIX_FMT_VYUY10  v4l2_fourcc('V', 'Y', 'U', 'A') /* 16  YUV 4:2:2 10-bit */
++#define V4L2_PIX_FMT_YUYV12  v4l2_fourcc('Y', 'U', 'Y', 'C') /* 16  YUV 4:2:2 12-bit */
++#define V4L2_PIX_FMT_YVYU12  v4l2_fourcc('Y', 'V', 'Y', 'C') /* 16  YUV 4:2:2 12-bit */
++#define V4L2_PIX_FMT_UYVY12  v4l2_fourcc('U', 'Y', 'V', 'C') /* 16  YUV 4:2:2 12-bit */
++#define V4L2_PIX_FMT_VYUY12  v4l2_fourcc('V', 'Y', 'U', 'C') /* 16  YUV 4:2:2 12-bit */
+ 
+ /* two planes -- one Y, one Cr + Cb interleaved  */
+ #define V4L2_PIX_FMT_NV12    v4l2_fourcc('N', 'V', '1', '2') /* 12  Y/CbCr 4:2:0  */
+@@ -627,6 +635,14 @@ struct v4l2_pix_format {
+ #define V4L2_PIX_FMT_NV24    v4l2_fourcc('N', 'V', '2', '4') /* 24  Y/CbCr 4:4:4  */
+ #define V4L2_PIX_FMT_NV42    v4l2_fourcc('N', 'V', '4', '2') /* 24  Y/CrCb 4:4:4  */
+ #define V4L2_PIX_FMT_P010    v4l2_fourcc('P', '0', '1', '0') /* 24  Y/CbCr 4:2:0 10-bit per component */
++#define V4L2_PIX_FMT_NV12_10 v4l2_fourcc('1', '2', 'A', 'U') /* 12  Y/CbCr 4:2:0 10 bits un-packed */
++#define V4L2_PIX_FMT_NV21_10 v4l2_fourcc('2', '1', 'A', 'U') /* 12  Y/CrCb 4:2:0 10 bits un-packed */
++#define V4L2_PIX_FMT_NV16_10 v4l2_fourcc('1', '6', 'A', 'U') /* 16  Y/CbCr 4:2:2 10 bits un-packed */
++#define V4L2_PIX_FMT_NV61_10 v4l2_fourcc('6', '1', 'A', 'U') /* 16  Y/CrCb 4:2:2 10 bits un-packed */
++#define V4L2_PIX_FMT_NV12_12 v4l2_fourcc('1', '2', 'C', 'U') /* 12  Y/CbCr 4:2:0 12 bits un-packed */
++#define V4L2_PIX_FMT_NV21_12 v4l2_fourcc('2', '1', 'C', 'U') /* 12  Y/CrCb 4:2:0 12 bits un-packed */
++#define V4L2_PIX_FMT_NV16_12 v4l2_fourcc('1', '6', 'C', 'U') /* 16  Y/CbCr 4:2:2 12 bits un-packed */
++#define V4L2_PIX_FMT_NV61_12 v4l2_fourcc('6', '1', 'C', 'U') /* 16  Y/CrCb 4:2:2 12 bits un-packed */
+ 
+ /* UBWC 8-bit Y/CbCr 4:2:0  */
+ #define V4L2_PIX_FMT_NV12_UBWC        v4l2_fourcc('Q', '1', '2', '8')
+@@ -741,6 +757,7 @@ struct v4l2_pix_format {
  #define V4L2_PIX_FMT_FWHT_STATELESS     v4l2_fourcc('S', 'F', 'W', 'H') /* Stateless FWHT (vicodec) */
  #define V4L2_PIX_FMT_H264_SLICE v4l2_fourcc('S', '2', '6', '4') /* H264 parsed slices */
  #define V4L2_PIX_FMT_HEVC_SLICE v4l2_fourcc('S', '2', '6', '5') /* HEVC parsed slices */
@@ -44123,7 +44937,107 @@ index abaadaf8c1d8a2121ad72b1e22e6413ae9bebdc0..6c6c26b41838d907e3ed220fc56b06c1
  
  /*  Vendor-specific formats   */
  #define V4L2_PIX_FMT_CPIA1    v4l2_fourcc('C', 'P', 'I', 'A') /* cpia1 YUV */
-@@ -1802,6 +1803,10 @@ struct v4l2_ext_control {
+@@ -786,6 +803,71 @@ struct v4l2_pix_format {
+ #define V4L2_PIX_FMT_IPU3_SGRBG10	v4l2_fourcc('i', 'p', '3', 'G') /* IPU3 packed 10-bit GRBG bayer */
+ #define V4L2_PIX_FMT_IPU3_SRGGB10	v4l2_fourcc('i', 'p', '3', 'r') /* IPU3 packed 10-bit RGGB bayer */
+ 
++/* Vendor specific - Mediatek ISP bayer formats */
++#define V4L2_PIX_FMT_MTISP_SBGGR8   v4l2_fourcc('M', 'B', 'B', '8') /*  Packed  8-bit  */
++#define V4L2_PIX_FMT_MTISP_SGBRG8   v4l2_fourcc('M', 'B', 'G', '8') /*  Packed  8-bit  */
++#define V4L2_PIX_FMT_MTISP_SGRBG8   v4l2_fourcc('M', 'B', 'g', '8') /*  Packed  8-bit  */
++#define V4L2_PIX_FMT_MTISP_SRGGB8   v4l2_fourcc('M', 'B', 'R', '8') /*  Packed  8-bit  */
++#define V4L2_PIX_FMT_MTISP_SBGGR10  v4l2_fourcc('M', 'B', 'B', 'A') /*  Packed 10-bit  */
++#define V4L2_PIX_FMT_MTISP_SGBRG10  v4l2_fourcc('M', 'B', 'G', 'A') /*  Packed 10-bit  */
++#define V4L2_PIX_FMT_MTISP_SGRBG10  v4l2_fourcc('M', 'B', 'g', 'A') /*  Packed 10-bit  */
++#define V4L2_PIX_FMT_MTISP_SRGGB10  v4l2_fourcc('M', 'B', 'R', 'A') /*  Packed 10-bit  */
++#define V4L2_PIX_FMT_MTISP_SBGGR12  v4l2_fourcc('M', 'B', 'B', 'C') /*  Packed 12-bit  */
++#define V4L2_PIX_FMT_MTISP_SGBRG12  v4l2_fourcc('M', 'B', 'G', 'C') /*  Packed 12-bit  */
++#define V4L2_PIX_FMT_MTISP_SGRBG12  v4l2_fourcc('M', 'B', 'g', 'C') /*  Packed 12-bit  */
++#define V4L2_PIX_FMT_MTISP_SRGGB12  v4l2_fourcc('M', 'B', 'R', 'C') /*  Packed 12-bit  */
++#define V4L2_PIX_FMT_MTISP_SBGGR14  v4l2_fourcc('M', 'B', 'B', 'E') /*  Packed 14-bit  */
++#define V4L2_PIX_FMT_MTISP_SGBRG14  v4l2_fourcc('M', 'B', 'G', 'E') /*  Packed 14-bit  */
++#define V4L2_PIX_FMT_MTISP_SGRBG14  v4l2_fourcc('M', 'B', 'g', 'E') /*  Packed 14-bit  */
++#define V4L2_PIX_FMT_MTISP_SRGGB14  v4l2_fourcc('M', 'B', 'R', 'E') /*  Packed 14-bit  */
++#define V4L2_PIX_FMT_MTISP_SBGGR8F  v4l2_fourcc('M', 'F', 'B', '8') /*  Full-G  8-bit  */
++#define V4L2_PIX_FMT_MTISP_SGBRG8F  v4l2_fourcc('M', 'F', 'G', '8') /*  Full-G  8-bit  */
++#define V4L2_PIX_FMT_MTISP_SGRBG8F  v4l2_fourcc('M', 'F', 'g', '8') /*  Full-G  8-bit  */
++#define V4L2_PIX_FMT_MTISP_SRGGB8F  v4l2_fourcc('M', 'F', 'R', '8') /*  Full-G  8-bit  */
++#define V4L2_PIX_FMT_MTISP_SBGGR10F  v4l2_fourcc('M', 'F', 'B', 'A') /*  Full-G 10-bit  */
++#define V4L2_PIX_FMT_MTISP_SGBRG10F  v4l2_fourcc('M', 'F', 'G', 'A') /*  Full-G 10-bit  */
++#define V4L2_PIX_FMT_MTISP_SGRBG10F  v4l2_fourcc('M', 'F', 'g', 'A') /*  Full-G 10-bit  */
++#define V4L2_PIX_FMT_MTISP_SRGGB10F  v4l2_fourcc('M', 'F', 'R', 'A') /*  Full-G 10-bit  */
++#define V4L2_PIX_FMT_MTISP_SBGGR12F  v4l2_fourcc('M', 'F', 'B', 'C') /*  Full-G 12-bit  */
++#define V4L2_PIX_FMT_MTISP_SGBRG12F  v4l2_fourcc('M', 'F', 'G', 'C') /*  Full-G 12-bit  */
++#define V4L2_PIX_FMT_MTISP_SGRBG12F  v4l2_fourcc('M', 'F', 'g', 'C') /*  Full-G 12-bit  */
++#define V4L2_PIX_FMT_MTISP_SRGGB12F  v4l2_fourcc('M', 'F', 'R', 'C') /*  Full-G 12-bit  */
++#define V4L2_PIX_FMT_MTISP_SBGGR14F  v4l2_fourcc('M', 'F', 'B', 'E') /*  Full-G 14-bit  */
++#define V4L2_PIX_FMT_MTISP_SGBRG14F  v4l2_fourcc('M', 'F', 'G', 'E') /*  Full-G 14-bit  */
++#define V4L2_PIX_FMT_MTISP_SGRBG14F  v4l2_fourcc('M', 'F', 'g', 'E') /*  Full-G 14-bit  */
++#define V4L2_PIX_FMT_MTISP_SRGGB14F  v4l2_fourcc('M', 'F', 'R', 'E') /*  Full-G 14-bit  */
++
++/* Vendor specific - Mediatek Luminance+Chrominance formats */
++#define V4L2_PIX_FMT_MTISP_YUYV10P v4l2_fourcc('Y', 'U', 'A', 'P') /* YUV 4:2:2 10-bit packed */
++#define V4L2_PIX_FMT_MTISP_YVYU10P v4l2_fourcc('Y', 'V', 'A', 'P') /* YUV 4:2:2 10-bit packed */
++#define V4L2_PIX_FMT_MTISP_UYVY10P v4l2_fourcc('U', 'Y', 'A', 'P') /* YUV 4:2:2 10-bit packed */
++#define V4L2_PIX_FMT_MTISP_VYUY10P v4l2_fourcc('V', 'Y', 'A', 'P') /* YUV 4:2:2 10-bit packed */
++#define V4L2_PIX_FMT_MTISP_NV12_10P v4l2_fourcc('1', '2', 'A', 'P') /* Y/CbCr 4:2:0 10 bits packed */
++#define V4L2_PIX_FMT_MTISP_NV21_10P v4l2_fourcc('2', '1', 'A', 'P') /* Y/CrCb 4:2:0 10 bits packed */
++#define V4L2_PIX_FMT_MTISP_NV16_10P v4l2_fourcc('1', '6', 'A', 'P') /* Y/CbCr 4:2:2 10 bits packed */
++#define V4L2_PIX_FMT_MTISP_NV61_10P v4l2_fourcc('6', '1', 'A', 'P') /* Y/CrCb 4:2:2 10 bits packed */
++#define V4L2_PIX_FMT_MTISP_YUYV12P v4l2_fourcc('Y', 'U', 'C', 'P') /* YUV 4:2:2 12-bit packed */
++#define V4L2_PIX_FMT_MTISP_YVYU12P v4l2_fourcc('Y', 'V', 'C', 'P') /* YUV 4:2:2 12-bit packed */
++#define V4L2_PIX_FMT_MTISP_UYVY12P v4l2_fourcc('U', 'Y', 'C', 'P') /* YUV 4:2:2 12-bit packed */
++#define V4L2_PIX_FMT_MTISP_VYUY12P v4l2_fourcc('V', 'Y', 'C', 'P') /* YUV 4:2:2 12-bit packed */
++#define V4L2_PIX_FMT_MTISP_NV12_12P v4l2_fourcc('1', '2', 'C', 'P') /* Y/CbCr 4:2:0 12 bits packed */
++#define V4L2_PIX_FMT_MTISP_NV21_12P v4l2_fourcc('2', '1', 'C', 'P') /* Y/CrCb 4:2:0 12 bits packed */
++#define V4L2_PIX_FMT_MTISP_NV16_12P v4l2_fourcc('1', '6', 'C', 'P') /* Y/CbCr 4:2:2 12 bits packed */
++#define V4L2_PIX_FMT_MTISP_NV61_12P v4l2_fourcc('6', '1', 'C', 'P') /* Y/CrCb 4:2:2 12 bits packed */
++#define V4L2_PIX_FMT_MTISP_NV12_UFBC v4l2_fourcc('1', '2', '8', 'F')
++#define V4L2_PIX_FMT_MTISP_NV21_UFBC v4l2_fourcc('2', '1', '8', 'F')
++#define V4L2_PIX_FMT_MTISP_NV12_10_UFBC v4l2_fourcc('1', '2', 'A', 'F')
++#define V4L2_PIX_FMT_MTISP_NV21_10_UFBC v4l2_fourcc('2', '1', 'A', 'F')
++#define V4L2_PIX_FMT_MTISP_NV12_12_UFBC v4l2_fourcc('1', '2', 'C', 'F')
++#define V4L2_PIX_FMT_MTISP_NV21_12_UFBC v4l2_fourcc('2', '1', 'C', 'F')
++#define V4L2_PIX_FMT_MTISP_BAYER8_UFBC v4l2_fourcc('M', 'B', '8', 'U')
++#define V4L2_PIX_FMT_MTISP_BAYER10_UFBC v4l2_fourcc('M', 'B', 'A', 'U')
++#define V4L2_PIX_FMT_MTISP_BAYER12_UFBC v4l2_fourcc('M', 'B', 'C', 'U')
++#define V4L2_PIX_FMT_MTISP_BAYER14_UFBC v4l2_fourcc('M', 'B', 'E', 'U')
++#define V4L2_PIX_FMT_MTISP_SGRB8F  v4l2_fourcc('M', 'F', '8', 'P')
++#define V4L2_PIX_FMT_MTISP_SGRB10F  v4l2_fourcc('M', 'F', 'A', 'P')
++#define V4L2_PIX_FMT_MTISP_SGRB12F  v4l2_fourcc('M', 'F', 'C', 'P')
++
+ /* SDR formats - used only for Software Defined Radio devices */
+ #define V4L2_SDR_FMT_CU8          v4l2_fourcc('C', 'U', '0', '8') /* IQ u8 */
+ #define V4L2_SDR_FMT_CU16LE       v4l2_fourcc('C', 'U', '1', '6') /* IQ u16le */
+@@ -1163,6 +1245,8 @@ static inline __u64 v4l2_timeval_to_ns(const struct timeval *tv)
+ /* request_fd is valid */
+ #define V4L2_BUF_FLAG_REQUEST_FD		0x00800000
+ 
++#define V4L2_BUF_FLAG_TIMESTAMP_BOOT		0x00008000
++
+ /**
+  * struct v4l2_exportbuffer - export of video buffer as DMABUF file descriptor
+  *
+@@ -1291,6 +1375,7 @@ struct v4l2_crop {
+  *		defined in v4l2-common.h; V4L2_SEL_TGT_* .
+  * @flags:	constraints flags, defined in v4l2-common.h; V4L2_SEL_FLAG_*.
+  * @r:		coordinates of selection window
++ * @request_fd: fd of the request that trigger the set selection operation
+  * @reserved:	for future use, rounds structure size to 64 bytes, set to zero
+  *
+  * Hardware may use multiple helper windows to process a video stream.
+@@ -1301,8 +1386,9 @@ struct v4l2_selection {
+ 	__u32			type;
+ 	__u32			target;
+ 	__u32                   flags;
++	__s32                   request_fd;
+ 	struct v4l2_rect        r;
+-	__u32                   reserved[9];
++	__u32                   reserved[8];
+ };
+ 
+ 
+@@ -1802,6 +1888,10 @@ struct v4l2_ext_control {
  		struct v4l2_ctrl_hevc_slice_params __user *p_hevc_slice_params;
  		struct v4l2_ctrl_hevc_scaling_matrix __user *p_hevc_scaling_matrix;
  		struct v4l2_ctrl_hevc_decode_params __user *p_hevc_decode_params;
@@ -44134,7 +45048,7 @@ index abaadaf8c1d8a2121ad72b1e22e6413ae9bebdc0..6c6c26b41838d907e3ed220fc56b06c1
  		void __user *ptr;
  	};
  } __attribute__ ((packed));
-@@ -1875,6 +1880,11 @@ enum v4l2_ctrl_type {
+@@ -1875,6 +1965,11 @@ enum v4l2_ctrl_type {
  	V4L2_CTRL_TYPE_HEVC_SLICE_PARAMS	= 0x0272,
  	V4L2_CTRL_TYPE_HEVC_SCALING_MATRIX	= 0x0273,
  	V4L2_CTRL_TYPE_HEVC_DECODE_PARAMS	= 0x0274,
@@ -44146,6 +45060,33 @@ index abaadaf8c1d8a2121ad72b1e22e6413ae9bebdc0..6c6c26b41838d907e3ed220fc56b06c1
  };
  
  /*  Used in the VIDIOC_QUERYCTRL ioctl for querying controls */
+@@ -2335,6 +2430,7 @@ struct v4l2_plane_pix_format {
+  * @hsv_enc:		enum v4l2_hsv_encoding, HSV encoding
+  * @quantization:	enum v4l2_quantization, colorspace quantization
+  * @xfer_func:		enum v4l2_xfer_func, colorspace transfer function
++ * @request_fd:	fd of the request that trigger the set format operation
+  * @reserved:		drivers and applications must zero this array
+  */
+ struct v4l2_pix_format_mplane {
+@@ -2353,7 +2449,8 @@ struct v4l2_pix_format_mplane {
+ 	};
+ 	__u8				quantization;
+ 	__u8				xfer_func;
+-	__u8				reserved[7];
++	__s32				request_fd;
++	__u8				reserved[6];
+ } __attribute__ ((packed));
+ 
+ /**
+@@ -2427,6 +2524,8 @@ struct v4l2_streamparm {
+ #define V4L2_EVENT_SOURCE_CHANGE		5
+ #define V4L2_EVENT_MOTION_DET			6
+ #define V4L2_EVENT_PRIVATE_START		0x08000000
++#define V4L2_EVENT_REQUEST_DRAINED              (V4L2_EVENT_PRIVATE_START + 1)
++#define V4L2_EVENT_REQUEST_DUMPED               (V4L2_EVENT_PRIVATE_START + 2)
+ 
+ /* Payload for V4L2_EVENT_VSYNC */
+ struct v4l2_event_vsync {
 diff --git a/sound/soc/mediatek/Kconfig b/sound/soc/mediatek/Kconfig
 index 363fa4d476800fffdf2e3d6fdab753fd80076091..b746ef8f7aff54b7feb91f626a39bde4dd7a8225 100644
 --- a/sound/soc/mediatek/Kconfig
