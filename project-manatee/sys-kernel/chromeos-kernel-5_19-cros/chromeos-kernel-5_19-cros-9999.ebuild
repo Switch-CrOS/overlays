@@ -1,21 +1,22 @@
-# Copyright 2022 The ChromiumOS Authors
+# Copyright 2023 The ChromiumOS Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
 
 CROS_WORKON_PROJECT="chromiumos/third_party/kernel"
 CROS_WORKON_LOCALNAME="kernel/v5.10-manatee"
-CROS_WORKON_EGIT_BRANCH="chromeos-5.10-manatee"
+CROS_WORKON_EGIT_BRANCH="merge/chromeos-5.19-manatee"
+CROS_WORKON_MANUAL_UPREV="1"
 
 # This must be inherited *after* EGIT/CROS_WORKON variables defined
 inherit cros-workon cros-kernel2
 
 HOMEPAGE="https://www.chromium.org/chromium-os/chromiumos-design-docs/chromium-os-kernel"
-DESCRIPTION="Chrome OS Linux Kernel 5.10 manatee guest"
+DESCRIPTION="Chrome OS Linux Kernel 5.19 manatee guest"
 KEYWORDS="~*"
 
 RDEPEND+="!sys-kernel/chromeos-kernel-5_10
-	!sys-kernel/chromeos-kernel-5_19-cros"
+	!sys-kernel/chromeos-kernel-5_10-cros"
 # This is Manatee specific 5.10 kernel temporarily branched in order to allow
 # development for teamfood. We will undiverge and remove this soon!
 #
