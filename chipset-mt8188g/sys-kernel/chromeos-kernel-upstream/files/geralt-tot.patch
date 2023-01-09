@@ -3677,7 +3677,7 @@ index 0000000000000000000000000000000000000000..093fd4b79bf457cbba9b29ae0454aed1
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8188.dtsi b/arch/arm64/boot/dts/mediatek/mt8188.dtsi
 new file mode 100644
-index 0000000000000000000000000000000000000000..1bcb322034a7219a9a7c2fbd6058f98105c777ad
+index 0000000000000000000000000000000000000000..0f4bb2587a0a174809c69203d0b46a4f82dc85b7
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt8188.dtsi
 @@ -0,0 +1,3299 @@
@@ -3717,22 +3717,22 @@ index 0000000000000000000000000000000000000000..1bcb322034a7219a9a7c2fbd6058f981
 +		merge5 = &merge5;
 +		mutex0 = &mutex;
 +		mutex1 = &mutex1;
-+		vdo1_padding0 = &vdo1_padding0;
-+		vdo1_padding1 = &vdo1_padding1;
-+		vdo1_padding2 = &vdo1_padding2;
-+		vdo1_padding3 = &vdo1_padding3;
-+		vdo1_padding4 = &vdo1_padding4;
-+		vdo1_padding5 = &vdo1_padding5;
-+		vdo1_padding6 = &vdo1_padding6;
-+		vdo1_padding7 = &vdo1_padding7;
-+		vdo1_rdma0 = &vdo1_rdma0;
-+		vdo1_rdma1 = &vdo1_rdma1;
-+		vdo1_rdma2 = &vdo1_rdma2;
-+		vdo1_rdma3 = &vdo1_rdma3;
-+		vdo1_rdma4 = &vdo1_rdma4;
-+		vdo1_rdma5 = &vdo1_rdma5;
-+		vdo1_rdma6 = &vdo1_rdma6;
-+		vdo1_rdma7 = &vdo1_rdma7;
++		vdo1-padding0 = &vdo1_padding0;
++		vdo1-padding1 = &vdo1_padding1;
++		vdo1-padding2 = &vdo1_padding2;
++		vdo1-padding3 = &vdo1_padding3;
++		vdo1-padding4 = &vdo1_padding4;
++		vdo1-padding5 = &vdo1_padding5;
++		vdo1-padding6 = &vdo1_padding6;
++		vdo1-padding7 = &vdo1_padding7;
++		vdo1-rdma0 = &vdo1_rdma0;
++		vdo1-rdma1 = &vdo1_rdma1;
++		vdo1-rdma2 = &vdo1_rdma2;
++		vdo1-rdma3 = &vdo1_rdma3;
++		vdo1-rdma4 = &vdo1_rdma4;
++		vdo1-rdma5 = &vdo1_rdma5;
++		vdo1-rdma6 = &vdo1_rdma6;
++		vdo1-rdma7 = &vdo1_rdma7;
 +	};
 +
 +	cpus {
@@ -6868,7 +6868,7 @@ index 0000000000000000000000000000000000000000..1bcb322034a7219a9a7c2fbd6058f981
 +			power-domains = <&spm MT8188_POWER_DOMAIN_VDOSYS1>;
 +			iommus = <&vpp_iommu M4U_PORT_L3_HDR_DS_SMI>,
 +				 <&vpp_iommu M4U_PORT_L3_HDR_ADL_SMI>;
-+			interrupts = <GIC_SPI 517 IRQ_TYPE_LEVEL_HIGH 0>;
++			interrupts = <GIC_SPI 566 IRQ_TYPE_LEVEL_HIGH 0>;
 +			resets = <&vdosys1 MT8188_VDO1_RST_HDR_VDO_FE0_DL_ASYNC>,
 +				 <&vdosys1 MT8188_VDO1_RST_HDR_VDO_FE1_DL_ASYNC>,
 +				 <&vdosys1 MT8188_VDO1_RST_HDR_GFX_FE0_DL_ASYNC>,
@@ -14329,7 +14329,7 @@ index 33e61a136bbc5e635cd5b67074e660b50e8bc378..e1087a04f050e132c3a0a93ebc3acd71
 +void mtk_disp_padding_config(struct device *dev, struct cmdq_pkt *cmdq_pkt);
  #endif
 diff --git a/drivers/gpu/drm/mediatek/mtk_disp_merge.c b/drivers/gpu/drm/mediatek/mtk_disp_merge.c
-index 6428b6203ffe8c2bb44cf95068fa61bc924b700e..68dd101837979533c6910aa300ec3af5b4e21703 100644
+index 6428b6203ffe8c2bb44cf95068fa61bc924b700e..7221cafd6204ec0ab309c1801a191d03897c1782 100644
 --- a/drivers/gpu/drm/mediatek/mtk_disp_merge.c
 +++ b/drivers/gpu/drm/mediatek/mtk_disp_merge.c
 @@ -26,6 +26,7 @@
@@ -14340,6 +14340,15 @@ index 6428b6203ffe8c2bb44cf95068fa61bc924b700e..68dd101837979533c6910aa300ec3af5
  #define CFG_10_10_2PI_2PO_BUF_MODE		8
  #define CFG_11_10_1PI_2PO_MERGE			18
  #define FLD_CFG_MERGE_MODE			GENMASK(4, 0)
+@@ -104,7 +105,7 @@ void mtk_merge_stop_cmdq(struct device *dev, struct cmdq_pkt *cmdq_pkt)
+ 	mtk_ddp_write(cmdq_pkt, 0, &priv->cmdq_reg, priv->regs,
+ 		      DISP_REG_MERGE_CTRL);
+ 
+-	if (priv->async_clk)
++	if (!cmdq_pkt && priv->async_clk)
+ 		reset_control_reset(priv->reset_ctl);
+ }
+ 
 @@ -148,7 +149,7 @@ void mtk_merge_advance_config(struct device *dev, unsigned int l_w, unsigned int
  
  	if (priv->fifo_en) {
@@ -14359,10 +14368,10 @@ index 6428b6203ffe8c2bb44cf95068fa61bc924b700e..68dd101837979533c6910aa300ec3af5
  };
 diff --git a/drivers/gpu/drm/mediatek/mtk_disp_ovl_adaptor.c b/drivers/gpu/drm/mediatek/mtk_disp_ovl_adaptor.c
 new file mode 100644
-index 0000000000000000000000000000000000000000..66d9f9e762d1ddac15dcda55ae7cb5a9de338a31
+index 0000000000000000000000000000000000000000..995429b108484d7fd43a28030b7d1d284def1aee
 --- /dev/null
 +++ b/drivers/gpu/drm/mediatek/mtk_disp_ovl_adaptor.c
-@@ -0,0 +1,583 @@
+@@ -0,0 +1,571 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +/*
 + * Copyright (c) 2021 MediaTek Inc.
@@ -14425,6 +14434,7 @@ index 0000000000000000000000000000000000000000..66d9f9e762d1ddac15dcda55ae7cb5a9
 +
 +struct ovl_adaptor_comp_match {
 +	enum mtk_ovl_adaptor_comp_type type;
++	enum mtk_ddp_comp_id comp_id;
 +	int alias_id;
 +};
 +
@@ -14435,34 +14445,34 @@ index 0000000000000000000000000000000000000000..66d9f9e762d1ddac15dcda55ae7cb5a9
 +};
 +
 +static const char * const private_comp_stem[OVL_ADAPTOR_TYPE_NUM] = {
-+	[OVL_ADAPTOR_TYPE_RDMA]		= "vdo1_rdma",
-+	[OVL_ADAPTOR_TYPE_PADDING]	= "vdo1_padding",
++	[OVL_ADAPTOR_TYPE_RDMA]		= "vdo1-rdma",
++	[OVL_ADAPTOR_TYPE_PADDING]	= "vdo1-padding",
 +	[OVL_ADAPTOR_TYPE_MERGE]	= "merge",
 +	[OVL_ADAPTOR_TYPE_ETHDR]	= "ethdr",
 +};
 +
 +static const struct ovl_adaptor_comp_match comp_matches[OVL_ADAPTOR_ID_MAX] = {
-+	[OVL_ADAPTOR_MDP_RDMA0]		= { OVL_ADAPTOR_TYPE_RDMA, 0 },
-+	[OVL_ADAPTOR_MDP_RDMA1]		= { OVL_ADAPTOR_TYPE_RDMA, 1 },
-+	[OVL_ADAPTOR_MDP_RDMA2]		= { OVL_ADAPTOR_TYPE_RDMA, 2 },
-+	[OVL_ADAPTOR_MDP_RDMA3]		= { OVL_ADAPTOR_TYPE_RDMA, 3 },
-+	[OVL_ADAPTOR_MDP_RDMA4]		= { OVL_ADAPTOR_TYPE_RDMA, 4 },
-+	[OVL_ADAPTOR_MDP_RDMA5]		= { OVL_ADAPTOR_TYPE_RDMA, 5 },
-+	[OVL_ADAPTOR_MDP_RDMA6]		= { OVL_ADAPTOR_TYPE_RDMA, 6 },
-+	[OVL_ADAPTOR_MDP_RDMA7]		= { OVL_ADAPTOR_TYPE_RDMA, 7 },
-+	[OVL_ADAPTOR_DISP_PADDING0]	= { OVL_ADAPTOR_TYPE_PADDING, 0 },
-+	[OVL_ADAPTOR_DISP_PADDING1]	= { OVL_ADAPTOR_TYPE_PADDING, 1 },
-+	[OVL_ADAPTOR_DISP_PADDING2]	= { OVL_ADAPTOR_TYPE_PADDING, 2 },
-+	[OVL_ADAPTOR_DISP_PADDING3]	= { OVL_ADAPTOR_TYPE_PADDING, 3 },
-+	[OVL_ADAPTOR_DISP_PADDING4]	= { OVL_ADAPTOR_TYPE_PADDING, 4 },
-+	[OVL_ADAPTOR_DISP_PADDING5]	= { OVL_ADAPTOR_TYPE_PADDING, 5 },
-+	[OVL_ADAPTOR_DISP_PADDING6]	= { OVL_ADAPTOR_TYPE_PADDING, 6 },
-+	[OVL_ADAPTOR_DISP_PADDING7]	= { OVL_ADAPTOR_TYPE_PADDING, 7 },
-+	[OVL_ADAPTOR_MERGE0]		= { OVL_ADAPTOR_TYPE_MERGE, 1 },
-+	[OVL_ADAPTOR_MERGE1]		= { OVL_ADAPTOR_TYPE_MERGE, 2 },
-+	[OVL_ADAPTOR_MERGE2]		= { OVL_ADAPTOR_TYPE_MERGE, 3 },
-+	[OVL_ADAPTOR_MERGE3]		= { OVL_ADAPTOR_TYPE_MERGE, 4 },
-+	[OVL_ADAPTOR_ETHDR0]		= { OVL_ADAPTOR_TYPE_ETHDR, 0 },
++	[OVL_ADAPTOR_MDP_RDMA0] = { OVL_ADAPTOR_TYPE_RDMA, DDP_COMPONENT_MDP_RDMA0, 0 },
++	[OVL_ADAPTOR_MDP_RDMA1] = { OVL_ADAPTOR_TYPE_RDMA, DDP_COMPONENT_MDP_RDMA1, 1 },
++	[OVL_ADAPTOR_MDP_RDMA2] = { OVL_ADAPTOR_TYPE_RDMA, DDP_COMPONENT_MDP_RDMA2, 2 },
++	[OVL_ADAPTOR_MDP_RDMA3] = { OVL_ADAPTOR_TYPE_RDMA, DDP_COMPONENT_MDP_RDMA3, 3 },
++	[OVL_ADAPTOR_MDP_RDMA4] = { OVL_ADAPTOR_TYPE_RDMA, DDP_COMPONENT_MDP_RDMA4, 4 },
++	[OVL_ADAPTOR_MDP_RDMA5] = { OVL_ADAPTOR_TYPE_RDMA, DDP_COMPONENT_MDP_RDMA5, 5 },
++	[OVL_ADAPTOR_MDP_RDMA6] = { OVL_ADAPTOR_TYPE_RDMA, DDP_COMPONENT_MDP_RDMA6, 6 },
++	[OVL_ADAPTOR_MDP_RDMA7] = { OVL_ADAPTOR_TYPE_RDMA, DDP_COMPONENT_MDP_RDMA7, 7 },
++	[OVL_ADAPTOR_DISP_PADDING0] = { OVL_ADAPTOR_TYPE_PADDING, DDP_COMPONENT_DISP_PADDING0, 0 },
++	[OVL_ADAPTOR_DISP_PADDING1] = { OVL_ADAPTOR_TYPE_PADDING, DDP_COMPONENT_DISP_PADDING1, 1 },
++	[OVL_ADAPTOR_DISP_PADDING2] = { OVL_ADAPTOR_TYPE_PADDING, DDP_COMPONENT_DISP_PADDING2, 2 },
++	[OVL_ADAPTOR_DISP_PADDING3] = { OVL_ADAPTOR_TYPE_PADDING, DDP_COMPONENT_DISP_PADDING3, 3 },
++	[OVL_ADAPTOR_DISP_PADDING4] = { OVL_ADAPTOR_TYPE_PADDING, DDP_COMPONENT_DISP_PADDING4, 4 },
++	[OVL_ADAPTOR_DISP_PADDING5] = { OVL_ADAPTOR_TYPE_PADDING, DDP_COMPONENT_DISP_PADDING5, 5 },
++	[OVL_ADAPTOR_DISP_PADDING6] = { OVL_ADAPTOR_TYPE_PADDING, DDP_COMPONENT_DISP_PADDING6, 6 },
++	[OVL_ADAPTOR_DISP_PADDING7] = { OVL_ADAPTOR_TYPE_PADDING, DDP_COMPONENT_DISP_PADDING7, 7 },
++	[OVL_ADAPTOR_MERGE0] = { OVL_ADAPTOR_TYPE_MERGE, DDP_COMPONENT_MERGE1, 1 },
++	[OVL_ADAPTOR_MERGE1] = { OVL_ADAPTOR_TYPE_MERGE, DDP_COMPONENT_MERGE2, 2 },
++	[OVL_ADAPTOR_MERGE2] = { OVL_ADAPTOR_TYPE_MERGE, DDP_COMPONENT_MERGE3, 3 },
++	[OVL_ADAPTOR_MERGE3] = { OVL_ADAPTOR_TYPE_MERGE, DDP_COMPONENT_MERGE4, 4 },
++	[OVL_ADAPTOR_ETHDR0] = { OVL_ADAPTOR_TYPE_ETHDR, DDP_COMPONENT_ETHDR_MIXER, 0 },
 +};
 +
 +void mtk_ovl_adaptor_layer_config(struct device *dev, unsigned int idx,
@@ -14528,13 +14538,16 @@ index 0000000000000000000000000000000000000000..66d9f9e762d1ddac15dcda55ae7cb5a9
 +	rdma_config.fmt = pending->format;
 +	rdma_config.color_encoding = pending->color_encoding;
 +	mtk_mdp_rdma_config(rdma_l, &rdma_config, cmdq_pkt);
-+	mtk_disp_padding_config(padding_l, cmdq_pkt);
++
++	if (padding_l)
++		mtk_disp_padding_config(padding_l, cmdq_pkt);
 +
 +	if (use_dual_pipe) {
 +		rdma_config.x_left = l_w;
 +		rdma_config.width = r_w;
 +		mtk_mdp_rdma_config(rdma_r, &rdma_config, cmdq_pkt);
-+		mtk_disp_padding_config(padding_r, cmdq_pkt);
++		if (padding_r)
++			mtk_disp_padding_config(padding_r, cmdq_pkt);
 +	}
 +
 +	mtk_merge_start_cmdq(merge, cmdq_pkt);
@@ -14581,6 +14594,8 @@ index 0000000000000000000000000000000000000000..66d9f9e762d1ddac15dcda55ae7cb5a9
 +
 +	for (i = 0; i < OVL_ADAPTOR_MERGE0; i++) {
 +		comp = ovl_adaptor->comp[i];
++		if (!comp)
++			continue;
 +		ret = pm_runtime_get_sync(comp);
 +		if (ret < 0) {
 +			dev_err(dev, "Failed to enable power domain %d, err %d\n", i, ret);
@@ -14590,7 +14605,8 @@ index 0000000000000000000000000000000000000000..66d9f9e762d1ddac15dcda55ae7cb5a9
 +
 +	for (i = 0; i < OVL_ADAPTOR_ID_MAX; i++) {
 +		comp = ovl_adaptor->comp[i];
-+
++		if (!comp)
++			continue;
 +		if (i < OVL_ADAPTOR_DISP_PADDING0)
 +			ret = mtk_mdp_rdma_clk_enable(comp);
 +		else if (i < OVL_ADAPTOR_MERGE0)
@@ -14610,6 +14626,8 @@ index 0000000000000000000000000000000000000000..66d9f9e762d1ddac15dcda55ae7cb5a9
 +clk_err:
 +	while (--i >= 0) {
 +		comp = ovl_adaptor->comp[i];
++		if (!comp)
++			continue;
 +		if (i < OVL_ADAPTOR_DISP_PADDING0)
 +			mtk_mdp_rdma_clk_disable(comp);
 +		else if (i < OVL_ADAPTOR_MERGE0)
@@ -14622,8 +14640,12 @@ index 0000000000000000000000000000000000000000..66d9f9e762d1ddac15dcda55ae7cb5a9
 +	i = OVL_ADAPTOR_MERGE0;
 +
 +pwr_err:
-+	while (--i >= 0)
-+		pm_runtime_put(ovl_adaptor->comp[i]);
++	while (--i >= 0) {
++		comp = ovl_adaptor->comp[i];
++		if (!comp)
++			continue;
++		pm_runtime_put(comp);
++	}
 +
 +	return ret;
 +}
@@ -14636,7 +14658,8 @@ index 0000000000000000000000000000000000000000..66d9f9e762d1ddac15dcda55ae7cb5a9
 +
 +	for (i = 0; i < OVL_ADAPTOR_ID_MAX; i++) {
 +		comp = ovl_adaptor->comp[i];
-+
++		if (!comp)
++			continue;
 +		if (i < OVL_ADAPTOR_DISP_PADDING0) {
 +			mtk_mdp_rdma_clk_disable(comp);
 +			pm_runtime_put(comp);
@@ -14695,52 +14718,26 @@ index 0000000000000000000000000000000000000000..66d9f9e762d1ddac15dcda55ae7cb5a9
 +
 +void mtk_ovl_adaptor_add_comp(struct device *dev, struct mtk_mutex *mutex)
 +{
-+	mtk_mutex_add_comp(mutex, DDP_COMPONENT_MDP_RDMA0);
-+	mtk_mutex_add_comp(mutex, DDP_COMPONENT_MDP_RDMA1);
-+	mtk_mutex_add_comp(mutex, DDP_COMPONENT_MDP_RDMA2);
-+	mtk_mutex_add_comp(mutex, DDP_COMPONENT_MDP_RDMA3);
-+	mtk_mutex_add_comp(mutex, DDP_COMPONENT_MDP_RDMA4);
-+	mtk_mutex_add_comp(mutex, DDP_COMPONENT_MDP_RDMA5);
-+	mtk_mutex_add_comp(mutex, DDP_COMPONENT_MDP_RDMA6);
-+	mtk_mutex_add_comp(mutex, DDP_COMPONENT_MDP_RDMA7);
-+	mtk_mutex_add_comp(mutex, DDP_COMPONENT_DISP_PADDING0);
-+	mtk_mutex_add_comp(mutex, DDP_COMPONENT_DISP_PADDING1);
-+	mtk_mutex_add_comp(mutex, DDP_COMPONENT_DISP_PADDING2);
-+	mtk_mutex_add_comp(mutex, DDP_COMPONENT_DISP_PADDING3);
-+	mtk_mutex_add_comp(mutex, DDP_COMPONENT_DISP_PADDING4);
-+	mtk_mutex_add_comp(mutex, DDP_COMPONENT_DISP_PADDING5);
-+	mtk_mutex_add_comp(mutex, DDP_COMPONENT_DISP_PADDING6);
-+	mtk_mutex_add_comp(mutex, DDP_COMPONENT_DISP_PADDING7);
-+	mtk_mutex_add_comp(mutex, DDP_COMPONENT_MERGE1);
-+	mtk_mutex_add_comp(mutex, DDP_COMPONENT_MERGE2);
-+	mtk_mutex_add_comp(mutex, DDP_COMPONENT_MERGE3);
-+	mtk_mutex_add_comp(mutex, DDP_COMPONENT_MERGE4);
-+	mtk_mutex_add_comp(mutex, DDP_COMPONENT_ETHDR_MIXER);
++	struct mtk_disp_ovl_adaptor *ovl_adaptor = dev_get_drvdata(dev);
++	int i;
++
++	for (i=0; i<OVL_ADAPTOR_ID_MAX; i++) {
++		if(!ovl_adaptor->comp[i])
++			continue;
++		mtk_mutex_add_comp(mutex, comp_matches[i].comp_id);
++	}
 +}
 +
 +void mtk_ovl_adaptor_remove_comp(struct device *dev, struct mtk_mutex *mutex)
 +{
-+	mtk_mutex_remove_comp(mutex, DDP_COMPONENT_MDP_RDMA0);
-+	mtk_mutex_remove_comp(mutex, DDP_COMPONENT_MDP_RDMA1);
-+	mtk_mutex_remove_comp(mutex, DDP_COMPONENT_MDP_RDMA2);
-+	mtk_mutex_remove_comp(mutex, DDP_COMPONENT_MDP_RDMA3);
-+	mtk_mutex_remove_comp(mutex, DDP_COMPONENT_MDP_RDMA4);
-+	mtk_mutex_remove_comp(mutex, DDP_COMPONENT_MDP_RDMA5);
-+	mtk_mutex_remove_comp(mutex, DDP_COMPONENT_MDP_RDMA6);
-+	mtk_mutex_remove_comp(mutex, DDP_COMPONENT_MDP_RDMA7);
-+	mtk_mutex_remove_comp(mutex, DDP_COMPONENT_DISP_PADDING0);
-+	mtk_mutex_remove_comp(mutex, DDP_COMPONENT_DISP_PADDING1);
-+	mtk_mutex_remove_comp(mutex, DDP_COMPONENT_DISP_PADDING2);
-+	mtk_mutex_remove_comp(mutex, DDP_COMPONENT_DISP_PADDING3);
-+	mtk_mutex_remove_comp(mutex, DDP_COMPONENT_DISP_PADDING4);
-+	mtk_mutex_remove_comp(mutex, DDP_COMPONENT_DISP_PADDING5);
-+	mtk_mutex_remove_comp(mutex, DDP_COMPONENT_DISP_PADDING6);
-+	mtk_mutex_remove_comp(mutex, DDP_COMPONENT_DISP_PADDING7);
-+	mtk_mutex_remove_comp(mutex, DDP_COMPONENT_MERGE1);
-+	mtk_mutex_remove_comp(mutex, DDP_COMPONENT_MERGE2);
-+	mtk_mutex_remove_comp(mutex, DDP_COMPONENT_MERGE3);
-+	mtk_mutex_remove_comp(mutex, DDP_COMPONENT_MERGE4);
-+	mtk_mutex_remove_comp(mutex, DDP_COMPONENT_ETHDR_MIXER);
++	struct mtk_disp_ovl_adaptor *ovl_adaptor = dev_get_drvdata(dev);
++	int i;
++
++	for (i=0; i<OVL_ADAPTOR_ID_MAX; i++) {
++		if(!ovl_adaptor->comp[i])
++			continue;
++		mtk_mutex_remove_comp(mutex, comp_matches[i].comp_id);
++	}
 +}
 +
 +void mtk_ovl_adaptor_connect(struct device *dev, struct device *mmsys_dev, unsigned int next)
@@ -18873,7 +18870,7 @@ index 2d0052c23dcbc3f9f62a044cb899d338351a37d0..aa95e0bcba9c8fc7d0cb486cd82ab8a5
  		   struct cmdq_client_reg *cmdq_reg, void __iomem *regs,
  		   unsigned int offset);
 diff --git a/drivers/gpu/drm/mediatek/mtk_drm_drv.c b/drivers/gpu/drm/mediatek/mtk_drm_drv.c
-index 546b794128154233baab1b0b9663eef79eb6b493..bebeae885e38d942b7dbc0d728966db89051faaf 100644
+index 546b794128154233baab1b0b9663eef79eb6b493..b8b151a28579d872390405caaf6bb65393578d21 100644
 --- a/drivers/gpu/drm/mediatek/mtk_drm_drv.c
 +++ b/drivers/gpu/drm/mediatek/mtk_drm_drv.c
 @@ -62,7 +62,7 @@ static const struct drm_mode_config_funcs mtk_drm_mode_config_funcs = {
@@ -19650,19 +19647,24 @@ index 546b794128154233baab1b0b9663eef79eb6b493..bebeae885e38d942b7dbc0d728966db8
  	if (ret)
  		dev_err(dev, "Failed to resume\n");
  }
-@@ -886,12 +1128,15 @@ static struct platform_driver * const mtk_drm_drivers[] = {
+@@ -885,13 +1127,16 @@ static struct platform_driver * const mtk_drm_drivers[] = {
+ 	&mtk_disp_ccorr_driver,
  	&mtk_disp_color_driver,
  	&mtk_disp_gamma_driver,
++	&mtk_disp_rdma_driver,
++	&mtk_mdp_rdma_driver,
++	&mtk_disp_padding_driver,
  	&mtk_disp_merge_driver,
-+	&mtk_disp_ovl_adaptor_driver,
- 	&mtk_disp_ovl_driver,
- 	&mtk_disp_rdma_driver,
- 	&mtk_dpi_driver,
- 	&mtk_drm_platform_driver,
- 	&mtk_dsi_driver,
 +	&mtk_ethdr_driver,
- 	&mtk_mdp_rdma_driver,
-+	&mtk_disp_padding_driver
+ 	&mtk_disp_ovl_driver,
+-	&mtk_disp_rdma_driver,
+-	&mtk_dpi_driver,
+-	&mtk_drm_platform_driver,
++	&mtk_disp_ovl_adaptor_driver,
+ 	&mtk_dsi_driver,
+-	&mtk_mdp_rdma_driver,
++	&mtk_dpi_driver,
++	&mtk_drm_platform_driver
  };
  
  static int __init mtk_drm_init(void)
@@ -20277,10 +20279,26 @@ index 6404081253ea187225e451a7648612eb35bd8d97..d0ccd272f92f5a736c392f93b30d40b1
  									  irqnames_r[index]);
  
 diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index 7e363b1f24dfe078a4c4c1ecea4def3f782de82b..9ca4414d00be1711a33a78e6c27e79b584d3f00a 100644
+index 7e363b1f24dfe078a4c4c1ecea4def3f782de82b..0b085fba2fbea5b1d7f6620c40a1879994dd6618 100644
 --- a/drivers/iommu/mtk_iommu.c
 +++ b/drivers/iommu/mtk_iommu.c
-@@ -138,6 +138,7 @@
+@@ -3,6 +3,7 @@
+  * Copyright (c) 2015-2016 MediaTek Inc.
+  * Author: Yong Wu <yong.wu@mediatek.com>
+  */
++#include <linux/arm-smccc.h>
+ #include <linux/bitfield.h>
+ #include <linux/bug.h>
+ #include <linux/clk.h>
+@@ -28,6 +29,7 @@
+ #include <linux/slab.h>
+ #include <linux/spinlock.h>
+ #include <linux/soc/mediatek/infracfg.h>
++#include <linux/soc/mediatek/mtk_sip_svc.h>
+ #include <asm/barrier.h>
+ #include <soc/mediatek/smi.h>
+ 
+@@ -138,6 +140,7 @@
  #define PM_CLK_AO			BIT(15)
  #define IFA_IOMMU_PCIE_SUPPORT		BIT(16)
  #define PGTABLE_PA_35_EN		BIT(17)
@@ -20288,7 +20306,7 @@ index 7e363b1f24dfe078a4c4c1ecea4def3f782de82b..9ca4414d00be1711a33a78e6c27e79b5
  
  #define MTK_IOMMU_HAS_FLAG_MASK(pdata, _x, mask)	\
  				((((pdata)->flags) & (mask)) == (_x))
-@@ -161,6 +162,7 @@ enum mtk_iommu_plat {
+@@ -161,6 +164,7 @@ enum mtk_iommu_plat {
  	M4U_MT8173,
  	M4U_MT8183,
  	M4U_MT8186,
@@ -20296,7 +20314,7 @@ index 7e363b1f24dfe078a4c4c1ecea4def3f782de82b..9ca4414d00be1711a33a78e6c27e79b5
  	M4U_MT8192,
  	M4U_MT8195,
  };
-@@ -221,6 +223,7 @@ struct mtk_iommu_data {
+@@ -221,6 +225,7 @@ struct mtk_iommu_data {
  	struct device			*smicomm_dev;
  
  	struct mtk_iommu_bank_data	*bank;
@@ -20304,7 +20322,7 @@ index 7e363b1f24dfe078a4c4c1ecea4def3f782de82b..9ca4414d00be1711a33a78e6c27e79b5
  
  	struct dma_iommu_mapping	*mapping; /* For mtk_iommu_v1.c */
  	struct regmap			*pericfg;
-@@ -554,14 +557,29 @@ static int mtk_iommu_config(struct mtk_iommu_data *data, struct device *dev,
+@@ -554,14 +559,29 @@ static int mtk_iommu_config(struct mtk_iommu_data *data, struct device *dev,
  			else
  				larb_mmu->mmu &= ~MTK_SMI_MMU_EN(portid);
  		} else if (MTK_IOMMU_IS_TYPE(data->plat_data, MTK_IOMMU_TYPE_INFRA)) {
@@ -20342,7 +20360,7 @@ index 7e363b1f24dfe078a4c4c1ecea4def3f782de82b..9ca4414d00be1711a33a78e6c27e79b5
  			if (ret)
  				dev_err(dev, "%s iommu(%s) inframaster 0x%x fail(%d).\n",
  					enable ? "enable" : "disable",
-@@ -579,7 +597,7 @@ static int mtk_iommu_domain_finalise(struct mtk_iommu_domain *dom,
+@@ -579,7 +599,7 @@ static int mtk_iommu_domain_finalise(struct mtk_iommu_domain *dom,
  	struct mtk_iommu_domain	*m4u_dom;
  
  	/* Always use bank0 in sharing pgtable case */
@@ -20351,7 +20369,7 @@ index 7e363b1f24dfe078a4c4c1ecea4def3f782de82b..9ca4414d00be1711a33a78e6c27e79b5
  	if (m4u_dom) {
  		dom->iop = m4u_dom->iop;
  		dom->cfg = m4u_dom->cfg;
-@@ -619,6 +637,9 @@ static int mtk_iommu_domain_finalise(struct mtk_iommu_domain *dom,
+@@ -619,6 +639,9 @@ static int mtk_iommu_domain_finalise(struct mtk_iommu_domain *dom,
  	dom->domain.geometry.aperture_start = region->iova_base;
  	dom->domain.geometry.aperture_end = region->iova_base + region->size - 1;
  	dom->domain.geometry.force_aperture = true;
@@ -20361,7 +20379,7 @@ index 7e363b1f24dfe078a4c4c1ecea4def3f782de82b..9ca4414d00be1711a33a78e6c27e79b5
  	return 0;
  }
  
-@@ -1461,6 +1482,50 @@ static const struct mtk_iommu_plat_data mt8186_data_mm = {
+@@ -1461,6 +1484,50 @@ static const struct mtk_iommu_plat_data mt8186_data_mm = {
  	.iova_region_nr = ARRAY_SIZE(mt8192_multi_dom),
  };
  
@@ -20412,7 +20430,7 @@ index 7e363b1f24dfe078a4c4c1ecea4def3f782de82b..9ca4414d00be1711a33a78e6c27e79b5
  static const struct mtk_iommu_plat_data mt8192_data = {
  	.m4u_plat       = M4U_MT8192,
  	.flags          = HAS_BCLK | HAS_SUB_COMM_2BITS | OUT_ORDER_WR_EN |
-@@ -1528,6 +1593,9 @@ static const struct of_device_id mtk_iommu_of_ids[] = {
+@@ -1528,6 +1595,9 @@ static const struct of_device_id mtk_iommu_of_ids[] = {
  	{ .compatible = "mediatek,mt8173-m4u", .data = &mt8173_data},
  	{ .compatible = "mediatek,mt8183-m4u", .data = &mt8183_data},
  	{ .compatible = "mediatek,mt8186-iommu-mm",    .data = &mt8186_data_mm}, /* mm: m4u */
@@ -20422,34 +20440,97 @@ index 7e363b1f24dfe078a4c4c1ecea4def3f782de82b..9ca4414d00be1711a33a78e6c27e79b5
  	{ .compatible = "mediatek,mt8192-m4u", .data = &mt8192_data},
  	{ .compatible = "mediatek,mt8195-iommu-infra", .data = &mt8195_data_infra},
  	{ .compatible = "mediatek,mt8195-iommu-vdo",   .data = &mt8195_data_vdo},
-diff --git a/drivers/media/mc/mc-device.c b/drivers/media/mc/mc-device.c
-index b8176a3b76d3b34f7b5610a5d79ced2dfb033f24..f17036d6b176c60d9c9ecdb1e7db430ef96e993e 100644
---- a/drivers/media/mc/mc-device.c
-+++ b/drivers/media/mc/mc-device.c
-@@ -203,6 +203,7 @@ static long media_device_setup_link(struct media_device *mdev, void *arg)
- 	struct media_link *link = NULL;
- 	struct media_entity *source;
- 	struct media_entity *sink;
-+	int ret;
+diff --git a/drivers/mailbox/mtk-cmdq-mailbox.c b/drivers/mailbox/mtk-cmdq-mailbox.c
+index 95fc4a60d5d7d08698b50917bfe836e2dd9b3538..391ffbd43d5bf95347ced6b27a05182850232d48 100644
+--- a/drivers/mailbox/mtk-cmdq-mailbox.c
++++ b/drivers/mailbox/mtk-cmdq-mailbox.c
+@@ -137,13 +137,11 @@ static void cmdq_init(struct cmdq *cmdq)
+ {
+ 	int i;
  
- 	/* Find the source and sink entities and link.
- 	 */
-@@ -221,10 +222,14 @@ static long media_device_setup_link(struct media_device *mdev, void *arg)
- 	if (link == NULL)
- 		return -EINVAL;
- 
-+	link->request_fd = linkd->request_fd;
- 	memset(linkd->reserved, 0, sizeof(linkd->reserved));
- 
- 	/* Setup the link on both entities. */
--	return __media_entity_setup_link(link, linkd->flags);
-+	ret = __media_entity_setup_link(link, linkd->flags);
-+	link->request_fd = 0;
-+
-+	return ret;
+-	WARN_ON(clk_bulk_enable(cmdq->gce_num, cmdq->clocks));
+ 	if (cmdq->control_by_sw)
+ 		writel(0x7, cmdq->base + GCE_GCTL_VALUE);
+ 	writel(CMDQ_THR_ACTIVE_SLOT_CYCLES, cmdq->base + CMDQ_THR_SLOT_CYCLES);
+ 	for (i = 0; i <= CMDQ_MAX_EVENT; i++)
+ 		writel(i, cmdq->base + CMDQ_SYNC_TOKEN_UPDATE);
+-	clk_bulk_disable(cmdq->gce_num, cmdq->clocks);
  }
  
- static long media_device_get_topology(struct media_device *mdev, void *arg)
+ static int cmdq_thread_reset(struct cmdq *cmdq, struct cmdq_thread *thread)
+@@ -274,10 +272,8 @@ static void cmdq_thread_irq_handler(struct cmdq *cmdq,
+ 			break;
+ 	}
+ 
+-	if (list_empty(&thread->task_busy_list)) {
++	if (list_empty(&thread->task_busy_list))
+ 		cmdq_thread_disable(cmdq, thread);
+-		clk_bulk_disable(cmdq->gce_num, cmdq->clocks);
+-	}
+ }
+ 
+ static irqreturn_t cmdq_irq_handler(int irq, void *dev)
+@@ -321,7 +317,7 @@ static int cmdq_suspend(struct device *dev)
+ 	if (task_running)
+ 		dev_warn(dev, "exist running task(s) in suspend\n");
+ 
+-	clk_bulk_unprepare(cmdq->gce_num, cmdq->clocks);
++	clk_bulk_disable_unprepare(cmdq->gce_num, cmdq->clocks);
+ 
+ 	return 0;
+ }
+@@ -330,7 +326,7 @@ static int cmdq_resume(struct device *dev)
+ {
+ 	struct cmdq *cmdq = dev_get_drvdata(dev);
+ 
+-	WARN_ON(clk_bulk_prepare(cmdq->gce_num, cmdq->clocks));
++	WARN_ON(clk_bulk_prepare_enable(cmdq->gce_num, cmdq->clocks));
+ 	cmdq->suspended = false;
+ 	return 0;
+ }
+@@ -339,7 +335,7 @@ static int cmdq_remove(struct platform_device *pdev)
+ {
+ 	struct cmdq *cmdq = platform_get_drvdata(pdev);
+ 
+-	clk_bulk_unprepare(cmdq->gce_num, cmdq->clocks);
++	clk_bulk_disable_unprepare(cmdq->gce_num, cmdq->clocks);
+ 	return 0;
+ }
+ 
+@@ -365,8 +361,6 @@ static int cmdq_mbox_send_data(struct mbox_chan *chan, void *data)
+ 	task->pkt = pkt;
+ 
+ 	if (list_empty(&thread->task_busy_list)) {
+-		WARN_ON(clk_bulk_enable(cmdq->gce_num, cmdq->clocks));
+-
+ 		/*
+ 		 * The thread reset will clear thread related register to 0,
+ 		 * including pc, end, priority, irq, suspend and enable. Thus
+@@ -439,7 +433,6 @@ static void cmdq_mbox_shutdown(struct mbox_chan *chan)
+ 	}
+ 
+ 	cmdq_thread_disable(cmdq, thread);
+-	clk_bulk_disable(cmdq->gce_num, cmdq->clocks);
+ 
+ done:
+ 	/*
+@@ -479,7 +472,6 @@ static int cmdq_mbox_flush(struct mbox_chan *chan, unsigned long timeout)
+ 
+ 	cmdq_thread_resume(thread);
+ 	cmdq_thread_disable(cmdq, thread);
+-	clk_bulk_disable(cmdq->gce_num, cmdq->clocks);
+ 
+ out:
+ 	spin_unlock_irqrestore(&thread->chan->lock, flags);
+@@ -624,7 +616,7 @@ static int cmdq_probe(struct platform_device *pdev)
+ 
+ 	platform_set_drvdata(pdev, cmdq);
+ 
+-	WARN_ON(clk_bulk_prepare(cmdq->gce_num, cmdq->clocks));
++	WARN_ON(clk_bulk_prepare_enable(cmdq->gce_num, cmdq->clocks));
+ 
+ 	cmdq_init(cmdq);
+ 
 diff --git a/drivers/media/platform/mediatek/mdp3/mdp_reg_aal.h b/drivers/media/platform/mediatek/mdp3/mdp_reg_aal.h
 new file mode 100644
 index 0000000000000000000000000000000000000000..2275a06fbdf9393d8961c34d60f47c1d711aaf1e
@@ -30387,108 +30468,10 @@ index 0797a13a3048de73ed032e7139b75e370363d83c..9721d1d95bd9ddea63ecbed987277e62
  		*type = V4L2_CTRL_TYPE_AREA;
  		*flags |= V4L2_CTRL_FLAG_READ_ONLY;
 diff --git a/drivers/media/v4l2-core/v4l2-ioctl.c b/drivers/media/v4l2-core/v4l2-ioctl.c
-index 935dbf34171d35d0ab412a22680847bf84e402e0..9e23e588e4d5018387004961406e0ff3e871c830 100644
+index 935dbf34171d35d0ab412a22680847bf84e402e0..73994108e0e37f68659a44990766e3d9a7b71796 100644
 --- a/drivers/media/v4l2-core/v4l2-ioctl.c
 +++ b/drivers/media/v4l2-core/v4l2-ioctl.c
-@@ -1329,6 +1329,14 @@ static void v4l_fill_fmtdesc(struct v4l2_fmtdesc *fmt)
- 	case V4L2_PIX_FMT_YVYU:		descr = "YVYU 4:2:2"; break;
- 	case V4L2_PIX_FMT_UYVY:		descr = "UYVY 4:2:2"; break;
- 	case V4L2_PIX_FMT_VYUY:		descr = "VYUY 4:2:2"; break;
-+	case V4L2_PIX_FMT_YUYV10:	descr = "YUYV 4:2:2 10 bits"; break;
-+	case V4L2_PIX_FMT_YVYU10:	descr = "YVYU 4:2:2 10 bits"; break;
-+	case V4L2_PIX_FMT_UYVY10:	descr = "UYVY 4:2:2 10 bits"; break;
-+	case V4L2_PIX_FMT_VYUY10:	descr = "VYUY 4:2:2 10 bits"; break;
-+	case V4L2_PIX_FMT_YUYV12:	descr = "YUYV 4:2:2 12 bits"; break;
-+	case V4L2_PIX_FMT_YVYU12:	descr = "YVYU 4:2:2 12 bits"; break;
-+	case V4L2_PIX_FMT_UYVY12:	descr = "UYVY 4:2:2 12 bits"; break;
-+	case V4L2_PIX_FMT_VYUY12:	descr = "VYUY 4:2:2 12 bits"; break;
- 	case V4L2_PIX_FMT_YUV422P:	descr = "Planar YUV 4:2:2"; break;
- 	case V4L2_PIX_FMT_YUV411P:	descr = "Planar YUV 4:1:1"; break;
- 	case V4L2_PIX_FMT_Y41P:		descr = "YUV 4:1:1 (Packed)"; break;
-@@ -1358,6 +1366,14 @@ static void v4l_fill_fmtdesc(struct v4l2_fmtdesc *fmt)
- 	case V4L2_PIX_FMT_NV12_16L16:	descr = "Y/CbCr 4:2:0 (16x16 Linear)"; break;
- 	case V4L2_PIX_FMT_NV12_32L32:   descr = "Y/CbCr 4:2:0 (32x32 Linear)"; break;
- 	case V4L2_PIX_FMT_P010_4L4:	descr = "10-bit Y/CbCr 4:2:0 (4x4 Linear)"; break;
-+	case V4L2_PIX_FMT_NV12_10:	descr = "Y/CbCr 4:2:0 10 bits"; break;
-+	case V4L2_PIX_FMT_NV21_10:	descr = "Y/CrCb 4:2:0 10 bits"; break;
-+	case V4L2_PIX_FMT_NV16_10:	descr = "Y/CbCr 4:2:2 10 bits"; break;
-+	case V4L2_PIX_FMT_NV61_10:	descr = "Y/CrCb 4:2:2 10 bits"; break;
-+	case V4L2_PIX_FMT_NV12_12:	descr = "Y/CbCr 4:2:0 12 bits"; break;
-+	case V4L2_PIX_FMT_NV21_12:	descr = "Y/CrCb 4:2:0 12 bits"; break;
-+	case V4L2_PIX_FMT_NV16_12:	descr = "Y/CbCr 4:2:2 12 bits"; break;
-+	case V4L2_PIX_FMT_NV61_12:	descr = "Y/CrCb 4:2:2 12 bits"; break;
- 	case V4L2_PIX_FMT_NV12_UBWC:	descr = "Y/CbCr 4:2:0 UBWC"; break;
- 	case V4L2_PIX_FMT_NV12M:	descr = "Y/CbCr 4:2:0 (N-C)"; break;
- 	case V4L2_PIX_FMT_NV21M:	descr = "Y/CrCb 4:2:0 (N-C)"; break;
-@@ -1426,6 +1442,67 @@ static void v4l_fill_fmtdesc(struct v4l2_fmtdesc *fmt)
- 	case V4L2_PIX_FMT_MM21:		descr = "Mediatek 8-bit Block Format"; break;
- 	case V4L2_PIX_FMT_HSV24:	descr = "24-bit HSV 8-8-8"; break;
- 	case V4L2_PIX_FMT_HSV32:	descr = "32-bit XHSV 8-8-8-8"; break;
-+	case V4L2_PIX_FMT_MTISP_SBGGR8: descr = "8-bit Bayer BGGR MTISP Packed"; break;
-+	case V4L2_PIX_FMT_MTISP_SGBRG8: descr = "8-bit Bayer GBRG MTISP Packed"; break;
-+	case V4L2_PIX_FMT_MTISP_SGRBG8: descr = "8-bit Bayer GRBG MTISP Packed"; break;
-+	case V4L2_PIX_FMT_MTISP_SRGGB8: descr = "8-bit Bayer RGGB MTISP Packed"; break;
-+	case V4L2_PIX_FMT_MTISP_SBGGR10: descr = "10-bit Bayer BGGR MTISP Packed"; break;
-+	case V4L2_PIX_FMT_MTISP_SGBRG10: descr = "10-bit Bayer GBRG MTISP Packed"; break;
-+	case V4L2_PIX_FMT_MTISP_SGRBG10: descr = "10-bit Bayer GRBG MTISP Packed"; break;
-+	case V4L2_PIX_FMT_MTISP_SRGGB10: descr = "10-bit Bayer RGGB MTISP Packed"; break;
-+	case V4L2_PIX_FMT_MTISP_SBGGR12: descr = "12-bit Bayer BGGR MTISP Packed"; break;
-+	case V4L2_PIX_FMT_MTISP_SGBRG12: descr = "12-bit Bayer GBRG MTISP Packed"; break;
-+	case V4L2_PIX_FMT_MTISP_SGRBG12: descr = "12-bit Bayer GRBG MTISP Packed"; break;
-+	case V4L2_PIX_FMT_MTISP_SRGGB12: descr = "12-bit Bayer RGGB MTISP Packed"; break;
-+	case V4L2_PIX_FMT_MTISP_SBGGR14: descr = "14-bit Bayer BGGR MTISP Packed"; break;
-+	case V4L2_PIX_FMT_MTISP_SGBRG14: descr = "14-bit Bayer GBRG MTISP Packed"; break;
-+	case V4L2_PIX_FMT_MTISP_SGRBG14: descr = "14-bit Bayer GRBG MTISP Packed"; break;
-+	case V4L2_PIX_FMT_MTISP_SRGGB14: descr = "14-bit Bayer RGGB MTISP Packed"; break;
-+	case V4L2_PIX_FMT_MTISP_SBGGR8F: descr = "8-bit Full-G Bayer BGGR Packed"; break;
-+	case V4L2_PIX_FMT_MTISP_SGBRG8F: descr = "8-bit Full-G Bayer GBRG Packed"; break;
-+	case V4L2_PIX_FMT_MTISP_SGRBG8F: descr = "8-bit Full-G Bayer GRBG Packed"; break;
-+	case V4L2_PIX_FMT_MTISP_SRGGB8F: descr = "8-bit Full-G Bayer RGGB Packed"; break;
-+	case V4L2_PIX_FMT_MTISP_SBGGR10F: descr = "10-bit Full-G Bayer BGGR Packed"; break;
-+	case V4L2_PIX_FMT_MTISP_SGBRG10F: descr = "10-bit Full-G Bayer GBRG Packed"; break;
-+	case V4L2_PIX_FMT_MTISP_SGRBG10F: descr = "10-bit Full-G Bayer GRBG Packed"; break;
-+	case V4L2_PIX_FMT_MTISP_SRGGB10F: descr = "10-bit Full-G Bayer RGGB Packed"; break;
-+	case V4L2_PIX_FMT_MTISP_SBGGR12F: descr = "12-bit Full-G Bayer BGGR Packed"; break;
-+	case V4L2_PIX_FMT_MTISP_SGBRG12F: descr = "12-bit Full-G Bayer GBRG Packed"; break;
-+	case V4L2_PIX_FMT_MTISP_SGRBG12F: descr = "12-bit Full-G Bayer GRBG Packed"; break;
-+	case V4L2_PIX_FMT_MTISP_SRGGB12F: descr = "12-bit Full-G Bayer RGGB Packed"; break;
-+	case V4L2_PIX_FMT_MTISP_SBGGR14F: descr = "14-bit Full-G Bayer BGGR Packed"; break;
-+	case V4L2_PIX_FMT_MTISP_SGBRG14F: descr = "14-bit Full-G Bayer GBRG Packed"; break;
-+	case V4L2_PIX_FMT_MTISP_SGRBG14F: descr = "14-bit Full-G Bayer GRBG Packed"; break;
-+	case V4L2_PIX_FMT_MTISP_SRGGB14F: descr = "14-bit Full-G Bayer RGGB Packed"; break;
-+	case V4L2_PIX_FMT_MTISP_NV12_10P: descr = "Y/CbCr 4:2:0 10 bits packed"; break;
-+	case V4L2_PIX_FMT_MTISP_NV21_10P: descr = "Y/CrCb 4:2:0 10 bits packed"; break;
-+	case V4L2_PIX_FMT_MTISP_NV16_10P: descr = "Y/CbCr 4:2:2 10 bits packed"; break;
-+	case V4L2_PIX_FMT_MTISP_NV61_10P: descr = "Y/CrCb 4:2:2 10 bits packed"; break;
-+	case V4L2_PIX_FMT_MTISP_YUYV10P: descr = "YUYV 4:2:2 10 bits packed"; break;
-+	case V4L2_PIX_FMT_MTISP_YVYU10P: descr = "YVYU 4:2:2 10 bits packed"; break;
-+	case V4L2_PIX_FMT_MTISP_UYVY10P: descr = "UYVY 4:2:2 10 bits packed"; break;
-+	case V4L2_PIX_FMT_MTISP_VYUY10P: descr = "VYUY 4:2:2 10 bits packed"; break;
-+	case V4L2_PIX_FMT_MTISP_NV12_12P: descr = "Y/CbCr 4:2:0 12 bits packed"; break;
-+	case V4L2_PIX_FMT_MTISP_NV21_12P: descr = "Y/CrCb 4:2:0 12 bits packed"; break;
-+	case V4L2_PIX_FMT_MTISP_NV16_12P: descr = "Y/CbCr 4:2:2 12 bits packed"; break;
-+	case V4L2_PIX_FMT_MTISP_NV61_12P: descr = "Y/CrCb 4:2:2 12 bits packed"; break;
-+	case V4L2_PIX_FMT_MTISP_YUYV12P: descr = "YUYV 4:2:2 12 bits packed"; break;
-+	case V4L2_PIX_FMT_MTISP_YVYU12P: descr = "YVYU 4:2:2 12 bits packed"; break;
-+	case V4L2_PIX_FMT_MTISP_UYVY12P: descr = "UYVY 4:2:2 12 bits packed"; break;
-+	case V4L2_PIX_FMT_MTISP_VYUY12P: descr = "VYUY 4:2:2 12 bits packed"; break;
-+	case V4L2_PIX_FMT_MTISP_NV12_UFBC: descr = "YCbCr 420 8 bits compress"; break;
-+	case V4L2_PIX_FMT_MTISP_NV21_UFBC: descr = "YCrCb 420 8 bits compress"; break;
-+	case V4L2_PIX_FMT_MTISP_NV12_10_UFBC: descr = "YCbCr 420 10 bits compress"; break;
-+        case V4L2_PIX_FMT_MTISP_NV21_10_UFBC: descr = "YCrCb 420 10 bits compress"; break;
-+	case V4L2_PIX_FMT_MTISP_NV12_12_UFBC: descr = "YCbCr 420 12 bits compress"; break;
-+	case V4L2_PIX_FMT_MTISP_NV21_12_UFBC: descr = "YCrCb 420 12 bits compress"; break;
-+	case V4L2_PIX_FMT_MTISP_BAYER8_UFBC: descr = "RAW 8 bits compress"; break;
-+	case V4L2_PIX_FMT_MTISP_BAYER10_UFBC: descr = "RAW 10 bits compress"; break;
-+	case V4L2_PIX_FMT_MTISP_BAYER12_UFBC: descr = "RAW 12 bits compress"; break;
-+	case V4L2_PIX_FMT_MTISP_BAYER14_UFBC: descr = "RAW 14 bits compress"; break;
-+	case V4L2_PIX_FMT_MTISP_SGRB8F: descr = "8-bit 3 plane GRB Packed"; break;
-+	case V4L2_PIX_FMT_MTISP_SGRB10F: descr = "10-bit 3 plane GRB Packed"; break;
-+	case V4L2_PIX_FMT_MTISP_SGRB12F: descr = "12-bit 3 plane GRB Packed"; break;
- 	case V4L2_SDR_FMT_CU8:		descr = "Complex U8"; break;
- 	case V4L2_SDR_FMT_CU16LE:	descr = "Complex U16LE"; break;
- 	case V4L2_SDR_FMT_CS8:		descr = "Complex S8"; break;
-@@ -1498,6 +1575,7 @@ static void v4l_fill_fmtdesc(struct v4l2_fmtdesc *fmt)
+@@ -1498,6 +1498,7 @@ static void v4l_fill_fmtdesc(struct v4l2_fmtdesc *fmt)
  		case V4L2_PIX_FMT_MT21C:	descr = "Mediatek Compressed Format"; break;
  		case V4L2_PIX_FMT_QC08C:	descr = "QCOM Compressed 8-bit Format"; break;
  		case V4L2_PIX_FMT_QC10C:	descr = "QCOM Compressed 10-bit Format"; break;
@@ -30496,55 +30479,80 @@ index 935dbf34171d35d0ab412a22680847bf84e402e0..9e23e588e4d5018387004961406e0ff3
  		default:
  			if (fmt->description[0])
  				return;
-@@ -1716,7 +1794,7 @@ static int v4l_s_fmt(const struct v4l2_ioctl_ops *ops,
- 	case V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE:
- 		if (unlikely(!ops->vidioc_s_fmt_vid_cap_mplane))
- 			break;
--		CLEAR_AFTER_FIELD(p, fmt.pix_mp.xfer_func);
-+		CLEAR_AFTER_FIELD(p, fmt.pix_mp.request_fd);
- 		for (i = 0; i < p->fmt.pix_mp.num_planes; i++)
- 			CLEAR_AFTER_FIELD(&p->fmt.pix_mp.plane_fmt[i],
- 					  bytesperline);
-@@ -1747,7 +1825,7 @@ static int v4l_s_fmt(const struct v4l2_ioctl_ops *ops,
- 	case V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE:
- 		if (unlikely(!ops->vidioc_s_fmt_vid_out_mplane))
- 			break;
--		CLEAR_AFTER_FIELD(p, fmt.pix_mp.xfer_func);
-+		CLEAR_AFTER_FIELD(p, fmt.pix_mp.request_fd);
- 		for (i = 0; i < p->fmt.pix_mp.num_planes; i++)
- 			CLEAR_AFTER_FIELD(&p->fmt.pix_mp.plane_fmt[i],
- 					  bytesperline);
-@@ -1818,7 +1896,7 @@ static int v4l_try_fmt(const struct v4l2_ioctl_ops *ops,
- 	case V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE:
- 		if (unlikely(!ops->vidioc_try_fmt_vid_cap_mplane))
- 			break;
--		CLEAR_AFTER_FIELD(p, fmt.pix_mp.xfer_func);
-+		CLEAR_AFTER_FIELD(p, fmt.pix_mp.request_fd);
- 		for (i = 0; i < p->fmt.pix_mp.num_planes; i++)
- 			CLEAR_AFTER_FIELD(&p->fmt.pix_mp.plane_fmt[i],
- 					  bytesperline);
-@@ -1849,7 +1927,7 @@ static int v4l_try_fmt(const struct v4l2_ioctl_ops *ops,
- 	case V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE:
- 		if (unlikely(!ops->vidioc_try_fmt_vid_out_mplane))
- 			break;
--		CLEAR_AFTER_FIELD(p, fmt.pix_mp.xfer_func);
-+		CLEAR_AFTER_FIELD(p, fmt.pix_mp.request_fd);
- 		for (i = 0; i < p->fmt.pix_mp.num_planes; i++)
- 			CLEAR_AFTER_FIELD(&p->fmt.pix_mp.plane_fmt[i],
- 					  bytesperline);
 diff --git a/drivers/memory/mtk-smi.c b/drivers/memory/mtk-smi.c
-index d7cb7ead2ac7fc04f52af23b14f3fcb76cdd42e9..db66a96f91b14711f6b19016541eb4bf7258401b 100644
+index d7cb7ead2ac7fc04f52af23b14f3fcb76cdd42e9..5a9754442bc75fa3f883b65c3461a1ca0d8c5f29 100644
 --- a/drivers/memory/mtk-smi.c
 +++ b/drivers/memory/mtk-smi.c
-@@ -89,6 +89,7 @@
+@@ -3,6 +3,7 @@
+  * Copyright (c) 2015-2016 MediaTek Inc.
+  * Author: Yong Wu <yong.wu@mediatek.com>
+  */
++#include <linux/arm-smccc.h>
+ #include <linux/clk.h>
+ #include <linux/component.h>
+ #include <linux/device.h>
+@@ -14,6 +15,7 @@
+ #include <linux/of_platform.h>
+ #include <linux/platform_device.h>
+ #include <linux/pm_runtime.h>
++#include <linux/soc/mediatek/mtk_sip_svc.h>
+ #include <soc/mediatek/smi.h>
+ #include <dt-bindings/memory/mt2701-larb-port.h>
+ #include <dt-bindings/memory/mtk-memory-port.h>
+@@ -89,6 +91,7 @@
  #define MTK_SMI_FLAG_THRT_UPDATE	BIT(0)
  #define MTK_SMI_FLAG_SW_FLAG		BIT(1)
  #define MTK_SMI_FLAG_SLEEP_CTL		BIT(2)
-+#define MTK_SMI_FLAG_SEC_REG		BIT(3)
++#define MTK_SMI_FLAG_CFG_PORT_SEC_CTL	BIT(3)
  #define MTK_SMI_CAPS(flags, _x)		(!!((flags) & (_x)))
  
  struct mtk_smi_reg_pair {
-@@ -235,6 +236,7 @@ static void mtk_smi_larb_config_port_gen2_general(struct device *dev)
+@@ -127,7 +130,7 @@ struct mtk_smi_common_plat {
+ 
+ struct mtk_smi_larb_gen {
+ 	int port_in_larb[MTK_LARB_NR_MAX + 1];
+-	void (*config_port)(struct device *dev);
++	int				(*config_port)(struct device *dev);
+ 	unsigned int			larb_direct_to_common_mask;
+ 	unsigned int			flags_general;
+ 	const u8			(*ostd)[SMI_LARB_PORT_NR_MAX];
+@@ -185,7 +188,7 @@ static const struct component_ops mtk_smi_larb_component_ops = {
+ 	.unbind = mtk_smi_larb_unbind,
+ };
+ 
+-static void mtk_smi_larb_config_port_gen1(struct device *dev)
++static int mtk_smi_larb_config_port_gen1(struct device *dev)
+ {
+ 	struct mtk_smi_larb *larb = dev_get_drvdata(dev);
+ 	const struct mtk_smi_larb_gen *larb_gen = larb->larb_gen;
+@@ -214,31 +217,35 @@ static void mtk_smi_larb_config_port_gen1(struct device *dev)
+ 			common->smi_ao_base
+ 			+ REG_SMI_SECUR_CON_ADDR(m4u_port_id));
+ 	}
++	return 0;
+ }
+ 
+-static void mtk_smi_larb_config_port_mt8167(struct device *dev)
++static int mtk_smi_larb_config_port_mt8167(struct device *dev)
+ {
+ 	struct mtk_smi_larb *larb = dev_get_drvdata(dev);
+ 
+ 	writel(*larb->mmu, larb->base + MT8167_SMI_LARB_MMU_EN);
++	return 0;
+ }
+ 
+-static void mtk_smi_larb_config_port_mt8173(struct device *dev)
++static int mtk_smi_larb_config_port_mt8173(struct device *dev)
+ {
+ 	struct mtk_smi_larb *larb = dev_get_drvdata(dev);
+ 
+ 	writel(*larb->mmu, larb->base + MT8173_SMI_LARB_MMU_EN);
++	return 0;
+ }
+ 
+-static void mtk_smi_larb_config_port_gen2_general(struct device *dev)
++static int mtk_smi_larb_config_port_gen2_general(struct device *dev)
+ {
  	struct mtk_smi_larb *larb = dev_get_drvdata(dev);
  	u32 reg, flags_general = larb->larb_gen->flags_general;
  	const u8 *larbostd = larb->larb_gen->ostd ? larb->larb_gen->ostd[larb->larbid] : NULL;
@@ -30552,17 +30560,36 @@ index d7cb7ead2ac7fc04f52af23b14f3fcb76cdd42e9..db66a96f91b14711f6b19016541eb4bf
  	int i;
  
  	if (BIT(larb->larbid) & larb->larb_gen->larb_direct_to_common_mask)
-@@ -259,8 +261,64 @@ static void mtk_smi_larb_config_port_gen2_general(struct device *dev)
+-		return;
++		return 0;
+ 
+ 	if (MTK_SMI_CAPS(flags_general, MTK_SMI_FLAG_THRT_UPDATE)) {
+ 		reg = readl_relaxed(larb->base + SMI_LARB_CMD_THRT_CON);
+@@ -253,14 +260,78 @@ static void mtk_smi_larb_config_port_gen2_general(struct device *dev)
+ 	for (i = 0; i < SMI_LARB_PORT_NR_MAX && larbostd && !!larbostd[i]; i++)
+ 		writel_relaxed(larbostd[i], larb->base + SMI_LARB_OSTDL_PORTx(i));
+ 
++	/*
++	 * When mmu_en bits are in security world, the bank_sel still is in the
++	 * LARB_NONSEC_CON below. And the mmu_en bits of LARB_NONSEC_CON have no
++	 * effect in this case.
++	 */
++	if (MTK_SMI_CAPS(flags_general, MTK_SMI_FLAG_CFG_PORT_SEC_CTL)) {
++		arm_smccc_smc(MTK_SIP_KERNEL_IOMMU_CONTROL, IOMMU_ATF_CMD_CONFIG_SMI_LARB,
++			      larb->larbid, *larb->mmu, 0, 0, 0, 0, &res);
++		if (res.a0 != 0) {
++			dev_err(dev, "Enable iommu fail, ret %ld\n", res.a0);
++			return -EINVAL;
++		}
++	}
++
+ 	for_each_set_bit(i, (unsigned long *)larb->mmu, 32) {
+ 		reg = readl_relaxed(larb->base + SMI_LARB_NONSEC_CON(i));
+ 		reg |= F_MMU_EN;
  		reg |= BANK_SEL(larb->bank[i]);
  		writel(reg, larb->base + SMI_LARB_NONSEC_CON(i));
  	}
-+
-+	if (MTK_SMI_CAPS(flags_general, MTK_SMI_FLAG_SEC_REG)) {
-+		arm_smccc_smc(MTK_SIP_KERNEL_IOMMU_CONTROL, IOMMU_ATF_CMD_CONFIG_SMI_LARB,
-+			      larb->larbid, (u32)(*larb->mmu), 0, 0, 0, 0, &res);
-+		if (res.a0 != 0)
-+			dev_err(dev, "Enable iommu fail, ret %ld\n", res.a0);
-+	}
++	return 0;
  }
  
 +static const u8 mtk_smi_larb_mt8188_ostd[][SMI_LARB_PORT_NR_MAX] = {
@@ -30617,21 +30644,21 @@ index d7cb7ead2ac7fc04f52af23b14f3fcb76cdd42e9..db66a96f91b14711f6b19016541eb4bf
  static const u8 mtk_smi_larb_mt8195_ostd[][SMI_LARB_PORT_NR_MAX] = {
  	[0] = {0x0a, 0xc, 0x22, 0x22, 0x01, 0x0a,}, /* larb0 */
  	[1] = {0x0a, 0xc, 0x22, 0x22, 0x01, 0x0a,}, /* larb1 */
-@@ -347,6 +405,13 @@ static const struct mtk_smi_larb_gen mtk_smi_larb_mt8186 = {
+@@ -347,6 +418,13 @@ static const struct mtk_smi_larb_gen mtk_smi_larb_mt8186 = {
  	.flags_general	            = MTK_SMI_FLAG_SLEEP_CTL,
  };
  
 +static const struct mtk_smi_larb_gen mtk_smi_larb_mt8188 = {
 +	.config_port                = mtk_smi_larb_config_port_gen2_general,
 +	.flags_general	            = MTK_SMI_FLAG_THRT_UPDATE | MTK_SMI_FLAG_SW_FLAG |
-+				      MTK_SMI_FLAG_SLEEP_CTL | MTK_SMI_FLAG_SEC_REG,
++				      MTK_SMI_FLAG_SLEEP_CTL | MTK_SMI_FLAG_CFG_PORT_SEC_CTL,
 +	.ostd		            = mtk_smi_larb_mt8188_ostd,
 +};
 +
  static const struct mtk_smi_larb_gen mtk_smi_larb_mt8192 = {
  	.config_port                = mtk_smi_larb_config_port_gen2_general,
  };
-@@ -367,6 +432,7 @@ static const struct of_device_id mtk_smi_larb_of_ids[] = {
+@@ -367,6 +445,7 @@ static const struct of_device_id mtk_smi_larb_of_ids[] = {
  	{.compatible = "mediatek,mt8173-smi-larb", .data = &mtk_smi_larb_mt8173},
  	{.compatible = "mediatek,mt8183-smi-larb", .data = &mtk_smi_larb_mt8183},
  	{.compatible = "mediatek,mt8186-smi-larb", .data = &mtk_smi_larb_mt8186},
@@ -30639,7 +30666,18 @@ index d7cb7ead2ac7fc04f52af23b14f3fcb76cdd42e9..db66a96f91b14711f6b19016541eb4bf
  	{.compatible = "mediatek,mt8192-smi-larb", .data = &mtk_smi_larb_mt8192},
  	{.compatible = "mediatek,mt8195-smi-larb", .data = &mtk_smi_larb_mt8195},
  	{}
-@@ -597,6 +663,18 @@ static const struct mtk_smi_common_plat mtk_smi_common_mt8186 = {
+@@ -511,9 +590,7 @@ static int __maybe_unused mtk_smi_larb_resume(struct device *dev)
+ 		mtk_smi_larb_sleep_ctrl_disable(larb);
+ 
+ 	/* Configure the basic setting for this larb */
+-	larb_gen->config_port(dev);
+-
+-	return 0;
++	return larb_gen->config_port(dev);
+ }
+ 
+ static int __maybe_unused mtk_smi_larb_suspend(struct device *dev)
+@@ -597,6 +674,18 @@ static const struct mtk_smi_common_plat mtk_smi_common_mt8186 = {
  	.bus_sel  = F_MMU1_LARB(1) | F_MMU1_LARB(4) | F_MMU1_LARB(7),
  };
  
@@ -30658,7 +30696,7 @@ index d7cb7ead2ac7fc04f52af23b14f3fcb76cdd42e9..db66a96f91b14711f6b19016541eb4bf
  static const struct mtk_smi_common_plat mtk_smi_common_mt8192 = {
  	.type     = MTK_SMI_GEN2,
  	.has_gals = true,
-@@ -633,6 +711,8 @@ static const struct of_device_id mtk_smi_common_of_ids[] = {
+@@ -633,6 +722,8 @@ static const struct of_device_id mtk_smi_common_of_ids[] = {
  	{.compatible = "mediatek,mt8173-smi-common", .data = &mtk_smi_common_gen2},
  	{.compatible = "mediatek,mt8183-smi-common", .data = &mtk_smi_common_mt8183},
  	{.compatible = "mediatek,mt8186-smi-common", .data = &mtk_smi_common_mt8186},
@@ -35722,10 +35760,10 @@ index 0000000000000000000000000000000000000000..0b3a8ea06573b15681844807907d5b32
 +
 +#endif /* __SOC_MEDIATEK_MT8188_PM_DOMAINS_H */
 diff --git a/drivers/soc/mediatek/mt8195-mmsys.h b/drivers/soc/mediatek/mt8195-mmsys.h
-index abfe94a302489c370922979ff559dc6a6c4a33c9..01c2803210cf5f27f626d8909895749fadddb62c 100644
+index abfe94a302489c370922979ff559dc6a6c4a33c9..42a592f63c3c4c275bf1d9bb521a8b2b2216297a 100644
 --- a/drivers/soc/mediatek/mt8195-mmsys.h
 +++ b/drivers/soc/mediatek/mt8195-mmsys.h
-@@ -75,6 +75,89 @@
+@@ -75,6 +75,90 @@
  #define MT8195_SOUT_DSC_WRAP1_OUT_TO_SINA_VIRTUAL0		(2 << 16)
  #define MT8195_SOUT_DSC_WRAP1_OUT_TO_VPP_MERGE			(3 << 16)
  
@@ -35735,6 +35773,7 @@ index abfe94a302489c370922979ff559dc6a6c4a33c9..01c2803210cf5f27f626d8909895749f
 +#define MT8195_VDO1_HDR_TOP_CFG					0xd00
 +#define MT8195_VDO1_MIXER_IN1_ALPHA				0xd30
 +#define MT8195_VDO1_MIXER_IN1_PAD				0xd40
++#define MT8188_VDO1_MIXER_VSYNC_LEN				0xd5c
 +
 +#define MT8195_VDO1_VPP_MERGE0_P0_SEL_IN			0xf04
 +#define MT8195_VPP_MERGE0_P0_SEL_IN_FROM_MDP_RDMA0			1
@@ -35815,7 +35854,7 @@ index abfe94a302489c370922979ff559dc6a6c4a33c9..01c2803210cf5f27f626d8909895749f
  static const struct mtk_mmsys_routes mmsys_mt8195_routing_table[] = {
  	{
  		DDP_COMPONENT_OVL0, DDP_COMPONENT_RDMA0,
-@@ -367,4 +450,79 @@ static const struct mtk_mmsys_routes mmsys_mt8195_routing_table[] = {
+@@ -367,4 +451,79 @@ static const struct mtk_mmsys_routes mmsys_mt8195_routing_table[] = {
  	}
  };
  
@@ -35896,7 +35935,7 @@ index abfe94a302489c370922979ff559dc6a6c4a33c9..01c2803210cf5f27f626d8909895749f
 +};
  #endif /* __SOC_MEDIATEK_MT8195_MMSYS_H */
 diff --git a/drivers/soc/mediatek/mtk-mmsys.c b/drivers/soc/mediatek/mtk-mmsys.c
-index 06d8e83a2cb56f5afdc25ab423083b7d733befe8..cba92e934249b2f20c1ea4cd2c7038d61d50e249 100644
+index 06d8e83a2cb56f5afdc25ab423083b7d733befe8..f0ffb90c630a385956b96f90af825160ca5e2f54 100644
 --- a/drivers/soc/mediatek/mtk-mmsys.c
 +++ b/drivers/soc/mediatek/mtk-mmsys.c
 @@ -19,6 +19,9 @@
@@ -36075,7 +36114,7 @@ index 06d8e83a2cb56f5afdc25ab423083b7d733befe8..cba92e934249b2f20c1ea4cd2c7038d6
  }
  EXPORT_SYMBOL_GPL(mtk_mmsys_ddp_connect);
  
-@@ -215,35 +298,103 @@ void mtk_mmsys_ddp_disconnect(struct device *dev,
+@@ -215,35 +298,104 @@ void mtk_mmsys_ddp_disconnect(struct device *dev,
  {
  	struct mtk_mmsys *mmsys = dev_get_drvdata(dev);
  	const struct mtk_mmsys_routes *routes = mmsys->data->routes;
@@ -36120,6 +36159,7 @@ index 06d8e83a2cb56f5afdc25ab423083b7d733befe8..cba92e934249b2f20c1ea4cd2c7038d6
 +			      alpha_sel << (19 + idx), cmdq_pkt);
 +	mtk_mmsys_update_bits(mmsys, MT8195_VDO1_MIXER_IN1_PAD + (idx - 1) * 4,
 +			      GENMASK(31, 16) | GENMASK(1, 0), biwidth << 16 | mode, cmdq_pkt);
++	mtk_mmsys_update_bits(mmsys, MT8188_VDO1_MIXER_VSYNC_LEN, ~0, 1, cmdq_pkt);
 +}
 +EXPORT_SYMBOL_GPL(mtk_mmsys_mixer_in_config);
 +
@@ -36191,7 +36231,7 @@ index 06d8e83a2cb56f5afdc25ab423083b7d733befe8..cba92e934249b2f20c1ea4cd2c7038d6
  
  	spin_unlock_irqrestore(&mmsys->lock, flags);
  
-@@ -300,18 +451,6 @@ static int mtk_mmsys_probe(struct platform_device *pdev)
+@@ -300,18 +452,6 @@ static int mtk_mmsys_probe(struct platform_device *pdev)
  		return ret;
  	}
  
@@ -36210,7 +36250,7 @@ index 06d8e83a2cb56f5afdc25ab423083b7d733befe8..cba92e934249b2f20c1ea4cd2c7038d6
  	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
  	if (!res) {
  		dev_err(dev, "Couldn't get mmsys resource\n");
-@@ -333,6 +472,24 @@ static int mtk_mmsys_probe(struct platform_device *pdev)
+@@ -333,6 +473,24 @@ static int mtk_mmsys_probe(struct platform_device *pdev)
  		mmsys->data = match_data->drv_data[0];
  	}
  
@@ -36235,7 +36275,7 @@ index 06d8e83a2cb56f5afdc25ab423083b7d733befe8..cba92e934249b2f20c1ea4cd2c7038d6
  	platform_set_drvdata(pdev, mmsys);
  
  	clks = platform_device_register_data(&pdev->dev, mmsys->data->clk_driver,
-@@ -340,6 +497,9 @@ static int mtk_mmsys_probe(struct platform_device *pdev)
+@@ -340,6 +498,9 @@ static int mtk_mmsys_probe(struct platform_device *pdev)
  	if (IS_ERR(clks))
  		return PTR_ERR(clks);
  
@@ -36245,7 +36285,7 @@ index 06d8e83a2cb56f5afdc25ab423083b7d733befe8..cba92e934249b2f20c1ea4cd2c7038d6
  	drm = platform_device_register_data(&pdev->dev, "mediatek-drm",
  					    PLATFORM_DEVID_AUTO, NULL, 0);
  	if (IS_ERR(drm)) {
-@@ -347,6 +507,7 @@ static int mtk_mmsys_probe(struct platform_device *pdev)
+@@ -347,6 +508,7 @@ static int mtk_mmsys_probe(struct platform_device *pdev)
  		return PTR_ERR(drm);
  	}
  
@@ -36253,7 +36293,7 @@ index 06d8e83a2cb56f5afdc25ab423083b7d733befe8..cba92e934249b2f20c1ea4cd2c7038d6
  	return 0;
  }
  
-@@ -395,6 +556,10 @@ static const struct of_device_id of_match_mtk_mmsys[] = {
+@@ -395,6 +557,10 @@ static const struct of_device_id of_match_mtk_mmsys[] = {
  		.compatible = "mediatek,mt8365-mmsys",
  		.data = &mt8365_mmsys_match_data,
  	},
@@ -43986,27 +44026,6 @@ index 082398e0cfb16e6cbc2cdab4b8f2acd3bc3b5742..0761128b435477826deb150b1e2a4f51
 +#define MTK_SIP_KERNEL_IOMMU_CONTROL	MTK_SIP_SMC_CMD(0x514)
 +
  #endif
-diff --git a/include/media/media-entity.h b/include/media/media-entity.h
-index f16ffe70f7a641a75d50b665747b45a51f954b17..f92096e8b40b4c25a308f1ae2eaf8e8bc375f161 100644
---- a/include/media/media-entity.h
-+++ b/include/media/media-entity.h
-@@ -129,6 +129,8 @@ struct media_pipeline {
-  *		link.
-  * @flags:	Link flags, as defined in uapi/media.h (MEDIA_LNK_FL_*)
-  * @is_backlink: Indicate if the link is a backlink.
-+ * @request_fd: The media request triggered the media link change, it is only
-+ *		meaningful in media_device_setup_link()
-  */
- struct media_link {
- 	struct media_gobj graph_obj;
-@@ -146,6 +148,7 @@ struct media_link {
- 	struct media_link *reverse;
- 	unsigned long flags;
- 	bool is_backlink;
-+	int request_fd;
- };
- 
- /**
 diff --git a/include/media/v4l2-ctrls.h b/include/media/v4l2-ctrls.h
 index 00828a4f9404aee934a254ebf3aef570e1dedecf..d39d4eec2a977298a527a0a66776fc6c12585957 100644
 --- a/include/media/v4l2-ctrls.h
@@ -44035,132 +44054,27 @@ index 00828a4f9404aee934a254ebf3aef570e1dedecf..d39d4eec2a977298a527a0a66776fc6c
  	const void *p_const;
  };
 diff --git a/include/soc/mediatek/smi.h b/include/soc/mediatek/smi.h
-index 11f7d6b5964269cfe58bfadeb18358586c5b339b..8bbf6ad18fd6245186c127989f669803238612b0 100644
+index 11f7d6b5964269cfe58bfadeb18358586c5b339b..99f13b0e416d0f2322038209c136d0bc1758798a 100644
 --- a/include/soc/mediatek/smi.h
 +++ b/include/soc/mediatek/smi.h
-@@ -8,6 +8,16 @@
- 
- #include <linux/bitops.h>
- #include <linux/device.h>
-+#include <linux/arm-smccc.h>
-+#include <linux/soc/mediatek/mtk_sip_svc.h>
-+
-+/* IOMMU & SMI ATF CMD */
-+
-+enum IOMMU_ATF_CMD {
-+	IOMMU_ATF_CMD_CONFIG_SMI_LARB,		/* For mm master to en/disable iommu */
-+	IOMMU_ATF_CMD_CONFIG_INFRA_IOMMU,	/* For infra master en/disable iommu */
-+	IOMMU_ATF_CMD_COUNT,
-+};
+@@ -11,6 +11,12 @@
  
  #if IS_ENABLED(CONFIG_MTK_SMI)
  
-diff --git a/include/uapi/linux/media.h b/include/uapi/linux/media.h
-index 3ddadaea849f945913ebfc80d6725cd4d410e086..f6810ce1c0168392b484ba1d510cfc274679d6ec 100644
---- a/include/uapi/linux/media.h
-+++ b/include/uapi/linux/media.h
-@@ -229,7 +229,8 @@ struct media_link_desc {
- 	struct media_pad_desc source;
- 	struct media_pad_desc sink;
- 	__u32 flags;
--	__u32 reserved[2];
-+	__s32 request_fd;
-+	__u32 reserved[1];
- };
++enum iommu_atf_cmd {
++	IOMMU_ATF_CMD_CONFIG_SMI_LARB,		/* For mm master to en/disable iommu */
++	IOMMU_ATF_CMD_CONFIG_INFRA_IOMMU,	/* For infra master en/disable iommu */
++	IOMMU_ATF_CMD_MAX,
++};
++
+ #define MTK_SMI_MMU_EN(port)	BIT(port)
  
- struct media_links_enum {
+ struct mtk_smi_larb_iommu {
 diff --git a/include/uapi/linux/v4l2-controls.h b/include/uapi/linux/v4l2-controls.h
-index 93bb5c3f8666146c29ff287b492a417975758424..6f6b7db377ed6931ff094eeb7a3c98f1d42f799d 100644
+index 93bb5c3f8666146c29ff287b492a417975758424..4fe844899fa4ca52927511e3a74a7e8f90226c61 100644
 --- a/include/uapi/linux/v4l2-controls.h
 +++ b/include/uapi/linux/v4l2-controls.h
-@@ -197,6 +197,30 @@ enum v4l2_colorfx {
-  * We reserve 16 controls for this driver. */
- #define V4L2_CID_USER_IMX_BASE			(V4L2_CID_USER_BASE + 0x10b0)
- 
-+/* The base for the mediatek camsys driver controls */
-+/* We reserve 48 controls for this driver. */
-+#define V4L2_CID_USER_MTK_CAM_BASE		(V4L2_CID_USER_BASE + 0x10d0)
-+#define V4L2_CID_MTK_CAM_USED_ENGINE_LIMIT	(V4L2_CID_USER_MTK_CAM_BASE + 1)
-+#define V4L2_CID_MTK_CAM_BIN_LIMIT		(V4L2_CID_USER_MTK_CAM_BASE + 2)
-+#define V4L2_CID_MTK_CAM_FRZ_LIMIT		(V4L2_CID_USER_MTK_CAM_BASE + 3)
-+#define V4L2_CID_MTK_CAM_RESOURCE_PLAN_POLICY	(V4L2_CID_USER_MTK_CAM_BASE + 4)
-+#define V4L2_CID_MTK_CAM_USED_ENGINE		(V4L2_CID_USER_MTK_CAM_BASE + 5)
-+#define V4L2_CID_MTK_CAM_BIN			(V4L2_CID_USER_MTK_CAM_BASE + 6)
-+#define V4L2_CID_MTK_CAM_FRZ			(V4L2_CID_USER_MTK_CAM_BASE + 7)
-+#define V4L2_CID_MTK_CAM_USED_ENGINE_TRY	(V4L2_CID_USER_MTK_CAM_BASE + 8)
-+#define V4L2_CID_MTK_CAM_BIN_TRY		(V4L2_CID_USER_MTK_CAM_BASE + 9)
-+#define V4L2_CID_MTK_CAM_FRZ_TRY		(V4L2_CID_USER_MTK_CAM_BASE + 10)
-+#define V4L2_CID_MTK_CAM_PIXEL_RATE		(V4L2_CID_USER_MTK_CAM_BASE + 11)
-+#define V4L2_CID_MTK_CAM_FEATURE		(V4L2_CID_USER_MTK_CAM_BASE + 12)
-+#define V4L2_CID_MTK_CAM_SYNC_ID		(V4L2_CID_USER_MTK_CAM_BASE + 13)
-+#define V4L2_CID_MTK_CAM_RAW_PATH_SELECT	(V4L2_CID_USER_MTK_CAM_BASE + 14)
-+#define V4L2_CID_MTK_CAM_HSF_EN			(V4L2_CID_USER_MTK_CAM_BASE + 15)
-+#define V4L2_CID_MTK_CAM_PDE_INFO		(V4L2_CID_USER_MTK_CAM_BASE + 16)
-+#define V4L2_CID_MTK_CAM_MSTREAM_EXPOSURE	(V4L2_CID_USER_MTK_CAM_BASE + 17)
-+#define V4L2_CID_MTK_CAM_RAW_RESOURCE_CALC	(V4L2_CID_USER_MTK_CAM_BASE + 18)
-+#define V4L2_CID_MTK_CAM_TG_FLASH_CFG		(V4L2_CID_USER_MTK_CAM_BASE + 19)
-+#define V4L2_CID_MTK_CAM_RAW_RESOURCE_UPDATE	(V4L2_CID_USER_MTK_CAM_BASE + 20)
-+#define V4L2_CID_MTK_CAM_CAMSYS_HW_MODE		(V4L2_CID_USER_MTK_CAM_BASE + 21)
- /*
-  * The base for the atmel isc driver controls.
-  * We reserve 32 controls for this driver.
-@@ -225,6 +249,46 @@ enum v4l2_colorfx {
-  */
- #define V4L2_CID_USER_ISL7998X_BASE		(V4L2_CID_USER_BASE + 0x1180)
- 
-+/* The base for the mediatek sensor driver controls */
-+/* We reserve 48 controls for this driver. */
-+#define V4L2_CID_USER_MTK_SENSOR_BASE		(V4L2_CID_USER_BASE + 0x1100)
-+#define V4L2_CID_MTK_TEMPERATURE		(V4L2_CID_USER_MTK_SENSOR_BASE + 1)
-+#define V4L2_CID_MTK_ANTI_FLICKER		(V4L2_CID_USER_MTK_SENSOR_BASE + 2)
-+#define V4L2_CID_MTK_AWB_GAIN			(V4L2_CID_USER_MTK_SENSOR_BASE + 3)
-+#define V4L2_CID_MTK_SHUTTER_GAIN_SYNC		(V4L2_CID_USER_MTK_SENSOR_BASE + 4)
-+#define V4L2_CID_MTK_DUAL_GAIN			(V4L2_CID_USER_MTK_SENSOR_BASE + 5)
-+#define V4L2_CID_MTK_IHDR_SHUTTER_GAIN		(V4L2_CID_USER_MTK_SENSOR_BASE + 6)
-+#define V4L2_CID_MTK_HDR_SHUTTER		(V4L2_CID_USER_MTK_SENSOR_BASE + 7)
-+#define V4L2_CID_MTK_SHUTTER_FRAME_LENGTH	(V4L2_CID_USER_MTK_SENSOR_BASE + 8)
-+#define V4L2_CID_MTK_PDFOCUS_AREA		(V4L2_CID_USER_MTK_SENSOR_BASE + 9)
-+#define V4L2_CID_MTK_HDR_ATR			(V4L2_CID_USER_MTK_SENSOR_BASE + 10)
-+#define V4L2_CID_MTK_HDR_TRI_SHUTTER		(V4L2_CID_USER_MTK_SENSOR_BASE + 11)
-+#define V4L2_CID_MTK_HDR_TRI_GAIN		(V4L2_CID_USER_MTK_SENSOR_BASE + 12)
-+#define V4L2_CID_FRAME_SYNC			(V4L2_CID_USER_MTK_SENSOR_BASE + 13)
-+#define V4L2_CID_MTK_MAX_FPS			(V4L2_CID_USER_MTK_SENSOR_BASE + 14)
-+#define V4L2_CID_MTK_STAGGER_AE_CTRL		(V4L2_CID_USER_MTK_SENSOR_BASE + 15)
-+#define V4L2_CID_SEAMLESS_SCENARIOS		(V4L2_CID_USER_MTK_SENSOR_BASE + 16)
-+#define V4L2_CID_MTK_STAGGER_INFO		(V4L2_CID_USER_MTK_SENSOR_BASE + 17)
-+#define V4L2_CID_STAGGER_TARGET_SCENARIO	(V4L2_CID_USER_MTK_SENSOR_BASE + 18)
-+#define V4L2_CID_START_SEAMLESS_SWITCH		(V4L2_CID_USER_MTK_SENSOR_BASE + 19)
-+#define V4L2_CID_MTK_DEBUG_CMD			(V4L2_CID_USER_MTK_SENSOR_BASE + 20)
-+#define V4L2_CID_MAX_EXP_TIME			(V4L2_CID_USER_MTK_SENSOR_BASE + 21)
-+#define V4L2_CID_MTK_SENSOR_PIXEL_RATE		(V4L2_CID_USER_MTK_SENSOR_BASE + 22)
-+#define V4L2_CID_MTK_FRAME_DESC			(V4L2_CID_USER_MTK_SENSOR_BASE + 23)
-+#define V4L2_CID_MTK_SENSOR_STATIC_PARAM	(V4L2_CID_USER_MTK_SENSOR_BASE + 24)
-+#define V4L2_CID_MTK_SENSOR_POWER		(V4L2_CID_USER_MTK_SENSOR_BASE + 25)
-+#define V4L2_CID_MTK_MSTREAM_MODE		(V4L2_CID_USER_MTK_SENSOR_BASE + 26)
-+#define V4L2_CID_MTK_N_1_MODE			(V4L2_CID_USER_MTK_SENSOR_BASE + 27)
-+#define V4L2_CID_MTK_CUST_SENSOR_PIXEL_RATE	(V4L2_CID_USER_MTK_SENSOR_BASE + 28)
-+#define V4L2_CID_MTK_CSI_PARAM			(V4L2_CID_USER_MTK_SENSOR_BASE + 29)
-+#define V4L2_CID_MTK_SENSOR_TEST_PATTERN_DATA	(V4L2_CID_USER_MTK_SENSOR_BASE + 30)
-+#define V4L2_CID_MTK_SENSOR_RESET		(V4L2_CID_USER_MTK_SENSOR_BASE + 31)
-+#define V4L2_CID_MTK_SENSOR_INIT		(V4L2_CID_USER_MTK_SENSOR_BASE + 32)
-+#define V4L2_CID_MTK_SOF_TIMEOUT_VALUE		(V4L2_CID_USER_MTK_SENSOR_BASE + 33)
-+
-+#define V4L2_CID_USER_MTK_SENINF_BASE		(V4L2_CID_USER_BASE + 0x1200)
-+#define V4L2_CID_MTK_SENINF_S_STREAM		(V4L2_CID_USER_MTK_SENINF_BASE + 1)
-+
- /* MPEG-class control IDs */
- /* The MPEG controls are applicable to all codec controls
-  * and the 'MPEG' part of the define is historical */
-@@ -1011,6 +1075,8 @@ enum v4l2_auto_focus_range {
- #define V4L2_CAMERA_ORIENTATION_EXTERNAL	2
- 
- #define V4L2_CID_CAMERA_SENSOR_ROTATION		(V4L2_CID_CAMERA_CLASS_BASE+35)
-+#define V4L2_CID_FSYNC_MAP_ID			(V4L2_CID_CAMERA_CLASS_BASE+36)
-+#define V4L2_CID_VSYNC_NOTIFY			(V4L2_CID_CAMERA_CLASS_BASE+37)
- 
- /*
-  * senozhatsky@ b:191930245
-@@ -2792,6 +2858,720 @@ struct v4l2_ctrl_vp9_compressed_hdr {
+@@ -2792,6 +2792,720 @@ struct v4l2_ctrl_vp9_compressed_hdr {
  	struct v4l2_vp9_mv_probs mv;
  };
  
@@ -44881,55 +44795,11 @@ index 93bb5c3f8666146c29ff287b492a417975758424..6f6b7db377ed6931ff094eeb7a3c98f1
  /* MPEG-compression definitions kept for backwards compatibility */
  #ifndef __KERNEL__
  #define V4L2_CTRL_CLASS_MPEG            V4L2_CTRL_CLASS_CODEC
-diff --git a/include/uapi/linux/v4l2-subdev.h b/include/uapi/linux/v4l2-subdev.h
-index 658106f5b5dc9682ab169b3f3666196412567869..d6ffd5981c68914c94cf27832fba125ab073ddc0 100644
---- a/include/uapi/linux/v4l2-subdev.h
-+++ b/include/uapi/linux/v4l2-subdev.h
-@@ -50,7 +50,8 @@ struct v4l2_subdev_format {
- 	__u32 which;
- 	__u32 pad;
- 	struct v4l2_mbus_framefmt format;
--	__u32 reserved[8];
-+	__s32 request_fd;
-+	__u32 reserved[7];
- };
- 
- /**
 diff --git a/include/uapi/linux/videodev2.h b/include/uapi/linux/videodev2.h
-index abaadaf8c1d8a2121ad72b1e22e6413ae9bebdc0..5ae95e3acdc0d001a6be730dd111a15c593ec21e 100644
+index abaadaf8c1d8a2121ad72b1e22e6413ae9bebdc0..6c6c26b41838d907e3ed220fc56b06c1912140ce 100644
 --- a/include/uapi/linux/videodev2.h
 +++ b/include/uapi/linux/videodev2.h
-@@ -618,6 +618,14 @@ struct v4l2_pix_format {
- #define V4L2_PIX_FMT_YUVA32  v4l2_fourcc('Y', 'U', 'V', 'A') /* 32  YUVA-8-8-8-8  */
- #define V4L2_PIX_FMT_YUVX32  v4l2_fourcc('Y', 'U', 'V', 'X') /* 32  YUVX-8-8-8-8  */
- #define V4L2_PIX_FMT_M420    v4l2_fourcc('M', '4', '2', '0') /* 12  YUV 4:2:0 2 lines y, 1 line uv interleaved */
-+#define V4L2_PIX_FMT_YUYV10  v4l2_fourcc('Y', 'U', 'Y', 'A') /* 16  YUV 4:2:2 10-bit */
-+#define V4L2_PIX_FMT_YVYU10  v4l2_fourcc('Y', 'V', 'Y', 'A') /* 16  YUV 4:2:2 10-bit */
-+#define V4L2_PIX_FMT_UYVY10  v4l2_fourcc('U', 'Y', 'V', 'A') /* 16  YUV 4:2:2 10-bit */
-+#define V4L2_PIX_FMT_VYUY10  v4l2_fourcc('V', 'Y', 'U', 'A') /* 16  YUV 4:2:2 10-bit */
-+#define V4L2_PIX_FMT_YUYV12  v4l2_fourcc('Y', 'U', 'Y', 'C') /* 16  YUV 4:2:2 12-bit */
-+#define V4L2_PIX_FMT_YVYU12  v4l2_fourcc('Y', 'V', 'Y', 'C') /* 16  YUV 4:2:2 12-bit */
-+#define V4L2_PIX_FMT_UYVY12  v4l2_fourcc('U', 'Y', 'V', 'C') /* 16  YUV 4:2:2 12-bit */
-+#define V4L2_PIX_FMT_VYUY12  v4l2_fourcc('V', 'Y', 'U', 'C') /* 16  YUV 4:2:2 12-bit */
- 
- /* two planes -- one Y, one Cr + Cb interleaved  */
- #define V4L2_PIX_FMT_NV12    v4l2_fourcc('N', 'V', '1', '2') /* 12  Y/CbCr 4:2:0  */
-@@ -627,6 +635,14 @@ struct v4l2_pix_format {
- #define V4L2_PIX_FMT_NV24    v4l2_fourcc('N', 'V', '2', '4') /* 24  Y/CbCr 4:4:4  */
- #define V4L2_PIX_FMT_NV42    v4l2_fourcc('N', 'V', '4', '2') /* 24  Y/CrCb 4:4:4  */
- #define V4L2_PIX_FMT_P010    v4l2_fourcc('P', '0', '1', '0') /* 24  Y/CbCr 4:2:0 10-bit per component */
-+#define V4L2_PIX_FMT_NV12_10 v4l2_fourcc('1', '2', 'A', 'U') /* 12  Y/CbCr 4:2:0 10 bits un-packed */
-+#define V4L2_PIX_FMT_NV21_10 v4l2_fourcc('2', '1', 'A', 'U') /* 12  Y/CrCb 4:2:0 10 bits un-packed */
-+#define V4L2_PIX_FMT_NV16_10 v4l2_fourcc('1', '6', 'A', 'U') /* 16  Y/CbCr 4:2:2 10 bits un-packed */
-+#define V4L2_PIX_FMT_NV61_10 v4l2_fourcc('6', '1', 'A', 'U') /* 16  Y/CrCb 4:2:2 10 bits un-packed */
-+#define V4L2_PIX_FMT_NV12_12 v4l2_fourcc('1', '2', 'C', 'U') /* 12  Y/CbCr 4:2:0 12 bits un-packed */
-+#define V4L2_PIX_FMT_NV21_12 v4l2_fourcc('2', '1', 'C', 'U') /* 12  Y/CrCb 4:2:0 12 bits un-packed */
-+#define V4L2_PIX_FMT_NV16_12 v4l2_fourcc('1', '6', 'C', 'U') /* 16  Y/CbCr 4:2:2 12 bits un-packed */
-+#define V4L2_PIX_FMT_NV61_12 v4l2_fourcc('6', '1', 'C', 'U') /* 16  Y/CrCb 4:2:2 12 bits un-packed */
- 
- /* UBWC 8-bit Y/CbCr 4:2:0  */
- #define V4L2_PIX_FMT_NV12_UBWC        v4l2_fourcc('Q', '1', '2', '8')
-@@ -741,6 +757,7 @@ struct v4l2_pix_format {
+@@ -741,6 +741,7 @@ struct v4l2_pix_format {
  #define V4L2_PIX_FMT_FWHT_STATELESS     v4l2_fourcc('S', 'F', 'W', 'H') /* Stateless FWHT (vicodec) */
  #define V4L2_PIX_FMT_H264_SLICE v4l2_fourcc('S', '2', '6', '4') /* H264 parsed slices */
  #define V4L2_PIX_FMT_HEVC_SLICE v4l2_fourcc('S', '2', '6', '5') /* HEVC parsed slices */
@@ -44937,107 +44807,7 @@ index abaadaf8c1d8a2121ad72b1e22e6413ae9bebdc0..5ae95e3acdc0d001a6be730dd111a15c
  
  /*  Vendor-specific formats   */
  #define V4L2_PIX_FMT_CPIA1    v4l2_fourcc('C', 'P', 'I', 'A') /* cpia1 YUV */
-@@ -786,6 +803,71 @@ struct v4l2_pix_format {
- #define V4L2_PIX_FMT_IPU3_SGRBG10	v4l2_fourcc('i', 'p', '3', 'G') /* IPU3 packed 10-bit GRBG bayer */
- #define V4L2_PIX_FMT_IPU3_SRGGB10	v4l2_fourcc('i', 'p', '3', 'r') /* IPU3 packed 10-bit RGGB bayer */
- 
-+/* Vendor specific - Mediatek ISP bayer formats */
-+#define V4L2_PIX_FMT_MTISP_SBGGR8   v4l2_fourcc('M', 'B', 'B', '8') /*  Packed  8-bit  */
-+#define V4L2_PIX_FMT_MTISP_SGBRG8   v4l2_fourcc('M', 'B', 'G', '8') /*  Packed  8-bit  */
-+#define V4L2_PIX_FMT_MTISP_SGRBG8   v4l2_fourcc('M', 'B', 'g', '8') /*  Packed  8-bit  */
-+#define V4L2_PIX_FMT_MTISP_SRGGB8   v4l2_fourcc('M', 'B', 'R', '8') /*  Packed  8-bit  */
-+#define V4L2_PIX_FMT_MTISP_SBGGR10  v4l2_fourcc('M', 'B', 'B', 'A') /*  Packed 10-bit  */
-+#define V4L2_PIX_FMT_MTISP_SGBRG10  v4l2_fourcc('M', 'B', 'G', 'A') /*  Packed 10-bit  */
-+#define V4L2_PIX_FMT_MTISP_SGRBG10  v4l2_fourcc('M', 'B', 'g', 'A') /*  Packed 10-bit  */
-+#define V4L2_PIX_FMT_MTISP_SRGGB10  v4l2_fourcc('M', 'B', 'R', 'A') /*  Packed 10-bit  */
-+#define V4L2_PIX_FMT_MTISP_SBGGR12  v4l2_fourcc('M', 'B', 'B', 'C') /*  Packed 12-bit  */
-+#define V4L2_PIX_FMT_MTISP_SGBRG12  v4l2_fourcc('M', 'B', 'G', 'C') /*  Packed 12-bit  */
-+#define V4L2_PIX_FMT_MTISP_SGRBG12  v4l2_fourcc('M', 'B', 'g', 'C') /*  Packed 12-bit  */
-+#define V4L2_PIX_FMT_MTISP_SRGGB12  v4l2_fourcc('M', 'B', 'R', 'C') /*  Packed 12-bit  */
-+#define V4L2_PIX_FMT_MTISP_SBGGR14  v4l2_fourcc('M', 'B', 'B', 'E') /*  Packed 14-bit  */
-+#define V4L2_PIX_FMT_MTISP_SGBRG14  v4l2_fourcc('M', 'B', 'G', 'E') /*  Packed 14-bit  */
-+#define V4L2_PIX_FMT_MTISP_SGRBG14  v4l2_fourcc('M', 'B', 'g', 'E') /*  Packed 14-bit  */
-+#define V4L2_PIX_FMT_MTISP_SRGGB14  v4l2_fourcc('M', 'B', 'R', 'E') /*  Packed 14-bit  */
-+#define V4L2_PIX_FMT_MTISP_SBGGR8F  v4l2_fourcc('M', 'F', 'B', '8') /*  Full-G  8-bit  */
-+#define V4L2_PIX_FMT_MTISP_SGBRG8F  v4l2_fourcc('M', 'F', 'G', '8') /*  Full-G  8-bit  */
-+#define V4L2_PIX_FMT_MTISP_SGRBG8F  v4l2_fourcc('M', 'F', 'g', '8') /*  Full-G  8-bit  */
-+#define V4L2_PIX_FMT_MTISP_SRGGB8F  v4l2_fourcc('M', 'F', 'R', '8') /*  Full-G  8-bit  */
-+#define V4L2_PIX_FMT_MTISP_SBGGR10F  v4l2_fourcc('M', 'F', 'B', 'A') /*  Full-G 10-bit  */
-+#define V4L2_PIX_FMT_MTISP_SGBRG10F  v4l2_fourcc('M', 'F', 'G', 'A') /*  Full-G 10-bit  */
-+#define V4L2_PIX_FMT_MTISP_SGRBG10F  v4l2_fourcc('M', 'F', 'g', 'A') /*  Full-G 10-bit  */
-+#define V4L2_PIX_FMT_MTISP_SRGGB10F  v4l2_fourcc('M', 'F', 'R', 'A') /*  Full-G 10-bit  */
-+#define V4L2_PIX_FMT_MTISP_SBGGR12F  v4l2_fourcc('M', 'F', 'B', 'C') /*  Full-G 12-bit  */
-+#define V4L2_PIX_FMT_MTISP_SGBRG12F  v4l2_fourcc('M', 'F', 'G', 'C') /*  Full-G 12-bit  */
-+#define V4L2_PIX_FMT_MTISP_SGRBG12F  v4l2_fourcc('M', 'F', 'g', 'C') /*  Full-G 12-bit  */
-+#define V4L2_PIX_FMT_MTISP_SRGGB12F  v4l2_fourcc('M', 'F', 'R', 'C') /*  Full-G 12-bit  */
-+#define V4L2_PIX_FMT_MTISP_SBGGR14F  v4l2_fourcc('M', 'F', 'B', 'E') /*  Full-G 14-bit  */
-+#define V4L2_PIX_FMT_MTISP_SGBRG14F  v4l2_fourcc('M', 'F', 'G', 'E') /*  Full-G 14-bit  */
-+#define V4L2_PIX_FMT_MTISP_SGRBG14F  v4l2_fourcc('M', 'F', 'g', 'E') /*  Full-G 14-bit  */
-+#define V4L2_PIX_FMT_MTISP_SRGGB14F  v4l2_fourcc('M', 'F', 'R', 'E') /*  Full-G 14-bit  */
-+
-+/* Vendor specific - Mediatek Luminance+Chrominance formats */
-+#define V4L2_PIX_FMT_MTISP_YUYV10P v4l2_fourcc('Y', 'U', 'A', 'P') /* YUV 4:2:2 10-bit packed */
-+#define V4L2_PIX_FMT_MTISP_YVYU10P v4l2_fourcc('Y', 'V', 'A', 'P') /* YUV 4:2:2 10-bit packed */
-+#define V4L2_PIX_FMT_MTISP_UYVY10P v4l2_fourcc('U', 'Y', 'A', 'P') /* YUV 4:2:2 10-bit packed */
-+#define V4L2_PIX_FMT_MTISP_VYUY10P v4l2_fourcc('V', 'Y', 'A', 'P') /* YUV 4:2:2 10-bit packed */
-+#define V4L2_PIX_FMT_MTISP_NV12_10P v4l2_fourcc('1', '2', 'A', 'P') /* Y/CbCr 4:2:0 10 bits packed */
-+#define V4L2_PIX_FMT_MTISP_NV21_10P v4l2_fourcc('2', '1', 'A', 'P') /* Y/CrCb 4:2:0 10 bits packed */
-+#define V4L2_PIX_FMT_MTISP_NV16_10P v4l2_fourcc('1', '6', 'A', 'P') /* Y/CbCr 4:2:2 10 bits packed */
-+#define V4L2_PIX_FMT_MTISP_NV61_10P v4l2_fourcc('6', '1', 'A', 'P') /* Y/CrCb 4:2:2 10 bits packed */
-+#define V4L2_PIX_FMT_MTISP_YUYV12P v4l2_fourcc('Y', 'U', 'C', 'P') /* YUV 4:2:2 12-bit packed */
-+#define V4L2_PIX_FMT_MTISP_YVYU12P v4l2_fourcc('Y', 'V', 'C', 'P') /* YUV 4:2:2 12-bit packed */
-+#define V4L2_PIX_FMT_MTISP_UYVY12P v4l2_fourcc('U', 'Y', 'C', 'P') /* YUV 4:2:2 12-bit packed */
-+#define V4L2_PIX_FMT_MTISP_VYUY12P v4l2_fourcc('V', 'Y', 'C', 'P') /* YUV 4:2:2 12-bit packed */
-+#define V4L2_PIX_FMT_MTISP_NV12_12P v4l2_fourcc('1', '2', 'C', 'P') /* Y/CbCr 4:2:0 12 bits packed */
-+#define V4L2_PIX_FMT_MTISP_NV21_12P v4l2_fourcc('2', '1', 'C', 'P') /* Y/CrCb 4:2:0 12 bits packed */
-+#define V4L2_PIX_FMT_MTISP_NV16_12P v4l2_fourcc('1', '6', 'C', 'P') /* Y/CbCr 4:2:2 12 bits packed */
-+#define V4L2_PIX_FMT_MTISP_NV61_12P v4l2_fourcc('6', '1', 'C', 'P') /* Y/CrCb 4:2:2 12 bits packed */
-+#define V4L2_PIX_FMT_MTISP_NV12_UFBC v4l2_fourcc('1', '2', '8', 'F')
-+#define V4L2_PIX_FMT_MTISP_NV21_UFBC v4l2_fourcc('2', '1', '8', 'F')
-+#define V4L2_PIX_FMT_MTISP_NV12_10_UFBC v4l2_fourcc('1', '2', 'A', 'F')
-+#define V4L2_PIX_FMT_MTISP_NV21_10_UFBC v4l2_fourcc('2', '1', 'A', 'F')
-+#define V4L2_PIX_FMT_MTISP_NV12_12_UFBC v4l2_fourcc('1', '2', 'C', 'F')
-+#define V4L2_PIX_FMT_MTISP_NV21_12_UFBC v4l2_fourcc('2', '1', 'C', 'F')
-+#define V4L2_PIX_FMT_MTISP_BAYER8_UFBC v4l2_fourcc('M', 'B', '8', 'U')
-+#define V4L2_PIX_FMT_MTISP_BAYER10_UFBC v4l2_fourcc('M', 'B', 'A', 'U')
-+#define V4L2_PIX_FMT_MTISP_BAYER12_UFBC v4l2_fourcc('M', 'B', 'C', 'U')
-+#define V4L2_PIX_FMT_MTISP_BAYER14_UFBC v4l2_fourcc('M', 'B', 'E', 'U')
-+#define V4L2_PIX_FMT_MTISP_SGRB8F  v4l2_fourcc('M', 'F', '8', 'P')
-+#define V4L2_PIX_FMT_MTISP_SGRB10F  v4l2_fourcc('M', 'F', 'A', 'P')
-+#define V4L2_PIX_FMT_MTISP_SGRB12F  v4l2_fourcc('M', 'F', 'C', 'P')
-+
- /* SDR formats - used only for Software Defined Radio devices */
- #define V4L2_SDR_FMT_CU8          v4l2_fourcc('C', 'U', '0', '8') /* IQ u8 */
- #define V4L2_SDR_FMT_CU16LE       v4l2_fourcc('C', 'U', '1', '6') /* IQ u16le */
-@@ -1163,6 +1245,8 @@ static inline __u64 v4l2_timeval_to_ns(const struct timeval *tv)
- /* request_fd is valid */
- #define V4L2_BUF_FLAG_REQUEST_FD		0x00800000
- 
-+#define V4L2_BUF_FLAG_TIMESTAMP_BOOT		0x00008000
-+
- /**
-  * struct v4l2_exportbuffer - export of video buffer as DMABUF file descriptor
-  *
-@@ -1291,6 +1375,7 @@ struct v4l2_crop {
-  *		defined in v4l2-common.h; V4L2_SEL_TGT_* .
-  * @flags:	constraints flags, defined in v4l2-common.h; V4L2_SEL_FLAG_*.
-  * @r:		coordinates of selection window
-+ * @request_fd: fd of the request that trigger the set selection operation
-  * @reserved:	for future use, rounds structure size to 64 bytes, set to zero
-  *
-  * Hardware may use multiple helper windows to process a video stream.
-@@ -1301,8 +1386,9 @@ struct v4l2_selection {
- 	__u32			type;
- 	__u32			target;
- 	__u32                   flags;
-+	__s32                   request_fd;
- 	struct v4l2_rect        r;
--	__u32                   reserved[9];
-+	__u32                   reserved[8];
- };
- 
- 
-@@ -1802,6 +1888,10 @@ struct v4l2_ext_control {
+@@ -1802,6 +1803,10 @@ struct v4l2_ext_control {
  		struct v4l2_ctrl_hevc_slice_params __user *p_hevc_slice_params;
  		struct v4l2_ctrl_hevc_scaling_matrix __user *p_hevc_scaling_matrix;
  		struct v4l2_ctrl_hevc_decode_params __user *p_hevc_decode_params;
@@ -45048,7 +44818,7 @@ index abaadaf8c1d8a2121ad72b1e22e6413ae9bebdc0..5ae95e3acdc0d001a6be730dd111a15c
  		void __user *ptr;
  	};
  } __attribute__ ((packed));
-@@ -1875,6 +1965,11 @@ enum v4l2_ctrl_type {
+@@ -1875,6 +1880,11 @@ enum v4l2_ctrl_type {
  	V4L2_CTRL_TYPE_HEVC_SLICE_PARAMS	= 0x0272,
  	V4L2_CTRL_TYPE_HEVC_SCALING_MATRIX	= 0x0273,
  	V4L2_CTRL_TYPE_HEVC_DECODE_PARAMS	= 0x0274,
@@ -45060,33 +44830,6 @@ index abaadaf8c1d8a2121ad72b1e22e6413ae9bebdc0..5ae95e3acdc0d001a6be730dd111a15c
  };
  
  /*  Used in the VIDIOC_QUERYCTRL ioctl for querying controls */
-@@ -2335,6 +2430,7 @@ struct v4l2_plane_pix_format {
-  * @hsv_enc:		enum v4l2_hsv_encoding, HSV encoding
-  * @quantization:	enum v4l2_quantization, colorspace quantization
-  * @xfer_func:		enum v4l2_xfer_func, colorspace transfer function
-+ * @request_fd:	fd of the request that trigger the set format operation
-  * @reserved:		drivers and applications must zero this array
-  */
- struct v4l2_pix_format_mplane {
-@@ -2353,7 +2449,8 @@ struct v4l2_pix_format_mplane {
- 	};
- 	__u8				quantization;
- 	__u8				xfer_func;
--	__u8				reserved[7];
-+	__s32				request_fd;
-+	__u8				reserved[6];
- } __attribute__ ((packed));
- 
- /**
-@@ -2427,6 +2524,8 @@ struct v4l2_streamparm {
- #define V4L2_EVENT_SOURCE_CHANGE		5
- #define V4L2_EVENT_MOTION_DET			6
- #define V4L2_EVENT_PRIVATE_START		0x08000000
-+#define V4L2_EVENT_REQUEST_DRAINED              (V4L2_EVENT_PRIVATE_START + 1)
-+#define V4L2_EVENT_REQUEST_DUMPED               (V4L2_EVENT_PRIVATE_START + 2)
- 
- /* Payload for V4L2_EVENT_VSYNC */
- struct v4l2_event_vsync {
 diff --git a/sound/soc/mediatek/Kconfig b/sound/soc/mediatek/Kconfig
 index 363fa4d476800fffdf2e3d6fdab753fd80076091..b746ef8f7aff54b7feb91f626a39bde4dd7a8225 100644
 --- a/sound/soc/mediatek/Kconfig
