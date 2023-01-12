@@ -32,6 +32,7 @@ src_install() {
 
 	insinto /etc/init/
 	doins "${FILESDIR}/modemfwd-helpers.conf"
+	doins "${FILESDIR}/modemfwd-check.conf"
 
 	cellular_dofirmware "${FILESDIR}/firmware_manifest.prototxt"
 
