@@ -24,9 +24,6 @@ modify_kernel_command_line() {
   # enable IOMMU
   echo "intel_iommu=on iommu=pt" >> "$1"
 
-  # enable VFIO-PCI
-  echo "vfio-pci.ids=10de:25a0,10de:25a5,10de:0fbb" >> "$1"
-
   echo "nouveau_modeset=0" >> "$1"
 
   # enable USB serial console for debugging
