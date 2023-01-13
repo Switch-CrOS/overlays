@@ -8,10 +8,13 @@ DESCRIPTION="Virtual for OpenGLES implementations"
 LICENSE="metapackage"
 SLOT="0"
 KEYWORDS="*"
-IUSE=""
+IUSE="video_cards_panfrost"
 
 DEPEND="
-	media-libs/mali-drivers-valhall-bin
-	x11-drivers/opengles-headers
+	video_cards_panfrost? ( media-libs/mesa-panfrost )
+	!video_cards_panfrost? (
+		media-libs/mali-drivers-valhall-bin
+		x11-drivers/opengles-headers
+	)
 "
 RDEPEND="${DEPEND}"

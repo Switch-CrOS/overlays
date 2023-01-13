@@ -8,11 +8,14 @@ DESCRIPTION="Virtual for OpenGLES implementations"
 LICENSE="metapackage"
 SLOT="0"
 KEYWORDS="-* arm arm64"
-IUSE=""
+IUSE="video_cards_panfrost"
 
 DEPEND="
-	media-libs/mali-drivers-bifrost-bin
-	x11-drivers/opengles-headers
+	video_cards_panfrost? ( media-libs/mesa-panfrost )
+	!video_cards_panfrost? (
+		media-libs/mali-drivers-bifrost-bin
+		x11-drivers/opengles-headers
+	)
 "
 RDEPEND="${DEPEND}"
 BDEPEND=""
