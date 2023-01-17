@@ -19,6 +19,6 @@ S=${WORKDIR}/${PN}-adln-${PV}
 
 src_install() {
 	insinto /lib/firmware/intel/sof/community
-	doins sof-adl.ri
-	doins sof-adl.ldc
+	newins sof-adl.ri sof-adl-n.ri
+	newins sof-adl.ldc sof-adl-n.ldc
 }
