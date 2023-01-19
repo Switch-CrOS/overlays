@@ -34,7 +34,7 @@ logerr() {
 # Read the FSG fuse hash, and store the result into
 # fsg_fuse_hash.
 read_fuses() {
-  fuse_path="/sys/bus/nvmem/devices/qfprom0/nvmem"
+  fuse_path="$(realpath /sys/bus/nvmem/devices/qfprom*/nvmem)"
   fsg_fuse_hash=
   if [ ! -r "${fuse_path}" ]; then
     logerr "Fuse driver does not appear to be loaded."
