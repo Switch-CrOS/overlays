@@ -4,8 +4,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-readonly GPIO=345
-readonly GPIO_PATH="/sys/class/gpio/gpio${GPIO}/"
+GPIO_ID=89
+GPIO_OFFSET=$(cat /sys/devices/platform/AMD0030:00/gpio/gpiochip[0-9]*/base)
+GPIO=$((GPIO_OFFSET + GPIO_ID))
+GPIO_PATH="/sys/class/gpio/gpio${GPIO}/"
 
 log() {
   logger "[modem]" "$@"
