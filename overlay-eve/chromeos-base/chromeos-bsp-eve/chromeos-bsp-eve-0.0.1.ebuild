@@ -69,7 +69,9 @@ src_install() {
 
 	# Install platform-specific bluetooth sysprops
 	insinto "/etc/bluetooth/sysprops.conf.d"
+	insopts -m0640
 	doins "${FILESDIR}/eve-bluetooth-sysprops.conf"
+	insopts -m0644
 
 	# Install device-specific automatic brightness model parameters.
 	insinto "/usr/share/chromeos-assets/autobrightness"
