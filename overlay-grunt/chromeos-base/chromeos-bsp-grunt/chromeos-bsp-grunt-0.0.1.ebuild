@@ -38,4 +38,10 @@ src_install() {
 
 	unibuild_install_files audio-files
 	unibuild_install_touch_files
+
+	# Install platform-specific bluetooth sysprops.
+	insinto "/etc/bluetooth/sysprops.conf.d"
+	insopts -m0640
+	doins "${FILESDIR}/grunt-bluetooth-sysprops.conf"
+	insopts -m0644
 }

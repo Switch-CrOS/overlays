@@ -48,4 +48,10 @@ src_install() {
 	# active_product_id to force the touch updater use the new PID.
 	exeinto "/opt/google/touch/scripts"
 	doexe "${FILESDIR}"/get_board_goodix_pid.sh
+
+	# Install platform-specific bluetooth sysprops.
+	insinto "/etc/bluetooth/sysprops.conf.d"
+	insopts -m0640
+	doins "${FILESDIR}/kukui-bluetooth-sysprops.conf"
+	insopts -m0644
 }
