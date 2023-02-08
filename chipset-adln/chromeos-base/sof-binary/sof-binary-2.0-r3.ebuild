@@ -12,6 +12,7 @@ SLOT="0"
 KEYWORDS="*"
 
 RDEPEND="
+	media-libs/adln-aec-param
 "
 DEPEND="${RDEPEND}"
 
