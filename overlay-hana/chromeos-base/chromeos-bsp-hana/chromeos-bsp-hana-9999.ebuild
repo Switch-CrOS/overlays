@@ -36,6 +36,9 @@ src_install() {
 
 	# Install audio config files.
 	local audio_config_dir="${FILESDIR}/audio-config"
+	if use hana-kernelnext; then
+		audio_config_dir="${FILESDIR}/kernelnext-audio-config"
+	fi
 	install_audio_configs hana "${audio_config_dir}"
 
 	# Install rules to enable WoWLAN on startup.
