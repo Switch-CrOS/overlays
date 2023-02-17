@@ -27,4 +27,7 @@ src_install() {
 	insinto /lib/firmware/intel/sof/community
 	doins sof-adl.ri
 	doins sof-adl.ldc
+
+	dosym ./sof-adl.ri /lib/firmware/intel/sof/community/sof-rpl.ri
+	dosym ./sof-adl.ldc /lib/firmware/intel/sof/community/sof-rpl.ldc
 }
