@@ -181,6 +181,9 @@ Diff file is generated via:
 
   git diff --full-index ${base:0:13} ${cl_commit} > ${FLAGS_board}-tot.patch
 
+The changes include:
+  <TODO: Add summary for major changes, or ignore this on trivial ToT rebase>
+
 BUG=b:${FLAGS_bugid}
 TEST=cros-workon-${FLAGS_board} stop ${PKG_NAME}
      emerge-${FLAGS_board} ${PKG_NAME}
