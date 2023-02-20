@@ -11,7 +11,7 @@ KEYWORDS="*"
 IUSE="panfrost"
 
 DEPEND="
-	panfrost? ( media-libs/mesa-panfrost[panfrost] )
+	panfrost? ( media-libs/mesa-panfrost )
 	!panfrost? (
 		media-libs/mali-drivers-bifrost-bin
 		x11-drivers/opengles-headers
