@@ -3028,6 +3028,18 @@ index c3962078d3f615f74ed26c4acd36eb60ddc4c3a3..8c2a7b0e4643482db08bb9f39842a9f2
  dtb-$(CONFIG_ARCH_MEDIATEK) += mt8192-asurada-hayato-r1.dtb
  dtb-$(CONFIG_ARCH_MEDIATEK) += mt8192-asurada-spherion-r0.dtb
  dtb-$(CONFIG_ARCH_MEDIATEK) += mt8192-evb.dtb
+diff --git a/arch/arm64/boot/dts/mediatek/mt6359.dtsi b/arch/arm64/boot/dts/mediatek/mt6359.dtsi
+index df3e822232d340ca1a4885f5f57a0a408e6024de..8550c7918f18e08ae5ae70637c2352100cf25ed4 100644
+--- a/arch/arm64/boot/dts/mediatek/mt6359.dtsi
++++ b/arch/arm64/boot/dts/mediatek/mt6359.dtsi
+@@ -143,6 +143,7 @@ mt6359_vcn18_ldo_reg: ldo_vcn18 {
+ 				regulator-min-microvolt = <1800000>;
+ 				regulator-max-microvolt = <1800000>;
+ 				regulator-enable-ramp-delay = <240>;
++				regulator-always-on;
+ 			};
+ 			mt6359_vfe28_ldo_reg: ldo_vfe28 {
+ 				regulator-name = "vfe28";
 diff --git a/arch/arm64/boot/dts/mediatek/mt8188-evb.dts b/arch/arm64/boot/dts/mediatek/mt8188-evb.dts
 new file mode 100644
 index 0000000000000000000000000000000000000000..2e00b5802c7df507ccb4bcf395663abd4faa9895
@@ -3750,10 +3762,10 @@ index 0000000000000000000000000000000000000000..2e00b5802c7df507ccb4bcf395663abd
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8188-geralt.dts b/arch/arm64/boot/dts/mediatek/mt8188-geralt.dts
 new file mode 100644
-index 0000000000000000000000000000000000000000..73236be9a71bac2d30c0f2f105645e849d63ed2f
+index 0000000000000000000000000000000000000000..e5825ae80d5349362211c2e8594ddcdd9fac2cfc
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt8188-geralt.dts
-@@ -0,0 +1,1156 @@
+@@ -0,0 +1,1166 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
 +/*
 + * Copyright (C) 2022 MediaTek Inc.
@@ -4808,6 +4820,13 @@ index 0000000000000000000000000000000000000000..73236be9a71bac2d30c0f2f105645e84
 +		interrupts = <149 IRQ_TYPE_LEVEL_LOW>;
 +		pinctrl-names = "default";
 +		pinctrl-0 = <&ec_ap_int>;
++
++		i2c_tunnel: i2c-tunnel {
++			compatible = "google,cros-ec-i2c-tunnel";
++			google,remote-bus = <1>;
++			#address-cells = <1>;
++			#size-cells = <0>;
++		};
 +	};
 +};
 +
@@ -4910,6 +4929,9 @@ index 0000000000000000000000000000000000000000..73236be9a71bac2d30c0f2f105645e84
 +	status = "okay";
 +	usb2-lpm-disable;
 +};
++
++#include <arm/cros-ec-keyboard.dtsi>
++#include <arm/cros-ec-sbs.dtsi>
 diff --git a/arch/arm64/boot/dts/mediatek/mt8188.dtsi b/arch/arm64/boot/dts/mediatek/mt8188.dtsi
 new file mode 100644
 index 0000000000000000000000000000000000000000..0eaaa31084419193cee8363440ae32184f399c24
@@ -20986,10 +21008,45 @@ index 7b37b5cf9629545657504180478acef376749933..4dfb596bfb7e4dadada6287352d1f256
 +extern struct platform_driver mtk_disp_padding_driver;
  #endif /* MTK_DRM_DRV_H */
 diff --git a/drivers/gpu/drm/mediatek/mtk_dsi.c b/drivers/gpu/drm/mediatek/mtk_dsi.c
-index 5b624e0f5b0a68e6dedf8cc17c2bfb6114cd94ca..a64b45e9f9c6fe99b14885042b60661bc3d9cd1d 100644
+index 5b624e0f5b0a68e6dedf8cc17c2bfb6114cd94ca..0616aac612164e1ea81c07ee2f744ff29ad80afd 100644
 --- a/drivers/gpu/drm/mediatek/mtk_dsi.c
 +++ b/drivers/gpu/drm/mediatek/mtk_dsi.c
-@@ -865,17 +865,30 @@ static int mtk_dsi_encoder_init(struct drm_device *drm, struct mtk_dsi *dsi)
+@@ -685,6 +685,16 @@ static void mtk_dsi_poweroff(struct mtk_dsi *dsi)
+ 	if (--dsi->refcount != 0)
+ 		return;
+ 
++	/*
++	 * mtk_dsi_stop() and mtk_dsi_start() is asymmetric, since
++	 * mtk_dsi_stop() should be called after mtk_drm_crtc_atomic_disable(),
++	 * which needs irq for vblank, and mtk_dsi_stop() will disable irq.
++	 * mtk_dsi_start() needs to be called in mtk_output_dsi_enable(),
++	 * after dsi is fully set.
++	 */
++	mtk_dsi_stop(dsi);
++
++	mtk_dsi_switch_to_cmd_mode(dsi, VM_DONE_INT_FLAG, 500);
+ 	mtk_dsi_reset_engine(dsi);
+ 	mtk_dsi_lane0_ulp_mode_enter(dsi);
+ 	mtk_dsi_clk_ulp_mode_enter(dsi);
+@@ -735,17 +745,6 @@ static void mtk_output_dsi_disable(struct mtk_dsi *dsi)
+ 	if (!dsi->enabled)
+ 		return;
+ 
+-	/*
+-	 * mtk_dsi_stop() and mtk_dsi_start() is asymmetric, since
+-	 * mtk_dsi_stop() should be called after mtk_drm_crtc_atomic_disable(),
+-	 * which needs irq for vblank, and mtk_dsi_stop() will disable irq.
+-	 * mtk_dsi_start() needs to be called in mtk_output_dsi_enable(),
+-	 * after dsi is fully set.
+-	 */
+-	mtk_dsi_stop(dsi);
+-
+-	mtk_dsi_switch_to_cmd_mode(dsi, VM_DONE_INT_FLAG, 500);
+-
+ 	dsi->enabled = false;
+ }
+ 
+@@ -865,17 +864,30 @@ static int mtk_dsi_encoder_init(struct drm_device *drm, struct mtk_dsi *dsi)
  	return ret;
  }
  
@@ -21021,7 +21078,7 @@ index 5b624e0f5b0a68e6dedf8cc17c2bfb6114cd94ca..a64b45e9f9c6fe99b14885042b60661b
  }
  
  static void mtk_dsi_unbind(struct device *dev, struct device *master,
-@@ -995,6 +1008,7 @@ static void mtk_dsi_cmdq(struct mtk_dsi *dsi, const struct mipi_dsi_msg *msg)
+@@ -995,6 +1007,7 @@ static void mtk_dsi_cmdq(struct mtk_dsi *dsi, const struct mipi_dsi_msg *msg)
  			     tx_buf[i] << (((i + cmdq_off) & 3U) * 8U));
  
  	mtk_dsi_mask(dsi, reg_cmdq_off, cmdq_mask, reg_val);
