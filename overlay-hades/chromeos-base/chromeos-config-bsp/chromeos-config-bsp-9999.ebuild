@@ -7,7 +7,9 @@ inherit cros-constants
 CROS_WORKON_REPO="${CROS_GIT_HOST_URL}"
 
 PROJECTS=(
+	"cora"
 	"hades"
+	"zeus"
 )
 
 CONFIG_PATH="sw_build_config/platform/chromeos-config"
