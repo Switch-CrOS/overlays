@@ -20,5 +20,6 @@ src_install() {
 	doins "${FILESDIR}"/PS1-termina.sh
 
 	insinto /etc/maitred
+	doins "${FILESDIR}/10-mount-vm-tools.textproto"
 	doins "${FILESDIR}/50-mount-fonts.textproto"
 }
