@@ -33,6 +33,9 @@ modify_kernel_command_line() {
   # Disable xDomain protocol on the thunderbolt driver
   echo "xdomain=0" >> "$1"
 
+  # Disable PSR2 by default.
+  echo "i915.enable_psr=1" >> "$1"
+
   # Display kernel debug messages on the UART
   echo "earlyprintk=serial,ttyS0,115200n8 console=ttyS0,115200n8,keep " >> "$1"
 }
