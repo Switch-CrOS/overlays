@@ -22,5 +22,7 @@ RDEPEND="!chromeos-base/arcvm-codec-software"
 src_install() {
 	arc-build-constants-configure
 	insinto "${ARC_VM_VENDOR_DIR}/etc/"
-	doins "${FILESDIR}"/*
+	doins "${FILESDIR}"/*_c2.xml
+
+	unibuild_install_files arc-codec-files
 }
