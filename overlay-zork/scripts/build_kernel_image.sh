@@ -12,8 +12,13 @@
 # See crrev.com/i/216896 as an example.
 
 modify_kernel_command_line() {
-  echo "amdgpu.dcfeaturemask=0x8" >> "$1"
+  {
+    echo "amdgpu.dcfeaturemask=0x8"
 
-  # See b/160277722
-  echo "rtc-cmos.use_acpi_alarm=1" >> "$1"
+    # See b/160277722
+    echo "rtc-cmos.use_acpi_alarm=1"
+
+    # See b/271817196
+    echo "clearcpuid=xsaves"
+  } >> "$1"
 }
