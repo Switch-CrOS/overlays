@@ -3,14 +3,15 @@
 
 EAPI=7
 
-CROS_WORKON_COMMIT="5cc87fae5680d0a168c7c46d10ecc902dcf2ba55"
-CROS_WORKON_TREE=("7901b6dfccda704a689b4370731beb1e3b191db3" "b261b329cc582427c11f748547432526d4c260aa")
+CROS_WORKON_COMMIT="cfa51a666aef915fcdb0842c2ae19788a93a6c4b"
+CROS_WORKON_TREE=("b261b329cc582427c11f748547432526d4c260aa" "7901b6dfccda704a689b4370731beb1e3b191db3" "db154352b1eb9a30e1d80f19f1bb9f0e3ca54f07")
 inherit cros-constants
 CROS_WORKON_REPO="${CROS_GIT_HOST_URL}"
 
 PROJECTS=(
-	"rex"
 	"mtlrvp"
+	"rex"
+	"screebo"
 )
 
 CONFIG_PATH="sw_build_config/platform/chromeos-config"
