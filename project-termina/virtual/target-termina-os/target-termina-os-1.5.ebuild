@@ -19,7 +19,6 @@ RDEPEND="
 	vm-containers? (
 		chromeos-base/termina_container_tools
 		chromeos-base/tremplin
-		chromeos-base/termina-lxd-scripts
 	)
 	chromeos-base/chromeos-bsp-termina
 	chromeos-base/mcastd
@@ -29,6 +28,7 @@ RDEPEND="
 	chromeos-base/vm_guest_tools
 	sys-apps/iproute2
 	sys-auth/pambase
+	sys-fs/btrfs-progs
 	virtual/chromeos-bsp
 	virtual/implicit-system
 	virtual/linux-sources
