@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-EAPI=6
+EAPI=7
 
 DESCRIPTION="AMD Cezanne SOF firmware binary"
 SRC_URI="gs://chromeos-localmirror/distfiles/${PN}-cezanne-${PV}.tar.bz2"

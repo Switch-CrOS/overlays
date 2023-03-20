@@ -1,7 +1,7 @@
 # Copyright 2020 The ChromiumOS Authors
 # Distributed under the terms of the GNU General Public License v2.
 
-EAPI=6
+EAPI=7
 
 DESCRIPTION="Jasper Lake SOF firmware binary"
 SRC_URI="gs://chromeos-localmirror/distfiles/${PN}-jsl-${PV}.tar.xz"

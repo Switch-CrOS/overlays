@@ -1,7 +1,3 @@
-Copyright 2022 The ChromiumOS Authors
-Use of this source code is governed by a BSD-style license that can be
-found in the LICENSE file.
-
 JSL-005 release.
 The topology enabled MCLK always on feature (PR:5952 on SOF repo).
 

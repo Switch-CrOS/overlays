@@ -1,7 +1,3 @@
-Copyright 2022 The ChromiumOS Authors
-Use of this source code is governed by a BSD-style license that can be
-found in the LICENSE file.
-
 MD5SUMs:
 1b06c2c93c72a5b0f5b79bdaf560c0f6  cs35l41-dsp1-spk-cali-tl.bin
 f501e0fb6eb2b39808ae89a4e8e6f822  cs35l41-dsp1-spk-cali-tl.wmfw
