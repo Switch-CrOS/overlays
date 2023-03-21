@@ -14,6 +14,8 @@ SRC_URI="gs://chromeos-localmirror/distfiles/${P}.tbz2"
 
 S="${WORKDIR}"
 src_install() {
-	insinto /
-	doins -r *
+	insinto /lib/firmware/mediatek/mt8188/
+	doins lib/firmware/scp.img
+	# TODO(b/270010491): remove it after geralt kernel patch landed
+	dosym mediatek/mt8188/scp.img /lib/firmware/scp.img
 }
