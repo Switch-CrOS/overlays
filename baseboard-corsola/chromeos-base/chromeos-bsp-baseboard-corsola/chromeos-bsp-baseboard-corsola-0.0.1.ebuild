@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit udev
+inherit arc-build-constants udev
 
 DESCRIPTION="Ebuild which pulls in any necessary ebuilds as dependencies
 or portage actions."
@@ -14,7 +14,7 @@ LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="-* arm64 arm"
 S="${WORKDIR}"
-IUSE=""
+IUSE="cheets"
 
 # Add dependencies on other ebuilds from within this board overlay
 DEPEND="
@@ -32,4 +32,12 @@ src_install() {
 	insinto "/etc/init"
 	doins "${FILESDIR}/udev-trigger-codec.conf"
 	udev_dorules "${FILESDIR}/50-media.rules"
+
+	# Install cpuset adjustments.
+	if use cheets; then
+		arc-build-constants-configure
+
+		insinto "${ARC_PREFIX:?}/vendor/etc/init"
+		doins "${FILESDIR}/init.cpusets.rc"
+	fi
 }
