@@ -150,10 +150,10 @@ index 0000000000000000000000000000000000000000..4cf8d3af98033f2b09cbcc3808084dd0
 +    };
 diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,ethdr.yaml b/Documentation/devicetree/bindings/display/mediatek/mediatek,ethdr.yaml
 new file mode 100644
-index 0000000000000000000000000000000000000000..3b11e47a88345e4ae38e1be17cceb9b56d1aeda6
+index 0000000000000000000000000000000000000000..801fa66ae61501961f8e48ce8b98a228f704e60d
 --- /dev/null
 +++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,ethdr.yaml
-@@ -0,0 +1,188 @@
+@@ -0,0 +1,182 @@
 +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
 +%YAML 1.2
 +---
@@ -254,19 +254,13 @@ index 0000000000000000000000000000000000000000..3b11e47a88345e4ae38e1be17cceb9b5
 +
 +  mediatek,gce-client-reg:
 +    $ref: /schemas/types.yaml#/definitions/phandle-array
++    minItems: 1
++    maxItems: 7
 +    description: The register of display function block to be set by gce.
 +      There are 4 arguments in this property, gce node, subsys id, offset and
 +      register size. The subsys id is defined in the gce header of each chips
 +      include/dt-bindings/gce/<chip>-gce.h, mapping to the register of display
 +      function block.
-+    items:
-+      items:
-+        - description: phandle of GCE
-+        - description: GCE subsys id
-+        - description: register offset
-+        - description: register size
-+    minItems: 7
-+    maxItems: 7
 +
 +required:
 +  - compatible
@@ -2828,10 +2822,10 @@ index 0000000000000000000000000000000000000000..3cec7f9402bb77ac806618129baad4ca
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8188-geralt.dts b/arch/arm64/boot/dts/mediatek/mt8188-geralt.dts
 new file mode 100644
-index 0000000000000000000000000000000000000000..044e677fcb7102a376b7aaa5b2412681920e48c1
+index 0000000000000000000000000000000000000000..6954d1d1730840923a7cd981aead9294e081fc46
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt8188-geralt.dts
-@@ -0,0 +1,1216 @@
+@@ -0,0 +1,1270 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
 +/*
 + * Copyright (C) 2022 MediaTek Inc.
@@ -2855,6 +2849,7 @@ index 0000000000000000000000000000000000000000..044e677fcb7102a376b7aaa5b2412681
 +		i2c5 = &i2c5;
 +		i2c6 = &i2c6;
 +		mmc0 = &mmc0;
++		mmc1 = &mmc1;
 +	};
 +
 +	avdd_lcd: avdd-lcd {
@@ -2873,6 +2868,7 @@ index 0000000000000000000000000000000000000000..044e677fcb7102a376b7aaa5b2412681
 +		enable-active-high;
 +		pinctrl-names = "default";
 +		pinctrl-0 = <&avee_lcd_en>;
++		regulator-enable-ramp-delay = <8000>;
 +	};
 +
 +	backlight_lcd0: backlight_lcd0 {
@@ -3038,6 +3034,7 @@ index 0000000000000000000000000000000000000000..044e677fcb7102a376b7aaa5b2412681
 +		pinctrl-0 = <&panel_pins_default>;
 +		pp1800-supply = <&mt6359_vm18_ldo_reg>;
 +		backlight = <&backlight_lcd1>;
++		rotation = <270>;
 +		status = "okay";
 +
 +		port {
@@ -3326,6 +3323,23 @@ index 0000000000000000000000000000000000000000..044e677fcb7102a376b7aaa5b2412681
 +	non-removable;
 +};
 +
++&mmc1 {
++	status = "okay";
++	pinctrl-names = "default", "state_uhs";
++	pinctrl-0 = <&mmc1_pins_default>;
++	pinctrl-1 = <&mmc1_pins_uhs>;
++	bus-width = <4>;
++	max-frequency = <200000000>;
++	cap-sd-highspeed;
++	sd-uhs-sdr50;
++	sd-uhs-sdr104;
++	no-mmc;
++	no-sdio;
++	cd-gpios = <&pio 107 GPIO_ACTIVE_LOW>;
++	vmmc-supply = <&mt6359_vpa_buck_reg>;
++	vqmmc-supply = <&mt6359_vsim1_ldo_reg>;
++};
++
 +&mt6359codec {
 +	mediatek,dmic-mode = <1>; /* one-wire */
 +	mediatek,mic-type-0 = <2>; /* DMIC */
@@ -3364,6 +3378,10 @@ index 0000000000000000000000000000000000000000..044e677fcb7102a376b7aaa5b2412681
 +
 +&mt6359_vufs_ldo_reg {
 +	regulator-always-on;
++};
++
++&mt6359_vpa_buck_reg {
++	regulator-max-microvolt = <3100000>;
 +};
 +
 +&nor_flash {
@@ -3616,7 +3634,6 @@ index 0000000000000000000000000000000000000000..044e677fcb7102a376b7aaa5b2412681
 +	dptx_pin: dptx-default-pins {
 +		pins-cmd-dat {
 +			pinmux = <PINMUX_GPIO46__FUNC_I0_DP_TX_HPD>;
-+			bias-pull-up;
 +		};
 +	};
 +
@@ -3630,7 +3647,6 @@ index 0000000000000000000000000000000000000000..044e677fcb7102a376b7aaa5b2412681
 +	edp_pins_default: edp-default-pins {
 +		pins-cmd-dat {
 +			pinmux = <PINMUX_GPIO17__FUNC_I0_EDP_TX_HPD>;
-+			bias-pull-up;
 +		};
 +	};
 +
@@ -3659,7 +3675,6 @@ index 0000000000000000000000000000000000000000..044e677fcb7102a376b7aaa5b2412681
 +		pins_bus {
 +			pinmux = <PINMUX_GPIO56__FUNC_B1_SDA0>,
 +				 <PINMUX_GPIO55__FUNC_B1_SCL0>;
-+			bias-pull-up = <MTK_PULL_SET_RSEL_011>;
 +		};
 +	};
 +
@@ -3667,7 +3682,6 @@ index 0000000000000000000000000000000000000000..044e677fcb7102a376b7aaa5b2412681
 +		pins_bus {
 +			pinmux = <PINMUX_GPIO58__FUNC_B1_SDA1>,
 +				 <PINMUX_GPIO57__FUNC_B1_SCL1>;
-+			bias-pull-up = <MTK_PULL_SET_RSEL_011>;
 +		};
 +	};
 +
@@ -3675,7 +3689,6 @@ index 0000000000000000000000000000000000000000..044e677fcb7102a376b7aaa5b2412681
 +		pins_bus {
 +			pinmux = <PINMUX_GPIO60__FUNC_B1_SDA2>,
 +				 <PINMUX_GPIO59__FUNC_B1_SCL2>;
-+			bias-pull-up = <MTK_PULL_SET_RSEL_011>;
 +		};
 +	};
 +
@@ -3683,7 +3696,6 @@ index 0000000000000000000000000000000000000000..044e677fcb7102a376b7aaa5b2412681
 +		pins_bus {
 +			pinmux = <PINMUX_GPIO62__FUNC_B1_SDA3>,
 +				 <PINMUX_GPIO61__FUNC_B1_SCL3>;
-+			bias-pull-up = <MTK_PULL_SET_RSEL_011>;
 +		};
 +	};
 +
@@ -3691,7 +3703,6 @@ index 0000000000000000000000000000000000000000..044e677fcb7102a376b7aaa5b2412681
 +		pins_bus {
 +			pinmux = <PINMUX_GPIO64__FUNC_B1_SDA4>,
 +				 <PINMUX_GPIO63__FUNC_B1_SCL4>;
-+			bias-pull-up = <MTK_PULL_SET_RSEL_011>;
 +		};
 +	};
 +
@@ -3699,7 +3710,6 @@ index 0000000000000000000000000000000000000000..044e677fcb7102a376b7aaa5b2412681
 +		pins_bus {
 +			pinmux = <PINMUX_GPIO66__FUNC_B1_SDA5>,
 +				 <PINMUX_GPIO65__FUNC_B1_SCL5>;
-+			bias-pull-up = <MTK_PULL_SET_RSEL_011>;
 +		};
 +	};
 +
@@ -3707,7 +3717,6 @@ index 0000000000000000000000000000000000000000..044e677fcb7102a376b7aaa5b2412681
 +		pins_bus {
 +			pinmux = <PINMUX_GPIO68__FUNC_B1_SDA6>,
 +				 <PINMUX_GPIO67__FUNC_B1_SCL6>;
-+			bias-pull-up = <MTK_PULL_SET_RSEL_011>;
 +		};
 +	};
 +
@@ -3793,7 +3802,46 @@ index 0000000000000000000000000000000000000000..044e677fcb7102a376b7aaa5b2412681
 +		pins-irq {
 +			pinmux = <PINMUX_GPIO108__FUNC_B_GPIO108>;
 +			input-enable;
++			};
++	};
++
++	mmc1_pins_default: mmc1-pins-default {
++		pins_cmd_dat {
++			pinmux = <PINMUX_GPIO163__FUNC_B1_MSDC1_CMD>,
++				 <PINMUX_GPIO165__FUNC_B1_MSDC1_DAT0>,
++				 <PINMUX_GPIO166__FUNC_B1_MSDC1_DAT1>,
++				 <PINMUX_GPIO167__FUNC_B1_MSDC1_DAT2>,
++				 <PINMUX_GPIO168__FUNC_B1_MSDC1_DAT3>;
++			input-enable;
++			drive-strength = <MTK_DRIVE_6mA>;
++			bias-pull-up = <MTK_PUPD_SET_R1R0_01>;
++		};
++		pins_clk {
++			pinmux = <PINMUX_GPIO164__FUNC_B1_MSDC1_CLK>;
++			drive-strength = <MTK_DRIVE_6mA>;
++			bias-pull-down = <MTK_PUPD_SET_R1R0_10>;
++		};
++		pins_insert {
++			pinmux = <PINMUX_GPIO107__FUNC_B_GPIO107>;
 +			bias-pull-up;
++		};
++	};
++
++	mmc1_pins_uhs: mmc1-pins-uhs {
++		pins_cmd_dat {
++			pinmux = <PINMUX_GPIO163__FUNC_B1_MSDC1_CMD>,
++				 <PINMUX_GPIO165__FUNC_B1_MSDC1_DAT0>,
++				 <PINMUX_GPIO166__FUNC_B1_MSDC1_DAT1>,
++				 <PINMUX_GPIO167__FUNC_B1_MSDC1_DAT2>,
++				 <PINMUX_GPIO168__FUNC_B1_MSDC1_DAT3>;
++			input-enable;
++			drive-strength = <MTK_DRIVE_10mA>;
++			bias-pull-up = <MTK_PUPD_SET_R1R0_01>;
++		};
++		pins_clk {
++			pinmux = <PINMUX_GPIO164__FUNC_B1_MSDC1_CLK>;
++			drive-strength = <MTK_DRIVE_6mA>;
++			bias-pull-down = <MTK_PUPD_SET_R1R0_10>;
 +		};
 +	};
 +
@@ -3833,7 +3881,6 @@ index 0000000000000000000000000000000000000000..044e677fcb7102a376b7aaa5b2412681
 +			pinmux = <PINMUX_GPIO47__FUNC_I1_WAKEN>,
 +				 <PINMUX_GPIO48__FUNC_O_PERSTN>,
 +				 <PINMUX_GPIO49__FUNC_B1_CLKREQN>;
-+			bias-pull-up;
 +		};
 +	};
 +
@@ -3903,6 +3950,7 @@ index 0000000000000000000000000000000000000000..044e677fcb7102a376b7aaa5b2412681
 +};
 +
 +&scp {
++	firmware-name = "mediatek/mt8188/scp.img";
 +	pinctrl-names = "default";
 +	pinctrl-0 = <&scp_pins>;
 +	memory-region = <&scp_mem_reserved>;
@@ -21628,7 +21676,7 @@ index 3517d1c65cd746bdd1ab3a7d3af6aca426d9c3c4..e116d626f7c13a4f3b8c66d135661fe6
  
  obj-$(CONFIG_DRM_MEDIATEK) += mediatek-drm.o
 diff --git a/drivers/gpu/drm/mediatek/mtk_disp_drv.h b/drivers/gpu/drm/mediatek/mtk_disp_drv.h
-index 33e61a136bbc5e635cd5b67074e660b50e8bc378..e1087a04f050e132c3a0a93ebc3acd71af461d3c 100644
+index 33e61a136bbc5e635cd5b67074e660b50e8bc378..79176852e6d5f2466ef43f74e242a98ae31326df 100644
 --- a/drivers/gpu/drm/mediatek/mtk_disp_drv.h
 +++ b/drivers/gpu/drm/mediatek/mtk_disp_drv.h
 @@ -7,6 +7,8 @@
@@ -21652,10 +21700,13 @@ index 33e61a136bbc5e635cd5b67074e660b50e8bc378..e1087a04f050e132c3a0a93ebc3acd71
  
  int mtk_gamma_clk_enable(struct device *dev);
  void mtk_gamma_clk_disable(struct device *dev);
-@@ -116,10 +120,38 @@ void mtk_rdma_unregister_vblank_cb(struct device *dev);
- void mtk_rdma_enable_vblank(struct device *dev);
- void mtk_rdma_disable_vblank(struct device *dev);
- 
+@@ -96,6 +100,34 @@ void mtk_ovl_register_vblank_cb(struct device *dev,
+ void mtk_ovl_unregister_vblank_cb(struct device *dev);
+ void mtk_ovl_enable_vblank(struct device *dev);
+ void mtk_ovl_disable_vblank(struct device *dev);
++const u32 *mtk_ovl_get_formats(struct device *dev);
++size_t mtk_ovl_get_num_formats(struct device *dev);
++
 +void mtk_ovl_adaptor_add_comp(struct device *dev, struct mtk_mutex *mutex);
 +void mtk_ovl_adaptor_remove_comp(struct device *dev, struct mtk_mutex *mutex);
 +void mtk_ovl_adaptor_connect(struct device *dev, struct device *mmsys_dev,
@@ -21679,10 +21730,21 @@ index 33e61a136bbc5e635cd5b67074e660b50e8bc378..e1087a04f050e132c3a0a93ebc3acd71
 +void mtk_ovl_adaptor_stop(struct device *dev);
 +unsigned int mtk_ovl_adaptor_layer_nr(struct device *dev);
 +struct device *mtk_ovl_adaptor_dma_dev_get(struct device *dev);
-+
++const u32 *mtk_ovl_adaptor_get_formats(struct device *dev);
++size_t mtk_ovl_adaptor_get_num_formats(struct device *dev);
+ 
+ void mtk_rdma_bypass_shadow(struct device *dev);
+ int mtk_rdma_clk_enable(struct device *dev);
+@@ -115,6 +147,8 @@ void mtk_rdma_register_vblank_cb(struct device *dev,
+ void mtk_rdma_unregister_vblank_cb(struct device *dev);
+ void mtk_rdma_enable_vblank(struct device *dev);
+ void mtk_rdma_disable_vblank(struct device *dev);
++const u32 *mtk_rdma_get_formats(struct device *dev);
++size_t mtk_rdma_get_num_formats(struct device *dev);
+ 
  int mtk_mdp_rdma_clk_enable(struct device *dev);
  void mtk_mdp_rdma_clk_disable(struct device *dev);
- void mtk_mdp_rdma_start(struct device *dev, struct cmdq_pkt *cmdq_pkt);
+@@ -122,4 +156,8 @@ void mtk_mdp_rdma_start(struct device *dev, struct cmdq_pkt *cmdq_pkt);
  void mtk_mdp_rdma_stop(struct device *dev, struct cmdq_pkt *cmdq_pkt);
  void mtk_mdp_rdma_config(struct device *dev, struct mtk_mdp_rdma_cfg *cfg,
  			 struct cmdq_pkt *cmdq_pkt);
@@ -21729,12 +21791,304 @@ index 6428b6203ffe8c2bb44cf95068fa61bc924b700e..7221cafd6204ec0ab309c1801a191d03
  	{ .compatible = "mediatek,mt8195-disp-merge", },
  	{},
  };
+diff --git a/drivers/gpu/drm/mediatek/mtk_disp_ovl.c b/drivers/gpu/drm/mediatek/mtk_disp_ovl.c
+index 002b0f6cae1a063322dbb0e8ae33337c55325314..7d26f70557516c5bdf4a9aaad42335b96b82e0ae 100644
+--- a/drivers/gpu/drm/mediatek/mtk_disp_ovl.c
++++ b/drivers/gpu/drm/mediatek/mtk_disp_ovl.c
+@@ -29,17 +29,23 @@
+ #define DISP_REG_OVL_DATAPATH_CON		0x0024
+ #define OVL_LAYER_SMI_ID_EN				BIT(0)
+ #define OVL_BGCLR_SEL_IN				BIT(2)
++#define OVL_LAYER_AFBC_EN(n)				BIT(4+n)
+ #define DISP_REG_OVL_ROI_BGCLR			0x0028
+ #define DISP_REG_OVL_SRC_CON			0x002c
+ #define DISP_REG_OVL_CON(n)			(0x0030 + 0x20 * (n))
+ #define DISP_REG_OVL_SRC_SIZE(n)		(0x0038 + 0x20 * (n))
+ #define DISP_REG_OVL_OFFSET(n)			(0x003c + 0x20 * (n))
++#define DISP_REG_OVL_PITCH_MSB(n)		(0x0040 + 0x20 * (n))
++#define OVL_PITCH_MSB_2ND_SUBBUF			BIT(16)
+ #define DISP_REG_OVL_PITCH(n)			(0x0044 + 0x20 * (n))
+ #define DISP_REG_OVL_RDMA_CTRL(n)		(0x00c0 + 0x20 * (n))
+ #define DISP_REG_OVL_RDMA_GMC(n)		(0x00c8 + 0x20 * (n))
+ #define DISP_REG_OVL_ADDR_MT2701		0x0040
++#define DISP_REG_OVL_CLRFMT_EXT			0x02D0
+ #define DISP_REG_OVL_ADDR_MT8173		0x0f40
+ #define DISP_REG_OVL_ADDR(ovl, n)		((ovl)->data->addr + 0x20 * (n))
++#define DISP_REG_OVL_HDR_ADDR(ovl, n)		((ovl)->data->addr + 0x20 * (n) + 0x04)
++#define DISP_REG_OVL_HDR_PITCH(ovl, n)		((ovl)->data->addr + 0x20 * (n) + 0x08)
+ 
+ #define GMC_THRESHOLD_BITS	16
+ #define GMC_THRESHOLD_HIGH	((1 << GMC_THRESHOLD_BITS) / 4)
+@@ -56,17 +62,55 @@
+ 					0 : OVL_CON_CLRFMT_RGB)
+ #define OVL_CON_CLRFMT_RGB888(ovl)	((ovl)->data->fmt_rgb565_is_0 ? \
+ 					OVL_CON_CLRFMT_RGB : 0)
++#define OVL_CON_CLRFMT_BIT_DEPTH_MASK(ovl)	(0xFF << 4 * (ovl))
++#define OVL_CON_CLRFMT_BIT_DEPTH(depth, ovl)	(depth << 4 * (ovl))
++#define OVL_CON_CLRFMT_8_BIT			0x00
++#define OVL_CON_CLRFMT_10_BIT			0x01
+ #define	OVL_CON_AEN		BIT(8)
+ #define	OVL_CON_ALPHA		0xff
+ #define	OVL_CON_VIRT_FLIP	BIT(9)
+ #define	OVL_CON_HORZ_FLIP	BIT(10)
+ 
++static const u32 mt8173_formats[] = {
++	DRM_FORMAT_XRGB8888,
++	DRM_FORMAT_ARGB8888,
++	DRM_FORMAT_BGRX8888,
++	DRM_FORMAT_BGRA8888,
++	DRM_FORMAT_ABGR8888,
++	DRM_FORMAT_XBGR8888,
++	DRM_FORMAT_RGB888,
++	DRM_FORMAT_BGR888,
++	DRM_FORMAT_RGB565,
++	DRM_FORMAT_UYVY,
++	DRM_FORMAT_YUYV,
++};
++
++static const u32 mt8195_formats[] = {
++	DRM_FORMAT_XRGB8888,
++	DRM_FORMAT_ARGB8888,
++	DRM_FORMAT_ARGB2101010,
++	DRM_FORMAT_BGRX8888,
++	DRM_FORMAT_BGRA8888,
++	DRM_FORMAT_BGRA1010102,
++	DRM_FORMAT_ABGR8888,
++	DRM_FORMAT_XBGR8888,
++	DRM_FORMAT_RGB888,
++	DRM_FORMAT_BGR888,
++	DRM_FORMAT_RGB565,
++	DRM_FORMAT_UYVY,
++	DRM_FORMAT_YUYV,
++};
++
+ struct mtk_disp_ovl_data {
+ 	unsigned int addr;
+ 	unsigned int gmc_bits;
+ 	unsigned int layer_nr;
+ 	bool fmt_rgb565_is_0;
+ 	bool smi_id_en;
++	bool supports_afbc;
++	const u32 *formats;
++	size_t num_formats;
++	bool supports_clrfmt_ext;
+ };
+ 
+ /*
+@@ -132,6 +176,20 @@ void mtk_ovl_disable_vblank(struct device *dev)
+ 	writel_relaxed(0x0, ovl->regs + DISP_REG_OVL_INTEN);
+ }
+ 
++const u32 *mtk_ovl_get_formats(struct device *dev)
++{
++	struct mtk_disp_ovl *ovl = dev_get_drvdata(dev);
++
++	return ovl->data->formats;
++}
++
++size_t mtk_ovl_get_num_formats(struct device *dev)
++{
++	struct mtk_disp_ovl *ovl = dev_get_drvdata(dev);
++
++	return ovl->data->num_formats;
++}
++
+ int mtk_ovl_clk_enable(struct device *dev)
+ {
+ 	struct mtk_disp_ovl *ovl = dev_get_drvdata(dev);
+@@ -172,7 +230,38 @@ void mtk_ovl_stop(struct device *dev)
+ 		reg = reg & ~OVL_LAYER_SMI_ID_EN;
+ 		writel_relaxed(reg, ovl->regs + DISP_REG_OVL_DATAPATH_CON);
+ 	}
++}
++
++static void mtk_ovl_set_afbc(struct mtk_disp_ovl *ovl, struct cmdq_pkt *cmdq_pkt,
++			     int idx, bool enabled)
++{
++	mtk_ddp_write_mask(cmdq_pkt, enabled ? OVL_LAYER_AFBC_EN(idx) : 0,
++			   &ovl->cmdq_reg, ovl->regs,
++			   DISP_REG_OVL_DATAPATH_CON, OVL_LAYER_AFBC_EN(idx));
++}
++
++static void mtk_ovl_set_bit_depth(struct device *dev, int idx, u32 format,
++				  struct cmdq_pkt *cmdq_pkt)
++{
++	struct mtk_disp_ovl *ovl = dev_get_drvdata(dev);
++	unsigned int reg;
++	unsigned int bit_depth = OVL_CON_CLRFMT_8_BIT;
++
++	if (!ovl->data->supports_clrfmt_ext)
++		return;
+ 
++	reg = readl(ovl->regs + DISP_REG_OVL_CLRFMT_EXT);
++	reg &= ~OVL_CON_CLRFMT_BIT_DEPTH_MASK(idx);
++
++	if (format == DRM_FORMAT_RGBA1010102 ||
++	    format == DRM_FORMAT_BGRA1010102 ||
++	    format == DRM_FORMAT_ARGB2101010)
++		bit_depth = OVL_CON_CLRFMT_10_BIT;
++
++	reg |= OVL_CON_CLRFMT_BIT_DEPTH(bit_depth, idx);
++
++	mtk_ddp_write(cmdq_pkt, reg, &ovl->cmdq_reg,
++		      ovl->regs, DISP_REG_OVL_CLRFMT_EXT);
+ }
+ 
+ void mtk_ovl_config(struct device *dev, unsigned int w,
+@@ -289,9 +378,11 @@ static unsigned int ovl_fmt_convert(struct mtk_disp_ovl *ovl, unsigned int fmt)
+ 		return OVL_CON_CLRFMT_ARGB8888;
+ 	case DRM_FORMAT_BGRX8888:
+ 	case DRM_FORMAT_BGRA8888:
++	case DRM_FORMAT_BGRA1010102:
+ 		return OVL_CON_CLRFMT_ARGB8888 | OVL_CON_BYTE_SWAP;
+ 	case DRM_FORMAT_XRGB8888:
+ 	case DRM_FORMAT_ARGB8888:
++	case DRM_FORMAT_ARGB2101010:
+ 		return OVL_CON_CLRFMT_RGBA8888;
+ 	case DRM_FORMAT_XBGR8888:
+ 	case DRM_FORMAT_ABGR8888:
+@@ -310,11 +401,23 @@ void mtk_ovl_layer_config(struct device *dev, unsigned int idx,
+ 	struct mtk_disp_ovl *ovl = dev_get_drvdata(dev);
+ 	struct mtk_plane_pending_state *pending = &state->pending;
+ 	unsigned int addr = pending->addr;
+-	unsigned int pitch = pending->pitch & 0xffff;
++	unsigned int hdr_addr = pending->hdr_addr;
++	unsigned int pitch = pending->pitch;
++	unsigned int hdr_pitch = pending->hdr_pitch;
+ 	unsigned int fmt = pending->format;
+ 	unsigned int offset = (pending->y << 16) | pending->x;
+ 	unsigned int src_size = (pending->height << 16) | pending->width;
+ 	unsigned int con;
++	bool is_afbc = pending->modifier != DRM_FORMAT_MOD_LINEAR;
++	union overlay_pitch {
++		struct split_pitch {
++			u16 lsb;
++			u16 msb;
++		} split_pitch;
++		u32 pitch;
++	} overlay_pitch;
++
++	overlay_pitch.pitch = pitch;
+ 
+ 	if (!pending->enable) {
+ 		mtk_ovl_layer_off(dev, idx, cmdq_pkt);
+@@ -335,9 +438,12 @@ void mtk_ovl_layer_config(struct device *dev, unsigned int idx,
+ 		addr += pending->pitch - 1;
+ 	}
+ 
++	if (ovl->data->supports_afbc)
++		mtk_ovl_set_afbc(ovl, cmdq_pkt, idx, is_afbc);
++
+ 	mtk_ddp_write_relaxed(cmdq_pkt, con, &ovl->cmdq_reg, ovl->regs,
+ 			      DISP_REG_OVL_CON(idx));
+-	mtk_ddp_write_relaxed(cmdq_pkt, pitch, &ovl->cmdq_reg, ovl->regs,
++	mtk_ddp_write_relaxed(cmdq_pkt, overlay_pitch.split_pitch.lsb, &ovl->cmdq_reg, ovl->regs,
+ 			      DISP_REG_OVL_PITCH(idx));
+ 	mtk_ddp_write_relaxed(cmdq_pkt, src_size, &ovl->cmdq_reg, ovl->regs,
+ 			      DISP_REG_OVL_SRC_SIZE(idx));
+@@ -346,6 +452,21 @@ void mtk_ovl_layer_config(struct device *dev, unsigned int idx,
+ 	mtk_ddp_write_relaxed(cmdq_pkt, addr, &ovl->cmdq_reg, ovl->regs,
+ 			      DISP_REG_OVL_ADDR(ovl, idx));
+ 
++	if (is_afbc) {
++		mtk_ddp_write_relaxed(cmdq_pkt, hdr_addr, &ovl->cmdq_reg, ovl->regs,
++				      DISP_REG_OVL_HDR_ADDR(ovl, idx));
++		mtk_ddp_write_relaxed(cmdq_pkt,
++				      OVL_PITCH_MSB_2ND_SUBBUF | overlay_pitch.split_pitch.msb,
++				      &ovl->cmdq_reg, ovl->regs, DISP_REG_OVL_PITCH_MSB(idx));
++		mtk_ddp_write_relaxed(cmdq_pkt, hdr_pitch, &ovl->cmdq_reg, ovl->regs,
++				      DISP_REG_OVL_HDR_PITCH(ovl, idx));
++	} else {
++		mtk_ddp_write_relaxed(cmdq_pkt,
++				      overlay_pitch.split_pitch.msb,
++				      &ovl->cmdq_reg, ovl->regs, DISP_REG_OVL_PITCH_MSB(idx));
++	}
++
++	mtk_ovl_set_bit_depth(dev, idx, fmt, cmdq_pkt);
+ 	mtk_ovl_layer_on(dev, idx, cmdq_pkt);
+ }
+ 
+@@ -453,6 +574,8 @@ static const struct mtk_disp_ovl_data mt2701_ovl_driver_data = {
+ 	.gmc_bits = 8,
+ 	.layer_nr = 4,
+ 	.fmt_rgb565_is_0 = false,
++	.formats = mt8173_formats,
++	.num_formats = ARRAY_SIZE(mt8173_formats),
+ };
+ 
+ static const struct mtk_disp_ovl_data mt8173_ovl_driver_data = {
+@@ -460,6 +583,8 @@ static const struct mtk_disp_ovl_data mt8173_ovl_driver_data = {
+ 	.gmc_bits = 8,
+ 	.layer_nr = 4,
+ 	.fmt_rgb565_is_0 = true,
++	.formats = mt8173_formats,
++	.num_formats = ARRAY_SIZE(mt8173_formats),
+ };
+ 
+ static const struct mtk_disp_ovl_data mt8183_ovl_driver_data = {
+@@ -467,6 +592,8 @@ static const struct mtk_disp_ovl_data mt8183_ovl_driver_data = {
+ 	.gmc_bits = 10,
+ 	.layer_nr = 4,
+ 	.fmt_rgb565_is_0 = true,
++	.formats = mt8173_formats,
++	.num_formats = ARRAY_SIZE(mt8173_formats),
+ };
+ 
+ static const struct mtk_disp_ovl_data mt8183_ovl_2l_driver_data = {
+@@ -474,6 +601,8 @@ static const struct mtk_disp_ovl_data mt8183_ovl_2l_driver_data = {
+ 	.gmc_bits = 10,
+ 	.layer_nr = 2,
+ 	.fmt_rgb565_is_0 = true,
++	.formats = mt8173_formats,
++	.num_formats = ARRAY_SIZE(mt8173_formats),
+ };
+ 
+ static const struct mtk_disp_ovl_data mt8192_ovl_driver_data = {
+@@ -482,6 +611,8 @@ static const struct mtk_disp_ovl_data mt8192_ovl_driver_data = {
+ 	.layer_nr = 4,
+ 	.fmt_rgb565_is_0 = true,
+ 	.smi_id_en = true,
++	.formats = mt8173_formats,
++	.num_formats = ARRAY_SIZE(mt8173_formats),
+ };
+ 
+ static const struct mtk_disp_ovl_data mt8192_ovl_2l_driver_data = {
+@@ -490,6 +621,20 @@ static const struct mtk_disp_ovl_data mt8192_ovl_2l_driver_data = {
+ 	.layer_nr = 2,
+ 	.fmt_rgb565_is_0 = true,
+ 	.smi_id_en = true,
++	.formats = mt8173_formats,
++	.num_formats = ARRAY_SIZE(mt8173_formats),
++};
++
++static const struct mtk_disp_ovl_data mt8195_ovl_driver_data = {
++	.addr = DISP_REG_OVL_ADDR_MT8173,
++	.gmc_bits = 10,
++	.layer_nr = 4,
++	.fmt_rgb565_is_0 = true,
++	.smi_id_en = true,
++	.supports_afbc = true,
++	.formats = mt8195_formats,
++	.num_formats = ARRAY_SIZE(mt8195_formats),
++	.supports_clrfmt_ext = true,
+ };
+ 
+ static const struct of_device_id mtk_disp_ovl_driver_dt_match[] = {
+@@ -505,6 +650,8 @@ static const struct of_device_id mtk_disp_ovl_driver_dt_match[] = {
+ 	  .data = &mt8192_ovl_driver_data},
+ 	{ .compatible = "mediatek,mt8192-disp-ovl-2l",
+ 	  .data = &mt8192_ovl_2l_driver_data},
++	{ .compatible = "mediatek,mt8195-disp-ovl",
++	  .data = &mt8195_ovl_driver_data},
+ 	{},
+ };
+ MODULE_DEVICE_TABLE(of, mtk_disp_ovl_driver_dt_match);
 diff --git a/drivers/gpu/drm/mediatek/mtk_disp_ovl_adaptor.c b/drivers/gpu/drm/mediatek/mtk_disp_ovl_adaptor.c
 new file mode 100644
-index 0000000000000000000000000000000000000000..7eab96b7249af7738f8734b73bf553394d96e1af
+index 0000000000000000000000000000000000000000..cc32263d2910fdc5fb16bcaa782762aa1f21ae7c
 --- /dev/null
 +++ b/drivers/gpu/drm/mediatek/mtk_disp_ovl_adaptor.c
-@@ -0,0 +1,576 @@
+@@ -0,0 +1,600 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +/*
 + * Copyright (c) 2021 MediaTek Inc.
@@ -21761,6 +22115,20 @@ index 0000000000000000000000000000000000000000..7eab96b7249af7738f8734b73bf55339
 +
 +#define MTK_OVL_ADAPTOR_RDMA_MAX_WIDTH 1920
 +#define MTK_OVL_ADAPTOR_LAYER_NUM 4
++
++static const u32 formats[] = {
++	DRM_FORMAT_XRGB8888,
++	DRM_FORMAT_ARGB8888,
++	DRM_FORMAT_BGRX8888,
++	DRM_FORMAT_BGRA8888,
++	DRM_FORMAT_ABGR8888,
++	DRM_FORMAT_XBGR8888,
++	DRM_FORMAT_RGB888,
++	DRM_FORMAT_BGR888,
++	DRM_FORMAT_RGB565,
++	DRM_FORMAT_UYVY,
++	DRM_FORMAT_YUYV,
++};
 +
 +enum mtk_ovl_adaptor_comp_type {
 +	OVL_ADAPTOR_TYPE_RDMA = 0,
@@ -22077,6 +22445,16 @@ index 0000000000000000000000000000000000000000..7eab96b7249af7738f8734b73bf55339
 +	struct mtk_disp_ovl_adaptor *ovl_adaptor = dev_get_drvdata(dev);
 +
 +	mtk_ethdr_disable_vblank(ovl_adaptor->comp[OVL_ADAPTOR_ETHDR0]);
++}
++
++const u32 *mtk_ovl_adaptor_get_formats(struct device *dev)
++{
++	return formats;
++}
++
++size_t mtk_ovl_adaptor_get_num_formats(struct device *dev)
++{
++	return ARRAY_SIZE(formats);
 +}
 +
 +void mtk_ovl_adaptor_add_comp(struct device *dev, struct mtk_mutex *mutex)
@@ -22452,29 +22830,82 @@ index 0000000000000000000000000000000000000000..5722aa57d6288a76bc92a5b3a3337a8f
 +		0b11, &padding->cmdq_reg, padding->regs, 0, 0b11);
 +}
 diff --git a/drivers/gpu/drm/mediatek/mtk_disp_rdma.c b/drivers/gpu/drm/mediatek/mtk_disp_rdma.c
-index 0ec2e4049e0799cdb72fa2e35fc81a7c80823652..66cdd0bc1311bbd0f1869f86874fd19254a10f08 100644
+index 0ec2e4049e0799cdb72fa2e35fc81a7c80823652..cf92df8451607a223ef82c8dc47e6b764bcf0860 100644
 --- a/drivers/gpu/drm/mediatek/mtk_disp_rdma.c
 +++ b/drivers/gpu/drm/mediatek/mtk_disp_rdma.c
-@@ -370,6 +370,10 @@ static const struct mtk_disp_rdma_data mt8183_rdma_driver_data = {
- 	.fifo_size = 5 * SZ_1K,
- };
+@@ -54,8 +54,24 @@
  
-+static const struct mtk_disp_rdma_data mt8192_rdma_driver_data = {
-+	.fifo_size = 5 * SZ_1K,
+ #define RDMA_MEM_GMC				0x40402020
+ 
++static const u32 mt8173_formats[] = {
++	DRM_FORMAT_XRGB8888,
++	DRM_FORMAT_ARGB8888,
++	DRM_FORMAT_BGRX8888,
++	DRM_FORMAT_BGRA8888,
++	DRM_FORMAT_ABGR8888,
++	DRM_FORMAT_XBGR8888,
++	DRM_FORMAT_RGB888,
++	DRM_FORMAT_BGR888,
++	DRM_FORMAT_RGB565,
++	DRM_FORMAT_UYVY,
++	DRM_FORMAT_YUYV,
 +};
 +
+ struct mtk_disp_rdma_data {
+ 	unsigned int fifo_size;
++	const u32 *formats;
++	size_t num_formats;
+ };
+ 
+ /*
+@@ -126,6 +142,20 @@ void mtk_rdma_disable_vblank(struct device *dev)
+ 	rdma_update_bits(dev, DISP_REG_RDMA_INT_ENABLE, RDMA_FRAME_END_INT, 0);
+ }
+ 
++const u32 *mtk_rdma_get_formats(struct device *dev)
++{
++	struct mtk_disp_rdma *rdma = dev_get_drvdata(dev);
++
++	return rdma->data->formats;
++}
++
++size_t mtk_rdma_get_num_formats(struct device *dev)
++{
++	struct mtk_disp_rdma *rdma = dev_get_drvdata(dev);
++
++	return rdma->data->num_formats;
++}
++
+ int mtk_rdma_clk_enable(struct device *dev)
+ {
+ 	struct mtk_disp_rdma *rdma = dev_get_drvdata(dev);
+@@ -360,18 +390,26 @@ static int mtk_disp_rdma_remove(struct platform_device *pdev)
+ 
+ static const struct mtk_disp_rdma_data mt2701_rdma_driver_data = {
+ 	.fifo_size = SZ_4K,
++	.formats = mt8173_formats,
++	.num_formats = ARRAY_SIZE(mt8173_formats),
+ };
+ 
+ static const struct mtk_disp_rdma_data mt8173_rdma_driver_data = {
+ 	.fifo_size = SZ_8K,
++	.formats = mt8173_formats,
++	.num_formats = ARRAY_SIZE(mt8173_formats),
+ };
+ 
+ static const struct mtk_disp_rdma_data mt8183_rdma_driver_data = {
+ 	.fifo_size = 5 * SZ_1K,
++	.formats = mt8173_formats,
++	.num_formats = ARRAY_SIZE(mt8173_formats),
+ };
+ 
  static const struct mtk_disp_rdma_data mt8195_rdma_driver_data = {
  	.fifo_size = 1920,
++	.formats = mt8173_formats,
++	.num_formats = ARRAY_SIZE(mt8173_formats),
  };
-@@ -381,6 +385,8 @@ static const struct of_device_id mtk_disp_rdma_driver_dt_match[] = {
- 	  .data = &mt8173_rdma_driver_data},
- 	{ .compatible = "mediatek,mt8183-disp-rdma",
- 	  .data = &mt8183_rdma_driver_data},
-+	{ .compatible = "mediatek,mt8192-disp-rdma",
-+	  .data = &mt8192_rdma_driver_data},
- 	{ .compatible = "mediatek,mt8195-disp-rdma",
- 	  .data = &mt8195_rdma_driver_data},
- 	{},
+ 
+ static const struct of_device_id mtk_disp_rdma_driver_dt_match[] = {
 diff --git a/drivers/gpu/drm/mediatek/mtk_dp.c b/drivers/gpu/drm/mediatek/mtk_dp.c
 index 9d085c05c49c3b1683b81e2bbfc415d7e5728a99..f52d1156ceeaa6087fc34caa9f91b4b7fb08c0eb 100644
 --- a/drivers/gpu/drm/mediatek/mtk_dp.c
@@ -22670,7 +23101,7 @@ index 00f7b9112466cf40e74b45bfe0ce894695eeb7a4..e02f2b74dbfbe4a2007d8b65ead06779
  {
  	struct mtk_dpi *dpi = dev_get_drvdata(dev);
 diff --git a/drivers/gpu/drm/mediatek/mtk_drm_crtc.c b/drivers/gpu/drm/mediatek/mtk_drm_crtc.c
-index 5071f1263216b21f693aa69a33e167d3183ba2b5..f4ae212a2b8fb177363463ebc3aa220f802fe60c 100644
+index 5071f1263216b21f693aa69a33e167d3183ba2b5..d252a21dbe2164dcbc8797857a5d4b005f61bbcd 100644
 --- a/drivers/gpu/drm/mediatek/mtk_drm_crtc.c
 +++ b/drivers/gpu/drm/mediatek/mtk_drm_crtc.c
 @@ -58,9 +58,15 @@ struct mtk_drm_crtc {
@@ -22843,7 +23274,18 @@ index 5071f1263216b21f693aa69a33e167d3183ba2b5..f4ae212a2b8fb177363463ebc3aa220f
  	ret = pm_runtime_resume_and_get(comp->dev);
  	if (ret < 0) {
  		DRM_DEV_ERROR(comp->dev, "Failed to enable power domain: %d\n", ret);
-@@ -865,22 +965,39 @@ static int mtk_drm_crtc_init_comp_planes(struct drm_device *drm_dev,
+@@ -856,7 +956,9 @@ static int mtk_drm_crtc_init_comp_planes(struct drm_device *drm_dev,
+ 				BIT(pipe),
+ 				mtk_drm_crtc_plane_type(mtk_crtc->layer_nr,
+ 							num_planes),
+-				mtk_ddp_comp_supported_rotations(comp));
++				mtk_ddp_comp_supported_rotations(comp),
++				mtk_ddp_comp_get_formats(comp),
++				mtk_ddp_comp_get_num_formats(comp));
+ 		if (ret)
+ 			return ret;
+ 
+@@ -865,22 +967,39 @@ static int mtk_drm_crtc_init_comp_planes(struct drm_device *drm_dev,
  	return 0;
  }
  
@@ -22885,7 +23327,7 @@ index 5071f1263216b21f693aa69a33e167d3183ba2b5..f4ae212a2b8fb177363463ebc3aa220f
  	for (i = 0; i < path_len; i++) {
  		enum mtk_ddp_comp_id comp_id = path[i];
  		struct device_node *node;
-@@ -889,10 +1006,13 @@ int mtk_drm_crtc_create(struct drm_device *drm_dev,
+@@ -889,10 +1008,13 @@ int mtk_drm_crtc_create(struct drm_device *drm_dev,
  		node = priv->comp_node[comp_id];
  		comp = &priv->ddp_comp[comp_id];
  
@@ -22902,7 +23344,7 @@ index 5071f1263216b21f693aa69a33e167d3183ba2b5..f4ae212a2b8fb177363463ebc3aa220f
  			return 0;
  		}
  
-@@ -908,7 +1028,24 @@ int mtk_drm_crtc_create(struct drm_device *drm_dev,
+@@ -908,7 +1030,24 @@ int mtk_drm_crtc_create(struct drm_device *drm_dev,
  
  	mtk_crtc->mmsys_dev = priv->mmsys_dev;
  	mtk_crtc->ddp_comp_nr = path_len;
@@ -22928,7 +23370,7 @@ index 5071f1263216b21f693aa69a33e167d3183ba2b5..f4ae212a2b8fb177363463ebc3aa220f
  						sizeof(*mtk_crtc->ddp_comp),
  						GFP_KERNEL);
  	if (!mtk_crtc->ddp_comp)
-@@ -922,7 +1059,7 @@ int mtk_drm_crtc_create(struct drm_device *drm_dev,
+@@ -922,7 +1061,7 @@ int mtk_drm_crtc_create(struct drm_device *drm_dev,
  	}
  
  	for (i = 0; i < mtk_crtc->ddp_comp_nr; i++) {
@@ -22937,7 +23379,7 @@ index 5071f1263216b21f693aa69a33e167d3183ba2b5..f4ae212a2b8fb177363463ebc3aa220f
  		struct mtk_ddp_comp *comp;
  
  		comp = &priv->ddp_comp[comp_id];
-@@ -950,29 +1087,35 @@ int mtk_drm_crtc_create(struct drm_device *drm_dev,
+@@ -950,29 +1089,35 @@ int mtk_drm_crtc_create(struct drm_device *drm_dev,
  
  	for (i = 0; i < mtk_crtc->ddp_comp_nr; i++) {
  		ret = mtk_drm_crtc_init_comp_planes(drm_dev, mtk_crtc, i,
@@ -22978,7 +23420,7 @@ index 5071f1263216b21f693aa69a33e167d3183ba2b5..f4ae212a2b8fb177363463ebc3aa220f
  	if (IS_ERR(mtk_crtc->cmdq_client.chan)) {
  		dev_dbg(dev, "mtk_crtc %d failed to create mailbox client, writing register by CPU now\n",
  			drm_crtc_index(&mtk_crtc->base));
-@@ -982,7 +1125,7 @@ int mtk_drm_crtc_create(struct drm_device *drm_dev,
+@@ -982,7 +1127,7 @@ int mtk_drm_crtc_create(struct drm_device *drm_dev,
  	if (mtk_crtc->cmdq_client.chan) {
  		ret = of_property_read_u32_index(priv->mutex_node,
  						 "mediatek,gce-events",
@@ -23018,7 +23460,7 @@ index cb9a36c48d4fdc096e9ce3c57e8f8078a6cef32c..96790f8f7a94735fb576f072846b161b
  
  #endif /* MTK_DRM_CRTC_H */
 diff --git a/drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.c b/drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.c
-index 6b6d5335c8347bed246d357a6454c35622f5b4e5..f83a14537ad69fc91b72526d45a57b2284beec93 100644
+index 6b6d5335c8347bed246d357a6454c35622f5b4e5..17b89addc40d70d8066c39c7826161b2e589bc9f 100644
 --- a/drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.c
 +++ b/drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.c
 @@ -304,6 +304,7 @@ static const struct mtk_ddp_comp_funcs ddp_dither = {
@@ -23037,7 +23479,25 @@ index 6b6d5335c8347bed246d357a6454c35622f5b4e5..f83a14537ad69fc91b72526d45a57b22
  };
  
  static const struct mtk_ddp_comp_funcs ddp_gamma = {
-@@ -389,6 +391,25 @@ static const struct mtk_ddp_comp_funcs ddp_ufoe = {
+@@ -359,6 +361,8 @@ static const struct mtk_ddp_comp_funcs ddp_ovl = {
+ 	.layer_config = mtk_ovl_layer_config,
+ 	.bgclr_in_on = mtk_ovl_bgclr_in_on,
+ 	.bgclr_in_off = mtk_ovl_bgclr_in_off,
++	.get_formats = mtk_ovl_get_formats,
++	.get_num_formats = mtk_ovl_get_num_formats,
+ };
+ 
+ static const struct mtk_ddp_comp_funcs ddp_postmask = {
+@@ -381,6 +385,8 @@ static const struct mtk_ddp_comp_funcs ddp_rdma = {
+ 	.disable_vblank = mtk_rdma_disable_vblank,
+ 	.layer_nr = mtk_rdma_layer_nr,
+ 	.layer_config = mtk_rdma_layer_config,
++	.get_formats = mtk_rdma_get_formats,
++	.get_num_formats = mtk_rdma_get_num_formats,
+ };
+ 
+ static const struct mtk_ddp_comp_funcs ddp_ufoe = {
+@@ -389,6 +395,27 @@ static const struct mtk_ddp_comp_funcs ddp_ufoe = {
  	.start = mtk_ufoe_start,
  };
  
@@ -23058,12 +23518,14 @@ index 6b6d5335c8347bed246d357a6454c35622f5b4e5..f83a14537ad69fc91b72526d45a57b22
 +	.disconnect = mtk_ovl_adaptor_disconnect,
 +	.add = mtk_ovl_adaptor_add_comp,
 +	.remove = mtk_ovl_adaptor_remove_comp,
++	.get_formats = mtk_ovl_adaptor_get_formats,
++	.get_num_formats = mtk_ovl_adaptor_get_num_formats,
 +};
 +
  static const char * const mtk_ddp_comp_stem[MTK_DDP_COMP_TYPE_MAX] = {
  	[MTK_DISP_AAL] = "aal",
  	[MTK_DISP_BLS] = "bls",
-@@ -402,6 +423,7 @@ static const char * const mtk_ddp_comp_stem[MTK_DDP_COMP_TYPE_MAX] = {
+@@ -402,6 +429,7 @@ static const char * const mtk_ddp_comp_stem[MTK_DDP_COMP_TYPE_MAX] = {
  	[MTK_DISP_OD] = "od",
  	[MTK_DISP_OVL] = "ovl",
  	[MTK_DISP_OVL_2L] = "ovl-2l",
@@ -23071,7 +23533,7 @@ index 6b6d5335c8347bed246d357a6454c35622f5b4e5..f83a14537ad69fc91b72526d45a57b22
  	[MTK_DISP_POSTMASK] = "postmask",
  	[MTK_DISP_PWM] = "pwm",
  	[MTK_DISP_RDMA] = "rdma",
-@@ -418,53 +440,54 @@ struct mtk_ddp_comp_match {
+@@ -418,53 +446,54 @@ struct mtk_ddp_comp_match {
  	const struct mtk_ddp_comp_funcs *funcs;
  };
  
@@ -23170,7 +23632,7 @@ index 6b6d5335c8347bed246d357a6454c35622f5b4e5..f83a14537ad69fc91b72526d45a57b22
  				     unsigned int path_len,
  				     struct mtk_ddp_comp *ddp_comp)
  {
-@@ -480,6 +503,27 @@ static bool mtk_drm_find_comp_in_ddp(struct device *dev,
+@@ -480,6 +509,27 @@ static bool mtk_drm_find_comp_in_ddp(struct device *dev,
  	return false;
  }
  
@@ -23198,7 +23660,7 @@ index 6b6d5335c8347bed246d357a6454c35622f5b4e5..f83a14537ad69fc91b72526d45a57b22
  int mtk_ddp_comp_get_id(struct device_node *node,
  			enum mtk_ddp_comp_type comp_type)
  {
-@@ -511,13 +555,19 @@ unsigned int mtk_drm_find_possible_crtc_by_comp(struct drm_device *drm,
+@@ -511,13 +561,19 @@ unsigned int mtk_drm_find_possible_crtc_by_comp(struct drm_device *drm,
  					  private->data->third_len, private->ddp_comp))
  		ret = BIT(2);
  	else
@@ -23219,7 +23681,7 @@ index 6b6d5335c8347bed246d357a6454c35622f5b4e5..f83a14537ad69fc91b72526d45a57b22
  {
  	struct platform_device *comp_pdev;
  	enum mtk_ddp_comp_type type;
-@@ -526,19 +576,24 @@ int mtk_ddp_comp_init(struct device_node *node, struct mtk_ddp_comp *comp,
+@@ -526,19 +582,24 @@ int mtk_ddp_comp_init(struct device_node *node, struct mtk_ddp_comp *comp,
  	int ret;
  #endif
  
@@ -23250,7 +23712,7 @@ index 6b6d5335c8347bed246d357a6454c35622f5b4e5..f83a14537ad69fc91b72526d45a57b22
  
  	if (type == MTK_DISP_AAL ||
  	    type == MTK_DISP_BLS ||
-@@ -548,6 +603,7 @@ int mtk_ddp_comp_init(struct device_node *node, struct mtk_ddp_comp *comp,
+@@ -548,6 +609,7 @@ int mtk_ddp_comp_init(struct device_node *node, struct mtk_ddp_comp *comp,
  	    type == MTK_DISP_MERGE ||
  	    type == MTK_DISP_OVL ||
  	    type == MTK_DISP_OVL_2L ||
@@ -23259,7 +23721,7 @@ index 6b6d5335c8347bed246d357a6454c35622f5b4e5..f83a14537ad69fc91b72526d45a57b22
  	    type == MTK_DISP_RDMA ||
  	    type == MTK_DPI ||
 diff --git a/drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.h b/drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.h
-index 2d0052c23dcbc3f9f62a044cb899d338351a37d0..aa95e0bcba9c8fc7d0cb486cd82ab8a56184a488 100644
+index 2d0052c23dcbc3f9f62a044cb899d338351a37d0..7effabbaec8bbc15e2d1b72a4fcca4abed80ffcd 100644
 --- a/drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.h
 +++ b/drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.h
 @@ -9,6 +9,7 @@
@@ -23282,11 +23744,13 @@ index 2d0052c23dcbc3f9f62a044cb899d338351a37d0..aa95e0bcba9c8fc7d0cb486cd82ab8a5
  	MTK_DISP_UFOE,
  	MTK_DISP_WDMA,
  	MTK_DPI,
-@@ -71,13 +74,20 @@ struct mtk_ddp_comp_funcs {
+@@ -71,13 +74,22 @@ struct mtk_ddp_comp_funcs {
  	void (*bgclr_in_off)(struct device *dev);
  	void (*ctm_set)(struct device *dev,
  			struct drm_crtc_state *state);
 +	struct device * (*dma_dev_get)(struct device *dev);
++	const u32 *(*get_formats)(struct device *dev);
++	size_t (*get_num_formats)(struct device *dev);
 +	void (*connect)(struct device *dev, struct device *mmsys_dev, unsigned int next);
 +	void (*disconnect)(struct device *dev, struct device *mmsys_dev, unsigned int next);
 +	void (*add)(struct device *dev, struct mtk_mutex *mutex);
@@ -23304,7 +23768,7 @@ index 2d0052c23dcbc3f9f62a044cb899d338351a37d0..aa95e0bcba9c8fc7d0cb486cd82ab8a5
  };
  
  static inline int mtk_ddp_comp_clk_enable(struct mtk_ddp_comp *comp)
-@@ -203,13 +213,64 @@ static inline void mtk_ddp_ctm_set(struct mtk_ddp_comp *comp,
+@@ -203,13 +215,82 @@ static inline void mtk_ddp_ctm_set(struct mtk_ddp_comp *comp,
  		comp->funcs->ctm_set(comp->dev, state);
  }
  
@@ -23313,6 +23777,24 @@ index 2d0052c23dcbc3f9f62a044cb899d338351a37d0..aa95e0bcba9c8fc7d0cb486cd82ab8a5
 +	if (comp->funcs && comp->funcs->dma_dev_get)
 +		return comp->funcs->dma_dev_get(comp->dev);
 +	return comp->dev;
++}
++
++static inline
++const u32 *mtk_ddp_comp_get_formats(struct mtk_ddp_comp *comp)
++{
++	if (comp->funcs && comp->funcs->get_formats)
++		return comp->funcs->get_formats(comp->dev);
++
++	return NULL;
++}
++
++static inline
++size_t mtk_ddp_comp_get_num_formats(struct mtk_ddp_comp *comp)
++{
++	if (comp->funcs && comp->funcs->get_num_formats)
++		return comp->funcs->get_num_formats(comp->dev);
++
++	return 0;
 +}
 +
 +static inline bool mtk_ddp_comp_add(struct mtk_ddp_comp *comp, struct mtk_mutex *mutex)
@@ -23372,7 +23854,7 @@ index 2d0052c23dcbc3f9f62a044cb899d338351a37d0..aa95e0bcba9c8fc7d0cb486cd82ab8a5
  		   struct cmdq_client_reg *cmdq_reg, void __iomem *regs,
  		   unsigned int offset);
 diff --git a/drivers/gpu/drm/mediatek/mtk_drm_drv.c b/drivers/gpu/drm/mediatek/mtk_drm_drv.c
-index 9f4e02846aee6b0b553a4978f9eff322b7edb8ca..7b8393f5b01cf460b3ee53151aa14dc17185e52d 100644
+index 9f4e02846aee6b0b553a4978f9eff322b7edb8ca..85eda276c98a9c5493547f538094a8fe9f19df4c 100644
 --- a/drivers/gpu/drm/mediatek/mtk_drm_drv.c
 +++ b/drivers/gpu/drm/mediatek/mtk_drm_drv.c
 @@ -4,8 +4,6 @@
@@ -24049,7 +24531,7 @@ index 9f4e02846aee6b0b553a4978f9eff322b7edb8ca..7b8393f5b01cf460b3ee53151aa14dc1
  	{ .compatible = "mediatek,mt8195-disp-merge",
  	  .data = (void *)MTK_DISP_MERGE },
  	{ .compatible = "mediatek,mt2701-disp-mutex",
-@@ -603,10 +761,14 @@ static const struct of_device_id mtk_ddp_comp_dt_ids[] = {
+@@ -603,6 +761,8 @@ static const struct of_device_id mtk_ddp_comp_dt_ids[] = {
  	  .data = (void *)MTK_DISP_MUTEX },
  	{ .compatible = "mediatek,mt8186-disp-mutex",
  	  .data = (void *)MTK_DISP_MUTEX },
@@ -24058,22 +24540,7 @@ index 9f4e02846aee6b0b553a4978f9eff322b7edb8ca..7b8393f5b01cf460b3ee53151aa14dc1
  	{ .compatible = "mediatek,mt8192-disp-mutex",
  	  .data = (void *)MTK_DISP_MUTEX },
  	{ .compatible = "mediatek,mt8195-disp-mutex",
- 	  .data = (void *)MTK_DISP_MUTEX },
-+	{ .compatible = "mediatek,mt8188-disp-mutex",
-+	  .data = (void *)MTK_DISP_MUTEX },
- 	{ .compatible = "mediatek,mt8173-disp-od",
- 	  .data = (void *)MTK_DISP_OD },
- 	{ .compatible = "mediatek,mt2701-disp-ovl",
-@@ -639,6 +801,8 @@ static const struct of_device_id mtk_ddp_comp_dt_ids[] = {
- 	  .data = (void *)MTK_DISP_RDMA },
- 	{ .compatible = "mediatek,mt8183-disp-rdma",
- 	  .data = (void *)MTK_DISP_RDMA },
-+	{ .compatible = "mediatek,mt8192-disp-rdma",
-+	  .data = (void *)MTK_DISP_RDMA },
- 	{ .compatible = "mediatek,mt8195-disp-rdma",
- 	  .data = (void *)MTK_DISP_RDMA },
- 	{ .compatible = "mediatek,mt8173-disp-ufoe",
-@@ -667,61 +831,20 @@ static const struct of_device_id mtk_ddp_comp_dt_ids[] = {
+@@ -667,61 +827,20 @@ static const struct of_device_id mtk_ddp_comp_dt_ids[] = {
  	  .data = (void *)MTK_DSI },
  	{ .compatible = "mediatek,mt8186-dsi",
  	  .data = (void *)MTK_DSI },
@@ -24138,7 +24605,7 @@ index 9f4e02846aee6b0b553a4978f9eff322b7edb8ca..7b8393f5b01cf460b3ee53151aa14dc1
  	int ret;
  	int i;
  
-@@ -739,18 +862,24 @@ static int mtk_drm_probe(struct platform_device *pdev)
+@@ -739,18 +858,24 @@ static int mtk_drm_probe(struct platform_device *pdev)
  	if (!of_id)
  		return -ENODEV;
  
@@ -24175,7 +24642,7 @@ index 9f4e02846aee6b0b553a4978f9eff322b7edb8ca..7b8393f5b01cf460b3ee53151aa14dc1
  	}
  
  	/* Iterate over sibling DISP function blocks */
-@@ -772,7 +901,13 @@ static int mtk_drm_probe(struct platform_device *pdev)
+@@ -772,7 +897,13 @@ static int mtk_drm_probe(struct platform_device *pdev)
  		comp_type = (enum mtk_ddp_comp_type)of_id->data;
  
  		if (comp_type == MTK_DISP_MUTEX) {
@@ -24190,7 +24657,7 @@ index 9f4e02846aee6b0b553a4978f9eff322b7edb8ca..7b8393f5b01cf460b3ee53151aa14dc1
  			continue;
  		}
  
-@@ -783,6 +918,9 @@ static int mtk_drm_probe(struct platform_device *pdev)
+@@ -783,6 +914,9 @@ static int mtk_drm_probe(struct platform_device *pdev)
  			continue;
  		}
  
@@ -24200,7 +24667,7 @@ index 9f4e02846aee6b0b553a4978f9eff322b7edb8ca..7b8393f5b01cf460b3ee53151aa14dc1
  		private->comp_node[comp_id] = of_node_get(node);
  
  		/*
-@@ -797,6 +935,7 @@ static int mtk_drm_probe(struct platform_device *pdev)
+@@ -797,6 +931,7 @@ static int mtk_drm_probe(struct platform_device *pdev)
  		    comp_type == MTK_DISP_MERGE ||
  		    comp_type == MTK_DISP_OVL ||
  		    comp_type == MTK_DISP_OVL_2L ||
@@ -24208,7 +24675,7 @@ index 9f4e02846aee6b0b553a4978f9eff322b7edb8ca..7b8393f5b01cf460b3ee53151aa14dc1
  		    comp_type == MTK_DISP_RDMA ||
  		    comp_type == MTK_DP_INTF ||
  		    comp_type == MTK_DPI ||
-@@ -834,7 +973,7 @@ static int mtk_drm_probe(struct platform_device *pdev)
+@@ -834,7 +969,7 @@ static int mtk_drm_probe(struct platform_device *pdev)
  	pm_runtime_disable(dev);
  err_node:
  	of_node_put(private->mutex_node);
@@ -24217,7 +24684,7 @@ index 9f4e02846aee6b0b553a4978f9eff322b7edb8ca..7b8393f5b01cf460b3ee53151aa14dc1
  		of_node_put(private->comp_node[i]);
  	return ret;
  }
-@@ -847,7 +986,7 @@ static int mtk_drm_remove(struct platform_device *pdev)
+@@ -847,7 +982,7 @@ static int mtk_drm_remove(struct platform_device *pdev)
  	component_master_del(&pdev->dev, &mtk_drm_ops);
  	pm_runtime_disable(&pdev->dev);
  	of_node_put(private->mutex_node);
@@ -24226,7 +24693,7 @@ index 9f4e02846aee6b0b553a4978f9eff322b7edb8ca..7b8393f5b01cf460b3ee53151aa14dc1
  		of_node_put(private->comp_node[i]);
  
  	return 0;
-@@ -858,16 +997,20 @@ static int mtk_drm_sys_prepare(struct device *dev)
+@@ -858,16 +993,20 @@ static int mtk_drm_sys_prepare(struct device *dev)
  	struct mtk_drm_private *private = dev_get_drvdata(dev);
  	struct drm_device *drm = private->drm;
  
@@ -24250,7 +24717,7 @@ index 9f4e02846aee6b0b553a4978f9eff322b7edb8ca..7b8393f5b01cf460b3ee53151aa14dc1
  	if (ret)
  		dev_err(dev, "Failed to resume\n");
  }
-@@ -891,13 +1034,16 @@ static struct platform_driver * const mtk_drm_drivers[] = {
+@@ -891,13 +1030,16 @@ static struct platform_driver * const mtk_drm_drivers[] = {
  	&mtk_disp_ccorr_driver,
  	&mtk_disp_color_driver,
  	&mtk_disp_gamma_driver,
@@ -24355,6 +24822,203 @@ index 7b37b5cf9629545657504180478acef376749933..068f83c7037936c834b9d7e99e11b592
 -
 +extern struct platform_driver mtk_disp_padding_driver;
  #endif /* MTK_DRM_DRV_H */
+diff --git a/drivers/gpu/drm/mediatek/mtk_drm_plane.c b/drivers/gpu/drm/mediatek/mtk_drm_plane.c
+index 2f5e007dd38001eb8634ed724a52979a299cdde7..31f9420aff6f8c5fda7372e1633b1aba0be2960c 100644
+--- a/drivers/gpu/drm/mediatek/mtk_drm_plane.c
++++ b/drivers/gpu/drm/mediatek/mtk_drm_plane.c
+@@ -11,6 +11,7 @@
+ #include <drm/drm_fourcc.h>
+ #include <drm/drm_framebuffer.h>
+ #include <drm/drm_gem_atomic_helper.h>
++#include <linux/align.h>
+ 
+ #include "mtk_drm_crtc.h"
+ #include "mtk_drm_ddp_comp.h"
+@@ -18,18 +19,12 @@
+ #include "mtk_drm_gem.h"
+ #include "mtk_drm_plane.h"
+ 
+-static const u32 formats[] = {
+-	DRM_FORMAT_XRGB8888,
+-	DRM_FORMAT_ARGB8888,
+-	DRM_FORMAT_BGRX8888,
+-	DRM_FORMAT_BGRA8888,
+-	DRM_FORMAT_ABGR8888,
+-	DRM_FORMAT_XBGR8888,
+-	DRM_FORMAT_RGB888,
+-	DRM_FORMAT_BGR888,
+-	DRM_FORMAT_RGB565,
+-	DRM_FORMAT_UYVY,
+-	DRM_FORMAT_YUYV,
++static const u64 modifiers[] = {
++	DRM_FORMAT_MOD_LINEAR,
++	DRM_FORMAT_MOD_ARM_AFBC(AFBC_FORMAT_MOD_BLOCK_SIZE_32x8 |
++				AFBC_FORMAT_MOD_SPLIT |
++				AFBC_FORMAT_MOD_SPARSE),
++	DRM_FORMAT_MOD_INVALID,
+ };
+ 
+ static void mtk_plane_reset(struct drm_plane *plane)
+@@ -51,6 +46,7 @@ static void mtk_plane_reset(struct drm_plane *plane)
+ 
+ 	state->base.plane = plane;
+ 	state->pending.format = DRM_FORMAT_RGB565;
++	state->pending.modifier = DRM_FORMAT_MOD_LINEAR;
+ }
+ 
+ static struct drm_plane_state *mtk_plane_duplicate_state(struct drm_plane *plane)
+@@ -71,6 +67,32 @@ static struct drm_plane_state *mtk_plane_duplicate_state(struct drm_plane *plane
+ 	return &state->base;
+ }
+ 
++static bool mtk_plane_format_mod_supported(struct drm_plane *plane,
++					   uint32_t format,
++					   uint64_t modifier)
++{
++	if (modifier == DRM_FORMAT_MOD_LINEAR)
++		return true;
++
++	if (modifier != DRM_FORMAT_MOD_ARM_AFBC(
++				AFBC_FORMAT_MOD_BLOCK_SIZE_32x8 |
++				AFBC_FORMAT_MOD_SPLIT |
++				AFBC_FORMAT_MOD_SPARSE))
++		return false;
++
++	if (format != DRM_FORMAT_XRGB8888 &&
++	    format != DRM_FORMAT_ARGB8888 &&
++	    format != DRM_FORMAT_BGRX8888 &&
++	    format != DRM_FORMAT_BGRA8888 &&
++	    format != DRM_FORMAT_ABGR8888 &&
++	    format != DRM_FORMAT_XBGR8888 &&
++	    format != DRM_FORMAT_RGB888 &&
++	    format != DRM_FORMAT_BGR888)
++		return false;
++
++	return true;
++}
++
+ static void mtk_drm_plane_destroy_state(struct drm_plane *plane,
+ 					struct drm_plane_state *state)
+ {
+@@ -119,21 +141,52 @@ static void mtk_plane_update_new_state(struct drm_plane_state *new_state,
+ 	struct drm_gem_object *gem;
+ 	struct mtk_drm_gem_obj *mtk_gem;
+ 	unsigned int pitch, format;
++	u64 modifier;
+ 	dma_addr_t addr;
++	dma_addr_t hdr_addr = 0;
++	unsigned int hdr_pitch = 0;
+ 
+ 	gem = fb->obj[0];
+ 	mtk_gem = to_mtk_gem_obj(gem);
+ 	addr = mtk_gem->dma_addr;
+ 	pitch = fb->pitches[0];
+ 	format = fb->format->format;
++	modifier = fb->modifier;
+ 
+-	addr += (new_state->src.x1 >> 16) * fb->format->cpp[0];
+-	addr += (new_state->src.y1 >> 16) * pitch;
++	if (modifier == DRM_FORMAT_MOD_LINEAR) {
++		addr += (new_state->src.x1 >> 16) * fb->format->cpp[0];
++		addr += (new_state->src.y1 >> 16) * pitch;
++	} else {
++		int width_in_blocks = ALIGN(fb->width, AFBC_DATA_BLOCK_WIDTH)
++				      / AFBC_DATA_BLOCK_WIDTH;
++		int height_in_blocks = ALIGN(fb->height, AFBC_DATA_BLOCK_HEIGHT)
++				       / AFBC_DATA_BLOCK_HEIGHT;
++		int x_offset_in_blocks = (new_state->src.x1 >> 16) / AFBC_DATA_BLOCK_WIDTH;
++		int y_offset_in_blocks = (new_state->src.y1 >> 16) / AFBC_DATA_BLOCK_HEIGHT;
++		int hdr_size;
++
++		hdr_pitch = width_in_blocks * AFBC_HEADER_BLOCK_SIZE;
++		pitch = width_in_blocks * AFBC_DATA_BLOCK_WIDTH *
++			AFBC_DATA_BLOCK_HEIGHT * fb->format->cpp[0];
++
++		hdr_size = ALIGN(hdr_pitch * height_in_blocks, AFBC_HEADER_ALIGNMENT);
++
++		hdr_addr = addr + hdr_pitch * y_offset_in_blocks +
++			   AFBC_HEADER_BLOCK_SIZE * x_offset_in_blocks;
++		/* The data plane is offset by 1 additional block. */
++		addr = addr + hdr_size +
++		       pitch * y_offset_in_blocks +
++		       AFBC_DATA_BLOCK_WIDTH * AFBC_DATA_BLOCK_HEIGHT *
++		       fb->format->cpp[0] * (x_offset_in_blocks + 1);
++	}
+ 
+ 	mtk_plane_state->pending.enable = true;
+ 	mtk_plane_state->pending.pitch = pitch;
++	mtk_plane_state->pending.hdr_pitch = hdr_pitch;
+ 	mtk_plane_state->pending.format = format;
++	mtk_plane_state->pending.modifier = modifier;
+ 	mtk_plane_state->pending.addr = addr;
++	mtk_plane_state->pending.hdr_addr = hdr_addr;
+ 	mtk_plane_state->pending.x = new_state->dst.x1;
+ 	mtk_plane_state->pending.y = new_state->dst.y1;
+ 	mtk_plane_state->pending.width = drm_rect_width(&new_state->dst);
+@@ -172,6 +225,7 @@ static const struct drm_plane_funcs mtk_plane_funcs = {
+ 	.reset = mtk_plane_reset,
+ 	.atomic_duplicate_state = mtk_plane_duplicate_state,
+ 	.atomic_destroy_state = mtk_drm_plane_destroy_state,
++	.format_mod_supported = mtk_plane_format_mod_supported,
+ };
+ 
+ static int mtk_plane_atomic_check(struct drm_plane *plane,
+@@ -247,13 +301,19 @@ static const struct drm_plane_helper_funcs mtk_plane_helper_funcs = {
+ 
+ int mtk_plane_init(struct drm_device *dev, struct drm_plane *plane,
+ 		   unsigned long possible_crtcs, enum drm_plane_type type,
+-		   unsigned int supported_rotations)
++		   unsigned int supported_rotations, const u32 *formats,
++		   size_t num_formats)
+ {
+ 	int err;
+ 
++	if (!formats || !num_formats) {
++		DRM_ERROR("no formats for plane\n");
++		return -EINVAL;
++	}
++
+ 	err = drm_universal_plane_init(dev, plane, possible_crtcs,
+ 				       &mtk_plane_funcs, formats,
+-				       ARRAY_SIZE(formats), NULL, type, NULL);
++				       num_formats, modifiers, type, NULL);
+ 	if (err) {
+ 		DRM_ERROR("failed to initialize plane\n");
+ 		return err;
+diff --git a/drivers/gpu/drm/mediatek/mtk_drm_plane.h b/drivers/gpu/drm/mediatek/mtk_drm_plane.h
+index 2d5ec66e3df1bcbc90e5bb3d1cdb711cade54523..99aff7da0831dd868ee6568c9df1b5ed0e75295e 100644
+--- a/drivers/gpu/drm/mediatek/mtk_drm_plane.h
++++ b/drivers/gpu/drm/mediatek/mtk_drm_plane.h
+@@ -10,12 +10,20 @@
+ #include <drm/drm_crtc.h>
+ #include <linux/types.h>
+ 
++#define AFBC_DATA_BLOCK_WIDTH 32
++#define AFBC_DATA_BLOCK_HEIGHT 8
++#define AFBC_HEADER_BLOCK_SIZE 16
++#define AFBC_HEADER_ALIGNMENT 1024
++
+ struct mtk_plane_pending_state {
+ 	bool				config;
+ 	bool				enable;
+ 	dma_addr_t			addr;
++	dma_addr_t			hdr_addr;
+ 	unsigned int			pitch;
++	unsigned int			hdr_pitch;
+ 	unsigned int			format;
++	unsigned long long		modifier;
+ 	unsigned int			x;
+ 	unsigned int			y;
+ 	unsigned int			width;
+@@ -40,6 +48,7 @@ to_mtk_plane_state(struct drm_plane_state *state)
+ 
+ int mtk_plane_init(struct drm_device *dev, struct drm_plane *plane,
+ 		   unsigned long possible_crtcs, enum drm_plane_type type,
+-		   unsigned int supported_rotations);
++		   unsigned int supported_rotations, const u32 *formats,
++		   size_t num_formats);
+ 
+ #endif
 diff --git a/drivers/gpu/drm/mediatek/mtk_dsi.c b/drivers/gpu/drm/mediatek/mtk_dsi.c
 index 9e1363c9fcdb46e98323595aa84ab08c8cd2d076..05bbe32f4fbce78b367ece6030d006246f7758c3 100644
 --- a/drivers/gpu/drm/mediatek/mtk_dsi.c
