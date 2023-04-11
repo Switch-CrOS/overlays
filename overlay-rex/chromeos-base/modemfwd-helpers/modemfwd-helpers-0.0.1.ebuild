@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit cros-cellular
+inherit cros-cellular udev user
 
 DESCRIPTION="Chrome OS Modem Update Helpers (rex)"
 HOMEPAGE="http://src.chromium.org"
@@ -14,6 +14,7 @@ SRC_URI="
 	${MIRROR_PATH}/cellular-firmware-fibocom-fm350-DEV_OTA_5001.0001.0000_Default_001.000.000.015.img.tar.xz
 	${MIRROR_PATH}/cellular-firmware-fibocom-fm350-OP_OTA_000.037.img.tar.xz
 	${MIRROR_PATH}/cellular-firmware-fibocom-fm350-OEM_OTA_6001.0000.001.img.tar.xz
+	${MIRROR_PATH}/cellular-firmware-fibocom-fm101-rex-19500.0000.00.01.01.52_A54.tar.xz
 	"
 
 RESTRICT="mirror"
@@ -26,17 +27,30 @@ S="${WORKDIR}"
 RDEPEND="
 	chromeos-base/fibocom-firmware
 	chromeos-base/modem-fw-dlc-rex-fm350
+	chromeos-base/modem-fw-dlc-rex-fm101
 	net-misc/qdl
 "
 src_install() {
 	cellular_domanifest "${FILESDIR}/helper_manifest.textproto"
 
+	insinto /etc/init/
+	doins "${FILESDIR}/modemfwd-helpers.conf"
+
+	udev_dorules "${FILESDIR}/94-fm101-gpio.rules"
+
 	cellular_dofirmware "${FILESDIR}/firmware_manifest.textproto"
 	insinto "$(_cellular_get_firmwaredir)/fm350"
 	doins -r cellular-firmware-fibocom-fm350-*/*
+
+	insinto "$(_cellular_get_firmwaredir)/fm101"
+	doins -r cellular-firmware-fibocom-fm101-*/*
 
 	# Create symbolic link to allow FM350 firmware to be accessible with
 	# /lib/firmware as root directory. This is required for devlink to be able
 	# to flash firmware to the modem.
 	dosym "$(_cellular_get_firmwaredir)/fm350" "/lib/firmware/fm350"
+}
+
+pkg_preinst() {
+	enewgroup gpio
 }
