@@ -25,4 +25,9 @@ src_install() {
 
 	# b/194177834: remove broken symlink (this can be dropped after v1.6.1)
 	rm "${D}/lib/firmware/intel/sof/sof-jsl.ri"
+
+	# Add support for ADL, ADL-N, RPL
+	dosym ./sof-tgl.ri /lib/firmware/intel/sof/sof-adl.ri
+	dosym ./sof-tgl.ri /lib/firmware/intel/sof/sof-adl-n.ri
+	dosym ./sof-tgl.ri /lib/firmware/intel/sof/sof-rpl.ri
 }
