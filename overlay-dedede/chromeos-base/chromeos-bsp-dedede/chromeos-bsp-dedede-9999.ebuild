@@ -16,7 +16,7 @@ dependencies or portage actions."
 
 LICENSE="BSD-Google"
 KEYWORDS="-* ~amd64 ~x86"
-IUSE=""
+IUSE="dedede-pvs"
 
 RDEPEND="
 	!<chromeos-base/gestures-conf-0.0.2
@@ -32,8 +32,11 @@ src_install() {
 	insinto "/etc/gesture"
 	doins "${FILESDIR}"/gesture/*
 
-	doappid "{E0DD1258-E890-493E-ADA3-0C755240B89C}" "CHROMEBOOK"
-
+	if use dedede-pvs; then
+		doappid "{586A71A9-4C1D-4D12-9484-2DF0451A8867}" "CHROMEBOOK"
+	else
+		doappid "{E0DD1258-E890-493E-ADA3-0C755240B89C}" "CHROMEBOOK"
+	fi
 	# Install audio config files
 	unibuild_install_files audio-files
 
