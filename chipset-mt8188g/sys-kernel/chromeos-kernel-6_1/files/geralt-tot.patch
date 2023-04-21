@@ -2493,10 +2493,10 @@ index 0000000000000000000000000000000000000000..3cec7f9402bb77ac806618129baad4ca
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8188-geralt.dts b/arch/arm64/boot/dts/mediatek/mt8188-geralt.dts
 new file mode 100644
-index 0000000000000000000000000000000000000000..3cf47909f51eb26c71250079bcfb551d734533b7
+index 0000000000000000000000000000000000000000..e65ed814f54cac7e3a0247f8c4f894c0e9f60966
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt8188-geralt.dts
-@@ -0,0 +1,1275 @@
+@@ -0,0 +1,1297 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
 +/*
 + * Copyright (C) 2022 MediaTek Inc.
@@ -2935,6 +2935,18 @@ index 0000000000000000000000000000000000000000..3cf47909f51eb26c71250079bcfb551d
 +	pinctrl-0 = <&i2c3_pin>;
 +	clock-frequency = <400000>;
 +	status = "okay";
++
++	ap_sar_sensor: proximity@28 {
++		compatible = "semtech,sx9324";
++		reg = <0x28>;
++		#io-channel-cells = <1>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&sar_sensor_pins>;
++		interrupt-parent = <&pio>;
++		interrupts = <88 IRQ_TYPE_LEVEL_LOW>;
++		vdd-supply = <&mt6359_vio18_ldo_reg>;
++		svdd-supply = <&mt6359_vio18_ldo_reg>;
++	};
 +};
 +
 +&i2c4 {
@@ -3361,6 +3373,8 @@ index 0000000000000000000000000000000000000000..3cf47909f51eb26c71250079bcfb551d
 +		pins_bus {
 +			pinmux = <PINMUX_GPIO60__FUNC_B1_SDA2>,
 +				 <PINMUX_GPIO59__FUNC_B1_SCL2>;
++			bias-disable;
++			drive-strength = <MTK_DRIVE_12mA>;
 +		};
 +	};
 +
@@ -3567,6 +3581,14 @@ index 0000000000000000000000000000000000000000..3cf47909f51eb26c71250079bcfb551d
 +		pins_cmd_dat {
 +			pinmux = <PINMUX_GPIO30__FUNC_O_DISP_PWM1>;
 +			output-high;
++		};
++	};
++
++	sar_sensor_pins: sar-sensor-pins {
++		pins-irq {
++			pinmux = <PINMUX_GPIO88__FUNC_B_GPIO88>;
++			input-enable;
++			bias-pull-up;
 +		};
 +	};
 +
