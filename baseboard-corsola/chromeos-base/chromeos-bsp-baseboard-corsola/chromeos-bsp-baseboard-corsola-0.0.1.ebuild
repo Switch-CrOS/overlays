@@ -19,6 +19,7 @@ IUSE="cheets"
 # Add dependencies on other ebuilds from within this board overlay
 DEPEND="
 	chromeos-base/chromeos-scp-firmware-corsola
+	chromeos-base/lte_power_control
 "
 RDEPEND="${DEPEND}"
 BDEPEND=""
