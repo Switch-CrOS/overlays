@@ -1,0 +1,1132 @@
+diff --git a/README b/README
+index 669ac7c32292798644b21dbb5a0dc657125f444d..a503cc0f16bd495673e64935f69fe96ffdba03c3 100644
+--- a/README
++++ b/README
+@@ -1,4 +1,4 @@
+-Linux kernel
++Linux kernel - staryu ToT
+ ============
+ 
+ There are several guides for kernel developers and users. These guides can
+diff --git a/arch/arm64/boot/dts/mediatek/Makefile b/arch/arm64/boot/dts/mediatek/Makefile
+index ebb51fc56d09786b2bb81a177f35d8a1c00220e1..afb8564d7d03753f5875cd00a4fa313eefedea79 100644
+--- a/arch/arm64/boot/dts/mediatek/Makefile
++++ b/arch/arm64/boot/dts/mediatek/Makefile
+@@ -56,6 +56,9 @@ dtb-$(CONFIG_ARCH_MEDIATEK) += mt8186-corsola-magneton-sku393218.dtb
+ dtb-$(CONFIG_ARCH_MEDIATEK) += mt8186-corsola-rusty-rev0-sku196608.dtb
+ dtb-$(CONFIG_ARCH_MEDIATEK) += mt8186-corsola-rusty-sku196608.dtb
+ dtb-$(CONFIG_ARCH_MEDIATEK) += mt8186-corsola-rusty-sku196612.dtb
++dtb-$(CONFIG_ARCH_MEDIATEK) += mt8186-corsola-starmie-sku0.dtb
++dtb-$(CONFIG_ARCH_MEDIATEK) += mt8186-corsola-starmie-sku1.dtb
++dtb-$(CONFIG_ARCH_MEDIATEK) += mt8186-corsola-starmie-sku2.dtb
+ dtb-$(CONFIG_ARCH_MEDIATEK) += mt8186-corsola-steelix-rev0-sku131072.dtb
+ dtb-$(CONFIG_ARCH_MEDIATEK) += mt8186-corsola-steelix-rev0-sku131073.dtb
+ dtb-$(CONFIG_ARCH_MEDIATEK) += mt8186-corsola-steelix-sku131072.dtb
+diff --git a/arch/arm64/boot/dts/mediatek/mt8186-corsola-starmie-sku0.dts b/arch/arm64/boot/dts/mediatek/mt8186-corsola-starmie-sku0.dts
+new file mode 100644
+index 0000000000000000000000000000000000000000..78e12de470dd1eae9995bcad78384aff1e6618e6
+--- /dev/null
++++ b/arch/arm64/boot/dts/mediatek/mt8186-corsola-starmie-sku0.dts
+@@ -0,0 +1,20 @@
++// SPDX-License-Identifier: (GPL-2.0 OR MIT)
++/*
++ * Copyright 2023 Google LLC
++ *
++ * Panel ID: 0x8 (Starry-Ilitek9882t)
++ * Unprovisioned SKU: 0x7FFFFFF0UL | 0x08
++ */
++
++/dts-v1/;
++#include "mt8186-corsola-starmie.dtsi"
++
++/ {
++	model = "Google Starmie sku0/unprovisioned board";
++	compatible = "google,starmie-sku0","google,starmie-sku2147483640",
++		     "google,starmie", "mediatek,mt8186";
++};
++
++&panel {
++	compatible = "starry,ili9882t";
++};
+diff --git a/arch/arm64/boot/dts/mediatek/mt8186-corsola-starmie-sku1.dts b/arch/arm64/boot/dts/mediatek/mt8186-corsola-starmie-sku1.dts
+new file mode 100644
+index 0000000000000000000000000000000000000000..de4e4662f67fa6c5053fb73bc53c8f5c11c34d76
+--- /dev/null
++++ b/arch/arm64/boot/dts/mediatek/mt8186-corsola-starmie-sku1.dts
+@@ -0,0 +1,38 @@
++// SPDX-License-Identifier: (GPL-2.0 OR MIT)
++/*
++ * Copyright 2023 Google LLC
++ *
++ * Panel ID: 0xA (Starry-Himax83102)
++ * Unprovisioned SKU: 0x7FFFFFF0UL | 0x0A
++ */
++
++/dts-v1/;
++#include "mt8186-corsola-starmie.dtsi"
++
++/ {
++	model = "Google Starmie sku1/unprovisioned board";
++	compatible = "google,starmie-sku1", "google,starmie-sku2147483642",
++		     "google,starmie", "mediatek,mt8186";
++};
++
++&panel {
++	compatible = "starry,himax83102-j02";
++};
++
++&i2c1 {
++  /delete-node/ touchscreen@41;
++  touchscreen_himax: touchscreen@4f {
++		status = "okay";
++
++		compatible = "hid-over-i2c";
++		reg = <0x4f>;
++		interrupt-parent = <&pio>;
++		interrupts = <12 IRQ_TYPE_LEVEL_LOW>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&touchscreen_pins>;
++		vdd-supply = <&mt6366_vio18_reg>;
++
++		post-power-on-delay-ms = <450>;
++		hid-descr-addr = <0x0001>;
++  };
++};
+diff --git a/arch/arm64/boot/dts/mediatek/mt8186-corsola-starmie-sku2.dts b/arch/arm64/boot/dts/mediatek/mt8186-corsola-starmie-sku2.dts
+new file mode 100644
+index 0000000000000000000000000000000000000000..bf36297a053f07373e3bfcd852d2b838163ae666
+--- /dev/null
++++ b/arch/arm64/boot/dts/mediatek/mt8186-corsola-starmie-sku2.dts
+@@ -0,0 +1,20 @@
++// SPDX-License-Identifier: (GPL-2.0 OR MIT)
++/*
++ * Copyright 2023 Google LLC
++ *
++ * Panel ID: 0x3 (K&D-Ili9882t)
++ * Unprovisioned SKU: 0x7FFFFFF0UL | 0x03
++ */
++
++/dts-v1/;
++#include "mt8186-corsola-starmie.dtsi"
++
++/ {
++	model = "Google Starmie sku2/unprovisioned board";
++	compatible = "google,starmie-sku2", "google,starmie-sku2147483635",
++		     "google,starmie", "mediatek,mt8186";
++};
++
++&panel {
++	compatible = "k&d,ili9882t";
++};
+diff --git a/arch/arm64/boot/dts/mediatek/mt8186-corsola-starmie.dtsi b/arch/arm64/boot/dts/mediatek/mt8186-corsola-starmie.dtsi
+new file mode 100644
+index 0000000000000000000000000000000000000000..b1e01fbf267ccf51acab12c85f04db69f4910974
+--- /dev/null
++++ b/arch/arm64/boot/dts/mediatek/mt8186-corsola-starmie.dtsi
+@@ -0,0 +1,485 @@
++// SPDX-License-Identifier: (GPL-2.0 OR MIT)
++/*
++ * Copyright 2023 Google LLC
++ */
++
++/dts-v1/;
++#include "mt8186-corsola.dtsi"
++#include "mt8186-corsola-it6505.dtsi"
++
++/delete-node/ &dsi_out;
++
++/ {
++	en_pp6000_mipi_disp_150ma: en-pp6000-mipi-disp-150ma {
++		compatible = "regulator-fixed";
++		regulator-name = "en_pp6000_mipi_disp_150ma";
++		gpio = <&pio 154 GPIO_ACTIVE_HIGH>;
++		enable-active-high;
++		pinctrl-names = "default";
++		pinctrl-0 = <&pp6000_mipi_disp_150ma_fixed_pins>;
++	};
++
++	rt1019p: rt1019p {
++		status = "okay";
++
++		compatible = "realtek,rt1019p";
++		pinctrl-names = "default";
++		pinctrl-0 = <&rt1019p_pins_default>;
++		sdb-gpios = <&pio 150 GPIO_ACTIVE_HIGH>;
++		#sound-dai-cells = <0>;
++	};
++
++	tboard_thermistor1: thermal-sensor1 {
++		compatible = "generic-adc-thermal";
++		#thermal-sensor-cells = <0>;
++		io-channels = <&auxadc 0>;
++		io-channel-names = "sensor-channel";
++		temperature-lookup-table = <    (-5000) 1492
++						0 1413
++						5000 1324
++						10000 1227
++						15000 1121
++						20000 1017
++						25000 900
++						30000 797
++						35000 698
++						40000 606
++						45000 522
++						50000 449
++						55000 383
++						60000 411
++						65000 326
++						70000 236
++						75000 201
++						80000 171
++						85000 145
++						90000 163
++						95000 124
++						100000 91
++						105000 78
++						110000 67
++						115000 58
++						120000 50
++						125000 44>;
++	};
++
++	tboard_thermistor2: thermal-sensor2 {
++		compatible = "generic-adc-thermal";
++		#thermal-sensor-cells = <0>;
++		io-channels = <&auxadc 1>;
++		io-channel-names = "sensor-channel";
++		temperature-lookup-table = <    (-5000) 1492
++						0 1413
++						5000 1324
++						10000 1227
++						15000 1121
++						20000 1017
++						25000 900
++						30000 797
++						35000 698
++						40000 606
++						45000 522
++						50000 449
++						55000 383
++						60000 411
++						65000 326
++						70000 236
++						75000 201
++						80000 171
++						85000 145
++						90000 163
++						95000 124
++						100000 91
++						105000 78
++						110000 67
++						115000 58
++						120000 50
++						125000 44>;
++	};
++};
++
++&dsi0 {
++	status = "okay";
++	#address-cells = <1>;
++	#size-cells = <0>;
++	panel: panel@0 {
++		/* compatible will be set in board dts */
++		reg = <0>;
++		enable-gpios = <&pio 98 0>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&panel_pins_default>;
++		avdd-supply = <&en_pp6000_mipi_disp>;
++		avee-supply = <&en_pp6000_mipi_disp_150ma>;
++		pp1800-supply = <&mt6366_vio18_reg>;
++		backlight = <&backlight_lcd0>;
++		port {
++			panel_in: endpoint {
++				remote-endpoint = <&dsi_out>;
++			};
++		};
++	};
++
++	ports {
++		port {
++			dsi_out: endpoint {
++				remote-endpoint = <&panel_in>;
++			};
++		};
++	};
++};
++
++&i2c0 {
++	status = "disabled";
++};
++
++&i2c1 {
++	touchscreen: touchscreen@41 {
++		status = "okay";
++
++		compatible = "goodix,gt7375p";
++		reg = <0x41>;
++		interrupt-parent = <&pio>;
++		interrupts = <12 IRQ_TYPE_LEVEL_LOW>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&touchscreen_pins>;
++		reset-gpios = <&pio 60 GPIO_ACTIVE_LOW>;
++		vdd-supply = <&mt6366_vio18_reg>;
++	};
++};
++
++&i2c2 {
++	status = "disabled";
++};
++
++&i2c4 {
++	status = "disabled";
++};
++
++&i2c5 {
++	clock-frequency = <400000>;
++
++	rt5682s: rt5682s@1a {
++		compatible = "realtek,rt5682s";
++		reg = <0x1a>;
++		interrupt-parent = <&pio>;
++		interrupts = <17 IRQ_TYPE_EDGE_BOTH>;
++		realtek,jd-src = <1>;
++		AVDD-supply = <&mt6366_vio18_reg>;
++		MICVDD-supply = <&pp3300_z2>;
++		#sound-dai-cells = <0>;
++	};
++};
++
++&mmc1_pins_default {
++	pins-clk {
++		drive-strength = <MTK_DRIVE_8mA>;
++	};
++
++	pins-cmd-dat {
++		drive-strength = <MTK_DRIVE_8mA>;
++	};
++};
++
++&mmc1_pins_uhs {
++	pins-clk {
++		drive-strength = <MTK_DRIVE_8mA>;
++	};
++
++	pins-cmd-dat {
++		drive-strength = <MTK_DRIVE_8mA>;
++	};
++};
++
++&pio {
++	/* 185 lines */
++	gpio-line-names = "TP",
++			  "TP",
++			  "TP",
++			  "I2S0_HP_DI",
++			  "I2S3_DP_SPKR_DO",
++			  "SAR_INT_ODL",
++			  "BT_WAKE_AP_ODL",
++			  "WIFI_INT_ODL",
++			  "DPBRDG_INT_ODL",
++			  "NC",
++			  "EC_AP_HPD_OD",
++			  "NC",
++			  "TCHSCR_INT_1V8_ODL",
++			  "EC_AP_INT_ODL",
++			  "EC_IN_RW_ODL",
++			  "GSC_AP_INT_ODL",
++			  /*
++			  * AP_FLASH_WP_L is crossystem ABI. Rev1 schematics
++			  * call it AP_WP_ODL.
++			  */
++			  "AP_FLASH_WP_L",
++			  "HP_INT_ODL",
++			  "PEN_EJECT_OD",
++			  "NC",
++			  "NC",
++			  "UCAM_SEN_EN",
++			  "NC",
++			  "NC",
++			  "NC",
++			  "I2S2_DP_SPK_MCK",
++			  "I2S2_DP_SPKR_BCK",
++			  "I2S2_DP_SPKR_LRCK",
++			  "NC",
++			  "NC",
++			  "NC",
++			  "NC",
++			  "UART_GSC_TX_AP_RX",
++			  "UART_AP_TX_GSC_RX",
++			  "UART_DBGCON_TX_ADSP_RX",
++			  "UART_ADSP_TX_DBGCON_RX",
++			  "NC",
++			  "TCHSCR_REPORT_DISABLE",
++			  "NC",
++			  "EN_PP1800_DPBRDG",
++			  "SPI_AP_CLK_EC",
++			  "SPI_AP_CS_EC_L",
++			  "SPI_AP_DO_EC_DI",
++			  "SPI_AP_DI_EC_DO",
++			  "SPI_AP_CLK_GSC",
++			  "SPI_AP_CS_GSC_L",
++			  "SPI_AP_DO_GSC_DI",
++			  "SPI_AP_DI_GSC_DO",
++			  "UART_DBGCON_TX_SCP_RX",
++			  "UART_SCP_TX_DBGCON_RX",
++			  "EN_PP1200_CAM_X",
++			  "WLAN_MODULE_RST_L",
++			  "NC",
++			  "NC",
++			  "NC",
++			  "NC",
++			  "I2S1_HP_DO",
++			  "I2S1_HP_BCK",
++			  "I2S1_HP_LRCK",
++			  "I2S1_HP_MCK",
++			  "TCHSCR_RST_1V8_L",
++			  "SPI_AP_CLK_ROM",
++			  "SPI_AP_CS_ROM_L",
++			  "SPI_AP_DO_ROM_DI",
++			  "SPI_AP_DI_ROM_DO",
++			  "NC",
++			  "NC",
++			  "EMMC_STRB",
++			  "EMMC_CLK",
++			  "EMMC_CMD",
++			  "EMMC_RST_L",
++			  "EMMC_DATA0",
++			  "EMMC_DATA1",
++			  "EMMC_DATA2",
++			  "EMMC_DATA3",
++			  "EMMC_DATA4",
++			  "EMMC_DATA5",
++			  "EMMC_DATA6",
++			  "EMMC_DATA7",
++			  "AP_KPCOL0",
++			  "NC",
++			  "NC",
++			  "NC",
++			  "TP",
++			  "SDIO_CLK",
++			  "SDIO_CMD",
++			  "SDIO_DATA0",
++			  "SDIO_DATA1",
++			  "SDIO_DATA2",
++			  "SDIO_DATA3",
++			  "NC",
++			  "NC",
++			  "NC",
++			  "NC",
++			  "NC",
++			  "NC",
++			  "NC",
++			  "MIPI_BL_PWM_1V8",
++			  "DISP_RST_1V8_L",
++			  "MIPI_DPI_CLK",
++			  "MIPI_DPI_VSYNC",
++			  "MIPI_DPI_HSYNC",
++			  "MIPI_DPI_DE",
++			  "MIPI_DPI_D0",
++			  "MIPI_DPI_D1",
++			  "MIPI_DPI_D2",
++			  "MIPI_DPI_D3",
++			  "MIPI_DPI_D4",
++			  "MIPI_DPI_D5",
++			  "MIPI_DPI_D6",
++			  "MIPI_DPI_DA7",
++			  "MIPI_DPI_D8",
++			  "MIPI_DPI_D9",
++			  "MIPI_DPI_D10",
++			  "MIPI_DPI_D11",
++			  "PCM_BT_CLK",
++			  "PCM_BT_SYNC",
++			  "PCM_BT_DI",
++			  "PCM_BT_DO",
++			  "JTAG_TMS_TP",
++			  "JTAG_TCK_TP",
++			  "JTAG_TDI_TP",
++			  "JTAG_TDO_TP",
++			  "JTAG_TRSTN_TP",
++			  "NC",
++			  "NC",
++			  "UCAM_DET_ODL",
++			  "NC",
++			  "NC",
++			  "AP_I2C_TCHSCR_SCL_1V8",
++			  "AP_I2C_TCHSCR_SDA_1V8",
++			  "NC",
++			  "NC",
++			  "AP_I2C_DPBRDG_SCL_1V8",
++			  "AP_I2C_DPBRDG_SDA_1V8",
++			  "NC",
++			  "NC",
++			  "AP_I2C_AUD_SCL_1V8",
++			  "AP_I2C_AUD_SDA_1V8",
++			  "AP_I2C_DISP_SCL_1V8",
++			  "AP_I2C_DISP_SDA_1V8",
++			  "NC",
++			  "NC",
++			  "NC",
++			  "NC",
++			  "SCP_I2C_SENSOR_SCL_1V8",
++			  "SCP_I2C_SENSOR_SDA_1V8",
++			  "AP_EC_WARM_RST_REQ",
++			  "AP_XHCI_INIT_DONE",
++			  "USB3_HUB_RST_L",
++			  "EN_SPKR",
++			  "BEEP_ON",
++			  "AP_DISP_BKLTEN",
++			  "EN_PP6000_MIPI_DISP",
++			  "EN_PP6000_MIPI_DISP_150MA",
++			  "BT_KILL_1V8_L",
++			  "WIFI_KILL_1V8_L",
++			  "PWRAP_SPI0_CSN",
++			  "PWRAP_SPI0_CK",
++			  "PWRAP_SPI0_MO",
++			  "PWRAP_SPI0_MI",
++			  "SRCLKENA0",
++			  "SRCLKENA1",
++			  "SCP_VREQ_VAO",
++			  "AP_RTC_CLK32K",
++			  "AP_PMIC_WDTRST_L",
++			  "AUD_CLK_MOSI",
++			  "AUD_SYNC_MOSI",
++			  "AUD_DAT_MOSI0",
++			  "AUD_DAT_MOSI1",
++			  "AUD_CLK_MISO",
++			  "AUD_SYNC_MISO",
++			  "AUD_DAT_MISO0",
++			  "AUD_DAT_MISO1",
++			  "NC",
++			  "NC",
++			  "NC",
++			  "DPBRDG_RST_L",
++			  "LTE_W_DISABLE_L",
++			  "LTE_SAR_DETECT_L",
++			  "EN_PP3300_LTE_X",
++			  "LTE_PWR_OFF_L",
++			  "LTE_RESET_L",
++			  "TP",
++			  "TP";
++
++	dpi_pin_default: dpi-pin-default {
++		pins-cmd-dat {
++			pinmux = <PINMUX_GPIO103__FUNC_GPIO103>,
++				 <PINMUX_GPIO104__FUNC_GPIO104>,
++				 <PINMUX_GPIO105__FUNC_GPIO105>,
++				 <PINMUX_GPIO106__FUNC_GPIO106>,
++				 <PINMUX_GPIO107__FUNC_GPIO107>,
++				 <PINMUX_GPIO108__FUNC_GPIO108>,
++				 <PINMUX_GPIO109__FUNC_GPIO109>,
++				 <PINMUX_GPIO110__FUNC_GPIO110>,
++				 <PINMUX_GPIO111__FUNC_GPIO111>,
++				 <PINMUX_GPIO112__FUNC_GPIO112>,
++				 <PINMUX_GPIO113__FUNC_GPIO113>,
++				 <PINMUX_GPIO114__FUNC_GPIO114>,
++				 <PINMUX_GPIO101__FUNC_GPIO101>,
++				 <PINMUX_GPIO100__FUNC_GPIO100>,
++				 <PINMUX_GPIO102__FUNC_GPIO102>,
++				 <PINMUX_GPIO99__FUNC_GPIO99>;
++			drive-strength = <MTK_DRIVE_10mA>;
++			output-low;
++		};
++	};
++
++	dpi_pin_func: dpi-pin-func {
++		pins-cmd-dat {
++			pinmux = <PINMUX_GPIO103__FUNC_DPI_DATA0>,
++				 <PINMUX_GPIO104__FUNC_DPI_DATA1>,
++				 <PINMUX_GPIO105__FUNC_DPI_DATA2>,
++				 <PINMUX_GPIO106__FUNC_DPI_DATA3>,
++				 <PINMUX_GPIO107__FUNC_DPI_DATA4>,
++				 <PINMUX_GPIO108__FUNC_DPI_DATA5>,
++				 <PINMUX_GPIO109__FUNC_DPI_DATA6>,
++				 <PINMUX_GPIO110__FUNC_DPI_DATA7>,
++				 <PINMUX_GPIO111__FUNC_DPI_DATA8>,
++				 <PINMUX_GPIO112__FUNC_DPI_DATA9>,
++				 <PINMUX_GPIO113__FUNC_DPI_DATA10>,
++				 <PINMUX_GPIO114__FUNC_DPI_DATA11>,
++				 <PINMUX_GPIO101__FUNC_DPI_HSYNC>,
++				 <PINMUX_GPIO100__FUNC_DPI_VSYNC>,
++				 <PINMUX_GPIO102__FUNC_DPI_DE>,
++				 <PINMUX_GPIO99__FUNC_DPI_PCLK>;
++			drive-strength = <MTK_DRIVE_10mA>;
++		};
++	};
++
++	pp6000_mipi_disp_150ma_fixed_pins: pp6000-mipi-disp-150ma-fixed-pins {
++		pins1 {
++			pinmux = <PINMUX_GPIO154__FUNC_GPIO154>;
++			output-high;
++		};
++	};
++
++	panel_pins_default: panel-pins-default {
++		pins1 {
++			pinmux = <PINMUX_GPIO98__FUNC_GPIO98>;
++			output-high;
++		};
++	};
++	wifi_pins_pwrseq: wifipwrseq {
++		pins-wifi-enable {
++			pinmux = <PINMUX_GPIO51__FUNC_GPIO51>;
++		};
++	};
++};
++
++&sound {
++	status = "okay";
++
++	compatible = "mediatek,mt8186-mt6366-rt1019-rt5682s-sound";
++	mediatek,adsp = <&adsp>;
++
++	playback-codecs {
++		sound-dai = <&it6505dptx>,<&rt1019p>;
++	};
++
++	headset-codec {
++		sound-dai = <&rt5682s>;
++	};
++};
++
++&thermal_zones {
++	tboard1 {
++		polling-delay = <1000>; /* milliseconds */
++		polling-delay-passive = <0>; /* milliseconds */
++		thermal-sensors = <&tboard_thermistor1>;
++	};
++
++	tboard2 {
++		polling-delay = <1000>; /* milliseconds */
++		polling-delay-passive = <0>; /* milliseconds */
++		thermal-sensors = <&tboard_thermistor2>;
++	};
++};
++
++&wifi_pwrseq {
++	reset-gpios = <&pio 51 1>;
++};
++
++en_pp6000_mipi_disp: &pp3300_disp_x {
++	gpio = <&pio 153 GPIO_ACTIVE_HIGH>;
++};
+diff --git a/drivers/gpu/drm/panel/panel-boe-tv101wum-nl6.c b/drivers/gpu/drm/panel/panel-boe-tv101wum-nl6.c
+index 783234ae0f5761e965d72e1446f1ced46a913a24..8c9c1aa20276ae7f7cce1d6a348f345980f590f0 100644
+--- a/drivers/gpu/drm/panel/panel-boe-tv101wum-nl6.c
++++ b/drivers/gpu/drm/panel/panel-boe-tv101wum-nl6.c
+@@ -75,6 +75,442 @@ struct panel_init_cmd {
+ 	.len = sizeof((char[]){__VA_ARGS__}), \
+ 	.data = (char[]){__VA_ARGS__} }
+ 
++static const struct panel_init_cmd starry_himax83102_j02_init_cmd[] = {
++	_INIT_DCS_CMD(0xB9, 0x83, 0x10, 0x21, 0x55, 0x00),
++	_INIT_DCS_CMD(0xB1, 0x2C, 0xB5, 0xB5, 0x31, 0xF1, 0x31, 0xD7, 0x2F, 0x36, 0x36, 0x36, 0x36, 0x1A, 0x8B, 0x11,
++		0x65, 0x00, 0x88, 0xFA, 0xFF, 0xFF, 0x8F, 0xFF, 0x08, 0x74, 0x33),
++	_INIT_DCS_CMD(0xB2, 0x00, 0x47, 0xB0, 0x80, 0x00, 0x12, 0x72, 0x3C, 0xA3, 0x03, 0x03, 0x00, 0x00, 0x88, 0xF5),
++	_INIT_DCS_CMD(0xB4, 0x76, 0x76, 0x76, 0x76, 0x76, 0x76, 0x63, 0x5C, 0x63, 0x5C, 0x01, 0x9E),
++	_INIT_DCS_CMD(0xE9, 0xCD),
++	_INIT_DCS_CMD(0xBA, 0x84),
++	_INIT_DCS_CMD(0xE9, 0x3F),
++	_INIT_DCS_CMD(0xBC, 0x1B, 0x04),
++	_INIT_DCS_CMD(0xBE, 0x20),
++	_INIT_DCS_CMD(0xBF, 0xFC, 0xC4),
++	_INIT_DCS_CMD(0xC0, 0x36, 0x36, 0x22, 0x11, 0x22, 0xA0, 0x61, 0x08, 0xF5, 0x03),
++	_INIT_DCS_CMD(0xE9, 0xCC),
++	_INIT_DCS_CMD(0xC7, 0x80),
++	_INIT_DCS_CMD(0xE9, 0x3F),
++	_INIT_DCS_CMD(0xE9, 0xC6),
++	_INIT_DCS_CMD(0xC8, 0x97),
++	_INIT_DCS_CMD(0xE9, 0x3F),
++	_INIT_DCS_CMD(0xC9, 0x00, 0x1E, 0x13, 0x88, 0x01),
++	_INIT_DCS_CMD(0xCB, 0x08, 0x13, 0x07, 0x00, 0x0F, 0x33),
++	_INIT_DCS_CMD(0xCC, 0x02),
++	_INIT_DCS_CMD(0xE9, 0xC4),
++	_INIT_DCS_CMD(0xD0, 0x03),
++	_INIT_DCS_CMD(0xE9, 0x3F),
++	_INIT_DCS_CMD(0xD1, 0x37, 0x06, 0x00, 0x02, 0x04, 0x0C, 0xFF),
++	_INIT_DCS_CMD(0xD2, 0x1F, 0x11, 0x1F),
++	_INIT_DCS_CMD(0xD3, 0x06, 0x00, 0x00, 0x00, 0x00, 0x00, 0x08, 0x00, 0x08, 0x37, 0x47, 0x34, 0x3B, 0x12, 0x12, 0x03,
++		0x03, 0x32, 0x10, 0x10, 0x00, 0x10, 0x32, 0x10, 0x08, 0x00, 0x08, 0x32, 0x17, 0x94, 0x07, 0x94, 0x00, 0x00),
++	_INIT_DCS_CMD(0xD5, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x19, 0x19, 0x40, 0x40, 0x1A, 0x1A,
++		0x1B, 0x1B, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x20, 0x21, 0x28, 0x29, 0x18, 0x18, 0x18, 0x18,0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18),
++	_INIT_DCS_CMD(0xD6, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x40, 0x40, 0x19, 0x19, 0x1A, 0x1A,
++		0x1B, 0x1B, 0x07, 0x06, 0x05, 0x04, 0x03, 0x02, 0x01, 0x00, 0x29, 0x28, 0x21, 0x20, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18),
++	_INIT_DCS_CMD(0xD8, 0xAA, 0xBA, 0xEA, 0xAA, 0xAA, 0xA0, 0xAA, 0xBA, 0xEA, 0xAA, 0xAA, 0xA0, 0xAA, 0xBA, 0xEA, 0xAA,
++		0xAA, 0xA0, 0xAA, 0xBA, 0xEA, 0xAA, 0xAA, 0xA0, 0xAA, 0xBA, 0xEA, 0xAA, 0xAA, 0xA0, 0xAA, 0xBA, 0xEA, 0xAA, 0xAA, 0xA0),
++	_INIT_DCS_CMD(0xE0, 0x00, 0x09, 0x14, 0x1E, 0x26, 0x48, 0x61, 0x67, 0x6C, 0x67, 0x7D, 0x7F, 0x80, 0x8B, 0x87, 0x8F, 0x98, 0xAB,
++		0xAB, 0x55, 0x5C, 0x68, 0x73, 0x00, 0x09, 0x14, 0x1E, 0x26, 0x48, 0x61, 0x67, 0x6C, 0x67, 0x7D, 0x7F, 0x80, 0x8B, 0x87, 0x8F, 0x98, 0xAB, 0xAB, 0x55, 0x5C, 0x68, 0x73),
++	_INIT_DCS_CMD(0xE7, 0x0E, 0x10, 0x10, 0x21, 0x2B, 0x9A, 0x02, 0x54, 0x9A, 0x14, 0x14, 0x00, 0x00, 0x00, 0x00, 0x12, 0x05, 0x02, 0x02, 0x10),
++	_INIT_DCS_CMD(0xBD, 0x01),
++	_INIT_DCS_CMD(0xB1, 0x01, 0xBF, 0x11),
++	_INIT_DCS_CMD(0xCB, 0x86),
++	_INIT_DCS_CMD(0xD2, 0x3C, 0xFA),
++	_INIT_DCS_CMD(0xE9, 0xC5),
++	_INIT_DCS_CMD(0xD3, 0x00, 0x00, 0x00, 0x00, 0x80, 0x0C, 0x01),
++	_INIT_DCS_CMD(0xE9, 0x3F),
++	_INIT_DCS_CMD(0xE7, 0x02, 0x00, 0x28, 0x01, 0x7E, 0x0F, 0x7E, 0x10, 0xA0, 0x00, 0x00, 0x20, 0x40, 0x50, 0x40),
++	_INIT_DCS_CMD(0xBD, 0x02),
++	_INIT_DCS_CMD(0xD8, 0xFF, 0xFF, 0xBF, 0xFE, 0xAA, 0xA0, 0xFF, 0xFF, 0xBF, 0xFE, 0xAA, 0xA0),
++	_INIT_DCS_CMD(0xE7, 0xFE, 0x04, 0xFE, 0x04, 0xFE, 0x04, 0x03, 0x03, 0x03, 0x26, 0x00, 0x26, 0x81, 0x02, 0x40, 0x00, 0x20, 0x9E, 0x04, 0x03, 0x02, 0x01, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00),
++	_INIT_DCS_CMD(0xBD, 0x03),
++	_INIT_DCS_CMD(0xE9, 0xC6),
++	_INIT_DCS_CMD(0xB4, 0x03, 0xFF, 0xF8),
++	_INIT_DCS_CMD(0xE9, 0x3F),
++	_INIT_DCS_CMD(0xD8, 0x00, 0x2A, 0xAA, 0xA8, 0x00, 0x00, 0x00, 0x2A, 0xAA, 0xA8, 0x00, 0x00, 0x00, 0x3F, 0xFF, 0xFC, 0x00, 0x00, 0x00, 0x3F, 0xFF, 0xFC, 0x00, 0x00, 0x00, 0x2A, 0xAA, 0xA8, 			0x00, 0x00, 0x00, 0x2A, 0xAA, 0xA8, 0x00, 0x00),
++	_INIT_DCS_CMD(0xBD, 0x00),
++	_INIT_DCS_CMD(0xE9, 0xC4),
++	_INIT_DCS_CMD(0xBA, 0x96),
++	_INIT_DCS_CMD(0xE9, 0x3F),
++	_INIT_DCS_CMD(0xBD, 0x01),
++	_INIT_DCS_CMD(0xE9, 0xC5),
++	_INIT_DCS_CMD(0xBA, 0x4F),
++	_INIT_DCS_CMD(0xE9, 0x3F),
++	_INIT_DCS_CMD(0xBD, 0x00),
++	_INIT_DCS_CMD(0x11),
++	_INIT_DELAY_CMD(120),
++	_INIT_DCS_CMD(0x29),
++	{},
++};
++
++static const struct panel_init_cmd starry_ili9882t_init_cmd[] = {
++
++	_INIT_DCS_CMD(0xFF, 0x98, 0x82, 0x01),
++	_INIT_DCS_CMD(0x00, 0x42),
++	_INIT_DCS_CMD(0x01, 0x11),
++	_INIT_DCS_CMD(0x02, 0x00),
++	_INIT_DCS_CMD(0x03, 0x00),
++
++	_INIT_DCS_CMD(0x04, 0x01),
++	_INIT_DCS_CMD(0x05, 0x11),
++	_INIT_DCS_CMD(0x06, 0x00),
++	_INIT_DCS_CMD(0x07, 0x00),
++
++	_INIT_DCS_CMD(0x08, 0x80),
++	_INIT_DCS_CMD(0x09, 0x81),
++	_INIT_DCS_CMD(0x0A, 0x71),
++	_INIT_DCS_CMD(0x0B, 0x00),
++
++	_INIT_DCS_CMD(0x0C, 0x00),
++	_INIT_DCS_CMD(0x0E, 0x1A),
++
++	_INIT_DCS_CMD(0x24, 0x00),
++	_INIT_DCS_CMD(0x25, 0x00),
++	_INIT_DCS_CMD(0x26, 0x00),
++	_INIT_DCS_CMD(0x27, 0x00),
++
++	_INIT_DCS_CMD(0x2C, 0xD4),
++	_INIT_DCS_CMD(0xB9, 0x40),
++
++	_INIT_DCS_CMD(0xB0, 0x11),
++
++	_INIT_DCS_CMD(0xE6, 0x32),
++	_INIT_DCS_CMD(0xD1, 0x30),
++
++	_INIT_DCS_CMD(0xD6, 0x55),
++
++	_INIT_DCS_CMD(0xD0, 0x01),
++	_INIT_DCS_CMD(0xE3, 0x93),
++	_INIT_DCS_CMD(0xE4, 0x00),
++	_INIT_DCS_CMD(0xE5, 0x80),
++
++	_INIT_DCS_CMD(0x31, 0x07),
++	_INIT_DCS_CMD(0x32, 0x07),
++	_INIT_DCS_CMD(0x33, 0x07),
++	_INIT_DCS_CMD(0x34, 0x07),
++	_INIT_DCS_CMD(0x35, 0x07),
++	_INIT_DCS_CMD(0x36, 0x01),
++	_INIT_DCS_CMD(0x37, 0x00),
++	_INIT_DCS_CMD(0x38, 0x28),
++	_INIT_DCS_CMD(0x39, 0x29),
++	_INIT_DCS_CMD(0x3A, 0x11),
++	_INIT_DCS_CMD(0x3B, 0x13),
++	_INIT_DCS_CMD(0x3C, 0x15),
++	_INIT_DCS_CMD(0x3D, 0x17),
++	_INIT_DCS_CMD(0x3E, 0x09),
++	_INIT_DCS_CMD(0x3F, 0x0D),
++	_INIT_DCS_CMD(0x40, 0x02),
++	_INIT_DCS_CMD(0x41, 0x02),
++	_INIT_DCS_CMD(0x42, 0x02),
++	_INIT_DCS_CMD(0x43, 0x02),
++	_INIT_DCS_CMD(0x44, 0x02),
++	_INIT_DCS_CMD(0x45, 0x02),
++	_INIT_DCS_CMD(0x46, 0x02),
++
++	_INIT_DCS_CMD(0x47, 0x07),
++	_INIT_DCS_CMD(0x48, 0x07),
++	_INIT_DCS_CMD(0x49, 0x07),
++	_INIT_DCS_CMD(0x4A, 0x07),
++	_INIT_DCS_CMD(0x4B, 0x07),
++	_INIT_DCS_CMD(0x4C, 0x01),
++	_INIT_DCS_CMD(0x4D, 0x00),
++	_INIT_DCS_CMD(0x4E, 0x28),
++	_INIT_DCS_CMD(0x4F, 0x29),
++	_INIT_DCS_CMD(0x50, 0x10),
++	_INIT_DCS_CMD(0x51, 0x12),
++	_INIT_DCS_CMD(0x52, 0x14),
++	_INIT_DCS_CMD(0x53, 0x16),
++	_INIT_DCS_CMD(0x54, 0x08),
++	_INIT_DCS_CMD(0x55, 0x0C),
++	_INIT_DCS_CMD(0x56, 0x02),
++	_INIT_DCS_CMD(0x57, 0x02),
++	_INIT_DCS_CMD(0x58, 0x02),
++	_INIT_DCS_CMD(0x59, 0x02),
++	_INIT_DCS_CMD(0x5A, 0x02),
++	_INIT_DCS_CMD(0x5B, 0x02),
++	_INIT_DCS_CMD(0x5C, 0x02),
++
++	_INIT_DCS_CMD(0x61, 0x07),
++	_INIT_DCS_CMD(0x62, 0x07),
++	_INIT_DCS_CMD(0x63, 0x07),
++	_INIT_DCS_CMD(0x64, 0x07),
++	_INIT_DCS_CMD(0x65, 0x07),
++	_INIT_DCS_CMD(0x66, 0x01),
++	_INIT_DCS_CMD(0x67, 0x00),
++	_INIT_DCS_CMD(0x68, 0x28),
++	_INIT_DCS_CMD(0x69, 0x29),
++	_INIT_DCS_CMD(0x6A, 0x16),
++	_INIT_DCS_CMD(0x6B, 0x14),
++	_INIT_DCS_CMD(0x6C, 0x12),
++	_INIT_DCS_CMD(0x6D, 0x10),
++	_INIT_DCS_CMD(0x6E, 0x0C),
++	_INIT_DCS_CMD(0x6F, 0x08),
++	_INIT_DCS_CMD(0x70, 0x02),
++	_INIT_DCS_CMD(0x71, 0x02),
++	_INIT_DCS_CMD(0x72, 0x02),
++	_INIT_DCS_CMD(0x73, 0x02),
++	_INIT_DCS_CMD(0x74, 0x02),
++	_INIT_DCS_CMD(0x75, 0x02),
++	_INIT_DCS_CMD(0x76, 0x02),
++
++	_INIT_DCS_CMD(0x77, 0x07),
++	_INIT_DCS_CMD(0x78, 0x07),
++	_INIT_DCS_CMD(0x79, 0x07),
++	_INIT_DCS_CMD(0x7A, 0x07),
++	_INIT_DCS_CMD(0x7B, 0x07),
++	_INIT_DCS_CMD(0x7C, 0x01),
++	_INIT_DCS_CMD(0x7D, 0x00),
++	_INIT_DCS_CMD(0x7E, 0x28),
++	_INIT_DCS_CMD(0x7F, 0x29),
++	_INIT_DCS_CMD(0x80, 0x17),
++	_INIT_DCS_CMD(0x81, 0x15),
++	_INIT_DCS_CMD(0x82, 0x13),
++	_INIT_DCS_CMD(0x83, 0x11),
++	_INIT_DCS_CMD(0x84, 0x0D),
++	_INIT_DCS_CMD(0x85, 0x09),
++	_INIT_DCS_CMD(0x86, 0x02),
++	_INIT_DCS_CMD(0x87, 0x07),
++	_INIT_DCS_CMD(0x88, 0x07),
++	_INIT_DCS_CMD(0x89, 0x07),
++	_INIT_DCS_CMD(0x8A, 0x07),
++	_INIT_DCS_CMD(0x8B, 0x07),
++	_INIT_DCS_CMD(0x8C, 0x07),
++
++	_INIT_DCS_CMD(0xFF, 0x98, 0x82, 0x02),
++
++	_INIT_DCS_CMD(0x29, 0x3A),
++	_INIT_DCS_CMD(0x2A, 0x3B),
++
++	_INIT_DCS_CMD(0x06, 0x01),
++	_INIT_DCS_CMD(0x07, 0x01),
++	_INIT_DCS_CMD(0x08, 0x0C),
++	_INIT_DCS_CMD(0x09, 0x44),
++
++	_INIT_DCS_CMD(0x3C, 0x0A),
++	_INIT_DCS_CMD(0x39, 0x11),
++	_INIT_DCS_CMD(0x3D, 0x00),
++	_INIT_DCS_CMD(0x3A, 0x0C),
++	_INIT_DCS_CMD(0x3B, 0x44),
++
++	_INIT_DCS_CMD(0x53, 0x1F),
++	_INIT_DCS_CMD(0x5E, 0x40),
++	_INIT_DCS_CMD(0x84, 0x00),
++
++	_INIT_DCS_CMD(0xFF, 0x98, 0x82, 0x03),
++	_INIT_DCS_CMD(0x20, 0x01),
++	_INIT_DCS_CMD(0x21, 0x3C),
++	_INIT_DCS_CMD(0x22, 0xFA),
++
++	_INIT_DCS_CMD(0xFF, 0x98, 0x82, 0x0A),
++	_INIT_DCS_CMD(0xE0, 0x01),
++	_INIT_DCS_CMD(0xE2, 0x01),
++	_INIT_DCS_CMD(0xE5, 0x91),
++	_INIT_DCS_CMD(0xE6, 0x3C),
++	_INIT_DCS_CMD(0xE7, 0x00),
++	_INIT_DCS_CMD(0xE8, 0xFA),
++
++	_INIT_DCS_CMD(0xFF, 0x98, 0x82, 0x12),
++	_INIT_DCS_CMD(0x87, 0x2C),
++
++	_INIT_DCS_CMD(0xFF, 0x98, 0x82, 0x05),
++	_INIT_DCS_CMD(0x73, 0xE5),
++	_INIT_DCS_CMD(0x7F, 0x6B),
++	_INIT_DCS_CMD(0x6D, 0xA4),
++	_INIT_DCS_CMD(0x79, 0x54),
++
++	_INIT_DCS_CMD(0x69, 0x97),
++	_INIT_DCS_CMD(0x6A, 0x97),
++
++	_INIT_DCS_CMD(0xA5, 0x3F),
++	_INIT_DCS_CMD(0x61, 0xDA),
++
++	_INIT_DCS_CMD(0xA7, 0xF1),
++	_INIT_DCS_CMD(0x5F, 0x01),
++	_INIT_DCS_CMD(0x62, 0x3F),
++
++	_INIT_DCS_CMD(0x1D, 0x90),
++
++	_INIT_DCS_CMD(0x86, 0x87),
++
++	_INIT_DCS_CMD(0xFF, 0x98, 0x82, 0x06),
++	_INIT_DCS_CMD(0xC0, 0x80),
++	_INIT_DCS_CMD(0xC1, 0x07),
++	_INIT_DCS_CMD(0xCA, 0x58),
++	_INIT_DCS_CMD(0xCB, 0x02),
++	_INIT_DCS_CMD(0xCE, 0x58),
++	_INIT_DCS_CMD(0xCF, 0x02),
++
++	_INIT_DCS_CMD(0x67, 0x60),
++	_INIT_DCS_CMD(0x10, 0x00),
++	_INIT_DCS_CMD(0x92, 0x22),
++	_INIT_DCS_CMD(0xD3, 0x08),
++
++	_INIT_DCS_CMD(0xD6, 0x55),
++	_INIT_DCS_CMD(0xDC, 0x38),
++
++	_INIT_DCS_CMD(0xFF, 0x98, 0x82, 0x08),
++	_INIT_DCS_CMD(0xE0, 0x00, 0x10, 0x2A, 0x4D, 0x61, 0x56, 0x6A, 0x6E, 0x79, 0x76, 0x8F, 0x95, 0x98, 0xAE, 0xAA, 0xB2, 0xBB, 0xCE, 0xC6, 0xBD, 0xD5, 0xE2, 0xE8),
++	_INIT_DCS_CMD(0xE1, 0x00, 0x10, 0x2A, 0x4D, 0x61, 0x56, 0x6A, 0x6E, 0x79, 0x76, 0x8F, 0x95, 0x98, 0xAE, 0xAA, 0xB2, 0xBB, 0xCE, 0xC6, 0xBD, 0xD5, 0xE2, 0xE8),
++
++	_INIT_DCS_CMD(0xFF, 0x98, 0x82, 0x04),
++	_INIT_DCS_CMD(0xBA, 0x81),
++
++	_INIT_DCS_CMD(0xFF, 0x98, 0x82, 0x0C),
++	_INIT_DCS_CMD(0x00, 0x02),
++	_INIT_DCS_CMD(0x01, 0x00),
++	_INIT_DCS_CMD(0x02, 0x03),
++	_INIT_DCS_CMD(0x03, 0x01),
++	_INIT_DCS_CMD(0x04, 0x03),
++	_INIT_DCS_CMD(0x05, 0x02),
++	_INIT_DCS_CMD(0x06, 0x04),
++	_INIT_DCS_CMD(0x07, 0x03),
++	_INIT_DCS_CMD(0x08, 0x03),
++	_INIT_DCS_CMD(0x09, 0x04),
++	_INIT_DCS_CMD(0x0A, 0x04),
++	_INIT_DCS_CMD(0x0B, 0x05),
++	_INIT_DCS_CMD(0x0C, 0x04),
++	_INIT_DCS_CMD(0x0D, 0x06),
++	_INIT_DCS_CMD(0x0E, 0x05),
++	_INIT_DCS_CMD(0x0F, 0x07),
++
++	_INIT_DCS_CMD(0x10, 0x04),
++	_INIT_DCS_CMD(0x11, 0x08),
++	_INIT_DCS_CMD(0x12, 0x05),
++	_INIT_DCS_CMD(0x13, 0x09),
++	_INIT_DCS_CMD(0x14, 0x05),
++	_INIT_DCS_CMD(0x15, 0x0A),
++	_INIT_DCS_CMD(0x16, 0x06),
++	_INIT_DCS_CMD(0x17, 0x0B),
++	_INIT_DCS_CMD(0x18, 0x05),
++	_INIT_DCS_CMD(0x19, 0x0C),
++	_INIT_DCS_CMD(0x1A, 0x06),
++	_INIT_DCS_CMD(0x1B, 0x0D),
++	_INIT_DCS_CMD(0x1C, 0x06),
++	_INIT_DCS_CMD(0x1D, 0x0E),
++	_INIT_DCS_CMD(0x1E, 0x07),
++	_INIT_DCS_CMD(0x1F, 0x0F),
++
++	_INIT_DCS_CMD(0x20, 0x06),
++	_INIT_DCS_CMD(0x21, 0x10),
++	_INIT_DCS_CMD(0x22, 0x07),
++	_INIT_DCS_CMD(0x23, 0x11),
++	_INIT_DCS_CMD(0x24, 0x07),
++	_INIT_DCS_CMD(0x25, 0x12),
++	_INIT_DCS_CMD(0x26, 0x08),
++	_INIT_DCS_CMD(0x27, 0x13),
++	_INIT_DCS_CMD(0x28, 0x07),
++	_INIT_DCS_CMD(0x29, 0x14),
++	_INIT_DCS_CMD(0x2A, 0x08),
++	_INIT_DCS_CMD(0x2B, 0x15),
++	_INIT_DCS_CMD(0x2C, 0x08),
++	_INIT_DCS_CMD(0x2D, 0x16),
++	_INIT_DCS_CMD(0x2E, 0x09),
++	_INIT_DCS_CMD(0x2F, 0x17),
++
++	_INIT_DCS_CMD(0x30, 0x08),
++	_INIT_DCS_CMD(0x31, 0x18),
++	_INIT_DCS_CMD(0x32, 0x09),
++	_INIT_DCS_CMD(0x33, 0x19),
++	_INIT_DCS_CMD(0x34, 0x09),
++	_INIT_DCS_CMD(0x35, 0x1A),
++	_INIT_DCS_CMD(0x36, 0x0A),
++	_INIT_DCS_CMD(0x37, 0x1B),
++	_INIT_DCS_CMD(0x38, 0x0A),
++	_INIT_DCS_CMD(0x39, 0x1C),
++	_INIT_DCS_CMD(0x3A, 0x0A),
++	_INIT_DCS_CMD(0x3B, 0x1D),
++	_INIT_DCS_CMD(0x3C, 0x0A),
++	_INIT_DCS_CMD(0x3D, 0x1E),
++	_INIT_DCS_CMD(0x3E, 0x0A),
++	_INIT_DCS_CMD(0x3F, 0x1F),
++
++	_INIT_DCS_CMD(0xFF, 0x98, 0x82, 0x04),
++	_INIT_DCS_CMD(0xBA, 0x01),
++
++	_INIT_DCS_CMD(0xFF, 0x98, 0x82, 0x0E),
++	_INIT_DCS_CMD(0x02, 0x0C),
++	_INIT_DCS_CMD(0x20, 0x10),
++
++	_INIT_DCS_CMD(0x25, 0x16),
++	_INIT_DCS_CMD(0x26, 0xE0),
++
++	_INIT_DCS_CMD(0x27, 0x00),
++	_INIT_DCS_CMD(0x29, 0x71),
++	_INIT_DCS_CMD(0x2A, 0x46),
++
++	_INIT_DCS_CMD(0x2B, 0x1F),
++	_INIT_DCS_CMD(0x2D, 0xC7),
++
++	_INIT_DCS_CMD(0x31, 0x02),
++
++	_INIT_DCS_CMD(0x32, 0xDF),
++
++	_INIT_DCS_CMD(0x33, 0x5A),
++	_INIT_DCS_CMD(0x34, 0xC0),
++	_INIT_DCS_CMD(0x35, 0x5A),
++	_INIT_DCS_CMD(0x36, 0xC0),
++
++	_INIT_DCS_CMD(0x38, 0x65),
++
++	_INIT_DCS_CMD(0x80, 0x3E),
++	_INIT_DCS_CMD(0x81, 0xA0),
++
++
++	_INIT_DCS_CMD(0xB0, 0x01),
++	_INIT_DCS_CMD(0xB1, 0xCC),
++
++	_INIT_DCS_CMD(0xC0, 0x12),
++	_INIT_DCS_CMD(0xC2, 0xCC),
++	_INIT_DCS_CMD(0xC3, 0xCC),
++	_INIT_DCS_CMD(0xC4, 0xCC),
++	_INIT_DCS_CMD(0xC5, 0xCC),
++	_INIT_DCS_CMD(0xC6, 0xCC),
++	_INIT_DCS_CMD(0xC7, 0xCC),
++	_INIT_DCS_CMD(0xC8, 0xCC),
++	_INIT_DCS_CMD(0xC9, 0xCC),
++
++	_INIT_DCS_CMD(0x30, 0x00),
++
++	_INIT_DCS_CMD(0x00, 0x81),
++
++
++	_INIT_DCS_CMD(0x08, 0x02),
++	_INIT_DCS_CMD(0x09, 0x00),
++
++	_INIT_DCS_CMD(0x07, 0x21),
++
++	_INIT_DCS_CMD(0x04, 0x10),
++
++	_INIT_DCS_CMD(0xFF, 0x98, 0x82, 0x1E),
++	_INIT_DCS_CMD(0x60, 0x00),
++	_INIT_DCS_CMD(0x64, 0x00),
++	_INIT_DCS_CMD(0x6D, 0x00),
++
++	_INIT_DCS_CMD(0xFF, 0x98, 0x82, 0x0B),
++	_INIT_DCS_CMD(0xA6, 0x44),
++	_INIT_DCS_CMD(0xA7, 0xB6),
++	_INIT_DCS_CMD(0xA8, 0x03),
++	_INIT_DCS_CMD(0xA9, 0x03),
++	_INIT_DCS_CMD(0xAA, 0x51),
++	_INIT_DCS_CMD(0xAB, 0x51),
++	_INIT_DCS_CMD(0xAC, 0x04),
++	_INIT_DCS_CMD(0xBD, 0x92),
++	_INIT_DCS_CMD(0xBE, 0xA1),
++
++	_INIT_DCS_CMD(0xFF, 0x98, 0x82, 0x05),
++	_INIT_DCS_CMD(0x86, 0x87),
++
++	_INIT_DCS_CMD(0xFF, 0x98, 0x82, 0x06),
++	_INIT_DCS_CMD(0x92, 0x22),
++
++	_INIT_DCS_CMD(0xFF, 0x98, 0x82, 0x00),
++	_INIT_DCS_CMD(0x11),
++	_INIT_DELAY_CMD(120),
++	_INIT_DCS_CMD(0x29),
++	{},
++};
++
+ static const struct panel_init_cmd boe_tv110c9m_init_cmd[] = {
+ 	_INIT_DCS_CMD(0xFF, 0x20),
+ 	_INIT_DCS_CMD(0xFB, 0x01),
+@@ -1620,6 +2056,60 @@ static const struct panel_desc starry_qfh032011_53g_desc = {
+ 	.init_cmds = starry_qfh032011_53g_init_cmd,
+ };
+ 
++static const struct drm_display_mode starry_himax83102_j02_default_mode = {
++	.clock = 160368,
++	.hdisplay = 1200,
++	.hsync_start = 1200 + 40,
++	.hsync_end = 1200 + 40 + 20,
++	.htotal = 1200 + 40 + 20 + 40,
++	.vdisplay = 1920,
++	.vsync_start = 1920 + 116,
++	.vsync_end = 1920 + 116 + 8,
++	.vtotal = 1920 + 116 + 8 + 12,
++	.type = DRM_MODE_TYPE_DRIVER | DRM_MODE_TYPE_PREFERRED,
++};
++
++static const struct panel_desc starry_himax83102_j02_desc = {
++	.modes = &starry_himax83102_j02_default_mode,
++	.bpc = 8,
++	.size = {
++		.width_mm = 141,
++		.height_mm = 226,
++	},
++	.lanes = 4,
++	.format = MIPI_DSI_FMT_RGB888,
++	.mode_flags = MIPI_DSI_MODE_VIDEO | MIPI_DSI_MODE_VIDEO_SYNC_PULSE |
++		      MIPI_DSI_MODE_LPM,
++	.init_cmds = starry_himax83102_j02_init_cmd,
++};
++
++static const struct drm_display_mode starry_ili9882t_default_mode = {
++	.clock = 165280,
++	.hdisplay = 1200,
++	.hsync_start = 1200 + 32,
++	.hsync_end = 1200 + 32 + 30,
++	.htotal = 1200 + 32 + 30 + 32,
++	.vdisplay = 1920,
++	.vsync_start = 1920 + 68,
++	.vsync_end = 1920 + 68 + 2,
++	.vtotal = 1920 + 68 + 2 + 10,
++	.type = DRM_MODE_TYPE_DRIVER | DRM_MODE_TYPE_PREFERRED,
++};
++
++static const struct panel_desc starry_ili9882t_desc = {
++	.modes = &starry_ili9882t_default_mode,
++	.bpc = 8,
++	.size = {
++		.width_mm = 141,
++		.height_mm = 226,
++	},
++	.lanes = 4,
++	.format = MIPI_DSI_FMT_RGB888,
++	.mode_flags = MIPI_DSI_MODE_VIDEO | MIPI_DSI_MODE_VIDEO_SYNC_PULSE |
++		      MIPI_DSI_MODE_LPM,
++	.init_cmds = starry_ili9882t_init_cmd,
++};
++
+ static int boe_panel_get_modes(struct drm_panel *panel,
+ 			       struct drm_connector *connector)
+ {
+@@ -1793,6 +2283,12 @@ static const struct of_device_id boe_of_match[] = {
+ 	{ .compatible = "starry,2081101qfh032011-53g",
+ 	  .data = &starry_qfh032011_53g_desc
+ 	},
++	{ .compatible = "starry,himax83102-j02",
++	  .data = &starry_himax83102_j02_desc
++	},
++	{ .compatible = "starry,ili9882t",
++	  .data = &starry_ili9882t_desc
++	},
+ 	{ /* sentinel */ }
+ };
+ MODULE_DEVICE_TABLE(of, boe_of_match);
