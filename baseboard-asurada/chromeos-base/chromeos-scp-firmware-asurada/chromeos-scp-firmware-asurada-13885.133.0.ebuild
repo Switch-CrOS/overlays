@@ -15,6 +15,10 @@ SRC_URI="gs://chromeos-localmirror/distfiles/${P}.tbz2"
 S=${WORKDIR}/${P}
 
 src_install() {
-	insinto /lib/firmware/
+	# For newer kernels we have subdirectories for each SoC
+	insinto /lib/firmware/mediatek/mt8192/
 	doins scp.img
+
+	# Add a symlink to make it backward compatible for old kernels
+	dosym mediatek/mt8192/scp.img /lib/firmware/scp.img
 }
