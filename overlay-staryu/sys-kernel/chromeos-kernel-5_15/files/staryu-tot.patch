@@ -120,10 +120,10 @@ index 0000000000000000000000000000000000000000..bf36297a053f07373e3bfcd852d2b838
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8186-corsola-starmie.dtsi b/arch/arm64/boot/dts/mediatek/mt8186-corsola-starmie.dtsi
 new file mode 100644
-index 0000000000000000000000000000000000000000..b1e01fbf267ccf51acab12c85f04db69f4910974
+index 0000000000000000000000000000000000000000..d75861eb84dac38dd54ec7f65df445839e0824fd
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt8186-corsola-starmie.dtsi
-@@ -0,0 +1,485 @@
+@@ -0,0 +1,489 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
 +/*
 + * Copyright 2023 Google LLC
@@ -563,7 +563,7 @@ index 0000000000000000000000000000000000000000..b1e01fbf267ccf51acab12c85f04db69
 +	panel_pins_default: panel-pins-default {
 +		pins1 {
 +			pinmux = <PINMUX_GPIO98__FUNC_GPIO98>;
-+			output-high;
++			output-low;
 +		};
 +	};
 +	wifi_pins_pwrseq: wifipwrseq {
@@ -588,6 +588,10 @@ index 0000000000000000000000000000000000000000..b1e01fbf267ccf51acab12c85f04db69
 +	};
 +};
 +
++&usb_c1 {
++	status = "disabled";
++};
++
 +&thermal_zones {
 +	tboard1 {
 +		polling-delay = <1000>; /* milliseconds */
@@ -610,10 +614,18 @@ index 0000000000000000000000000000000000000000..b1e01fbf267ccf51acab12c85f04db69
 +	gpio = <&pio 153 GPIO_ACTIVE_HIGH>;
 +};
 diff --git a/drivers/gpu/drm/panel/panel-boe-tv101wum-nl6.c b/drivers/gpu/drm/panel/panel-boe-tv101wum-nl6.c
-index 783234ae0f5761e965d72e1446f1ced46a913a24..8c9c1aa20276ae7f7cce1d6a348f345980f590f0 100644
+index 783234ae0f5761e965d72e1446f1ced46a913a24..e0da44b8b37982e499e86915cd6a542742ead6ec 100644
 --- a/drivers/gpu/drm/panel/panel-boe-tv101wum-nl6.c
 +++ b/drivers/gpu/drm/panel/panel-boe-tv101wum-nl6.c
-@@ -75,6 +75,442 @@ struct panel_init_cmd {
+@@ -36,6 +36,7 @@ struct panel_desc {
+ 	const struct panel_init_cmd *init_cmds;
+ 	unsigned int lanes;
+ 	bool discharge_on_disable;
++	int enable_gpio_init_value;
+ };
+ 
+ struct boe_panel {
+@@ -75,6 +76,442 @@ struct panel_init_cmd {
  	.len = sizeof((char[]){__VA_ARGS__}), \
  	.data = (char[]){__VA_ARGS__} }
  
@@ -1056,7 +1068,7 @@ index 783234ae0f5761e965d72e1446f1ced46a913a24..8c9c1aa20276ae7f7cce1d6a348f3459
  static const struct panel_init_cmd boe_tv110c9m_init_cmd[] = {
  	_INIT_DCS_CMD(0xFF, 0x20),
  	_INIT_DCS_CMD(0xFB, 0x01),
-@@ -1620,6 +2056,60 @@ static const struct panel_desc starry_qfh032011_53g_desc = {
+@@ -1620,6 +2057,62 @@ static const struct panel_desc starry_qfh032011_53g_desc = {
  	.init_cmds = starry_qfh032011_53g_init_cmd,
  };
  
@@ -1085,6 +1097,7 @@ index 783234ae0f5761e965d72e1446f1ced46a913a24..8c9c1aa20276ae7f7cce1d6a348f3459
 +	.mode_flags = MIPI_DSI_MODE_VIDEO | MIPI_DSI_MODE_VIDEO_SYNC_PULSE |
 +		      MIPI_DSI_MODE_LPM,
 +	.init_cmds = starry_himax83102_j02_init_cmd,
++	.enable_gpio_init_value = 1,
 +};
 +
 +static const struct drm_display_mode starry_ili9882t_default_mode = {
@@ -1112,12 +1125,22 @@ index 783234ae0f5761e965d72e1446f1ced46a913a24..8c9c1aa20276ae7f7cce1d6a348f3459
 +	.mode_flags = MIPI_DSI_MODE_VIDEO | MIPI_DSI_MODE_VIDEO_SYNC_PULSE |
 +		      MIPI_DSI_MODE_LPM,
 +	.init_cmds = starry_ili9882t_init_cmd,
++	.enable_gpio_init_value = 1,
 +};
 +
  static int boe_panel_get_modes(struct drm_panel *panel,
  			       struct drm_connector *connector)
  {
-@@ -1793,6 +2283,12 @@ static const struct of_device_id boe_of_match[] = {
+@@ -1694,7 +2187,7 @@ static int boe_panel_add(struct boe_panel *boe)
+ 		return PTR_ERR(boe->enable_gpio);
+ 	}
+ 
+-	gpiod_set_value(boe->enable_gpio, 0);
++	gpiod_set_value(boe->enable_gpio, boe->desc->enable_gpio_init_value);
+ 
+ 	drm_panel_init(&boe->base, dev, &boe_panel_funcs,
+ 		       DRM_MODE_CONNECTOR_DSI);
+@@ -1793,6 +2286,12 @@ static const struct of_device_id boe_of_match[] = {
  	{ .compatible = "starry,2081101qfh032011-53g",
  	  .data = &starry_qfh032011_53g_desc
  	},
