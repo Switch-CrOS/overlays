@@ -120,10 +120,10 @@ index 0000000000000000000000000000000000000000..bf36297a053f07373e3bfcd852d2b838
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8186-corsola-starmie.dtsi b/arch/arm64/boot/dts/mediatek/mt8186-corsola-starmie.dtsi
 new file mode 100644
-index 0000000000000000000000000000000000000000..d75861eb84dac38dd54ec7f65df445839e0824fd
+index 0000000000000000000000000000000000000000..6c77e8a9aaa87417d9fcdd91e478d14e952492e4
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt8186-corsola-starmie.dtsi
-@@ -0,0 +1,489 @@
+@@ -0,0 +1,496 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
 +/*
 + * Copyright 2023 Google LLC
@@ -224,6 +224,12 @@ index 0000000000000000000000000000000000000000..d75861eb84dac38dd54ec7f65df44583
 +	};
 +};
 +
++&cros_ec {
++	cbas {
++		compatible = "google,cros-cbas";
++	};
++};
++
 +&dsi0 {
 +	status = "okay";
 +	#address-cells = <1>;
@@ -238,6 +244,7 @@ index 0000000000000000000000000000000000000000..d75861eb84dac38dd54ec7f65df44583
 +		avee-supply = <&en_pp6000_mipi_disp_150ma>;
 +		pp1800-supply = <&mt6366_vio18_reg>;
 +		backlight = <&backlight_lcd0>;
++		rotation = <270>;
 +		port {
 +			panel_in: endpoint {
 +				remote-endpoint = <&dsi_out>;
@@ -1153,3 +1160,22 @@ index 783234ae0f5761e965d72e1446f1ced46a913a24..e0da44b8b37982e499e86915cd6a5427
  	{ /* sentinel */ }
  };
  MODULE_DEVICE_TABLE(of, boe_of_match);
+diff --git a/drivers/hid/i2c-hid/i2c-hid-of-goodix.c b/drivers/hid/i2c-hid/i2c-hid-of-goodix.c
+index 0060e3dcd775d8fe081c7df4ecf34d3ff557bf20..c5870b683a26b4c427680b85328f03d5c3e20622 100644
+--- a/drivers/hid/i2c-hid/i2c-hid-of-goodix.c
++++ b/drivers/hid/i2c-hid/i2c-hid-of-goodix.c
+@@ -101,8 +101,14 @@ static const struct goodix_i2c_hid_timing_data goodix_gt7375p_timing_data = {
+ 	.post_gpio_reset_delay_ms = 180,
+ };
+ 
++static const struct goodix_i2c_hid_timing_data ilitek_ili9882t_timing_data = {
++	.post_power_delay_ms = 200,
++	.post_gpio_reset_delay_ms = 180,
++};
++
+ static const struct of_device_id goodix_i2c_hid_of_match[] = {
+ 	{ .compatible = "goodix,gt7375p", .data = &goodix_gt7375p_timing_data },
++	{ .compatible = "ilitek,ili9882t", .data = &ilitek_ili9882t_timing_data },
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(of, goodix_i2c_hid_of_match);
