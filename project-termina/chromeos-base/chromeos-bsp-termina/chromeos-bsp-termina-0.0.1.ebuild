@@ -16,10 +16,13 @@ src_install() {
 	insinto /etc
 	doins "${FILESDIR}"/arc_host.conf
 
+	dosbin "${FILESDIR}"/cros-mount-external
+
 	insinto /etc/profile.d
 	doins "${FILESDIR}"/PS1-termina.sh
 
 	insinto /etc/maitred
 	doins "${FILESDIR}/10-mount-vm-tools.textproto"
+	doins "${FILESDIR}/11-mount-external.textproto"
 	doins "${FILESDIR}/50-mount-fonts.textproto"
 }
