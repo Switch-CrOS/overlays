@@ -22,14 +22,14 @@ KEYWORDS="*"
 S="${WORKDIR}"
 
 src_install() {
-	cellular_domanifest "${FILESDIR}/helper_manifest.prototxt"
+	cellular_domanifest "${FILESDIR}/helper_manifest.textproto"
 
 	# TODO(ejcaruso): remove these after b/71870985 is fixed and we can
 	# use MBIM commands to reset the modem instead of toggling GPIOs
 	insinto /etc/init/
 	doins "${FILESDIR}/modemfwd-helpers.conf"
 
-	udev_dorules "${FILESDIR}/94-l850gl-gpio.rules"
+	udev_dorules "${FILESDIR}/94-usb-modem-gpio.rules"
 
 	cellular_dofirmware "${FILESDIR}/firmware_manifest.prototxt"
 	# cellular_dofirmware cannot handle this case yet
