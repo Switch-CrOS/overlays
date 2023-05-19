@@ -26,6 +26,9 @@ fi
 
 external_disk_device="/dev/${external_disk_name}"
 mkdir -p "${target_path}"
-mount "${external_disk_device}" "${target_path}"
-chmod 0755 "${target_path}" || umount "${target_path}"
+if ! mount "${external_disk_device}" "${target_path}"; then
+  mkfs.btrfs "${external_disk_device}"
+  mount "${external_disk_device}" "${target_path}"
+fi
+chmod 0777 "${target_path}" || umount "${target_path}"
 logger --tag mount-external "${external_disk_device} mnt at ${target_path}"
