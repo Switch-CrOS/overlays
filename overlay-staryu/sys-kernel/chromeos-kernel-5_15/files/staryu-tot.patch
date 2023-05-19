@@ -120,7 +120,7 @@ index 0000000000000000000000000000000000000000..bf36297a053f07373e3bfcd852d2b838
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8186-corsola-starmie.dtsi b/arch/arm64/boot/dts/mediatek/mt8186-corsola-starmie.dtsi
 new file mode 100644
-index 0000000000000000000000000000000000000000..6c77e8a9aaa87417d9fcdd91e478d14e952492e4
+index 0000000000000000000000000000000000000000..5f6aa3364987a7d9465ea02ba127c05370fec4d9
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt8186-corsola-starmie.dtsi
 @@ -0,0 +1,496 @@
@@ -269,7 +269,7 @@ index 0000000000000000000000000000000000000000..6c77e8a9aaa87417d9fcdd91e478d14e
 +	touchscreen: touchscreen@41 {
 +		status = "okay";
 +
-+		compatible = "goodix,gt7375p";
++		compatible = "ilitek,ili9882t";
 +		reg = <0x41>;
 +		interrupt-parent = <&pio>;
 +		interrupts = <12 IRQ_TYPE_LEVEL_LOW>;
@@ -621,18 +621,18 @@ index 0000000000000000000000000000000000000000..6c77e8a9aaa87417d9fcdd91e478d14e
 +	gpio = <&pio 153 GPIO_ACTIVE_HIGH>;
 +};
 diff --git a/drivers/gpu/drm/panel/panel-boe-tv101wum-nl6.c b/drivers/gpu/drm/panel/panel-boe-tv101wum-nl6.c
-index 783234ae0f5761e965d72e1446f1ced46a913a24..e0da44b8b37982e499e86915cd6a542742ead6ec 100644
+index f5a6046f1d19bdc2a6ef19953fddcb5dec8771dc..8d564df6e5e332dec3d0d67e5e85671c80bfe1cb 100644
 --- a/drivers/gpu/drm/panel/panel-boe-tv101wum-nl6.c
 +++ b/drivers/gpu/drm/panel/panel-boe-tv101wum-nl6.c
-@@ -36,6 +36,7 @@ struct panel_desc {
- 	const struct panel_init_cmd *init_cmds;
+@@ -37,6 +37,7 @@ struct panel_desc {
  	unsigned int lanes;
  	bool discharge_on_disable;
+ 	bool lp11_before_reset;
 +	int enable_gpio_init_value;
  };
  
  struct boe_panel {
-@@ -75,6 +76,442 @@ struct panel_init_cmd {
+@@ -76,6 +77,413 @@ struct panel_init_cmd {
  	.len = sizeof((char[]){__VA_ARGS__}), \
  	.data = (char[]){__VA_ARGS__} }
  
@@ -666,7 +666,7 @@ index 783234ae0f5761e965d72e1446f1ced46a913a24..e0da44b8b37982e499e86915cd6a5427
 +	_INIT_DCS_CMD(0xD3, 0x06, 0x00, 0x00, 0x00, 0x00, 0x00, 0x08, 0x00, 0x08, 0x37, 0x47, 0x34, 0x3B, 0x12, 0x12, 0x03,
 +		0x03, 0x32, 0x10, 0x10, 0x00, 0x10, 0x32, 0x10, 0x08, 0x00, 0x08, 0x32, 0x17, 0x94, 0x07, 0x94, 0x00, 0x00),
 +	_INIT_DCS_CMD(0xD5, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x19, 0x19, 0x40, 0x40, 0x1A, 0x1A,
-+		0x1B, 0x1B, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x20, 0x21, 0x28, 0x29, 0x18, 0x18, 0x18, 0x18,0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18),
++		0x1B, 0x1B, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x20, 0x21, 0x28, 0x29, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18),
 +	_INIT_DCS_CMD(0xD6, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x40, 0x40, 0x19, 0x19, 0x1A, 0x1A,
 +		0x1B, 0x1B, 0x07, 0x06, 0x05, 0x04, 0x03, 0x02, 0x01, 0x00, 0x29, 0x28, 0x21, 0x20, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18),
 +	_INIT_DCS_CMD(0xD8, 0xAA, 0xBA, 0xEA, 0xAA, 0xAA, 0xA0, 0xAA, 0xBA, 0xEA, 0xAA, 0xAA, 0xA0, 0xAA, 0xBA, 0xEA, 0xAA,
@@ -706,7 +706,6 @@ index 783234ae0f5761e965d72e1446f1ced46a913a24..e0da44b8b37982e499e86915cd6a5427
 +};
 +
 +static const struct panel_init_cmd starry_ili9882t_init_cmd[] = {
-+
 +	_INIT_DCS_CMD(0xFF, 0x98, 0x82, 0x01),
 +	_INIT_DCS_CMD(0x00, 0x42),
 +	_INIT_DCS_CMD(0x01, 0x11),
@@ -839,7 +838,6 @@ index 783234ae0f5761e965d72e1446f1ced46a913a24..e0da44b8b37982e499e86915cd6a5427
 +	_INIT_DCS_CMD(0x8C, 0x07),
 +
 +	_INIT_DCS_CMD(0xFF, 0x98, 0x82, 0x02),
-+
 +	_INIT_DCS_CMD(0x29, 0x3A),
 +	_INIT_DCS_CMD(0x2A, 0x3B),
 +
@@ -879,19 +877,14 @@ index 783234ae0f5761e965d72e1446f1ced46a913a24..e0da44b8b37982e499e86915cd6a5427
 +	_INIT_DCS_CMD(0x7F, 0x6B),
 +	_INIT_DCS_CMD(0x6D, 0xA4),
 +	_INIT_DCS_CMD(0x79, 0x54),
-+
 +	_INIT_DCS_CMD(0x69, 0x97),
 +	_INIT_DCS_CMD(0x6A, 0x97),
-+
 +	_INIT_DCS_CMD(0xA5, 0x3F),
 +	_INIT_DCS_CMD(0x61, 0xDA),
-+
 +	_INIT_DCS_CMD(0xA7, 0xF1),
 +	_INIT_DCS_CMD(0x5F, 0x01),
 +	_INIT_DCS_CMD(0x62, 0x3F),
-+
 +	_INIT_DCS_CMD(0x1D, 0x90),
-+
 +	_INIT_DCS_CMD(0x86, 0x87),
 +
 +	_INIT_DCS_CMD(0xFF, 0x98, 0x82, 0x06),
@@ -901,12 +894,10 @@ index 783234ae0f5761e965d72e1446f1ced46a913a24..e0da44b8b37982e499e86915cd6a5427
 +	_INIT_DCS_CMD(0xCB, 0x02),
 +	_INIT_DCS_CMD(0xCE, 0x58),
 +	_INIT_DCS_CMD(0xCF, 0x02),
-+
 +	_INIT_DCS_CMD(0x67, 0x60),
 +	_INIT_DCS_CMD(0x10, 0x00),
 +	_INIT_DCS_CMD(0x92, 0x22),
 +	_INIT_DCS_CMD(0xD3, 0x08),
-+
 +	_INIT_DCS_CMD(0xD6, 0x55),
 +	_INIT_DCS_CMD(0xDC, 0x38),
 +
@@ -934,7 +925,6 @@ index 783234ae0f5761e965d72e1446f1ced46a913a24..e0da44b8b37982e499e86915cd6a5427
 +	_INIT_DCS_CMD(0x0D, 0x06),
 +	_INIT_DCS_CMD(0x0E, 0x05),
 +	_INIT_DCS_CMD(0x0F, 0x07),
-+
 +	_INIT_DCS_CMD(0x10, 0x04),
 +	_INIT_DCS_CMD(0x11, 0x08),
 +	_INIT_DCS_CMD(0x12, 0x05),
@@ -951,7 +941,6 @@ index 783234ae0f5761e965d72e1446f1ced46a913a24..e0da44b8b37982e499e86915cd6a5427
 +	_INIT_DCS_CMD(0x1D, 0x0E),
 +	_INIT_DCS_CMD(0x1E, 0x07),
 +	_INIT_DCS_CMD(0x1F, 0x0F),
-+
 +	_INIT_DCS_CMD(0x20, 0x06),
 +	_INIT_DCS_CMD(0x21, 0x10),
 +	_INIT_DCS_CMD(0x22, 0x07),
@@ -968,7 +957,6 @@ index 783234ae0f5761e965d72e1446f1ced46a913a24..e0da44b8b37982e499e86915cd6a5427
 +	_INIT_DCS_CMD(0x2D, 0x16),
 +	_INIT_DCS_CMD(0x2E, 0x09),
 +	_INIT_DCS_CMD(0x2F, 0x17),
-+
 +	_INIT_DCS_CMD(0x30, 0x08),
 +	_INIT_DCS_CMD(0x31, 0x18),
 +	_INIT_DCS_CMD(0x32, 0x09),
@@ -992,35 +980,24 @@ index 783234ae0f5761e965d72e1446f1ced46a913a24..e0da44b8b37982e499e86915cd6a5427
 +	_INIT_DCS_CMD(0xFF, 0x98, 0x82, 0x0E),
 +	_INIT_DCS_CMD(0x02, 0x0C),
 +	_INIT_DCS_CMD(0x20, 0x10),
-+
 +	_INIT_DCS_CMD(0x25, 0x16),
 +	_INIT_DCS_CMD(0x26, 0xE0),
-+
 +	_INIT_DCS_CMD(0x27, 0x00),
 +	_INIT_DCS_CMD(0x29, 0x71),
 +	_INIT_DCS_CMD(0x2A, 0x46),
-+
 +	_INIT_DCS_CMD(0x2B, 0x1F),
 +	_INIT_DCS_CMD(0x2D, 0xC7),
-+
 +	_INIT_DCS_CMD(0x31, 0x02),
-+
 +	_INIT_DCS_CMD(0x32, 0xDF),
-+
 +	_INIT_DCS_CMD(0x33, 0x5A),
 +	_INIT_DCS_CMD(0x34, 0xC0),
 +	_INIT_DCS_CMD(0x35, 0x5A),
 +	_INIT_DCS_CMD(0x36, 0xC0),
-+
 +	_INIT_DCS_CMD(0x38, 0x65),
-+
 +	_INIT_DCS_CMD(0x80, 0x3E),
 +	_INIT_DCS_CMD(0x81, 0xA0),
-+
-+
 +	_INIT_DCS_CMD(0xB0, 0x01),
 +	_INIT_DCS_CMD(0xB1, 0xCC),
-+
 +	_INIT_DCS_CMD(0xC0, 0x12),
 +	_INIT_DCS_CMD(0xC2, 0xCC),
 +	_INIT_DCS_CMD(0xC3, 0xCC),
@@ -1030,17 +1007,11 @@ index 783234ae0f5761e965d72e1446f1ced46a913a24..e0da44b8b37982e499e86915cd6a5427
 +	_INIT_DCS_CMD(0xC7, 0xCC),
 +	_INIT_DCS_CMD(0xC8, 0xCC),
 +	_INIT_DCS_CMD(0xC9, 0xCC),
-+
 +	_INIT_DCS_CMD(0x30, 0x00),
-+
 +	_INIT_DCS_CMD(0x00, 0x81),
-+
-+
 +	_INIT_DCS_CMD(0x08, 0x02),
 +	_INIT_DCS_CMD(0x09, 0x00),
-+
 +	_INIT_DCS_CMD(0x07, 0x21),
-+
 +	_INIT_DCS_CMD(0x04, 0x10),
 +
 +	_INIT_DCS_CMD(0xFF, 0x98, 0x82, 0x1E),
@@ -1075,12 +1046,12 @@ index 783234ae0f5761e965d72e1446f1ced46a913a24..e0da44b8b37982e499e86915cd6a5427
  static const struct panel_init_cmd boe_tv110c9m_init_cmd[] = {
  	_INIT_DCS_CMD(0xFF, 0x20),
  	_INIT_DCS_CMD(0xFB, 0x01),
-@@ -1620,6 +2057,62 @@ static const struct panel_desc starry_qfh032011_53g_desc = {
+@@ -1698,6 +2106,64 @@ static const struct panel_desc starry_qfh032011_53g_desc = {
  	.init_cmds = starry_qfh032011_53g_init_cmd,
  };
  
 +static const struct drm_display_mode starry_himax83102_j02_default_mode = {
-+	.clock = 160368,
++	.clock = 161600,
 +	.hdisplay = 1200,
 +	.hsync_start = 1200 + 40,
 +	.hsync_end = 1200 + 40 + 20,
@@ -1105,6 +1076,7 @@ index 783234ae0f5761e965d72e1446f1ced46a913a24..e0da44b8b37982e499e86915cd6a5427
 +		      MIPI_DSI_MODE_LPM,
 +	.init_cmds = starry_himax83102_j02_init_cmd,
 +	.enable_gpio_init_value = 1,
++	.lp11_before_reset = true,
 +};
 +
 +static const struct drm_display_mode starry_ili9882t_default_mode = {
@@ -1133,12 +1105,13 @@ index 783234ae0f5761e965d72e1446f1ced46a913a24..e0da44b8b37982e499e86915cd6a5427
 +		      MIPI_DSI_MODE_LPM,
 +	.init_cmds = starry_ili9882t_init_cmd,
 +	.enable_gpio_init_value = 1,
++	.lp11_before_reset = true,
 +};
 +
  static int boe_panel_get_modes(struct drm_panel *panel,
  			       struct drm_connector *connector)
  {
-@@ -1694,7 +2187,7 @@ static int boe_panel_add(struct boe_panel *boe)
+@@ -1772,7 +2238,7 @@ static int boe_panel_add(struct boe_panel *boe)
  		return PTR_ERR(boe->enable_gpio);
  	}
  
@@ -1147,7 +1120,7 @@ index 783234ae0f5761e965d72e1446f1ced46a913a24..e0da44b8b37982e499e86915cd6a5427
  
  	drm_panel_init(&boe->base, dev, &boe_panel_funcs,
  		       DRM_MODE_CONNECTOR_DSI);
-@@ -1793,6 +2286,12 @@ static const struct of_device_id boe_of_match[] = {
+@@ -1871,6 +2337,12 @@ static const struct of_device_id boe_of_match[] = {
  	{ .compatible = "starry,2081101qfh032011-53g",
  	  .data = &starry_qfh032011_53g_desc
  	},
