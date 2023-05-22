@@ -18,7 +18,7 @@ or portage actions."
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="-* amd64 x86"
-IUSE="vpu_driver nnapi vendor-nnhal nnapi_custom_ops "
+IUSE="vpu_driver nnapi vendor-nnhal nnapi_custom_ops modemfwd "
 
 # Add dependencies on other ebuilds from within this board overlay
 RDEPEND="
@@ -34,6 +34,9 @@ RDEPEND="
 	)
 	nnapi_custom_ops? (
 		sci-libs/tensorflow:=
+	)
+	modemfwd? (
+		chromeos-base/modemfwd-helpers
 	)
 "
 DEPEND="
