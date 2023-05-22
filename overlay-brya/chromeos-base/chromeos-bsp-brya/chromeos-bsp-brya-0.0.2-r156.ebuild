@@ -17,7 +17,7 @@ or portage actions."
 
 LICENSE="BSD-Google"
 KEYWORDS="-* amd64 x86"
-IUSE="brya-arc-t adlrvp brya-lvm-stateful zephyr_poc brya-hibernate brya-kernelnext brya-connectivitynext brya-pvs"
+IUSE="brya-arc-t adlrvp brya-lvm-stateful zephyr_poc brya-hibernate brya-kernelnext brya-connectivitynext brya-pvs modemfwd"
 
 # Add dependencies on other ebuilds from within this board overlay
 RDEPEND="
@@ -27,6 +27,7 @@ RDEPEND="
 	chromeos-base/sof-topology:=
 	chromeos-base/touch_updater:=
 	media-sound/sound_card_init:=
+	modemfwd? ( chromeos-base/modemfwd-helpers )
 "
 DEPEND="
 	${RDEPEND}
