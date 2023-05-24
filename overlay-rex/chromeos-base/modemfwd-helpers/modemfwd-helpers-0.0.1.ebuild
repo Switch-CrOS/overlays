@@ -18,7 +18,7 @@ SRC_URI="
 	"
 
 RESTRICT="mirror"
-LICENSE="TAINTED" #TODO(b/203807072): Change once Fibocom provides a license
+LICENSE="GPL-2 LGPL-2.1 BSD-Fibocom Apache-2.0 openssl"
 SLOT="0"
 KEYWORDS="*"
 

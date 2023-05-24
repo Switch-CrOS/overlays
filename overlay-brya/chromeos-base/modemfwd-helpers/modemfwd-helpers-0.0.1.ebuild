@@ -23,7 +23,7 @@ SRC_URI="
 	"
 
 RESTRICT="mirror"
-LICENSE="BSD-Google"
+LICENSE="GPL-2 LGPL-2.1 BSD-Fibocom Apache-2.0 openssl"
 SLOT="0"
 KEYWORDS="*"
 
