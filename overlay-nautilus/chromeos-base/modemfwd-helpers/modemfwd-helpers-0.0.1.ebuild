@@ -17,9 +17,7 @@ SLOT="0"
 KEYWORDS="*"
 
 S="${WORKDIR}"
-DEPEND="
-	chromeos-base/fibocom-firmware
-"
+DEPEND=""
 RDEPEND="${DEPEND}"
 
 src_install() {

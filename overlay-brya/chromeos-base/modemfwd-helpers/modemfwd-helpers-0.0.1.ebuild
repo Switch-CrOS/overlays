@@ -29,7 +29,6 @@ KEYWORDS="*"
 
 S="${WORKDIR}"
 DEPEND="
-	chromeos-base/fibocom-firmware
 	chromeos-base/modem-fw-dlc-anahera-l850
 	chromeos-base/modem-fw-dlc-brya-fm350
 	chromeos-base/modem-fw-dlc-brya-l850
