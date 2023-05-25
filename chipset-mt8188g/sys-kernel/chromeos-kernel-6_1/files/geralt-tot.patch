@@ -2370,7 +2370,7 @@ index 0000000000000000000000000000000000000000..3cec7f9402bb77ac806618129baad4ca
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8188-geralt.dts b/arch/arm64/boot/dts/mediatek/mt8188-geralt.dts
 new file mode 100644
-index 0000000000000000000000000000000000000000..494c263a0a83f50d40666d6e9ed898d1f749d30b
+index 0000000000000000000000000000000000000000..24a6589c38a7609da133bb4074a2e4ab45529b94
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt8188-geralt.dts
 @@ -0,0 +1,1309 @@
@@ -2838,7 +2838,7 @@ index 0000000000000000000000000000000000000000..494c263a0a83f50d40666d6e9ed898d1
 +		compatible = "hid-over-i2c";
 +		reg = <0x56>;
 +		interrupt-parent = <&pio>;
-+		interrupts = <148 IRQ_TYPE_EDGE_FALLING>;
++		interrupts = <148 IRQ_TYPE_LEVEL_LOW>;
 +		pinctrl-names = "default";
 +		pinctrl-0 = <&touchpad_pins>;
 +		hid-descr-addr = <0x0001>;
@@ -29434,6 +29434,29 @@ index 0000000000000000000000000000000000000000..62fd89dc57b19035661ed52bbdde4b8b
 +MODULE_AUTHOR("Example");
 +MODULE_DESCRIPTION("Example on virtual temp driver");
 +MODULE_LICENSE("GPL v2");
+diff --git a/fs/proc/task_mmu.c b/fs/proc/task_mmu.c
+index cab0523b74a542fa83e472752ef48472a8e25df6..e37ed3ef5928ab2f193d476b1115e4e644474585 100644
+--- a/fs/proc/task_mmu.c
++++ b/fs/proc/task_mmu.c
+@@ -2220,7 +2220,8 @@ static ssize_t reclaim_write(struct file *file, const char __user *buf,
+ 		for (vma = start, next = find_vma(mm, vma->vm_end); vma && next != start;
+ 		    (vma = next ? next :
+ 		    /* Only loop around if we didn't start at mm->mmap. */
+-		    (start != find_vma(mm, 0) ? find_vma(mm, 0) : NULL))) {
++		    (start != find_vma(mm, 0) ? find_vma(mm, 0) : NULL)),
++		    (next = vma ? find_vma(mm, vma->vm_end) : NULL)) {
+ 			if (!reclaim_data.nr_to_try)
+ 				break;
+ 			if (is_vm_hugetlb_page(vma))
+@@ -2275,8 +2276,6 @@ static ssize_t reclaim_write(struct file *file, const char __user *buf,
+ 			} else
+ 				walk_page_range(mm, vma->vm_start, vma->vm_end,
+ 				    &reclaim_walk, (void*)&reclaim_data);
+-
+-			vma = find_vma(mm, vma->vm_end);
+ 		}
+ 		flush_tlb_mm(mm);
+ 		mmap_read_unlock(mm);
 diff --git a/include/drm/drm_mipi_dsi.h b/include/drm/drm_mipi_dsi.h
 index 9054a5185e1a9a23fc73f76ffd45070071d45e88..80e46afa39a15bb4e6be53ebb34085d656d7299e 100644
 --- a/include/drm/drm_mipi_dsi.h
