@@ -25,7 +25,6 @@ KEYWORDS="*"
 S="${WORKDIR}"
 
 RDEPEND="
-	chromeos-base/fibocom-firmware
 	chromeos-base/modem-fw-dlc-rex-fm350
 	chromeos-base/modem-fw-dlc-rex-fm101
 	net-misc/qdl
