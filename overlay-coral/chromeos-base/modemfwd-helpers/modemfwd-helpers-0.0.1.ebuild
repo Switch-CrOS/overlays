@@ -21,7 +21,7 @@ DEPEND=""
 RDEPEND="${DEPEND}"
 
 src_install() {
-	cellular_domanifest "${FILESDIR}/helper_manifest.prototxt"
+	cellular_domanifest "${FILESDIR}/helper_manifest.textproto"
 
 	# TODO(ejcaruso): remove these after b/71870985 is fixed and we can
 	# use MBIM commands to reset the modem instead of toggling GPIOs
