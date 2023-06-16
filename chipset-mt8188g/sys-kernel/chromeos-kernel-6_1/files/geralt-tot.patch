@@ -271,6 +271,189 @@ index c00be39af64e53e801a5d4d551235b5e16f504fe..2e055e06bed1495c310d3dc4a4fa4843
    clocks:
      maxItems: 6
  
+diff --git a/Documentation/devicetree/bindings/sound/mediatek,mt8188-afe.yaml b/Documentation/devicetree/bindings/sound/mediatek,mt8188-afe.yaml
+index 82ccb32f08f27fde0063be8e5967eba7348ec006..e6cb711ece773b347562273bbaebafa472e3ec2f 100644
+--- a/Documentation/devicetree/bindings/sound/mediatek,mt8188-afe.yaml
++++ b/Documentation/devicetree/bindings/sound/mediatek,mt8188-afe.yaml
+@@ -29,6 +29,10 @@ properties:
+     $ref: /schemas/types.yaml#/definitions/phandle
+     description: The phandle of the mediatek topckgen controller
+ 
++  mediatek,infracfg:
++    $ref: /schemas/types.yaml#/definitions/phandle
++    description: The phandle of the mediatek infracfg controller
++
+   power-domains:
+     maxItems: 1
+ 
+@@ -52,6 +56,11 @@ properties:
+       - description: mux for i2si1_mck
+       - description: mux for i2si2_mck
+       - description: audio 26m clock
++      - description: audio pll1 divide 4
++      - description: audio pll2 divide 4
++      - description: clock divider for iec
++      - description: mux for a2sys clock
++      - description: mux for aud_iec
+ 
+   clock-names:
+     items:
+@@ -63,16 +72,21 @@ properties:
+       - const: apll12_div2
+       - const: apll12_div3
+       - const: apll12_div9
+-      - const: a1sys_hp_sel
+-      - const: aud_intbus_sel
+-      - const: audio_h_sel
+-      - const: audio_local_bus_sel
+-      - const: dptx_m_sel
+-      - const: i2so1_m_sel
+-      - const: i2so2_m_sel
+-      - const: i2si1_m_sel
+-      - const: i2si2_m_sel
++      - const: top_a1sys_hp
++      - const: top_aud_intbus
++      - const: top_audio_h
++      - const: top_audio_local_bus
++      - const: top_dptx
++      - const: top_i2so1
++      - const: top_i2so2
++      - const: top_i2si1
++      - const: top_i2si2
+       - const: adsp_audio_26m
++      - const: apll1_d4
++      - const: apll2_d4
++      - const: apll12_div4
++      - const: top_a2sys
++      - const: top_aud_iec
+ 
+   mediatek,etdm-in1-cowork-source:
+     $ref: /schemas/types.yaml#/definitions/uint32
+@@ -144,6 +158,7 @@ required:
+   - resets
+   - reset-names
+   - mediatek,topckgen
++  - mediatek,infracfg
+   - power-domains
+   - clocks
+   - clock-names
+@@ -162,6 +177,7 @@ examples:
+         resets = <&watchdog 14>;
+         reset-names = "audiosys";
+         mediatek,topckgen = <&topckgen>;
++        mediatek,infracfg = <&infracfg_ao>;
+         power-domains = <&spm 13>; //MT8188_POWER_DOMAIN_AUDIO
+         mediatek,etdm-in2-cowork-source = <2>;
+         mediatek,etdm-out2-cowork-source = <0>;
+@@ -184,7 +200,12 @@ examples:
+                  <&topckgen 78>, //CLK_TOP_I2SO2
+                  <&topckgen 79>, //CLK_TOP_I2SI1
+                  <&topckgen 80>, //CLK_TOP_I2SI2
+-                 <&adsp_audio26m 0>; //CLK_AUDIODSP_AUDIO26M
++                 <&adsp_audio26m 0>, //CLK_AUDIODSP_AUDIO26M
++                 <&topckgen 132>, //CLK_TOP_APLL1_D4
++                 <&topckgen 133>, //CLK_TOP_APLL2_D4
++                 <&topckgen 183>, //CLK_TOP_APLL12_CK_DIV4
++                 <&topckgen 84>, //CLK_TOP_A2SYS
++                 <&topckgen 82>; //CLK_TOP_AUD_IEC>;
+         clock-names = "clk26m",
+                       "apll1",
+                       "apll2",
+@@ -193,16 +214,21 @@ examples:
+                       "apll12_div2",
+                       "apll12_div3",
+                       "apll12_div9",
+-                      "a1sys_hp_sel",
+-                      "aud_intbus_sel",
+-                      "audio_h_sel",
+-                      "audio_local_bus_sel",
+-                      "dptx_m_sel",
+-                      "i2so1_m_sel",
+-                      "i2so2_m_sel",
+-                      "i2si1_m_sel",
+-                      "i2si2_m_sel",
+-                      "adsp_audio_26m";
++                      "top_a1sys_hp",
++                      "top_aud_intbus",
++                      "top_audio_h",
++                      "top_audio_local_bus",
++                      "top_dptx",
++                      "top_i2so1",
++                      "top_i2so2",
++                      "top_i2si1",
++                      "top_i2si2",
++                      "adsp_audio_26m",
++                      "apll1_d4",
++                      "apll2_d4",
++                      "apll12_div4",
++                      "top_a2sys",
++                      "top_aud_iec";
+     };
+ 
+ ...
+diff --git a/Documentation/devicetree/bindings/sound/mediatek,mt8188-mt6359.yaml b/Documentation/devicetree/bindings/sound/mediatek,mt8188-mt6359.yaml
+index 6640272b3f4f6d5c4d49c96dc314ef746055a699..05e532b5d50a664e1145984accead4ff87485f64 100644
+--- a/Documentation/devicetree/bindings/sound/mediatek,mt8188-mt6359.yaml
++++ b/Documentation/devicetree/bindings/sound/mediatek,mt8188-mt6359.yaml
+@@ -11,7 +11,9 @@ maintainers:
+ 
+ properties:
+   compatible:
+-    const: mediatek,mt8188-mt6359-evb
++    enum:
++      - mediatek,mt8188-mt6359-evb
++      - mediatek,mt8188-nau8825
+ 
+   model:
+     $ref: /schemas/types.yaml#/definitions/string
+@@ -42,7 +44,6 @@ patternProperties:
+           we are going to update parameters in this node.
+         items:
+           enum:
+-            - ADDA_BE
+             - DPTX_BE
+             - ETDM1_IN_BE
+             - ETDM2_IN_BE
+@@ -62,11 +63,28 @@ patternProperties:
+         required:
+           - sound-dai
+ 
++      dai-format:
++        description: audio format.
++        items:
++          enum:
++            - i2s
++            - right_j
++            - left_j
++            - dsp_a
++            - dsp_b
++
++      mediatek,clk-provider:
++        $ref: /schemas/types.yaml#/definitions/string
++        description: Indicates dai-link clock master.
++        items:
++          enum:
++            - cpu
++            - codec
++
+     additionalProperties: false
+ 
+     required:
+       - link-name
+-      - codec
+ 
+ additionalProperties: false
+ 
+@@ -87,7 +105,8 @@ examples:
+             "AIN1", "Headset Mic";
+         dai-link-0 {
+             link-name = "ETDM3_OUT_BE";
+-
++            dai-format = "i2s";
++            mediatek,clk-provider = "cpu";
+             codec {
+                 sound-dai = <&hdmi0>;
+             };
 diff --git a/Documentation/devicetree/bindings/thermal/mediatek,mt8188-lvts.yaml b/Documentation/devicetree/bindings/thermal/mediatek,mt8188-lvts.yaml
 new file mode 100644
 index 0000000000000000000000000000000000000000..d270db378419cf0a3b0eb8fe23509526da8e975e
@@ -1767,13 +1950,46 @@ index cd33857d947d354d4d3094daa2a2ef7ab8b3878a..6cad798f7cda6527cdf0d0f5baceeeaf
 +        If not set, indicates that clipping to the full range shall be applied
 +        to the sample values after adding the film grain.
 diff --git a/Documentation/userspace-api/media/v4l/pixfmt-compressed.rst b/Documentation/userspace-api/media/v4l/pixfmt-compressed.rst
-index 506dd3c988841e714949807df7f3c3e3dc5515f2..d7bf21bffa3027df7cb495c617422b8883955c8c 100644
+index 506dd3c988841e714949807df7f3c3e3dc5515f2..806ed73ac474ce0e6df00f902850db9fd0db240e 100644
 --- a/Documentation/userspace-api/media/v4l/pixfmt-compressed.rst
 +++ b/Documentation/userspace-api/media/v4l/pixfmt-compressed.rst
-@@ -233,6 +233,22 @@ Compressed Formats
+@@ -88,6 +88,11 @@ Compressed Formats
+       - ``V4L2_PIX_FMT_H263``
+       - 'H263'
+       - H263 video elementary stream.
++    * .. _V4L2-PIX-FMT-SPK:
++
++      - ``V4L2_PIX_FMT_SPK``
++      - 'SPK0'
++      - Sorenson Spark is an implementation of H.263 for use in Flash Video and Adobe Flash files
+     * .. _V4L2-PIX-FMT-MPEG1:
+ 
+       - ``V4L2_PIX_FMT_MPEG1``
+@@ -232,6 +237,42 @@ Compressed Formats
+         Metadata associated with the frame to decode is required to be passed
          through the ``V4L2_CID_STATELESS_FWHT_PARAMS`` control.
  	See the :ref:`associated Codec Control ID <codec-stateless-fwht>`.
- 
++    * .. _V4L2-PIX-FMT-RV30:
++
++      - ``V4L2_PIX_FMT_RV30``
++      - 'RV30'
++      - RealVideo, or also spelled as Real Video, is a suite of
++        proprietary video compression formats developed by
++        RealNetworks - the specific format changes with the version.
++        RealVideo codecs are identified by four-character codes.
++        RV30 corresponds to RealVideo 8, suspected to be based
++        largely on an early draft of H.264
++    * .. _V4L2-PIX-FMT-RV40:
++
++      - ``V4L2_PIX_FMT_RV40``
++      - 'RV40'
++      - RV40 represents RealVideo 9 and RealVideo 10.
++        RealVideo 9, suspected to be based on H.264.
++        RealVideo 10, aka RV9 EHQ, This refers to an improved encoder
++        for the RV9 format that is fully backwards compatible with
++        RV9 players - the format and decoder did not change, only
++        the encoder did. As a result, it uses the same FourCC.
++
 +    * .. _V4L2-PIX-FMT-AV1-FRAME:
 +
 +      - ``V4L2_PIX_FMT_AV1_FRAME``
@@ -1789,10 +2005,9 @@ index 506dd3c988841e714949807df7f3c3e3dc5515f2..d7bf21bffa3027df7cb495c617422b88
 +        this pixel format. The output buffer must contain the appropriate number
 +        of macroblocks to decode a full corresponding frame to the matching
 +        capture buffer.
-+
+ 
  .. raw:: latex
  
-     \normalsize
 diff --git a/Documentation/userspace-api/media/v4l/pixfmt-reserved.rst b/Documentation/userspace-api/media/v4l/pixfmt-reserved.rst
 index 0ff68cd8cf629b9af0b212a695be42562fa2e523..73cd998280105becfa1ef479ccab8cd9e20141e9 100644
 --- a/Documentation/userspace-api/media/v4l/pixfmt-reserved.rst
@@ -2433,10 +2648,10 @@ index 0000000000000000000000000000000000000000..3cec7f9402bb77ac806618129baad4ca
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8188-geralt.dts b/arch/arm64/boot/dts/mediatek/mt8188-geralt.dts
 new file mode 100644
-index 0000000000000000000000000000000000000000..92b4d85d0e37214fe20d4fa847123ad4810527af
+index 0000000000000000000000000000000000000000..b911b84ea608ca3d5410c06b8d5272235db28f0e
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt8188-geralt.dts
-@@ -0,0 +1,1336 @@
+@@ -0,0 +1,1342 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
 +/*
 + * Copyright (C) 2022 MediaTek Inc.
@@ -2789,8 +3004,6 @@ index 0000000000000000000000000000000000000000..92b4d85d0e37214fe20d4fa847123ad4
 +		nuvoton,jkdet-polarity = <1>;
 +		nuvoton,vref-impedance = <2>;
 +		nuvoton,micbias-voltage = <6>;
-+		nuvoton,sar-threshold-num = <4>;
-+		nuvoton,sar-threshold = <0xc 0x1e 0x38 0x60>;
 +		nuvoton,sar-hysteresis = <1>;
 +		nuvoton,sar-voltage = <6>;
 +		nuvoton,sar-compare-time = <0>;
@@ -2806,6 +3019,7 @@ index 0000000000000000000000000000000000000000..92b4d85d0e37214fe20d4fa847123ad4
 +		#sound-dai-cells = <0>;
 +		compatible = "maxim,max98390";
 +		reg = <0x38>;
++		sound-name-prefix = "Rear Right";
 +		reset-gpios = <&pio 118 1>;
 +		pinctrl-names = "default";
 +		pinctrl-0 = <&max98390_pins_default>;
@@ -2816,6 +3030,7 @@ index 0000000000000000000000000000000000000000..92b4d85d0e37214fe20d4fa847123ad4
 +		#sound-dai-cells = <0>;
 +		compatible = "maxim,max98390";
 +		reg = <0x39>;
++		sound-name-prefix = "Rear Left";
 +		status = "okay";
 +	};
 +
@@ -2823,6 +3038,7 @@ index 0000000000000000000000000000000000000000..92b4d85d0e37214fe20d4fa847123ad4
 +		#sound-dai-cells = <0>;
 +		compatible = "maxim,max98390";
 +		reg = <0x3A>;
++		sound-name-prefix = "Front Left";
 +		status = "okay";
 +	};
 +
@@ -2830,6 +3046,7 @@ index 0000000000000000000000000000000000000000..92b4d85d0e37214fe20d4fa847123ad4
 +		#sound-dai-cells = <0>;
 +		compatible = "maxim,max98390";
 +		reg = <0x3B>;
++		sound-name-prefix = "Front Right";
 +		status = "okay";
 +	};
 +};
@@ -3611,9 +3828,13 @@ index 0000000000000000000000000000000000000000..92b4d85d0e37214fe20d4fa847123ad4
 +	pinctrl-names = "default";
 +	pinctrl-0 = <&aud_pins_default>;
 +	audio-routing =
-+		"Headphone", "HPOL",
-+		"Headphone", "HPOR",
-+		"MIC", "Headset Mic";
++		"Headphone Jack", "HPOL",
++		"Headphone Jack", "HPOR",
++		"MIC", "Headset Mic",
++		"Left Spk", "Front Left BE_OUT",
++		"Right Spk", "Front Right BE_OUT",
++		"Rear Left Spk", "Rear Left BE_OUT",
++		"Rear Right Spk", "Rear Right BE_OUT";
 +	status = "okay";
 +
 +	dai-link-0 {
@@ -3774,11 +3995,11 @@ index 0000000000000000000000000000000000000000..92b4d85d0e37214fe20d4fa847123ad4
 +	>;
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8188.dtsi b/arch/arm64/boot/dts/mediatek/mt8188.dtsi
-new file mode 100755
-index 0000000000000000000000000000000000000000..8929eee1d41547da406d3768b9caab6eb0d078cf
+new file mode 100644
+index 0000000000000000000000000000000000000000..df2e0d3e47fa0c2c4727c3d651a73644f8cac250
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt8188.dtsi
-@@ -0,0 +1,3034 @@
+@@ -0,0 +1,3041 @@
 +// SPDX-License-Identifier: GPL-2.0+
 +/*
 + * Copyright (c) 2022 MediaTek Inc.
@@ -5077,6 +5298,7 @@ index 0000000000000000000000000000000000000000..8929eee1d41547da406d3768b9caab6e
 +		afe: afe@10b10000 {
 +			compatible = "mediatek,mt8188-afe";
 +			mediatek,topckgen = <&topckgen>;
++			mediatek,infracfg = <&infracfg_ao>;
 +			power-domains = <&spm MT8188_POWER_DOMAIN_AUDIO>;
 +			interrupts = <GIC_SPI 822 IRQ_TYPE_LEVEL_HIGH 0>;
 +			resets = <&watchdog 14>;
@@ -5085,7 +5307,6 @@ index 0000000000000000000000000000000000000000..8929eee1d41547da406d3768b9caab6e
 +			clocks = <&clk26m>,
 +				 <&apmixedsys CLK_APMIXED_APLL1>,
 +				 <&apmixedsys CLK_APMIXED_APLL2>,
-+				 <&topckgen CLK_TOP_APLL1_D4>,
 +				 <&topckgen CLK_TOP_APLL12_CK_DIV0>,
 +				 <&topckgen CLK_TOP_APLL12_CK_DIV1>,
 +				 <&topckgen CLK_TOP_APLL12_CK_DIV2>,
@@ -5100,11 +5321,15 @@ index 0000000000000000000000000000000000000000..8929eee1d41547da406d3768b9caab6e
 +				 <&topckgen CLK_TOP_I2SO2>,
 +				 <&topckgen CLK_TOP_I2SI1>,
 +				 <&topckgen CLK_TOP_I2SI2>,
-+				 <&adsp_audio26m CLK_AUDIODSP_AUDIO26M>;
++				 <&adsp_audio26m CLK_AUDIODSP_AUDIO26M>,
++				 <&topckgen CLK_TOP_APLL1_D4>,
++				 <&topckgen CLK_TOP_APLL2_D4>,
++				 <&topckgen CLK_TOP_APLL12_CK_DIV4>,
++				 <&topckgen CLK_TOP_A2SYS>,
++				 <&topckgen CLK_TOP_AUD_IEC>;
 +			clock-names = "clk26m",
 +				      "apll1",
 +				      "apll2",
-+				      "apll1_d4",
 +				      "apll12_div0",
 +				      "apll12_div1",
 +				      "apll12_div2",
@@ -5119,7 +5344,12 @@ index 0000000000000000000000000000000000000000..8929eee1d41547da406d3768b9caab6e
 +				      "top_i2so2",
 +				      "top_i2si1",
 +				      "top_i2si2",
-+				      "adsp_audio_26m";
++				      "adsp_audio_26m",
++				      "apll1_d4",
++				      "apll2_d4",
++				      "apll12_div4",
++				      "top_a2sys",
++				      "top_aud_iec";
 +			assigned-clocks = <&topckgen CLK_TOP_A1SYS_HP>;
 +			assigned-clock-parents =  <&clk26m>;
 +			status = "disabled";
@@ -5658,7 +5888,7 @@ index 0000000000000000000000000000000000000000..8929eee1d41547da406d3768b9caab6e
 +			#size-cells = <1>;
 +
 +			dp_calibration: dp_data {
-+				reg = <0x19c 0x10>;
++				reg = <0x1a0 0x10>;
 +			};
 +
 +			lvts_efuse_data1: lvts1-calib@1ac {
@@ -6781,8 +7011,7 @@ index 0000000000000000000000000000000000000000..8929eee1d41547da406d3768b9caab6e
 +		};
 +
 +		edp_tx: edp-tx@1c500000 {
-+			compatible = "mediatek,mt8188-edp-tx",
-+				     "mediatek,mt8195-edp-tx";
++			compatible = "mediatek,mt8188-edp-tx";
 +			reg = <0 0x1c500000 0 0x8000>;
 +			nvmem-cells = <&dp_calibration>;
 +			nvmem-cell-names = "dp_calibration_data";
@@ -6794,16 +7023,15 @@ index 0000000000000000000000000000000000000000..8929eee1d41547da406d3768b9caab6e
 +
 +		dp_tx: dp-tx@1c600000 {
 +			#sound-dai-cells = <0>;
-+			compatible = "mediatek,mt8188-dp-tx",
-+				     "mediatek,mt8195-dp-tx";
++			compatible = "mediatek,mt8188-dp-tx";
 +			reg = <0 0x1c600000 0 0x8000>;
 +			max-lanes = <4>;
-+			max-linkrate = <8100>;
++			max-linkrate = <5400>;
 +			nvmem-cells = <&dp_calibration>;
 +			nvmem-cell-names = "dp_calibration_data";
 +			power-domains = <&spm MT8188_POWER_DOMAIN_DP_TX>;
 +			interrupts = <GIC_SPI 458 IRQ_TYPE_LEVEL_HIGH 0>;
-+			max-linkrate-mhz = <8100>;
++			max-linkrate-mhz = <5400>;
 +			status = "disabled";
 +		};
 +
@@ -6995,17 +7223,17 @@ index 0000000000000000000000000000000000000000..8f865be3060cadd1a7bbaf3073ec44cc
 +module_platform_driver(bring_up);
 +MODULE_LICENSE("GPL");
 diff --git a/drivers/clk/mediatek/clk-mt8188-infra_ao.c b/drivers/clk/mediatek/clk-mt8188-infra_ao.c
-index 91c35db40b4e88521c6a654a6580deb46284ae83..28f01690266c1fc1c4e04a4de6f00f9f68c17324 100644
+index 91c35db40b4e88521c6a654a6580deb46284ae83..6d8764e05c8a68349e2f33d667505e2beba89bee 100644
 --- a/drivers/clk/mediatek/clk-mt8188-infra_ao.c
 +++ b/drivers/clk/mediatek/clk-mt8188-infra_ao.c
-@@ -7,6 +7,7 @@
+@@ -5,6 +5,7 @@
+  */
+ 
  #include <dt-bindings/clock/mediatek,mt8188-clk.h>
++#include <dt-bindings/reset/mt8188-resets.h>
  #include <linux/clk-provider.h>
  #include <linux/platform_device.h>
-+#include <dt-bindings/reset/mt8188-resets.h>
  
- #include "clk-gate.h"
- #include "clk-mtk.h"
 @@ -176,9 +177,32 @@ static const struct mtk_gate infra_ao_clks[] = {
  		       "infra_ao_aes_msdcfde_0p", "top_aes_msdcfde", 18),
  };
@@ -7024,7 +7252,7 @@ index 91c35db40b4e88521c6a654a6580deb46284ae83..28f01690266c1fc1c4e04a4de6f00f9f
 +	[MT8188_INFRA_RST3_PTP_CTRL_RST] = 3 * RST_NR_PER_BANK + 5,
 +};
 +
-+static struct mtk_clk_rst_desc infra_ao_rst_desc = {
++static const struct mtk_clk_rst_desc infra_ao_rst_desc = {
 +	.version = MTK_RST_SET_CLR,
 +	.rst_bank_ofs = infra_ao_rst_ofs,
 +	.rst_bank_nr = ARRAY_SIZE(infra_ao_rst_ofs),
@@ -11721,19 +11949,185 @@ index 0ec2e4049e0799cdb72fa2e35fc81a7c80823652..cf92df8451607a223ef82c8dc47e6b76
  
  static const struct of_device_id mtk_disp_rdma_driver_dt_match[] = {
 diff --git a/drivers/gpu/drm/mediatek/mtk_dp.c b/drivers/gpu/drm/mediatek/mtk_dp.c
-index 007af69e5026f8dc82435cb44398a94ebcdecee5..3eb8efd2d0d8d1b61a37092ea71394fac23f2597 100644
+index 007af69e5026f8dc82435cb44398a94ebcdecee5..59df12b4febd313fbe521a7cc11c85b57d1c7003 100644
 --- a/drivers/gpu/drm/mediatek/mtk_dp.c
 +++ b/drivers/gpu/drm/mediatek/mtk_dp.c
-@@ -139,6 +139,8 @@ struct mtk_dp_data {
+@@ -139,6 +139,174 @@ struct mtk_dp_data {
  	unsigned int smc_cmd;
  	const struct mtk_dp_efuse_fmt *efuse_fmt;
  	bool audio_supported;
 +	const bool arrange;
 +	const u8 audio_m_div2;
++};
++
++static const struct mtk_dp_efuse_fmt mt8188_edp_efuse_fmt[MTK_DP_CAL_MAX] = {
++	[MTK_DP_CAL_GLB_BIAS_TRIM] = {
++		.idx = 0,
++		.shift = 19,
++		.mask = 0x1f,
++		.min_val = 1,
++		.max_val = 0x1e,
++		.default_val = 0xf,
++	},
++	[MTK_DP_CAL_CLKTX_IMPSE] = {
++		.idx = 0,
++		.shift = 24,
++		.mask = 0xf,
++		.min_val = 1,
++		.max_val = 0xe,
++		.default_val = 0x8,
++	},
++	[MTK_DP_CAL_LN_TX_IMPSEL_PMOS_0] = {
++		.idx = 2,
++		.shift = 0,
++		.mask = 0xf,
++		.min_val = 1,
++		.max_val = 0xe,
++		.default_val = 0x8,
++	},
++	[MTK_DP_CAL_LN_TX_IMPSEL_PMOS_1] = {
++		.idx = 2,
++		.shift = 8,
++		.mask = 0xf,
++		.min_val = 1,
++		.max_val = 0xe,
++		.default_val = 0x8,
++	},
++	[MTK_DP_CAL_LN_TX_IMPSEL_PMOS_2] = {
++		.idx = 2,
++		.shift = 16,
++		.mask = 0xf,
++		.min_val = 1,
++		.max_val = 0xe,
++		.default_val = 0x8,
++	},
++	[MTK_DP_CAL_LN_TX_IMPSEL_PMOS_3] = {
++		.idx = 2,
++		.shift = 24,
++		.mask = 0xf,
++		.min_val = 1,
++		.max_val = 0xe,
++		.default_val = 0x8,
++	},
++	[MTK_DP_CAL_LN_TX_IMPSEL_NMOS_0] = {
++		.idx = 2,
++		.shift = 4,
++		.mask = 0xf,
++		.min_val = 1,
++		.max_val = 0xe,
++		.default_val = 0x8,
++	},
++	[MTK_DP_CAL_LN_TX_IMPSEL_NMOS_1] = {
++		.idx = 2,
++		.shift = 12,
++		.mask = 0xf,
++		.min_val = 1,
++		.max_val = 0xe,
++		.default_val = 0x8,
++	},
++	[MTK_DP_CAL_LN_TX_IMPSEL_NMOS_2] = {
++		.idx = 2,
++		.shift = 20,
++		.mask = 0xf,
++		.min_val = 1,
++		.max_val = 0xe,
++		.default_val = 0x8,
++	},
++	[MTK_DP_CAL_LN_TX_IMPSEL_NMOS_3] = {
++		.idx = 2,
++		.shift = 28,
++		.mask = 0xf,
++		.min_val = 1,
++		.max_val = 0xe,
++		.default_val = 0x8,
++	},
++};
++
++static const struct mtk_dp_efuse_fmt mt8188_dp_efuse_fmt[MTK_DP_CAL_MAX] = {
++	[MTK_DP_CAL_GLB_BIAS_TRIM] = {
++		.idx = 0,
++		.shift = 10,
++		.mask = 0x1f,
++		.min_val = 1,
++		.max_val = 0x1e,
++		.default_val = 0xf,
++	},
++	[MTK_DP_CAL_CLKTX_IMPSE] = {
++		.idx = 0,
++		.shift = 15,
++		.mask = 0xf,
++		.min_val = 1,
++		.max_val = 0xe,
++		.default_val = 0x8,
++	},
++	[MTK_DP_CAL_LN_TX_IMPSEL_PMOS_0] = {
++		.idx = 1,
++		.shift = 0,
++		.mask = 0xf,
++		.min_val = 1,
++		.max_val = 0xe,
++		.default_val = 0x8,
++	},
++	[MTK_DP_CAL_LN_TX_IMPSEL_PMOS_1] = {
++		.idx = 1,
++		.shift = 8,
++		.mask = 0xf,
++		.min_val = 1,
++		.max_val = 0xe,
++		.default_val = 0x8,
++	},
++	[MTK_DP_CAL_LN_TX_IMPSEL_PMOS_2] = {
++		.idx = 1,
++		.shift = 16,
++		.mask = 0xf,
++		.min_val = 1,
++		.max_val = 0xe,
++		.default_val = 0x8,
++	},
++	[MTK_DP_CAL_LN_TX_IMPSEL_PMOS_3] = {
++		.idx = 1,
++		.shift = 24,
++		.mask = 0xf,
++		.min_val = 1,
++		.max_val = 0xe,
++		.default_val = 0x8,
++	},
++	[MTK_DP_CAL_LN_TX_IMPSEL_NMOS_0] = {
++		.idx = 1,
++		.shift = 4,
++		.mask = 0xf,
++		.min_val = 1,
++		.max_val = 0xe,
++		.default_val = 0x8,
++	},
++	[MTK_DP_CAL_LN_TX_IMPSEL_NMOS_1] = {
++		.idx = 1,
++		.shift = 12,
++		.mask = 0xf,
++		.min_val = 1,
++		.max_val = 0xe,
++		.default_val = 0x8,
++	},
++	[MTK_DP_CAL_LN_TX_IMPSEL_NMOS_2] = {
++		.idx = 1,
++		.shift = 20,
++		.mask = 0xf,
++		.min_val = 1,
++		.max_val = 0xe,
++		.default_val = 0x8,
++	},
++	[MTK_DP_CAL_LN_TX_IMPSEL_NMOS_3] = {
++		.idx = 1,
++		.shift = 28,
++		.mask = 0xf,
++		.min_val = 1,
++		.max_val = 0xe,
++		.default_val = 0x8,
++	},
  };
  
  static const struct mtk_dp_efuse_fmt mt8195_edp_efuse_fmt[MTK_DP_CAL_MAX] = {
-@@ -646,8 +648,10 @@ static void mtk_dp_audio_sdp_asp_set_channels(struct mtk_dp *mtk_dp,
+@@ -646,8 +814,10 @@ static void mtk_dp_audio_sdp_asp_set_channels(struct mtk_dp *mtk_dp,
  
  static void mtk_dp_audio_set_divider(struct mtk_dp *mtk_dp)
  {
@@ -11745,7 +12139,7 @@ index 007af69e5026f8dc82435cb44398a94ebcdecee5..3eb8efd2d0d8d1b61a37092ea71394fa
  			   AUDIO_M_CODE_MULT_DIV_SEL_DP_ENC0_P0_MASK);
  }
  
-@@ -1362,6 +1366,14 @@ static void mtk_dp_sdp_set_down_cnt_init_in_hblank(struct mtk_dp *mtk_dp)
+@@ -1362,6 +1532,14 @@ static void mtk_dp_sdp_set_down_cnt_init_in_hblank(struct mtk_dp *mtk_dp)
  			   SDP_DOWN_CNT_INIT_IN_HBLANK_DP_ENC1_P0_MASK);
  }
  
@@ -11760,7 +12154,7 @@ index 007af69e5026f8dc82435cb44398a94ebcdecee5..3eb8efd2d0d8d1b61a37092ea71394fa
  static void mtk_dp_setup_tu(struct mtk_dp *mtk_dp)
  {
  	u32 sram_read_start = min_t(u32, MTK_DP_TBC_BUF_READ_START_ADDR,
-@@ -1371,6 +1383,7 @@ static void mtk_dp_setup_tu(struct mtk_dp *mtk_dp)
+@@ -1371,6 +1549,7 @@ static void mtk_dp_setup_tu(struct mtk_dp *mtk_dp)
  				    MTK_DP_PIX_PER_ADDR);
  	mtk_dp_set_sram_read_start(mtk_dp, sram_read_start);
  	mtk_dp_setup_encoder(mtk_dp);
@@ -11768,14 +12162,23 @@ index 007af69e5026f8dc82435cb44398a94ebcdecee5..3eb8efd2d0d8d1b61a37092ea71394fa
  	mtk_dp_sdp_set_down_cnt_init_in_hblank(mtk_dp);
  	mtk_dp_sdp_set_down_cnt_init(mtk_dp, sram_read_start);
  }
-@@ -2616,11 +2629,22 @@ static int mtk_dp_resume(struct device *dev)
+@@ -2616,11 +2795,31 @@ static int mtk_dp_resume(struct device *dev)
  
  static SIMPLE_DEV_PM_OPS(mtk_dp_pm_ops, mtk_dp_suspend, mtk_dp_resume);
  
++static const struct mtk_dp_data mt8188_edp_data = {
++	.bridge_type = DRM_MODE_CONNECTOR_eDP,
++	.smc_cmd = MTK_DP_SIP_ATF_EDP_VIDEO_UNMUTE,
++	.efuse_fmt = mt8188_edp_efuse_fmt,
++	.audio_supported = false,
++	.arrange = false,
++	.audio_m_div2 = 5,
++};
++
 +static const struct mtk_dp_data mt8188_dp_data = {
 +	.bridge_type = DRM_MODE_CONNECTOR_DisplayPort,
 +	.smc_cmd = MTK_DP_SIP_ATF_VIDEO_UNMUTE,
-+	.efuse_fmt = mt8195_dp_efuse_fmt,
++	.efuse_fmt = mt8188_dp_efuse_fmt,
 +	.audio_supported = true,
 +	.arrange = true,
 +	.audio_m_div2 = 4,
@@ -11791,7 +12194,7 @@ index 007af69e5026f8dc82435cb44398a94ebcdecee5..3eb8efd2d0d8d1b61a37092ea71394fa
  };
  
  static const struct mtk_dp_data mt8195_dp_data = {
-@@ -2628,9 +2652,15 @@ static const struct mtk_dp_data mt8195_dp_data = {
+@@ -2628,9 +2827,19 @@ static const struct mtk_dp_data mt8195_dp_data = {
  	.smc_cmd = MTK_DP_SIP_ATF_VIDEO_UNMUTE,
  	.efuse_fmt = mt8195_dp_efuse_fmt,
  	.audio_supported = true,
@@ -11800,6 +12203,10 @@ index 007af69e5026f8dc82435cb44398a94ebcdecee5..3eb8efd2d0d8d1b61a37092ea71394fa
  };
  
  static const struct of_device_id mtk_dp_of_match[] = {
++	{
++		.compatible = "mediatek,mt8188-edp-tx",
++		.data = &mt8188_edp_data,
++	},
 +	{
 +		.compatible = "mediatek,mt8188-dp-tx",
 +		.data = &mt8188_dp_data,
@@ -13631,7 +14038,7 @@ index 8f39011cdbfc92c6632110e47aaab1c479ee11b2..99aff7da0831dd868ee6568c9df1b5ed
  
  #endif
 diff --git a/drivers/gpu/drm/mediatek/mtk_dsi.c b/drivers/gpu/drm/mediatek/mtk_dsi.c
-index 9e1363c9fcdb46e98323595aa84ab08c8cd2d076..fee77605f46bed11c87c9924ba792a8d9cb9404b 100644
+index 9e1363c9fcdb46e98323595aa84ab08c8cd2d076..57b3d7b5082f0a1f83172fd9d0cecaa75cf978b1 100644
 --- a/drivers/gpu/drm/mediatek/mtk_dsi.c
 +++ b/drivers/gpu/drm/mediatek/mtk_dsi.c
 @@ -82,9 +82,11 @@
@@ -13662,7 +14069,34 @@ index 9e1363c9fcdb46e98323595aa84ab08c8cd2d076..fee77605f46bed11c87c9924ba792a8d
  };
  
  static inline struct mtk_dsi *bridge_to_dsi(struct drm_bridge *b)
-@@ -513,6 +517,83 @@ static void mtk_dsi_config_vdo_timing(struct mtk_dsi *dsi)
+@@ -236,7 +240,7 @@ static void mtk_dsi_phy_timconfig(struct mtk_dsi *dsi)
+ 	timing->da_hs_prepare = (80 * data_rate_mhz + 4 * 1000) / 8000;
+ 	timing->da_hs_zero = (170 * data_rate_mhz + 10 * 1000) / 8000 + 1 -
+ 			     timing->da_hs_prepare;
+-	timing->da_hs_trail = timing->da_hs_prepare + 1;
++	timing->da_hs_trail = timing->da_hs_prepare;
+ 
+ 	timing->ta_go = 4 * timing->lpx - 2;
+ 	timing->ta_sure = timing->lpx + 2;
+@@ -254,7 +258,7 @@ static void mtk_dsi_phy_timconfig(struct mtk_dsi *dsi)
+ 	timcon1 = timing->ta_go | timing->ta_sure << 8 |
+ 		  timing->ta_get << 16 | timing->da_hs_exit << 24;
+ 	timcon2 = 1 << 8 | timing->clk_hs_zero << 16 |
+-		  timing->clk_hs_trail << 24;
++			  (timing->clk_hs_trail+2) << 24;
+ 	timcon3 = timing->clk_hs_prepare | timing->clk_hs_post << 8 |
+ 		  timing->clk_hs_exit << 16;
+ 
+@@ -262,6 +266,8 @@ static void mtk_dsi_phy_timconfig(struct mtk_dsi *dsi)
+ 	writel(timcon1, dsi->regs + DSI_PHY_TIMECON1);
+ 	writel(timcon2, dsi->regs + DSI_PHY_TIMECON2);
+ 	writel(timcon3, dsi->regs + DSI_PHY_TIMECON3);
++	pr_notice("[###]222con0=0x%x \n", readl(dsi->regs + DSI_PHY_TIMECON0));
++	pr_notice("[###]222con2=0x%x \n", readl(dsi->regs + DSI_PHY_TIMECON2));
+ }
+ 
+ static void mtk_dsi_enable(struct mtk_dsi *dsi)
+@@ -513,6 +519,83 @@ static void mtk_dsi_config_vdo_timing(struct mtk_dsi *dsi)
  			(vm->hactive * dsi_tmp_buf_bpp + 2) % dsi->lanes;
  	}
  
@@ -13746,7 +14180,7 @@ index 9e1363c9fcdb46e98323595aa84ab08c8cd2d076..fee77605f46bed11c87c9924ba792a8d
  	writel(horizontal_sync_active_byte, dsi->regs + DSI_HSA_WC);
  	writel(horizontal_backporch_byte, dsi->regs + DSI_HBP_WC);
  	writel(horizontal_frontporch_byte, dsi->regs + DSI_HFP_WC);
-@@ -864,6 +945,15 @@ static int mtk_dsi_encoder_init(struct drm_device *drm, struct mtk_dsi *dsi)
+@@ -864,6 +947,15 @@ static int mtk_dsi_encoder_init(struct drm_device *drm, struct mtk_dsi *dsi)
  	return ret;
  }
  
@@ -13762,7 +14196,7 @@ index 9e1363c9fcdb46e98323595aa84ab08c8cd2d076..fee77605f46bed11c87c9924ba792a8d
  static int mtk_dsi_bind(struct device *dev, struct device *master, void *data)
  {
  	int ret;
-@@ -900,6 +990,8 @@ static int mtk_dsi_host_attach(struct mipi_dsi_host *host,
+@@ -900,6 +992,8 @@ static int mtk_dsi_host_attach(struct mipi_dsi_host *host,
  	dsi->lanes = device->lanes;
  	dsi->format = device->format;
  	dsi->mode_flags = device->mode_flags;
@@ -13771,7 +14205,7 @@ index 9e1363c9fcdb46e98323595aa84ab08c8cd2d076..fee77605f46bed11c87c9924ba792a8d
  	dsi->next_bridge = devm_drm_of_get_bridge(dev, dev->of_node, 0, 0);
  	if (IS_ERR(dsi->next_bridge))
  		return PTR_ERR(dsi->next_bridge);
-@@ -964,6 +1056,11 @@ static u32 mtk_dsi_recv_cnt(u8 type, u8 *read_data)
+@@ -964,6 +1058,11 @@ static u32 mtk_dsi_recv_cnt(u8 type, u8 *read_data)
  	return 0;
  }
  
@@ -13783,7 +14217,7 @@ index 9e1363c9fcdb46e98323595aa84ab08c8cd2d076..fee77605f46bed11c87c9924ba792a8d
  static void mtk_dsi_cmdq(struct mtk_dsi *dsi, const struct mipi_dsi_msg *msg)
  {
  	const char *tx_buf = msg->tx_buf;
-@@ -995,6 +1092,8 @@ static void mtk_dsi_cmdq(struct mtk_dsi *dsi, const struct mipi_dsi_msg *msg)
+@@ -995,6 +1094,8 @@ static void mtk_dsi_cmdq(struct mtk_dsi *dsi, const struct mipi_dsi_msg *msg)
  
  	mtk_dsi_mask(dsi, reg_cmdq_off, cmdq_mask, reg_val);
  	mtk_dsi_mask(dsi, DSI_CMDQ_SIZE, CMDQ_SIZE, cmdq_size);
@@ -13792,7 +14226,7 @@ index 9e1363c9fcdb46e98323595aa84ab08c8cd2d076..fee77605f46bed11c87c9924ba792a8d
  }
  
  static ssize_t mtk_dsi_host_send_cmd(struct mtk_dsi *dsi,
-@@ -1199,12 +1298,21 @@ static const struct mtk_dsi_driver_data mt8183_dsi_driver_data = {
+@@ -1199,12 +1300,21 @@ static const struct mtk_dsi_driver_data mt8183_dsi_driver_data = {
  	.reg_cmdq_off = 0x200,
  	.has_shadow_ctl = true,
  	.has_size_ctl = true,
@@ -13814,7 +14248,7 @@ index 9e1363c9fcdb46e98323595aa84ab08c8cd2d076..fee77605f46bed11c87c9924ba792a8d
  };
  
  static const struct of_device_id mtk_dsi_of_match[] = {
-@@ -1216,6 +1324,8 @@ static const struct of_device_id mtk_dsi_of_match[] = {
+@@ -1216,6 +1326,8 @@ static const struct of_device_id mtk_dsi_of_match[] = {
  	  .data = &mt8183_dsi_driver_data },
  	{ .compatible = "mediatek,mt8186-dsi",
  	  .data = &mt8186_dsi_driver_data },
@@ -14619,6 +15053,352 @@ index 41bc650896ebee7b740a2a5704f0cc79fe30de24..b90580a8cc2c374d9b28a36fce1e61bd
  
  	cmdq_init(cmdq);
  
+diff --git a/drivers/media/platform/mediatek/jpeg/mtk_jpeg_core.c b/drivers/media/platform/mediatek/jpeg/mtk_jpeg_core.c
+index 0051f372a66cfea26f11f390bb71a8c90a51430d..935ce85c546d8ed8f7c4cea616b73145ab02922b 100644
+--- a/drivers/media/platform/mediatek/jpeg/mtk_jpeg_core.c
++++ b/drivers/media/platform/mediatek/jpeg/mtk_jpeg_core.c
+@@ -1270,6 +1270,7 @@ static void mtk_jpegdec_worker(struct work_struct *work)
+ 	ctx->total_frame_num++;
+ 	mtk_jpeg_dec_reset(comp_jpeg[hw_id]->reg_base);
+ 	mtk_jpeg_dec_set_config(comp_jpeg[hw_id]->reg_base,
++				jpeg->support_34bit,
+ 				&jpeg_src_buf->dec_param,
+ 				jpeg_src_buf->bs_size,
+ 				&bs,
+@@ -1340,6 +1341,7 @@ static void mtk_jpeg_dec_device_run(void *priv)
+ 	spin_lock_irqsave(&jpeg->hw_lock, flags);
+ 	mtk_jpeg_dec_reset(jpeg->reg_base);
+ 	mtk_jpeg_dec_set_config(jpeg->reg_base,
++				jpeg->support_34bit,
+ 				&jpeg_src_buf->dec_param,
+ 				jpeg_src_buf->bs_size,
+ 				&bs,
+@@ -1446,7 +1448,8 @@ static irqreturn_t mtk_jpeg_enc_done(struct mtk_jpeg_dev *jpeg)
+ 	src_buf = v4l2_m2m_src_buf_remove(ctx->fh.m2m_ctx);
+ 	dst_buf = v4l2_m2m_dst_buf_remove(ctx->fh.m2m_ctx);
+ 
+-	result_size = mtk_jpeg_enc_get_file_size(jpeg->reg_base);
++	result_size = mtk_jpeg_enc_get_file_size(jpeg->reg_base,
++			ctx->jpeg->support_34bit);
+ 	vb2_set_plane_payload(&dst_buf->vb2_buf, 0, result_size);
+ 
+ 	buf_state = VB2_BUF_STATE_DONE;
+@@ -1729,6 +1732,14 @@ static int mtk_jpeg_probe(struct platform_device *pdev)
+ 		return -EINVAL;
+ 	}
+ 
++	ret = of_property_read_u32(pdev->dev.of_node, "mediatek,34bits",
++			&jpeg->support_34bit);
++	if (ret != 0) {
++		dev_info(&pdev->dev, "default for 34bits");
++		jpeg->support_34bit = 1;
++	}
++	dev_info(&pdev->dev, "use 34bits: %d", jpeg->support_34bit);
++
+ 	if (!jpeg->variant->multi_core) {
+ 		ret = mtk_jpeg_single_core_init(pdev, jpeg);
+ 		if (ret) {
+diff --git a/drivers/media/platform/mediatek/jpeg/mtk_jpeg_core.h b/drivers/media/platform/mediatek/jpeg/mtk_jpeg_core.h
+index 8ba6e757e11aa93e154c2fa9c7965cd494753765..8237c07ac743b10c6540ad2fe1dffaa830073d7e 100644
+--- a/drivers/media/platform/mediatek/jpeg/mtk_jpeg_core.h
++++ b/drivers/media/platform/mediatek/jpeg/mtk_jpeg_core.h
+@@ -209,6 +209,7 @@ struct mtk_jpegdec_comp_dev {
+  * @reg_decbase:	jpg decode register base addr
+  * @dec_hw_dev:	jpg decode hardware device
+  * @hw_index:		jpg hw index
++ * @support_34bit:	flag to check if support dma_address 34bit
+  */
+ struct mtk_jpeg_dev {
+ 	struct mutex		lock;
+@@ -231,6 +232,7 @@ struct mtk_jpeg_dev {
+ 	void __iomem *reg_decbase[MTK_JPEGDEC_HW_MAX];
+ 	struct mtk_jpegdec_comp_dev *dec_hw_dev[MTK_JPEGDEC_HW_MAX];
+ 	atomic_t hw_index;
++	u32 support_34bit;
+ };
+ 
+ /**
+diff --git a/drivers/media/platform/mediatek/jpeg/mtk_jpeg_dec_hw.c b/drivers/media/platform/mediatek/jpeg/mtk_jpeg_dec_hw.c
+index 869068fac5e2f9ae8cb25e02ce12be285fd6d25d..eef25202203a709336130785c7edbe5532c9983e 100644
+--- a/drivers/media/platform/mediatek/jpeg/mtk_jpeg_dec_hw.c
++++ b/drivers/media/platform/mediatek/jpeg/mtk_jpeg_dec_hw.c
+@@ -272,7 +272,7 @@ void mtk_jpeg_dec_reset(void __iomem *base)
+ EXPORT_SYMBOL_GPL(mtk_jpeg_dec_reset);
+ 
+ static void mtk_jpeg_dec_set_brz_factor(void __iomem *base, u8 yscale_w,
+-					u8 yscale_h, u8 uvscale_w, u8 uvscale_h)
++				u8 yscale_h, u8 uvscale_w, u8 uvscale_h)
+ {
+ 	u32 val;
+ 
+@@ -281,23 +281,43 @@ static void mtk_jpeg_dec_set_brz_factor(void __iomem *base, u8 yscale_w,
+ 	writel(val, base + JPGDEC_REG_BRZ_FACTOR);
+ }
+ 
+-static void mtk_jpeg_dec_set_dst_bank0(void __iomem *base, u32 addr_y,
+-				       u32 addr_u, u32 addr_v)
++static void mtk_jpeg_dec_set_dst_bank0(void __iomem *base, u32 support_34bit,
++		dma_addr_t addr_y, dma_addr_t addr_u, dma_addr_t addr_v)
+ {
++	u32 val;
++
+ 	mtk_jpeg_verify_align(addr_y, 16, JPGDEC_REG_DEST_ADDR0_Y);
+ 	writel(addr_y, base + JPGDEC_REG_DEST_ADDR0_Y);
+ 	mtk_jpeg_verify_align(addr_u, 16, JPGDEC_REG_DEST_ADDR0_U);
+ 	writel(addr_u, base + JPGDEC_REG_DEST_ADDR0_U);
+ 	mtk_jpeg_verify_align(addr_v, 16, JPGDEC_REG_DEST_ADDR0_V);
+ 	writel(addr_v, base + JPGDEC_REG_DEST_ADDR0_V);
++	if (support_34bit) {
++		val = upper_32_bits(addr_y) & 0x3;
++		writel(val, base + JPGDEC_REG_DEST_ADDR0_Y_EXT);
++		val = upper_32_bits(addr_u) & 0x3;
++		writel(val, base + JPGDEC_REG_DEST_ADDR0_U_EXT);
++		val = upper_32_bits(addr_v) & 0x3;
++		writel(val, base + JPGDEC_REG_DEST_ADDR0_V_EXT);
++	}
+ }
+ 
+-static void mtk_jpeg_dec_set_dst_bank1(void __iomem *base, u32 addr_y,
+-				       u32 addr_u, u32 addr_v)
++static void mtk_jpeg_dec_set_dst_bank1(void __iomem *base, u32 support_34bit,
++		dma_addr_t addr_y, dma_addr_t addr_u, dma_addr_t addr_v)
+ {
++	u32 val;
++
+ 	writel(addr_y, base + JPGDEC_REG_DEST_ADDR1_Y);
+ 	writel(addr_u, base + JPGDEC_REG_DEST_ADDR1_U);
+ 	writel(addr_v, base + JPGDEC_REG_DEST_ADDR1_V);
++	if (support_34bit) {
++		val = upper_32_bits(addr_y) & 0x3;
++		writel(val, base + JPGDEC_REG_DEST_ADDR1_Y_EXT);
++		val = upper_32_bits(addr_u) & 0x3;
++		writel(val, base + JPGDEC_REG_DEST_ADDR1_U_EXT);
++		val = upper_32_bits(addr_v) & 0x3;
++		writel(val, base + JPGDEC_REG_DEST_ADDR1_V_EXT);
++	}
+ }
+ 
+ static void mtk_jpeg_dec_set_mem_stride(void __iomem *base, u32 stride_y,
+@@ -324,18 +344,31 @@ static void mtk_jpeg_dec_set_dec_mode(void __iomem *base, u32 mode)
+ 	writel(mode & 0x03, base + JPGDEC_REG_OPERATION_MODE);
+ }
+ 
+-static void mtk_jpeg_dec_set_bs_write_ptr(void __iomem *base, u32 ptr)
++static void mtk_jpeg_dec_set_bs_write_ptr(void __iomem *base,
++				u32 support_34bit, dma_addr_t ptr)
+ {
++	u32 val;
++
+ 	mtk_jpeg_verify_align(ptr, 16, JPGDEC_REG_FILE_BRP);
+ 	writel(ptr, base + JPGDEC_REG_FILE_BRP);
++	if (support_34bit) {
++		val = upper_32_bits(ptr) & 0x3;
++		writel(val, base + JPGDEC_REG_FILE_BRP_EXT);
++	}
+ }
+ 
+-static void mtk_jpeg_dec_set_bs_info(void __iomem *base, u32 addr, u32 size,
+-				     u32 bitstream_size)
++static void mtk_jpeg_dec_set_bs_info(void __iomem *base, u32 support_34bit,
++		dma_addr_t addr, u32 size, u32 bitstream_size)
+ {
++	u32 val;
++
+ 	mtk_jpeg_verify_align(addr, 16, JPGDEC_REG_FILE_ADDR);
+ 	mtk_jpeg_verify_align(size, 128, JPGDEC_REG_FILE_TOTAL_SIZE);
+ 	writel(addr, base + JPGDEC_REG_FILE_ADDR);
++	if (support_34bit) {
++		val = upper_32_bits(addr) & 0x3;
++		writel(val, base + JPGDEC_REG_FILE_ADDR_EXT);
++	}
+ 	writel(size, base + JPGDEC_REG_FILE_TOTAL_SIZE);
+ 	writel(bitstream_size, base + JPGDEC_REG_BIT_STREAM_SIZE);
+ }
+@@ -406,6 +439,7 @@ static void mtk_jpeg_dec_set_sampling_factor(void __iomem *base, u32 comp_num,
+ }
+ 
+ void mtk_jpeg_dec_set_config(void __iomem *base,
++			     u32 support_34bits,
+ 			     struct mtk_jpeg_dec_param *cfg,
+ 			     u32 bitstream_size,
+ 			     struct mtk_jpeg_bs *bs,
+@@ -415,8 +449,9 @@ void mtk_jpeg_dec_set_config(void __iomem *base,
+ 	mtk_jpeg_dec_set_dec_mode(base, 0);
+ 	mtk_jpeg_dec_set_comp0_du(base, cfg->unit_num);
+ 	mtk_jpeg_dec_set_total_mcu(base, cfg->total_mcu);
+-	mtk_jpeg_dec_set_bs_info(base, bs->str_addr, bs->size, bitstream_size);
+-	mtk_jpeg_dec_set_bs_write_ptr(base, bs->end_addr);
++	mtk_jpeg_dec_set_bs_info(base, support_34bits, bs->str_addr,
++				       bs->size, bitstream_size);
++	mtk_jpeg_dec_set_bs_write_ptr(base, support_34bits, bs->end_addr);
+ 	mtk_jpeg_dec_set_du_membership(base, cfg->membership, 1,
+ 				       (cfg->comp_num == 1) ? 1 : 0);
+ 	mtk_jpeg_dec_set_comp_id(base, cfg->comp_id[0], cfg->comp_id[1],
+@@ -434,9 +469,9 @@ void mtk_jpeg_dec_set_config(void __iomem *base,
+ 				    cfg->mem_stride[1]);
+ 	mtk_jpeg_dec_set_img_stride(base, cfg->img_stride[0],
+ 				    cfg->img_stride[1]);
+-	mtk_jpeg_dec_set_dst_bank0(base, fb->plane_addr[0],
++	mtk_jpeg_dec_set_dst_bank0(base, support_34bits, fb->plane_addr[0],
+ 				   fb->plane_addr[1], fb->plane_addr[2]);
+-	mtk_jpeg_dec_set_dst_bank1(base, 0, 0, 0);
++	mtk_jpeg_dec_set_dst_bank1(base, support_34bits, 0, 0, 0);
+ 	mtk_jpeg_dec_set_dma_group(base, cfg->dma_mcu, cfg->dma_group,
+ 				   cfg->dma_last_mcu);
+ 	mtk_jpeg_dec_set_pause_mcu_idx(base, cfg->total_mcu);
+diff --git a/drivers/media/platform/mediatek/jpeg/mtk_jpeg_dec_hw.h b/drivers/media/platform/mediatek/jpeg/mtk_jpeg_dec_hw.h
+index 8c31c6b124178c61c6ace7d8d98966a8647553f4..14c6e6cb387d5179810ba2fc4ca8b306dbca9fec 100644
+--- a/drivers/media/platform/mediatek/jpeg/mtk_jpeg_dec_hw.h
++++ b/drivers/media/platform/mediatek/jpeg/mtk_jpeg_dec_hw.h
+@@ -71,6 +71,7 @@ int mtk_jpeg_dec_fill_param(struct mtk_jpeg_dec_param *param);
+ u32 mtk_jpeg_dec_get_int_status(void __iomem *dec_reg_base);
+ u32 mtk_jpeg_dec_enum_result(u32 irq_result);
+ void mtk_jpeg_dec_set_config(void __iomem *base,
++			     u32 support_34bits,
+ 			     struct mtk_jpeg_dec_param *cfg,
+ 			     u32 bitstream_size,
+ 			     struct mtk_jpeg_bs *bs,
+diff --git a/drivers/media/platform/mediatek/jpeg/mtk_jpeg_dec_reg.h b/drivers/media/platform/mediatek/jpeg/mtk_jpeg_dec_reg.h
+index 27b7711ca341998c8d89b99740dde82a1e8c87a5..e94f52de7c690cae1c67304c27686eea096f8e8c 100644
+--- a/drivers/media/platform/mediatek/jpeg/mtk_jpeg_dec_reg.h
++++ b/drivers/media/platform/mediatek/jpeg/mtk_jpeg_dec_reg.h
+@@ -46,5 +46,13 @@
+ #define JPGDEC_REG_INTERRUPT_STATUS	0x0274
+ #define JPGDEC_REG_STATUS		0x0278
+ #define JPGDEC_REG_BIT_STREAM_SIZE	0x0344
++#define JPGDEC_REG_DEST_ADDR0_Y_EXT	0x0360
++#define JPGDEC_REG_DEST_ADDR0_U_EXT	0x0364
++#define JPGDEC_REG_DEST_ADDR0_V_EXT	0x0368
++#define JPGDEC_REG_DEST_ADDR1_Y_EXT	0x036c
++#define JPGDEC_REG_DEST_ADDR1_U_EXT	0x0370
++#define JPGDEC_REG_DEST_ADDR1_V_EXT	0x0374
++#define JPGDEC_REG_FILE_ADDR_EXT	0x0378
++#define JPGDEC_REG_FILE_BRP_EXT		0x037c
+ 
+ #endif /* _MTK_JPEG_REG_H */
+diff --git a/drivers/media/platform/mediatek/jpeg/mtk_jpeg_enc_hw.c b/drivers/media/platform/mediatek/jpeg/mtk_jpeg_enc_hw.c
+index 71e85b4bbf12762ae175dd6af8ecbdc9bc93101b..f46d305c0b79f517e3824fafc39fde317507b7dc 100644
+--- a/drivers/media/platform/mediatek/jpeg/mtk_jpeg_enc_hw.c
++++ b/drivers/media/platform/mediatek/jpeg/mtk_jpeg_enc_hw.c
+@@ -64,9 +64,14 @@ void mtk_jpeg_enc_reset(void __iomem *base)
+ }
+ EXPORT_SYMBOL_GPL(mtk_jpeg_enc_reset);
+ 
+-u32 mtk_jpeg_enc_get_file_size(void __iomem *base)
++u32 mtk_jpeg_enc_get_file_size(void __iomem *base, u32 support_34bit)
+ {
+-	return readl(base + JPEG_ENC_DMA_ADDR0) -
++	u32 value = 1;
++
++	if (support_34bit)
++		value = 4;
++
++	return readl(base + JPEG_ENC_DMA_ADDR0) * value -
+ 	       readl(base + JPEG_ENC_DST_ADDR0);
+ }
+ EXPORT_SYMBOL_GPL(mtk_jpeg_enc_get_file_size);
+@@ -77,6 +82,9 @@ void mtk_jpeg_enc_start(void __iomem *base)
+ 
+ 	value = readl(base + JPEG_ENC_CTRL);
+ 	value |= JPEG_ENC_CTRL_INT_EN_BIT | JPEG_ENC_CTRL_ENABLE_BIT;
++	value |= JPEG_ENC_CTRL_RDMA_PADDING_EN;
++	value |= JPEG_ENC_CTRL_RDMA_RIGHT_PADDING_EN;
++	value &= ~JPEG_ENC_CTRL_RDMA_PADDING_0_EN;
+ 	writel(value, base + JPEG_ENC_CTRL);
+ }
+ EXPORT_SYMBOL_GPL(mtk_jpeg_enc_start);
+@@ -86,14 +94,25 @@ void mtk_jpeg_set_enc_src(struct mtk_jpeg_ctx *ctx,  void __iomem *base,
+ {
+ 	int i;
+ 	dma_addr_t dma_addr;
++	u32 val;
++	u32 support_34bit = ctx->jpeg->support_34bit;
+ 
+ 	for (i = 0; i < src_buf->num_planes; i++) {
+ 		dma_addr = vb2_dma_contig_plane_dma_addr(src_buf, i) +
+ 			   src_buf->planes[i].data_offset;
+-		if (!i)
++		if (!i) {
+ 			writel(dma_addr, base + JPEG_ENC_SRC_LUMA_ADDR);
+-		else
++			if (support_34bit) {
++				val = upper_32_bits(dma_addr) & 0x3;
++				writel(val, base + JPEG_ENC_SRC_LUMA_ADDR_EXT);
++			}
++		} else {
+ 			writel(dma_addr, base + JPEG_ENC_SRC_CHROMA_ADDR);
++			if (support_34bit) {
++				val = upper_32_bits(dma_addr) & 0x3;
++				writel(val, base + JPEG_ENC_SRC_CHROMA_ADDR_EXT);
++			}
++		}
+ 	}
+ }
+ EXPORT_SYMBOL_GPL(mtk_jpeg_set_enc_src);
+@@ -105,6 +124,8 @@ void mtk_jpeg_set_enc_dst(struct mtk_jpeg_ctx *ctx, void __iomem *base,
+ 	size_t size;
+ 	u32 dma_addr_offset;
+ 	u32 dma_addr_offsetmask;
++	u32 val;
++	u32 support_34bit = ctx->jpeg->support_34bit;
+ 
+ 	dma_addr = vb2_dma_contig_plane_dma_addr(dst_buf, 0);
+ 	dma_addr_offset = ctx->enable_exif ? MTK_JPEG_MAX_EXIF_SIZE : 0;
+@@ -114,7 +135,15 @@ void mtk_jpeg_set_enc_dst(struct mtk_jpeg_ctx *ctx, void __iomem *base,
+ 	writel(dma_addr_offset & ~0xf, base + JPEG_ENC_OFFSET_ADDR);
+ 	writel(dma_addr_offsetmask & 0xf, base + JPEG_ENC_BYTE_OFFSET_MASK);
+ 	writel(dma_addr & ~0xf, base + JPEG_ENC_DST_ADDR0);
++	if (support_34bit) {
++		val = upper_32_bits(dma_addr) & 0x3;
++		writel(val, base + JPEG_ENC_DEST_ADDR0_EXT);
++	}
+ 	writel((dma_addr + size) & ~0xf, base + JPEG_ENC_STALL_ADDR0);
++	if (support_34bit) {
++		val = upper_32_bits(dma_addr + size) & 0x3;
++		writel(val, base + JPEG_ENC_STALL_ADDR0_EXT);
++	}
+ }
+ EXPORT_SYMBOL_GPL(mtk_jpeg_set_enc_dst);
+ 
+@@ -279,7 +308,8 @@ static irqreturn_t mtk_jpegenc_hw_irq_handler(int irq, void *priv)
+ 	if (!(irq_status & JPEG_ENC_INT_STATUS_DONE))
+ 		dev_warn(jpeg->dev, "Jpg Enc occurs unknown Err.");
+ 
+-	result_size = mtk_jpeg_enc_get_file_size(jpeg->reg_base);
++	result_size = mtk_jpeg_enc_get_file_size(jpeg->reg_base,
++			ctx->jpeg->support_34bit);
+ 	vb2_set_plane_payload(&dst_buf->vb2_buf, 0, result_size);
+ 	buf_state = VB2_BUF_STATE_DONE;
+ 	v4l2_m2m_buf_done(src_buf, buf_state);
+diff --git a/drivers/media/platform/mediatek/jpeg/mtk_jpeg_enc_hw.h b/drivers/media/platform/mediatek/jpeg/mtk_jpeg_enc_hw.h
+index 61c60e4e58ea925275f489648360b0ad48588584..2f03a1a5de9867f68b8cd3cf9c71ca2bb75d98b8 100644
+--- a/drivers/media/platform/mediatek/jpeg/mtk_jpeg_enc_hw.h
++++ b/drivers/media/platform/mediatek/jpeg/mtk_jpeg_enc_hw.h
+@@ -68,6 +68,15 @@
+ #define JPEG_ENC_DCM_CTRL		0x300
+ #define JPEG_ENC_CODEC_SEL		0x314
+ #define JPEG_ENC_ULTRA_THRES		0x318
++#define JPEG_ENC_SRC_LUMA_ADDR_EXT      0x584
++#define JPEG_ENC_SRC_CHROMA_ADDR_EXT    0x588
++#define JPEG_ENC_Q_TBL_ADDR_EXT         0x58C
++#define JPEG_ENC_DEST_ADDR0_EXT         0x590
++#define JPEG_ENC_STALL_ADDR0_EXT        0x594
++
++#define JPEG_ENC_CTRL_RDMA_PADDING_EN           (1 << 20)
++#define JPEG_ENC_CTRL_RDMA_RIGHT_PADDING_EN     (1 << 29)
++#define JPEG_ENC_CTRL_RDMA_PADDING_0_EN         (1 << 30)
+ 
+ /**
+  * struct mtk_jpeg_enc_qlt - JPEG encoder quality data
+@@ -80,7 +89,7 @@ struct mtk_jpeg_enc_qlt {
+ };
+ 
+ void mtk_jpeg_enc_reset(void __iomem *base);
+-u32 mtk_jpeg_enc_get_file_size(void __iomem *base);
++u32 mtk_jpeg_enc_get_file_size(void __iomem *base, u32 support_34bit);
+ void mtk_jpeg_enc_start(void __iomem *enc_reg_base);
+ void mtk_jpeg_set_enc_src(struct mtk_jpeg_ctx *ctx,  void __iomem *base,
+ 			  struct vb2_buffer *src_buf);
 diff --git a/drivers/media/platform/mediatek/vcodec/Makefile b/drivers/media/platform/mediatek/vcodec/Makefile
 index 93e7a343b5b0eaf487d9037516b2c0c4ee95efca..d719cfaf83adb5bfb4f9d05f8c07487ff8368d49 100644
 --- a/drivers/media/platform/mediatek/vcodec/Makefile
@@ -18956,10 +19736,20 @@ index 0797a13a3048de73ed032e7139b75e370363d83c..109d00faa5dc42279e7360fbd3fb4cba
  		*type = V4L2_CTRL_TYPE_AREA;
  		*flags |= V4L2_CTRL_FLAG_READ_ONLY;
 diff --git a/drivers/media/v4l2-core/v4l2-ioctl.c b/drivers/media/v4l2-core/v4l2-ioctl.c
-index 6876ec25bc512fce9e5aa271277154d70ab3655b..38fa0012f79a9e05bedfd1c2f7909e9219776b1b 100644
+index 6876ec25bc512fce9e5aa271277154d70ab3655b..40bb34cbd41af9bd62d7175492a43237ff3a476e 100644
 --- a/drivers/media/v4l2-core/v4l2-ioctl.c
 +++ b/drivers/media/v4l2-core/v4l2-ioctl.c
-@@ -1497,6 +1497,8 @@ static void v4l_fill_fmtdesc(struct v4l2_fmtdesc *fmt)
+@@ -1476,6 +1476,9 @@ static void v4l_fill_fmtdesc(struct v4l2_fmtdesc *fmt)
+ 		case V4L2_PIX_FMT_HEVC_SLICE:	descr = "HEVC Parsed Slice Data"; break;
+ 		case V4L2_PIX_FMT_FWHT:		descr = "FWHT"; break; /* used in vicodec */
+ 		case V4L2_PIX_FMT_FWHT_STATELESS:	descr = "FWHT Stateless"; break; /* used in vicodec */
++		case V4L2_PIX_FMT_SPK:		descr = "Sorenson Spark"; break;
++		case V4L2_PIX_FMT_RV30:		descr = "RealVideo 8"; break;
++		case V4L2_PIX_FMT_RV40:		descr = "RealVideo 9 & 10"; break;
+ 		case V4L2_PIX_FMT_CPIA1:	descr = "GSPCA CPiA YUV"; break;
+ 		case V4L2_PIX_FMT_WNVA:		descr = "WNVA"; break;
+ 		case V4L2_PIX_FMT_SN9C10X:	descr = "GSPCA SN9C10X"; break;
+@@ -1497,6 +1500,8 @@ static void v4l_fill_fmtdesc(struct v4l2_fmtdesc *fmt)
  		case V4L2_PIX_FMT_MT21C:	descr = "Mediatek Compressed Format"; break;
  		case V4L2_PIX_FMT_QC08C:	descr = "QCOM Compressed 8-bit Format"; break;
  		case V4L2_PIX_FMT_QC10C:	descr = "QCOM Compressed 10-bit Format"; break;
@@ -19278,9 +20068,7 @@ index 3811578fcff051bbc70e4a90ad4c988d65659979..0dea3da0cbba8714c24568a168fd73a0
  			clk_disable_unprepare(mdp->clk_main);
  		}
 diff --git a/drivers/soc/mediatek/Kconfig b/drivers/soc/mediatek/Kconfig
-old mode 100644
-new mode 100755
-index 30b5afc0e51ddb83b4f3dc73a6a88197f92c0d28..b22062730323dea0ca00db584a9656733f1e3856
+index 30b5afc0e51ddb83b4f3dc73a6a88197f92c0d28..b22062730323dea0ca00db584a9656733f1e3856 100644
 --- a/drivers/soc/mediatek/Kconfig
 +++ b/drivers/soc/mediatek/Kconfig
 @@ -90,4 +90,19 @@ config MTK_SVS
@@ -19304,9 +20092,7 @@ index 30b5afc0e51ddb83b4f3dc73a6a88197f92c0d28..b22062730323dea0ca00db584a965673
 +
  endmenu
 diff --git a/drivers/soc/mediatek/Makefile b/drivers/soc/mediatek/Makefile
-old mode 100644
-new mode 100755
-index 8c0ddacbcde8b938a826964f0ef3178f29e5766b..9a36749f4fefb414cb344bb915ac9074e613fc8c
+index 8c0ddacbcde8b938a826964f0ef3178f29e5766b..9a36749f4fefb414cb344bb915ac9074e613fc8c 100644
 --- a/drivers/soc/mediatek/Makefile
 +++ b/drivers/soc/mediatek/Makefile
 @@ -9,3 +9,5 @@ obj-$(CONFIG_MTK_SCPSYS_PM_DOMAINS) += mtk-pm-domains.o
@@ -19679,7 +20465,7 @@ index 16415bbb4d890b2a15df6b00ea72634351f4983f..a6f86ddd7dd091b24d9b5ca19da1c3bf
  
  static const unsigned int mt8195_mutex_sof[DDP_MUTEX_SOF_MAX] = {
 diff --git a/drivers/soc/mediatek/mtk-socinfo.c b/drivers/soc/mediatek/mtk-socinfo.c
-new file mode 100755
+new file mode 100644
 index 0000000000000000000000000000000000000000..406ef54b31ad9f2a273d615032f76b76b60378b5
 --- /dev/null
 +++ b/drivers/soc/mediatek/mtk-socinfo.c
@@ -19933,7 +20719,7 @@ index 0000000000000000000000000000000000000000..406ef54b31ad9f2a273d615032f76b76
 +MODULE_DESCRIPTION("Mediatek socinfo driver");
 +MODULE_LICENSE("GPL");
 diff --git a/drivers/soc/mediatek/mtk-socinfo.h b/drivers/soc/mediatek/mtk-socinfo.h
-new file mode 100755
+new file mode 100644
 index 0000000000000000000000000000000000000000..a09de3c4e29c5d8cdc768eb94ef89e8c14c118df
 --- /dev/null
 +++ b/drivers/soc/mediatek/mtk-socinfo.h
@@ -26741,18 +27527,21 @@ index 280fc33e48a79b4b76cb5efc636f02f86644531c..1145e05ef4b86da61162ed81f6346d27
  #ifndef __KERNEL__
  #define V4L2_CTRL_CLASS_MPEG            V4L2_CTRL_CLASS_CODEC
 diff --git a/include/uapi/linux/videodev2.h b/include/uapi/linux/videodev2.h
-index e9fce7d259fc4450712d7c4b513c956aca7c0128..e21dce2a90acc650d20127eccc4ab6f933609798 100644
+index e9fce7d259fc4450712d7c4b513c956aca7c0128..d54d74eaf9a0e6c907c42a817306fc208bbd1cde 100644
 --- a/include/uapi/linux/videodev2.h
 +++ b/include/uapi/linux/videodev2.h
-@@ -737,6 +737,7 @@ struct v4l2_pix_format {
+@@ -737,6 +737,10 @@ struct v4l2_pix_format {
  #define V4L2_PIX_FMT_FWHT_STATELESS     v4l2_fourcc('S', 'F', 'W', 'H') /* Stateless FWHT (vicodec) */
  #define V4L2_PIX_FMT_H264_SLICE v4l2_fourcc('S', '2', '6', '4') /* H264 parsed slices */
  #define V4L2_PIX_FMT_HEVC_SLICE v4l2_fourcc('S', '2', '6', '5') /* HEVC parsed slices */
 +#define V4L2_PIX_FMT_AV1_FRAME v4l2_fourcc('A', 'V', '1', 'F') /* AV1 parsed frame */
++#define V4L2_PIX_FMT_SPK      v4l2_fourcc('S', 'P', 'K', '0') /* Sorenson Spark */
++#define V4L2_PIX_FMT_RV30     v4l2_fourcc('R', 'V', '3', '0') /* RealVideo 8 */
++#define V4L2_PIX_FMT_RV40     v4l2_fourcc('R', 'V', '4', '0') /* RealVideo 9 & 10 */
  
  /*  Vendor-specific formats   */
  #define V4L2_PIX_FMT_CPIA1    v4l2_fourcc('C', 'P', 'I', 'A') /* cpia1 YUV */
-@@ -775,6 +776,7 @@ struct v4l2_pix_format {
+@@ -775,6 +779,7 @@ struct v4l2_pix_format {
  #define V4L2_PIX_FMT_HI240    v4l2_fourcc('H', 'I', '2', '4') /* BTTV 8-bit dithered RGB */
  #define V4L2_PIX_FMT_QC08C    v4l2_fourcc('Q', '0', '8', 'C') /* Qualcomm 8-bit compressed */
  #define V4L2_PIX_FMT_QC10C    v4l2_fourcc('Q', '1', '0', 'C') /* Qualcomm 10-bit compressed */
@@ -26760,7 +27549,7 @@ index e9fce7d259fc4450712d7c4b513c956aca7c0128..e21dce2a90acc650d20127eccc4ab6f9
  
  /* 10bit raw packed, 32 bytes for every 25 pixels, last LSB 6 bits unused */
  #define V4L2_PIX_FMT_IPU3_SBGGR10	v4l2_fourcc('i', 'p', '3', 'b') /* IPU3 packed 10-bit BGGR bayer */
-@@ -1799,6 +1801,10 @@ struct v4l2_ext_control {
+@@ -1799,6 +1804,10 @@ struct v4l2_ext_control {
  		struct v4l2_ctrl_hevc_slice_params __user *p_hevc_slice_params;
  		struct v4l2_ctrl_hevc_scaling_matrix __user *p_hevc_scaling_matrix;
  		struct v4l2_ctrl_hevc_decode_params __user *p_hevc_decode_params;
@@ -26771,7 +27560,7 @@ index e9fce7d259fc4450712d7c4b513c956aca7c0128..e21dce2a90acc650d20127eccc4ab6f9
  		void __user *ptr;
  	};
  } __attribute__ ((packed));
-@@ -1872,6 +1878,13 @@ enum v4l2_ctrl_type {
+@@ -1872,6 +1881,11 @@ enum v4l2_ctrl_type {
  	V4L2_CTRL_TYPE_HEVC_SLICE_PARAMS	= 0x0272,
  	V4L2_CTRL_TYPE_HEVC_SCALING_MATRIX	= 0x0273,
  	V4L2_CTRL_TYPE_HEVC_DECODE_PARAMS	= 0x0274,
@@ -26780,8 +27569,6 @@ index e9fce7d259fc4450712d7c4b513c956aca7c0128..e21dce2a90acc650d20127eccc4ab6f9
 +	V4L2_CTRL_TYPE_AV1_TILE_GROUP_ENTRY = 0x281,
 +	V4L2_CTRL_TYPE_AV1_FRAME	    = 0x282,
 +	V4L2_CTRL_TYPE_AV1_FILM_GRAIN	    = 0x283,
-+
-+	V4L2_CTRL_TYPE_PRIVATE       = 0xffff,
  };
  
  /*  Used in the VIDIOC_QUERYCTRL ioctl for querying controls */
@@ -26877,11 +27664,285 @@ index 6b7b57b4f63ab279be4a32bb1175a5b2dae1f417..96f664c5e287012be6e365bb5dea9d60
  	hci_dev_unlock(hdev);
  
  done:
+diff --git a/sound/hda/hdac_regmap.c b/sound/hda/hdac_regmap.c
+index fe3587547cfec568b877f3ef18f9ba116a152bde..7cfaa908ff574000d8c1dc2d149ebc96e742ee1b 100644
+--- a/sound/hda/hdac_regmap.c
++++ b/sound/hda/hdac_regmap.c
+@@ -17,7 +17,6 @@
+ #include <linux/regmap.h>
+ #include <linux/export.h>
+ #include <linux/pm.h>
+-#include <linux/pm_runtime.h>
+ #include <sound/core.h>
+ #include <sound/hdaudio.h>
+ #include <sound/hda_regmap.h>
+diff --git a/sound/pci/hda/hda_bind.c b/sound/pci/hda/hda_bind.c
+index 890c2f7c33fc21f1d82d1e17abdc0e928046c80d..b7ca2a83fbb0862a8ac1c5ba9e1f8b051a9a3b79 100644
+--- a/sound/pci/hda/hda_bind.c
++++ b/sound/pci/hda/hda_bind.c
+@@ -10,7 +10,6 @@
+ #include <linux/module.h>
+ #include <linux/export.h>
+ #include <linux/pm.h>
+-#include <linux/pm_runtime.h>
+ #include <sound/core.h>
+ #include <sound/hda_codec.h>
+ #include "hda_local.h"
+diff --git a/sound/soc/amd/acp/acp-pci.c b/sound/soc/amd/acp/acp-pci.c
+index a0c84cd07fdea5899ed563c3d931fda2ac7e04cd..8154fbfd1229d2e67551425477edc2808cc86297 100644
+--- a/sound/soc/amd/acp/acp-pci.c
++++ b/sound/soc/amd/acp/acp-pci.c
+@@ -15,7 +15,6 @@
+ #include <linux/interrupt.h>
+ #include <linux/pci.h>
+ #include <linux/platform_device.h>
+-#include <linux/pm_runtime.h>
+ #include <linux/module.h>
+ 
+ #include "amd.h"
+diff --git a/sound/soc/amd/acp/acp-platform.c b/sound/soc/amd/acp/acp-platform.c
+index 447612a7a762706358647732c5ff7276205ed2b8..f220378ec20edc5ffc318c41adc1e47dfaede730 100644
+--- a/sound/soc/amd/acp/acp-platform.c
++++ b/sound/soc/amd/acp/acp-platform.c
+@@ -18,7 +18,6 @@
+ #include <sound/pcm_params.h>
+ #include <sound/soc.h>
+ #include <sound/soc-dai.h>
+-#include <linux/pm_runtime.h>
+ #include <linux/dma-mapping.h>
+ 
+ #include "amd.h"
+diff --git a/sound/soc/codecs/max98090.c b/sound/soc/codecs/max98090.c
+index b419c49e1e083fc9b987e8169c765fc0f466619d..5413cbb0163398db793a6ccbaae38e1c8ace57ea 100644
+--- a/sound/soc/codecs/max98090.c
++++ b/sound/soc/codecs/max98090.c
+@@ -10,7 +10,6 @@
+ #include <linux/module.h>
+ #include <linux/of.h>
+ #include <linux/pm.h>
+-#include <linux/pm_runtime.h>
+ #include <linux/regmap.h>
+ #include <linux/slab.h>
+ #include <linux/acpi.h>
 diff --git a/sound/soc/codecs/mt6359.c b/sound/soc/codecs/mt6359.c
-index c9a453ce8a2a888ef229bd36964a51cccd4e2a7a..0c8e59a9df2c2c75bb9981d754a08e23d9eaa7bd 100644
+index c9a453ce8a2a888ef229bd36964a51cccd4e2a7a..362dc68e4656b55fe24595e40dde2ba412cfc6e2 100644
 --- a/sound/soc/codecs/mt6359.c
 +++ b/sound/soc/codecs/mt6359.c
-@@ -2358,6 +2358,10 @@ static const struct snd_soc_dapm_route mt6359_dapm_routes[] = {
+@@ -18,6 +18,20 @@
+ 
+ #include "mt6359.h"
+ 
++static void mt6359_set_gpio_smt(struct mt6359_priv *priv)
++{
++	/* set gpio SMT mode */
++	regmap_update_bits(priv->regmap, MT6359_SMT_CON1, 0x3ff0, 0x3ff0);
++}
++
++static void mt6359_set_gpio_driving(struct mt6359_priv *priv)
++{
++	/* 8:4mA(default), a:8mA, c:12mA, e:16mA */
++	regmap_update_bits(priv->regmap, MT6359_DRV_CON2, 0xffff, 0x8888);
++	regmap_update_bits(priv->regmap, MT6359_DRV_CON3, 0xffff, 0x8888);
++	regmap_update_bits(priv->regmap, MT6359_DRV_CON4, 0x00ff, 0x88);
++}
++
+ static void mt6359_set_playback_gpio(struct mt6359_priv *priv)
+ {
+ 	/* set gpio mosi mode, clk / data mosi */
+@@ -360,8 +374,34 @@ static int mt6359_put_volsw(struct snd_kcontrol *kcontrol,
+ 			(struct soc_mixer_control *)kcontrol->private_value;
+ 	unsigned int reg;
+ 	int index = ucontrol->value.integer.value[0];
++	int orig_gain[2], new_gain[2];
+ 	int ret;
+ 
++	switch (mc->reg) {
++	case MT6359_ZCD_CON2:
++		orig_gain[0] = priv->ana_gain[AUDIO_ANALOG_VOLUME_HPOUTL];
++		orig_gain[1] = priv->ana_gain[AUDIO_ANALOG_VOLUME_HPOUTR];
++		break;
++	case MT6359_ZCD_CON1:
++		orig_gain[0] = priv->ana_gain[AUDIO_ANALOG_VOLUME_LINEOUTL];
++		orig_gain[1] = priv->ana_gain[AUDIO_ANALOG_VOLUME_LINEOUTR];
++		break;
++	case MT6359_ZCD_CON3:
++		orig_gain[0] = priv->ana_gain[AUDIO_ANALOG_VOLUME_HSOUTL];
++		break;
++	case MT6359_AUDENC_ANA_CON0:
++		orig_gain[0] = priv->ana_gain[AUDIO_ANALOG_VOLUME_MICAMP1];
++		break;
++	case MT6359_AUDENC_ANA_CON1:
++		orig_gain[0] = priv->ana_gain[AUDIO_ANALOG_VOLUME_MICAMP2];
++		break;
++	case MT6359_AUDENC_ANA_CON2:
++		orig_gain[0] = priv->ana_gain[AUDIO_ANALOG_VOLUME_MICAMP3];
++		break;
++	default:
++		return -EINVAL;
++	}
++
+ 	ret = snd_soc_put_volsw(kcontrol, ucontrol);
+ 	if (ret < 0)
+ 		return ret;
+@@ -373,6 +413,8 @@ static int mt6359_put_volsw(struct snd_kcontrol *kcontrol,
+ 			(reg >> RG_AUDHPLGAIN_SFT) & RG_AUDHPLGAIN_MASK;
+ 		priv->ana_gain[AUDIO_ANALOG_VOLUME_HPOUTR] =
+ 			(reg >> RG_AUDHPRGAIN_SFT) & RG_AUDHPRGAIN_MASK;
++		new_gain[0] = priv->ana_gain[AUDIO_ANALOG_VOLUME_HPOUTL];
++		new_gain[1] = priv->ana_gain[AUDIO_ANALOG_VOLUME_HPOUTR];
+ 		break;
+ 	case MT6359_ZCD_CON1:
+ 		regmap_read(priv->regmap, MT6359_ZCD_CON1, &reg);
+@@ -380,35 +422,82 @@ static int mt6359_put_volsw(struct snd_kcontrol *kcontrol,
+ 			(reg >> RG_AUDLOLGAIN_SFT) & RG_AUDLOLGAIN_MASK;
+ 		priv->ana_gain[AUDIO_ANALOG_VOLUME_LINEOUTR] =
+ 			(reg >> RG_AUDLORGAIN_SFT) & RG_AUDLORGAIN_MASK;
++		new_gain[0] = priv->ana_gain[AUDIO_ANALOG_VOLUME_LINEOUTL];
++		new_gain[1] = priv->ana_gain[AUDIO_ANALOG_VOLUME_LINEOUTR];
+ 		break;
+ 	case MT6359_ZCD_CON3:
+ 		regmap_read(priv->regmap, MT6359_ZCD_CON3, &reg);
+ 		priv->ana_gain[AUDIO_ANALOG_VOLUME_HSOUTL] =
+ 			(reg >> RG_AUDHSGAIN_SFT) & RG_AUDHSGAIN_MASK;
++		new_gain[0] = priv->ana_gain[AUDIO_ANALOG_VOLUME_HSOUTL];
+ 		break;
+ 	case MT6359_AUDENC_ANA_CON0:
+ 		regmap_read(priv->regmap, MT6359_AUDENC_ANA_CON0, &reg);
+ 		priv->ana_gain[AUDIO_ANALOG_VOLUME_MICAMP1] =
+ 			(reg >> RG_AUDPREAMPLGAIN_SFT) & RG_AUDPREAMPLGAIN_MASK;
++		new_gain[0] = priv->ana_gain[AUDIO_ANALOG_VOLUME_MICAMP1];
+ 		break;
+ 	case MT6359_AUDENC_ANA_CON1:
+ 		regmap_read(priv->regmap, MT6359_AUDENC_ANA_CON1, &reg);
+ 		priv->ana_gain[AUDIO_ANALOG_VOLUME_MICAMP2] =
+ 			(reg >> RG_AUDPREAMPRGAIN_SFT) & RG_AUDPREAMPRGAIN_MASK;
++		new_gain[0] = priv->ana_gain[AUDIO_ANALOG_VOLUME_MICAMP2];
+ 		break;
+ 	case MT6359_AUDENC_ANA_CON2:
+ 		regmap_read(priv->regmap, MT6359_AUDENC_ANA_CON2, &reg);
+ 		priv->ana_gain[AUDIO_ANALOG_VOLUME_MICAMP3] =
+ 			(reg >> RG_AUDPREAMP3GAIN_SFT) & RG_AUDPREAMP3GAIN_MASK;
++		new_gain[0] = priv->ana_gain[AUDIO_ANALOG_VOLUME_MICAMP3];
+ 		break;
+ 	}
+ 
++	ret = 0;
++	if (orig_gain[0] != new_gain[0]) {
++		ret = 1;
++	} else if (snd_soc_volsw_is_stereo(mc)) {
++		if (orig_gain[1] != new_gain[1])
++			ret = 1;
++	}
++
+ 	dev_dbg(priv->dev, "%s(), name %s, reg(0x%x) = 0x%x, set index = %x\n",
+ 		__func__, kcontrol->id.name, mc->reg, reg, index);
+ 
+ 	return ret;
+ }
+ 
++static int mt6359_get_playback_volsw(struct snd_kcontrol *kcontrol,
++				     struct snd_ctl_elem_value *ucontrol)
++{
++	struct snd_soc_component *component =
++			snd_soc_kcontrol_component(kcontrol);
++	struct mt6359_priv *priv = snd_soc_component_get_drvdata(component);
++	struct soc_mixer_control *mc =
++			(struct soc_mixer_control *)kcontrol->private_value;
++
++	switch (mc->reg) {
++	case MT6359_ZCD_CON2:
++		ucontrol->value.integer.value[0] =
++			priv->ana_gain[AUDIO_ANALOG_VOLUME_HPOUTL];
++		ucontrol->value.integer.value[1] =
++			priv->ana_gain[AUDIO_ANALOG_VOLUME_HPOUTR];
++		break;
++	case MT6359_ZCD_CON1:
++		ucontrol->value.integer.value[0] =
++			priv->ana_gain[AUDIO_ANALOG_VOLUME_LINEOUTL];
++		ucontrol->value.integer.value[1] =
++			priv->ana_gain[AUDIO_ANALOG_VOLUME_LINEOUTR];
++		break;
++	case MT6359_ZCD_CON3:
++		ucontrol->value.integer.value[0] =
++			priv->ana_gain[AUDIO_ANALOG_VOLUME_HSOUTL];
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	return 0;
++}
++
+ /* MUX */
+ 
+ /* LOL MUX */
+@@ -1070,9 +1159,10 @@ static int mt_lo_event(struct snd_soc_dapm_widget *w,
+ {
+ 	struct snd_soc_component *cmpnt = snd_soc_dapm_to_component(w->dapm);
+ 	struct mt6359_priv *priv = snd_soc_component_get_drvdata(cmpnt);
++	unsigned int mux = dapm_kcontrol_get_value(w->kcontrols[0]);
+ 
+ 	dev_dbg(priv->dev, "%s(), event 0x%x, mux %u\n",
+-		__func__, event, dapm_kcontrol_get_value(w->kcontrols[0]));
++		__func__, event, mux);
+ 
+ 	switch (event) {
+ 	case SND_SOC_DAPM_PRE_PMU:
+@@ -1110,14 +1200,29 @@ static int mt_lo_event(struct snd_soc_dapm_widget *w,
+ 		/* Enable AUD_CLK */
+ 		mt6359_set_decoder_clk(priv, true);
+ 
+-		/* Enable Audio DAC (3rd DAC) */
+-		regmap_write(priv->regmap, MT6359_AUDDEC_ANA_CON7, 0x3113);
+-		/* Enable low-noise mode of DAC */
+-		if (priv->dev_counter[DEVICE_HP] == 0)
+-			regmap_write(priv->regmap,
+-				     MT6359_AUDDEC_ANA_CON9, 0x0001);
+-		/* Switch LOL MUX to audio 3rd DAC */
+-		regmap_write(priv->regmap, MT6359_AUDDEC_ANA_CON7, 0x311b);
++		/* Switch LOL MUX to audio DAC */
++		if (mux == LO_MUX_L_DAC) {
++			if (priv->dev_counter[DEVICE_HP] > 0) {
++				dev_info(priv->dev, "%s(), can not enable DAC, hp count %d\n",
++					 __func__, priv->dev_counter[DEVICE_HP]);
++				break;
++			}
++			/* Enable DACL and switch HP MUX to open*/
++			regmap_write(priv->regmap, MT6359_AUDDEC_ANA_CON0, 0x3009);
++			/* Disable low-noise mode of DAC */
++			regmap_write(priv->regmap, MT6359_AUDDEC_ANA_CON9, 0xf200);
++			usleep_range(100, 120);
++			/* Switch LOL MUX to DACL */
++			regmap_write(priv->regmap, MT6359_AUDDEC_ANA_CON7, 0x0117);
++		} else if (mux == LO_MUX_3RD_DAC) {
++			/* Enable Audio DAC (3rd DAC) */
++			regmap_write(priv->regmap, MT6359_AUDDEC_ANA_CON7, 0x3113);
++			/* Enable low-noise mode of DAC */
++			if (priv->dev_counter[DEVICE_HP] == 0)
++				regmap_write(priv->regmap, MT6359_AUDDEC_ANA_CON9, 0x0001);
++			/* Switch LOL MUX to audio 3rd DAC */
++			regmap_write(priv->regmap, MT6359_AUDDEC_ANA_CON7, 0x311b);
++		}
+ 		break;
+ 	case SND_SOC_DAPM_PRE_PMD:
+ 		/* Switch LOL MUX to open */
+@@ -1129,6 +1234,15 @@ static int mt_lo_event(struct snd_soc_dapm_widget *w,
+ 		regmap_update_bits(priv->regmap, MT6359_AUDDEC_ANA_CON0,
+ 				   0x000f, 0x0000);
+ 
++		if (mux == LO_MUX_L_DAC) {
++			/* Disable HP driver core circuits */
++			regmap_update_bits(priv->regmap, MT6359_AUDDEC_ANA_CON0,
++					   0x3 << 4, 0x0);
++			/* Disable HP driver bias circuits */
++			regmap_update_bits(priv->regmap, MT6359_AUDDEC_ANA_CON0,
++					   0x3 << 6, 0x0);
++		}
++
+ 		/* Disable AUD_CLK */
+ 		mt6359_set_decoder_clk(priv, false);
+ 
+@@ -2358,6 +2472,10 @@ static const struct snd_soc_dapm_route mt6359_dapm_routes[] = {
  	{"MISO2_MUX", "UL2_CH1", "UL2_SRC_MUX"},
  	{"MISO2_MUX", "UL2_CH2", "UL2_SRC_MUX"},
  
@@ -26892,12 +27953,230 @@ index c9a453ce8a2a888ef229bd36964a51cccd4e2a7a..0c8e59a9df2c2c75bb9981d754a08e23
  	{"UL_SRC_MUX", "AMIC", "ADC_L"},
  	{"UL_SRC_MUX", "AMIC", "ADC_R"},
  	{"UL_SRC_MUX", "DMIC", "DMIC0_MUX"},
+@@ -2497,6 +2615,7 @@ static const struct snd_soc_dapm_route mt6359_dapm_routes[] = {
+ 
+ 	/* Lineout Path */
+ 	{"LOL Mux", "Playback", "DAC_3RD"},
++	{"LOL Mux", "Playback_L_DAC", "DACL"},
+ 	{"LINEOUT L", NULL, "LOL Mux"},
+ 
+ 	/* Headphone Path */
+@@ -2666,6 +2785,8 @@ static int mt6359_codec_init_reg(struct snd_soc_component *cmpnt)
+ 			   0x1 << RG_AUDLOLSCDISABLE_VAUDP32_SFT);
+ 
+ 	/* set gpio */
++	mt6359_set_gpio_smt(priv);
++	mt6359_set_gpio_driving(priv);
+ 	mt6359_reset_playback_gpio(priv);
+ 	mt6359_reset_capture_gpio(priv);
+ 
+@@ -2697,22 +2818,23 @@ static void mt6359_codec_remove(struct snd_soc_component *cmpnt)
+ 	cmpnt->regmap = NULL;
+ }
+ 
+-static const DECLARE_TLV_DB_SCALE(hp_playback_tlv, -2200, 100, 0);
+ static const DECLARE_TLV_DB_SCALE(playback_tlv, -1000, 100, 0);
+ static const DECLARE_TLV_DB_SCALE(capture_tlv, 0, 600, 0);
+ 
+ static const struct snd_kcontrol_new mt6359_snd_controls[] = {
+ 	/* dl pga gain */
+ 	SOC_DOUBLE_EXT_TLV("Headset Volume",
+-			   MT6359_ZCD_CON2, 0, 7, 0x1E, 0,
+-			   snd_soc_get_volsw, mt6359_put_volsw,
+-			   hp_playback_tlv),
++			   MT6359_ZCD_CON2, 0, 7, 0x12, 0,
++			   mt6359_get_playback_volsw, mt6359_put_volsw,
++			   playback_tlv),
+ 	SOC_DOUBLE_EXT_TLV("Lineout Volume",
+ 			   MT6359_ZCD_CON1, 0, 7, 0x12, 0,
+-			   snd_soc_get_volsw, mt6359_put_volsw, playback_tlv),
++			   mt6359_get_playback_volsw, mt6359_put_volsw,
++			   playback_tlv),
+ 	SOC_SINGLE_EXT_TLV("Handset Volume",
+ 			   MT6359_ZCD_CON3, 0, 0x12, 0,
+-			   snd_soc_get_volsw, mt6359_put_volsw, playback_tlv),
++			   mt6359_get_playback_volsw, mt6359_put_volsw,
++			   playback_tlv),
+ 
+ 	/* ul pga gain */
+ 	SOC_SINGLE_EXT_TLV("PGA1 Volume",
+diff --git a/sound/soc/codecs/pcm186x.c b/sound/soc/codecs/pcm186x.c
+index dd21803ba13cb0256e7665dc8f1f2fea4cc1dad5..451a8fd8fac5065d3ea72d6673a4a2fac4529da4 100644
+--- a/sound/soc/codecs/pcm186x.c
++++ b/sound/soc/codecs/pcm186x.c
+@@ -12,7 +12,6 @@
+ #include <linux/init.h>
+ #include <linux/delay.h>
+ #include <linux/pm.h>
+-#include <linux/pm_runtime.h>
+ #include <linux/regulator/consumer.h>
+ #include <linux/regmap.h>
+ #include <linux/slab.h>
+diff --git a/sound/soc/codecs/rk3328_codec.c b/sound/soc/codecs/rk3328_codec.c
+index 1d523bfd9d84f83df2ad7ce1d45d9580224dc007..9697aefc6e030e101ad833a46a4a206f8b0e7c10 100644
+--- a/sound/soc/codecs/rk3328_codec.c
++++ b/sound/soc/codecs/rk3328_codec.c
+@@ -11,7 +11,6 @@
+ #include <linux/module.h>
+ #include <linux/of.h>
+ #include <linux/platform_device.h>
+-#include <linux/pm_runtime.h>
+ #include <linux/regmap.h>
+ #include <linux/mfd/syscon.h>
+ #include <sound/dmaengine_pcm.h>
+diff --git a/sound/soc/codecs/rt5682-i2c.c b/sound/soc/codecs/rt5682-i2c.c
+index 416c891b6f74a7805b695eaecfaef87b603d3a84..8b44c8c74a2ed839d9a1e7771d5cb26129dccf18 100644
+--- a/sound/soc/codecs/rt5682-i2c.c
++++ b/sound/soc/codecs/rt5682-i2c.c
+@@ -11,7 +11,6 @@
+ #include <linux/init.h>
+ #include <linux/delay.h>
+ #include <linux/pm.h>
+-#include <linux/pm_runtime.h>
+ #include <linux/i2c.h>
+ #include <linux/platform_device.h>
+ #include <linux/spi/spi.h>
+diff --git a/sound/soc/codecs/rt5682s.c b/sound/soc/codecs/rt5682s.c
+index 9c34dca58f54da38ceaa6f0ce1f22f2eb6569ffc..d995fc44b74e3ec9b719ea459b293674780315fb 100644
+--- a/sound/soc/codecs/rt5682s.c
++++ b/sound/soc/codecs/rt5682s.c
+@@ -11,7 +11,6 @@
+ #include <linux/init.h>
+ #include <linux/delay.h>
+ #include <linux/pm.h>
+-#include <linux/pm_runtime.h>
+ #include <linux/i2c.h>
+ #include <linux/platform_device.h>
+ #include <linux/spi/spi.h>
+diff --git a/sound/soc/codecs/tas2562.c b/sound/soc/codecs/tas2562.c
+index b486d0bd86c991c76ad47905c5fe4d7da996460d..a788a5412000bcb8796fe342aa160494dfa1294b 100644
+--- a/sound/soc/codecs/tas2562.c
++++ b/sound/soc/codecs/tas2562.c
+@@ -8,7 +8,6 @@
+ #include <linux/errno.h>
+ #include <linux/device.h>
+ #include <linux/i2c.h>
+-#include <linux/pm_runtime.h>
+ #include <linux/regmap.h>
+ #include <linux/slab.h>
+ #include <linux/gpio/consumer.h>
+diff --git a/sound/soc/codecs/tas5720.c b/sound/soc/codecs/tas5720.c
+index 3885c0bf0b01c1dbfee527f460d3359aade6778f..4ada42d04ee9d61c6a935ad721b8dfab7d7dee8f 100644
+--- a/sound/soc/codecs/tas5720.c
++++ b/sound/soc/codecs/tas5720.c
+@@ -11,7 +11,6 @@
+ #include <linux/errno.h>
+ #include <linux/device.h>
+ #include <linux/i2c.h>
+-#include <linux/pm_runtime.h>
+ #include <linux/regmap.h>
+ #include <linux/slab.h>
+ #include <linux/regulator/consumer.h>
+diff --git a/sound/soc/codecs/tas6424.c b/sound/soc/codecs/tas6424.c
+index f8ff69fa2549c9f3de436c18dde73fca9514b27e..f8398cbef11a9fab0f6dacdd046ec7c20c08be7b 100644
+--- a/sound/soc/codecs/tas6424.c
++++ b/sound/soc/codecs/tas6424.c
+@@ -11,7 +11,6 @@
+ #include <linux/errno.h>
+ #include <linux/device.h>
+ #include <linux/i2c.h>
+-#include <linux/pm_runtime.h>
+ #include <linux/regmap.h>
+ #include <linux/slab.h>
+ #include <linux/regulator/consumer.h>
+diff --git a/sound/soc/codecs/wm_adsp.c b/sound/soc/codecs/wm_adsp.c
+index c11bdae91f14c5687283885da62f3c356d669fee..a214e75d5dde4b7040b26690b6c48e23848e0b7c 100644
+--- a/sound/soc/codecs/wm_adsp.c
++++ b/sound/soc/codecs/wm_adsp.c
+@@ -15,7 +15,6 @@
+ #include <linux/firmware.h>
+ #include <linux/list.h>
+ #include <linux/pm.h>
+-#include <linux/pm_runtime.h>
+ #include <linux/regmap.h>
+ #include <linux/regulator/consumer.h>
+ #include <linux/slab.h>
+diff --git a/sound/soc/fsl/imx-audmix.c b/sound/soc/fsl/imx-audmix.c
+index 1292a845c42446797de09105d49d953998d9752c..54383c489c628df492637d62079667592b9be7c2 100644
+--- a/sound/soc/fsl/imx-audmix.c
++++ b/sound/soc/fsl/imx-audmix.c
+@@ -15,7 +15,6 @@
+ #include <linux/clk.h>
+ #include <sound/soc.h>
+ #include <sound/soc-dapm.h>
+-#include <linux/pm_runtime.h>
+ #include "fsl_sai.h"
+ #include "fsl_audmix.h"
+ 
+diff --git a/sound/soc/intel/atom/sst/sst_acpi.c b/sound/soc/intel/atom/sst/sst_acpi.c
+index 3be64430c2567feb4b9b5142c83803261b3611d4..abddcf6687f59b26c7055fae1d340bdf0b7bd581 100644
+--- a/sound/soc/intel/atom/sst/sst_acpi.c
++++ b/sound/soc/intel/atom/sst/sst_acpi.c
+@@ -15,7 +15,6 @@
+ #include <linux/io.h>
+ #include <linux/platform_device.h>
+ #include <linux/firmware.h>
+-#include <linux/pm_runtime.h>
+ #include <linux/pm_qos.h>
+ #include <linux/dmi.h>
+ #include <linux/acpi.h>
+diff --git a/sound/soc/intel/atom/sst/sst_ipc.c b/sound/soc/intel/atom/sst/sst_ipc.c
+index 4e039c7173d8ca23bec75cc46ba56e7fadf85353..3fc2c9a6c44dcdb92779c31598ab81abfb3323c5 100644
+--- a/sound/soc/intel/atom/sst/sst_ipc.c
++++ b/sound/soc/intel/atom/sst/sst_ipc.c
+@@ -15,7 +15,6 @@
+ #include <linux/firmware.h>
+ #include <linux/sched.h>
+ #include <linux/delay.h>
+-#include <linux/pm_runtime.h>
+ #include <sound/core.h>
+ #include <sound/pcm.h>
+ #include <sound/soc.h>
+diff --git a/sound/soc/intel/atom/sst/sst_loader.c b/sound/soc/intel/atom/sst/sst_loader.c
+index eea889001c248ce4e9f417055c5baecfdb9df242..bf4ba6bcc4295d958e93ea0060b6e284ade43285 100644
+--- a/sound/soc/intel/atom/sst/sst_loader.c
++++ b/sound/soc/intel/atom/sst/sst_loader.c
+@@ -20,7 +20,6 @@
+ #include <linux/sched.h>
+ #include <linux/firmware.h>
+ #include <linux/dmaengine.h>
+-#include <linux/pm_runtime.h>
+ #include <linux/pm_qos.h>
+ #include <sound/core.h>
+ #include <sound/pcm.h>
+diff --git a/sound/soc/intel/atom/sst/sst_pci.c b/sound/soc/intel/atom/sst/sst_pci.c
+index 5862fe968083696ddde9ea129f3a0a066620616b..4058b4f80a0cf067421eb001807314ba5d8ffd38 100644
+--- a/sound/soc/intel/atom/sst/sst_pci.c
++++ b/sound/soc/intel/atom/sst/sst_pci.c
+@@ -15,7 +15,6 @@
+ #include <linux/pci.h>
+ #include <linux/fs.h>
+ #include <linux/firmware.h>
+-#include <linux/pm_runtime.h>
+ #include <sound/core.h>
+ #include <sound/soc.h>
+ #include <asm/platform_sst_audio.h>
+diff --git a/sound/soc/intel/atom/sst/sst_stream.c b/sound/soc/intel/atom/sst/sst_stream.c
+index ea1ef8a61fa6b54a9d0aaa73160c7b1513c72017..862a19ae54299f071391fd533a9be91ef27d1800 100644
+--- a/sound/soc/intel/atom/sst/sst_stream.c
++++ b/sound/soc/intel/atom/sst/sst_stream.c
+@@ -15,7 +15,6 @@
+ #include <linux/firmware.h>
+ #include <linux/sched.h>
+ #include <linux/delay.h>
+-#include <linux/pm_runtime.h>
+ #include <sound/core.h>
+ #include <sound/pcm.h>
+ #include <sound/soc.h>
 diff --git a/sound/soc/mediatek/Kconfig b/sound/soc/mediatek/Kconfig
-index 4baac72677d9ac6cd101d5c085d52fd69ca8f450..4ea012342b52211380a7baac4a08ddc1b22439b6 100644
+index 4baac72677d9ac6cd101d5c085d52fd69ca8f450..90db67e0ce4fb8b3be64deba1837bc5c5d16f911 100644
 --- a/sound/soc/mediatek/Kconfig
 +++ b/sound/soc/mediatek/Kconfig
-@@ -225,6 +225,10 @@ config SND_SOC_MT8188_MT6359
+@@ -223,8 +223,13 @@ config SND_SOC_MT8188
+ config SND_SOC_MT8188_MT6359
+ 	tristate "ASoC Audio driver for MT8188 with MT6359 and I2S codecs"
  	depends on SND_SOC_MT8188 && MTK_PMIC_WRAP
++	depends on I2C
  	select SND_SOC_MT6359
  	select SND_SOC_HDMI_CODEC
 +	select SND_SOC_DMIC
@@ -26908,19 +28187,23 @@ index 4baac72677d9ac6cd101d5c085d52fd69ca8f450..4ea012342b52211380a7baac4a08ddc1
  	  This adds support for ASoC machine driver for MediaTek MT8188
  	  boards with the MT6359 and other I2S audio codecs.
 diff --git a/sound/soc/mediatek/common/mtk-soundcard-driver.c b/sound/soc/mediatek/common/mtk-soundcard-driver.c
-index 738093451ccbfc35dcbc1938044b410964ef6e7a..53330b60a11d67841a59b826c0e18c7f94374b2d 100644
+index 738093451ccbfc35dcbc1938044b410964ef6e7a..a58e1e3674deca03f71c28c3b38500375d2e5545 100644
 --- a/sound/soc/mediatek/common/mtk-soundcard-driver.c
 +++ b/sound/soc/mediatek/common/mtk-soundcard-driver.c
-@@ -22,7 +22,7 @@ static int set_card_codec_info(struct snd_soc_card *card,
+@@ -21,8 +21,10 @@ static int set_card_codec_info(struct snd_soc_card *card,
+ 	int ret;
  
  	codec_node = of_get_child_by_name(sub_node, "codec");
- 	if (!codec_node)
+-	if (!codec_node)
 -		return -EINVAL;
++	if (!codec_node) {
++		dev_dbg(dev, "%s no specified codec\n", dai_link->name);
 +		return 0;
++	}
  
  	/* set card codec info */
  	ret = snd_soc_of_get_dai_link_codecs(dev, codec_node, dai_link);
-@@ -36,6 +36,47 @@ static int set_card_codec_info(struct snd_soc_card *card,
+@@ -36,6 +38,47 @@ static int set_card_codec_info(struct snd_soc_card *card,
  	return 0;
  }
  
@@ -26968,30 +28251,80 @@ index 738093451ccbfc35dcbc1938044b410964ef6e7a..53330b60a11d67841a59b826c0e18c7f
  int parse_dai_link_info(struct snd_soc_card *card)
  {
  	struct device *dev = card->dev;
-@@ -67,6 +108,10 @@ int parse_dai_link_info(struct snd_soc_card *card)
+@@ -67,6 +110,12 @@ int parse_dai_link_info(struct snd_soc_card *card)
  			of_node_put(sub_node);
  			return ret;
  		}
 +
 +		ret = set_dailink_daifmt(card, sub_node, dai_link);
-+		if (ret < 0)
++		if (ret < 0) {
++			of_node_put(sub_node);
 +			return ret;
++		}
  	}
  
  	return 0;
+diff --git a/sound/soc/mediatek/mt8186/mt8186-afe-control.c b/sound/soc/mediatek/mt8186/mt8186-afe-control.c
+index d714e9641571a8753bf885223aac9b466c1a49e3..55edf6374578e14faeb6ab88bddb057d0997e824 100644
+--- a/sound/soc/mediatek/mt8186/mt8186-afe-control.c
++++ b/sound/soc/mediatek/mt8186/mt8186-afe-control.c
+@@ -6,7 +6,6 @@
+ // Author: Jiaxin Yu <jiaxin.yu@mediatek.com>
+ 
+ #include "mt8186-afe-common.h"
+-#include <linux/pm_runtime.h>
+ 
+ enum {
+ 	MTK_AFE_RATE_8K = 0,
+diff --git a/sound/soc/mediatek/mt8186/mt8186-mt6366-da7219-max98357.c b/sound/soc/mediatek/mt8186/mt8186-mt6366-da7219-max98357.c
+index 970b980a81e64b86bdc88e10b0f9a1b7b4582a31..f21c904e298136e3373c37754c0ed8be048170ae 100644
+--- a/sound/soc/mediatek/mt8186/mt8186-mt6366-da7219-max98357.c
++++ b/sound/soc/mediatek/mt8186/mt8186-mt6366-da7219-max98357.c
+@@ -10,7 +10,6 @@
+ #include <linux/input.h>
+ #include <linux/module.h>
+ #include <linux/of_device.h>
+-#include <linux/pm_runtime.h>
+ #include <sound/jack.h>
+ #include <sound/pcm_params.h>
+ #include <sound/soc.h>
+diff --git a/sound/soc/mediatek/mt8186/mt8186-mt6366-rt1019-rt5682s.c b/sound/soc/mediatek/mt8186/mt8186-mt6366-rt1019-rt5682s.c
+index af44e331dae8241186795879a6208d3a48ac5bae..334744d52ca479eb9474bd19919209e496ddc82a 100644
+--- a/sound/soc/mediatek/mt8186/mt8186-mt6366-rt1019-rt5682s.c
++++ b/sound/soc/mediatek/mt8186/mt8186-mt6366-rt1019-rt5682s.c
+@@ -12,7 +12,6 @@
+ #include <linux/input.h>
+ #include <linux/module.h>
+ #include <linux/of_device.h>
+-#include <linux/pm_runtime.h>
+ #include <sound/jack.h>
+ #include <sound/pcm_params.h>
+ #include <sound/rt5682.h>
 diff --git a/sound/soc/mediatek/mt8188/mt8188-afe-clk.c b/sound/soc/mediatek/mt8188/mt8188-afe-clk.c
-index 743d6a162cb9a871a196532e4b4af77fcd2039c4..02411be93900d21279b744d00e30f6b037faab97 100644
+index 743d6a162cb9a871a196532e4b4af77fcd2039c4..4c24d0b9e90d4bd79a35c02d656b707736598ace 100644
 --- a/sound/soc/mediatek/mt8188/mt8188-afe-clk.c
 +++ b/sound/soc/mediatek/mt8188/mt8188-afe-clk.c
-@@ -24,6 +24,7 @@ static const char *aud_clks[MT8188_CLK_NUM] = {
+@@ -24,14 +24,19 @@ static const char *aud_clks[MT8188_CLK_NUM] = {
  	[MT8188_CLK_APMIXED_APLL2] = "apll2",
  
  	/* divider */
 +	[MT8188_CLK_TOP_APLL1_D4] = "apll1_d4",
++	[MT8188_CLK_TOP_APLL2_D4] = "apll2_d4",
  	[MT8188_CLK_TOP_APLL12_DIV0] = "apll12_div0",
  	[MT8188_CLK_TOP_APLL12_DIV1] = "apll12_div1",
  	[MT8188_CLK_TOP_APLL12_DIV2] = "apll12_div2",
-@@ -378,6 +379,19 @@ int mt8188_afe_get_default_mclk_source_by_rate(int rate)
+ 	[MT8188_CLK_TOP_APLL12_DIV3] = "apll12_div3",
++	[MT8188_CLK_TOP_APLL12_DIV4] = "apll12_div4",
+ 	[MT8188_CLK_TOP_APLL12_DIV9] = "apll12_div9",
+ 
+ 	/* mux */
+ 	[MT8188_CLK_TOP_A1SYS_HP_SEL] = "top_a1sys_hp",
++	[MT8188_CLK_TOP_A2SYS_SEL] = "top_a2sys",
++	[MT8188_CLK_TOP_AUD_IEC_SEL] = "top_aud_iec",
+ 	[MT8188_CLK_TOP_AUD_INTBUS_SEL] = "top_aud_intbus",
+ 	[MT8188_CLK_TOP_AUDIO_H_SEL] = "top_audio_h",
+ 	[MT8188_CLK_TOP_AUDIO_LOCAL_BUS_SEL] = "top_audio_local_bus",
+@@ -378,6 +383,19 @@ int mt8188_afe_get_default_mclk_source_by_rate(int rate)
  		MT8188_MCK_SEL_APLL1 : MT8188_MCK_SEL_APLL2;
  }
  
@@ -27011,7 +28344,7 @@ index 743d6a162cb9a871a196532e4b4af77fcd2039c4..02411be93900d21279b744d00e30f6b0
  int mt8188_afe_init_clock(struct mtk_base_afe *afe)
  {
  	struct mt8188_afe_private *afe_priv = afe->platform_priv;
-@@ -477,8 +491,8 @@ int mt8188_afe_set_clk_parent(struct mtk_base_afe *afe, struct clk *clk,
+@@ -477,8 +495,8 @@ int mt8188_afe_set_clk_parent(struct mtk_base_afe *afe, struct clk *clk,
  	if (clk && parent) {
  		ret = clk_set_parent(clk, parent);
  		if (ret) {
@@ -27022,7 +28355,7 @@ index 743d6a162cb9a871a196532e4b4af77fcd2039c4..02411be93900d21279b744d00e30f6b0
  			return ret;
  		}
  	}
-@@ -605,54 +619,132 @@ static int mt8188_afe_disable_afe_on(struct mtk_base_afe *afe)
+@@ -605,54 +623,132 @@ static int mt8188_afe_disable_afe_on(struct mtk_base_afe *afe)
  	return 0;
  }
  
@@ -27177,7 +28510,7 @@ index 743d6a162cb9a871a196532e4b4af77fcd2039c4..02411be93900d21279b744d00e30f6b0
  	return 0;
  }
 diff --git a/sound/soc/mediatek/mt8188/mt8188-afe-clk.h b/sound/soc/mediatek/mt8188/mt8188-afe-clk.h
-index 084fdfb1d877a42a8e2cb840a90c45eb1615b8fd..04cb476f0bcb29092441dddd646da5cd7b198a7f 100644
+index 084fdfb1d877a42a8e2cb840a90c45eb1615b8fd..904505d10841ffa167a9b5f7107eadd8fa898a37 100644
 --- a/sound/soc/mediatek/mt8188/mt8188-afe-clk.h
 +++ b/sound/soc/mediatek/mt8188/mt8188-afe-clk.h
 @@ -11,6 +11,10 @@
@@ -27191,15 +28524,26 @@ index 084fdfb1d877a42a8e2cb840a90c45eb1615b8fd..04cb476f0bcb29092441dddd646da5cd
  enum {
  	/* xtal */
  	MT8188_CLK_XTAL_26M,
-@@ -18,6 +22,7 @@ enum {
+@@ -18,13 +22,18 @@ enum {
  	MT8188_CLK_APMIXED_APLL1,
  	MT8188_CLK_APMIXED_APLL2,
  	/* divider */
 +	MT8188_CLK_TOP_APLL1_D4,
++	MT8188_CLK_TOP_APLL2_D4,
  	MT8188_CLK_TOP_APLL12_DIV0,
  	MT8188_CLK_TOP_APLL12_DIV1,
  	MT8188_CLK_TOP_APLL12_DIV2,
-@@ -99,6 +104,8 @@ struct mtk_base_afe;
+ 	MT8188_CLK_TOP_APLL12_DIV3,
++	MT8188_CLK_TOP_APLL12_DIV4,
+ 	MT8188_CLK_TOP_APLL12_DIV9,
+ 	/* mux */
+ 	MT8188_CLK_TOP_A1SYS_HP_SEL,
++	MT8188_CLK_TOP_A2SYS_SEL,
++	MT8188_CLK_TOP_AUD_IEC_SEL,
+ 	MT8188_CLK_TOP_AUD_INTBUS_SEL,
+ 	MT8188_CLK_TOP_AUDIO_H_SEL,
+ 	MT8188_CLK_TOP_AUDIO_LOCAL_BUS_SEL,
+@@ -99,6 +108,8 @@ struct mtk_base_afe;
  int mt8188_afe_get_mclk_source_clk_id(int sel);
  int mt8188_afe_get_mclk_source_rate(struct mtk_base_afe *afe, int apll);
  int mt8188_afe_get_default_mclk_source_by_rate(int rate);
@@ -27208,7 +28552,7 @@ index 084fdfb1d877a42a8e2cb840a90c45eb1615b8fd..04cb476f0bcb29092441dddd646da5cd
  int mt8188_afe_init_clock(struct mtk_base_afe *afe);
  void mt8188_afe_deinit_clock(void *priv);
  int mt8188_afe_enable_clk(struct mtk_base_afe *afe, struct clk *clk);
-@@ -107,6 +114,10 @@ int mt8188_afe_set_clk_rate(struct mtk_base_afe *afe, struct clk *clk,
+@@ -107,6 +118,10 @@ int mt8188_afe_set_clk_rate(struct mtk_base_afe *afe, struct clk *clk,
  			    unsigned int rate);
  int mt8188_afe_set_clk_parent(struct mtk_base_afe *afe, struct clk *clk,
  			      struct clk *parent);
@@ -27219,8 +28563,220 @@ index 084fdfb1d877a42a8e2cb840a90c45eb1615b8fd..04cb476f0bcb29092441dddd646da5cd
  int mt8188_afe_enable_main_clock(struct mtk_base_afe *afe);
  int mt8188_afe_disable_main_clock(struct mtk_base_afe *afe);
  int mt8188_afe_enable_reg_rw_clk(struct mtk_base_afe *afe);
+diff --git a/sound/soc/mediatek/mt8188/mt8188-afe-common.h b/sound/soc/mediatek/mt8188/mt8188-afe-common.h
+index eb7e57c239bddd825528b6a76bd212b09dceaf52..1304d685a306bcb43b5131eff165b80051810b04 100644
+--- a/sound/soc/mediatek/mt8188/mt8188-afe-common.h
++++ b/sound/soc/mediatek/mt8188/mt8188-afe-common.h
+@@ -39,7 +39,7 @@ enum {
+ 	MT8188_AFE_MEMIF_END,
+ 	MT8188_AFE_MEMIF_NUM = (MT8188_AFE_MEMIF_END - MT8188_AFE_MEMIF_START),
+ 	MT8188_AFE_IO_START = MT8188_AFE_MEMIF_END,
+-	MT8188_AFE_IO_ADDA = MT8188_AFE_IO_START,
++	MT8188_AFE_IO_DL_SRC = MT8188_AFE_IO_START,
+ 	MT8188_AFE_IO_DMIC_IN,
+ 	MT8188_AFE_IO_DPTX,
+ 	MT8188_AFE_IO_ETDM_START,
+@@ -52,6 +52,7 @@ enum {
+ 	MT8188_AFE_IO_ETDM_NUM =
+ 		(MT8188_AFE_IO_ETDM_END - MT8188_AFE_IO_ETDM_START),
+ 	MT8188_AFE_IO_PCM = MT8188_AFE_IO_ETDM_END,
++	MT8188_AFE_IO_UL_SRC,
+ 	MT8188_AFE_IO_END,
+ 	MT8188_AFE_IO_NUM = (MT8188_AFE_IO_END - MT8188_AFE_IO_START),
+ 	MT8188_DAI_END = MT8188_AFE_IO_END,
+diff --git a/sound/soc/mediatek/mt8188/mt8188-afe-pcm.c b/sound/soc/mediatek/mt8188/mt8188-afe-pcm.c
+index e8e84de865422021d2a99498128f5ce53a16c546..c3fd32764da06240c4b5e1235c3cdd9978d9f85d 100644
+--- a/sound/soc/mediatek/mt8188/mt8188-afe-pcm.c
++++ b/sound/soc/mediatek/mt8188/mt8188-afe-pcm.c
+@@ -17,6 +17,7 @@
+ #include <linux/of_address.h>
+ #include <linux/of_platform.h>
+ #include <linux/pm_runtime.h>
++#include <linux/soc/mediatek/infracfg.h>
+ #include <linux/reset.h>
+ #include <sound/pcm_params.h>
+ #include "mt8188-afe-common.h"
+@@ -1898,10 +1899,6 @@ static const struct snd_kcontrol_new mt8188_memif_controls[] = {
+ 			    MT8188_AFE_MEMIF_UL10),
+ };
+ 
+-static const struct snd_soc_component_driver mt8188_afe_pcm_dai_component = {
+-	.name = "mt8188-afe-pcm-dai",
+-};
+-
+ static const struct mtk_base_memif_data memif_data[MT8188_AFE_MEMIF_NUM] = {
+ 	[MT8188_AFE_MEMIF_DL2] = {
+ 		.name = "DL2",
+@@ -3137,14 +3134,69 @@ static int mt8188_afe_parse_of(struct mtk_base_afe *afe,
+ 	return 0;
+ }
+ 
++#define MT8188_DELAY_US 10
++#define MT8188_TIMEOUT_US USEC_PER_SEC
++
++static int bus_protect_enable(struct regmap *regmap)
++{
++	int ret;
++	u32 val;
++	u32 mask;
++
++	val = 0;
++	mask = MT8188_TOP_AXI_PROT_EN_2_AUDIO_STEP1;
++	regmap_write(regmap, MT8188_TOP_AXI_PROT_EN_2_SET, mask);
++
++	ret = regmap_read_poll_timeout(regmap, MT8188_TOP_AXI_PROT_EN_2_STA,
++				       val, (val & mask) == mask,
++				       MT8188_DELAY_US, MT8188_TIMEOUT_US);
++	if (ret)
++		return ret;
++
++	val = 0;
++	mask = MT8188_TOP_AXI_PROT_EN_2_AUDIO_STEP2;
++	regmap_write(regmap, MT8188_TOP_AXI_PROT_EN_2_SET, mask);
++
++	ret = regmap_read_poll_timeout(regmap, MT8188_TOP_AXI_PROT_EN_2_STA,
++				       val, (val & mask) == mask,
++				       MT8188_DELAY_US, MT8188_TIMEOUT_US);
++	return ret;
++}
++
++static int bus_protect_disable(struct regmap *regmap)
++{
++	int ret;
++	u32 val;
++	u32 mask;
++
++	val = 0;
++	mask = MT8188_TOP_AXI_PROT_EN_2_AUDIO_STEP2;
++	regmap_write(regmap, MT8188_TOP_AXI_PROT_EN_2_CLR, mask);
++
++	ret = regmap_read_poll_timeout(regmap, MT8188_TOP_AXI_PROT_EN_2_STA,
++				       val, !(val & mask),
++				       MT8188_DELAY_US, MT8188_TIMEOUT_US);
++	if (ret)
++		return ret;
++
++	val = 0;
++	mask = MT8188_TOP_AXI_PROT_EN_2_AUDIO_STEP1;
++	regmap_write(regmap, MT8188_TOP_AXI_PROT_EN_2_CLR, mask);
++
++	ret = regmap_read_poll_timeout(regmap, MT8188_TOP_AXI_PROT_EN_2_STA,
++				       val, !(val & mask),
++				       MT8188_DELAY_US, MT8188_TIMEOUT_US);
++	return ret;
++}
++
+ static int mt8188_afe_pcm_dev_probe(struct platform_device *pdev)
+ {
+ 	struct mtk_base_afe *afe;
+ 	struct mt8188_afe_private *afe_priv;
+ 	struct device *dev;
+-	int i, irq_id, ret;
+-	struct snd_soc_component *component;
+ 	struct reset_control *rstc;
++	struct regmap *infra_ao;
++	int i, irq_id, ret;
+ 
+ 	ret = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(33));
+ 	if (ret)
+@@ -3168,18 +3220,37 @@ static int mt8188_afe_pcm_dev_probe(struct platform_device *pdev)
+ 		return dev_err_probe(dev, PTR_ERR(afe->base_addr),
+ 				     "AFE base_addr not found\n");
+ 
++	infra_ao = syscon_regmap_lookup_by_phandle(dev->of_node,
++						   "mediatek,infracfg");
++	if (IS_ERR(infra_ao))
++		return dev_err_probe(dev, PTR_ERR(infra_ao),
++				     "%s() Cannot find infra_ao controller\n",
++				     __func__);
++
+ 	/* reset controller to reset audio regs before regmap cache */
+ 	rstc = devm_reset_control_get_exclusive(dev, "audiosys");
+ 	if (IS_ERR(rstc))
+ 		return dev_err_probe(dev, PTR_ERR(rstc),
+ 				     "could not get audiosys reset\n");
+ 
++	ret = bus_protect_enable(infra_ao);
++	if (ret) {
++		dev_err(dev, "bus_protect_enable failed\n");
++		return ret;
++	}
++
+ 	ret = reset_control_reset(rstc);
+ 	if (ret) {
+ 		dev_err(dev, "failed to trigger audio reset:%d\n", ret);
+ 		return ret;
+ 	}
+ 
++	ret = bus_protect_disable(infra_ao);
++	if (ret) {
++		dev_err(dev, "bus_protect_disable failed\n");
++		return ret;
++	}
++
+ 	/* initial audio related clock */
+ 	ret = mt8188_afe_init_clock(afe);
+ 	if (ret)
+@@ -3280,34 +3351,12 @@ static int mt8188_afe_pcm_dev_probe(struct platform_device *pdev)
+ 
+ 	/* register component */
+ 	ret = devm_snd_soc_register_component(dev, &mt8188_afe_component,
+-					      NULL, 0);
++					      afe->dai_drivers, afe->num_dai_drivers);
+ 	if (ret) {
+ 		dev_warn(dev, "err_platform\n");
+ 		goto err_pm_put;
+ 	}
+ 
+-	component = devm_kzalloc(&pdev->dev, sizeof(*component), GFP_KERNEL);
+-	if (!component) {
+-		ret = -ENOMEM;
+-		goto err_pm_put;
+-	}
+-
+-	ret = snd_soc_component_initialize(component,
+-					   &mt8188_afe_pcm_dai_component,
+-					   &pdev->dev);
+-	if (ret)
+-		goto err_pm_put;
+-#ifdef CONFIG_DEBUG_FS
+-	component->debugfs_prefix = "pcm";
+-#endif
+-	ret = snd_soc_add_component(component,
+-				    afe->dai_drivers,
+-				    afe->num_dai_drivers);
+-	if (ret) {
+-		dev_warn(dev, "err_add_component\n");
+-		goto err_pm_put;
+-	}
+-
+ 	mt8188_afe_init_registers(afe);
+ 
+ 	pm_runtime_put_sync(&pdev->dev);
+@@ -3323,13 +3372,6 @@ static int mt8188_afe_pcm_dev_probe(struct platform_device *pdev)
+ 	return ret;
+ }
+ 
+-static int mt8188_afe_pcm_dev_remove(struct platform_device *pdev)
+-{
+-	snd_soc_unregister_component(&pdev->dev);
+-
+-	return 0;
+-}
+-
+ static const struct of_device_id mt8188_afe_pcm_dt_match[] = {
+ 	{ .compatible = "mediatek,mt8188-afe", },
+ 	{},
+@@ -3348,7 +3390,6 @@ static struct platform_driver mt8188_afe_pcm_driver = {
+ 		   .pm = &mt8188_afe_pm_ops,
+ 	},
+ 	.probe = mt8188_afe_pcm_dev_probe,
+-	.remove = mt8188_afe_pcm_dev_remove,
+ };
+ 
+ module_platform_driver(mt8188_afe_pcm_driver);
 diff --git a/sound/soc/mediatek/mt8188/mt8188-dai-adda.c b/sound/soc/mediatek/mt8188/mt8188-dai-adda.c
-index d71696901553adc58ffab940bce853c1537d1b73..fed9f927e6234fec83ace84761ef9e5f7c15f7f1 100644
+index d71696901553adc58ffab940bce853c1537d1b73..7dc029f2b428366f4fe940ccaf82350afbc088c5 100644
 --- a/sound/soc/mediatek/mt8188/mt8188-dai-adda.c
 +++ b/sound/soc/mediatek/mt8188/mt8188-dai-adda.c
 @@ -18,7 +18,6 @@
@@ -27231,14 +28787,26 @@ index d71696901553adc58ffab940bce853c1537d1b73..fed9f927e6234fec83ace84761ef9e5f
  	SUPPLY_SEQ_ADDA_DL_ON,
  	SUPPLY_SEQ_ADDA_MTKAIF_CFG,
  	SUPPLY_SEQ_ADDA_UL_ON,
-@@ -242,34 +241,6 @@ static int mtk_adda_ul_event(struct snd_soc_dapm_widget *w,
+@@ -54,8 +53,7 @@ enum {
+ };
+ 
+ struct mtk_dai_adda_priv {
+-	unsigned int dl_rate;
+-	unsigned int ul_rate;
++	bool hires_required;
+ };
+ 
+ static unsigned int afe_adda_dl_rate_transform(struct mtk_base_afe *afe,
+@@ -242,70 +240,35 @@ static int mtk_adda_ul_event(struct snd_soc_dapm_widget *w,
  	return 0;
  }
  
 -static int mtk_audio_hires_event(struct snd_soc_dapm_widget *w,
 -				 struct snd_kcontrol *kcontrol,
 -				 int event)
--{
++static struct mtk_dai_adda_priv *get_adda_priv_by_name(struct mtk_base_afe *afe,
++						       const char *name)
+ {
 -	struct snd_soc_component *cmpnt = snd_soc_dapm_to_component(w->dapm);
 -	struct mtk_base_afe *afe = snd_soc_component_get_drvdata(cmpnt);
 -	struct mt8188_afe_private *afe_priv = afe->platform_priv;
@@ -27263,10 +28831,57 @@ index d71696901553adc58ffab940bce853c1537d1b73..fed9f927e6234fec83ace84761ef9e5f
 -	return 0;
 -}
 -
- static int mtk_afe_adc_hires_connect(struct snd_soc_dapm_widget *source,
- 				     struct snd_soc_dapm_widget *sink)
+-static int mtk_afe_adc_hires_connect(struct snd_soc_dapm_widget *source,
+-				     struct snd_soc_dapm_widget *sink)
+-{
+-	struct snd_soc_dapm_widget *w = source;
+-	struct snd_soc_component *cmpnt = snd_soc_dapm_to_component(w->dapm);
+-	struct mtk_base_afe *afe = snd_soc_component_get_drvdata(cmpnt);
+ 	struct mt8188_afe_private *afe_priv = afe->platform_priv;
+-	struct mtk_dai_adda_priv *adda_priv;
+-
+-	adda_priv = afe_priv->dai_priv[MT8188_AFE_IO_ADDA];
+ 
+-	if (!adda_priv) {
+-		dev_err(afe->dev, "%s adda_priv == NULL", __func__);
+-		return 0;
+-	}
+-
+-	return !!(adda_priv->ul_rate > ADDA_HIRES_THRES);
++	if (strstr(name, "aud_adc_hires"))
++		return afe_priv->dai_priv[MT8188_AFE_IO_UL_SRC];
++	else if (strstr(name, "aud_dac_hires"))
++		return afe_priv->dai_priv[MT8188_AFE_IO_DL_SRC];
++	else
++		return NULL;
+ }
+ 
+-static int mtk_afe_dac_hires_connect(struct snd_soc_dapm_widget *source,
+-				     struct snd_soc_dapm_widget *sink)
++static int mtk_afe_adda_hires_connect(struct snd_soc_dapm_widget *source,
++				      struct snd_soc_dapm_widget *sink)
  {
-@@ -364,12 +335,6 @@ static const struct snd_soc_dapm_widget mtk_dai_adda_widgets[] = {
+ 	struct snd_soc_dapm_widget *w = source;
+ 	struct snd_soc_component *cmpnt = snd_soc_dapm_to_component(w->dapm);
+ 	struct mtk_base_afe *afe = snd_soc_component_get_drvdata(cmpnt);
+-	struct mt8188_afe_private *afe_priv = afe->platform_priv;
+ 	struct mtk_dai_adda_priv *adda_priv;
+ 
+-	adda_priv = afe_priv->dai_priv[MT8188_AFE_IO_ADDA];
++	adda_priv = get_adda_priv_by_name(afe, w->name);
+ 
+ 	if (!adda_priv) {
+-		dev_err(afe->dev, "%s adda_priv == NULL", __func__);
++		dev_dbg(afe->dev, "adda_priv == NULL");
+ 		return 0;
+ 	}
+ 
+-	return !!(adda_priv->dl_rate > ADDA_HIRES_THRES);
++	return (adda_priv->hires_required) ? 1 : 0;
+ }
+ 
+ static const struct snd_kcontrol_new mtk_dai_adda_o176_mix[] = {
+@@ -364,12 +327,6 @@ static const struct snd_soc_dapm_widget mtk_dai_adda_widgets[] = {
  			      mtk_adda_ul_event,
  			      SND_SOC_DAPM_PRE_PMU | SND_SOC_DAPM_POST_PMD),
  
@@ -27279,24 +28894,93 @@ index d71696901553adc58ffab940bce853c1537d1b73..fed9f927e6234fec83ace84761ef9e5f
  	SND_SOC_DAPM_SUPPLY_S("ADDA_MTKAIF_CFG", SUPPLY_SEQ_ADDA_MTKAIF_CFG,
  			      SND_SOC_NOPM,
  			      0, 0,
-@@ -397,7 +362,6 @@ static const struct snd_soc_dapm_route mtk_dai_adda_routes[] = {
+@@ -396,8 +353,7 @@ static const struct snd_soc_dapm_route mtk_dai_adda_routes[] = {
+ 	{"ADDA Capture", NULL, "ADDA Capture Enable"},
  	{"ADDA Capture", NULL, "ADDA_MTKAIF_CFG"},
  	{"ADDA Capture", NULL, "aud_adc"},
- 	{"ADDA Capture", NULL, "aud_adc_hires", mtk_afe_adc_hires_connect},
+-	{"ADDA Capture", NULL, "aud_adc_hires", mtk_afe_adc_hires_connect},
 -	{"aud_adc_hires", NULL, "AUDIO_HIRES"},
++	{"ADDA Capture", NULL, "aud_adc_hires", mtk_afe_adda_hires_connect},
  
  	{"I168", NULL, "ADDA Capture"},
  	{"I169", NULL, "ADDA Capture"},
-@@ -406,7 +370,6 @@ static const struct snd_soc_dapm_route mtk_dai_adda_routes[] = {
+@@ -405,8 +361,7 @@ static const struct snd_soc_dapm_route mtk_dai_adda_routes[] = {
+ 	{"ADDA Playback", NULL, "ADDA Enable"},
  	{"ADDA Playback", NULL, "ADDA Playback Enable"},
  	{"ADDA Playback", NULL, "aud_dac"},
- 	{"ADDA Playback", NULL, "aud_dac_hires", mtk_afe_dac_hires_connect},
+-	{"ADDA Playback", NULL, "aud_dac_hires", mtk_afe_dac_hires_connect},
 -	{"aud_dac_hires", NULL, "AUDIO_HIRES"},
++	{"ADDA Playback", NULL, "aud_dac_hires", mtk_afe_adda_hires_connect},
  
  	{"DL_GAIN", NULL, "O176"},
  	{"DL_GAIN", NULL, "O177"},
+@@ -540,13 +495,12 @@ static int mtk_dai_adda_hw_params(struct snd_pcm_substream *substream,
+ 	dev_dbg(afe->dev, "%s(), id %d, stream %d, rate %u\n",
+ 		__func__, id, substream->stream, rate);
+ 
+-	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK) {
+-		adda_priv->dl_rate = rate;
++	adda_priv->hires_required = (rate > ADDA_HIRES_THRES);
++
++	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK)
+ 		ret = mtk_dai_da_configure(afe, rate, id);
+-	} else {
+-		adda_priv->ul_rate = rate;
++	else
+ 		ret = mtk_dai_ad_configure(afe, rate, id);
+-	}
+ 
+ 	return ret;
+ }
+@@ -573,8 +527,8 @@ static const struct snd_soc_dai_ops mtk_dai_adda_ops = {
+ 
+ static struct snd_soc_dai_driver mtk_dai_adda_driver[] = {
+ 	{
+-		.name = "ADDA",
+-		.id = MT8188_AFE_IO_ADDA,
++		.name = "DL_SRC",
++		.id = MT8188_AFE_IO_DL_SRC,
+ 		.playback = {
+ 			.stream_name = "ADDA Playback",
+ 			.channels_min = 1,
+@@ -582,6 +536,11 @@ static struct snd_soc_dai_driver mtk_dai_adda_driver[] = {
+ 			.rates = MTK_ADDA_PLAYBACK_RATES,
+ 			.formats = MTK_ADDA_FORMATS,
+ 		},
++		.ops = &mtk_dai_adda_ops,
++	},
++	{
++		.name = "UL_SRC",
++		.id = MT8188_AFE_IO_UL_SRC,
+ 		.capture = {
+ 			.stream_name = "ADDA Capture",
+ 			.channels_min = 1,
+@@ -597,13 +556,18 @@ static int init_adda_priv_data(struct mtk_base_afe *afe)
+ {
+ 	struct mt8188_afe_private *afe_priv = afe->platform_priv;
+ 	struct mtk_dai_adda_priv *adda_priv;
++	int adda_dai_list[] = {MT8188_AFE_IO_DL_SRC, MT8188_AFE_IO_UL_SRC};
++	int i;
+ 
+-	adda_priv = devm_kzalloc(afe->dev, sizeof(struct mtk_dai_adda_priv),
+-				 GFP_KERNEL);
+-	if (!adda_priv)
+-		return -ENOMEM;
++	for (i = 0; i < ARRAY_SIZE(adda_dai_list); i++) {
++		adda_priv = devm_kzalloc(afe->dev,
++					 sizeof(struct mtk_dai_adda_priv),
++					 GFP_KERNEL);
++		if (!adda_priv)
++			return -ENOMEM;
+ 
+-	afe_priv->dai_priv[MT8188_AFE_IO_ADDA] = adda_priv;
++		afe_priv->dai_priv[adda_dai_list[i]] = adda_priv;
++	}
+ 
+ 	return 0;
+ }
 diff --git a/sound/soc/mediatek/mt8188/mt8188-dai-etdm.c b/sound/soc/mediatek/mt8188/mt8188-dai-etdm.c
-index 7a37752d42444b2890fbbfdf45937b93ea2c69f3..03caf934c82ed9582bd6236ebcb5c92c06f748e9 100644
+index 7a37752d42444b2890fbbfdf45937b93ea2c69f3..16440dd0a89cee89cd69f3faaab160bbff39b048 100644
 --- a/sound/soc/mediatek/mt8188/mt8188-dai-etdm.c
 +++ b/sound/soc/mediatek/mt8188/mt8188-dai-etdm.c
 @@ -21,6 +21,14 @@
@@ -27452,7 +29136,7 @@ index 7a37752d42444b2890fbbfdf45937b93ea2c69f3..03caf934c82ed9582bd6236ebcb5c92c
 +
 +	etdm_priv = get_etdm_priv_by_name(afe, w->name);
 +	if (!etdm_priv) {
-+		dev_info(afe->dev, "etdm_priv == NULL");
++		dev_dbg(afe->dev, "etdm_priv == NULL\n");
 +		return 0;
 +	}
 +
@@ -27490,13 +29174,13 @@ index 7a37752d42444b2890fbbfdf45937b93ea2c69f3..03caf934c82ed9582bd6236ebcb5c92c
 +
 +	mclk_id = get_etdm_id_by_name(afe, source->name);
 +	if (mclk_id < 0) {
-+		dev_info(afe->dev, "mclk_id < 0");
++		dev_dbg(afe->dev, "mclk_id < 0\n");
 +		return 0;
 +	}
 +
 +	etdm_priv = get_etdm_priv_by_name(afe, w->name);
 +	if (!etdm_priv) {
-+		dev_info(afe->dev, "etdm_priv == NULL");
++		dev_dbg(afe->dev, "etdm_priv == NULL\n");
 +		return 0;
 +	}
 +
@@ -27524,13 +29208,13 @@ index 7a37752d42444b2890fbbfdf45937b93ea2c69f3..03caf934c82ed9582bd6236ebcb5c92c
 +
 +	source_id = get_etdm_id_by_name(afe, source->name);
 +	if (source_id < 0) {
-+		dev_info(afe->dev, "%s() source_id < 0\n", __func__);
++		dev_dbg(afe->dev, "%s() source_id < 0\n", __func__);
 +		return 0;
 +	}
 +
 +	etdm_priv = get_etdm_priv_by_name(afe, w->name);
 +	if (!etdm_priv) {
-+		dev_info(afe->dev, "%s() etdm_priv == NULL\n", __func__);
++		dev_dbg(afe->dev, "%s() etdm_priv == NULL\n", __func__);
 +		return 0;
 +	}
 +
@@ -27592,7 +29276,7 @@ index 7a37752d42444b2890fbbfdf45937b93ea2c69f3..03caf934c82ed9582bd6236ebcb5c92c
 +	int mclk_id = get_etdm_id_by_name(afe, w->name);
 +
 +	if (mclk_id < 0) {
-+		dev_info(afe->dev, "%s() mclk_id < 0\n", __func__);
++		dev_dbg(afe->dev, "%s() mclk_id < 0\n", __func__);
 +		return 0;
 +	}
 +
@@ -27649,13 +29333,13 @@ index 7a37752d42444b2890fbbfdf45937b93ea2c69f3..03caf934c82ed9582bd6236ebcb5c92c
 +
 +	etdm_id = get_etdm_id_by_name(afe, w->name);
 +	if (etdm_id < 0) {
-+		dev_info(afe->dev, "%s() etdm_id < 0\n", __func__);
++		dev_dbg(afe->dev, "%s() etdm_id < 0\n", __func__);
 +		return 0;
 +	}
 +
 +	cg_id = mtk_dai_etdm_get_cg_id_by_dai_id(etdm_id);
 +	if (cg_id < 0) {
-+		dev_info(afe->dev, "%s() cg_id < 0\n", __func__);
++		dev_dbg(afe->dev, "%s() cg_id < 0\n", __func__);
 +		return 0;
 +	}
 +
@@ -28389,18 +30073,19 @@ index 7a37752d42444b2890fbbfdf45937b93ea2c69f3..03caf934c82ed9582bd6236ebcb5c92c
  	.set_fmt	= mtk_dai_etdm_set_fmt,
  };
 diff --git a/sound/soc/mediatek/mt8188/mt8188-mt6359.c b/sound/soc/mediatek/mt8188/mt8188-mt6359.c
-index 919d74ea193466a5bc70691b4523c4005042624b..d5d0a60652f25f8754fcf2c3a1e0474d13072a5c 100644
+index 919d74ea193466a5bc70691b4523c4005042624b..c44d1019d2625b39f547de4c28b0e823e8c92e94 100644
 --- a/sound/soc/mediatek/mt8188/mt8188-mt6359.c
 +++ b/sound/soc/mediatek/mt8188/mt8188-mt6359.c
-@@ -6,6 +6,7 @@
+@@ -6,6 +6,8 @@
   * Author: Trevor Wu <trevor.wu@mediatek.com>
   */
  
++#include <linux/bitfield.h>
 +#include <linux/input.h>
  #include <linux/module.h>
  #include <linux/of_device.h>
  #include <linux/pm_runtime.h>
-@@ -13,9 +14,31 @@
+@@ -13,9 +15,43 @@
  #include <sound/pcm_params.h>
  #include <sound/soc.h>
  #include "mt8188-afe-common.h"
@@ -28410,6 +30095,18 @@ index 919d74ea193466a5bc70691b4523c4005042624b..d5d0a60652f25f8754fcf2c3a1e0474d
  #include "../common/mtk-soundcard-driver.h"
 +#include "../common/mtk-dsp-sof-common.h"
 +#include "../common/mtk-soc-card.h"
++
++#define CKSYS_AUD_TOP_CFG	0x032c
++ #define RG_TEST_ON		BIT(0)
++ #define RG_TEST_TYPE		BIT(2)
++#define CKSYS_AUD_TOP_MON	0x0330
++ #define TEST_MISO_COUNT_1	GENMASK(3, 0)
++ #define TEST_MISO_COUNT_2	GENMASK(7, 4)
++ #define TEST_MISO_DONE_1	BIT(28)
++ #define TEST_MISO_DONE_2	BIT(29)
++
++#define NAU8825_HS_PRESENT	BIT(0)
++#define DPCM_FE_CONSTRAINT	BIT(16)
 +
 +/*
 + * Maxim MAX98390
@@ -28432,21 +30129,29 @@ index 919d74ea193466a5bc70691b4523c4005042624b..d5d0a60652f25f8754fcf2c3a1e0474d
  
  /* FE */
  SND_SOC_DAILINK_DEFS(playback2,
-@@ -102,7 +125,9 @@ SND_SOC_DAILINK_DEFS(capture10,
- SND_SOC_DAILINK_DEFS(adda,
- 		     DAILINK_COMP_ARRAY(COMP_CPU("ADDA")),
- 		     DAILINK_COMP_ARRAY(COMP_CODEC("mt6359-sound",
--						   "mt6359-snd-codec-aif1")),
-+						   "mt6359-snd-codec-aif1"),
-+					COMP_CODEC("dmic-codec",
-+						   "dmic-hifi")),
+@@ -99,8 +135,8 @@ SND_SOC_DAILINK_DEFS(capture10,
  		     DAILINK_COMP_ARRAY(COMP_EMPTY()));
  
- SND_SOC_DAILINK_DEFS(dptx,
-@@ -140,9 +165,63 @@ SND_SOC_DAILINK_DEFS(pcm1,
+ /* BE */
+-SND_SOC_DAILINK_DEFS(adda,
+-		     DAILINK_COMP_ARRAY(COMP_CPU("ADDA")),
++SND_SOC_DAILINK_DEFS(dl_src,
++		     DAILINK_COMP_ARRAY(COMP_CPU("DL_SRC")),
+ 		     DAILINK_COMP_ARRAY(COMP_CODEC("mt6359-sound",
+ 						   "mt6359-snd-codec-aif1")),
+ 		     DAILINK_COMP_ARRAY(COMP_EMPTY()));
+@@ -140,9 +176,71 @@ SND_SOC_DAILINK_DEFS(pcm1,
  		     DAILINK_COMP_ARRAY(COMP_DUMMY()),
  		     DAILINK_COMP_ARRAY(COMP_EMPTY()));
  
++SND_SOC_DAILINK_DEFS(ul_src,
++		     DAILINK_COMP_ARRAY(COMP_CPU("UL_SRC")),
++		     DAILINK_COMP_ARRAY(COMP_CODEC("mt6359-sound",
++						   "mt6359-snd-codec-aif1"),
++					COMP_CODEC("dmic-codec",
++						   "dmic-hifi")),
++		     DAILINK_COMP_ARRAY(COMP_EMPTY()));
++
 +SND_SOC_DAILINK_DEFS(AFE_SOF_DL2,
 +		     DAILINK_COMP_ARRAY(COMP_CPU("SOF_DL2")),
 +		     DAILINK_COMP_ARRAY(COMP_DUMMY()),
@@ -28468,17 +30173,17 @@ index 919d74ea193466a5bc70691b4523c4005042624b..d5d0a60652f25f8754fcf2c3a1e0474d
 +		     DAILINK_COMP_ARRAY(COMP_EMPTY()));
 +
 +static const struct sof_conn_stream g_sof_conn_streams[] = {
-+	{ "ADDA_BE", "AFE_SOF_DL2", SOF_DMA_DL2, SNDRV_PCM_STREAM_PLAYBACK}, /* This is for EVB, should be removed in upstream */
-+	{ "ETDM2_OUT_BE", "AFE_SOF_DL2", SOF_DMA_DL2, SNDRV_PCM_STREAM_PLAYBACK},
-+	{ "ETDM1_OUT_BE", "AFE_SOF_DL3", SOF_DMA_DL3, SNDRV_PCM_STREAM_PLAYBACK},
-+	{ "ADDA_BE", "AFE_SOF_UL4", SOF_DMA_UL4, SNDRV_PCM_STREAM_CAPTURE},
-+	{ "ETDM2_IN_BE", "AFE_SOF_UL5", SOF_DMA_UL5, SNDRV_PCM_STREAM_CAPTURE},
++	{ NULL, "AFE_SOF_DL2", SOF_DMA_DL2, SNDRV_PCM_STREAM_PLAYBACK},
++	{ NULL, "AFE_SOF_DL3", SOF_DMA_DL3, SNDRV_PCM_STREAM_PLAYBACK},
++	{ NULL, "AFE_SOF_UL4", SOF_DMA_UL4, SNDRV_PCM_STREAM_CAPTURE},
++	{ NULL, "AFE_SOF_UL5", SOF_DMA_UL5, SNDRV_PCM_STREAM_CAPTURE},
 +};
 +
  struct mt8188_mt6359_priv {
  	struct snd_soc_jack dp_jack;
  	struct snd_soc_jack hdmi_jack;
 +	struct snd_soc_jack headset_jack;
++	void *private_data;
 +};
 +
 +static struct snd_soc_jack_pin mt8188_hdmi_jack_pins[] = {
@@ -28497,7 +30202,7 @@ index 919d74ea193466a5bc70691b4523c4005042624b..d5d0a60652f25f8754fcf2c3a1e0474d
 +
 +static struct snd_soc_jack_pin nau8825_jack_pins[] = {
 +	{
-+		.pin    = "Headphone",
++		.pin    = "Headphone Jack",
 +		.mask   = SND_JACK_HEADPHONE,
 +	},
 +	{
@@ -28507,11 +30212,11 @@ index 919d74ea193466a5bc70691b4523c4005042624b..d5d0a60652f25f8754fcf2c3a1e0474d
  };
  
  struct mt8188_card_data {
-@@ -150,9 +229,52 @@ struct mt8188_card_data {
+@@ -150,9 +248,43 @@ struct mt8188_card_data {
  	unsigned long quirk;
  };
  
-+static const struct snd_kcontrol_new mt8188_dumb_spk_kcontrols[] = {
++static const struct snd_kcontrol_new mt8188_dumb_spk_controls[] = {
 +	SOC_DAPM_PIN_SWITCH("Ext Spk"),
 +};
 +
@@ -28519,7 +30224,7 @@ index 919d74ea193466a5bc70691b4523c4005042624b..d5d0a60652f25f8754fcf2c3a1e0474d
 +	SND_SOC_DAPM_SPK("Ext Spk", NULL),
 +};
 +
-+static const struct snd_kcontrol_new mt8188_dual_spk_kcontrols[] = {
++static const struct snd_kcontrol_new mt8188_dual_spk_controls[] = {
 +	SOC_DAPM_PIN_SWITCH("Left Spk"),
 +	SOC_DAPM_PIN_SWITCH("Right Spk"),
 +};
@@ -28529,13 +30234,7 @@ index 919d74ea193466a5bc70691b4523c4005042624b..d5d0a60652f25f8754fcf2c3a1e0474d
 +	SND_SOC_DAPM_SPK("Right Spk", NULL),
 +};
 +
-+static const struct snd_soc_dapm_route mt8188_max98390_dual_spk_routes[] = {
-+	/* speaker */
-+	{ "Left Spk", NULL, "Front Left BE_OUT" },
-+	{ "Right Spk", NULL, "Front Right BE_OUT" },
-+};
-+
-+static const struct snd_kcontrol_new mt8188_rear_spk_kcontrols[] = {
++static const struct snd_kcontrol_new mt8188_rear_spk_controls[] = {
 +	SOC_DAPM_PIN_SWITCH("Rear Left Spk"),
 +	SOC_DAPM_PIN_SWITCH("Rear Right Spk"),
 +};
@@ -28545,14 +30244,11 @@ index 919d74ea193466a5bc70691b4523c4005042624b..d5d0a60652f25f8754fcf2c3a1e0474d
 +	SND_SOC_DAPM_SPK("Rear Right Spk", NULL),
 +};
 +
-+static const struct snd_soc_dapm_route mt8188_max98390_rear_spk_routes[] = {
-+	{ "Rear Left Spk", NULL, "Rear Left BE_OUT" },
-+	{ "Rear Right Spk", NULL, "Rear Right BE_OUT" },
-+};
-+
  static const struct snd_soc_dapm_widget mt8188_mt6359_widgets[] = {
  	SND_SOC_DAPM_HP("Headphone", NULL),
  	SND_SOC_DAPM_MIC("Headset Mic", NULL),
++	SND_SOC_DAPM_SINK("HDMI"),
++	SND_SOC_DAPM_SINK("DP"),
 +	SND_SOC_DAPM_MIXER(SOF_DMA_DL2, SND_SOC_NOPM, 0, 0, NULL, 0),
 +	SND_SOC_DAPM_MIXER(SOF_DMA_DL3, SND_SOC_NOPM, 0, 0, NULL, 0),
 +	SND_SOC_DAPM_MIXER(SOF_DMA_UL4, SND_SOC_NOPM, 0, 0, NULL, 0),
@@ -28560,11 +30256,21 @@ index 919d74ea193466a5bc70691b4523c4005042624b..d5d0a60652f25f8754fcf2c3a1e0474d
  };
  
  static const struct snd_kcontrol_new mt8188_mt6359_controls[] = {
-@@ -160,6 +282,19 @@ static const struct snd_kcontrol_new mt8188_mt6359_controls[] = {
+@@ -160,8 +292,26 @@ static const struct snd_kcontrol_new mt8188_mt6359_controls[] = {
  	SOC_DAPM_PIN_SWITCH("Headset Mic"),
  };
  
-+static const struct snd_soc_dapm_route mt8195_mt6359_routes[] = {
+-#define CKSYS_AUD_TOP_CFG 0x032c
+-#define CKSYS_AUD_TOP_MON 0x0330
++static const struct snd_soc_dapm_widget mt8188_nau8825_widgets[] = {
++	SND_SOC_DAPM_HP("Headphone Jack", NULL),
++};
++
++static const struct snd_kcontrol_new mt8188_nau8825_controls[] = {
++	SOC_DAPM_PIN_SWITCH("Headphone Jack"),
++};
++
++static const struct snd_soc_dapm_route mt8188_mt6359_routes[] = {
 +	/* SOF Uplink */
 +	{SOF_DMA_UL4, NULL, "O034"},
 +	{SOF_DMA_UL4, NULL, "O035"},
@@ -28576,29 +30282,258 @@ index 919d74ea193466a5bc70691b4523c4005042624b..d5d0a60652f25f8754fcf2c3a1e0474d
 +	{"I020", NULL, SOF_DMA_DL3},
 +	{"I021", NULL, SOF_DMA_DL3},
 +};
-+
- #define CKSYS_AUD_TOP_CFG 0x032c
- #define CKSYS_AUD_TOP_MON 0x0330
  
-@@ -353,8 +488,17 @@ enum {
+ static int mt8188_mt6359_mtkaif_calibration(struct snd_soc_pcm_runtime *rtd)
+ {
+@@ -174,13 +324,13 @@ static int mt8188_mt6359_mtkaif_calibration(struct snd_soc_pcm_runtime *rtd)
+ 	struct mtkaif_param *param;
+ 	int chosen_phase_1, chosen_phase_2;
+ 	int prev_cycle_1, prev_cycle_2;
+-	int test_done_1, test_done_2;
++	u8 test_done_1, test_done_2;
+ 	int cycle_1, cycle_2;
+ 	int mtkaif_chosen_phase[MT8188_MTKAIF_MISO_NUM];
+ 	int mtkaif_phase_cycle[MT8188_MTKAIF_MISO_NUM];
+ 	int mtkaif_calibration_num_phase;
+ 	bool mtkaif_calibration_ok;
+-	unsigned int monitor = 0;
++	u32 monitor = 0;
+ 	int counter;
+ 	int phase;
+ 	int i;
+@@ -212,8 +362,7 @@ static int mt8188_mt6359_mtkaif_calibration(struct snd_soc_pcm_runtime *rtd)
+ 	mt6359_mtkaif_calibration_enable(cmpnt_codec);
+ 
+ 	/* set test type to synchronizer pulse */
+-	regmap_update_bits(afe_priv->topckgen,
+-			   CKSYS_AUD_TOP_CFG, 0xffff, 0x4);
++	regmap_write(afe_priv->topckgen, CKSYS_AUD_TOP_CFG, RG_TEST_TYPE);
+ 	mtkaif_calibration_num_phase = 42;	/* mt6359: 0 ~ 42 */
+ 	mtkaif_calibration_ok = true;
+ 
+@@ -223,7 +372,7 @@ static int mt8188_mt6359_mtkaif_calibration(struct snd_soc_pcm_runtime *rtd)
+ 		mt6359_set_mtkaif_calibration_phase(cmpnt_codec,
+ 						    phase, phase, phase);
+ 
+-		regmap_set_bits(afe_priv->topckgen, CKSYS_AUD_TOP_CFG, 0x1);
++		regmap_set_bits(afe_priv->topckgen, CKSYS_AUD_TOP_CFG, RG_TEST_ON);
+ 
+ 		test_done_1 = 0;
+ 		test_done_2 = 0;
+@@ -235,20 +384,19 @@ static int mt8188_mt6359_mtkaif_calibration(struct snd_soc_pcm_runtime *rtd)
+ 		while (!(test_done_1 & test_done_2)) {
+ 			regmap_read(afe_priv->topckgen,
+ 				    CKSYS_AUD_TOP_MON, &monitor);
+-			test_done_1 = (monitor >> 28) & 0x1;
+-			test_done_2 = (monitor >> 29) & 0x1;
++			test_done_1 = FIELD_GET(TEST_MISO_DONE_1, monitor);
++			test_done_2 = FIELD_GET(TEST_MISO_DONE_2, monitor);
+ 
+ 			if (test_done_1 == 1)
+-				cycle_1 = monitor & 0xf;
++				cycle_1 = FIELD_GET(TEST_MISO_COUNT_1, monitor);
+ 
+ 			if (test_done_2 == 1)
+-				cycle_2 = (monitor >> 4) & 0xf;
++				cycle_2 = FIELD_GET(TEST_MISO_COUNT_2, monitor);
+ 
+ 			/* handle if never test done */
+ 			if (++counter > 10000) {
+-				dev_info(afe->dev, "%s(), test fail, cycle_1 %d, cycle_2 %d, monitor 0x%x\n",
+-					 __func__,
+-					 cycle_1, cycle_2, monitor);
++				dev_err(afe->dev, "%s(), test fail, cycle_1 %d, cycle_2 %d, monitor 0x%x\n",
++					__func__, cycle_1, cycle_2, monitor);
+ 				mtkaif_calibration_ok = false;
+ 				break;
+ 			}
+@@ -271,7 +419,7 @@ static int mt8188_mt6359_mtkaif_calibration(struct snd_soc_pcm_runtime *rtd)
+ 			mtkaif_phase_cycle[MT8188_MTKAIF_MISO_1] = prev_cycle_2;
+ 		}
+ 
+-		regmap_clear_bits(afe_priv->topckgen, CKSYS_AUD_TOP_CFG, 0x1);
++		regmap_clear_bits(afe_priv->topckgen, CKSYS_AUD_TOP_CFG, RG_TEST_ON);
+ 
+ 		if (mtkaif_chosen_phase[MT8188_MTKAIF_MISO_0] >= 0 &&
+ 		    mtkaif_chosen_phase[MT8188_MTKAIF_MISO_1] >= 0)
+@@ -307,8 +455,8 @@ static int mt8188_mt6359_mtkaif_calibration(struct snd_soc_pcm_runtime *rtd)
+ 	for (i = 0; i < MT8188_MTKAIF_MISO_NUM; i++)
+ 		param->mtkaif_phase_cycle[i] = mtkaif_phase_cycle[i];
+ 
+-	dev_info(afe->dev, "%s(), end, calibration ok %d\n",
+-		 __func__, param->mtkaif_calibration_ok);
++	dev_dbg(afe->dev, "%s(), end, calibration ok %d\n",
++		__func__, param->mtkaif_calibration_ok);
+ 
+ 	return 0;
+ }
+@@ -345,7 +493,7 @@ enum {
+ 	DAI_LINK_UL8_FE,
+ 	DAI_LINK_UL9_FE,
+ 	DAI_LINK_UL10_FE,
+-	DAI_LINK_ADDA_BE,
++	DAI_LINK_DL_SRC_BE,
+ 	DAI_LINK_DPTX_BE,
+ 	DAI_LINK_ETDM1_IN_BE,
+ 	DAI_LINK_ETDM2_IN_BE,
+@@ -353,6 +501,156 @@ enum {
  	DAI_LINK_ETDM2_OUT_BE,
  	DAI_LINK_ETDM3_OUT_BE,
  	DAI_LINK_PCM1_BE,
-+	DAI_LINK_REGULAR_LAST = DAI_LINK_PCM1_BE,
++	DAI_LINK_UL_SRC_BE,
++	DAI_LINK_REGULAR_LAST = DAI_LINK_UL_SRC_BE,
 +	DAI_LINK_SOF_START,
 +	DAI_LINK_SOF_DL2_BE = DAI_LINK_SOF_START,
 +	DAI_LINK_SOF_DL3_BE,
 +	DAI_LINK_SOF_UL4_BE,
 +	DAI_LINK_SOF_UL5_BE,
 +	DAI_LINK_SOF_END = DAI_LINK_SOF_UL5_BE,
- };
- 
++};
++
 +#define	DAI_LINK_REGULAR_NUM	(DAI_LINK_REGULAR_LAST + 1)
 +
++static int mt8188_playback_startup(struct snd_pcm_substream *substream)
++{
++	static const unsigned int rates[] = {
++		48000
++	};
++	static const unsigned int channels[] = {
++		2
++	};
++	static const struct snd_pcm_hw_constraint_list constraints_rates = {
++		.count = ARRAY_SIZE(rates),
++		.list  = rates,
++		.mask = 0,
++	};
++	static const struct snd_pcm_hw_constraint_list constraints_channels = {
++		.count = ARRAY_SIZE(channels),
++		.list  = channels,
++		.mask = 0,
++	};
++
++	struct snd_soc_pcm_runtime *rtd = asoc_substream_to_rtd(substream);
++	struct snd_pcm_runtime *runtime = substream->runtime;
++	struct mtk_soc_card_data *soc_card_data = snd_soc_card_get_drvdata(rtd->card);
++	struct mt8188_mt6359_priv *priv = soc_card_data->mach_priv;
++	struct mt8188_card_data *data = (struct mt8188_card_data *)priv->private_data;
++	int ret;
++
++	if (!(data->quirk & DPCM_FE_CONSTRAINT))
++		return 0;
++
++	ret = snd_pcm_hw_constraint_list(runtime, 0,
++					 SNDRV_PCM_HW_PARAM_RATE,
++					 &constraints_rates);
++	if (ret < 0) {
++		dev_err(rtd->dev, "hw_constraint_list rate failed\n");
++		return ret;
++	}
++
++	ret = snd_pcm_hw_constraint_list(runtime, 0,
++					 SNDRV_PCM_HW_PARAM_CHANNELS,
++					 &constraints_channels);
++	if (ret < 0) {
++		dev_err(rtd->dev, "hw_constraint_list channel failed\n");
++		return ret;
++	}
++
++	return 0;
++}
++
++static const struct snd_soc_ops mt8188_playback_ops = {
++	.startup = mt8188_playback_startup,
++};
++
++static int mt8188_capture_startup(struct snd_pcm_substream *substream)
++{
++	static const unsigned int rates[] = {
++		48000
++	};
++	static const struct snd_pcm_hw_constraint_list constraints_rates = {
++		.count = ARRAY_SIZE(rates),
++		.list  = rates,
++		.mask = 0,
++	};
++
++	struct snd_soc_pcm_runtime *rtd = asoc_substream_to_rtd(substream);
++	struct snd_pcm_runtime *runtime = substream->runtime;
++	struct mtk_soc_card_data *soc_card_data = snd_soc_card_get_drvdata(rtd->card);
++	struct mt8188_mt6359_priv *priv = soc_card_data->mach_priv;
++	struct mt8188_card_data *data = (struct mt8188_card_data *)priv->private_data;
++	int ret;
++
++	if (!(data->quirk & DPCM_FE_CONSTRAINT))
++		return 0;
++
++	ret = snd_pcm_hw_constraint_list(runtime, 0,
++					 SNDRV_PCM_HW_PARAM_RATE,
++					 &constraints_rates);
++	if (ret < 0) {
++		dev_err(rtd->dev, "hw_constraint_list rate failed\n");
++		return ret;
++	}
++
++	return 0;
++}
++
++static const struct snd_soc_ops mt8188_capture_ops = {
++	.startup = mt8188_capture_startup,
++};
++
++static int mt8188_hdmi_dptx_startup(struct snd_pcm_substream *substream)
++{
++	static const unsigned int rates[] = {
++		48000
++	};
++	static const unsigned int channels[] = {
++		2, 4, 6, 8
++	};
++	static const struct snd_pcm_hw_constraint_list constraints_rates = {
++		.count = ARRAY_SIZE(rates),
++		.list  = rates,
++		.mask = 0,
++	};
++	static const struct snd_pcm_hw_constraint_list constraints_channels = {
++		.count = ARRAY_SIZE(channels),
++		.list  = channels,
++		.mask = 0,
++	};
++
++	struct snd_soc_pcm_runtime *rtd = asoc_substream_to_rtd(substream);
++	struct snd_pcm_runtime *runtime = substream->runtime;
++	struct mtk_soc_card_data *soc_card_data = snd_soc_card_get_drvdata(rtd->card);
++	struct mt8188_mt6359_priv *priv = soc_card_data->mach_priv;
++	struct mt8188_card_data *data = (struct mt8188_card_data *)priv->private_data;
++	int ret;
++
++	if (!(data->quirk & DPCM_FE_CONSTRAINT))
++		return 0;
++
++	ret = snd_pcm_hw_constraint_list(runtime, 0,
++					 SNDRV_PCM_HW_PARAM_RATE,
++					 &constraints_rates);
++	if (ret < 0) {
++		dev_err(rtd->dev, "hw_constraint_list rate failed\n");
++		return ret;
++	}
++
++	ret = snd_pcm_hw_constraint_list(runtime, 0,
++					 SNDRV_PCM_HW_PARAM_CHANNELS,
++					 &constraints_channels);
++	if (ret < 0) {
++		dev_err(rtd->dev, "hw_constraint_list channel failed\n");
++		return ret;
++	}
++
++	return 0;
++}
++
++static const struct snd_soc_ops mt8188_hdmi_dptx_playback_ops = {
++	.startup = mt8188_hdmi_dptx_startup,
+ };
+ 
  static int mt8188_dptx_hw_params(struct snd_pcm_substream *substream,
- 				 struct snd_pcm_hw_params *params)
- {
-@@ -385,12 +529,15 @@ static int mt8188_dptx_hw_params_fixup(struct snd_soc_pcm_runtime *rtd,
+@@ -385,46 +683,266 @@ static int mt8188_dptx_hw_params_fixup(struct snd_soc_pcm_runtime *rtd,
  
  static int mt8188_hdmi_codec_init(struct snd_soc_pcm_runtime *rtd)
  {
@@ -28615,9 +30550,24 @@ index 919d74ea193466a5bc70691b4523c4005042624b..d5d0a60652f25f8754fcf2c3a1e0474d
 +					 mt8188_hdmi_jack_pins,
 +					 ARRAY_SIZE(mt8188_hdmi_jack_pins));
  	if (ret) {
- 		dev_info(rtd->dev, "%s, new jack failed: %d\n", __func__, ret);
+-		dev_info(rtd->dev, "%s, new jack failed: %d\n", __func__, ret);
++		dev_err(rtd->dev, "%s, new jack failed: %d\n", __func__, ret);
  		return ret;
-@@ -406,12 +553,14 @@ static int mt8188_hdmi_codec_init(struct snd_soc_pcm_runtime *rtd)
+ 	}
+ 
+ 	ret = snd_soc_component_set_jack(component, &priv->hdmi_jack, NULL);
+-	if (ret)
+-		dev_info(rtd->dev, "%s, set jack failed on %s (ret=%d)\n",
+-			 __func__, component->name, ret);
++	if (ret) {
++		dev_err(rtd->dev, "%s, set jack failed on %s (ret=%d)\n",
++			__func__, component->name, ret);
++		return ret;
++	}
+ 
+-	return ret;
++	return 0;
+ }
  
  static int mt8188_dptx_codec_init(struct snd_soc_pcm_runtime *rtd)
  {
@@ -28633,13 +30583,26 @@ index 919d74ea193466a5bc70691b4523c4005042624b..d5d0a60652f25f8754fcf2c3a1e0474d
 +					 &priv->dp_jack, mt8188_dp_jack_pins,
 +					 ARRAY_SIZE(mt8188_dp_jack_pins));
  	if (ret) {
- 		dev_info(rtd->dev, "%s, new jack failed: %d\n", __func__, ret);
+-		dev_info(rtd->dev, "%s, new jack failed: %d\n", __func__, ret);
++		dev_err(rtd->dev, "%s, new jack failed: %d\n", __func__, ret);
  		return ret;
-@@ -425,6 +574,206 @@ static int mt8188_dptx_codec_init(struct snd_soc_pcm_runtime *rtd)
- 	return ret;
- }
+ 	}
  
-+int mt8188_dumb_amp_init(struct snd_soc_pcm_runtime *rtd)
+ 	ret = snd_soc_component_set_jack(component, &priv->dp_jack, NULL);
+-	if (ret)
+-		dev_info(rtd->dev, "%s, set jack failed on %s (ret=%d)\n",
+-			 __func__, component->name, ret);
++	if (ret) {
++		dev_err(rtd->dev, "%s, set jack failed on %s (ret=%d)\n",
++			__func__, component->name, ret);
++		return ret;
++	}
+ 
+-	return ret;
++	return 0;
++}
++
++static int mt8188_dumb_amp_init(struct snd_soc_pcm_runtime *rtd)
 +{
 +	struct snd_soc_card *card = rtd->card;
 +	int ret = 0;
@@ -28651,34 +30614,15 @@ index 919d74ea193466a5bc70691b4523c4005042624b..d5d0a60652f25f8754fcf2c3a1e0474d
 +		return ret;
 +	}
 +
-+	ret = snd_soc_add_card_controls(card, mt8188_dumb_spk_kcontrols,
-+					ARRAY_SIZE(mt8188_dumb_spk_kcontrols));
++	ret = snd_soc_add_card_controls(card, mt8188_dumb_spk_controls,
++					ARRAY_SIZE(mt8188_dumb_spk_controls));
 +	if (ret) {
 +		dev_err(rtd->dev, "unable to add Dumb card controls, ret %d\n", ret);
 +		return ret;
 +	}
 +
-+	return ret;
++	return 0;
 +}
-+
-+static struct snd_soc_codec_conf max98390_4spk_codec_conf[] = {
-+	{
-+		.dlc = COMP_CODEC_CONF(MAX98390_DEV0_NAME),
-+		.name_prefix = "Rear Right",
-+	},
-+	{
-+		.dlc = COMP_CODEC_CONF(MAX98390_DEV1_NAME),
-+		.name_prefix = "Rear Left",
-+	},
-+	{
-+		.dlc = COMP_CODEC_CONF(MAX98390_DEV2_NAME),
-+		.name_prefix = "Front Right",
-+	},
-+	{
-+		.dlc = COMP_CODEC_CONF(MAX98390_DEV3_NAME),
-+		.name_prefix = "Front Left",
-+	},
-+};
 +
 +static int mt8188_max98390_hw_params(struct snd_pcm_substream *substream,
 +				     struct snd_pcm_hw_params *params)
@@ -28711,32 +30655,28 @@ index 919d74ea193466a5bc70691b4523c4005042624b..d5d0a60652f25f8754fcf2c3a1e0474d
 +	.hw_params = mt8188_max98390_hw_params,
 +};
 +
-+int mt8188_max98390_codec_init(struct snd_soc_pcm_runtime *rtd)
++static int mt8188_max98390_codec_init(struct snd_soc_pcm_runtime *rtd)
 +{
 +	struct snd_soc_card *card = rtd->card;
-+	int ret = 0;
++	int ret;
 +
 +	/* add regular speakers dapm route */
 +	ret = snd_soc_dapm_new_controls(&card->dapm, mt8188_dual_spk_widgets,
-+				      ARRAY_SIZE(mt8188_dual_spk_widgets));
++					ARRAY_SIZE(mt8188_dual_spk_widgets));
 +	if (ret) {
 +		dev_err(rtd->dev, "unable to add Left/Right Speaker widget, ret %d\n", ret);
 +		return ret;
 +	}
 +
-+	ret = snd_soc_add_card_controls(card, mt8188_dual_spk_kcontrols,
-+					ARRAY_SIZE(mt8188_dual_spk_kcontrols));
++	ret = snd_soc_add_card_controls(card, mt8188_dual_spk_controls,
++					ARRAY_SIZE(mt8188_dual_spk_controls));
 +	if (ret) {
 +		dev_err(rtd->dev, "unable to add Left/Right card controls, ret %d\n", ret);
 +		return ret;
 +	}
 +
-+	ret = snd_soc_dapm_add_routes(&card->dapm, mt8188_max98390_dual_spk_routes,
-+				      ARRAY_SIZE(mt8188_max98390_dual_spk_routes));
-+	if (ret) {
-+		dev_err(rtd->dev,
-+			"unable to add Left/Right Speaker routes, ret %d\n", ret);
-+	}
++	if (rtd->dai_link->num_codecs <= 2)
++		return 0;
 +
 +	/* add widgets/controls/dapm for rear speakers */
 +	ret = snd_soc_dapm_new_controls(&card->dapm, mt8188_rear_spk_widgets,
@@ -28747,30 +30687,38 @@ index 919d74ea193466a5bc70691b4523c4005042624b..d5d0a60652f25f8754fcf2c3a1e0474d
 +		return ret;
 +	}
 +
-+	ret = snd_soc_add_card_controls(card, mt8188_rear_spk_kcontrols,
-+					ARRAY_SIZE(mt8188_rear_spk_kcontrols));
++	ret = snd_soc_add_card_controls(card, mt8188_rear_spk_controls,
++					ARRAY_SIZE(mt8188_rear_spk_controls));
 +	if (ret) {
 +		dev_err(rtd->dev, "unable to add Rear card controls, ret %d\n", ret);
 +		return ret;
 +	}
 +
-+	ret = snd_soc_dapm_add_routes(&card->dapm, mt8188_max98390_rear_spk_routes,
-+				      ARRAY_SIZE(mt8188_max98390_rear_spk_routes));
-+	if (ret) {
-+		dev_err(rtd->dev,
-+			"unable to add Rear Left/Right Speaker routes, ret %d\n", ret);
-+	}
-+
-+	return ret;
++	return 0;
 +}
 +
 +static int mt8188_nau8825_codec_init(struct snd_soc_pcm_runtime *rtd)
 +{
-+	struct mtk_soc_card_data *soc_card_data = snd_soc_card_get_drvdata(rtd->card);
++	struct snd_soc_card *card = rtd->card;
++	struct mtk_soc_card_data *soc_card_data = snd_soc_card_get_drvdata(card);
 +	struct mt8188_mt6359_priv *priv = soc_card_data->mach_priv;
 +	struct snd_soc_component *component = asoc_rtd_to_codec(rtd, 0)->component;
 +	struct snd_soc_jack *jack = &priv->headset_jack;
 +	int ret;
++
++	ret = snd_soc_dapm_new_controls(&card->dapm, mt8188_nau8825_widgets,
++					ARRAY_SIZE(mt8188_nau8825_widgets));
++	if (ret) {
++		dev_err(rtd->dev, "unable to add nau8825 card widget, ret %d\n", ret);
++		return ret;
++	}
++
++	ret = snd_soc_add_card_controls(card, mt8188_nau8825_controls,
++					ARRAY_SIZE(mt8188_nau8825_controls));
++	if (ret) {
++		dev_err(rtd->dev, "unable to add nau8825 card controls, ret %d\n", ret);
++		return ret;
++	}
 +
 +	ret = snd_soc_card_jack_new_pins(rtd->card, "Headset Jack",
 +					 SND_JACK_HEADSET | SND_JACK_BTN_0 |
@@ -28795,7 +30743,7 @@ index 919d74ea193466a5bc70691b4523c4005042624b..d5d0a60652f25f8754fcf2c3a1e0474d
 +		return ret;
 +	}
 +
-+	return ret;
++	return 0;
 +};
 +
 +static void mt8188_nau8825_codec_exit(struct snd_soc_pcm_runtime *rtd)
@@ -28806,7 +30754,7 @@ index 919d74ea193466a5bc70691b4523c4005042624b..d5d0a60652f25f8754fcf2c3a1e0474d
 +}
 +
 +static int mt8188_nau8825_hw_params(struct snd_pcm_substream *substream,
-+				 struct snd_pcm_hw_params *params)
++				    struct snd_pcm_hw_params *params)
 +{
 +	struct snd_soc_pcm_runtime *rtd = asoc_substream_to_rtd(substream);
 +	struct snd_soc_dai *codec_dai = asoc_rtd_to_codec(rtd, 0);
@@ -28832,64 +30780,189 @@ index 919d74ea193466a5bc70691b4523c4005042624b..d5d0a60652f25f8754fcf2c3a1e0474d
 +		return ret;
 +	}
 +
-+	return ret;
++	return 0;
 +}
 +
-+static struct snd_soc_ops mt8188_nau8825_ops = {
++static const struct snd_soc_ops mt8188_nau8825_ops = {
 +	.hw_params = mt8188_nau8825_hw_params,
++};
++
++static int mt8188_sof_be_hw_params(struct snd_pcm_substream *substream,
++				   struct snd_pcm_hw_params *params)
++{
++	struct snd_soc_pcm_runtime *rtd = asoc_substream_to_rtd(substream);
++	struct snd_soc_component *cmpnt_afe = NULL;
++	struct snd_soc_pcm_runtime *runtime;
++
++	/* find afe component */
++	for_each_card_rtds(rtd->card, runtime) {
++		cmpnt_afe = snd_soc_rtdcom_lookup(runtime, AFE_PCM_NAME);
++		if (cmpnt_afe)
++			break;
++	}
++
++	if (cmpnt_afe && !pm_runtime_active(cmpnt_afe->dev)) {
++		dev_err(rtd->dev, "afe pm runtime is not active!!\n");
++		return -EINVAL;
++	}
++
++	return 0;
+ }
+ 
++static const struct snd_soc_ops mt8188_sof_be_ops = {
++	.hw_params = mt8188_sof_be_hw_params,
 +};
 +
  static struct snd_soc_dai_link mt8188_mt6359_dai_links[] = {
  	/* FE */
  	[DAI_LINK_DL2_FE] = {
-@@ -676,6 +1025,32 @@ static struct snd_soc_dai_link mt8188_mt6359_dai_links[] = {
+@@ -436,6 +954,7 @@ static struct snd_soc_dai_link mt8188_mt6359_dai_links[] = {
+ 		},
+ 		.dynamic = 1,
+ 		.dpcm_playback = 1,
++		.ops = &mt8188_playback_ops,
+ 		SND_SOC_DAILINK_REG(playback2),
+ 	},
+ 	[DAI_LINK_DL3_FE] = {
+@@ -447,6 +966,7 @@ static struct snd_soc_dai_link mt8188_mt6359_dai_links[] = {
+ 		},
+ 		.dynamic = 1,
+ 		.dpcm_playback = 1,
++		.ops = &mt8188_playback_ops,
+ 		SND_SOC_DAILINK_REG(playback3),
+ 	},
+ 	[DAI_LINK_DL6_FE] = {
+@@ -491,6 +1011,7 @@ static struct snd_soc_dai_link mt8188_mt6359_dai_links[] = {
+ 		},
+ 		.dynamic = 1,
+ 		.dpcm_playback = 1,
++		.ops = &mt8188_hdmi_dptx_playback_ops,
+ 		SND_SOC_DAILINK_REG(playback10),
+ 	},
+ 	[DAI_LINK_DL11_FE] = {
+@@ -546,6 +1067,7 @@ static struct snd_soc_dai_link mt8188_mt6359_dai_links[] = {
+ 		},
+ 		.dynamic = 1,
+ 		.dpcm_capture = 1,
++		.ops = &mt8188_capture_ops,
+ 		SND_SOC_DAILINK_REG(capture4),
+ 	},
+ 	[DAI_LINK_UL5_FE] = {
+@@ -557,6 +1079,7 @@ static struct snd_soc_dai_link mt8188_mt6359_dai_links[] = {
+ 		},
+ 		.dynamic = 1,
+ 		.dpcm_capture = 1,
++		.ops = &mt8188_capture_ops,
+ 		SND_SOC_DAILINK_REG(capture5),
+ 	},
+ 	[DAI_LINK_UL6_FE] = {
+@@ -604,13 +1127,11 @@ static struct snd_soc_dai_link mt8188_mt6359_dai_links[] = {
+ 		SND_SOC_DAILINK_REG(capture10),
+ 	},
+ 	/* BE */
+-	[DAI_LINK_ADDA_BE] = {
+-		.name = "ADDA_BE",
++	[DAI_LINK_DL_SRC_BE] = {
++		.name = "DL_SRC_BE",
+ 		.no_pcm = 1,
+ 		.dpcm_playback = 1,
+-		.dpcm_capture = 1,
+-		.init = mt8188_mt6359_init,
+-		SND_SOC_DAILINK_REG(adda),
++		SND_SOC_DAILINK_REG(dl_src),
+ 	},
+ 	[DAI_LINK_DPTX_BE] = {
+ 		.name = "DPTX_BE",
+@@ -676,25 +1197,105 @@ static struct snd_soc_dai_link mt8188_mt6359_dai_links[] = {
  		.dpcm_capture = 1,
  		SND_SOC_DAILINK_REG(pcm1),
  	},
++	[DAI_LINK_UL_SRC_BE] = {
++		.name = "UL_SRC_BE",
++		.no_pcm = 1,
++		.dpcm_capture = 1,
++		SND_SOC_DAILINK_REG(ul_src),
++	},
 +
 +	/* SOF BE */
 +	[DAI_LINK_SOF_DL2_BE] = {
 +		.name = "AFE_SOF_DL2",
 +		.no_pcm = 1,
 +		.dpcm_playback = 1,
++		.ops = &mt8188_sof_be_ops,
 +		SND_SOC_DAILINK_REG(AFE_SOF_DL2),
 +	},
 +	[DAI_LINK_SOF_DL3_BE] = {
 +		.name = "AFE_SOF_DL3",
 +		.no_pcm = 1,
 +		.dpcm_playback = 1,
++		.ops = &mt8188_sof_be_ops,
 +		SND_SOC_DAILINK_REG(AFE_SOF_DL3),
 +	},
 +	[DAI_LINK_SOF_UL4_BE] = {
 +		.name = "AFE_SOF_UL4",
 +		.no_pcm = 1,
 +		.dpcm_capture = 1,
++		.ops = &mt8188_sof_be_ops,
 +		SND_SOC_DAILINK_REG(AFE_SOF_UL4),
 +	},
 +	[DAI_LINK_SOF_UL5_BE] = {
 +		.name = "AFE_SOF_UL5",
 +		.no_pcm = 1,
 +		.dpcm_capture = 1,
++		.ops = &mt8188_sof_be_ops,
 +		SND_SOC_DAILINK_REG(AFE_SOF_UL5),
 +	},
  };
  
- static struct snd_soc_card mt8188_mt6359_soc_card = {
-@@ -686,16 +1061,31 @@ static struct snd_soc_card mt8188_mt6359_soc_card = {
- 	.num_dapm_widgets = ARRAY_SIZE(mt8188_mt6359_widgets),
- 	.controls = mt8188_mt6359_controls,
- 	.num_controls = ARRAY_SIZE(mt8188_mt6359_controls),
-+	.dapm_routes = mt8195_mt6359_routes,
-+	.num_dapm_routes = ARRAY_SIZE(mt8195_mt6359_routes),
- };
- 
-+/* fixup the BE DAI link to match any values from topology */
-+static int mt8188_dai_link_fixup(struct snd_soc_pcm_runtime *rtd,
-+				 struct snd_pcm_hw_params *params)
++static struct snd_kcontrol *ctl_find(struct snd_card *card, const char *name)
 +{
-+	return mtk_sof_dai_link_fixup(rtd, params);
++	struct snd_ctl_elem_id sid;
++
++	memset(&sid, 0, sizeof(sid));
++	strcpy(sid.name, name);
++	sid.iface = SNDRV_CTL_ELEM_IFACE_MIXER;
++	return snd_ctl_find_id(card, &sid);
 +}
 +
++static void mt8188_fixup_controls(struct snd_soc_card *card)
++{
++	struct mtk_soc_card_data *soc_card_data = snd_soc_card_get_drvdata(card);
++	struct mt8188_mt6359_priv *priv = soc_card_data->mach_priv;
++	struct mt8188_card_data *card_data = (struct mt8188_card_data *)priv->private_data;
++	struct snd_kcontrol *kctl;
++
++	if (card_data->quirk & NAU8825_HS_PRESENT) {
++		struct snd_soc_dapm_widget *w, *next_w;
++
++		for_each_card_widgets_safe(card, w, next_w) {
++			if (strcmp(w->name, "Headphone"))
++				continue;
++
++			snd_soc_dapm_free_widget(w);
++		}
++
++		kctl = ctl_find(card->snd_card, "Headphone Switch");
++		if (kctl)
++			snd_ctl_remove(card->snd_card, kctl);
++		else
++			dev_warn(card->dev, "Cannot find ctl : Headphone Switch\n");
++	}
++}
++
+ static struct snd_soc_card mt8188_mt6359_soc_card = {
+ 	.owner = THIS_MODULE,
+ 	.dai_link = mt8188_mt6359_dai_links,
+ 	.num_links = ARRAY_SIZE(mt8188_mt6359_dai_links),
+ 	.dapm_widgets = mt8188_mt6359_widgets,
+ 	.num_dapm_widgets = ARRAY_SIZE(mt8188_mt6359_widgets),
++	.dapm_routes = mt8188_mt6359_routes,
++	.num_dapm_routes = ARRAY_SIZE(mt8188_mt6359_routes),
+ 	.controls = mt8188_mt6359_controls,
+ 	.num_controls = ARRAY_SIZE(mt8188_mt6359_controls),
++	.fixup_controls = mt8188_fixup_controls,
+ };
+ 
  static int mt8188_mt6359_dev_probe(struct platform_device *pdev)
  {
  	struct snd_soc_card *card = &mt8188_mt6359_soc_card;
@@ -28899,15 +30972,14 @@ index 919d74ea193466a5bc70691b4523c4005042624b..d5d0a60652f25f8754fcf2c3a1e0474d
  	struct mt8188_mt6359_priv *priv;
  	struct mt8188_card_data *card_data;
  	struct snd_soc_dai_link *dai_link;
-+	int sof_on = 0;
- 	int ret, i;
++	bool init_mt6359 = false;
 +	bool init_nau8825 = false;
 +	bool init_max98390 = false;
 +	bool init_dumb = false;
+ 	int ret, i;
  
  	card_data = (struct mt8188_card_data *)of_device_get_match_data(&pdev->dev);
- 	card->dev = &pdev->dev;
-@@ -708,21 +1098,66 @@ static int mt8188_mt6359_dev_probe(struct platform_device *pdev)
+@@ -708,21 +1309,64 @@ static int mt8188_mt6359_dev_probe(struct platform_device *pdev)
  	if (!card->name)
  		card->name = card_data->name;
  
@@ -28942,7 +31014,6 @@ index 919d74ea193466a5bc70691b4523c4005042624b..d5d0a60652f25f8754fcf2c3a1e0474d
 +		}
 +		sof_priv->conn_streams = g_sof_conn_streams;
 +		sof_priv->num_streams = ARRAY_SIZE(g_sof_conn_streams);
-+		sof_priv->sof_dai_link_fixup = mt8188_dai_link_fixup;
 +		soc_card_data->sof_priv = sof_priv;
 +		card->probe = mtk_sof_card_probe;
 +		card->late_probe = mtk_sof_card_late_probe;
@@ -28951,7 +31022,6 @@ index 919d74ea193466a5bc70691b4523c4005042624b..d5d0a60652f25f8754fcf2c3a1e0474d
 +			card->topology_shortname_created = true;
 +		}
 +		card->name = card->topology_shortname;
-+		sof_on = 1;
 +	}
 +
 +	if (of_property_read_bool(pdev->dev.of_node, "mediatek,dai-link")) {
@@ -28960,11 +31030,11 @@ index 919d74ea193466a5bc70691b4523c4005042624b..d5d0a60652f25f8754fcf2c3a1e0474d
 +					       mt8188_mt6359_dai_links,
 +					       ARRAY_SIZE(mt8188_mt6359_dai_links));
 +		if (ret) {
-+			dev_dbg(&pdev->dev, "Parse dai-link fail\n");
++			dev_err_probe(&pdev->dev, ret, "Parse dai-link fail\n");
 +			goto err_adsp_node;
 +		}
 +	} else {
-+		if (!sof_on)
++		if (!adsp_node)
 +			card->num_links = DAI_LINK_REGULAR_NUM;
 +	}
 +
@@ -28973,20 +31043,20 @@ index 919d74ea193466a5bc70691b4523c4005042624b..d5d0a60652f25f8754fcf2c3a1e0474d
  	if (!platform_node) {
  		ret = -EINVAL;
 -		return dev_err_probe(&pdev->dev, ret, "Property 'platform' missing or invalid\n");
-+		dev_dbg(&pdev->dev, "Property 'platform' missing or invalid\n");
++		dev_err_probe(&pdev->dev, ret, "Property 'platform' missing or invalid\n");
 +		goto err_platform_node;
 +
  	}
  
  	ret = parse_dai_link_info(card);
-@@ -730,8 +1165,12 @@ static int mt8188_mt6359_dev_probe(struct platform_device *pdev)
+@@ -730,8 +1374,12 @@ static int mt8188_mt6359_dev_probe(struct platform_device *pdev)
  		goto err;
  
  	for_each_card_prelinks(card, i, dai_link) {
 -		if (!dai_link->platforms->name)
 -			dai_link->platforms->of_node = platform_node;
 +		if (!dai_link->platforms->name) {
-+			if (!strncmp(dai_link->name, "AFE_SOF", strlen("AFE_SOF")) && sof_on)
++			if (!strncmp(dai_link->name, "AFE_SOF", strlen("AFE_SOF")) && adsp_node)
 +				dai_link->platforms->of_node = adsp_node;
 +			else
 +				dai_link->platforms->of_node = platform_node;
@@ -28994,49 +31064,51 @@ index 919d74ea193466a5bc70691b4523c4005042624b..d5d0a60652f25f8754fcf2c3a1e0474d
  
  		if (strcmp(dai_link->name, "DPTX_BE") == 0) {
  			if (strcmp(dai_link->codecs->dai_name, "snd-soc-dummy-dai"))
-@@ -739,10 +1178,40 @@ static int mt8188_mt6359_dev_probe(struct platform_device *pdev)
+@@ -739,10 +1387,42 @@ static int mt8188_mt6359_dev_probe(struct platform_device *pdev)
  		} else if (strcmp(dai_link->name, "ETDM3_OUT_BE") == 0) {
  			if (strcmp(dai_link->codecs->dai_name, "snd-soc-dummy-dai"))
  				dai_link->init = mt8188_hdmi_codec_init;
++		} else if (strcmp(dai_link->name, "DL_SRC_BE") == 0 ||
++			   strcmp(dai_link->name, "UL_SRC_BE") == 0) {
++			if (!init_mt6359) {
++				dai_link->init = mt8188_mt6359_init;
++				init_mt6359 = true;
++			}
 +		} else if (strcmp(dai_link->name, "ETDM1_OUT_BE") == 0 ||
 +			   strcmp(dai_link->name, "ETDM2_OUT_BE") == 0 ||
 +			   strcmp(dai_link->name, "ETDM1_IN_BE") == 0 ||
 +			   strcmp(dai_link->name, "ETDM2_IN_BE") == 0) {
 +			if (!strcmp(dai_link->codecs->dai_name, MAX98390_CODEC_DAI)) {
 +				dai_link->ops = &mt8188_max98390_ops;
-+				if (init_max98390)
-+					continue;
-+
-+				dai_link->init = mt8188_max98390_codec_init;
-+				card->codec_conf = max98390_4spk_codec_conf;
-+				card->num_configs = ARRAY_SIZE(max98390_4spk_codec_conf);
-+				init_max98390 = true;
++				if (!init_max98390) {
++					dai_link->init = mt8188_max98390_codec_init;
++					init_max98390 = true;
++				}
 +			} else if (!strcmp(dai_link->codecs->dai_name, NAU8825_CODEC_DAI)) {
 +				dai_link->ops = &mt8188_nau8825_ops;
-+				if (init_nau8825)
-+					continue;
-+
-+				dai_link->init = mt8188_nau8825_codec_init;
-+				dai_link->exit = mt8188_nau8825_codec_exit;
-+				init_nau8825 = true;
++				if (!init_nau8825) {
++					dai_link->init = mt8188_nau8825_codec_init;
++					dai_link->exit = mt8188_nau8825_codec_exit;
++					init_nau8825 = true;
++				}
 +			} else {
 +				if (strcmp(dai_link->codecs->dai_name, "snd-soc-dummy-dai")) {
-+					if (init_dumb)
-+						continue;
-+
-+					dai_link->init = mt8188_dumb_amp_init;
-+					init_dumb = true;
++					if (!init_dumb) {
++						dai_link->init = mt8188_dumb_amp_init;
++						init_dumb = true;
++					}
 +				}
 +			}
  		}
  	}
  
 -	snd_soc_card_set_drvdata(card, priv);
++	priv->private_data = card_data;
 +	snd_soc_card_set_drvdata(card, soc_card_data);
  
  	ret = devm_snd_soc_register_card(&pdev->dev, card);
  	if (ret)
-@@ -751,6 +1220,11 @@ static int mt8188_mt6359_dev_probe(struct platform_device *pdev)
+@@ -751,6 +1431,11 @@ static int mt8188_mt6359_dev_probe(struct platform_device *pdev)
  err:
  	of_node_put(platform_node);
  	clean_card_reference(card);
@@ -29048,26 +31120,27 @@ index 919d74ea193466a5bc70691b4523c4005042624b..d5d0a60652f25f8754fcf2c3a1e0474d
  	return ret;
  }
  
-@@ -758,11 +1232,19 @@ static struct mt8188_card_data mt8188_evb_card = {
+@@ -758,12 +1443,15 @@ static struct mt8188_card_data mt8188_evb_card = {
  	.name = "mt8188_mt6359",
  };
  
 +static struct mt8188_card_data mt8188_nau8825_card = {
 +	.name = "mt8188_nau8825",
++	.quirk = NAU8825_HS_PRESENT | DPCM_FE_CONSTRAINT,
 +};
 +
  static const struct of_device_id mt8188_mt6359_dt_match[] = {
- 	{
- 		.compatible = "mediatek,mt8188-mt6359-evb",
- 		.data = &mt8188_evb_card,
- 	},
-+	{
-+		.compatible = "mediatek,mt8188-nau8825",
-+		.data = &mt8188_nau8825_card,
-+	},
- 	{},
+-	{
+-		.compatible = "mediatek,mt8188-mt6359-evb",
+-		.data = &mt8188_evb_card,
+-	},
+-	{},
++	{ .compatible = "mediatek,mt8188-mt6359-evb", .data = &mt8188_evb_card, },
++	{ .compatible = "mediatek,mt8188-nau8825", .data = &mt8188_nau8825_card, },
++	{ /* sentinel */ },
  };
  MODULE_DEVICE_TABLE(of, mt8188_mt6359_dt_match);
+ 
 diff --git a/sound/soc/mediatek/mt8188/mt8188-reg.h b/sound/soc/mediatek/mt8188/mt8188-reg.h
 index 51cd1a83dd9dd75167f1ffb56372769c1bf45abd..bdd885419ff3874bab80549ea3ff4617172b8245 100644
 --- a/sound/soc/mediatek/mt8188/mt8188-reg.h
@@ -29088,3 +31161,312 @@ index 51cd1a83dd9dd75167f1ffb56372769c1bf45abd..bdd885419ff3874bab80549ea3ff4617
  
  /* AFE_ADDA_DL_SRC2_CON0 */
  #define DL_2_INPUT_MODE_CTL_MASK	GENMASK(31, 28)
+diff --git a/sound/soc/mediatek/mt8192/mt8192-afe-control.c b/sound/soc/mediatek/mt8192/mt8192-afe-control.c
+index 9163e05e54e173f678299d7caa9be9f6e487d8e4..d01b62e10088ddc44d78ef6107e83e2e6a747dff 100644
+--- a/sound/soc/mediatek/mt8192/mt8192-afe-control.c
++++ b/sound/soc/mediatek/mt8192/mt8192-afe-control.c
+@@ -6,8 +6,6 @@
+ // Author: Shane Chien <shane.chien@mediatek.com>
+ //
+ 
+-#include <linux/pm_runtime.h>
+-
+ #include "mt8192-afe-common.h"
+ 
+ enum {
+diff --git a/sound/soc/soc-compress.c b/sound/soc/soc-compress.c
+index 6e74a6c4898696ed8697daf8dc99eb59ec1f4c48..b8be2d3b4ecbd3d89686b6e6be874030dcf8b853 100644
+--- a/sound/soc/soc-compress.c
++++ b/sound/soc/soc-compress.c
+@@ -20,7 +20,6 @@
+ #include <sound/initval.h>
+ #include <sound/soc-dpcm.h>
+ #include <sound/soc-link.h>
+-#include <linux/pm_runtime.h>
+ 
+ static int snd_soc_compr_components_open(struct snd_compr_stream *cstream)
+ {
+diff --git a/sound/soc/soc-pcm.c b/sound/soc/soc-pcm.c
+index b830a53ceacbb8f1ec4173aa4b04bb82c8a6d80f..a5d83f1bd2868b1201755cc48c2a436ebaf3b69e 100644
+--- a/sound/soc/soc-pcm.c
++++ b/sound/soc/soc-pcm.c
+@@ -14,7 +14,6 @@
+ #include <linux/init.h>
+ #include <linux/delay.h>
+ #include <linux/pinctrl/consumer.h>
+-#include <linux/pm_runtime.h>
+ #include <linux/slab.h>
+ #include <linux/workqueue.h>
+ #include <linux/export.h>
+diff --git a/sound/soc/sof/intel/hda-loader-skl.c b/sound/soc/sof/intel/hda-loader-skl.c
+index 69fdef8f89ae25e7336337349b9bcaf6a3c407e0..1e77ca936f806a37670bdc158959b3e950501c1e 100644
+--- a/sound/soc/sof/intel/hda-loader-skl.c
++++ b/sound/soc/sof/intel/hda-loader-skl.c
+@@ -15,7 +15,6 @@
+ #include <linux/mm.h>
+ #include <linux/module.h>
+ #include <linux/pci.h>
+-#include <linux/pm_runtime.h>
+ #include <linux/slab.h>
+ #include <sound/hdaudio_ext.h>
+ #include <sound/sof.h>
+diff --git a/sound/soc/sof/intel/hda-stream.c b/sound/soc/sof/intel/hda-stream.c
+index 79d818e6a0fa9d222572104c5834998aaeadba45..109f7ca2967390a58a857cc1ed9d2b84f8c494af 100644
+--- a/sound/soc/sof/intel/hda-stream.c
++++ b/sound/soc/sof/intel/hda-stream.c
+@@ -15,7 +15,6 @@
+  * Hardware interface for generic Intel audio DSP HDA IP
+  */
+ 
+-#include <linux/pm_runtime.h>
+ #include <sound/hdaudio_ext.h>
+ #include <sound/hda_register.h>
+ #include <sound/sof.h>
+diff --git a/sound/soc/sof/intel/skl.c b/sound/soc/sof/intel/skl.c
+index 13efdb94d071d2b3b780a7f856b22fbc3d5b502c..d24e64e71b58f52da464bfa3eb4086162c400435 100644
+--- a/sound/soc/sof/intel/skl.c
++++ b/sound/soc/sof/intel/skl.c
+@@ -19,7 +19,6 @@
+ #include <linux/module.h>
+ #include <linux/slab.h>
+ #include <linux/pci.h>
+-#include <linux/pm_runtime.h>
+ #include <sound/hdaudio_ext.h>
+ #include <sound/pcm_params.h>
+ #include <sound/sof.h>
+diff --git a/sound/soc/sof/mediatek/mt8186/mt8186-clk.c b/sound/soc/sof/mediatek/mt8186/mt8186-clk.c
+index 2df3b7ae1c6f510feae21f0f052dcd1bf28f3583..cb2ab5884b8c08fa91cbe2c68b75326bd0fd989e 100644
+--- a/sound/soc/sof/mediatek/mt8186/mt8186-clk.c
++++ b/sound/soc/sof/mediatek/mt8186/mt8186-clk.c
+@@ -8,7 +8,6 @@
+ // Hardware interface for mt8186 DSP clock
+ 
+ #include <linux/clk.h>
+-#include <linux/pm_runtime.h>
+ #include <linux/io.h>
+ 
+ #include "../../sof-audio.h"
+diff --git a/sound/soc/sof/mediatek/mt8186/mt8186.c b/sound/soc/sof/mediatek/mt8186/mt8186.c
+index 597cb4476acb4183b3ab6c98c69ac953b6eaa7f0..3e0ea0e109e2f6d6fc572d3b791c3264a432f96f 100644
+--- a/sound/soc/sof/mediatek/mt8186/mt8186.c
++++ b/sound/soc/sof/mediatek/mt8186/mt8186.c
+@@ -24,6 +24,7 @@
+ #include "../../sof-of-dev.h"
+ #include "../../sof-audio.h"
+ #include "../adsp_helper.h"
++#include "../mtk-adsp-common.h"
+ #include "mt8186.h"
+ #include "mt8186-clk.h"
+ 
+@@ -48,47 +49,13 @@ static int mt8186_send_msg(struct snd_sof_dev *sdev,
+ 	return mtk_adsp_ipc_send(priv->dsp_ipc, MTK_ADSP_IPC_REQ, MTK_ADSP_IPC_OP_REQ);
+ }
+ 
+-static void mt8186_get_reply(struct snd_sof_dev *sdev)
+-{
+-	struct snd_sof_ipc_msg *msg = sdev->msg;
+-	struct sof_ipc_reply reply;
+-	int ret = 0;
+-
+-	if (!msg) {
+-		dev_warn(sdev->dev, "unexpected ipc interrupt\n");
+-		return;
+-	}
+-
+-	/* get reply */
+-	sof_mailbox_read(sdev, sdev->host_box.offset, &reply, sizeof(reply));
+-	if (reply.error < 0) {
+-		memcpy(msg->reply_data, &reply, sizeof(reply));
+-		ret = reply.error;
+-	} else {
+-		/* reply has correct size? */
+-		if (reply.hdr.size != msg->reply_size) {
+-			dev_err(sdev->dev, "error: reply expected %zu got %u bytes\n",
+-				msg->reply_size, reply.hdr.size);
+-			ret = -EINVAL;
+-		}
+-
+-		/* read the message */
+-		if (msg->reply_size > 0)
+-			sof_mailbox_read(sdev, sdev->host_box.offset,
+-					 msg->reply_data, msg->reply_size);
+-	}
+-
+-	msg->reply_error = ret;
+-}
+-
+ static void mt8186_dsp_handle_reply(struct mtk_adsp_ipc *ipc)
+ {
+ 	struct adsp_priv *priv = mtk_adsp_ipc_get_data(ipc);
+ 	unsigned long flags;
+ 
+ 	spin_lock_irqsave(&priv->sdev->ipc_lock, flags);
+-	mt8186_get_reply(priv->sdev);
+-	snd_sof_ipc_reply(priv->sdev, 0);
++	snd_sof_ipc_process_reply(priv->sdev, 0);
+ 	spin_unlock_irqrestore(&priv->sdev->ipc_lock, flags);
+ }
+ 
+@@ -507,6 +474,26 @@ static snd_pcm_uframes_t mt8186_pcm_pointer(struct snd_sof_dev *sdev,
+ 	return pos;
+ }
+ 
++static void mt8186_adsp_dump(struct snd_sof_dev *sdev, u32 flags)
++{
++	u32 dbg_pc, dbg_data, dbg_inst, dbg_ls0stat, dbg_status, faultinfo;
++
++	/* dump debug registers */
++	dbg_pc = snd_sof_dsp_read(sdev, DSP_REG_BAR, DSP_PDEBUGPC);
++	dbg_data = snd_sof_dsp_read(sdev, DSP_REG_BAR, DSP_PDEBUGDATA);
++	dbg_inst = snd_sof_dsp_read(sdev, DSP_REG_BAR, DSP_PDEBUGINST);
++	dbg_ls0stat = snd_sof_dsp_read(sdev, DSP_REG_BAR, DSP_PDEBUGLS0STAT);
++	dbg_status = snd_sof_dsp_read(sdev, DSP_REG_BAR, DSP_PDEBUGSTATUS);
++	faultinfo = snd_sof_dsp_read(sdev, DSP_REG_BAR, DSP_PFAULTINFO);
++
++	dev_info(sdev->dev, "adsp dump : pc %#x, data %#x, dbg_inst %#x,",
++		 dbg_pc, dbg_data, dbg_inst);
++	dev_info(sdev->dev, "ls0stat %#x, status %#x, faultinfo %#x",
++		 dbg_ls0stat, dbg_status, faultinfo);
++
++	mtk_adsp_dump(sdev, flags);
++}
++
+ static struct snd_soc_dai_driver mt8186_dai[] = {
+ {
+ 	.name = "SOF_DL1",
+@@ -589,6 +576,7 @@ static struct snd_sof_dsp_ops sof_mt8186_ops = {
+ 	.num_drv	= ARRAY_SIZE(mt8186_dai),
+ 
+ 	/* Debug information */
++	.dbg_dump = mt8186_adsp_dump,
+ 	.debugfs_add_region_item = snd_sof_debugfs_add_region_item_iomem,
+ 
+ 	/* PM */
+@@ -628,7 +616,65 @@ static const struct sof_dev_desc sof_of_mt8186_desc = {
+ 	.ops = &sof_mt8186_ops,
+ };
+ 
++/*
++ * DL2, DL3, UL4, UL5 are registered as SOF FE, so creating the corresponding
++ * SOF BE to complete the pipeline.
++ */
++static struct snd_soc_dai_driver mt8188_dai[] = {
++{
++	.name = "SOF_DL2",
++	.playback = {
++		.channels_min = 1,
++		.channels_max = 2,
++	},
++},
++{
++	.name = "SOF_DL3",
++	.playback = {
++		.channels_min = 1,
++		.channels_max = 2,
++	},
++},
++{
++	.name = "SOF_UL4",
++	.capture = {
++		.channels_min = 1,
++		.channels_max = 2,
++	},
++},
++{
++	.name = "SOF_UL5",
++	.capture = {
++		.channels_min = 1,
++		.channels_max = 2,
++	},
++},
++};
++
++/* mt8188 ops */
++static struct snd_sof_dsp_ops sof_mt8188_ops;
++
++static int sof_mt8188_ops_init(struct snd_sof_dev *sdev)
++{
++	/* common defaults */
++	memcpy(&sof_mt8188_ops, &sof_mt8186_ops, sizeof(sof_mt8188_ops));
++
++	sof_mt8188_ops.drv = mt8188_dai;
++	sof_mt8188_ops.num_drv = ARRAY_SIZE(mt8188_dai);
++
++	return 0;
++}
++
++static struct snd_sof_of_mach sof_mt8188_machs[] = {
++	{
++		.compatible = "mediatek,mt8188",
++		.sof_tplg_filename = "sof-mt8188.tplg",
++	},
++	{}
++};
++
+ static const struct sof_dev_desc sof_of_mt8188_desc = {
++	.of_machines = sof_mt8188_machs,
+ 	.ipc_supported_mask	= BIT(SOF_IPC),
+ 	.ipc_default		= SOF_IPC,
+ 	.default_fw_path = {
+@@ -641,7 +687,8 @@ static const struct sof_dev_desc sof_of_mt8188_desc = {
+ 		[SOF_IPC] = "sof-mt8188.ri",
+ 	},
+ 	.nocodec_tplg_filename = "sof-mt8188-nocodec.tplg",
+-	.ops = &sof_mt8186_ops,
++	.ops = &sof_mt8188_ops,
++	.ops_init = sof_mt8188_ops_init,
+ };
+ 
+ static const struct of_device_id sof_of_mt8186_ids[] = {
+diff --git a/sound/soc/sof/mediatek/mt8186/mt8186.h b/sound/soc/sof/mediatek/mt8186/mt8186.h
+index 5b521c60b4e34a3acc9338225cccda01def8e0ea..91323f492a1e0648d534df7ce116fa921eadad59 100644
+--- a/sound/soc/sof/mediatek/mt8186/mt8186.h
++++ b/sound/soc/sof/mediatek/mt8186/mt8186.h
+@@ -38,6 +38,11 @@ struct snd_sof_dev;
+ #define DSP_MBOX3_IRQ_EN		BIT(3)
+ #define DSP_MBOX4_IRQ_EN		BIT(4)
+ #define DSP_PDEBUGPC			0x013C
++#define DSP_PDEBUGDATA			0x0140
++#define DSP_PDEBUGINST			0x0144
++#define DSP_PDEBUGLS0STAT		0x0148
++#define DSP_PDEBUGSTATUS		0x014C
++#define DSP_PFAULTINFO			0x0150
+ #define ADSP_CK_EN			0x1000
+ #define CORE_CLK_EN			BIT(0)
+ #define COREDBG_EN			BIT(1)
+diff --git a/sound/soc/sof/mediatek/mt8195/mt8195-clk.c b/sound/soc/sof/mediatek/mt8195/mt8195-clk.c
+index 9ef08e43aa38b2db830931e4ee7bbf56def4dc03..7cffcad00f9b796a6172e4122a8d9a5fb58e0389 100644
+--- a/sound/soc/sof/mediatek/mt8195/mt8195-clk.c
++++ b/sound/soc/sof/mediatek/mt8195/mt8195-clk.c
+@@ -7,7 +7,6 @@
+ // Hardware interface for mt8195 DSP clock
+ 
+ #include <linux/clk.h>
+-#include <linux/pm_runtime.h>
+ #include <linux/io.h>
+ #include "mt8195.h"
+ #include "mt8195-clk.h"
+diff --git a/sound/soc/tegra/tegra20_ac97.c b/sound/soc/tegra/tegra20_ac97.c
+index d23d88a1089961879706e497166f17f01dd4e163..131f829a39230c2af9eecb7aeafe798c5c47a858 100644
+--- a/sound/soc/tegra/tegra20_ac97.c
++++ b/sound/soc/tegra/tegra20_ac97.c
+@@ -19,7 +19,6 @@
+ #include <linux/of.h>
+ #include <linux/of_gpio.h>
+ #include <linux/platform_device.h>
+-#include <linux/pm_runtime.h>
+ #include <linux/regmap.h>
+ #include <linux/reset.h>
+ #include <linux/slab.h>
+diff --git a/sound/soc/ti/omap-mcbsp-st.c b/sound/soc/ti/omap-mcbsp-st.c
+index 8163f453bf36e54ffa0cb37a3316be8c7fe5b1c8..b047add5d8875aa3cf857da9efc1af9db8a90927 100644
+--- a/sound/soc/ti/omap-mcbsp-st.c
++++ b/sound/soc/ti/omap-mcbsp-st.c
+@@ -19,7 +19,6 @@
+ #include <linux/delay.h>
+ #include <linux/io.h>
+ #include <linux/slab.h>
+-#include <linux/pm_runtime.h>
+ 
+ #include "omap-mcbsp.h"
+ #include "omap-mcbsp-priv.h"
