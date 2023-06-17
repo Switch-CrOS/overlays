@@ -1,12 +1,12 @@
 This file should always contain information regarding which
 branch/commit the firmware was built from.
 
-MTL-003 Initial drop
+MTL-005 Initial drop
 
 repo : https://github.com/thesofproject/sof
-branch : mtl-003-drop-stable
-commit id : 98a20ce546ca09b36ef8639c058196e938b04a7a
+branch : mtl-005-drop-stable
+commit id : c08898c8ef2859a50d20af6758e408cb242e0373
 
 MD5sums:
-e9554eedc728ff749ac2e612e8e49185  sof-mtl.ri
-cb8b37012ff8c7b66af4e665847b54ef  sof-mtl.ldc
+e6bfcc01047af99300648045935fcf06  sof-mtl.ldc
+06dd7ae3b3bcb9fdc8d927558534c389  sof-mtl.ri
