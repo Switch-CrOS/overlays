@@ -16,4 +16,6 @@ S=${WORKDIR}/${PN}-rex-${PV}
 src_install() {
 	insinto /lib/firmware/intel/sof-ace-tplg
 	doins ./*.tplg
+
+	dosym ./sof-mtl-rt1019-rt5682.tplg /lib/firmware/intel/sof-ace-tplg/sof-mtl-max98360a-rt5682.tplg
 }

@@ -1,14 +1,12 @@
 This file should always contain information regarding which
 branch/commit the firmware was built from.
 
-MTL Initial drop
+MTL-005 drop to support cs42l42 on soundwire.
 
-repo : https://github.com/
-branch : mtl-004-drop-stable
-commit id : 6b91a553284ba541214e4a5ff7cb3e070228f8eb
-with the following 2 patches reverted:
-f63e5357f topology2: enable BT offload in cavs-rt5682
-9f318fd3d topology2: cavs-rt5682: Update BT offload SSP for MTL chromebook
+repo : https://github.com/thesofproject/sof
+branch : mtl-005-drop-stable
+commit id : 006f71e212e32b8c0024ec326dbaf66628758f88
 
 MD5sums:
-97d47363ca102733ba8486c04a71826c  sof-mtl-max98360a-rt5682.tplg
+39a97658b363d1028f978c68333dd3d8  sof-mtl-max98360a-rt5682.tplg
+ce458ef3dc99996a1a159e3e7436f204  sof-mtl-sdw-cs42l42-l0-max98363-l2.tplg
