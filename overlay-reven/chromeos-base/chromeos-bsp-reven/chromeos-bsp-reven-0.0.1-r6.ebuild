@@ -23,6 +23,7 @@ RDEPEND="
 	chromeos-base/flex_bluetooth
 	chromeos-base/reven-hwdb
 	chromeos-base/reven-quirks
+	sys-firmware/fwupd-uefi-dbx
 "
 
 src_install() {
