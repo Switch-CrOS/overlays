@@ -1,7 +1,7 @@
 # Copyright 2019 The ChromiumOS Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI="7"
 
 DESCRIPTION="MediaTek config files required by the MediaTek camera HAL"
 
