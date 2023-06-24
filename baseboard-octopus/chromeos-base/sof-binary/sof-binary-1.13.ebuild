@@ -1,7 +1,7 @@
 # Copyright 2018 The ChromiumOS Authors
 # Distributed under the terms of the GNU General Public License v2.
 
-EAPI=5
+EAPI="7"
 
 DESCRIPTION="Gemini Lake SOF firmware binary"
 SRC_URI="gs://chromeos-localmirror/distfiles/${PN}-glk-${PV}.tar.bz2"
