@@ -20,6 +20,7 @@ IUSE="vpu_driver"
 
 # Add dependencies on other ebuilds from within this board overlay
 RDEPEND="
+	chromeos-base/sof-binary:=
 	vpu_driver? (
 		chromeos-base/intel-vpu-umd:=
 	)
