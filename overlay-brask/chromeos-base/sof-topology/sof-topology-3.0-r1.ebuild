@@ -16,4 +16,9 @@ S=${WORKDIR}/${PN}-brask-${PV}
 src_install() {
 	insinto /lib/firmware/intel/sof-tplg
 	doins ./*.tplg
+
+	# Add symlinks for all tplg files to RPL ones with name replacing prefix to "sof-rpl"
+	for TPLG_FILE in ./*.tplg ; do
+		dosym "${TPLG_FILE}" /lib/firmware/intel/sof-tplg/"${TPLG_FILE//sof-adl/sof-rpl}"
+	done
 }
