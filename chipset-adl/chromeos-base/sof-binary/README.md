@@ -1,12 +1,12 @@
 This file should always contain information regarding which
 branch/commit the firmware was built from.
 
-RPL-001 drop stable
+CAVS2.5-001 drop stable
 
 repo : https://chrome-internal.googlesource.com/chromeos/third_party/sound-open-firmware-private
-branch : rpl-001-drop-stable
-commit id : b8e5cc383073519fddc0b4992ef6d74bd0e89a78
+branch : cavs2.5-001-drop-stable
+commit id : 0360a4d87f614911c272b687c4d265befb4e806b
 
 MD5sums:
-a6f6bd68244821c52ba5adc62e4dfdee  sof-adl.ldc
-7091cd6e6d7e3fde35491acfa2d1dcbd  sof-adl.ri
+fbcc50c01274d8a54c8b526f942c1d11  sof-adl.ldc
+52d40e4f11f600d4873ad7c6020b9374  sof-adl.ri
