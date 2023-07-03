@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-EAPI=6
+EAPI=7
 
 DESCRIPTION="Alder Lake SOF firmware binary"
 SRC_URI="gs://chromeos-localmirror/distfiles/${PN}-adln-${PV}.tar.bz2"
@@ -20,6 +20,6 @@ S=${WORKDIR}/${PN}-adln-${PV}
 
 src_install() {
 	insinto /lib/firmware/intel/sof/community
-	newins sof-adl.ri sof-adl-n.ri
-	newins sof-adl.ldc sof-adl-n.ldc
+	doins sof-adl-n.ri
+	doins sof-adl-n.ldc
 }
