@@ -246,10 +246,10 @@ index 0000000000000000000000000000000000000000..c3aa1cc11d92dab264ff072c6ca4cc13
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8186-corsola-starmie.dtsi b/arch/arm64/boot/dts/mediatek/mt8186-corsola-starmie.dtsi
 new file mode 100644
-index 0000000000000000000000000000000000000000..0424b2a9676cd7bc89e9d25326700130f8197687
+index 0000000000000000000000000000000000000000..d3a279fbfc6e3e5986a6a9bfc9be8e5494f6cec5
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt8186-corsola-starmie.dtsi
-@@ -0,0 +1,497 @@
+@@ -0,0 +1,506 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
 +/*
 + * Copyright 2023 Google LLC
@@ -687,10 +687,17 @@ index 0000000000000000000000000000000000000000..0424b2a9676cd7bc89e9d25326700130
 +		};
 +	};
 +
++	edp_panel_fixed_pins: edp-panel-fixed-pins {
++		pins1 {
++			pinmux = <PINMUX_GPIO153__FUNC_GPIO153>;
++			output-low;
++		};
++	};
++
 +	pp6000_mipi_disp_150ma_fixed_pins: pp6000-mipi-disp-150ma-fixed-pins {
 +		pins1 {
 +			pinmux = <PINMUX_GPIO154__FUNC_GPIO154>;
-+			output-high;
++			output-low;
 +		};
 +	};
 +
@@ -745,7 +752,9 @@ index 0000000000000000000000000000000000000000..0424b2a9676cd7bc89e9d25326700130
 +};
 +
 +en_pp6000_mipi_disp: &pp3300_disp_x {
++	regulator-name = "en_pp6000_mipi_disp";
 +	gpio = <&pio 153 GPIO_ACTIVE_HIGH>;
++	/delete-property/ regulator-boot-on;
 +};
 diff --git a/chromeos/config/chromeos/arm64/chromiumos-mediatek.flavour.config b/chromeos/config/chromeos/arm64/chromiumos-mediatek.flavour.config
 index 368e2a064a37f77892246b1fafd764c6390f86db..071255688b27ec5dbebcdb839be34c01d1e599c3 100644
@@ -1019,6 +1028,58 @@ index f634371c717a856b2e66961a58df77a7bf5012ed..d103eda89f8e19944ba3b5f5c5cc57ec
  #if IS_REACHABLE(CONFIG_BACKLIGHT_CLASS_DEVICE)
  /**
   * drm_panel_of_backlight - use backlight device node for backlight
+diff --git a/drivers/gpu/drm/panel/panel-boe-tv101wum-nl6.c b/drivers/gpu/drm/panel/panel-boe-tv101wum-nl6.c
+index dc276c346fd1a0d982215b6994fb760ac5fe5b80..b44a6871d97cb1e2142beb135d49fee6cb04ebaa 100644
+--- a/drivers/gpu/drm/panel/panel-boe-tv101wum-nl6.c
++++ b/drivers/gpu/drm/panel/panel-boe-tv101wum-nl6.c
+@@ -37,6 +37,7 @@ struct panel_desc {
+ 	unsigned int lanes;
+ 	bool discharge_on_disable;
+ 	bool lp11_before_reset;
++	int avdd_avee_delay;
+ };
+ 
+ struct boe_panel {
+@@ -1798,6 +1799,7 @@ static int boe_panel_unprepare(struct drm_panel *panel)
+ 
+ 	if (boe->desc->discharge_on_disable) {
+ 		regulator_disable(boe->avee);
++		usleep_range(boe->desc->avdd_avee_delay, boe->desc->avdd_avee_delay * 2);
+ 		regulator_disable(boe->avdd);
+ 		usleep_range(5000, 7000);
+ 		gpiod_set_value(boe->enable_gpio, 0);
+@@ -1808,6 +1810,7 @@ static int boe_panel_unprepare(struct drm_panel *panel)
+ 		gpiod_set_value(boe->enable_gpio, 0);
+ 		usleep_range(1000, 2000);
+ 		regulator_disable(boe->avee);
++		usleep_range(boe->desc->avdd_avee_delay, boe->desc->avdd_avee_delay * 2);
+ 		regulator_disable(boe->avdd);
+ 		usleep_range(5000, 7000);
+ 		regulator_disable(boe->pp1800);
+@@ -1843,6 +1846,7 @@ static int boe_panel_prepare(struct drm_panel *panel)
+ 	ret = regulator_enable(boe->avdd);
+ 	if (ret < 0)
+ 		goto poweroff1v8;
++	usleep_range(boe->desc->avdd_avee_delay, boe->desc->avdd_avee_delay * 2);
+ 	ret = regulator_enable(boe->avee);
+ 	if (ret < 0)
+ 		goto poweroffavdd;
+@@ -2134,6 +2138,7 @@ static const struct panel_desc starry_himax83102_j02_desc = {
+ 		      MIPI_DSI_MODE_LPM,
+ 	.init_cmds = starry_himax83102_j02_init_cmd,
+ 	.lp11_before_reset = true,
++	.avdd_avee_delay = 1500,
+ };
+ 
+ static const struct drm_display_mode starry_ili9882t_default_mode = {
+@@ -2162,6 +2167,7 @@ static const struct panel_desc starry_ili9882t_desc = {
+ 		      MIPI_DSI_MODE_LPM,
+ 	.init_cmds = starry_ili9882t_init_cmd,
+ 	.lp11_before_reset = true,
++	.avdd_avee_delay = 1500,
+ };
+ 
+ static int boe_panel_get_modes(struct drm_panel *panel,
 diff --git a/drivers/hid/i2c-hid/i2c-hid-core.c b/drivers/hid/i2c-hid/i2c-hid-core.c
 index 36fdd9866e5dd8cf1281c7bdd6e7db40b0cb1972..04e021463b4617976572f229487efb086e2493ba 100644
 --- a/drivers/hid/i2c-hid/i2c-hid-core.c
