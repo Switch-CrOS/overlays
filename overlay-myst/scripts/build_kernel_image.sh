@@ -19,7 +19,8 @@ modify_kernel_command_line() {
     echo "amdgpu.dcfeaturemask=0x8"
 
     echo "rtc-cmos.use_acpi_alarm=1"
-    echo "amd-pmc.enable_stb=1"
+    # TODO(b/290662743): Re-enable when STB debugfs doesn't crash
+    echo "amd-pmc.enable_stb=0"
     echo "amd_pstate=active"
   } >> "$1"
 }
