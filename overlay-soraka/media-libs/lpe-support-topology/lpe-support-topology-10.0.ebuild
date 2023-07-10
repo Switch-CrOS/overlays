@@ -1,7 +1,7 @@
 # Copyright 2021 The ChromiumOS Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=5
+EAPI=7
 
 DESCRIPTION="Topology binary files used to support/configure LPE Audio"
 LICENSE="LICENCE.adsp_sst"
@@ -15,13 +15,10 @@ RDEPEND="
 	media-libs/kbl-hotword-support
 "
 
-S="${WORKDIR}"
+S="${WORKDIR}/${P}"
 
 
 src_install() {
-	cd ${P}
 	insinto /
-	doins -r *
-	#insinto /
-	#doins -r ./*
+	doins -r ./*
 }
