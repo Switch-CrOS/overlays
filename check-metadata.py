@@ -314,7 +314,6 @@ MISSING_OVERLAYS_OWNERS = {
     "chipset-whl",
     "overlay-amd64-generic",
     "overlay-amd64-generic-embedded",
-    "overlay-arm64-generic",
     "overlay-arm-generic",
     "overlay-atlas",
     "overlay-bob",
