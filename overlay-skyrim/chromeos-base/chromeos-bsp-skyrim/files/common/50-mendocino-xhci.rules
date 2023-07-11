@@ -1,3 +1,12 @@
 # Bluetooth fails to load due to https://crrev.com/c/3988227.
 # Don't enable runtime PM for Mendocino XHCI (b/258709954).
 ATTR{[dmi/id]product_name}=="Frostflow", SUBSYSTEM=="pci", DRIVER=="xhci_hcd", ATTR{power/control}="on"
+
+# Enable HUB power/wakeup to detect USB device connecting/disconnecting
+# Ignore BUS==1 as this bus controls internal USB2.0 camera which is
+# powered off on suspend. If not ignored, the hub would detect that as
+# device-disconnect which would cause rolling suspend&resume cycles.
+SUBSYSTEMS=="usb", ATTR{bDeviceClass}=="09", ATTR{bDeviceProtocol}!="3", ATTR{busnum}!="1", ATTR{power/wakeup}="enabled"
+
+# If HUB is USB3.x then enable connect/disconnect wakeup events.
+SUBSYSTEMS=="usb", ATTR{bDeviceClass}=="09", ATTR{bDeviceProtocol}=="3", ATTR{power/wakeup}="enabled"
