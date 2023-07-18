@@ -33,14 +33,6 @@ modify_kernel_command_line() {
     # Disable PSR2 by default.
     echo "i915.enable_psr=1"
 
-    # Enable Intel's iommu driver.
-    # There are a few known issues with MTL ES0/ES1
-    # (see b/278761218#comment6 for more info),
-    # so instead of using "intel_iommu=on" we use the arguments
-    # below as a workaround. This will be removed in
-    # August 2023 (when everyone will be using ES2).
-    echo "intel_iommu=on,sm_on iommu=pt"
-
     # Display kernel debug messages on the UART
     echo "earlyprintk=serial,ttyS0,115200n8 console=ttyS0,115200n8,keep"
 
