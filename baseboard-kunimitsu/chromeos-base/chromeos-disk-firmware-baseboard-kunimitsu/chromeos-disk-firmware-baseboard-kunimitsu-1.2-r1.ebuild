@@ -1,1 +1,0 @@
-chromeos-disk-firmware-baseboard-kunimitsu-1.2.ebuild
