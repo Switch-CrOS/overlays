@@ -4,8 +4,8 @@
 
 EAPI=7
 
-CROS_WORKON_COMMIT="d0cdd8a38ec2419713bd8338f81ffd1807bc5b95"
-CROS_WORKON_TREE="0434e10231b602a85e59368b9df9376dde2c4797"
+CROS_WORKON_COMMIT="728def01a062c3d0deaa96bcbf44b3f191a3dc92"
+CROS_WORKON_TREE="7987a4a5a76b2f61bb74e0288201ade6ecf05519"
 CROS_WORKON_PROJECT="chromiumos/third_party/kernel"
 # TODO: Fix it when the official CrOS kernel branch is created.
 CROS_WORKON_LOCALNAME="kernel/v6.1"
