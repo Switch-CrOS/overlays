@@ -2,11 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-identity_common: &identity_common
+common-identity: &common_identity
   platform-name: "Poppy"
   frid: "Google_Nautilus"
 
-camera_config_ufc_wfc: &camera_config_ufc_wfc
+camera-config-ufc-wfc: &camera_config_ufc_wfc
   count: 2
   devices:
     - interface: "usb"
@@ -22,7 +22,7 @@ camera_config_ufc_wfc: &camera_config_ufc_wfc
         support-autofocus : True
         support-1080p: True
 
-base_config: &base_config
+common-config: &common_config
   brand-code: "{{$brand-code}}"
   name: "{{$device-name}}"
   firmware:
@@ -36,7 +36,7 @@ base_config: &base_config
   hardware-properties:
     form-factor: CONVERTIBLE
   identity:
-    <<: *identity_common
+    <<: *common_identity
     sku-id: "{{$sku-id}}"
   camera:
     <<: *camera_config_ufc_wfc
@@ -46,6 +46,11 @@ base_config: &base_config
       region: "keyboard"
       side: "right"
 
+modem-device-config: &modem_device_config
+  <<: *common_config
+  modem:
+    firmware-variant: "{{$device-name}}"
+
 chromeos:
   devices:
     - $device-name: "nautilus"
@@ -54,16 +59,14 @@ chromeos:
           $brand-code: "ZSKM"
       skus:
         - $sku-id: 0
-          config: *base_config
+          config: *common_config
     - $device-name: "nautiluslte"
       products:
         - $marketing-name: "nautiluslte"
           $brand-code: "SMAL"
       skus:
         - $sku-id: 1
-          config: *base_config
-          modem:
-            firmware-variant: "{{$device-name}}"
+          config: *modem_device_config
     # Older RO firmware may not expose a SKU ID in SMBIOS.  Explicitly
     # declare a config which allows for this condition.
     - $device-name: "nautilus"
@@ -72,5 +75,5 @@ chromeos:
           $brand-code: "ZSKM"
       skus:
         - config:
-            <<: *base_config
-            identity: *identity_common
+            <<: *common_config
+            identity: *common_identity
