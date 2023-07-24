@@ -16,4 +16,5 @@ S="${WORKDIR}"
 src_install() {
 	insinto /lib/firmware/mediatek/mt8188/
 	doins scp.img
+	doins scp-dual.img
 }
