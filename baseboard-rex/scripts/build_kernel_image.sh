@@ -45,9 +45,6 @@ modify_kernel_command_line() {
     # August 2023 (when everyone will be using ES2).
     echo "intel_iommu=on,sm_on iommu=pt"
 
-    # Disabling DPT (for context see b:270540659)
-    echo "i915.enable_dpt=0"
-
     # Display kernel debug messages on the UART
     echo "earlyprintk=serial,ttyS0,115200n8 console=ttyS0,115200n8,keep"
 
