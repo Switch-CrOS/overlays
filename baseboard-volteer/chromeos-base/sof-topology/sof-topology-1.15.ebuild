@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-EAPI=5
+EAPI="7"
 
 # Version of the topology package that needs to be downloaded. This should be
 # updated when a new topology is required to be used.
