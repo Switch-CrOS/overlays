@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-EAPI=5
+EAPI="7"
 
 DESCRIPTION="Krabbylake baseboard-specific ebuild that pulls in necessary
 ebuilds as dependencies or portage actions."
@@ -24,4 +24,3 @@ src_install() {
 	insinto "/usr/share/power_manager/board_specific"
 	doins "${FILESDIR}"/powerd_prefs/*
 }
-
