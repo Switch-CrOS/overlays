@@ -228,6 +228,31 @@ index c00be39af64e53e801a5d4d551235b5e16f504fe..2e055e06bed1495c310d3dc4a4fa4843
    clocks:
      maxItems: 6
  
+diff --git a/Documentation/devicetree/bindings/sound/mediatek,mt8188-afe.yaml b/Documentation/devicetree/bindings/sound/mediatek,mt8188-afe.yaml
+index e6cb711ece773b347562273bbaebafa472e3ec2f..0b92c71d877957ffd990d8a82df1f74865164d58 100644
+--- a/Documentation/devicetree/bindings/sound/mediatek,mt8188-afe.yaml
++++ b/Documentation/devicetree/bindings/sound/mediatek,mt8188-afe.yaml
+@@ -25,6 +25,12 @@ properties:
+   reset-names:
+     const: audiosys
+ 
++  memory-region:
++    maxItems: 1
++    description: |
++      Shared memory region for AFE memif.  A "shared-dma-pool".
++      See ../reserved-memory/reserved-memory.yaml for details.
++
+   mediatek,topckgen:
+     $ref: /schemas/types.yaml#/definitions/phandle
+     description: The phandle of the mediatek topckgen controller
+@@ -176,6 +182,7 @@ examples:
+         interrupts = <GIC_SPI 822 IRQ_TYPE_LEVEL_HIGH 0>;
+         resets = <&watchdog 14>;
+         reset-names = "audiosys";
++        memory-region = <&snd_dma_mem_reserved>;
+         mediatek,topckgen = <&topckgen>;
+         mediatek,infracfg = <&infracfg_ao>;
+         power-domains = <&spm 13>; //MT8188_POWER_DOMAIN_AUDIO
 diff --git a/Documentation/devicetree/bindings/thermal/mediatek,mt8188-lvts.yaml b/Documentation/devicetree/bindings/thermal/mediatek,mt8188-lvts.yaml
 new file mode 100644
 index 0000000000000000000000000000000000000000..d270db378419cf0a3b0eb8fe23509526da8e975e
@@ -1000,10 +1025,10 @@ index 0000000000000000000000000000000000000000..3cec7f9402bb77ac806618129baad4ca
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8188-geralt.dts b/arch/arm64/boot/dts/mediatek/mt8188-geralt.dts
 new file mode 100644
-index 0000000000000000000000000000000000000000..b911b84ea608ca3d5410c06b8d5272235db28f0e
+index 0000000000000000000000000000000000000000..31bbf3832dee0bce43010ee3a042bb46040ea5a2
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt8188-geralt.dts
-@@ -0,0 +1,1342 @@
+@@ -0,0 +1,1411 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
 +/*
 + * Copyright (C) 2022 MediaTek Inc.
@@ -1171,6 +1196,12 @@ index 0000000000000000000000000000000000000000..b911b84ea608ca3d5410c06b8d527223
 +			reg = <0 0x50000000 0 0x2900000>;
 +			no-map;
 +		};
++
++		afe_dma_mem_reserved: snd_dma_mem_region {
++			compatible = "shared-dma-pool";
++			no-map;
++			reg = <0 0x60000000 0 0x1000000>;
++		};
 +	};
 +
 +	usb_p1_vbus: regulator-usb-p1-vbus {
@@ -1184,6 +1215,7 @@ index 0000000000000000000000000000000000000000..b911b84ea608ca3d5410c06b8d527223
 +};
 +
 +&afe {
++	memory-region = <&afe_dma_mem_reserved>;
 +	mediatek,etdm-out1-cowork-source = <0>; /* in1 */
 +	mediatek,etdm-in2-cowork-source = <3>; /* out2 */
 +	status = "okay";
@@ -1799,22 +1831,67 @@ index 0000000000000000000000000000000000000000..b911b84ea608ca3d5410c06b8d527223
 +		};
 +	};
 +
-+	aud_pins_default: audiodefault {
-+		pins_cmd_dat {
++	aud_etdm_hp_on: aud_etdm_hp_on {
++		pins-cmd-dat {
++			pinmux = <PINMUX_GPIO110__FUNC_I0_I2SIN_D0>,
++				 <PINMUX_GPIO115__FUNC_B0_I2SO2_BCK>,
++				 <PINMUX_GPIO116__FUNC_B0_I2SO2_WS>,
++				 <PINMUX_GPIO117__FUNC_O_I2SO2_D0>;
++		};
++	};
++
++	aud_etdm_hp_off: aud_etdm_hp_off {
++		pins-cmd-dat {
++			pinmux = <PINMUX_GPIO110__FUNC_B_GPIO110>,
++				 <PINMUX_GPIO115__FUNC_B_GPIO115>,
++				 <PINMUX_GPIO116__FUNC_B_GPIO116>,
++				 <PINMUX_GPIO117__FUNC_B_GPIO117>;
++			bias-pull-down;
++			input-enable;
++		};
++	};
++
++	aud_etdm_spk_on: aud_etdm_spk_on {
++		pins-cmd-dat {
 +			pinmux = <PINMUX_GPIO11__FUNC_O_I2SO1_D0>,
-+				 <PINMUX_GPIO101__FUNC_O_AUD_CLK_MOSI>,
++				 <PINMUX_GPIO113__FUNC_B0_TDMIN_BCK>,
++				 <PINMUX_GPIO119__FUNC_B0_TDMIN_LRCK>,
++				 <PINMUX_GPIO120__FUNC_I0_TDMIN_DI>;
++		};
++	};
++
++	aud_etdm_spk_off: aud_etdm_spk_off {
++		pins-cmd-dat {
++			pinmux = <PINMUX_GPIO11__FUNC_B_GPIO11>,
++				 <PINMUX_GPIO113__FUNC_B_GPIO113>,
++				 <PINMUX_GPIO119__FUNC_B_GPIO119>,
++				 <PINMUX_GPIO120__FUNC_B_GPIO120>;
++			bias-pull-down;
++			input-enable;
++		};
++	};
++
++	aud_mtkaif_on: aud_mtkaif_on {
++		pins_cmd_dat {
++			pinmux = <PINMUX_GPIO101__FUNC_O_AUD_CLK_MOSI>,
 +				 <PINMUX_GPIO102__FUNC_O_AUD_SYNC_MOSI>,
 +				 <PINMUX_GPIO103__FUNC_O_AUD_DAT_MOSI0>,
 +				 <PINMUX_GPIO104__FUNC_O_AUD_DAT_MOSI1>,
 +				 <PINMUX_GPIO105__FUNC_I0_AUD_DAT_MISO0>,
-+				 <PINMUX_GPIO106__FUNC_I0_AUD_DAT_MISO1>,
-+				 <PINMUX_GPIO110__FUNC_I0_I2SIN_D0>,
-+				 <PINMUX_GPIO113__FUNC_B0_TDMIN_BCK>,
-+				 <PINMUX_GPIO115__FUNC_B0_I2SO2_BCK>,
-+				 <PINMUX_GPIO116__FUNC_B0_I2SO2_WS>,
-+				 <PINMUX_GPIO117__FUNC_O_I2SO2_D0>,
-+				 <PINMUX_GPIO119__FUNC_B0_TDMIN_LRCK>,
-+				 <PINMUX_GPIO120__FUNC_I0_TDMIN_DI>;
++				 <PINMUX_GPIO106__FUNC_I0_AUD_DAT_MISO1>;
++		};
++	};
++
++	aud_mtkaif_off: aud_mtkaif_off {
++		pins_cmd_dat {
++			pinmux = <PINMUX_GPIO101__FUNC_B_GPIO101>,
++				 <PINMUX_GPIO102__FUNC_B_GPIO102>,
++				 <PINMUX_GPIO103__FUNC_B_GPIO103>,
++				 <PINMUX_GPIO104__FUNC_B_GPIO104>,
++				 <PINMUX_GPIO105__FUNC_B_GPIO105>,
++				 <PINMUX_GPIO106__FUNC_B_GPIO106>;
++			bias-pull-down;
++			input-enable;
 +		};
 +	};
 +
@@ -2177,9 +2254,26 @@ index 0000000000000000000000000000000000000000..b911b84ea608ca3d5410c06b8d527223
 +&sound {
 +	compatible = "mediatek,mt8188-nau8825";
 +	model = "mt8188_m98390_8825";
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&aud_pins_default>;
++
++	pinctrl-names = "aud_etdm_hp_on",
++			"aud_etdm_hp_off",
++			"aud_etdm_spk_on",
++			"aud_etdm_spk_off",
++			"aud_mtkaif_on",
++			"aud_mtkaif_off";
++	pinctrl-0 = <&aud_etdm_hp_on>;
++	pinctrl-1 = <&aud_etdm_hp_off>;
++	pinctrl-2 = <&aud_etdm_spk_on>;
++	pinctrl-3 = <&aud_etdm_spk_off>;
++	pinctrl-4 = <&aud_mtkaif_on>;
++	pinctrl-5 = <&aud_mtkaif_off>;
++
 +	audio-routing =
++		"ETDM1_OUT", "ETDM_SPK_PIN",
++		"ETDM2_OUT", "ETDM_HP_PIN",
++		"ETDM1_IN", "ETDM_SPK_PIN",
++		"ETDM2_IN", "ETDM_HP_PIN",
++		"ADDA Capture", "MTKAIF_PIN",
 +		"Headphone Jack", "HPOL",
 +		"Headphone Jack", "HPOR",
 +		"MIC", "Headset Mic",
@@ -5394,7 +5488,7 @@ index 0000000000000000000000000000000000000000..5f54d7b00a4ef0c08672db6b8ce569e8
 +	};
 +};
 diff --git a/chromeos/config/chromeos/arm64/chromiumos-mediatek.flavour.config b/chromeos/config/chromeos/arm64/chromiumos-mediatek.flavour.config
-index 9de8243d6f8fb6b0787b1718b8f9f426be520fc0..ec58e6a17d4e6c2fa0449548c70567beac5092c7 100644
+index 9de8243d6f8fb6b0787b1718b8f9f426be520fc0..0681da38361a3e8b305b2007e1c7a92635165926 100644
 --- a/chromeos/config/chromeos/arm64/chromiumos-mediatek.flavour.config
 +++ b/chromeos/config/chromeos/arm64/chromiumos-mediatek.flavour.config
 @@ -3,6 +3,7 @@
@@ -5452,6 +5546,12 @@ index 9de8243d6f8fb6b0787b1718b8f9f426be520fc0..ec58e6a17d4e6c2fa0449548c70567be
  CONFIG_TMPFS=y
  CONFIG_TOUCHSCREEN_MELFAS_MIP4=y
  CONFIG_TYPEC=y
+@@ -131,3 +137,5 @@ CONFIG_VIDEO_MEDIATEK_VPU=y
+ CONFIG_VIDEO_OV02A10=m
+ CONFIG_VIDEO_OV5695=m
+ CONFIG_VIDEO_OV8856=m
++CONFIG_TEE=y
++CONFIG_OPTEE=y
 diff --git a/drivers/clk/mediatek/Makefile b/drivers/clk/mediatek/Makefile
 index dbeaa5b41177dc699bf4b302c183914a95d280b8..9be2785b4653d5de9db19a8cea779729be948439 100644
 --- a/drivers/clk/mediatek/Makefile
@@ -18595,8 +18695,229 @@ index 3f2c01c2331c02539f7487b738f4971ad63deffd..e12e0c54c07369f24714cdeeed19e677
  	hci_dev_unlock(hdev);
  
  done:
+diff --git a/sound/soc/mediatek/common/mtk-dsp-sof-common.c b/sound/soc/mediatek/common/mtk-dsp-sof-common.c
+index 6fef16306f74ff941f4b796583c06cc568f6ce71..ef49c2c0e253ad3480a08ed7676986e9e32dba90 100644
+--- a/sound/soc/mediatek/common/mtk-dsp-sof-common.c
++++ b/sound/soc/mediatek/common/mtk-dsp-sof-common.c
+@@ -54,6 +54,8 @@ int mtk_sof_card_probe(struct snd_soc_card *card)
+ {
+ 	int i;
+ 	struct snd_soc_dai_link *dai_link;
++	struct mtk_soc_card_data *soc_card_data = snd_soc_card_get_drvdata(card);
++	struct mtk_sof_priv *sof_priv = soc_card_data->sof_priv;
+ 
+ 	/* Set stream_name to help sof bind widgets */
+ 	for_each_card_prelinks(card, i, dai_link) {
+@@ -61,10 +63,74 @@ int mtk_sof_card_probe(struct snd_soc_card *card)
+ 			dai_link->stream_name = dai_link->name;
+ 	}
+ 
++	INIT_LIST_HEAD(&sof_priv->dai_link_list);
++
+ 	return 0;
+ }
+ EXPORT_SYMBOL_GPL(mtk_sof_card_probe);
+ 
++/* fixup the BE DAI link to match any values from topology */
++static int mtk_sof_check_tplg_be_dai_link_fixup(struct snd_soc_pcm_runtime *rtd,
++						struct snd_pcm_hw_params *params)
++{
++	struct snd_soc_card *card = rtd->card;
++	struct mtk_soc_card_data *soc_card_data = snd_soc_card_get_drvdata(card);
++	struct mtk_sof_priv *sof_priv = soc_card_data->sof_priv;
++	struct snd_soc_pcm_runtime *fe;
++	struct snd_soc_pcm_runtime *be;
++	struct snd_soc_dai_link *sof_dai_link = NULL;
++	struct mtk_dai_link *dai_link;
++	struct snd_soc_dpcm *dpcm;
++	int i, stream;
++	int ret = 0;
++
++	for_each_pcm_streams(stream) {
++		fe = NULL;
++		for_each_dpcm_fe(rtd, stream, dpcm) {
++			fe = dpcm->fe;
++			if (fe)
++				break;
++		}
++
++		if (!fe)
++			continue;
++
++		for_each_dpcm_be(fe, stream, dpcm) {
++			be = dpcm->be;
++			if (be == rtd)
++				continue;
++
++			for (i = 0; i < sof_priv->num_streams; i++) {
++				const struct sof_conn_stream *conn = &sof_priv->conn_streams[i];
++
++				if (!strcmp(be->dai_link->name, conn->sof_link)) {
++					sof_dai_link = be->dai_link;
++					goto FIXUP;
++				}
++			}
++		}
++	}
++
++FIXUP:
++	if (sof_dai_link) {
++		if (sof_priv->sof_dai_link_fixup)
++			ret = sof_priv->sof_dai_link_fixup(rtd, params);
++		else if (sof_dai_link->be_hw_params_fixup)
++			ret = sof_dai_link->be_hw_params_fixup(be, params);
++	} else {
++		list_for_each_entry(dai_link, &sof_priv->dai_link_list, list) {
++			if (strcmp(dai_link->name, rtd->dai_link->name) == 0) {
++				if (dai_link->be_hw_params_fixup)
++					ret = dai_link->be_hw_params_fixup(rtd, params);
++
++				break;
++			}
++		}
++	}
++
++	return ret;
++}
++
+ int mtk_sof_card_late_probe(struct snd_soc_card *card)
+ {
+ 	struct snd_soc_pcm_runtime *rtd;
+@@ -72,6 +138,8 @@ int mtk_sof_card_late_probe(struct snd_soc_card *card)
+ 	struct mtk_soc_card_data *soc_card_data =
+ 		snd_soc_card_get_drvdata(card);
+ 	struct mtk_sof_priv *sof_priv = soc_card_data->sof_priv;
++	struct snd_soc_dai_link *dai_link;
++	struct mtk_dai_link *mtk_dai_link;
+ 	int i;
+ 
+ 	/* 1. find sof component */
+@@ -86,25 +154,37 @@ int mtk_sof_card_late_probe(struct snd_soc_card *card)
+ 		return 0;
+ 	}
+ 
+-	/* 2. add route path and fixup callback */
++	/* 2. overwrite all BE fixups, and backup the existing fixup */
++	for_each_card_prelinks(card, i, dai_link) {
++		if (dai_link->be_hw_params_fixup) {
++			mtk_dai_link = devm_kzalloc(card->dev,
++						    sizeof(*mtk_dai_link),
++						    GFP_KERNEL);
++			if (mtk_dai_link == NULL)
++				return -ENOMEM;
++
++			mtk_dai_link->be_hw_params_fixup = dai_link->be_hw_params_fixup;
++			mtk_dai_link->name = dai_link->name;
++
++			list_add(&mtk_dai_link->list, &sof_priv->dai_link_list);
++		}
++
++		if (dai_link->no_pcm)
++			dai_link->be_hw_params_fixup = mtk_sof_check_tplg_be_dai_link_fixup;
++	}
++
++	/* 3. add route path and SOF_BE fixup callback */
+ 	for (i = 0; i < sof_priv->num_streams; i++) {
+ 		const struct sof_conn_stream *conn = &sof_priv->conn_streams[i];
+ 		struct snd_soc_pcm_runtime *sof_rtd = NULL;
+-		struct snd_soc_pcm_runtime *normal_rtd = NULL;
+ 
+ 		for_each_card_rtds(card, rtd) {
+ 			if (!strcmp(rtd->dai_link->name, conn->sof_link)) {
+ 				sof_rtd = rtd;
+-				continue;
+-			}
+-			if (!strcmp(rtd->dai_link->name, conn->normal_link)) {
+-				normal_rtd = rtd;
+-				continue;
+-			}
+-			if (normal_rtd && sof_rtd)
+ 				break;
++			}
+ 		}
+-		if (normal_rtd && sof_rtd) {
++		if (sof_rtd) {
+ 			int j;
+ 			struct snd_soc_dai *cpu_dai;
+ 
+@@ -131,13 +211,9 @@ int mtk_sof_card_late_probe(struct snd_soc_card *card)
+ 				}
+ 			}
+ 
++			/* overwrite SOF BE fixup */
+ 			sof_rtd->dai_link->be_hw_params_fixup =
+ 				sof_comp->driver->be_hw_params_fixup;
+-			if (sof_priv->sof_dai_link_fixup)
+-				normal_rtd->dai_link->be_hw_params_fixup =
+-					sof_priv->sof_dai_link_fixup;
+-			else
+-				normal_rtd->dai_link->be_hw_params_fixup = mtk_sof_dai_link_fixup;
+ 		}
+ 	}
+ 
+diff --git a/sound/soc/mediatek/common/mtk-dsp-sof-common.h b/sound/soc/mediatek/common/mtk-dsp-sof-common.h
+index dd38c4a93574f4e4bcd74200d66e7878d076a234..4bc5e1c0c8ed9b016b48e64e74afe9de747e7a99 100644
+--- a/sound/soc/mediatek/common/mtk-dsp-sof-common.h
++++ b/sound/soc/mediatek/common/mtk-dsp-sof-common.h
+@@ -18,11 +18,19 @@ struct sof_conn_stream {
+ 	int stream_dir;
+ };
+ 
++struct mtk_dai_link {
++	const char *name;
++	int (*be_hw_params_fixup)(struct snd_soc_pcm_runtime *rtd,
++				  struct snd_pcm_hw_params *params);
++	struct list_head list;
++};
++
+ struct mtk_sof_priv {
+ 	const struct sof_conn_stream *conn_streams;
+ 	int num_streams;
+ 	int (*sof_dai_link_fixup)(struct snd_soc_pcm_runtime *rtd,
+ 				  struct snd_pcm_hw_params *params);
++	struct list_head dai_link_list;
+ };
+ 
+ int mtk_sof_dai_link_fixup(struct snd_soc_pcm_runtime *rtd,
+diff --git a/sound/soc/mediatek/mt8188/mt8188-afe-pcm.c b/sound/soc/mediatek/mt8188/mt8188-afe-pcm.c
+index 6a24b339444b35652844aa8e1bbd96b847268225..5e14655c5617ed066f0c92d13592e9e15dabfa50 100644
+--- a/sound/soc/mediatek/mt8188/mt8188-afe-pcm.c
++++ b/sound/soc/mediatek/mt8188/mt8188-afe-pcm.c
+@@ -16,6 +16,7 @@
+ #include <linux/of.h>
+ #include <linux/of_address.h>
+ #include <linux/of_platform.h>
++#include <linux/of_reserved_mem.h>
+ #include <linux/pm_runtime.h>
+ #include <linux/soc/mediatek/infracfg.h>
+ #include <linux/reset.h>
+@@ -3193,11 +3194,15 @@ static int mt8188_afe_pcm_dev_probe(struct platform_device *pdev)
+ {
+ 	struct mtk_base_afe *afe;
+ 	struct mt8188_afe_private *afe_priv;
+-	struct device *dev;
++	struct device *dev = &pdev->dev;
+ 	struct reset_control *rstc;
+ 	struct regmap *infra_ao;
+ 	int i, irq_id, ret;
+ 
++	ret = of_reserved_mem_device_init(dev);
++	if (ret)
++		dev_dbg(dev, "failed to assign memory region: %d\n", ret);
++
+ 	ret = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(33));
+ 	if (ret)
+ 		return ret;
+@@ -3213,7 +3218,6 @@ static int mt8188_afe_pcm_dev_probe(struct platform_device *pdev)
+ 
+ 	afe_priv = afe->platform_priv;
+ 	afe->dev = &pdev->dev;
+-	dev = afe->dev;
+ 
+ 	afe->base_addr = devm_platform_ioremap_resource(pdev, 0);
+ 	if (IS_ERR(afe->base_addr))
 diff --git a/sound/soc/mediatek/mt8188/mt8188-mt6359.c b/sound/soc/mediatek/mt8188/mt8188-mt6359.c
-index ac69c23e0da1c02fcd23712b35ea08bb3613ff99..c44d1019d2625b39f547de4c28b0e823e8c92e94 100644
+index ac69c23e0da1c02fcd23712b35ea08bb3613ff99..e205de2899a9948503f4dfb0c0cc34556a4c3cdc 100644
 --- a/sound/soc/mediatek/mt8188/mt8188-mt6359.c
 +++ b/sound/soc/mediatek/mt8188/mt8188-mt6359.c
 @@ -19,6 +19,8 @@
@@ -18608,15 +18929,7 @@ index ac69c23e0da1c02fcd23712b35ea08bb3613ff99..c44d1019d2625b39f547de4c28b0e823
  
  #define CKSYS_AUD_TOP_CFG	0x032c
   #define RG_TEST_ON		BIT(0)
-@@ -30,6 +32,7 @@
-  #define TEST_MISO_DONE_2	BIT(29)
- 
- #define NAU8825_HS_PRESENT	BIT(0)
-+#define DPCM_FE_CONSTRAINT	BIT(16)
- 
- /*
-  * Maxim MAX98390
-@@ -45,6 +48,11 @@
+@@ -45,6 +47,11 @@
   */
  #define NAU8825_CODEC_DAI  "nau8825-hifi"
  
@@ -18628,7 +18941,7 @@ index ac69c23e0da1c02fcd23712b35ea08bb3613ff99..c44d1019d2625b39f547de4c28b0e823
  /* FE */
  SND_SOC_DAILINK_DEFS(playback2,
  		     DAILINK_COMP_ARRAY(COMP_CPU("DL2")),
-@@ -176,6 +184,33 @@ SND_SOC_DAILINK_DEFS(ul_src,
+@@ -176,6 +183,49 @@ SND_SOC_DAILINK_DEFS(ul_src,
  						   "dmic-hifi")),
  		     DAILINK_COMP_ARRAY(COMP_EMPTY()));
  
@@ -18653,16 +18966,32 @@ index ac69c23e0da1c02fcd23712b35ea08bb3613ff99..c44d1019d2625b39f547de4c28b0e823
 +		     DAILINK_COMP_ARRAY(COMP_EMPTY()));
 +
 +static const struct sof_conn_stream g_sof_conn_streams[] = {
-+	{ NULL, "AFE_SOF_DL2", SOF_DMA_DL2, SNDRV_PCM_STREAM_PLAYBACK},
-+	{ NULL, "AFE_SOF_DL3", SOF_DMA_DL3, SNDRV_PCM_STREAM_PLAYBACK},
-+	{ NULL, "AFE_SOF_UL4", SOF_DMA_UL4, SNDRV_PCM_STREAM_CAPTURE},
-+	{ NULL, "AFE_SOF_UL5", SOF_DMA_UL5, SNDRV_PCM_STREAM_CAPTURE},
++	{
++		.sof_link = "AFE_SOF_DL2",
++		.sof_dma = SOF_DMA_DL2,
++		.stream_dir = SNDRV_PCM_STREAM_PLAYBACK
++	},
++	{
++		.sof_link = "AFE_SOF_DL3",
++		.sof_dma = SOF_DMA_DL3,
++		.stream_dir = SNDRV_PCM_STREAM_PLAYBACK
++	},
++	{
++		.sof_link = "AFE_SOF_UL4",
++		.sof_dma = SOF_DMA_UL4,
++		.stream_dir = SNDRV_PCM_STREAM_CAPTURE
++	},
++	{
++		.sof_link = "AFE_SOF_UL5",
++		.sof_dma = SOF_DMA_UL5,
++		.stream_dir = SNDRV_PCM_STREAM_CAPTURE
++	},
 +};
 +
  struct mt8188_mt6359_priv {
  	struct snd_soc_jack dp_jack;
  	struct snd_soc_jack hdmi_jack;
-@@ -246,6 +281,10 @@ static const struct snd_soc_dapm_widget mt8188_mt6359_widgets[] = {
+@@ -246,6 +296,15 @@ static const struct snd_soc_dapm_widget mt8188_mt6359_widgets[] = {
  	SND_SOC_DAPM_MIC("Headset Mic", NULL),
  	SND_SOC_DAPM_SINK("HDMI"),
  	SND_SOC_DAPM_SINK("DP"),
@@ -18670,10 +18999,15 @@ index ac69c23e0da1c02fcd23712b35ea08bb3613ff99..c44d1019d2625b39f547de4c28b0e823
 +	SND_SOC_DAPM_MIXER(SOF_DMA_DL3, SND_SOC_NOPM, 0, 0, NULL, 0),
 +	SND_SOC_DAPM_MIXER(SOF_DMA_UL4, SND_SOC_NOPM, 0, 0, NULL, 0),
 +	SND_SOC_DAPM_MIXER(SOF_DMA_UL5, SND_SOC_NOPM, 0, 0, NULL, 0),
++
++	/* dynamic pinctrl */
++	SND_SOC_DAPM_PINCTRL("ETDM_SPK_PIN", "aud_etdm_spk_on", "aud_etdm_spk_off"),
++	SND_SOC_DAPM_PINCTRL("ETDM_HP_PIN", "aud_etdm_hp_on", "aud_etdm_hp_off"),
++	SND_SOC_DAPM_PINCTRL("MTKAIF_PIN", "aud_mtkaif_on", "aud_mtkaif_off"),
  };
  
  static const struct snd_kcontrol_new mt8188_mt6359_controls[] = {
-@@ -261,6 +300,19 @@ static const struct snd_kcontrol_new mt8188_nau8825_controls[] = {
+@@ -261,12 +320,26 @@ static const struct snd_kcontrol_new mt8188_nau8825_controls[] = {
  	SOC_DAPM_PIN_SWITCH("Headphone Jack"),
  };
  
@@ -18693,7 +19027,43 @@ index ac69c23e0da1c02fcd23712b35ea08bb3613ff99..c44d1019d2625b39f547de4c28b0e823
  static int mt8188_mt6359_mtkaif_calibration(struct snd_soc_pcm_runtime *rtd)
  {
  	struct snd_soc_component *cmpnt_afe =
-@@ -450,6 +502,155 @@ enum {
+ 		snd_soc_rtdcom_lookup(rtd, AFE_PCM_NAME);
+ 	struct snd_soc_component *cmpnt_codec =
+ 		asoc_rtd_to_codec(rtd, 0)->component;
++	struct snd_soc_dapm_widget *pin_w = NULL, *w;
+ 	struct mtk_base_afe *afe;
+ 	struct mt8188_afe_private *afe_priv;
+ 	struct mtkaif_param *param;
+@@ -306,6 +379,18 @@ static int mt8188_mt6359_mtkaif_calibration(struct snd_soc_pcm_runtime *rtd)
+ 		return 0;
+ 	}
+ 
++	for_each_card_widgets(rtd->card, w) {
++		if (!strcmp(w->name, "MTKAIF_PIN")) {
++			pin_w = w;
++			break;
++		}
++	}
++
++	if (!pin_w)
++		dev_dbg(afe->dev, "%s(), no pinmux widget, please check if default on\n", __func__);
++	else
++		dapm_pinctrl_event(pin_w, NULL, SND_SOC_DAPM_PRE_PMU);
++
+ 	pm_runtime_get_sync(afe->dev);
+ 	mt6359_mtkaif_calibration_enable(cmpnt_codec);
+ 
+@@ -403,6 +488,9 @@ static int mt8188_mt6359_mtkaif_calibration(struct snd_soc_pcm_runtime *rtd)
+ 	for (i = 0; i < MT8188_MTKAIF_MISO_NUM; i++)
+ 		param->mtkaif_phase_cycle[i] = mtkaif_phase_cycle[i];
+ 
++	if (pin_w)
++		dapm_pinctrl_event(pin_w, NULL, SND_SOC_DAPM_POST_PMD);
++
+ 	dev_dbg(afe->dev, "%s(), end, calibration ok %d\n",
+ 		__func__, param->mtkaif_calibration_ok);
+ 
+@@ -450,8 +538,17 @@ enum {
  	DAI_LINK_ETDM3_OUT_BE,
  	DAI_LINK_PCM1_BE,
  	DAI_LINK_UL_SRC_BE,
@@ -18704,152 +19074,14 @@ index ac69c23e0da1c02fcd23712b35ea08bb3613ff99..c44d1019d2625b39f547de4c28b0e823
 +	DAI_LINK_SOF_UL4_BE,
 +	DAI_LINK_SOF_UL5_BE,
 +	DAI_LINK_SOF_END = DAI_LINK_SOF_UL5_BE,
-+};
-+
-+#define	DAI_LINK_REGULAR_NUM	(DAI_LINK_REGULAR_LAST + 1)
-+
-+static int mt8188_playback_startup(struct snd_pcm_substream *substream)
-+{
-+	static const unsigned int rates[] = {
-+		48000
-+	};
-+	static const unsigned int channels[] = {
-+		2
-+	};
-+	static const struct snd_pcm_hw_constraint_list constraints_rates = {
-+		.count = ARRAY_SIZE(rates),
-+		.list  = rates,
-+		.mask = 0,
-+	};
-+	static const struct snd_pcm_hw_constraint_list constraints_channels = {
-+		.count = ARRAY_SIZE(channels),
-+		.list  = channels,
-+		.mask = 0,
-+	};
-+
-+	struct snd_soc_pcm_runtime *rtd = asoc_substream_to_rtd(substream);
-+	struct snd_pcm_runtime *runtime = substream->runtime;
-+	struct mtk_soc_card_data *soc_card_data = snd_soc_card_get_drvdata(rtd->card);
-+	struct mt8188_mt6359_priv *priv = soc_card_data->mach_priv;
-+	struct mt8188_card_data *data = (struct mt8188_card_data *)priv->private_data;
-+	int ret;
-+
-+	if (!(data->quirk & DPCM_FE_CONSTRAINT))
-+		return 0;
-+
-+	ret = snd_pcm_hw_constraint_list(runtime, 0,
-+					 SNDRV_PCM_HW_PARAM_RATE,
-+					 &constraints_rates);
-+	if (ret < 0) {
-+		dev_err(rtd->dev, "hw_constraint_list rate failed\n");
-+		return ret;
-+	}
-+
-+	ret = snd_pcm_hw_constraint_list(runtime, 0,
-+					 SNDRV_PCM_HW_PARAM_CHANNELS,
-+					 &constraints_channels);
-+	if (ret < 0) {
-+		dev_err(rtd->dev, "hw_constraint_list channel failed\n");
-+		return ret;
-+	}
-+
-+	return 0;
-+}
-+
-+static const struct snd_soc_ops mt8188_playback_ops = {
-+	.startup = mt8188_playback_startup,
-+};
-+
-+static int mt8188_capture_startup(struct snd_pcm_substream *substream)
-+{
-+	static const unsigned int rates[] = {
-+		48000
-+	};
-+	static const struct snd_pcm_hw_constraint_list constraints_rates = {
-+		.count = ARRAY_SIZE(rates),
-+		.list  = rates,
-+		.mask = 0,
-+	};
-+
-+	struct snd_soc_pcm_runtime *rtd = asoc_substream_to_rtd(substream);
-+	struct snd_pcm_runtime *runtime = substream->runtime;
-+	struct mtk_soc_card_data *soc_card_data = snd_soc_card_get_drvdata(rtd->card);
-+	struct mt8188_mt6359_priv *priv = soc_card_data->mach_priv;
-+	struct mt8188_card_data *data = (struct mt8188_card_data *)priv->private_data;
-+	int ret;
-+
-+	if (!(data->quirk & DPCM_FE_CONSTRAINT))
-+		return 0;
-+
-+	ret = snd_pcm_hw_constraint_list(runtime, 0,
-+					 SNDRV_PCM_HW_PARAM_RATE,
-+					 &constraints_rates);
-+	if (ret < 0) {
-+		dev_err(rtd->dev, "hw_constraint_list rate failed\n");
-+		return ret;
-+	}
-+
-+	return 0;
-+}
-+
-+static const struct snd_soc_ops mt8188_capture_ops = {
-+	.startup = mt8188_capture_startup,
-+};
-+
-+static int mt8188_hdmi_dptx_startup(struct snd_pcm_substream *substream)
-+{
-+	static const unsigned int rates[] = {
-+		48000
-+	};
-+	static const unsigned int channels[] = {
-+		2, 4, 6, 8
-+	};
-+	static const struct snd_pcm_hw_constraint_list constraints_rates = {
-+		.count = ARRAY_SIZE(rates),
-+		.list  = rates,
-+		.mask = 0,
-+	};
-+	static const struct snd_pcm_hw_constraint_list constraints_channels = {
-+		.count = ARRAY_SIZE(channels),
-+		.list  = channels,
-+		.mask = 0,
-+	};
-+
-+	struct snd_soc_pcm_runtime *rtd = asoc_substream_to_rtd(substream);
-+	struct snd_pcm_runtime *runtime = substream->runtime;
-+	struct mtk_soc_card_data *soc_card_data = snd_soc_card_get_drvdata(rtd->card);
-+	struct mt8188_mt6359_priv *priv = soc_card_data->mach_priv;
-+	struct mt8188_card_data *data = (struct mt8188_card_data *)priv->private_data;
-+	int ret;
-+
-+	if (!(data->quirk & DPCM_FE_CONSTRAINT))
-+		return 0;
-+
-+	ret = snd_pcm_hw_constraint_list(runtime, 0,
-+					 SNDRV_PCM_HW_PARAM_RATE,
-+					 &constraints_rates);
-+	if (ret < 0) {
-+		dev_err(rtd->dev, "hw_constraint_list rate failed\n");
-+		return ret;
-+	}
-+
-+	ret = snd_pcm_hw_constraint_list(runtime, 0,
-+					 SNDRV_PCM_HW_PARAM_CHANNELS,
-+					 &constraints_channels);
-+	if (ret < 0) {
-+		dev_err(rtd->dev, "hw_constraint_list channel failed\n");
-+		return ret;
-+	}
-+
-+	return 0;
-+}
-+
-+static const struct snd_soc_ops mt8188_hdmi_dptx_playback_ops = {
-+	.startup = mt8188_hdmi_dptx_startup,
  };
  
++#define	DAI_LINK_REGULAR_NUM	(DAI_LINK_REGULAR_LAST + 1)
++
  static int mt8188_dptx_hw_params(struct snd_pcm_substream *substream,
-@@ -482,7 +683,8 @@ static int mt8188_dptx_hw_params_fixup(struct snd_soc_pcm_runtime *rtd,
+ 				 struct snd_pcm_hw_params *params)
+ {
+@@ -482,7 +579,8 @@ static int mt8188_dptx_hw_params_fixup(struct snd_soc_pcm_runtime *rtd,
  
  static int mt8188_hdmi_codec_init(struct snd_soc_pcm_runtime *rtd)
  {
@@ -18859,7 +19091,7 @@ index ac69c23e0da1c02fcd23712b35ea08bb3613ff99..c44d1019d2625b39f547de4c28b0e823
  	struct snd_soc_component *component = asoc_rtd_to_codec(rtd, 0)->component;
  	int ret = 0;
  
-@@ -507,7 +709,8 @@ static int mt8188_hdmi_codec_init(struct snd_soc_pcm_runtime *rtd)
+@@ -507,7 +605,8 @@ static int mt8188_hdmi_codec_init(struct snd_soc_pcm_runtime *rtd)
  
  static int mt8188_dptx_codec_init(struct snd_soc_pcm_runtime *rtd)
  {
@@ -18869,7 +19101,7 @@ index ac69c23e0da1c02fcd23712b35ea08bb3613ff99..c44d1019d2625b39f547de4c28b0e823
  	struct snd_soc_component *component = asoc_rtd_to_codec(rtd, 0)->component;
  	int ret = 0;
  
-@@ -627,7 +830,8 @@ static int mt8188_max98390_codec_init(struct snd_soc_pcm_runtime *rtd)
+@@ -627,7 +726,8 @@ static int mt8188_max98390_codec_init(struct snd_soc_pcm_runtime *rtd)
  static int mt8188_nau8825_codec_init(struct snd_soc_pcm_runtime *rtd)
  {
  	struct snd_soc_card *card = rtd->card;
@@ -18879,7 +19111,7 @@ index ac69c23e0da1c02fcd23712b35ea08bb3613ff99..c44d1019d2625b39f547de4c28b0e823
  	struct snd_soc_component *component = asoc_rtd_to_codec(rtd, 0)->component;
  	struct snd_soc_jack *jack = &priv->headset_jack;
  	int ret;
-@@ -712,6 +916,33 @@ static int mt8188_nau8825_hw_params(struct snd_pcm_substream *substream,
+@@ -712,6 +812,33 @@ static int mt8188_nau8825_hw_params(struct snd_pcm_substream *substream,
  static const struct snd_soc_ops mt8188_nau8825_ops = {
  	.hw_params = mt8188_nau8825_hw_params,
  };
@@ -18913,47 +19145,57 @@ index ac69c23e0da1c02fcd23712b35ea08bb3613ff99..c44d1019d2625b39f547de4c28b0e823
  static struct snd_soc_dai_link mt8188_mt6359_dai_links[] = {
  	/* FE */
  	[DAI_LINK_DL2_FE] = {
-@@ -723,6 +954,7 @@ static struct snd_soc_dai_link mt8188_mt6359_dai_links[] = {
+@@ -723,6 +850,9 @@ static struct snd_soc_dai_link mt8188_mt6359_dai_links[] = {
  		},
  		.dynamic = 1,
  		.dpcm_playback = 1,
-+		.ops = &mt8188_playback_ops,
++		.dpcm_merged_chan = 1,
++		.dpcm_merged_rate = 1,
++		.dpcm_merged_format = 1,
  		SND_SOC_DAILINK_REG(playback2),
  	},
  	[DAI_LINK_DL3_FE] = {
-@@ -734,6 +966,7 @@ static struct snd_soc_dai_link mt8188_mt6359_dai_links[] = {
+@@ -734,6 +864,9 @@ static struct snd_soc_dai_link mt8188_mt6359_dai_links[] = {
  		},
  		.dynamic = 1,
  		.dpcm_playback = 1,
-+		.ops = &mt8188_playback_ops,
++		.dpcm_merged_chan = 1,
++		.dpcm_merged_rate = 1,
++		.dpcm_merged_format = 1,
  		SND_SOC_DAILINK_REG(playback3),
  	},
  	[DAI_LINK_DL6_FE] = {
-@@ -778,6 +1011,7 @@ static struct snd_soc_dai_link mt8188_mt6359_dai_links[] = {
+@@ -745,6 +878,9 @@ static struct snd_soc_dai_link mt8188_mt6359_dai_links[] = {
  		},
  		.dynamic = 1,
  		.dpcm_playback = 1,
-+		.ops = &mt8188_hdmi_dptx_playback_ops,
- 		SND_SOC_DAILINK_REG(playback10),
++		.dpcm_merged_chan = 1,
++		.dpcm_merged_rate = 1,
++		.dpcm_merged_format = 1,
+ 		SND_SOC_DAILINK_REG(playback6),
  	},
- 	[DAI_LINK_DL11_FE] = {
-@@ -833,6 +1067,7 @@ static struct snd_soc_dai_link mt8188_mt6359_dai_links[] = {
+ 	[DAI_LINK_DL7_FE] = {
+@@ -833,6 +969,9 @@ static struct snd_soc_dai_link mt8188_mt6359_dai_links[] = {
  		},
  		.dynamic = 1,
  		.dpcm_capture = 1,
-+		.ops = &mt8188_capture_ops,
++		.dpcm_merged_chan = 1,
++		.dpcm_merged_rate = 1,
++		.dpcm_merged_format = 1,
  		SND_SOC_DAILINK_REG(capture4),
  	},
  	[DAI_LINK_UL5_FE] = {
-@@ -844,6 +1079,7 @@ static struct snd_soc_dai_link mt8188_mt6359_dai_links[] = {
+@@ -844,6 +983,9 @@ static struct snd_soc_dai_link mt8188_mt6359_dai_links[] = {
  		},
  		.dynamic = 1,
  		.dpcm_capture = 1,
-+		.ops = &mt8188_capture_ops,
++		.dpcm_merged_chan = 1,
++		.dpcm_merged_rate = 1,
++		.dpcm_merged_format = 1,
  		SND_SOC_DAILINK_REG(capture5),
  	},
  	[DAI_LINK_UL6_FE] = {
-@@ -967,6 +1203,36 @@ static struct snd_soc_dai_link mt8188_mt6359_dai_links[] = {
+@@ -967,6 +1109,36 @@ static struct snd_soc_dai_link mt8188_mt6359_dai_links[] = {
  		.dpcm_capture = 1,
  		SND_SOC_DAILINK_REG(ul_src),
  	},
@@ -18990,7 +19232,7 @@ index ac69c23e0da1c02fcd23712b35ea08bb3613ff99..c44d1019d2625b39f547de4c28b0e823
  };
  
  static struct snd_kcontrol *ctl_find(struct snd_card *card, const char *name)
-@@ -981,7 +1247,8 @@ static struct snd_kcontrol *ctl_find(struct snd_card *card, const char *name)
+@@ -981,7 +1153,8 @@ static struct snd_kcontrol *ctl_find(struct snd_card *card, const char *name)
  
  static void mt8188_fixup_controls(struct snd_soc_card *card)
  {
@@ -19000,7 +19242,7 @@ index ac69c23e0da1c02fcd23712b35ea08bb3613ff99..c44d1019d2625b39f547de4c28b0e823
  	struct mt8188_card_data *card_data = (struct mt8188_card_data *)priv->private_data;
  	struct snd_kcontrol *kctl;
  
-@@ -1009,6 +1276,8 @@ static struct snd_soc_card mt8188_mt6359_soc_card = {
+@@ -1009,6 +1182,8 @@ static struct snd_soc_card mt8188_mt6359_soc_card = {
  	.num_links = ARRAY_SIZE(mt8188_mt6359_dai_links),
  	.dapm_widgets = mt8188_mt6359_widgets,
  	.num_dapm_widgets = ARRAY_SIZE(mt8188_mt6359_widgets),
@@ -19009,7 +19251,7 @@ index ac69c23e0da1c02fcd23712b35ea08bb3613ff99..c44d1019d2625b39f547de4c28b0e823
  	.controls = mt8188_mt6359_controls,
  	.num_controls = ARRAY_SIZE(mt8188_mt6359_controls),
  	.fixup_controls = mt8188_fixup_controls,
-@@ -1018,6 +1287,8 @@ static int mt8188_mt6359_dev_probe(struct platform_device *pdev)
+@@ -1018,6 +1193,8 @@ static int mt8188_mt6359_dev_probe(struct platform_device *pdev)
  {
  	struct snd_soc_card *card = &mt8188_mt6359_soc_card;
  	struct device_node *platform_node;
@@ -19018,7 +19260,7 @@ index ac69c23e0da1c02fcd23712b35ea08bb3613ff99..c44d1019d2625b39f547de4c28b0e823
  	struct mt8188_mt6359_priv *priv;
  	struct mt8188_card_data *card_data;
  	struct snd_soc_dai_link *dai_link;
-@@ -1038,21 +1309,64 @@ static int mt8188_mt6359_dev_probe(struct platform_device *pdev)
+@@ -1038,21 +1215,64 @@ static int mt8188_mt6359_dev_probe(struct platform_device *pdev)
  	if (!card->name)
  		card->name = card_data->name;
  
@@ -19088,7 +19330,7 @@ index ac69c23e0da1c02fcd23712b35ea08bb3613ff99..c44d1019d2625b39f547de4c28b0e823
  	}
  
  	ret = parse_dai_link_info(card);
-@@ -1060,8 +1374,12 @@ static int mt8188_mt6359_dev_probe(struct platform_device *pdev)
+@@ -1060,8 +1280,12 @@ static int mt8188_mt6359_dev_probe(struct platform_device *pdev)
  		goto err;
  
  	for_each_card_prelinks(card, i, dai_link) {
@@ -19103,7 +19345,7 @@ index ac69c23e0da1c02fcd23712b35ea08bb3613ff99..c44d1019d2625b39f547de4c28b0e823
  
  		if (strcmp(dai_link->name, "DPTX_BE") == 0) {
  			if (strcmp(dai_link->codecs->dai_name, "snd-soc-dummy-dai"))
-@@ -1104,7 +1422,7 @@ static int mt8188_mt6359_dev_probe(struct platform_device *pdev)
+@@ -1104,7 +1328,7 @@ static int mt8188_mt6359_dev_probe(struct platform_device *pdev)
  	}
  
  	priv->private_data = card_data;
@@ -19112,7 +19354,7 @@ index ac69c23e0da1c02fcd23712b35ea08bb3613ff99..c44d1019d2625b39f547de4c28b0e823
  
  	ret = devm_snd_soc_register_card(&pdev->dev, card);
  	if (ret)
-@@ -1113,6 +1431,11 @@ static int mt8188_mt6359_dev_probe(struct platform_device *pdev)
+@@ -1113,6 +1337,11 @@ static int mt8188_mt6359_dev_probe(struct platform_device *pdev)
  err:
  	of_node_put(platform_node);
  	clean_card_reference(card);
@@ -19124,12 +19366,99 @@ index ac69c23e0da1c02fcd23712b35ea08bb3613ff99..c44d1019d2625b39f547de4c28b0e823
  	return ret;
  }
  
-@@ -1122,7 +1445,7 @@ static struct mt8188_card_data mt8188_evb_card = {
+diff --git a/sound/soc/sof/ipc3-pcm.c b/sound/soc/sof/ipc3-pcm.c
+index 304faf6425abc16da9c7c7d28479a69d21113d60..cb58ee8c158a5593fc104c4dbc3b223e94f4421b 100644
+--- a/sound/soc/sof/ipc3-pcm.c
++++ b/sound/soc/sof/ipc3-pcm.c
+@@ -309,6 +309,23 @@ static int sof_ipc3_pcm_dai_link_fixup(struct snd_soc_pcm_runtime *rtd,
+ 		channels->min = private->dai_config->afe.channels;
+ 		channels->max = private->dai_config->afe.channels;
  
- static struct mt8188_card_data mt8188_nau8825_card = {
- 	.name = "mt8188_nau8825",
--	.quirk = NAU8825_HS_PRESENT,
-+	.quirk = NAU8825_HS_PRESENT | DPCM_FE_CONSTRAINT,
- };
++		snd_mask_none(fmt);
++
++		switch (private->dai_config->afe.format) {
++		case SOF_IPC_FRAME_S16_LE:
++			snd_mask_set_format(fmt, SNDRV_PCM_FORMAT_S16_LE);
++			break;
++		case SOF_IPC_FRAME_S24_4LE:
++			snd_mask_set_format(fmt, SNDRV_PCM_FORMAT_S24_LE);
++			break;
++		case SOF_IPC_FRAME_S32_LE:
++			snd_mask_set_format(fmt, SNDRV_PCM_FORMAT_S32_LE);
++			break;
++		default:
++			dev_err(component->dev, "Not available format!\n");
++			return -EINVAL;
++		}
++
+ 		dev_dbg(component->dev, "rate_min: %d rate_max: %d\n", rate->min, rate->max);
+ 		dev_dbg(component->dev, "channels_min: %d channels_max: %d\n",
+ 			channels->min, channels->max);
+diff --git a/sound/soc/sof/mediatek/mt8186/mt8186.c b/sound/soc/sof/mediatek/mt8186/mt8186.c
+index 3e0ea0e109e2f6d6fc572d3b791c3264a432f96f..f587edf9e0a70fdeb786a71b8ebfcd5d529c4360 100644
+--- a/sound/soc/sof/mediatek/mt8186/mt8186.c
++++ b/sound/soc/sof/mediatek/mt8186/mt8186.c
+@@ -111,6 +111,14 @@ static int platform_parse_resource(struct platform_device *pdev, void *data)
  
- static const struct of_device_id mt8188_mt6359_dt_match[] = {
+ 	dev_dbg(dev, "DMA %pR\n", &res);
+ 
++	adsp->pa_shared_dram = (phys_addr_t)res.start;
++	adsp->shared_size = resource_size(&res);
++	if (adsp->pa_shared_dram & DRAM_REMAP_MASK) {
++		dev_err(dev, "adsp shared dma memory(%#x) is not 4K-aligned\n",
++			(u32)adsp->pa_shared_dram);
++		return -EINVAL;
++	}
++
+ 	ret = of_reserved_mem_device_init(dev);
+ 	if (ret) {
+ 		dev_err(dev, "of_reserved_mem_device_init failed\n");
+@@ -244,23 +252,18 @@ static int adsp_shared_base_ioremap(struct platform_device *pdev, void *data)
+ {
+ 	struct device *dev = &pdev->dev;
+ 	struct mtk_adsp_chip_info *adsp = data;
+-	u32 shared_size;
+ 
+ 	/* remap shared-dram base to be non-cachable */
+-	shared_size = TOTAL_SIZE_SHARED_DRAM_FROM_TAIL;
+-	adsp->pa_shared_dram = adsp->pa_dram + adsp->dramsize - shared_size;
+-	if (adsp->va_dram) {
+-		adsp->shared_dram = adsp->va_dram + DSP_DRAM_SIZE - shared_size;
+-	} else {
+-		adsp->shared_dram = devm_ioremap(dev, adsp->pa_shared_dram,
+-						 shared_size);
+-		if (!adsp->shared_dram) {
+-			dev_err(dev, "ioremap failed for shared DRAM\n");
+-			return -ENOMEM;
+-		}
++	adsp->shared_dram = devm_ioremap(dev, adsp->pa_shared_dram,
++					 adsp->shared_size);
++	if (!adsp->shared_dram) {
++		dev_err(dev, "failed to ioremap base %pa size %#x\n",
++			adsp->shared_dram, adsp->shared_size);
++		return -ENOMEM;
+ 	}
+-	dev_dbg(dev, "shared-dram vbase=%p, phy addr :%pa, size=%#x\n",
+-		adsp->shared_dram, &adsp->pa_shared_dram, shared_size);
++
++	dev_dbg(dev, "shared-dram vbase=%p, phy addr :%pa,  size=%#x\n",
++		adsp->shared_dram, &adsp->pa_shared_dram, adsp->shared_size);
+ 
+ 	return 0;
+ }
+@@ -307,9 +310,12 @@ static int mt8186_dsp_probe(struct snd_sof_dev *sdev)
+ 		return -ENOMEM;
+ 	}
+ 
+-	sdev->bar[SOF_FW_BLK_TYPE_SRAM] = devm_ioremap_wc(sdev->dev,
+-							  priv->adsp->pa_dram,
+-							  priv->adsp->dramsize);
++	priv->adsp->va_sram = sdev->bar[SOF_FW_BLK_TYPE_IRAM];
++
++	sdev->bar[SOF_FW_BLK_TYPE_SRAM] = devm_ioremap(sdev->dev,
++						       priv->adsp->pa_dram,
++						       priv->adsp->dramsize);
++
+ 	if (!sdev->bar[SOF_FW_BLK_TYPE_SRAM]) {
+ 		dev_err(sdev->dev, "failed to ioremap base %pa size %#x\n",
+ 			&priv->adsp->pa_dram, priv->adsp->dramsize);
