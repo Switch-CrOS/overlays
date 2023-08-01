@@ -151,7 +151,6 @@ MISSING_OVERLAYS_DIR_METADATA = {
     "overlay-trogdor-kernelnext",
     "overlay-variant-guado-labstation",
     "overlay-volteer",
-    "overlay-x32-generic",
     "overlay-zork",
     "project-labstation",
     "project-satlab",
@@ -273,7 +272,6 @@ MISSING_OVERLAYS_README_MD = {
     "overlay-trogdor-kernelnext",
     "overlay-variant-guado-labstation",
     "overlay-volteer",
-    "overlay-x32-generic",
     "overlay-zork",
     "project-labstation",
     "project-mobbase",
@@ -343,7 +341,6 @@ MISSING_OVERLAYS_OWNERS = {
     "overlay-soraka-libcamera",
     "overlay-variant-guado-labstation",
     "overlay-volteer",
-    "overlay-x32-generic",
     "project-satlab",
     "project-wilco",
 }
