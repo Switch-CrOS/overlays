@@ -45,17 +45,17 @@ index dd12e2ff685c2f4f62df30342f17d6a88bcfeea8..7570a0684967ad40022b8cd250ffe4d5
    reg:
      maxItems: 1
 diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,merge.yaml b/Documentation/devicetree/bindings/display/mediatek/mediatek,merge.yaml
-index 69ba75777dac2b000ff87219a078f34d610f1a95..7fc486e8b14ed1d62f84b5e4ef88381ed059f5e8 100644
+index eead5cb8636edbf3a64ea208fbdff9348a9f7984..c9628a6c09cfaa82e9d828ed1128504a14516d96 100644
 --- a/Documentation/devicetree/bindings/display/mediatek/mediatek,merge.yaml
 +++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,merge.yaml
-@@ -24,6 +24,7 @@ properties:
+@@ -23,6 +23,7 @@ properties:
+     oneOf:
+       - enum:
+           - mediatek,mt8173-disp-merge
++          - mediatek,mt8188-disp-merge
+           - mediatek,mt8195-disp-merge
        - items:
-           - const: mediatek,mt8173-disp-merge
-       - items:
-+          - const: mediatek,mt8188-disp-merge
-           - const: mediatek,mt8195-disp-merge
- 
-   reg:
+           - const: mediatek,mt6795-disp-merge
 diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,padding.yaml b/Documentation/devicetree/bindings/display/mediatek/mediatek,padding.yaml
 new file mode 100644
 index 0000000000000000000000000000000000000000..db24801ebc484e184df1bdc3e75af0661c105753
@@ -228,31 +228,6 @@ index c00be39af64e53e801a5d4d551235b5e16f504fe..2e055e06bed1495c310d3dc4a4fa4843
    clocks:
      maxItems: 6
  
-diff --git a/Documentation/devicetree/bindings/sound/mediatek,mt8188-afe.yaml b/Documentation/devicetree/bindings/sound/mediatek,mt8188-afe.yaml
-index e6cb711ece773b347562273bbaebafa472e3ec2f..0b92c71d877957ffd990d8a82df1f74865164d58 100644
---- a/Documentation/devicetree/bindings/sound/mediatek,mt8188-afe.yaml
-+++ b/Documentation/devicetree/bindings/sound/mediatek,mt8188-afe.yaml
-@@ -25,6 +25,12 @@ properties:
-   reset-names:
-     const: audiosys
- 
-+  memory-region:
-+    maxItems: 1
-+    description: |
-+      Shared memory region for AFE memif.  A "shared-dma-pool".
-+      See ../reserved-memory/reserved-memory.yaml for details.
-+
-   mediatek,topckgen:
-     $ref: /schemas/types.yaml#/definitions/phandle
-     description: The phandle of the mediatek topckgen controller
-@@ -176,6 +182,7 @@ examples:
-         interrupts = <GIC_SPI 822 IRQ_TYPE_LEVEL_HIGH 0>;
-         resets = <&watchdog 14>;
-         reset-names = "audiosys";
-+        memory-region = <&snd_dma_mem_reserved>;
-         mediatek,topckgen = <&topckgen>;
-         mediatek,infracfg = <&infracfg_ao>;
-         power-domains = <&spm 13>; //MT8188_POWER_DOMAIN_AUDIO
 diff --git a/Documentation/devicetree/bindings/thermal/mediatek,mt8188-lvts.yaml b/Documentation/devicetree/bindings/thermal/mediatek,mt8188-lvts.yaml
 new file mode 100644
 index 0000000000000000000000000000000000000000..d270db378419cf0a3b0eb8fe23509526da8e975e
@@ -5488,7 +5463,7 @@ index 0000000000000000000000000000000000000000..5f54d7b00a4ef0c08672db6b8ce569e8
 +	};
 +};
 diff --git a/chromeos/config/chromeos/arm64/chromiumos-mediatek.flavour.config b/chromeos/config/chromeos/arm64/chromiumos-mediatek.flavour.config
-index 9de8243d6f8fb6b0787b1718b8f9f426be520fc0..0681da38361a3e8b305b2007e1c7a92635165926 100644
+index 9de8243d6f8fb6b0787b1718b8f9f426be520fc0..ec58e6a17d4e6c2fa0449548c70567beac5092c7 100644
 --- a/chromeos/config/chromeos/arm64/chromiumos-mediatek.flavour.config
 +++ b/chromeos/config/chromeos/arm64/chromiumos-mediatek.flavour.config
 @@ -3,6 +3,7 @@
@@ -5546,12 +5521,6 @@ index 9de8243d6f8fb6b0787b1718b8f9f426be520fc0..0681da38361a3e8b305b2007e1c7a926
  CONFIG_TMPFS=y
  CONFIG_TOUCHSCREEN_MELFAS_MIP4=y
  CONFIG_TYPEC=y
-@@ -131,3 +137,5 @@ CONFIG_VIDEO_MEDIATEK_VPU=y
- CONFIG_VIDEO_OV02A10=m
- CONFIG_VIDEO_OV5695=m
- CONFIG_VIDEO_OV8856=m
-+CONFIG_TEE=y
-+CONFIG_OPTEE=y
 diff --git a/drivers/clk/mediatek/Makefile b/drivers/clk/mediatek/Makefile
 index dbeaa5b41177dc699bf4b302c183914a95d280b8..9be2785b4653d5de9db19a8cea779729be948439 100644
 --- a/drivers/clk/mediatek/Makefile
@@ -11063,7 +11032,7 @@ index 8519cd4dd0f330bc1fd7168ab303e5728cd4a3db..1f5d49e38430644def31fb510583c2f0
  	{ .compatible = "mediatek,mt8195-iommu-infra", .data = &mt8195_data_infra},
  	{ .compatible = "mediatek,mt8195-iommu-vdo",   .data = &mt8195_data_vdo},
 diff --git a/drivers/media/platform/mediatek/jpeg/mtk_jpeg_core.c b/drivers/media/platform/mediatek/jpeg/mtk_jpeg_core.c
-index 0051f372a66cfea26f11f390bb71a8c90a51430d..935ce85c546d8ed8f7c4cea616b73145ab02922b 100644
+index 6069ecf420b0bebafdf9cf532ca5849cdfb090fc..051beafe2ee6dfc239d951833543b3c1c2ec3975 100644
 --- a/drivers/media/platform/mediatek/jpeg/mtk_jpeg_core.c
 +++ b/drivers/media/platform/mediatek/jpeg/mtk_jpeg_core.c
 @@ -1270,6 +1270,7 @@ static void mtk_jpegdec_worker(struct work_struct *work)
@@ -11456,24 +11425,11 @@ index c2f90848f4984e5534b56bc0cc564974842418de..374934be3884b7e979b7729547b76e01
  	tb = instance->tile.va;
  	for (i = 0; i < rows; i++) {
  		for (j = 0; j < cols; j++) {
-diff --git a/drivers/memory/mtk-smi.c b/drivers/memory/mtk-smi.c
-index 5a9754442bc75fa3f883b65c3461a1ca0d8c5f29..b8a127112f410e24a93c82eb552ea0df5db026c9 100644
---- a/drivers/memory/mtk-smi.c
-+++ b/drivers/memory/mtk-smi.c
-@@ -830,8 +830,6 @@ static int __maybe_unused mtk_smi_common_suspend(struct device *dev)
- 
- static const struct dev_pm_ops smi_common_pm_ops = {
- 	SET_RUNTIME_PM_OPS(mtk_smi_common_suspend, mtk_smi_common_resume, NULL)
--	SET_LATE_SYSTEM_SLEEP_PM_OPS(pm_runtime_force_suspend,
--				     pm_runtime_force_resume)
- };
- 
- static struct platform_driver mtk_smi_common_driver = {
 diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/mcu.c b/drivers/net/wireless/mediatek/mt76/mt7921/mcu.c
-index d3507e86e9cf59b45be86ec271b5f9b2d5343fed..fdbd8f5226990c5f87f273836abde3bc361c0bd9 100644
+index 10dda1693d7dbe6647ad21c0a6a78324f437ab70..799f4c887797769e6afd7adb5c4cde941f8b9062 100644
 --- a/drivers/net/wireless/mediatek/mt76/mt7921/mcu.c
 +++ b/drivers/net/wireless/mediatek/mt76/mt7921/mcu.c
-@@ -481,6 +481,7 @@ static int mt7921_load_firmware(struct mt7921_dev *dev)
+@@ -473,6 +473,7 @@ static int mt7921_load_firmware(struct mt7921_dev *dev)
  
  #ifdef CONFIG_PM
  	dev->mt76.hw->wiphy->wowlan = &mt76_connac_wowlan_support;
@@ -11482,10 +11438,10 @@ index d3507e86e9cf59b45be86ec271b5f9b2d5343fed..fdbd8f5226990c5f87f273836abde3bc
  
  	dev_dbg(dev->mt76.dev, "Firmware init done\n");
 diff --git a/drivers/opp/core.c b/drivers/opp/core.c
-index f922ccca838d23bda1a2059d5effec1c87471645..c555d86fb929ee237ff6b3e8924972c242489337 100644
+index b20d6ff89ce4666c189cf06c3daae001b6cd3931..540c394a4fd6f95035e674a488e26522c11f4886 100644
 --- a/drivers/opp/core.c
 +++ b/drivers/opp/core.c
-@@ -2942,6 +2942,75 @@ int dev_pm_opp_adjust_voltage(struct device *dev, unsigned long freq,
+@@ -2945,6 +2945,75 @@ int dev_pm_opp_adjust_voltage(struct device *dev, unsigned long freq,
  }
  EXPORT_SYMBOL_GPL(dev_pm_opp_adjust_voltage);
  
@@ -18604,93 +18560,35 @@ index dfd8efca5e606accf947ff3878a28791d4bd58de..000eb1cf68b7a7bb5e151d023238281c
  };
  
 diff --git a/net/bluetooth/mgmt.c b/net/bluetooth/mgmt.c
-index 3f2c01c2331c02539f7487b738f4971ad63deffd..e12e0c54c07369f24714cdeeed19e6772de7f2ff 100644
+index c2354a17df1203b349537d4350ea47a1555ad214..2cc581a94c38dfb263566de3ba2dc45d199a381a 100644
 --- a/net/bluetooth/mgmt.c
 +++ b/net/bluetooth/mgmt.c
-@@ -5019,22 +5019,6 @@ static int set_exp_feature(struct sock *sk, struct hci_dev *hdev,
- 			       MGMT_STATUS_NOT_SUPPORTED);
- }
- 
--static u32 get_params_flags(struct hci_dev *hdev,
--			    struct hci_conn_params *params)
--{
--	u32 flags = hdev->conn_flags;
--
--	/* Devices using RPAs can only be programmed in the acceptlist if
--	 * LL Privacy has been enable otherwise they cannot mark
--	 * HCI_CONN_FLAG_REMOTE_WAKEUP.
--	 */
--	if ((flags & HCI_CONN_FLAG_REMOTE_WAKEUP) && !use_ll_privacy(hdev) &&
--	    hci_find_irk_by_addr(hdev, &params->addr, params->addr_type))
--		flags &= ~HCI_CONN_FLAG_REMOTE_WAKEUP;
--
--	return flags;
--}
--
- int mgmt_quality_report(struct hci_dev *hdev, struct sk_buff *skb,
- 			u8 quality_spec)
- {
-@@ -5088,10 +5072,10 @@ static int get_device_flags(struct sock *sk, struct hci_dev *hdev, void *data,
- 	} else {
+@@ -5159,20 +5159,8 @@ static int set_device_flags(struct sock *sk, struct hci_dev *hdev, void *data,
  		params = hci_conn_params_lookup(hdev, &cp->addr.bdaddr,
  						le_addr_type(cp->addr.type));
-+
- 		if (!params)
- 			goto done;
- 
--		supported_flags = get_params_flags(hdev, params);
- 		current_flags = params->flags;
- 	}
- 
-@@ -5159,36 +5143,25 @@ static int set_device_flags(struct sock *sk, struct hci_dev *hdev, void *data,
- 			bt_dev_warn(hdev, "No such BR/EDR device %pMR (0x%x)",
- 				    &cp->addr.bdaddr, cp->addr.type);
- 		}
-+	} else {
-+		params = hci_conn_params_lookup(hdev, &cp->addr.bdaddr,
-+						le_addr_type(cp->addr.type));
-+		if (params) {
+ 		if (params) {
+-			/* Devices using RPAs can only be programmed in the
+-			 * acceptlist LL Privacy has been enable otherwise they
+-			 * cannot mark HCI_CONN_FLAG_REMOTE_WAKEUP.
+-			 */
+-			if ((current_flags & HCI_CONN_FLAG_REMOTE_WAKEUP) &&
+-			    !use_ll_privacy(hdev) &&
+-			    hci_find_irk_by_addr(hdev, &params->addr,
+-						 params->addr_type)) {
+-				bt_dev_warn(hdev,
+-					    "Cannot set wakeable for RPA");
+-				goto unlock;
+-			}
+-
+ 			WRITE_ONCE(params->flags, current_flags);
 +			params->flags = current_flags;
-+			status = MGMT_STATUS_SUCCESS;
+ 			status = MGMT_STATUS_SUCCESS;
  
--		goto unlock;
--	}
--
--	params = hci_conn_params_lookup(hdev, &cp->addr.bdaddr,
--					le_addr_type(cp->addr.type));
--	if (!params) {
--		bt_dev_warn(hdev, "No such LE device %pMR (0x%x)",
--			    &cp->addr.bdaddr, le_addr_type(cp->addr.type));
--		goto unlock;
--	}
--
--	supported_flags = get_params_flags(hdev, params);
--
--	if ((supported_flags | current_flags) != supported_flags) {
--		bt_dev_warn(hdev, "Bad flag given (0x%x) vs supported (0x%0x)",
--			    current_flags, supported_flags);
--		goto unlock;
-+			/* Update passive scan if HCI_CONN_FLAG_DEVICE_PRIVACY
-+			 * has been set.
-+			 */
-+			if (params->flags & HCI_CONN_FLAG_DEVICE_PRIVACY)
-+				hci_update_passive_scan(hdev);
-+		} else {
-+			bt_dev_warn(hdev, "No such LE device %pMR (0x%x)",
-+				    &cp->addr.bdaddr,
-+				    le_addr_type(cp->addr.type));
-+		}
+ 			/* Update passive scan if HCI_CONN_FLAG_DEVICE_PRIVACY
+@@ -5187,7 +5175,6 @@ static int set_device_flags(struct sock *sk, struct hci_dev *hdev, void *data,
+ 		}
  	}
  
--	params->flags = current_flags;
--	status = MGMT_STATUS_SUCCESS;
--
--	/* Update passive scan if HCI_CONN_FLAG_DEVICE_PRIVACY
--	 * has been set.
--	 */
--	if (params->flags & HCI_CONN_FLAG_DEVICE_PRIVACY)
--		hci_update_passive_scan(hdev);
--
 -unlock:
  	hci_dev_unlock(hdev);
  
@@ -18879,45 +18777,8 @@ index dd38c4a93574f4e4bcd74200d66e7878d076a234..4bc5e1c0c8ed9b016b48e64e74afe9de
  };
  
  int mtk_sof_dai_link_fixup(struct snd_soc_pcm_runtime *rtd,
-diff --git a/sound/soc/mediatek/mt8188/mt8188-afe-pcm.c b/sound/soc/mediatek/mt8188/mt8188-afe-pcm.c
-index 6a24b339444b35652844aa8e1bbd96b847268225..5e14655c5617ed066f0c92d13592e9e15dabfa50 100644
---- a/sound/soc/mediatek/mt8188/mt8188-afe-pcm.c
-+++ b/sound/soc/mediatek/mt8188/mt8188-afe-pcm.c
-@@ -16,6 +16,7 @@
- #include <linux/of.h>
- #include <linux/of_address.h>
- #include <linux/of_platform.h>
-+#include <linux/of_reserved_mem.h>
- #include <linux/pm_runtime.h>
- #include <linux/soc/mediatek/infracfg.h>
- #include <linux/reset.h>
-@@ -3193,11 +3194,15 @@ static int mt8188_afe_pcm_dev_probe(struct platform_device *pdev)
- {
- 	struct mtk_base_afe *afe;
- 	struct mt8188_afe_private *afe_priv;
--	struct device *dev;
-+	struct device *dev = &pdev->dev;
- 	struct reset_control *rstc;
- 	struct regmap *infra_ao;
- 	int i, irq_id, ret;
- 
-+	ret = of_reserved_mem_device_init(dev);
-+	if (ret)
-+		dev_dbg(dev, "failed to assign memory region: %d\n", ret);
-+
- 	ret = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(33));
- 	if (ret)
- 		return ret;
-@@ -3213,7 +3218,6 @@ static int mt8188_afe_pcm_dev_probe(struct platform_device *pdev)
- 
- 	afe_priv = afe->platform_priv;
- 	afe->dev = &pdev->dev;
--	dev = afe->dev;
- 
- 	afe->base_addr = devm_platform_ioremap_resource(pdev, 0);
- 	if (IS_ERR(afe->base_addr))
 diff --git a/sound/soc/mediatek/mt8188/mt8188-mt6359.c b/sound/soc/mediatek/mt8188/mt8188-mt6359.c
-index ac69c23e0da1c02fcd23712b35ea08bb3613ff99..e205de2899a9948503f4dfb0c0cc34556a4c3cdc 100644
+index 7c9e08e6a4f56def2436aeb5cd9d0e7692bc74c1..e205de2899a9948503f4dfb0c0cc34556a4c3cdc 100644
 --- a/sound/soc/mediatek/mt8188/mt8188-mt6359.c
 +++ b/sound/soc/mediatek/mt8188/mt8188-mt6359.c
 @@ -19,6 +19,8 @@
@@ -19145,57 +19006,7 @@ index ac69c23e0da1c02fcd23712b35ea08bb3613ff99..e205de2899a9948503f4dfb0c0cc3455
  static struct snd_soc_dai_link mt8188_mt6359_dai_links[] = {
  	/* FE */
  	[DAI_LINK_DL2_FE] = {
-@@ -723,6 +850,9 @@ static struct snd_soc_dai_link mt8188_mt6359_dai_links[] = {
- 		},
- 		.dynamic = 1,
- 		.dpcm_playback = 1,
-+		.dpcm_merged_chan = 1,
-+		.dpcm_merged_rate = 1,
-+		.dpcm_merged_format = 1,
- 		SND_SOC_DAILINK_REG(playback2),
- 	},
- 	[DAI_LINK_DL3_FE] = {
-@@ -734,6 +864,9 @@ static struct snd_soc_dai_link mt8188_mt6359_dai_links[] = {
- 		},
- 		.dynamic = 1,
- 		.dpcm_playback = 1,
-+		.dpcm_merged_chan = 1,
-+		.dpcm_merged_rate = 1,
-+		.dpcm_merged_format = 1,
- 		SND_SOC_DAILINK_REG(playback3),
- 	},
- 	[DAI_LINK_DL6_FE] = {
-@@ -745,6 +878,9 @@ static struct snd_soc_dai_link mt8188_mt6359_dai_links[] = {
- 		},
- 		.dynamic = 1,
- 		.dpcm_playback = 1,
-+		.dpcm_merged_chan = 1,
-+		.dpcm_merged_rate = 1,
-+		.dpcm_merged_format = 1,
- 		SND_SOC_DAILINK_REG(playback6),
- 	},
- 	[DAI_LINK_DL7_FE] = {
-@@ -833,6 +969,9 @@ static struct snd_soc_dai_link mt8188_mt6359_dai_links[] = {
- 		},
- 		.dynamic = 1,
- 		.dpcm_capture = 1,
-+		.dpcm_merged_chan = 1,
-+		.dpcm_merged_rate = 1,
-+		.dpcm_merged_format = 1,
- 		SND_SOC_DAILINK_REG(capture4),
- 	},
- 	[DAI_LINK_UL5_FE] = {
-@@ -844,6 +983,9 @@ static struct snd_soc_dai_link mt8188_mt6359_dai_links[] = {
- 		},
- 		.dynamic = 1,
- 		.dpcm_capture = 1,
-+		.dpcm_merged_chan = 1,
-+		.dpcm_merged_rate = 1,
-+		.dpcm_merged_format = 1,
- 		SND_SOC_DAILINK_REG(capture5),
- 	},
- 	[DAI_LINK_UL6_FE] = {
-@@ -967,6 +1109,36 @@ static struct snd_soc_dai_link mt8188_mt6359_dai_links[] = {
+@@ -982,6 +1109,36 @@ static struct snd_soc_dai_link mt8188_mt6359_dai_links[] = {
  		.dpcm_capture = 1,
  		SND_SOC_DAILINK_REG(ul_src),
  	},
@@ -19232,7 +19043,7 @@ index ac69c23e0da1c02fcd23712b35ea08bb3613ff99..e205de2899a9948503f4dfb0c0cc3455
  };
  
  static struct snd_kcontrol *ctl_find(struct snd_card *card, const char *name)
-@@ -981,7 +1153,8 @@ static struct snd_kcontrol *ctl_find(struct snd_card *card, const char *name)
+@@ -996,7 +1153,8 @@ static struct snd_kcontrol *ctl_find(struct snd_card *card, const char *name)
  
  static void mt8188_fixup_controls(struct snd_soc_card *card)
  {
@@ -19242,7 +19053,7 @@ index ac69c23e0da1c02fcd23712b35ea08bb3613ff99..e205de2899a9948503f4dfb0c0cc3455
  	struct mt8188_card_data *card_data = (struct mt8188_card_data *)priv->private_data;
  	struct snd_kcontrol *kctl;
  
-@@ -1009,6 +1182,8 @@ static struct snd_soc_card mt8188_mt6359_soc_card = {
+@@ -1024,6 +1182,8 @@ static struct snd_soc_card mt8188_mt6359_soc_card = {
  	.num_links = ARRAY_SIZE(mt8188_mt6359_dai_links),
  	.dapm_widgets = mt8188_mt6359_widgets,
  	.num_dapm_widgets = ARRAY_SIZE(mt8188_mt6359_widgets),
@@ -19251,7 +19062,7 @@ index ac69c23e0da1c02fcd23712b35ea08bb3613ff99..e205de2899a9948503f4dfb0c0cc3455
  	.controls = mt8188_mt6359_controls,
  	.num_controls = ARRAY_SIZE(mt8188_mt6359_controls),
  	.fixup_controls = mt8188_fixup_controls,
-@@ -1018,6 +1193,8 @@ static int mt8188_mt6359_dev_probe(struct platform_device *pdev)
+@@ -1033,6 +1193,8 @@ static int mt8188_mt6359_dev_probe(struct platform_device *pdev)
  {
  	struct snd_soc_card *card = &mt8188_mt6359_soc_card;
  	struct device_node *platform_node;
@@ -19260,7 +19071,7 @@ index ac69c23e0da1c02fcd23712b35ea08bb3613ff99..e205de2899a9948503f4dfb0c0cc3455
  	struct mt8188_mt6359_priv *priv;
  	struct mt8188_card_data *card_data;
  	struct snd_soc_dai_link *dai_link;
-@@ -1038,21 +1215,64 @@ static int mt8188_mt6359_dev_probe(struct platform_device *pdev)
+@@ -1053,21 +1215,64 @@ static int mt8188_mt6359_dev_probe(struct platform_device *pdev)
  	if (!card->name)
  		card->name = card_data->name;
  
@@ -19330,7 +19141,7 @@ index ac69c23e0da1c02fcd23712b35ea08bb3613ff99..e205de2899a9948503f4dfb0c0cc3455
  	}
  
  	ret = parse_dai_link_info(card);
-@@ -1060,8 +1280,12 @@ static int mt8188_mt6359_dev_probe(struct platform_device *pdev)
+@@ -1075,8 +1280,12 @@ static int mt8188_mt6359_dev_probe(struct platform_device *pdev)
  		goto err;
  
  	for_each_card_prelinks(card, i, dai_link) {
@@ -19345,7 +19156,7 @@ index ac69c23e0da1c02fcd23712b35ea08bb3613ff99..e205de2899a9948503f4dfb0c0cc3455
  
  		if (strcmp(dai_link->name, "DPTX_BE") == 0) {
  			if (strcmp(dai_link->codecs->dai_name, "snd-soc-dummy-dai"))
-@@ -1104,7 +1328,7 @@ static int mt8188_mt6359_dev_probe(struct platform_device *pdev)
+@@ -1119,7 +1328,7 @@ static int mt8188_mt6359_dev_probe(struct platform_device *pdev)
  	}
  
  	priv->private_data = card_data;
@@ -19354,7 +19165,7 @@ index ac69c23e0da1c02fcd23712b35ea08bb3613ff99..e205de2899a9948503f4dfb0c0cc3455
  
  	ret = devm_snd_soc_register_card(&pdev->dev, card);
  	if (ret)
-@@ -1113,6 +1337,11 @@ static int mt8188_mt6359_dev_probe(struct platform_device *pdev)
+@@ -1128,6 +1337,11 @@ static int mt8188_mt6359_dev_probe(struct platform_device *pdev)
  err:
  	of_node_put(platform_node);
  	clean_card_reference(card);
