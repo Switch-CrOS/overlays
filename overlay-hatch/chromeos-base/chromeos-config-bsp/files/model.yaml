@@ -126,7 +126,7 @@ base-config: &base_config
         # EQ/DRC DSP config
         - source: "{{$cras_dsp_config}}/audio/{{$cras-source-config-dir}}/dsp.ini"
           destination: "{{$cras_root}}/{{cras-config-dir}}/dsp.ini"
-  hardware-properties:
+  hardware-properties: &hardware_properties_common
     form-factor: CHROMEBOOK
     psu-type: battery
 
@@ -161,6 +161,9 @@ cros-healthd-sku-number-enabled: &cros_healthd_sku_number_enabled
 
 jinlon-config: &jinlon_config
   <<: [ *base_config, *cros_healthd_sku_number_enabled ]
+  hardware-properties:
+    <<: *hardware_properties_common
+    has-side-volume-button: true
   ui:
     side-volume-button:
       region: keyboard

@@ -93,7 +93,7 @@ firmware: &firmware_common
   image-name: "{{$device-name}}"
 
 convertible-base-config: &convertible_base_config
-  hardware-properties:
+  hardware-properties: &convertible_hardware_properties_common
     form-factor: CHROMEBOOK
     psu-type: battery
     is-lid-convertible: True
@@ -244,6 +244,9 @@ kasumi360-config: &kasumi360_config
       - source: "touch/elan/1d8e_5612.bin"
         destination: "{{$fw_dest}}/1d8e_5612.bin"
         symlink: "{{$fw_root}}/elants_i2c_1d8e.bin"
+  hardware-properties:
+    <<: *convertible_hardware_properties_common
+    has-side-volume-button: true
   ui:
     side-volume-button:
       region: keyboard
