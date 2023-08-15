@@ -42,12 +42,15 @@ device-config: &device_config
     platform-name: "Coral"
     frid: "Google_Coral"
     sku-id: "{{$sku-id}}"
-  hardware-properties:
-    form-factor: CHROMEBOOK
+  hardware-properties: &hardware_properties
+    $form-factor: CHROMEBOOK
+    form-factor: "{{$form-factor}}"
   rmad: *rmad_common
 
 convertible-base-config: &convertible_base_config
+  <<: *device_config
   hardware-properties:
+    <<: *hardware_properties
     form-factor: CONVERTIBLE
     is-lid-convertible: True
     has-lid-accelerometer: True
@@ -55,7 +58,7 @@ convertible-base-config: &convertible_base_config
     has-base-gyroscope: True
 
 convertible-config: &convertible_config
-  <<: [ *device_config, *convertible_base_config ]
+  <<: *convertible_base_config
 
 wl-device-config: &wl_device_config
   <<: *device_config
@@ -65,6 +68,13 @@ wl-device-config: &wl_device_config
 
 wl-convertible-config: &wl_convertible_config
   <<: [ *wl_device_config, *convertible_base_config ]
+  hardware-properties:
+    <<: *hardware_properties
+    form-factor: CONVERTIBLE
+    is-lid-convertible: True
+    has-lid-accelerometer: True
+    has-base-accelerometer: True
+    has-base-gyroscope: True
 
 astronaut-config: &astronaut_config
   <<: *device_config
