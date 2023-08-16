@@ -107,7 +107,6 @@ MISSING_OVERLAYS_DIR_METADATA = {
     "overlay-eve",
     "overlay-fizz",
     "overlay-fizz-labstation",
-    "overlay-fizz-satlab",
     "overlay-grunt",
     "overlay-guado",
     "overlay-guybrush",
@@ -153,7 +152,6 @@ MISSING_OVERLAYS_DIR_METADATA = {
     "overlay-volteer",
     "overlay-zork",
     "project-labstation",
-    "project-satlab",
     "project-termina",
 }
 
@@ -229,7 +227,6 @@ MISSING_OVERLAYS_README_MD = {
     "overlay-fizz",
     "overlay-fizz-labstation",
     "overlay-fizz-moblab",
-    "overlay-fizz-satlab",
     "overlay-galaxy",
     "overlay-grunt",
     "overlay-guado",
@@ -276,7 +273,6 @@ MISSING_OVERLAYS_README_MD = {
     "project-labstation",
     "project-mobbase",
     "project-moblab",
-    "project-satlab",
     "project-wilco",
 }
 
@@ -317,7 +313,6 @@ MISSING_OVERLAYS_OWNERS = {
     "overlay-draco",
     "overlay-eve",
     "overlay-fizz",
-    "overlay-fizz-satlab",
     "overlay-galaxy",
     "overlay-grunt",
     "overlay-guado",
@@ -341,7 +336,6 @@ MISSING_OVERLAYS_OWNERS = {
     "overlay-soraka-libcamera",
     "overlay-variant-guado-labstation",
     "overlay-volteer",
-    "project-satlab",
     "project-wilco",
 }
 
