@@ -1,3 +1,76 @@
+diff --git a/.cop/build.yaml b/.cop/build.yaml
+new file mode 100644
+index 0000000000000000000000000000000000000000..96b4e12de4b470bb52cffe1434f701010c92e1d8
+--- /dev/null
++++ b/.cop/build.yaml
+@@ -0,0 +1,55 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++steps:
++- name: 'gcr.io/${PROJECT_ID}/kernel-aarch64'
++  entrypoint: 'bash'
++  id: 'format_patch'
++  args:
++  - '-c'
++  - |
++        set -ve
++        git checkout -b CUT #CL under test
++        git format-patch -1
++- name: 'gcr.io/${PROJECT_ID}/kernel-aarch64'
++  entrypoint: 'bash'
++  id: 'build_parent'
++  allowFailure: true
++  args:
++  - '-c'
++  - |
++        set -ve
++        git checkout CUT~1
++        CHROMEOS_KERNEL_FAMILY=chromeos ./chromeos/scripts/prepareconfig ${_CONFIG}
++        ./scripts/config -d CONFIG_WERROR -d LOCALVERSION_AUTO
++        CROSS_COMPILE=${_CROSS_COMPILE} ARCH=${_ARCH} make olddefconfig 2> /dev/null
++        CROSS_COMPILE=${_CROSS_COMPILE} ARCH=${_ARCH} make -j $(nproc) W=1 C=1
++- name: 'gcr.io/${PROJECT_ID}/kernel-aarch64'
++  entrypoint: 'bash'
++  id: 'build_sparse'
++  args:
++  - '-c'
++  - |
++        set -ve
++        git checkout CUT
++        CHROMEOS_KERNEL_FAMILY=chromeos ./chromeos/scripts/prepareconfig ${_CONFIG}
++        ./scripts/config -d CONFIG_WERROR -d LOCALVERSION_AUTO
++        CROSS_COMPILE=${_CROSS_COMPILE} ARCH=${_ARCH} make olddefconfig 2> /dev/null
++        CROSS_COMPILE=${_CROSS_COMPILE} ARCH=${_ARCH} make -j $(nproc) W=1 C=1 2>&1 | tee build_sparse.txt
++        ! grep -i -e "error:" -e "warning:" build_sparse.txt
++- name: 'gcr.io/${PROJECT_ID}/kernel-aarch64'
++  entrypoint: 'bash'
++  id: 'checkpatch'
++  args:
++  - '-c'
++  - |
++        set -v
++        scripts/checkpatch.pl --show-types --strict --ignore GERRIT_CHANGE_ID \
++                --ignore UNKNOWN_COMMIT_ID --ignore COMMIT_LOG_LONG_LINE \
++                --ignore FILE_PATH_CHANGES  *patch
++substitutions:
++  _CONFIG: "chromiumos-mediatek"
++  _ARCH: "arm64"
++  _CROSS_COMPILE: "aarch64-linux-gnu-"
++  _FETCH_DEPTH: "2"
++options:
++ machineType: 'E2_HIGHCPU_32'
++
+diff --git a/.gitignore b/.gitignore
+index 47229f98b327b5d5aeb0bf764188edf0f2189cd5..24ca8c07b891123952aac9fe044ac2fec1a2f5e4 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -100,6 +100,7 @@ modules.order
+ !.gitignore
+ !.mailmap
+ !.rustfmt.toml
++!.cop
+ 
+ #
+ # Generated include files
 diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mmsys.yaml b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mmsys.yaml
 index d1410345ef180c5df9597f6e506fdd10f68d8dd9..8180199d65731580d41a760857f6c455d66bf0b7 100644
 --- a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mmsys.yaml
@@ -583,10 +656,10 @@ index 0f15a83c0bdf6d8283f9969bd7496048c4722d7d..8e98600b2415f98d75334618612fef34
  			clock-names = "MT_CG_VENC";
 diff --git a/arch/arm64/boot/dts/mediatek/mt8188-evb.dts b/arch/arm64/boot/dts/mediatek/mt8188-evb.dts
 new file mode 100644
-index 0000000000000000000000000000000000000000..3cec7f9402bb77ac806618129baad4ca663f76bf
+index 0000000000000000000000000000000000000000..39b99b693187c96db975210b1a4efaa8ed2512b1
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt8188-evb.dts
-@@ -0,0 +1,411 @@
+@@ -0,0 +1,442 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
 +/*
 + * Copyright (C) 2022 MediaTek Inc.
@@ -630,6 +703,12 @@ index 0000000000000000000000000000000000000000..3cec7f9402bb77ac806618129baad4ca
 +		scp_mem_reserved: scp_mem_region {
 +			compatible = "shared-dma-pool";
 +			reg = <0 0x50000000 0 0x2900000>;
++			no-map;
++		};
++
++		scp_dual_mem_reserved: scp-dual-mem-region {
++			compatible = "shared-dma-pool";
++			reg = <0 0x70000000 0 0xd000000>;
 +			no-map;
 +		};
 +	};
@@ -902,6 +981,14 @@ index 0000000000000000000000000000000000000000..3cec7f9402bb77ac806618129baad4ca
 +		};
 +	};
 +
++	scp_pins: scp {
++		pins_scp_vreq {
++			pinmux = <PINMUX_GPIO98__FUNC_O_SCP_VREQ_VAO>;
++			bias-disable;
++			input-enable;
++		};
++	};
++
 +	spi0_pins: spi0_pins {
 +		pins_spi {
 +			pinmux = <PINMUX_GPIO69__FUNC_O_SPIM0_CSB>,
@@ -946,9 +1033,26 @@ index 0000000000000000000000000000000000000000..3cec7f9402bb77ac806618129baad4ca
 +	interrupts = <222 IRQ_TYPE_LEVEL_HIGH>;
 +};
 +
++&mt6359_vgpu11_sshub_buck_reg {
++	regulator-always-on;
++	regulator-min-microvolt = <550000>;
++	regulator-max-microvolt = <550000>;
++};
++
 +&scp {
++	pinctrl-names = "default";
++	pinctrl-0 = <&scp_pins>;
 +	memory-region = <&scp_mem_reserved>;
 +	status = "okay";
++
++	mediatek,scp-core = <&scp_dual 0>;
++};
++
++&scp_dual {
++	status = "okay";
++	memory-region = <&scp_dual_mem_reserved>;
++	mediatek,scp-core = <&scp 1>;
++	firmware-name = "scp-dual.img";
 +};
 +
 +&spi0 {
@@ -1000,10 +1104,10 @@ index 0000000000000000000000000000000000000000..3cec7f9402bb77ac806618129baad4ca
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8188-geralt.dts b/arch/arm64/boot/dts/mediatek/mt8188-geralt.dts
 new file mode 100644
-index 0000000000000000000000000000000000000000..31bbf3832dee0bce43010ee3a042bb46040ea5a2
+index 0000000000000000000000000000000000000000..5c99a3b7fd53d172430b154b3d040b328ccb328c
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt8188-geralt.dts
-@@ -0,0 +1,1411 @@
+@@ -0,0 +1,1426 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
 +/*
 + * Copyright (C) 2022 MediaTek Inc.
@@ -1176,6 +1280,12 @@ index 0000000000000000000000000000000000000000..31bbf3832dee0bce43010ee3a042bb46
 +			compatible = "shared-dma-pool";
 +			no-map;
 +			reg = <0 0x60000000 0 0x1000000>;
++		};
++
++		scp_dual_mem_reserved: scp-dual-mem-region {
++			compatible = "shared-dma-pool";
++			reg = <0 0x70000000 0 0xd000000>;
++			no-map;
 +		};
 +	};
 +
@@ -2224,6 +2334,15 @@ index 0000000000000000000000000000000000000000..31bbf3832dee0bce43010ee3a042bb46
 +	pinctrl-0 = <&scp_pins>;
 +	memory-region = <&scp_mem_reserved>;
 +	status = "okay";
++
++	mediatek,scp-core = <&scp_dual 0>;
++};
++
++&scp_dual {
++	status = "okay";
++	memory-region = <&scp_dual_mem_reserved>;
++	mediatek,scp-core = <&scp 1>;
++	firmware-name = "scp-dual.img";
 +};
 +
 +&sound {
@@ -2417,10 +2536,10 @@ index 0000000000000000000000000000000000000000..31bbf3832dee0bce43010ee3a042bb46
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8188.dtsi b/arch/arm64/boot/dts/mediatek/mt8188.dtsi
 new file mode 100644
-index 0000000000000000000000000000000000000000..5f54d7b00a4ef0c08672db6b8ce569e8f399baf4
+index 0000000000000000000000000000000000000000..103419cb447109ec87af63014f8f743618d30e7a
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt8188.dtsi
-@@ -0,0 +1,3041 @@
+@@ -0,0 +1,3050 @@
 +// SPDX-License-Identifier: GPL-2.0+
 +/*
 + * Copyright (c) 2022 MediaTek Inc.
@@ -3708,6 +3827,15 @@ index 0000000000000000000000000000000000000000..5f54d7b00a4ef0c08672db6b8ce569e8
 +			      <0 0x10720000 0 0xe0000>;
 +			reg-names = "sram", "cfg";
 +			interrupts = <GIC_SPI 462 IRQ_TYPE_LEVEL_HIGH 0>;
++		};
++
++		scp_dual: scp-dual@105af000 {
++			compatible = "mediatek,mt8195-scp-dual";
++			reg = <0 0x105e0000 0 0x1f000>,
++			      <0 0x10720000 0 0xe0000>;
++			reg-names = "sram", "cfg";
++			interrupts = <GIC_SPI 463 IRQ_TYPE_LEVEL_HIGH 0>;
++			status = "disabled";
 +		};
 +
 +		adsp_audio26m: clock-controller@10b91100 {
@@ -9897,7 +10025,7 @@ index 948a53f1f4b385154f7e58070812b326ae8bd7cf..265be8960fb21e3ce3b40176b5d9c1da
  	.hvsize_mask = DPINTF_HSIZE_MASK,
  	.channel_swap_shift = DPINTF_CH_SWAP,
 diff --git a/drivers/gpu/drm/mediatek/mtk_drm_crtc.c b/drivers/gpu/drm/mediatek/mtk_drm_crtc.c
-index d40142842f85c21dc539b0ca5641f470ed476834..5ff20d0de29b00445007bba98dba96c3130014f8 100644
+index d40142842f85c21dc539b0ca5641f470ed476834..e589be41dc29ac3eb9951b3ff12bdef3fc00f4dc 100644
 --- a/drivers/gpu/drm/mediatek/mtk_drm_crtc.c
 +++ b/drivers/gpu/drm/mediatek/mtk_drm_crtc.c
 @@ -60,8 +60,13 @@ struct mtk_drm_crtc {
@@ -9914,7 +10042,36 @@ index d40142842f85c21dc539b0ca5641f470ed476834..5ff20d0de29b00445007bba98dba96c3
  
  	/* lock for display hardware access */
  	struct mutex			hw_lock;
-@@ -649,6 +654,85 @@ static void mtk_drm_crtc_disable_vblank(struct drm_crtc *crtc)
+@@ -328,7 +333,7 @@ static void ddp_cmdq_cb(struct mbox_client *cl, void *mssg)
+ }
+ #endif
+ 
+-static int mtk_crtc_ddp_hw_init(struct mtk_drm_crtc *mtk_crtc)
++static int mtk_crtc_ddp_hw_init(struct mtk_drm_crtc *mtk_crtc, struct drm_atomic_state *state)
+ {
+ 	struct drm_crtc *crtc = &mtk_crtc->base;
+ 	struct drm_connector *connector;
+@@ -405,11 +410,17 @@ static int mtk_crtc_ddp_hw_init(struct mtk_drm_crtc *mtk_crtc)
+ 	/* Initially configure all planes */
+ 	for (i = 0; i < mtk_crtc->layer_nr; i++) {
+ 		struct drm_plane *plane = &mtk_crtc->planes[i];
+-		struct mtk_plane_state *plane_state;
++		struct drm_plane_state *new_state;
++		struct mtk_plane_state *plane_state = to_mtk_plane_state(plane->state);
+ 		struct mtk_ddp_comp *comp;
+ 		unsigned int local_layer;
+ 
+-		plane_state = to_mtk_plane_state(plane->state);
++		/* sync the new plane state from drm_atomic_state */
++		if (state->planes[i].ptr) {
++			new_state = drm_atomic_get_new_plane_state(state, state->planes[i].ptr);
++			mtk_plane_update_new_state(new_state, plane_state);
++		}
++
+ 		comp = mtk_drm_ddp_comp_for_plane(crtc, plane, &local_layer);
+ 		if (comp)
+ 			mtk_ddp_comp_layer_config(comp, local_layer,
+@@ -649,6 +660,85 @@ static void mtk_drm_crtc_disable_vblank(struct drm_crtc *crtc)
  	mtk_ddp_comp_disable_vblank(comp);
  }
  
@@ -10000,7 +10157,7 @@ index d40142842f85c21dc539b0ca5641f470ed476834..5ff20d0de29b00445007bba98dba96c3
  int mtk_drm_crtc_plane_check(struct drm_crtc *crtc, struct drm_plane *plane,
  			     struct mtk_plane_state *state)
  {
-@@ -681,6 +765,12 @@ static void mtk_drm_crtc_atomic_enable(struct drm_crtc *crtc,
+@@ -681,13 +771,19 @@ static void mtk_drm_crtc_atomic_enable(struct drm_crtc *crtc,
  
  	DRM_DEBUG_DRIVER("%s %d\n", __func__, crtc->base.id);
  
@@ -10013,7 +10170,15 @@ index d40142842f85c21dc539b0ca5641f470ed476834..5ff20d0de29b00445007bba98dba96c3
  	ret = pm_runtime_resume_and_get(comp->dev);
  	if (ret < 0) {
  		DRM_DEV_ERROR(comp->dev, "Failed to enable power domain: %d\n", ret);
-@@ -886,7 +976,8 @@ struct device *mtk_drm_crtc_dma_dev_get(struct drm_crtc *crtc)
+ 		return;
+ 	}
+ 
+-	ret = mtk_crtc_ddp_hw_init(mtk_crtc);
++	ret = mtk_crtc_ddp_hw_init(mtk_crtc, state);
+ 	if (ret) {
+ 		pm_runtime_put(comp->dev);
+ 		return;
+@@ -886,7 +982,8 @@ struct device *mtk_drm_crtc_dma_dev_get(struct drm_crtc *crtc)
  
  int mtk_drm_crtc_create(struct drm_device *drm_dev,
  			const unsigned int *path, unsigned int path_len,
@@ -10023,7 +10188,7 @@ index d40142842f85c21dc539b0ca5641f470ed476834..5ff20d0de29b00445007bba98dba96c3
  {
  	struct mtk_drm_private *priv = drm_dev->dev_private;
  	struct device *dev = drm_dev->dev;
-@@ -898,6 +989,7 @@ int mtk_drm_crtc_create(struct drm_device *drm_dev,
+@@ -898,6 +995,7 @@ int mtk_drm_crtc_create(struct drm_device *drm_dev,
  	uint gamma_lut_size = 0;
  	struct drm_crtc *tmp;
  	int crtc_i = 0;
@@ -10031,7 +10196,7 @@ index d40142842f85c21dc539b0ca5641f470ed476834..5ff20d0de29b00445007bba98dba96c3
  
  	if (!path)
  		return 0;
-@@ -937,7 +1029,24 @@ int mtk_drm_crtc_create(struct drm_device *drm_dev,
+@@ -937,7 +1035,24 @@ int mtk_drm_crtc_create(struct drm_device *drm_dev,
  
  	mtk_crtc->mmsys_dev = priv->mmsys_dev;
  	mtk_crtc->ddp_comp_nr = path_len;
@@ -10346,6 +10511,66 @@ index eb2fd45941f09d511407d8c39320ebe5cee87854..d2efd715699f7cde3c98fbb413585cf9
 -
 +extern struct platform_driver mtk_padding_driver;
  #endif /* MTK_DRM_DRV_H */
+diff --git a/drivers/gpu/drm/mediatek/mtk_drm_plane.c b/drivers/gpu/drm/mediatek/mtk_drm_plane.c
+index 31f9420aff6f8c5fda7372e1633b1aba0be2960c..ef4460f98c074f0592b2e3099d433860dd4934ce 100644
+--- a/drivers/gpu/drm/mediatek/mtk_drm_plane.c
++++ b/drivers/gpu/drm/mediatek/mtk_drm_plane.c
+@@ -134,8 +134,8 @@ static int mtk_plane_atomic_async_check(struct drm_plane *plane,
+ 						   true, true);
+ }
+ 
+-static void mtk_plane_update_new_state(struct drm_plane_state *new_state,
+-				       struct mtk_plane_state *mtk_plane_state)
++void mtk_plane_update_new_state(struct drm_plane_state *new_state,
++				struct mtk_plane_state *mtk_plane_state)
+ {
+ 	struct drm_framebuffer *fb = new_state->fb;
+ 	struct drm_gem_object *gem;
+@@ -146,6 +146,11 @@ static void mtk_plane_update_new_state(struct drm_plane_state *new_state,
+ 	dma_addr_t hdr_addr = 0;
+ 	unsigned int hdr_pitch = 0;
+ 
++	if (!fb) {
++		mtk_plane_state->pending.enable = false;
++		return;
++	}
++
+ 	gem = fb->obj[0];
+ 	mtk_gem = to_mtk_gem_obj(gem);
+ 	addr = mtk_gem->dma_addr;
+@@ -180,7 +185,7 @@ static void mtk_plane_update_new_state(struct drm_plane_state *new_state,
+ 		       fb->format->cpp[0] * (x_offset_in_blocks + 1);
+ 	}
+ 
+-	mtk_plane_state->pending.enable = true;
++	mtk_plane_state->pending.enable = new_state->visible;
+ 	mtk_plane_state->pending.pitch = pitch;
+ 	mtk_plane_state->pending.hdr_pitch = hdr_pitch;
+ 	mtk_plane_state->pending.format = format;
+@@ -210,9 +215,9 @@ static void mtk_plane_atomic_async_update(struct drm_plane *plane,
+ 	plane->state->src_y = new_state->src_y;
+ 	plane->state->src_h = new_state->src_h;
+ 	plane->state->src_w = new_state->src_w;
+-	swap(plane->state->fb, new_state->fb);
+ 
+ 	mtk_plane_update_new_state(new_state, new_plane_state);
++	swap(plane->state->fb, new_state->fb);
+ 	wmb(); /* Make sure the above parameters are set before update */
+ 	new_plane_state->pending.async_dirty = true;
+ 	mtk_drm_crtc_async_update(new_state->crtc, plane, state);
+diff --git a/drivers/gpu/drm/mediatek/mtk_drm_plane.h b/drivers/gpu/drm/mediatek/mtk_drm_plane.h
+index 99aff7da0831dd868ee6568c9df1b5ed0e75295e..0a7d70d13e439a3abd286f5dac9d0e228e891d79 100644
+--- a/drivers/gpu/drm/mediatek/mtk_drm_plane.h
++++ b/drivers/gpu/drm/mediatek/mtk_drm_plane.h
+@@ -46,6 +46,8 @@ to_mtk_plane_state(struct drm_plane_state *state)
+ 	return container_of(state, struct mtk_plane_state, base);
+ }
+ 
++void mtk_plane_update_new_state(struct drm_plane_state *new_state,
++				struct mtk_plane_state *mtk_plane_state);
+ int mtk_plane_init(struct drm_device *dev, struct drm_plane *plane,
+ 		   unsigned long possible_crtcs, enum drm_plane_type type,
+ 		   unsigned int supported_rotations, const u32 *formats,
 diff --git a/drivers/gpu/drm/mediatek/mtk_dsi.c b/drivers/gpu/drm/mediatek/mtk_dsi.c
 index 9e1363c9fcdb46e98323595aa84ab08c8cd2d076..57b3d7b5082f0a1f83172fd9d0cecaa75cf978b1 100644
 --- a/drivers/gpu/drm/mediatek/mtk_dsi.c
@@ -11717,6 +11942,571 @@ index b8612ce5f4d0cf82c23198bf5b802e09d1412145..f5e55e5542e563f60f376066cbac87bd
  }
  
  static int mtk_pcie_setup(struct mtk_gen3_pcie *pcie)
+diff --git a/drivers/remoteproc/mtk_common.h b/drivers/remoteproc/mtk_common.h
+index ea6fa1100a00b37316bbb1882e10dae543ee049e..04c1f66ee77d74c6977a5889c3a3677527763483 100644
+--- a/drivers/remoteproc/mtk_common.h
++++ b/drivers/remoteproc/mtk_common.h
+@@ -47,6 +47,7 @@
+ #define MT8192_SCP2SPM_IPC_CLR		0x4094
+ #define MT8192_GIPC_IN_SET		0x4098
+ #define MT8192_HOST_IPC_INT_BIT		BIT(0)
++#define MT8195_CORE1_HOST_IPC_INT_BIT	BIT(4)
+ 
+ #define MT8192_CORE0_SW_RSTN_CLR	0x10000
+ #define MT8192_CORE0_SW_RSTN_SET	0x10004
+@@ -54,8 +55,32 @@
+ #define MT8192_CORE0_WDT_IRQ		0x10030
+ #define MT8192_CORE0_WDT_CFG		0x10034
+ 
++#define MT8195_SYS_STATUS		0x4004
++#define MT8195_CORE0_WDT		BIT(16)
++#define MT8195_CORE1_WDT		BIT(17)
++
+ #define MT8195_L1TCM_SRAM_PDN_RESERVED_RSI_BITS		GENMASK(7, 4)
+ 
++#define MT8195_CPU1_SRAM_PD			0x1084
++#define MT8195_SSHUB2APMCU_IPC_SET		0x4088
++#define MT8195_SSHUB2APMCU_IPC_CLR		0x408C
++#define MT8195_CORE1_SW_RSTN_CLR		0x20000
++#define MT8195_CORE1_SW_RSTN_SET		0x20004
++#define MT8195_CORE1_MEM_ATT_PREDEF		0x20008
++#define MT8195_CORE1_WDT_IRQ			0x20030
++#define MT8195_CORE1_WDT_CFG			0x20034
++
++#define MT8195_SEC_CTRL				0x85000
++#define MT8195_CORE_OFFSET_ENABLE_D		BIT(13)
++#define MT8195_CORE_OFFSET_ENABLE_I		BIT(12)
++#define MT8195_L2TCM_OFFSET_RANGE_0_LOW		0x850b0
++#define MT8195_L2TCM_OFFSET_RANGE_0_HIGH	0x850b4
++#define MT8195_L2TCM_OFFSET			0x850d0
++#define SCP_SRAM_REMAP_LOW			0
++#define SCP_SRAM_REMAP_HIGH			1
++#define SCP_SRAM_REMAP_OFFSET			2
++#define SCP_SRAM_REMAP_SIZE			3
++
+ #define SCP_FW_VER_LEN			32
+ #define SCP_SHARE_BUFFER_SIZE		288
+ 
+@@ -74,6 +99,14 @@ struct scp_ipi_desc {
+ 	void *priv;
+ };
+ 
++struct scp_subdev_core {
++	struct rproc_subdev subdev;
++	struct mtk_scp *main_scp;
++	void (*scp_dual_wdt_timeout)(struct mtk_scp *scp, u32 scp_to_host);
++};
++
++#define to_subdev_core(d) container_of(d, struct scp_subdev_core, subdev)
++
+ struct mtk_scp;
+ 
+ struct mtk_scp_of_data {
+@@ -89,6 +122,7 @@ struct mtk_scp_of_data {
+ 	u32 host_to_scp_int_bit;
+ 
+ 	size_t ipi_buf_offset;
++	uint32_t max_code_size;
+ };
+ 
+ struct mtk_scp {
+@@ -119,6 +153,8 @@ struct mtk_scp {
+ 	size_t dram_size;
+ 
+ 	struct rproc_subdev *rpmsg_subdev;
++	struct rproc_subdev *dual_subdev;
++	int dual_probe_done;
+ };
+ 
+ /**
+diff --git a/drivers/remoteproc/mtk_scp.c b/drivers/remoteproc/mtk_scp.c
+index 0861b76f185f7274708958bd5743fb8f584b09c1..285127ae885bbdf3b23c1aaf77f30e033d1c2090 100644
+--- a/drivers/remoteproc/mtk_scp.c
++++ b/drivers/remoteproc/mtk_scp.c
+@@ -20,9 +20,12 @@
+ #include "mtk_common.h"
+ #include "remoteproc_internal.h"
+ 
+-#define MAX_CODE_SIZE 0x500000
+ #define SECTION_NAME_IPI_BUFFER ".ipi_buffer"
+ 
++#define SCP_CORE_0 0
++#define SCP_CORE_1 1
++#define SCP_CORE_SINGLE 0xF
++
+ /**
+  * scp_get() - get a reference to SCP.
+  *
+@@ -176,6 +179,16 @@ static void mt8192_scp_reset_deassert(struct mtk_scp *scp)
+ 	writel(1, scp->reg_base + MT8192_CORE0_SW_RSTN_CLR);
+ }
+ 
++static void mt8195_scp_dual_reset_assert(struct mtk_scp *scp)
++{
++	writel(1, scp->reg_base + MT8195_CORE1_SW_RSTN_SET);
++}
++
++static void mt8195_scp_dual_reset_deassert(struct mtk_scp *scp)
++{
++	writel(1, scp->reg_base + MT8195_CORE1_SW_RSTN_CLR);
++}
++
+ static void mt8183_scp_irq_handler(struct mtk_scp *scp)
+ {
+ 	u32 scp_to_host;
+@@ -212,6 +225,56 @@ static void mt8192_scp_irq_handler(struct mtk_scp *scp)
+ 	}
+ }
+ 
++static void mt8195_scp_irq_handler(struct mtk_scp *scp)
++{
++	u32 scp_to_host;
++
++	scp_to_host = readl(scp->reg_base + MT8192_SCP2APMCU_IPC_SET);
++
++	if (scp_to_host & MT8192_SCP_IPC_INT_BIT) {
++		scp_ipi_handler(scp);
++
++		/*
++		 * SCP won't send another interrupt until we clear
++		 * MT8192_SCP2APMCU_IPC.
++		 */
++		writel(MT8192_SCP_IPC_INT_BIT,
++		       scp->reg_base + MT8192_SCP2APMCU_IPC_CLR);
++	} else {
++		if (readl(scp->reg_base + MT8195_SYS_STATUS) & MT8195_CORE1_WDT) {
++			writel(1, scp->reg_base + MT8195_CORE1_WDT_IRQ);
++
++			if (scp->dual_subdev) {
++				struct scp_subdev_core *subdev_core;
++
++				subdev_core = to_subdev_core(scp->dual_subdev);
++				subdev_core->scp_dual_wdt_timeout(scp, scp_to_host);
++			}
++		} else {
++			writel(1, scp->reg_base + MT8192_CORE0_WDT_IRQ);
++			scp_wdt_handler(scp, scp_to_host);
++		}
++	}
++}
++
++static void mt8195_scp_dual_irq_handler(struct mtk_scp *scp)
++{
++	u32 scp_to_host;
++
++	scp_to_host = readl(scp->reg_base + MT8195_SSHUB2APMCU_IPC_SET);
++
++	if (scp_to_host & MT8192_SCP_IPC_INT_BIT) {
++		scp_ipi_handler(scp);
++
++		/*
++		 * SCP won't send another interrupt until we clear
++		 * MT8195_SSHUB2APMCU_IPC_CLR.
++		 */
++		writel(MT8192_SCP_IPC_INT_BIT,
++		       scp->reg_base + MT8195_SSHUB2APMCU_IPC_CLR);
++	}
++}
++
+ static irqreturn_t scp_irq_handler(int irq, void *priv)
+ {
+ 	struct mtk_scp *scp = priv;
+@@ -453,6 +516,63 @@ static int mt8195_scp_before_load(struct mtk_scp *scp)
+ 	return 0;
+ }
+ 
++static int mt8195_scp_dual_before_load(struct mtk_scp *scp)
++{
++	u32 sec_ctrl;
++	struct device *dev = scp->dev;
++	struct device_node *main_np;
++	struct platform_device *main_pdev;
++	struct mtk_scp *scp_core0;
++
++	/* Get sram start address from SCP core 0 */
++	main_np = of_parse_phandle(dev->of_node, "mediatek,scp-core", 0);
++	if (!main_np) {
++		dev_warn(dev, "Invalid SCP main core phandle\n");
++		return -EINVAL;
++	}
++
++	main_pdev = of_find_device_by_node(main_np);
++	of_node_put(main_np);
++
++	if (!main_pdev) {
++		dev_err(dev, "Cannot find SCP core 0 device\n");
++		return -ENODEV;
++	}
++	scp_core0 = platform_get_drvdata(main_pdev);
++	put_device(&main_pdev->dev);
++
++	scp_sram_power_on(scp->reg_base + MT8195_CPU1_SRAM_PD, 0);
++
++	/* hold SCP in reset while loading FW. */
++	scp->data->scp_reset_assert(scp);
++
++	/* enable MPU for all memory regions */
++	writel(0xff, scp->reg_base + MT8195_CORE1_MEM_ATT_PREDEF);
++
++	/* The value of SRAM offset range is from the viewpoint of SCP core 1.
++	 * This configuration adds an offset on SCP bus when SCP core 1 accesses SCP SRAM
++	 * to solve the SCP core 0 and core 1 both fetch the 1st instruction from the same
++	 * SRAM address.
++	 *
++	 * Because SCP core 0 and core 1 both boot from address 0, this must be configured
++	 * before boot SCP core 1.
++	 *
++	 * Configure the range of SRAM addresses will be added offset.
++	 */
++	writel(0, scp->reg_base + MT8195_L2TCM_OFFSET_RANGE_0_LOW);
++	writel(scp->sram_size, scp->reg_base + MT8195_L2TCM_OFFSET_RANGE_0_HIGH);
++
++	/* configure the offset value */
++	writel(scp->sram_phys - scp_core0->sram_phys, scp->reg_base + MT8195_L2TCM_OFFSET);
++
++	/* enable adding sram offset when fetching instruction and data */
++	sec_ctrl = readl(scp->reg_base + MT8195_SEC_CTRL);
++	sec_ctrl |= MT8195_CORE_OFFSET_ENABLE_I | MT8195_CORE_OFFSET_ENABLE_D;
++	writel(sec_ctrl, scp->reg_base + MT8195_SEC_CTRL);
++
++	return 0;
++}
++
+ static int scp_load(struct rproc *rproc, const struct firmware *fw)
+ {
+ 	struct mtk_scp *scp = rproc->priv;
+@@ -625,6 +745,15 @@ static void mt8195_scp_stop(struct mtk_scp *scp)
+ 	writel(0, scp->reg_base + MT8192_CORE0_WDT_CFG);
+ }
+ 
++static void mt8195_scp_dual_stop(struct mtk_scp *scp)
++{
++	/* Power off CPU SRAM */
++	scp_sram_power_off(scp->reg_base + MT8195_CPU1_SRAM_PD, 0);
++
++	/* Disable SCP watchdog */
++	writel(0, scp->reg_base + MT8195_CORE1_WDT_CFG);
++}
++
+ static int scp_stop(struct rproc *rproc)
+ {
+ 	struct mtk_scp *scp = (struct mtk_scp *)rproc->priv;
+@@ -744,7 +873,7 @@ static int scp_map_memory_region(struct mtk_scp *scp)
+ 	}
+ 
+ 	/* Reserved SCP code size */
+-	scp->dram_size = MAX_CODE_SIZE;
++	scp->dram_size = scp->data->max_code_size;
+ 	scp->cpu_addr = dma_alloc_coherent(scp->dev, scp->dram_size,
+ 					   &scp->dma_addr, GFP_KERNEL);
+ 	if (!scp->cpu_addr)
+@@ -811,6 +940,151 @@ static void scp_remove_rpmsg_subdev(struct mtk_scp *scp)
+ 	}
+ }
+ 
++static struct mtk_scp *scp_dual_get(struct mtk_scp *scp)
++{
++	struct device *dev = scp->dev;
++	struct device_node *np;
++	struct platform_device *dual_pdev;
++	struct mtk_scp *scp_dual;
++
++	np = of_parse_phandle(dev->of_node, "mediatek,scp-core", 0);
++	dual_pdev = of_find_device_by_node(np);
++	of_node_put(np);
++
++	if (!dual_pdev) {
++		dev_err(dev, "No scp-dual pdev\n");
++		return NULL;
++	}
++
++	scp_dual = platform_get_drvdata(dual_pdev);
++	if (!scp_dual)
++		put_device(&dual_pdev->dev);
++
++	return scp_dual;
++}
++
++static void scp_dual_put(struct mtk_scp *scp)
++{
++	put_device(scp->dev);
++}
++
++static int scp_dual_rproc_prepare(struct rproc_subdev *subdev)
++{
++	struct scp_subdev_core *subdev_core = to_subdev_core(subdev);
++	struct mtk_scp *scp = subdev_core->main_scp;
++	unsigned long timeout;
++
++	timeout = jiffies + msecs_to_jiffies(100);
++	while (1) {
++		struct mtk_scp *scp_dual = scp_dual_get(scp);
++
++		if (scp_dual && scp_dual->dual_probe_done) {
++			scp_dual_put(scp_dual);
++			break;
++		}
++
++		if (scp_dual && !scp_dual->dual_probe_done)
++			scp_dual_put(scp_dual);
++
++		if (time_after(jiffies, timeout)) {
++			dev_err(scp->dev, "scp-dual probe timeout\n");
++			return -ETIMEDOUT;
++		}
++	}
++
++	return 0;
++}
++
++static int scp_dual_rproc_start(struct rproc_subdev *subdev)
++{
++	struct scp_subdev_core *subdev_core = to_subdev_core(subdev);
++	struct mtk_scp *scp_dual;
++
++	scp_dual = scp_dual_get(subdev_core->main_scp);
++	if (!scp_dual)
++		return -ENODEV;
++
++	rproc_boot(scp_dual->rproc);
++	scp_dual_put(scp_dual);
++
++	return 0;
++}
++
++static void scp_dual_rproc_stop(struct rproc_subdev *subdev, bool crashed)
++{
++	struct scp_subdev_core *subdev_core = to_subdev_core(subdev);
++	struct mtk_scp *scp_dual;
++
++	scp_dual = scp_dual_get(subdev_core->main_scp);
++	if (!scp_dual)
++		return;
++
++	rproc_shutdown(scp_dual->rproc);
++	scp_dual_put(scp_dual);
++}
++
++static void scp_dual_wdt_handler(struct mtk_scp *scp, u32 scp_to_host)
++{
++	struct mtk_scp *scp_dual;
++
++	scp_dual = scp_dual_get(scp);
++	if (!scp_dual)
++		return;
++
++	dev_err(scp_dual->dev, "SCP watchdog timeout! 0x%x\n", scp_to_host);
++	rproc_report_crash(scp_dual->rproc, RPROC_WATCHDOG);
++	scp_dual_put(scp_dual);
++}
++
++static struct rproc_subdev *scp_dual_create_subdev(struct mtk_scp *scp)
++{
++	struct device *dev = scp->dev;
++	struct scp_subdev_core *subdev_core;
++	struct device_node *np;
++
++	np = of_parse_phandle(dev->of_node, "mediatek,scp-core", 0);
++	if (!np)
++		return NULL;
++
++	of_node_put(np);
++
++	subdev_core = devm_kzalloc(dev, sizeof(*subdev_core), GFP_KERNEL);
++	if (!subdev_core)
++		return NULL;
++
++	subdev_core->main_scp = scp;
++	subdev_core->scp_dual_wdt_timeout = scp_dual_wdt_handler;
++	subdev_core->subdev.prepare = scp_dual_rproc_prepare;
++	subdev_core->subdev.start = scp_dual_rproc_start;
++	subdev_core->subdev.stop = scp_dual_rproc_stop;
++
++	return &subdev_core->subdev;
++}
++
++static void scp_dual_destroy_subdev(struct rproc_subdev *subdev)
++{
++	struct scp_subdev_core *subdev_core = to_subdev_core(subdev);
++
++	devm_kfree(subdev_core->main_scp->dev, subdev_core);
++}
++
++static void scp_add_dual_subdev(struct mtk_scp *scp)
++{
++	scp->dual_subdev = scp_dual_create_subdev(scp);
++
++	if (scp->dual_subdev)
++		rproc_add_subdev(scp->rproc, scp->dual_subdev);
++}
++
++static void scp_remove_dual_subdev(struct mtk_scp *scp)
++{
++	if (scp->dual_subdev) {
++		rproc_remove_subdev(scp->rproc, scp->dual_subdev);
++		scp_dual_destroy_subdev(scp->dual_subdev);
++		scp->dual_subdev = NULL;
++	}
++}
++
+ static int scp_probe(struct platform_device *pdev)
+ {
+ 	struct device *dev = &pdev->dev;
+@@ -820,6 +1094,7 @@ static int scp_probe(struct platform_device *pdev)
+ 	struct resource *res;
+ 	const char *fw_name = "scp.img";
+ 	int ret, i;
++	u32 core_id = SCP_CORE_SINGLE;
+ 
+ 	ret = rproc_of_parse_firmware(dev, 0, &fw_name);
+ 	if (ret < 0 && ret != -EINVAL)
+@@ -835,8 +1110,16 @@ static int scp_probe(struct platform_device *pdev)
+ 	scp->data = of_device_get_match_data(dev);
+ 	platform_set_drvdata(pdev, scp);
+ 
++	ret = of_property_read_u32_index(dev->of_node, "mediatek,scp-core", 1, &core_id);
++	if (ret == 0)
++		dev_info(dev, "Boot SCP dual core %u\n", core_id);
++
+ 	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "sram");
+-	scp->sram_base = devm_ioremap_resource(dev, res);
++	if (core_id == SCP_CORE_1)
++		scp->sram_base = devm_ioremap(dev, res->start, resource_size(res));
++	else
++		scp->sram_base = devm_ioremap_resource(dev, res);
++
+ 	if (IS_ERR(scp->sram_base))
+ 		return dev_err_probe(dev, PTR_ERR(scp->sram_base),
+ 				     "Failed to parse and map sram memory\n");
+@@ -857,7 +1140,12 @@ static int scp_probe(struct platform_device *pdev)
+ 		scp->l1tcm_phys = res->start;
+ 	}
+ 
+-	scp->reg_base = devm_platform_ioremap_resource_byname(pdev, "cfg");
++	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "cfg");
++	if (core_id == SCP_CORE_1)
++		scp->reg_base = devm_ioremap(dev, res->start, resource_size(res));
++	else
++		scp->reg_base = devm_ioremap_resource(dev, res);
++
+ 	if (IS_ERR(scp->reg_base))
+ 		return dev_err_probe(dev, PTR_ERR(scp->reg_base),
+ 				     "Failed to parse and map cfg memory\n");
+@@ -886,6 +1174,9 @@ static int scp_probe(struct platform_device *pdev)
+ 
+ 	scp_add_rpmsg_subdev(scp);
+ 
++	if (core_id == SCP_CORE_0)
++		scp_add_dual_subdev(scp);
++
+ 	ret = devm_request_threaded_irq(dev, platform_get_irq(pdev, 0), NULL,
+ 					scp_irq_handler, IRQF_ONESHOT,
+ 					pdev->name, scp);
+@@ -895,13 +1186,23 @@ static int scp_probe(struct platform_device *pdev)
+ 		goto remove_subdev;
+ 	}
+ 
++	/* disable auto boot before register rproc.
++	 * scp core 1 is booted as a subdevice of scp core 0.
++	 */
++	if (core_id == SCP_CORE_1)
++		rproc->auto_boot = false;
++
+ 	ret = rproc_add(rproc);
+ 	if (ret)
+ 		goto remove_subdev;
+ 
++	if (core_id == SCP_CORE_1)
++		scp->dual_probe_done = 1;
++
+ 	return 0;
+ 
+ remove_subdev:
++	scp_remove_dual_subdev(scp);
+ 	scp_remove_rpmsg_subdev(scp);
+ 	scp_ipi_unregister(scp, SCP_IPI_INIT);
+ release_dev_mem:
+@@ -919,6 +1220,7 @@ static int scp_remove(struct platform_device *pdev)
+ 	int i;
+ 
+ 	rproc_del(scp->rproc);
++	scp_remove_dual_subdev(scp);
+ 	scp_remove_rpmsg_subdev(scp);
+ 	scp_ipi_unregister(scp, SCP_IPI_INIT);
+ 	scp_unmap_memory_region(scp);
+@@ -940,6 +1242,7 @@ static const struct mtk_scp_of_data mt8183_of_data = {
+ 	.host_to_scp_reg = MT8183_HOST_TO_SCP,
+ 	.host_to_scp_int_bit = MT8183_HOST_IPC_INT_BIT,
+ 	.ipi_buf_offset = 0x7bdb0,
++	.max_code_size = 0x500000,
+ };
+ 
+ static const struct mtk_scp_of_data mt8186_of_data = {
+@@ -953,18 +1256,20 @@ static const struct mtk_scp_of_data mt8186_of_data = {
+ 	.host_to_scp_reg = MT8183_HOST_TO_SCP,
+ 	.host_to_scp_int_bit = MT8183_HOST_IPC_INT_BIT,
+ 	.ipi_buf_offset = 0x3bdb0,
++	.max_code_size = 0x500000,
+ };
+ 
+ static const struct mtk_scp_of_data mt8188_of_data = {
+ 	.scp_clk_get = mt8195_scp_clk_get,
+ 	.scp_before_load = mt8192_scp_before_load,
+-	.scp_irq_handler = mt8192_scp_irq_handler,
++	.scp_irq_handler = mt8195_scp_irq_handler,
+ 	.scp_reset_assert = mt8192_scp_reset_assert,
+ 	.scp_reset_deassert = mt8192_scp_reset_deassert,
+ 	.scp_stop = mt8192_scp_stop,
+ 	.scp_da_to_va = mt8192_scp_da_to_va,
+ 	.host_to_scp_reg = MT8192_GIPC_IN_SET,
+ 	.host_to_scp_int_bit = MT8192_HOST_IPC_INT_BIT,
++	.max_code_size = 0x500000,
+ };
+ 
+ static const struct mtk_scp_of_data mt8192_of_data = {
+@@ -977,18 +1282,33 @@ static const struct mtk_scp_of_data mt8192_of_data = {
+ 	.scp_da_to_va = mt8192_scp_da_to_va,
+ 	.host_to_scp_reg = MT8192_GIPC_IN_SET,
+ 	.host_to_scp_int_bit = MT8192_HOST_IPC_INT_BIT,
++	.max_code_size = 0x500000,
+ };
+ 
+ static const struct mtk_scp_of_data mt8195_of_data = {
+ 	.scp_clk_get = mt8195_scp_clk_get,
+ 	.scp_before_load = mt8195_scp_before_load,
+-	.scp_irq_handler = mt8192_scp_irq_handler,
++	.scp_irq_handler = mt8195_scp_irq_handler,
+ 	.scp_reset_assert = mt8192_scp_reset_assert,
+ 	.scp_reset_deassert = mt8192_scp_reset_deassert,
+ 	.scp_stop = mt8195_scp_stop,
+ 	.scp_da_to_va = mt8192_scp_da_to_va,
+ 	.host_to_scp_reg = MT8192_GIPC_IN_SET,
+ 	.host_to_scp_int_bit = MT8192_HOST_IPC_INT_BIT,
++	.max_code_size = 0x500000,
++};
++
++static const struct mtk_scp_of_data mt8195_scp_dual_of_data = {
++	.scp_clk_get = mt8195_scp_clk_get,
++	.scp_before_load = mt8195_scp_dual_before_load,
++	.scp_irq_handler = mt8195_scp_dual_irq_handler,
++	.scp_reset_assert = mt8195_scp_dual_reset_assert,
++	.scp_reset_deassert = mt8195_scp_dual_reset_deassert,
++	.scp_stop = mt8195_scp_dual_stop,
++	.scp_da_to_va = mt8192_scp_da_to_va,
++	.host_to_scp_reg = MT8192_GIPC_IN_SET,
++	.host_to_scp_int_bit = MT8195_CORE1_HOST_IPC_INT_BIT,
++	.max_code_size = 0x400000,
+ };
+ 
+ static const struct of_device_id mtk_scp_of_match[] = {
+@@ -997,6 +1317,7 @@ static const struct of_device_id mtk_scp_of_match[] = {
+ 	{ .compatible = "mediatek,mt8188-scp", .data = &mt8188_of_data },
+ 	{ .compatible = "mediatek,mt8192-scp", .data = &mt8192_of_data },
+ 	{ .compatible = "mediatek,mt8195-scp", .data = &mt8195_of_data },
++	{ .compatible = "mediatek,mt8195-scp-dual", .data = &mt8195_scp_dual_of_data },
+ 	{},
+ };
+ MODULE_DEVICE_TABLE(of, mtk_scp_of_match);
 diff --git a/drivers/soc/mediatek/Kconfig b/drivers/soc/mediatek/Kconfig
 index d6b83a5508cab78018fe6961f32da315fc9c60dd..0d66d70e53c39db8368af6d7a21f688d614a5309 100644
 --- a/drivers/soc/mediatek/Kconfig
