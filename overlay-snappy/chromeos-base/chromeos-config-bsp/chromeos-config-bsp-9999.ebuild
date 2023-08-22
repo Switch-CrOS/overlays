@@ -17,7 +17,6 @@ HOMEPAGE="https://chromium.googlesource.com/chromiumos/platform2/+/HEAD/chromeos
 RDEPEND="chromeos-base/chromeos-config-bsp-baseboard"
 
 LICENSE="BSD-Google"
-SLOT="0"
 KEYWORDS="~*"
 
 src_install() {

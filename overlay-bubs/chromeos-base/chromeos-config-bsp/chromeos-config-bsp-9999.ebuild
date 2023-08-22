@@ -16,7 +16,6 @@ HOMEPAGE="http://src.chromium.org"
 SRC_URI=""
 
 LICENSE="BSD-Google"
-SLOT="0/${PF}"
 KEYWORDS="~*"
 
 src_install() {

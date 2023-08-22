@@ -27,7 +27,6 @@ HOMEPAGE="https://www.chromium.org/chromium-os"
 SRC_URI=""
 
 LICENSE="BSD-Google"
-SLOT="0/${PF}"
 KEYWORDS="~*"
 
 RDEPEND="!chromeos-base/chromeos-config-bsp-geralt"
