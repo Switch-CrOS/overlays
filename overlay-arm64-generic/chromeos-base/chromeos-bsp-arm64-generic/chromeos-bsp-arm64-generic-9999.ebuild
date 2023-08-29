@@ -3,10 +3,10 @@
 
 EAPI=7
 
-inherit appid cros-workon
-
 CROS_WORKON_PROJECT="chromiumos/infra/build/empty-project"
 CROS_WORKON_LOCALNAME="platform/empty-project"
+
+inherit appid cros-workon
 
 DESCRIPTION="Ebuild which pulls in any necessary ebuilds as dependencies
 or portage actions."
