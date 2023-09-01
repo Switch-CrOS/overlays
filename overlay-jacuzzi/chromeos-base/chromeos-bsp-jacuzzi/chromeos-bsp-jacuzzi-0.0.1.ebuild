@@ -12,7 +12,7 @@ or portage actions."
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="-* arm64 arm"
-IUSE="jacuzzi-kernelnext"
+IUSE="jacuzzi-kernelnext jacuzzi64"
 S="${WORKDIR}"
 
 # Add dependencies on other ebuilds from within this board overlay
@@ -29,6 +29,8 @@ src_install() {
 
 	if use jacuzzi-kernelnext; then
 		doappid "{94AE1860-91C5-11EB-BAEA-C76F2B34FA33}" "CHROMEBOOK"
+	elif use jacuzzi64; then
+		doappid "{2ABCCE45-793D-44F5-8ABF-275134950A26}" "CHROMEBOOK"
 	else
 		doappid "{BA7092E6-2B09-4620-BBB0-FAA34397F3F8}" "CHROMEBOOK"
 	fi
