@@ -16,4 +16,7 @@ S=${WORKDIR}/${PN}-rex-${PV}
 src_install() {
 	insinto /lib/firmware/intel/sof-ace-tplg
 	doins ./*.tplg
+
+	insinto /lib/firmware/intel/sof-ace-tplg/pdm1
+	doins ./pdm1/*.tplg
 }
