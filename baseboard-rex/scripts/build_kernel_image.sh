@@ -23,10 +23,6 @@ modify_kernel_command_line() {
     # Check for S0ix failures and show warnings on failures
     echo "intel_pmc_core.warn_on_s0ix_failures=1"
 
-    # Enable power-saving display c states. Setting the value of 4
-    # enables up to DC6 with DC3C0.
-    echo "i915.enable_dc=4"
-
     # Disable xDomain protocol on the thunderbolt driver
     echo "xdomain=0"
 
