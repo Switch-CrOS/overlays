@@ -29,9 +29,6 @@ modify_kernel_command_line() {
     # Disable PSR2 by default.
     echo "i915.enable_psr=1"
 
-    # Display kernel debug messages on the UART
-    echo "earlyprintk=serial,ttyS0,115200n8 console=ttyS0,115200n8,keep"
-
     # The 5G driver requires a lot of swiotlb buffers (b/284465894)
     # So increase the swiotlb slots from default 32768 (64MB) to 65536 (128MB)
     echo "swiotlb=65536"
