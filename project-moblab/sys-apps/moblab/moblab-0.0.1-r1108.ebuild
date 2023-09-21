@@ -5,7 +5,7 @@ EAPI="7"
 
 CROS_WORKON_COMMIT="206adb2fbc5bfe5a43b856b24576ef22676f4fc8"
 CROS_WORKON_TREE="5c2f27142071a0bec00c0cb54deb5c8ae2251dd1"
-PYTHON_COMPAT=( python3_{6..11} )
+PYTHON_COMPAT=( python3_{8..11} )
 
 CROS_WORKON_INCREMENTAL_BUILD=1
 CROS_WORKON_OUTOFTREE_BUILD=1
@@ -23,9 +23,11 @@ KEYWORDS="*"
 
 RDEPEND="
 	${PYTHON_DEPS}
-	dev-python/grpcio[${PYTHON_USEDEP}]
-	dev-python/protobuf-python[${PYTHON_USEDEP}]
-	dev-python/netifaces[${PYTHON_USEDEP}]
+	$(python_gen_cond_dep '
+		dev-python/grpcio[${PYTHON_USEDEP}]
+		dev-python/protobuf-python[${PYTHON_USEDEP}]
+		dev-python/netifaces[${PYTHON_USEDEP}]
+		' -3)
 	virtual/libusb:1=
 "
 
