@@ -33,5 +33,5 @@ modify_kernel_command_line() {
   # get sound working
   echo "snd-intel-dspcfg.dsp_driver=1" >> "$1"
 
-  echo "  snd_hda_intel.enable=0" >> "$1"
+  echo "snd-hda-intel.enable=0" >> "$1"
 }
