@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit appid cros-unibuild cros-workon
+inherit appid cros-unibuild cros-workon udev
 
 # This ebuild only cares about its own FILESDIR and ebuild file, so it tracks
 # the canonical empty project.
@@ -51,4 +51,7 @@ src_install() {
 
 	# Install audio config files
 	unibuild_install_files audio-files
+
+	# Install udev rules
+	udev_dorules "${FILESDIR}"/udev/*.rules
 }
