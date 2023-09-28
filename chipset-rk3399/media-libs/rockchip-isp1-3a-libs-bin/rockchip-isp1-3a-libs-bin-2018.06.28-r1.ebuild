@@ -1,1 +1,0 @@
-rockchip-isp1-3a-libs-bin-2018.06.28.ebuild
