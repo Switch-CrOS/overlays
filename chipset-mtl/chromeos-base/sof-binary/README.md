@@ -4,9 +4,9 @@ branch/commit the firmware was built from.
 MTL-005 hotfix for dmic capture.
 
 repo : https://github.com/thesofproject/sof
-branch : mtl-005-drop-stable
-commit id : 9daaddcffb8978befb8f8c7b6e9fcde80d07b526
+branch : mtl-006-drop-stable
+commit id : 3b78ccda2d382c35c58126d09e823dcd02a425dd
 
 MD5sums:
-852c1b0cee0478ce8f4bb5ffb2ba198e  sof-mtl.ldc
-7e108d8d025769932755dd24e10e99c1  sof-mtl.ri
+2fd57fa1b2f3e47354aa594a96468fc5  sof-mtl.ldc
+089ed0b45d2cf379c5da0021539afced  sof-mtl.ri
