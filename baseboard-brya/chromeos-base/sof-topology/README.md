@@ -20,6 +20,7 @@ b4b5b22e13f36196f4d58803fb8abd54  sof-adl-max98360a-rt5682.tplg
 8686f269513b5083847131057f1a07c2  sof-adl-max98390-ssp2-rt5682-ssp0.tplg
 e2104dd408abe169e11407dafb0b90b4  sof-adl-nau8318-nau8825.tplg
 71ef8b18abdbdb5801a51951c3577e22  sof-adl-nau8825.tplg
+1217b39bac9f001bbfdc86dce105d6f5  sof-adl-rt1015-nau8825.tplg
 62578becc0e4cbb786fc1da25afe6fbf  sof-adl-rt1019-nau8825.tplg
 f20c7d4c0461f171fcb657820cd5b8cf  sof-adl-rt1019-rt5682.tplg
 5b018d608e40ed96a2b9eff35017bc61  sof-adl-rt5682.tplg
