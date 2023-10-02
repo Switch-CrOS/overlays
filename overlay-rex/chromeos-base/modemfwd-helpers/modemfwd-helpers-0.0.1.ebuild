@@ -14,7 +14,12 @@ SRC_URI="
 	${MIRROR_PATH}/cellular-firmware-fibocom-fm350-DEV_OTA_5001.0001.0000_Default_001.000.000.015.img.tar.xz
 	${MIRROR_PATH}/cellular-firmware-fibocom-fm350-OP_OTA_000.037.img.tar.xz
 	${MIRROR_PATH}/cellular-firmware-fibocom-fm350-OEM_OTA_6001.0000.001.img.tar.xz
-	${MIRROR_PATH}/cellular-firmware-fibocom-fm101-rex-19500.0000.00.01.01.52_A54.tar.xz
+	${MIRROR_PATH}/cellular-firmware-fibocom-fm101-19500.0000.00.01.02.80.tar.xz
+	${MIRROR_PATH}/cellular-firmware-fibocom-fm101-A90.tar.xz
+	${MIRROR_PATH}/cellular-firmware-fibocom-fm101-DEV_OTA_6000.0001.0002.0000_00.01.tar.xz
+	${MIRROR_PATH}/cellular-firmware-fibocom-fm101-download_agent_rex_fm101-19500.0000.00.01.02.80-A90.tar.xz
+	${MIRROR_PATH}/cellular-firmware-fibocom-fm101-OEM_OTA_6000.0000.004.tar.xz
+	${MIRROR_PATH}/cellular-firmware-fibocom-fm101-OP_OTA_000.075.tar.xz
 	"
 
 RESTRICT="mirror"
