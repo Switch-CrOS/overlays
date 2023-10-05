@@ -3,8 +3,6 @@
 
 EAPI="7"
 
-inherit user
-
 DESCRIPTION="Ebuild which pulls in any necessary ebuilds as dependencies or portage actions"
 
 LICENSE="BSD-Google"
@@ -15,10 +13,6 @@ RDEPEND=""
 DEPEND=""
 
 S=${WORKDIR}
-
-pkg_preinst() {
-	usermod -a -G docker $USER
-}
 
 src_install() {
 	insinto /etc/init
