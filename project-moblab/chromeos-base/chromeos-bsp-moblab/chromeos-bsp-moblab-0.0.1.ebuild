@@ -29,7 +29,6 @@ S=${WORKDIR}
 pkg_preinst() {
 	enewgroup moblab
 	enewuser moblab
-	usermod -a -G docker moblab
 }
 
 src_install() {
