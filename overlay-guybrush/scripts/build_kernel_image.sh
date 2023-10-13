@@ -22,7 +22,4 @@ modify_kernel_command_line() {
 
 	# See b/219534576
 	echo "amd-pmc.enable_stb=1" >> "$1"
-
-	# see b/285231416
-	echo "cma=16MB" >> "$1"
 }
