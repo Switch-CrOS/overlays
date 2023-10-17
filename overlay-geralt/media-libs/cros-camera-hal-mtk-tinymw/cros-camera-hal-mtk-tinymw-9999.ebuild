@@ -9,6 +9,9 @@ CROS_WORKON_DESTDIR=("${S}/platform2" "${S}/platform2/platform_camera")
 CROS_WORKON_SUBTREE=(".gn common-mk" "hal/mediatek")
 CROS_WORKON_INCREMENTAL_BUILD="1"
 
+# Preparatory work before removing the package
+CROS_WORKON_MANUAL_UPREV="1"
+
 PLATFORM_SUBDIR="platform_camera/hal/mediatek/mtkcam_tinymw/mtkcam-core"
 
 inherit cros-camera cros-workon platform meson
