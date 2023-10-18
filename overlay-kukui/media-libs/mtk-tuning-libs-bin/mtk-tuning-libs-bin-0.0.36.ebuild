@@ -6,7 +6,10 @@ EAPI="7"
 inherit toolchain-funcs unpacker
 
 DESCRIPTION="MediaTek tuning library binaries required by the MediaTek camera HAL"
-SRC_URI="gs://chromeos-localmirror/distfiles/mtk-tuning-libs-bin-${PV}.tar.xz"
+SRC_URI="
+  arm? ( gs://chromeos-localmirror/distfiles/mtk-tuning-libs-bin-${PV}.tar.xz )
+  arm64? ( gs://chromeos-localmirror/distfiles/mtk-tuning-libs-bin-arm64-${PV}.tar.xz )
+"
 
 LICENSE="LICENCE.mediatek"
 SLOT="0"
