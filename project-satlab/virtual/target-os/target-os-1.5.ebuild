@@ -13,7 +13,7 @@ KEYWORDS="*"
 IUSE=""
 
 RDEPEND="
-	app-emulation/docker
+	app-containers/docker
 	net-firewall/iptables
 	dev-lang/python:3.6
 	virtual/target-chromium-os
