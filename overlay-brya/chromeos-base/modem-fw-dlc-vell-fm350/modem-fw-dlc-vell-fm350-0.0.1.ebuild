@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit dlc cros-binary
+inherit cros-binary modem-fw-dlc
 
 DESCRIPTION="DLC containing the modem firmware for vell_fm350."
 HOMEPAGE="http://src.chromium.org"
@@ -31,18 +31,6 @@ S="${WORKDIR}"
 # 160MB/4KB = 40000
 # Reserved space
 DLC_PREALLOC_BLOCKS="40000"
-
-# Installs the DLC during FSI.
-DLC_FACTORY_INSTALL=true
-
-#Preload on test images
-DLC_PRELOAD=true
-
-# Always update with the OS
-DLC_CRITICAL_UPDATE=true
-
-# Trusted dm-verity digest through LoadPin.
-DLC_LOADPIN_VERITY_DIGEST=true
 
 src_install() {
 	insinto "$(dlc_add_path /fm350)"

@@ -4,7 +4,7 @@
 
 EAPI=7
 
-inherit dlc cros-binary
+inherit cros-binary modem-fw-dlc
 
 DESCRIPTION="DLC containing the modem firmware for crota_fm101."
 HOMEPAGE="http://src.chromium.org"
@@ -28,18 +28,6 @@ S="${WORKDIR}"
 # 300MB/4KB = 75000
 # Reserved space
 DLC_PREALLOC_BLOCKS="75000"
-
-# Installs the DLC during FSI.
-DLC_FACTORY_INSTALL=true
-
-#Preload on test images
-DLC_PRELOAD=true
-
-# Always update with the OS
-DLC_CRITICAL_UPDATE=true
-
-# Trusted dm-verity digest through LoadPin.
-DLC_LOADPIN_VERITY_DIGEST=true
 
 src_install() {
 	insinto "$(dlc_add_path /fm101)"
