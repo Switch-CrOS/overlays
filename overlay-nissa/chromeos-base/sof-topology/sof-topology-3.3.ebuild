@@ -8,13 +8,13 @@
 EAPI=7
 
 DESCRIPTION="SOF topology files for Nissa"
-SRC_URI="gs://chromeos-localmirror/distfiles/${PN}-nissa-3.0.tar.bz2"
+SRC_URI="gs://chromeos-localmirror/distfiles/${PN}-nissa-${PV}.tar.bz2"
 
 LICENSE="SOF"
 SLOT="0"
 KEYWORDS="*"
 
-S=${WORKDIR}/${PN}-nissa-3.0
+S=${WORKDIR}/${PN}-nissa-${PV}
 
 src_install() {
 	insinto /lib/firmware/intel/sof-tplg
