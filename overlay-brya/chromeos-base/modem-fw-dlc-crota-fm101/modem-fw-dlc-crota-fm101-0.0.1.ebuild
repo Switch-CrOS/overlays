@@ -19,20 +19,9 @@ LICENSE="BSD-Google" #TODO(b/203807072): Change once Fibocom provides a license
 
 S="${WORKDIR}"
 
-# For modem FWs, this value should never change, since there
-# is no guarantee that the user will have enough space left to accommodate the
-# increase in size.
-# Each block is 4KB. We reserve enough space to fit:
-# 2 Main FWs = ~110MB * 2
-# Total = ~220 MB => 300MB to be safe
-# 300MB/4KB = 75000
-# Reserved space
-DLC_PREALLOC_BLOCKS="75000"
+# For modem FWs, this value should never increase. See modem-fw-dlc.eclass.
+MODEM_FW_DLC_PREALLOC_SIZE_MB="${MODEM_FW_DLC_FM101_DEFAULT_SIZE_3FW}"
 
 src_install() {
-	insinto "$(dlc_add_path /fm101)"
-	for f in cellular-firmware-fibocom-fm101-*; do
-		doins -r "${f}"/*
-	done
-	dlc_src_install
+	modem_fw_dlc_src_install
 }

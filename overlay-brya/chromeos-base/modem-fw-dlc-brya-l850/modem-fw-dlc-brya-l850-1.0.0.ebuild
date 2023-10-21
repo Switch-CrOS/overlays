@@ -18,22 +18,9 @@ LICENSE="BSD-Google" #TODO(b/203807072): Change once Fibocom provides a license
 
 S="${WORKDIR}"
 
-# For modem FWs, this value should never change, since there
-# is no guarantee that the user will have enough space left to accommodate the
-# increase in size.
-# Each block is 4KB. We reserve enough space to fit:
-# 2 Main FWs = ~11.5MB * 2
-# 1 OEM FW = 125KB
-# 1 OEM carrier pack = 2MB
-# Total = ~26 MB => 40MB to be safe
-# 40MB/4KB = 10000
-# Reserved space
-DLC_PREALLOC_BLOCKS="10000"
+# For modem FWs, this value should never increase. See modem-fw-dlc.eclass.
+MODEM_FW_DLC_PREALLOC_SIZE_MB="${MODEM_FW_DLC_L850_DEFAULT_SIZE_3FW}"
 
 src_install() {
-	insinto "$(dlc_add_path /l850)"
-	for f in cellular-firmware-fibocom-l850-*; do
-		doins -r "${f}"/*
-	done
-	dlc_src_install
+	modem_fw_dlc_src_install
 }
