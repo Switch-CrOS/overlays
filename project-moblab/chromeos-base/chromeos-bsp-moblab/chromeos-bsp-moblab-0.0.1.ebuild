@@ -34,4 +34,5 @@ pkg_preinst() {
 src_install() {
 	insinto /etc/init
 	doins "${FILESDIR}/cgroups.override"
+	doins "${FILESDIR}"/cras.override
 }
