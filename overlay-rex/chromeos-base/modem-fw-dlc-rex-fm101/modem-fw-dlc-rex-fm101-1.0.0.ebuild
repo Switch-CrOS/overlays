@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit dlc cros-binary
+inherit cros-binary modem-fw-dlc
 
 DESCRIPTION="DLC containing the modem firmware for rex."
 HOMEPAGE="http://src.chromium.org"
@@ -23,29 +23,9 @@ LICENSE="GPL-2 LGPL-2.1 BSD-Fibocom Apache-2.0 openssl"
 
 S="${WORKDIR}"
 
-# For modem FWs, this value should never change, since there
-# is no guarantee that the user will have enough space left to accommodate the
-# increase in size.
-# Each block is 4KB. We reserve enough space to fit:
-# 2 Main FWs = ~110MB * 2
-# Total = ~220 MB => 300MB to be safe
-# 300MB/4KB = 75000
-# Reserved space
-DLC_PREALLOC_BLOCKS="75000"
-
-# Installs the DLC during FSI.
-DLC_FACTORY_INSTALL=true
-
-#Preload on test images
-DLC_PRELOAD=true
-
-# Always update with the OS
-DLC_CRITICAL_UPDATE=true
+# For modem FWs, this value should never increase. See modem-fw-dlc.eclass.
+MODEM_FW_DLC_PREALLOC_SIZE_MB="${MODEM_FW_DLC_FM101_DEFAULT_SIZE_3FW}"
 
 src_install() {
-	insinto "$(dlc_add_path /fm101)"
-	for f in cellular-firmware-fibocom-fm101-*; do
-		doins -r "${f}"/*
-	done
-	dlc_src_install
+	modem_fw_dlc_src_install
 }

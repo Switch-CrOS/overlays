@@ -3,7 +3,7 @@
 
 EAPI=7
 
-inherit dlc cros-binary
+inherit cros-binary modem-fw-dlc
 
 DESCRIPTION="DLC containing the modem firmware for rex_fm350."
 HOMEPAGE="http://src.chromium.org"
@@ -22,32 +22,9 @@ LICENSE="BSD-Google" #TODO(b/203807072): Change once Fibocom provides a license
 
 S="${WORKDIR}"
 
-# For modem FWs, this value should never change, since there
-# is no guarantee that the user will have enough space left to accommodate the
-# increase in size.
-# Each block is 4KB. We reserve enough space to fit:
-# 3 Main FWs = ~45MB * 3
-# Total = ~135 MB => 160MB to be safe
-# 160MB/4KB = 40000
-# Reserved space
-DLC_PREALLOC_BLOCKS="40000"
-
-# Installs the DLC during FSI.
-DLC_FACTORY_INSTALL=true
-
-#Preload on test images
-DLC_PRELOAD=true
-
-# Always update with the OS
-DLC_CRITICAL_UPDATE=true
-
-# Trusted dm-verity digest through LoadPin.
-DLC_LOADPIN_VERITY_DIGEST=true
+# For modem FWs, this value should never increase. See modem-fw-dlc.eclass.
+MODEM_FW_DLC_PREALLOC_SIZE_MB="${MODEM_FW_DLC_FM350_DEFAULT_SIZE_3FW}"
 
 src_install() {
-	insinto "$(dlc_add_path /fm350)"
-	for f in cellular-firmware-fibocom-fm350-*; do
-		doins -r "${f}"/*
-	done
-	dlc_src_install
+	modem_fw_dlc_src_install
 }
