@@ -20,3 +20,9 @@ sys-devel/llvm -libedit
 # b/308616226: ThinLTO takes a long time. Since we sometimes build
 # llvm in the bazel CQ we want to build it as fast as possible.
 sys-devel/llvm -thinlto
+
+# b/308560968 - cmake has a circular dependency with nghttp2. We need to use
+# the cmake bundled version of nghttp2 to break that cycle. We also need to
+# disable http2 from curl since cmake depends on curl.
+net-misc/curl -http2
+dev-util/cmake -system-nghttp2
