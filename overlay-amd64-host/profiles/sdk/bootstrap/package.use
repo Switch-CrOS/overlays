@@ -21,8 +21,8 @@ sys-devel/llvm -libedit
 # llvm in the bazel CQ we want to build it as fast as possible.
 sys-devel/llvm -thinlto
 
-# b/308560968 - cmake has a circular dependency with nghttp2. We need to use
-# the cmake bundled version of nghttp2 to break that cycle. We also need to
-# disable http2 from curl since cmake depends on curl.
+# b/308560968 - We need to disable http2 from curl since:
+# * `cmake` DEPENDs on `curl`.
+# * `curl[http2]` DEPENDs on `nghttp2`.
+# * `nghttp2` BDEPEND on `cmake`.
 net-misc/curl -http2
-dev-util/cmake -system-nghttp2
