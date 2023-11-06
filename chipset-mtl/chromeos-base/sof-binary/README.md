@@ -1,12 +1,12 @@
 This file should always contain information regarding which
 branch/commit the firmware was built from.
 
-MTL-005 hotfix for dmic capture.
+MTL-006 v6.3 release.
 
 repo : https://github.com/thesofproject/sof
 branch : mtl-006-drop-stable
-commit id : 3b78ccda2d382c35c58126d09e823dcd02a425dd
+commit id : df1a295fc81b534b5fdf1e33f2c4b018401d6212
 
 MD5sums:
-2fd57fa1b2f3e47354aa594a96468fc5  sof-mtl.ldc
-089ed0b45d2cf379c5da0021539afced  sof-mtl.ri
+22d3695ac6d1f2af2e8880ba60b24800  sof-mtl.ldc
+3940b558c1bf32fdd57f0c4bb56a250e  sof-mtl.ri
