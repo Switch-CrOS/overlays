@@ -14,4 +14,5 @@ S="${WORKDIR}"
 
 src_install() {
 	dolib.so lib64/*.so
+	dolib.a lib64/*.a
 }
