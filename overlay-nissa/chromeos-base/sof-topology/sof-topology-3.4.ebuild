@@ -2,9 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# ${PV} is replaced with "3.0" as the workaround for revert while increasing ebuild version
-# TODO(b/305106411): change back to ${PV} usage after the formal fix lands
-
 EAPI=7
 
 DESCRIPTION="SOF topology files for Nissa"
