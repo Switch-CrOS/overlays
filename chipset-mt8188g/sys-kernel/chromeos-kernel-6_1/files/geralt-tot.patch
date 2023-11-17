@@ -5670,9 +5670,7 @@ index 84d2fbc07ec5c779e257d442c8a11dcbe17a8662..ceaf7e4908da937b49a23d2896581d32
  CONFIG_VIDEO_OV8856=m
 +CONFIG_MTK_SVS=y
 diff --git a/drivers/clk/mediatek/clk-mt8188-topckgen.c b/drivers/clk/mediatek/clk-mt8188-topckgen.c
-old mode 100644
-new mode 100755
-index c56ec42cb15f3061a76cc039aba80653e49c1a8e..dd385bf1ff24a25be5dca2e6f035fc82283c4f14
+index c56ec42cb15f3061a76cc039aba80653e49c1a8e..8fc5af813aa5b864e56c4254cff2d88dd106c4a2 100644
 --- a/drivers/clk/mediatek/clk-mt8188-topckgen.c
 +++ b/drivers/clk/mediatek/clk-mt8188-topckgen.c
 @@ -487,6 +487,64 @@ static const char * const dp_parents[] = {
@@ -5692,7 +5690,7 @@ index c56ec42cb15f3061a76cc039aba80653e49c1a8e..dd385bf1ff24a25be5dca2e6f035fc82
 +	if (!strncmp(clk_hw_name, "top_edp", 7))
 +		is_edp = 1;
 +
-+	if(req->rate < 8000000)
++	if(req->rate < 7000000)
 +		pow = 4; //D16
 +	else if (req->rate < 200000000)
 +		pow = 3; //D8
@@ -5833,6 +5831,238 @@ index d4e66b2405733d9819d8f575753f4de5107d1dd9..8256f219d8b80b1f047130afbc09596f
  };
  module_platform_driver(clk_mt8188_vpp1_drv);
  MODULE_LICENSE("GPL");
+diff --git a/drivers/dma-buf/dma-heap.c b/drivers/dma-buf/dma-heap.c
+index 59d158873f4cb451b5a5db4f0691e25d6a56909c..0d84c7f268781a2282b7fa1875568eee9b497910 100644
+--- a/drivers/dma-buf/dma-heap.c
++++ b/drivers/dma-buf/dma-heap.c
+@@ -7,17 +7,16 @@
+  */
+ 
+ #include <linux/cdev.h>
+-#include <linux/debugfs.h>
+ #include <linux/device.h>
+ #include <linux/dma-buf.h>
++#include <linux/dma-heap.h>
+ #include <linux/err.h>
+-#include <linux/xarray.h>
++#include <linux/kref.h>
+ #include <linux/list.h>
+-#include <linux/slab.h>
+ #include <linux/nospec.h>
+-#include <linux/uaccess.h>
+ #include <linux/syscalls.h>
+-#include <linux/dma-heap.h>
++#include <linux/uaccess.h>
++#include <linux/xarray.h>
+ #include <uapi/linux/dma-heap.h>
+ 
+ #define DEVNAME "dma_heap"
+@@ -28,9 +27,11 @@
+  * struct dma_heap - represents a dmabuf heap in the system
+  * @name:		used for debugging/device-node name
+  * @ops:		ops struct for this heap
+- * @heap_devt		heap device node
+- * @list		list head connecting to list of heaps
+- * @heap_cdev		heap char device
++ * @priv:		private data for this heap
++ * @heap_devt:		heap device node
++ * @list:		list head connecting to list of heaps
++ * @heap_cdev:		heap char device
++ * @refcount:		reference counter for this heap device
+  *
+  * Represents a heap of memory from which buffers can be made.
+  */
+@@ -41,6 +42,7 @@ struct dma_heap {
+ 	dev_t heap_devt;
+ 	struct list_head list;
+ 	struct cdev heap_cdev;
++	struct kref refcount;
+ };
+ 
+ static LIST_HEAD(heap_list);
+@@ -49,12 +51,24 @@ static dev_t dma_heap_devt;
+ static struct class *dma_heap_class;
+ static DEFINE_XARRAY_ALLOC(dma_heap_minors);
+ 
+-static int dma_heap_buffer_alloc(struct dma_heap *heap, size_t len,
+-				 unsigned int fd_flags,
+-				 unsigned int heap_flags)
++/**
++ * dma_heap_buffer_alloc - Allocate dma-buf from a dma_heap
++ * @heap:	DMA-Heap to allocate from
++ * @len:	size to allocate in bytes
++ * @fd_flags:	flags to set on returned dma-buf fd
++ * @heap_flags: flags to pass to the dma heap
++ *
++ * This is for internal dma-buf allocations only. Free returned buffers with dma_buf_put().
++ */
++struct dma_buf *dma_heap_buffer_alloc(struct dma_heap *heap, size_t len,
++				      unsigned int fd_flags,
++				      unsigned int heap_flags)
+ {
+-	struct dma_buf *dmabuf;
+-	int fd;
++	if (fd_flags & ~DMA_HEAP_VALID_FD_FLAGS)
++		return ERR_PTR(-EINVAL);
++
++	if (heap_flags & ~DMA_HEAP_VALID_HEAP_FLAGS)
++		return ERR_PTR(-EINVAL);
+ 
+ 	/*
+ 	 * Allocations from all heaps have to begin
+@@ -62,9 +76,20 @@ static int dma_heap_buffer_alloc(struct dma_heap *heap, size_t len,
+ 	 */
+ 	len = PAGE_ALIGN(len);
+ 	if (!len)
+-		return -EINVAL;
++		return ERR_PTR(-EINVAL);
+ 
+-	dmabuf = heap->ops->allocate(heap, len, fd_flags, heap_flags);
++	return heap->ops->allocate(heap, len, fd_flags, heap_flags);
++}
++EXPORT_SYMBOL_GPL(dma_heap_buffer_alloc);
++
++static int dma_heap_bufferfd_alloc(struct dma_heap *heap, size_t len,
++				   unsigned int fd_flags,
++				   unsigned int heap_flags)
++{
++	struct dma_buf *dmabuf;
++	int fd;
++
++	dmabuf = dma_heap_buffer_alloc(heap, len, fd_flags, heap_flags);
+ 	if (IS_ERR(dmabuf))
+ 		return PTR_ERR(dmabuf);
+ 
+@@ -102,15 +127,9 @@ static long dma_heap_ioctl_allocate(struct file *file, void *data)
+ 	if (heap_allocation->fd)
+ 		return -EINVAL;
+ 
+-	if (heap_allocation->fd_flags & ~DMA_HEAP_VALID_FD_FLAGS)
+-		return -EINVAL;
+-
+-	if (heap_allocation->heap_flags & ~DMA_HEAP_VALID_HEAP_FLAGS)
+-		return -EINVAL;
+-
+-	fd = dma_heap_buffer_alloc(heap, heap_allocation->len,
+-				   heap_allocation->fd_flags,
+-				   heap_allocation->heap_flags);
++	fd = dma_heap_bufferfd_alloc(heap, heap_allocation->len,
++				     heap_allocation->fd_flags,
++				     heap_allocation->heap_flags);
+ 	if (fd < 0)
+ 		return fd;
+ 
+@@ -193,20 +212,21 @@ static const struct file_operations dma_heap_fops = {
+ };
+ 
+ /**
+- * dma_heap_get_drvdata() - get per-subdriver data for the heap
++ * dma_heap_get_drvdata - get per-heap driver data
+  * @heap: DMA-Heap to retrieve private data for
+  *
+  * Returns:
+- * The per-subdriver data for the heap.
++ * The per-heap data for the heap.
+  */
+ void *dma_heap_get_drvdata(struct dma_heap *heap)
+ {
+ 	return heap->priv;
+ }
++EXPORT_SYMBOL_GPL(dma_heap_get_drvdata);
+ 
+ /**
+- * dma_heap_get_name() - get heap name
+- * @heap: DMA-Heap to retrieve private data for
++ * dma_heap_get_name - get heap name
++ * @heap: DMA-Heap to retrieve the name of
+  *
+  * Returns:
+  * The char* for the heap name.
+@@ -215,7 +235,12 @@ const char *dma_heap_get_name(struct dma_heap *heap)
+ {
+ 	return heap->name;
+ }
++EXPORT_SYMBOL_GPL(dma_heap_get_name);
+ 
++/**
++ * dma_heap_add - adds a heap to dmabuf heaps
++ * @exp_info: information needed to register this heap
++ */
+ struct dma_heap *dma_heap_add(const struct dma_heap_export_info *exp_info)
+ {
+ 	struct dma_heap *heap, *h, *err_ret;
+@@ -237,6 +262,7 @@ struct dma_heap *dma_heap_add(const struct dma_heap_export_info *exp_info)
+ 	if (!heap)
+ 		return ERR_PTR(-ENOMEM);
+ 
++	kref_init(&heap->refcount);
+ 	heap->name = exp_info->name;
+ 	heap->ops = exp_info->ops;
+ 	heap->priv = exp_info->priv;
+@@ -300,6 +326,63 @@ struct dma_heap *dma_heap_add(const struct dma_heap_export_info *exp_info)
+ 	kfree(heap);
+ 	return err_ret;
+ }
++EXPORT_SYMBOL_GPL(dma_heap_add);
++
++/**
++ * dma_heap_find - get the heap registered with the specified name
++ * @name: Name of the DMA-Heap to find
++ *
++ * Returns:
++ * The DMA-Heap with the provided name.
++ *
++ * NOTE: DMA-Heaps returned from this function MUST be released using
++ * dma_heap_put() when the user is done to enable the heap to be unloaded.
++ */
++struct dma_heap *dma_heap_find(const char *name)
++{
++	struct dma_heap *h;
++
++	mutex_lock(&heap_list_lock);
++	list_for_each_entry(h, &heap_list, list) {
++		if (!kref_get_unless_zero(&h->refcount))
++			continue;
++
++		if (!strcmp(h->name, name)) {
++			mutex_unlock(&heap_list_lock);
++			return h;
++		}
++		dma_heap_put(h);
++	}
++	mutex_unlock(&heap_list_lock);
++	return NULL;
++}
++EXPORT_SYMBOL_GPL(dma_heap_find);
++
++static void dma_heap_release(struct kref *ref)
++{
++	struct dma_heap *heap = container_of(ref, struct dma_heap, refcount);
++	unsigned int minor = MINOR(heap->heap_devt);
++
++	mutex_lock(&heap_list_lock);
++	list_del(&heap->list);
++	mutex_unlock(&heap_list_lock);
++
++	device_destroy(dma_heap_class, heap->heap_devt);
++	cdev_del(&heap->heap_cdev);
++	xa_erase(&dma_heap_minors, minor);
++
++	kfree(heap);
++}
++
++/**
++ * dma_heap_put - drops a reference to a dmabuf heap, potentially freeing it
++ * @heap: DMA-Heap whose reference count to decrement
++ */
++void dma_heap_put(struct dma_heap *heap)
++{
++	kref_put(&heap->refcount, dma_heap_release);
++}
++EXPORT_SYMBOL_GPL(dma_heap_put);
+ 
+ static char *dma_heap_devnode(struct device *dev, umode_t *mode)
+ {
 diff --git a/drivers/gpu/arm/mali/Kconfig b/drivers/gpu/arm/mali/Kconfig
 index 0fc2dd0eec163f09fe7abd447e472fad0d37146c..18db639f01ccf086b595f2bbe40b31c90eaada15 100644
 --- a/drivers/gpu/arm/mali/Kconfig
@@ -6583,7 +6813,7 @@ index e09edffd91a69bf8aeaf70093f1d8b52016f2ffb..b83c147cbb11452169989a589f884f10
  	{ .compatible = "mediatek,mt8195-dp-intf", .data = &mt8195_dpintf_conf },
  	{ /* sentinel */ },
 diff --git a/drivers/gpu/drm/mediatek/mtk_drm_crtc.c b/drivers/gpu/drm/mediatek/mtk_drm_crtc.c
-index aa21c947e67314ef6b5e148f2db1ebcff44fc718..94f6debc29e6240acbddf197986eca809484806c 100644
+index aa21c947e67314ef6b5e148f2db1ebcff44fc718..6890bb827c15467cb3c17da9003b68337f3b29dd 100644
 --- a/drivers/gpu/drm/mediatek/mtk_drm_crtc.c
 +++ b/drivers/gpu/drm/mediatek/mtk_drm_crtc.c
 @@ -6,7 +6,6 @@
@@ -6683,6 +6913,26 @@ index aa21c947e67314ef6b5e148f2db1ebcff44fc718..94f6debc29e6240acbddf197986eca80
 +	mtk_ddp_comp_power_off(comp);
  
  	mtk_crtc->enabled = false;
+ }
+@@ -787,6 +773,7 @@ static void mtk_drm_crtc_atomic_begin(struct drm_crtc *crtc,
+ 									  crtc);
+ 	struct mtk_crtc_state *mtk_crtc_state = to_mtk_crtc_state(crtc_state);
+ 	struct mtk_drm_crtc *mtk_crtc = to_mtk_crtc(crtc);
++	unsigned long flags;
+ 
+ 	if (mtk_crtc->event && mtk_crtc_state->base.event)
+ 		DRM_ERROR("new event while there is still a pending event\n");
+@@ -794,7 +781,11 @@ static void mtk_drm_crtc_atomic_begin(struct drm_crtc *crtc,
+ 	if (mtk_crtc_state->base.event) {
+ 		mtk_crtc_state->base.event->pipe = drm_crtc_index(crtc);
+ 		WARN_ON(drm_crtc_vblank_get(crtc) != 0);
++
++		spin_lock_irqsave(&crtc->dev->event_lock, flags);
+ 		mtk_crtc->event = mtk_crtc_state->base.event;
++		spin_unlock_irqrestore(&crtc->dev->event_lock, flags);
++
+ 		mtk_crtc_state->base.event = NULL;
+ 	}
  }
 diff --git a/drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.c b/drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.c
 index f3345af12cb82ab762a18f94a38851624ab621b9..9633e860cc3ce9220be4caa2ef0931f6b8f17934 100644
@@ -7153,10 +7403,29 @@ index df7727a58e7fddb8cb50b85a7eb4387c4a98f03e..7d4d823ee3250883e37e2c9a4fd328fc
  	boe->dsi = dsi;
  	ret = boe_panel_add(boe);
 diff --git a/drivers/mailbox/mtk-cmdq-mailbox.c b/drivers/mailbox/mtk-cmdq-mailbox.c
-index 41bc650896ebee7b740a2a5704f0cc79fe30de24..b75e9986ef636b5d005d5946897164c6464f4fcb 100644
+old mode 100644
+new mode 100755
+index 41bc650896ebee7b740a2a5704f0cc79fe30de24..67ccaac3f21450080cd95915619f2a616ef9726f
 --- a/drivers/mailbox/mtk-cmdq-mailbox.c
 +++ b/drivers/mailbox/mtk-cmdq-mailbox.c
-@@ -106,14 +106,10 @@ struct gce_plat {
+@@ -22,6 +22,8 @@
+ #define CMDQ_GCE_NUM_MAX		(2)
+ 
+ #define CMDQ_CURR_IRQ_STATUS		0x10
++#define CMDQ_SYNC_TOKEN_ID 		0x60
++#define CMDQ_SYNC_TOKEN_VALUE		0x64
+ #define CMDQ_SYNC_TOKEN_UPDATE		0x68
+ #define CMDQ_THR_SLOT_CYCLES		0x30
+ #define CMDQ_THR_BASE			0x100
+@@ -94,6 +96,7 @@ struct cmdq {
+ 	bool			control_by_sw;
+ 	bool			sw_ddr_en;
+ 	u32			gce_num;
++	spinlock_t		event_lock;
+ };
+ 
+ struct gce_plat {
+@@ -106,14 +109,10 @@ struct gce_plat {
  
  static void cmdq_sw_ddr_enable(struct cmdq *cmdq, bool enable)
  {
@@ -7171,7 +7440,46 @@ index 41bc650896ebee7b740a2a5704f0cc79fe30de24..b75e9986ef636b5d005d5946897164c6
  }
  
  u8 cmdq_get_shift_pa(struct mbox_chan *chan)
-@@ -154,7 +150,6 @@ static void cmdq_init(struct cmdq *cmdq)
+@@ -124,6 +123,38 @@ u8 cmdq_get_shift_pa(struct mbox_chan *chan)
+ }
+ EXPORT_SYMBOL(cmdq_get_shift_pa);
+ 
++void cmdq_set_event(void *chan, u16 event_id)
++{
++	struct cmdq *cmdq = container_of(((struct mbox_chan *)chan)->mbox,
++		typeof(*cmdq), mbox);
++	unsigned long flags;
++
++	spin_lock_irqsave(&cmdq->event_lock, flags);
++
++	writel((1L << 16) | event_id, cmdq->base + CMDQ_SYNC_TOKEN_UPDATE);
++
++	spin_unlock_irqrestore(&cmdq->event_lock, flags);
++}
++EXPORT_SYMBOL(cmdq_set_event);
++
++u32 cmdq_get_event(void *chan, u16 event_id)
++{
++	struct cmdq *cmdq = container_of(((struct mbox_chan *)chan)->mbox,
++		typeof(*cmdq), mbox);
++	unsigned long flags;
++	u32 val = 0;
++
++	spin_lock_irqsave(&cmdq->event_lock, flags);
++
++	writel(0x3FF & event_id, cmdq->base + CMDQ_SYNC_TOKEN_ID);
++	val = readl(cmdq->base + CMDQ_SYNC_TOKEN_VALUE);
++
++	spin_unlock_irqrestore(&cmdq->event_lock, flags);
++
++	return val;
++}
++EXPORT_SYMBOL(cmdq_get_event);
++
+ static int cmdq_thread_suspend(struct cmdq *cmdq, struct cmdq_thread *thread)
+ {
+ 	u32 status;
+@@ -154,7 +185,6 @@ static void cmdq_init(struct cmdq *cmdq)
  	int i;
  	u32 gctl_regval = 0;
  
@@ -7179,7 +7487,7 @@ index 41bc650896ebee7b740a2a5704f0cc79fe30de24..b75e9986ef636b5d005d5946897164c6
  	if (cmdq->control_by_sw)
  		gctl_regval = GCE_CTRL_BY_SW;
  	if (cmdq->sw_ddr_en)
-@@ -169,7 +164,6 @@ static void cmdq_init(struct cmdq *cmdq)
+@@ -169,7 +199,6 @@ static void cmdq_init(struct cmdq *cmdq)
  	writel(CMDQ_THR_ACTIVE_SLOT_CYCLES, cmdq->base + CMDQ_THR_SLOT_CYCLES);
  	for (i = 0; i <= CMDQ_MAX_EVENT; i++)
  		writel(i, cmdq->base + CMDQ_SYNC_TOKEN_UPDATE);
@@ -7187,7 +7495,7 @@ index 41bc650896ebee7b740a2a5704f0cc79fe30de24..b75e9986ef636b5d005d5946897164c6
  }
  
  static int cmdq_thread_reset(struct cmdq *cmdq, struct cmdq_thread *thread)
-@@ -302,7 +296,6 @@ static void cmdq_thread_irq_handler(struct cmdq *cmdq,
+@@ -302,7 +331,6 @@ static void cmdq_thread_irq_handler(struct cmdq *cmdq,
  
  	if (list_empty(&thread->task_busy_list)) {
  		cmdq_thread_disable(cmdq, thread);
@@ -7195,7 +7503,7 @@ index 41bc650896ebee7b740a2a5704f0cc79fe30de24..b75e9986ef636b5d005d5946897164c6
  	}
  }
  
-@@ -350,7 +343,7 @@ static int cmdq_suspend(struct device *dev)
+@@ -350,7 +378,7 @@ static int cmdq_suspend(struct device *dev)
  	if (cmdq->sw_ddr_en)
  		cmdq_sw_ddr_enable(cmdq, false);
  
@@ -7204,7 +7512,7 @@ index 41bc650896ebee7b740a2a5704f0cc79fe30de24..b75e9986ef636b5d005d5946897164c6
  
  	return 0;
  }
-@@ -359,7 +352,7 @@ static int cmdq_resume(struct device *dev)
+@@ -359,7 +387,7 @@ static int cmdq_resume(struct device *dev)
  {
  	struct cmdq *cmdq = dev_get_drvdata(dev);
  
@@ -7213,7 +7521,7 @@ index 41bc650896ebee7b740a2a5704f0cc79fe30de24..b75e9986ef636b5d005d5946897164c6
  	cmdq->suspended = false;
  
  	if (cmdq->sw_ddr_en)
-@@ -375,7 +368,7 @@ static int cmdq_remove(struct platform_device *pdev)
+@@ -375,7 +403,7 @@ static int cmdq_remove(struct platform_device *pdev)
  	if (cmdq->sw_ddr_en)
  		cmdq_sw_ddr_enable(cmdq, false);
  
@@ -7222,7 +7530,7 @@ index 41bc650896ebee7b740a2a5704f0cc79fe30de24..b75e9986ef636b5d005d5946897164c6
  	return 0;
  }
  
-@@ -401,8 +394,6 @@ static int cmdq_mbox_send_data(struct mbox_chan *chan, void *data)
+@@ -401,8 +429,6 @@ static int cmdq_mbox_send_data(struct mbox_chan *chan, void *data)
  	task->pkt = pkt;
  
  	if (list_empty(&thread->task_busy_list)) {
@@ -7231,7 +7539,7 @@ index 41bc650896ebee7b740a2a5704f0cc79fe30de24..b75e9986ef636b5d005d5946897164c6
  		/*
  		 * The thread reset will clear thread related register to 0,
  		 * including pc, end, priority, irq, suspend and enable. Thus
-@@ -475,8 +466,6 @@ static void cmdq_mbox_shutdown(struct mbox_chan *chan)
+@@ -475,8 +501,6 @@ static void cmdq_mbox_shutdown(struct mbox_chan *chan)
  	}
  
  	cmdq_thread_disable(cmdq, thread);
@@ -7240,7 +7548,7 @@ index 41bc650896ebee7b740a2a5704f0cc79fe30de24..b75e9986ef636b5d005d5946897164c6
  done:
  	/*
  	 * The thread->task_busy_list empty means thread already disable. The
-@@ -515,7 +504,6 @@ static int cmdq_mbox_flush(struct mbox_chan *chan, unsigned long timeout)
+@@ -515,7 +539,6 @@ static int cmdq_mbox_flush(struct mbox_chan *chan, unsigned long timeout)
  
  	cmdq_thread_resume(thread);
  	cmdq_thread_disable(cmdq, thread);
@@ -7248,14 +7556,38 @@ index 41bc650896ebee7b740a2a5704f0cc79fe30de24..b75e9986ef636b5d005d5946897164c6
  
  out:
  	spin_unlock_irqrestore(&thread->chan->lock, flags);
-@@ -661,7 +649,7 @@ static int cmdq_probe(struct platform_device *pdev)
+@@ -661,7 +684,8 @@ static int cmdq_probe(struct platform_device *pdev)
  
  	platform_set_drvdata(pdev, cmdq);
  
 -	WARN_ON(clk_bulk_prepare(cmdq->gce_num, cmdq->clocks));
 +	WARN_ON(clk_bulk_prepare_enable(cmdq->gce_num, cmdq->clocks));
++	spin_lock_init(&cmdq->event_lock);
  
  	cmdq_init(cmdq);
+ 
+@@ -716,6 +740,14 @@ static const struct gce_plat gce_plat_v7 = {
+ 	.gce_num = 1
+ };
+ 
++static const struct gce_plat gce_plat_v8 = {
++        .thread_nr = 32,
++        .shift = 3,
++        .control_by_sw = true,
++        .sw_ddr_en = true,
++        .gce_num = 2
++};
++
+ static const struct of_device_id cmdq_of_ids[] = {
+ 	{.compatible = "mediatek,mt8173-gce", .data = (void *)&gce_plat_v2},
+ 	{.compatible = "mediatek,mt8183-gce", .data = (void *)&gce_plat_v3},
+@@ -723,6 +755,7 @@ static const struct of_device_id cmdq_of_ids[] = {
+ 	{.compatible = "mediatek,mt6779-gce", .data = (void *)&gce_plat_v4},
+ 	{.compatible = "mediatek,mt8192-gce", .data = (void *)&gce_plat_v5},
+ 	{.compatible = "mediatek,mt8195-gce", .data = (void *)&gce_plat_v6},
++	{.compatible = "mediatek,mt8188-gce", .data = (void *)&gce_plat_v8},
+ 	{}
+ };
  
 diff --git a/drivers/media/platform/mediatek/jpeg/mtk_jpeg_core.c b/drivers/media/platform/mediatek/jpeg/mtk_jpeg_core.c
 index 7194f88edc0fb41c037b7fe91a80f5df6b755b03..a6ab85d995f8acf35c576d8dbf7573bb5a040ccf 100644
@@ -7604,10 +7936,10 @@ index 61c60e4e58ea925275f489648360b0ad48588584..2f03a1a5de9867f68b8cd3cf9c71ca2b
  void mtk_jpeg_set_enc_src(struct mtk_jpeg_ctx *ctx,  void __iomem *base,
  			  struct vb2_buffer *src_buf);
 diff --git a/drivers/media/platform/mediatek/vcodec/common/mtk_vcodec_util.c b/drivers/media/platform/mediatek/vcodec/common/mtk_vcodec_util.c
-index 9ce34a3b5ee67daf5ae6a575159ac4f8e5467565..79c99433b76a7ded736642dd9a236b2a983377bc 100644
+index 9ce34a3b5ee67daf5ae6a575159ac4f8e5467565..6b40bcc5b5e95af26a52dbdbf258c00cddb2ac4d 100644
 --- a/drivers/media/platform/mediatek/vcodec/common/mtk_vcodec_util.c
 +++ b/drivers/media/platform/mediatek/vcodec/common/mtk_vcodec_util.c
-@@ -45,7 +45,7 @@ int mtk_vcodec_write_vdecsys(struct mtk_vcodec_dec_ctx *ctx, unsigned int reg,
+@@ -45,11 +45,10 @@ int mtk_vcodec_write_vdecsys(struct mtk_vcodec_dec_ctx *ctx, unsigned int reg,
  }
  EXPORT_SYMBOL(mtk_vcodec_write_vdecsys);
  
@@ -7616,10 +7948,27 @@ index 9ce34a3b5ee67daf5ae6a575159ac4f8e5467565..79c99433b76a7ded736642dd9a236b2a
  {
  	enum mtk_instance_type inst_type = *((unsigned int *)priv);
  	struct platform_device *plat_dev;
-@@ -76,9 +76,39 @@ int mtk_vcodec_mem_alloc(void *priv, struct mtk_vcodec_mem *mem)
+-	unsigned long size = mem->size;
+ 	int id;
  
- 	return 0;
- }
+ 	if (inst_type == MTK_INST_ENCODER) {
+@@ -64,25 +63,54 @@ int mtk_vcodec_mem_alloc(void *priv, struct mtk_vcodec_mem *mem)
+ 		id = dec_ctx->id;
+ 	}
+ 
+-	mem->va = dma_alloc_coherent(&plat_dev->dev, size, &mem->dma_addr, GFP_KERNEL);
++	mem->va = dma_alloc_coherent(&plat_dev->dev, mem->size, &mem->dma_addr, GFP_KERNEL);
++	if (!mem->va) {
++		mtk_v4l2_err(plat_dev, "%s dma_alloc size=0x%zx failed!",
++			     __func__, mem->size);
++		return -ENOMEM;
++	}
++
++	mtk_v4l2_debug(plat_dev, 3, "[%d] - va = %p dma = 0x%lx size = 0x%zx", id, mem->va,
++		       (unsigned long)mem->dma_addr, mem->size);
++
++	return 0;
++}
 +
 +static int mtk_vcodec_mem_enc_alloc(void *priv, struct mtk_vcodec_mem *mem)
 +{
@@ -7628,18 +7977,22 @@ index 9ce34a3b5ee67daf5ae6a575159ac4f8e5467565..79c99433b76a7ded736642dd9a236b2a
 +	struct device *dev = &ctx->dev->plat_dev->dev;
 +
 +	mem->va = dma_alloc_coherent(dev, size, &mem->dma_addr, GFP_KERNEL);
-+	if (!mem->va) {
+ 	if (!mem->va) {
+-		mtk_v4l2_err(plat_dev, "%s dma_alloc size=%ld failed!",
+-			     dev_name(&plat_dev->dev), size);
 +		mtk_v4l2_venc_err(ctx, "%s dma_alloc size=%ld failed!", dev_name(dev), size);
-+		return -ENOMEM;
-+	}
-+
+ 		return -ENOMEM;
+ 	}
+ 
+-	mtk_v4l2_debug(plat_dev, 3, "[%d] - va = %p dma = 0x%lx size = 0x%lx", id, mem->va,
+-		       (unsigned long)mem->dma_addr, size);
 +	mtk_v4l2_venc_dbg(3, ctx, "[%d]  - va      = %p", ctx->id, mem->va);
 +	mtk_v4l2_venc_dbg(3, ctx, "[%d]  - dma     = 0x%lx", ctx->id,
 +			  (unsigned long)mem->dma_addr);
 +	mtk_v4l2_venc_dbg(3, ctx, "[%d]    size = 0x%lx", ctx->id, size);
-+
-+	return 0;
-+}
+ 
+ 	return 0;
+ }
 +
 +int mtk_vcodec_mem_alloc(void *priv, struct mtk_vcodec_mem *mem)
 +{
@@ -7657,10 +8010,30 @@ index 9ce34a3b5ee67daf5ae6a575159ac4f8e5467565..79c99433b76a7ded736642dd9a236b2a
  {
  	enum mtk_instance_type inst_type = *((unsigned int *)priv);
  	struct platform_device *plat_dev;
-@@ -111,6 +141,38 @@ void mtk_vcodec_mem_free(void *priv, struct mtk_vcodec_mem *mem)
- 	mem->dma_addr = 0;
- 	mem->size = 0;
- }
+-	unsigned long size = mem->size;
+ 	int id;
+ 
+ 	if (inst_type == MTK_INST_ENCODER) {
+@@ -98,19 +126,52 @@ void mtk_vcodec_mem_free(void *priv, struct mtk_vcodec_mem *mem)
+ 	}
+ 
+ 	if (!mem->va) {
+-		mtk_v4l2_err(plat_dev, "%s dma_free size=%ld failed!",
+-			     dev_name(&plat_dev->dev), size);
++		if (mem->size)
++			mtk_v4l2_err(plat_dev, "%s VA is NULL but size = 0x%zx",
++				     __func__, mem->size);
++		return;
++	}
++
++	mtk_v4l2_debug(plat_dev, 3, "[%d] - va = %p dma = 0x%lx size = 0x%zx", id, mem->va,
++		       (unsigned long)mem->dma_addr, mem->size);
++
++	dma_free_coherent(&plat_dev->dev, mem->size, mem->va, mem->dma_addr);
++	mem->va = NULL;
++	mem->dma_addr = 0;
++	mem->size = 0;
++}
 +
 +static void mtk_vcodec_mem_enc_free(void *priv, struct mtk_vcodec_mem *mem)
 +{
@@ -7670,19 +8043,22 @@ index 9ce34a3b5ee67daf5ae6a575159ac4f8e5467565..79c99433b76a7ded736642dd9a236b2a
 +
 +	if (!mem->va) {
 +		mtk_v4l2_venc_err(ctx, "%s dma_free size=%ld failed!", dev_name(dev), size);
-+		return;
-+	}
-+
+ 		return;
+ 	}
+ 
+-	mtk_v4l2_debug(plat_dev, 3, "[%d] - va = %p dma = 0x%lx size = 0x%lx", id, mem->va,
+-		       (unsigned long)mem->dma_addr, size);
 +	mtk_v4l2_venc_dbg(3, ctx, "[%d]  - va      = %p", ctx->id, mem->va);
 +	mtk_v4l2_venc_dbg(3, ctx, "[%d]  - dma     = 0x%lx", ctx->id,
 +			  (unsigned long)mem->dma_addr);
 +	mtk_v4l2_venc_dbg(3, ctx, "[%d]    size = 0x%lx", ctx->id, size);
-+
+ 
+-	dma_free_coherent(&plat_dev->dev, size, mem->va, mem->dma_addr);
 +	dma_free_coherent(dev, size, mem->va, mem->dma_addr);
-+	mem->va = NULL;
-+	mem->dma_addr = 0;
-+	mem->size = 0;
-+}
+ 	mem->va = NULL;
+ 	mem->dma_addr = 0;
+ 	mem->size = 0;
+ }
 +
 +void mtk_vcodec_mem_free(void *priv, struct mtk_vcodec_mem *mem)
 +{
@@ -7750,18 +8126,6 @@ index 05abca91e742983749ebd732d2defcbf28a91b3f..23ca0d93324f9f128115f6c328b245b3
  
  	inst->vsi = (struct venc_vp8_vsi *)inst->vpu_inst.vsi;
  
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/mcu.c b/drivers/net/wireless/mediatek/mt76/mt7921/mcu.c
-index 10dda1693d7dbe6647ad21c0a6a78324f437ab70..799f4c887797769e6afd7adb5c4cde941f8b9062 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7921/mcu.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7921/mcu.c
-@@ -473,6 +473,7 @@ static int mt7921_load_firmware(struct mt7921_dev *dev)
- 
- #ifdef CONFIG_PM
- 	dev->mt76.hw->wiphy->wowlan = &mt76_connac_wowlan_support;
-+	device_init_wakeup(dev->mt76.dev, true);
- #endif /* CONFIG_PM */
- 
- 	dev_dbg(dev->mt76.dev, "Firmware init done\n");
 diff --git a/drivers/opp/core.c b/drivers/opp/core.c
 index a4461c0663af9a72a56a4a8da215b4e24ab01489..0da8a53fb298a4961f47b64549d93f69ce9870f0 100644
 --- a/drivers/opp/core.c
@@ -7843,7 +8207,7 @@ index a4461c0663af9a72a56a4a8da215b4e24ab01489..0da8a53fb298a4961f47b64549d93f69
   * dev_pm_opp_enable() - Enable a specific OPP
   * @dev:	device for which we do this operation
 diff --git a/drivers/pci/controller/pcie-mediatek-gen3.c b/drivers/pci/controller/pcie-mediatek-gen3.c
-index b8612ce5f4d0cf82c23198bf5b802e09d1412145..f5e55e5542e563f60f376066cbac87bd6e92eadb 100644
+index b8612ce5f4d0cf82c23198bf5b802e09d1412145..5ddbc2a0c020e0eee0bd3dfe2b85f41037c59a3b 100644
 --- a/drivers/pci/controller/pcie-mediatek-gen3.c
 +++ b/drivers/pci/controller/pcie-mediatek-gen3.c
 @@ -8,6 +8,8 @@
@@ -7916,7 +8280,7 @@ index b8612ce5f4d0cf82c23198bf5b802e09d1412145..f5e55e5542e563f60f376066cbac87bd
  
  	regs = platform_get_resource_byname(pdev, IORESOURCE_MEM, "pcie-mac");
  	if (!regs)
-@@ -809,14 +830,105 @@ static int mtk_pcie_parse_port(struct mtk_gen3_pcie *pcie)
+@@ -809,14 +830,103 @@ static int mtk_pcie_parse_port(struct mtk_gen3_pcie *pcie)
  		return pcie->num_clks;
  	}
  
@@ -8013,16 +8377,14 @@ index b8612ce5f4d0cf82c23198bf5b802e09d1412145..f5e55e5542e563f60f376066cbac87bd
  	int err;
  
 +	/* Downstream Component power up before RC */
-+	if (!device_wakeup_path(pcie->dev)){
-+		err = mtk_pcie_dsc_power_up(pcie);
-+		if (err)
-+			return err;
-+	}
++	err = mtk_pcie_dsc_power_up(pcie);
++	if (err)
++		return err;
 +
  	/* PHY power on and enable pipe clock */
  	reset_control_deassert(pcie->phy_reset);
  
-@@ -855,6 +967,7 @@ static int mtk_pcie_power_up(struct mtk_gen3_pcie *pcie)
+@@ -855,6 +965,7 @@ static int mtk_pcie_power_up(struct mtk_gen3_pcie *pcie)
  	phy_exit(pcie->phy);
  err_phy_init:
  	reset_control_assert(pcie->phy_reset);
@@ -8030,15 +8392,11 @@ index b8612ce5f4d0cf82c23198bf5b802e09d1412145..f5e55e5542e563f60f376066cbac87bd
  
  	return err;
  }
-@@ -870,6 +983,11 @@ static void mtk_pcie_power_down(struct mtk_gen3_pcie *pcie)
+@@ -870,6 +981,7 @@ static void mtk_pcie_power_down(struct mtk_gen3_pcie *pcie)
  	phy_power_off(pcie->phy);
  	phy_exit(pcie->phy);
  	reset_control_assert(pcie->phy_reset);
-+
-+	if (!pcie->dev->power.is_suspended || !device_wakeup_path(pcie->dev))
-+	{
-+		mtk_pcie_dsc_power_down(pcie);
-+	}
++	mtk_pcie_dsc_power_down(pcie);
  }
  
  static int mtk_pcie_setup(struct mtk_gen3_pcie *pcie)
@@ -8934,6 +9292,288 @@ index 0692cb444ed020c260c7155ebee234fc3e4b1bfd..e6dbdc0aa6841e2e328602edf0755c8b
  	},
  	[MT8188_POWER_DOMAIN_CAM_MAIN] = {
  		.name = "cam_main",
+diff --git a/drivers/soc/mediatek/mtk-cmdq-helper.c b/drivers/soc/mediatek/mtk-cmdq-helper.c
+index c1837a468267372eb588a087c630cd7ad605e9ce..17b731b476901954eab3b9c1528b3142e41f79a3 100644
+--- a/drivers/soc/mediatek/mtk-cmdq-helper.c
++++ b/drivers/soc/mediatek/mtk-cmdq-helper.c
+@@ -15,27 +15,31 @@
+ #define CMDQ_REG_TYPE		1
+ #define CMDQ_JUMP_RELATIVE	1
+ 
++#define CMDQ_GET_ARG_B(arg)		(((arg) & GENMASK(31, 16)) >> 16)
++#define CMDQ_GET_ARG_C(arg)		((arg) & GENMASK(15, 0))
++
+ struct cmdq_instruction {
+ 	union {
+ 		u32 value;
+ 		u32 mask;
+ 		struct {
+ 			u16 arg_c;
+-			u16 src_reg;
++			u16 arg_b;
+ 		};
+ 	};
+ 	union {
+ 		u16 offset;
+ 		u16 event;
+ 		u16 reg_dst;
++		u16 arg_a;
+ 	};
+ 	union {
+ 		u8 subsys;
+ 		struct {
+-			u8 sop:5;
+-			u8 arg_c_t:1;
+-			u8 src_t:1;
+-			u8 dst_t:1;
++			u8 s_op:5;
++			u8 arg_c_type:1;
++			u8 arg_b_type:1;
++			u8 arg_a_type:1;
+ 		};
+ 	};
+ 	u8 op;
+@@ -216,25 +220,56 @@ int cmdq_pkt_read_s(struct cmdq_pkt *pkt, u16 high_addr_reg_idx, u16 addr_low,
+ 	struct cmdq_instruction inst = {};
+ 
+ 	inst.op = CMDQ_CODE_READ_S;
+-	inst.dst_t = CMDQ_REG_TYPE;
+-	inst.sop = high_addr_reg_idx;
++	inst.arg_a_type = CMDQ_REG_TYPE;
++	inst.s_op = high_addr_reg_idx;
+ 	inst.reg_dst = reg_idx;
+-	inst.src_reg = addr_low;
++	inst.arg_b = addr_low;
+ 
+ 	return cmdq_pkt_append_command(pkt, inst);
+ }
+ EXPORT_SYMBOL(cmdq_pkt_read_s);
+ 
++int cmdq_pkt_read_reg(struct cmdq_pkt *pkt, u8 subsys, u16 offset,
++	u16 dst_reg_idx)
++{
++	struct cmdq_instruction inst = {};
++
++	inst.arg_c = 0;
++	inst.arg_b = offset;
++	inst.arg_a = dst_reg_idx;
++	inst.s_op = subsys;
++	inst.arg_c_type = 0;
++	inst.arg_b_type = 0;
++	inst.arg_a_type = CMDQ_REG_TYPE;
++	inst.op = CMDQ_CODE_READ_S;
++	return cmdq_pkt_append_command(pkt, inst);
++}
++EXPORT_SYMBOL(cmdq_pkt_read_reg);
++
++int cmdq_pkt_read_addr(struct cmdq_pkt *pkt, dma_addr_t addr, u16 dst_reg_idx)
++{
++	s32 err;
++	const u16 src_reg_idx = CMDQ_SPR_FOR_TEMP;
++
++	err = cmdq_pkt_assign(pkt, src_reg_idx, CMDQ_ADDR_HIGH(addr));
++	if (err < 0)
++		return err;
++
++	return cmdq_pkt_read_s(pkt, src_reg_idx, CMDQ_ADDR_LOW(addr),
++			       dst_reg_idx);
++}
++EXPORT_SYMBOL(cmdq_pkt_read_addr);
++
+ int cmdq_pkt_write_s(struct cmdq_pkt *pkt, u16 high_addr_reg_idx,
+ 		     u16 addr_low, u16 src_reg_idx)
+ {
+ 	struct cmdq_instruction inst = {};
+ 
+ 	inst.op = CMDQ_CODE_WRITE_S;
+-	inst.src_t = CMDQ_REG_TYPE;
+-	inst.sop = high_addr_reg_idx;
++	inst.arg_b_type = CMDQ_REG_TYPE;
++	inst.s_op = high_addr_reg_idx;
+ 	inst.offset = addr_low;
+-	inst.src_reg = src_reg_idx;
++	inst.arg_b = src_reg_idx;
+ 
+ 	return cmdq_pkt_append_command(pkt, inst);
+ }
+@@ -254,10 +289,10 @@ int cmdq_pkt_write_s_mask(struct cmdq_pkt *pkt, u16 high_addr_reg_idx,
+ 
+ 	inst.mask = 0;
+ 	inst.op = CMDQ_CODE_WRITE_S_MASK;
+-	inst.src_t = CMDQ_REG_TYPE;
+-	inst.sop = high_addr_reg_idx;
++	inst.arg_b_type = CMDQ_REG_TYPE;
++	inst.s_op = high_addr_reg_idx;
+ 	inst.offset = addr_low;
+-	inst.src_reg = src_reg_idx;
++	inst.arg_b = src_reg_idx;
+ 
+ 	return cmdq_pkt_append_command(pkt, inst);
+ }
+@@ -269,7 +304,7 @@ int cmdq_pkt_write_s_value(struct cmdq_pkt *pkt, u8 high_addr_reg_idx,
+ 	struct cmdq_instruction inst = {};
+ 
+ 	inst.op = CMDQ_CODE_WRITE_S;
+-	inst.sop = high_addr_reg_idx;
++	inst.s_op = high_addr_reg_idx;
+ 	inst.offset = addr_low;
+ 	inst.value = value;
+ 
+@@ -290,7 +325,7 @@ int cmdq_pkt_write_s_mask_value(struct cmdq_pkt *pkt, u8 high_addr_reg_idx,
+ 		return err;
+ 
+ 	inst.op = CMDQ_CODE_WRITE_S_MASK;
+-	inst.sop = high_addr_reg_idx;
++	inst.s_op = high_addr_reg_idx;
+ 	inst.offset = addr_low;
+ 	inst.value = value;
+ 
+@@ -298,6 +333,61 @@ int cmdq_pkt_write_s_mask_value(struct cmdq_pkt *pkt, u8 high_addr_reg_idx,
+ }
+ EXPORT_SYMBOL(cmdq_pkt_write_s_mask_value);
+ 
++int cmdq_pkt_write_reg_addr(struct cmdq_pkt *pkt, dma_addr_t addr,
++			    u16 src_reg_idx, u32 mask)
++{
++	s32 err;
++	const u16 dst_reg_idx = CMDQ_SPR_FOR_TEMP;
++
++	err = cmdq_pkt_assign(pkt, dst_reg_idx,
++			      CMDQ_ADDR_HIGH(addr));
++	if (err < 0)
++		return err;
++
++	if (mask != CMDQ_NO_MASK)
++		return cmdq_pkt_write_s(pkt, dst_reg_idx,
++						   CMDQ_ADDR_LOW(addr), src_reg_idx);
++
++	return cmdq_pkt_write_s_mask(pkt, dst_reg_idx,
++				     CMDQ_ADDR_LOW(addr), src_reg_idx, mask);
++}
++EXPORT_SYMBOL(cmdq_pkt_write_reg_addr);
++
++int cmdq_pkt_write_value_addr(struct cmdq_pkt *pkt, dma_addr_t addr,
++			      u32 value, u32 mask)
++{
++	s32 err;
++	const u16 dst_reg_idx = CMDQ_SPR_FOR_TEMP;
++
++	/* assign high bit to spr temp */
++	err = cmdq_pkt_assign(pkt, dst_reg_idx,
++		CMDQ_ADDR_HIGH(addr));
++	if (err < 0)
++		return err;
++
++	if (mask != CMDQ_NO_MASK)
++		return cmdq_pkt_write_s_mask_value(pkt, dst_reg_idx,
++						   CMDQ_ADDR_LOW(addr), value, mask);
++
++	return cmdq_pkt_write_s_value(pkt, dst_reg_idx,
++				      CMDQ_ADDR_LOW(addr), value);
++}
++EXPORT_SYMBOL(cmdq_pkt_write_value_addr);
++
++s32 cmdq_pkt_mem_move(struct cmdq_pkt *pkt, dma_addr_t src_addr,
++		      dma_addr_t dst_addr, u16 swap_reg_idx)
++{
++	s32 err;
++
++	err = cmdq_pkt_read_addr(pkt, src_addr, swap_reg_idx);
++	if (err != 0)
++		return err;
++
++	return cmdq_pkt_write_reg_addr(pkt, dst_addr,
++				       swap_reg_idx, CMDQ_NO_MASK);
++}
++EXPORT_SYMBOL(cmdq_pkt_mem_move);
++
+ int cmdq_pkt_wfe(struct cmdq_pkt *pkt, u16 event, bool clear)
+ {
+ 	struct cmdq_instruction inst = { {0} };
+@@ -344,6 +434,21 @@ int cmdq_pkt_set_event(struct cmdq_pkt *pkt, u16 event)
+ }
+ EXPORT_SYMBOL(cmdq_pkt_set_event);
+ 
++int cmdq_pkt_acquire_event(struct cmdq_pkt *pkt, u16 event)
++{
++	struct cmdq_instruction inst = {};
++
++	if (event >= CMDQ_MAX_EVENT)
++		return -EINVAL;
++
++	inst.op = CMDQ_CODE_WFE;
++	inst.value = CMDQ_WFE_UPDATE | CMDQ_WFE_UPDATE_VALUE | CMDQ_WFE_WAIT;
++	inst.event = event;
++
++	return cmdq_pkt_append_command(pkt, inst);
++}
++EXPORT_SYMBOL(cmdq_pkt_acquire_event);
++
+ int cmdq_pkt_poll(struct cmdq_pkt *pkt, u8 subsys,
+ 		  u16 offset, u32 value)
+ {
+@@ -379,12 +484,60 @@ int cmdq_pkt_poll_mask(struct cmdq_pkt *pkt, u8 subsys,
+ }
+ EXPORT_SYMBOL(cmdq_pkt_poll_mask);
+ 
++int cmdq_pkt_poll_addr(struct cmdq_pkt *pkt, u32 value, u32 addr,
++		       u32 mask, u8 reg_gpr)
++{
++	struct cmdq_instruction inst = { {0} };
++	int err;
++	u8 use_mask = 0;
++
++	if (mask != CMDQ_NO_MASK) {
++		inst.arg_c = CMDQ_GET_ARG_C(~mask);
++		inst.arg_b = CMDQ_GET_ARG_B(~mask);
++		inst.arg_a = 0;
++		inst.s_op = 0;
++		inst.arg_c = 0;
++		inst.arg_b = 0;
++		inst.arg_a = 1;
++		inst.op = CMDQ_CODE_MASK;
++		err = cmdq_pkt_append_command(pkt, inst);
++		if (err != 0)
++			return err;
++
++		use_mask = 1;
++	}
++
++	/* Move extra handle APB address to GPR */
++	inst.arg_c = CMDQ_GET_ARG_C(addr);
++	inst.arg_b = CMDQ_GET_ARG_B(addr);
++	inst.arg_a = 0;
++	inst.s_op = reg_gpr;
++	inst.arg_c = 0;
++	inst.arg_b = 0;
++	inst.arg_a = 1;
++	inst.op = CMDQ_CODE_MOVE;
++	err = cmdq_pkt_append_command(pkt, inst);
++	if (err < 0)
++		return err;
++
++	inst.arg_c = CMDQ_GET_ARG_C(value);
++	inst.arg_b = CMDQ_GET_ARG_B(value);
++	inst.arg_a = use_mask;
++	inst.s_op = reg_gpr;
++	inst.arg_c = 0;
++	inst.arg_b = 0;
++	inst.arg_a = 1;
++	inst.op = CMDQ_CODE_POLL;
++	return cmdq_pkt_append_command(pkt, inst);
++}
++EXPORT_SYMBOL(cmdq_pkt_poll_addr);
++
+ int cmdq_pkt_assign(struct cmdq_pkt *pkt, u16 reg_idx, u32 value)
+ {
+ 	struct cmdq_instruction inst = {};
+ 
+ 	inst.op = CMDQ_CODE_LOGIC;
+-	inst.dst_t = CMDQ_REG_TYPE;
++	inst.arg_a_type = CMDQ_REG_TYPE;
+ 	inst.reg_dst = reg_idx;
+ 	inst.value = value;
+ 	return cmdq_pkt_append_command(pkt, inst);
 diff --git a/drivers/soc/mediatek/mtk-mmsys.c b/drivers/soc/mediatek/mtk-mmsys.c
 index 9619faa796e8fee95324ee9f0b79d435ce4ec432..a456c3e0aee7afc39097deb19bdf51583f9f0d5d 100644
 --- a/drivers/soc/mediatek/mtk-mmsys.c
@@ -14919,6 +15559,83 @@ index ba9a5e9b889981d6191bc55468ce49566a515897..5a58c54e7d200cae37b8bfc205c47291
 +#define MT8188_VDO1_RST_HDR_VDO_BE_DL_ASYNC	53
 +
  #endif  /* _DT_BINDINGS_RESET_CONTROLLER_MT8188 */
+diff --git a/include/linux/dma-heap.h b/include/linux/dma-heap.h
+index 0c05561cad6e62b78af6d492b565f50db21e596f..3cbf9bff2346930352d61aa85573ad7d04949c78 100644
+--- a/include/linux/dma-heap.h
++++ b/include/linux/dma-heap.h
+@@ -9,14 +9,13 @@
+ #ifndef _DMA_HEAPS_H
+ #define _DMA_HEAPS_H
+ 
+-#include <linux/cdev.h>
+ #include <linux/types.h>
+ 
+ struct dma_heap;
+ 
+ /**
+  * struct dma_heap_ops - ops to operate on a given heap
+- * @allocate:		allocate dmabuf and return struct dma_buf ptr
++ * @allocate:	allocate dmabuf and return struct dma_buf ptr
+  *
+  * allocate returns dmabuf on success, ERR_PTR(-errno) on error.
+  */
+@@ -41,28 +40,18 @@ struct dma_heap_export_info {
+ 	void *priv;
+ };
+ 
+-/**
+- * dma_heap_get_drvdata() - get per-heap driver data
+- * @heap: DMA-Heap to retrieve private data for
+- *
+- * Returns:
+- * The per-heap data for the heap.
+- */
+ void *dma_heap_get_drvdata(struct dma_heap *heap);
+ 
+-/**
+- * dma_heap_get_name() - get heap name
+- * @heap: DMA-Heap to retrieve private data for
+- *
+- * Returns:
+- * The char* for the heap name.
+- */
+ const char *dma_heap_get_name(struct dma_heap *heap);
+ 
+-/**
+- * dma_heap_add - adds a heap to dmabuf heaps
+- * @exp_info:		information needed to register this heap
+- */
+ struct dma_heap *dma_heap_add(const struct dma_heap_export_info *exp_info);
+ 
++struct dma_heap *dma_heap_find(const char *name);
++
++void dma_heap_put(struct dma_heap *heap);
++
++struct dma_buf *dma_heap_buffer_alloc(struct dma_heap *heap, size_t len,
++				      unsigned int fd_flags,
++				      unsigned int heap_flags);
++
+ #endif /* _DMA_HEAPS_H */
+diff --git a/include/linux/mailbox/mtk-cmdq-mailbox.h b/include/linux/mailbox/mtk-cmdq-mailbox.h
+index a8f0070c7aa98f64c8f2578c88ce7cbd6f7dc426..6e978a4e82d0d85991e5de5cce6f3b4b8cc13874 100644
+--- a/include/linux/mailbox/mtk-cmdq-mailbox.h
++++ b/include/linux/mailbox/mtk-cmdq-mailbox.h
+@@ -54,6 +54,7 @@
+  */
+ enum cmdq_code {
+ 	CMDQ_CODE_MASK = 0x02,
++	CMDQ_CODE_MOVE = 0x02,
+ 	CMDQ_CODE_WRITE = 0x04,
+ 	CMDQ_CODE_POLL = 0x08,
+ 	CMDQ_CODE_JUMP = 0x10,
+@@ -79,5 +80,7 @@ struct cmdq_pkt {
+ };
+ 
+ u8 cmdq_get_shift_pa(struct mbox_chan *chan);
++void cmdq_set_event(void *chan, u16 event_id);
++u32 cmdq_get_event(void *chan, u16 event_id);
+ 
+ #endif /* __MTK_CMDQ_MAILBOX_H__ */
 diff --git a/include/linux/pm_opp.h b/include/linux/pm_opp.h
 index 19990b235b74e71c6c8d0ba1c44280406629134c..0c680470a79325eb0b1ebe3cb0fa17fc81a0403d 100644
 --- a/include/linux/pm_opp.h
@@ -14934,6 +15651,161 @@ index 19990b235b74e71c6c8d0ba1c44280406629134c..0c680470a79325eb0b1ebe3cb0fa17fc
  int dev_pm_opp_enable(struct device *dev, unsigned long freq);
  
  int dev_pm_opp_disable(struct device *dev, unsigned long freq);
+diff --git a/include/linux/soc/mediatek/mtk-cmdq.h b/include/linux/soc/mediatek/mtk-cmdq.h
+index 649955d2cf5cdd89de731d4b402d7bda22e0f93c..db829721da57f406c211d70189074abf9dc31078 100644
+--- a/include/linux/soc/mediatek/mtk-cmdq.h
++++ b/include/linux/soc/mediatek/mtk-cmdq.h
+@@ -11,6 +11,14 @@
+ #include <linux/mailbox/mtk-cmdq-mailbox.h>
+ #include <linux/timer.h>
+ 
++#define CMDQ_SPR_FOR_TEMP		0
++#define CMDQ_THR_SPR_IDX0		0
++#define CMDQ_THR_SPR_IDX1		1
++#define CMDQ_THR_SPR_IDX2		2
++#define CMDQ_THR_SPR_IDX3		3
++#define CMDQ_THR_SPR_MAX		4
++
++#define CMDQ_NO_MASK		GENMASK(31, 0)
+ #define CMDQ_ADDR_HIGH(addr)	((u32)(((addr) >> 16) & GENMASK(31, 0)))
+ #define CMDQ_ADDR_LOW(addr)	((u16)(addr) | BIT(1))
+ 
+@@ -74,6 +82,18 @@ struct cmdq_pkt *cmdq_pkt_create(struct cmdq_client *client, size_t size);
+  */
+ void cmdq_pkt_destroy(struct cmdq_pkt *pkt);
+ 
++/**
++ * cmdq_pkt_mem_move() - append memory move command to the CMDQ packet
++ * @pkt:	the CMDQ packet
++ * @src_addr:	source address
++ * @dma_addr_t:	destination address
++ * @swap_reg_idx:	the temp register idx for swapping
++ *
++ * Return: 0 for success; else the error code is returned
++ */
++int cmdq_pkt_mem_move(struct cmdq_pkt *pkt, dma_addr_t src_addr,
++		      dma_addr_t dst_addr, u16 swap_reg_idx);
++
+ /**
+  * cmdq_pkt_write() - append write command to the CMDQ packet
+  * @pkt:	the CMDQ packet
+@@ -110,6 +130,32 @@ int cmdq_pkt_write_mask(struct cmdq_pkt *pkt, u8 subsys,
+ int cmdq_pkt_read_s(struct cmdq_pkt *pkt, u16 high_addr_reg_idx, u16 addr_low,
+ 		    u16 reg_idx);
+ 
++/*
++ * cmdq_pkt_read_reg() - append read_s command to the CMDQ packet
++ *			      which read the value of subsys code to a CMDQ
++ *			      internal register ID
++ * @pkt:	the CMDQ packet
++ * @subsys:	the CMDQ sub system code
++ * @offset:	register offset from CMDQ sub system
++ * @dst_reg_idx:	the CMDQ internal register ID to cache read data
++ *
++ * Return: 0 for success; else the error code is returned
++ */
++int cmdq_pkt_read_reg(struct cmdq_pkt *pkt, u8 subsys, u16 offset,
++		      u16 dst_reg_idx);
++
++/*
++ * cmdq_pkt_read_addr() - append read_s command to the CMDQ packet
++ *			      which read the value of physical address to a CMDQ
++ *			      internal register ID
++ * @pkt:	the CMDQ packet
++ * @addr:	address of pa
++ * @dst_reg_idx:	the CMDQ internal register ID to cache read data
++ *
++ * Return: 0 for success; else the error code is returned
++ */
++int cmdq_pkt_read_addr(struct cmdq_pkt *pkt, dma_addr_t addr, u16 dst_reg_idx);
++
+ /**
+  * cmdq_pkt_write_s() - append write_s command to the CMDQ packet
+  * @pkt:	the CMDQ packet
+@@ -160,8 +206,7 @@ int cmdq_pkt_write_s_value(struct cmdq_pkt *pkt, u8 high_addr_reg_idx,
+ 
+ /**
+  * cmdq_pkt_write_s_mask_value() - append write_s command with mask to the CMDQ
+- *				   packet which write value to a physical
+- *				   address
++ *				   packet which write value to a physical address
+  * @pkt:	the CMDQ packet
+  * @high_addr_reg_idx:	internal register ID which contains high address of pa
+  * @addr_low:	low address of pa
+@@ -173,6 +218,33 @@ int cmdq_pkt_write_s_value(struct cmdq_pkt *pkt, u8 high_addr_reg_idx,
+ int cmdq_pkt_write_s_mask_value(struct cmdq_pkt *pkt, u8 high_addr_reg_idx,
+ 				u16 addr_low, u32 value, u32 mask);
+ 
++/**
++ * cmdq_pkt_write_reg_addr() - append write_s command w/o mask to the CMDQ
++ *				   packet which write the value in CMDQ internal source register
++ 				   to a physical address
++ * @pkt:	the CMDQ packet
++ * @addr	address of pa
++ * @src_reg_idx:	the CMDQ internal register ID which cache source value
++ * @mask:	the specified target mask
++ *
++ * Return: 0 for success; else the error code is returned
++ */
++int cmdq_pkt_write_reg_addr(struct cmdq_pkt *pkt, dma_addr_t addr,
++				u16 src_reg_idx, u32 mask);
++
++/**
++ * cmdq_pkt_write_value_addr() - append write_s command w/o mask to the CMDQ
++ *				   packet which write value to a physical address
++ * @pkt:	the CMDQ packet
++ * @addr	address of pa
++ * @value:	the specified target value
++ * @mask:	the specified target mask
++ *
++ * Return: 0 for success; else the error code is returned
++ */
++int cmdq_pkt_write_value_addr(struct cmdq_pkt *pkt, dma_addr_t addr,
++				  u32 value, u32 mask);
++
+ /**
+  * cmdq_pkt_wfe() - append wait for event command to the CMDQ packet
+  * @pkt:	the CMDQ packet
+@@ -192,6 +264,15 @@ int cmdq_pkt_wfe(struct cmdq_pkt *pkt, u16 event, bool clear);
+  */
+ int cmdq_pkt_clear_event(struct cmdq_pkt *pkt, u16 event);
+ 
++/**
++ * cmdq_pkt_acquire_event() - append acquire event command to the CMDQ packet
++ * @pkt:	the CMDQ packet
++ * @event:	the desired event to be aquired
++ *
++ * Return: 0 for success; else the error code is returned
++ */
++int cmdq_pkt_acquire_event(struct cmdq_pkt *pkt, u16 event);
++
+ /**
+  * cmdq_pkt_set_event() - append set event command to the CMDQ packet
+  * @pkt:	the CMDQ packet
+@@ -234,6 +315,23 @@ int cmdq_pkt_poll(struct cmdq_pkt *pkt, u8 subsys,
+ int cmdq_pkt_poll_mask(struct cmdq_pkt *pkt, u8 subsys,
+ 		       u16 offset, u32 value, u32 mask);
+ 
++/**
++* cmdq_pkt_poll_addr() - Append polling command to the CMDQ packet, ask GCE to
++*				 execute an instruction that wait for a specified
++*				 hardware register address to check for the value
++				 w/ mask.
++*				 All GCE hardware threads will be blocked by this
++*				 instruction.
++* @pkt:    the CMDQ packet
++* @value:  the specified target register value
++* @addr: the hardward register address
++* @mask:   the specified target register mask
++*
++* Return: 0 for success; else the error code is returned
++*/
++int cmdq_pkt_poll_addr(struct cmdq_pkt *pkt, u32 value, u32 addr,
++		       u32 mask, u8 reg_gpr);
++
+ /**
+  * cmdq_pkt_assign() - Append logic assign command to the CMDQ packet, ask GCE
+  *		       to execute an instruction that set a constant value into
 diff --git a/include/linux/soc/mediatek/mtk-mmsys.h b/include/linux/soc/mediatek/mtk-mmsys.h
 index 2475ef9147465cf16f04bf99622f8f437d93da53..4885b065b849fb32897f41ba8983f5cdc07318c9 100644
 --- a/include/linux/soc/mediatek/mtk-mmsys.h
@@ -14953,15 +15825,3 @@ index 2475ef9147465cf16f04bf99622f8f437d93da53..4885b065b849fb32897f41ba8983f5cd
  	DDP_COMPONENT_POSTMASK0,
  	DDP_COMPONENT_PWM0,
  	DDP_COMPONENT_PWM1,
-diff --git a/net/bluetooth/mgmt.c b/net/bluetooth/mgmt.c
-index ba7a6ee80e9c0595826b8129935eb96f94cdb715..39a6ff486a4926228bb422d8575874433b35dea9 100644
---- a/net/bluetooth/mgmt.c
-+++ b/net/bluetooth/mgmt.c
-@@ -5160,6 +5160,7 @@ static int set_device_flags(struct sock *sk, struct hci_dev *hdev, void *data,
- 						le_addr_type(cp->addr.type));
- 		if (params) {
- 			WRITE_ONCE(params->flags, current_flags);
-+			params->flags = current_flags;
- 			status = MGMT_STATUS_SUCCESS;
- 
- 			/* Update passive scan if HCI_CONN_FLAG_DEVICE_PRIVACY
