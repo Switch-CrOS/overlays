@@ -19,4 +19,6 @@ src_install() {
 
 	insinto /lib/firmware/intel/sof-ace-tplg/pdm1
 	doins ./pdm1/*.tplg
+
+	dosym ./sof-mtl-max98360a-rt5682.tplg /lib/firmware/intel/sof-ace-tplg/sof-mtl-rt5650.tplg
 }
