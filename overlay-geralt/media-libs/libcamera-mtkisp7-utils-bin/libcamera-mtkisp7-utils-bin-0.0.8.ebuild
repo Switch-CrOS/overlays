@@ -13,8 +13,10 @@ KEYWORDS="-* arm64"
 S="${WORKDIR}"
 
 # This package was renamed from libcamera-mtkcam, so block that.
+# mtk-isp7-utils installs the same shared binaries, block it.
 RDEPEND="
 	!media-libs/libcamera-mtkcam
+	!media-libs/mtk-isp7-utils
 "
 
 src_install() {
