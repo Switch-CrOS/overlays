@@ -7999,6 +7999,18 @@ index 05abca91e742983749ebd732d2defcbf28a91b3f..23ca0d93324f9f128115f6c328b245b3
  
  	inst->vsi = (struct venc_vp8_vsi *)inst->vpu_inst.vsi;
  
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/mcu.c b/drivers/net/wireless/mediatek/mt76/mt7921/mcu.c
+index f90a63c9484f5cfa823a22c12890f433e05c7d8c..76965f9dc732f039b2f36e629714303697a23f7b 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7921/mcu.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7921/mcu.c
+@@ -501,6 +501,7 @@ static int mt7921_load_firmware(struct mt7921_dev *dev)
+ 
+ #ifdef CONFIG_PM
+ 	dev->mt76.hw->wiphy->wowlan = &mt76_connac_wowlan_support;
++	device_init_wakeup(dev->mt76.dev, true);
+ #endif /* CONFIG_PM */
+ 
+ 	dev_dbg(dev->mt76.dev, "Firmware init done\n");
 diff --git a/drivers/opp/core.c b/drivers/opp/core.c
 index a4461c0663af9a72a56a4a8da215b4e24ab01489..0da8a53fb298a4961f47b64549d93f69ce9870f0 100644
 --- a/drivers/opp/core.c
@@ -8080,7 +8092,7 @@ index a4461c0663af9a72a56a4a8da215b4e24ab01489..0da8a53fb298a4961f47b64549d93f69
   * dev_pm_opp_enable() - Enable a specific OPP
   * @dev:	device for which we do this operation
 diff --git a/drivers/pci/controller/pcie-mediatek-gen3.c b/drivers/pci/controller/pcie-mediatek-gen3.c
-index b8612ce5f4d0cf82c23198bf5b802e09d1412145..5ddbc2a0c020e0eee0bd3dfe2b85f41037c59a3b 100644
+index b8612ce5f4d0cf82c23198bf5b802e09d1412145..f5e55e5542e563f60f376066cbac87bd6e92eadb 100644
 --- a/drivers/pci/controller/pcie-mediatek-gen3.c
 +++ b/drivers/pci/controller/pcie-mediatek-gen3.c
 @@ -8,6 +8,8 @@
@@ -8153,7 +8165,7 @@ index b8612ce5f4d0cf82c23198bf5b802e09d1412145..5ddbc2a0c020e0eee0bd3dfe2b85f410
  
  	regs = platform_get_resource_byname(pdev, IORESOURCE_MEM, "pcie-mac");
  	if (!regs)
-@@ -809,14 +830,103 @@ static int mtk_pcie_parse_port(struct mtk_gen3_pcie *pcie)
+@@ -809,14 +830,105 @@ static int mtk_pcie_parse_port(struct mtk_gen3_pcie *pcie)
  		return pcie->num_clks;
  	}
  
@@ -8250,14 +8262,16 @@ index b8612ce5f4d0cf82c23198bf5b802e09d1412145..5ddbc2a0c020e0eee0bd3dfe2b85f410
  	int err;
  
 +	/* Downstream Component power up before RC */
-+	err = mtk_pcie_dsc_power_up(pcie);
-+	if (err)
-+		return err;
++	if (!device_wakeup_path(pcie->dev)){
++		err = mtk_pcie_dsc_power_up(pcie);
++		if (err)
++			return err;
++	}
 +
  	/* PHY power on and enable pipe clock */
  	reset_control_deassert(pcie->phy_reset);
  
-@@ -855,6 +965,7 @@ static int mtk_pcie_power_up(struct mtk_gen3_pcie *pcie)
+@@ -855,6 +967,7 @@ static int mtk_pcie_power_up(struct mtk_gen3_pcie *pcie)
  	phy_exit(pcie->phy);
  err_phy_init:
  	reset_control_assert(pcie->phy_reset);
@@ -8265,11 +8279,15 @@ index b8612ce5f4d0cf82c23198bf5b802e09d1412145..5ddbc2a0c020e0eee0bd3dfe2b85f410
  
  	return err;
  }
-@@ -870,6 +981,7 @@ static void mtk_pcie_power_down(struct mtk_gen3_pcie *pcie)
+@@ -870,6 +983,11 @@ static void mtk_pcie_power_down(struct mtk_gen3_pcie *pcie)
  	phy_power_off(pcie->phy);
  	phy_exit(pcie->phy);
  	reset_control_assert(pcie->phy_reset);
-+	mtk_pcie_dsc_power_down(pcie);
++
++	if (!pcie->dev->power.is_suspended || !device_wakeup_path(pcie->dev))
++	{
++		mtk_pcie_dsc_power_down(pcie);
++	}
  }
  
  static int mtk_pcie_setup(struct mtk_gen3_pcie *pcie)
