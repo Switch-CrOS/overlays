@@ -3,7 +3,7 @@
 
 EAPI=7
 
-DESCRIPTION="This package will be deprecated soon, use libcamera-mtkisp7-utils-bin instead"
+DESCRIPTION="Libcamera mtkcam shared libraries for mtkisp7"
 SRC_URI="gs://chromeos-localmirror/distfiles/${P}.tar.bz2"
 
 LICENSE="LICENCE.mediatek"
@@ -11,6 +11,11 @@ SLOT="0"
 KEYWORDS="-* arm64"
 
 S="${WORKDIR}"
+
+# This package was renamed from libcamera-mtkcam, so block that.
+RDEPEND="
+	!media-libs/libcamera-mtkcam
+"
 
 src_install() {
 	dolib.so lib64/*.so
