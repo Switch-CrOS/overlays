@@ -43,7 +43,7 @@ src_install() {
 	# Install audio config files
 	unibuild_install_files audio-files
 
-	udev_dorules "${FILESDIR}/99-chromeos-brask-usb-nfc-beep.rules"
+	udev_dorules "${FILESDIR}"/udev/*.rules
 
 	exeinto "$(get_udevdir)"
 	doexe "${FILESDIR}"/control_usb_nfc_beep.sh
