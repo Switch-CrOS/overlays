@@ -16,5 +16,4 @@ S=${WORKDIR}/${PN}-mtl-${PV}
 src_install() {
 	insinto /lib/firmware/intel/sof-ipc4/mtl/community
 	doins sof-mtl.ri
-	doins sof-mtl.ldc
 }

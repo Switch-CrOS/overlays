@@ -1,12 +1,11 @@
 This file should always contain information regarding which
 branch/commit the firmware was built from.
 
-MTL-006 v6.3 release.
+MTL SOF FW 7.0 release.
 
 repo : https://github.com/thesofproject/sof
-branch : mtl-006-drop-stable
-commit id : df1a295fc81b534b5fdf1e33f2c4b018401d6212
+branch : mtl-007-drop-stable
+commit id : a1f24c753508708463b65b493b3cf91681b219b3
 
 MD5sums:
-22d3695ac6d1f2af2e8880ba60b24800  sof-mtl.ldc
-3940b558c1bf32fdd57f0c4bb56a250e  sof-mtl.ri
+137a6ce8f224618de3ac2821194e4b10  sof-mtl.ri
