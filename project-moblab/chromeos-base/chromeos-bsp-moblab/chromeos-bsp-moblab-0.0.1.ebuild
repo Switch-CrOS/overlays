@@ -3,7 +3,7 @@
 
 EAPI="7"
 
-inherit user
+inherit user udev
 
 DESCRIPTION="Ebuild which pulls in any necessary ebuilds as dependencies or portage actions"
 
@@ -35,4 +35,6 @@ src_install() {
 	insinto /etc/init
 	doins "${FILESDIR}/cgroups.override"
 	doins "${FILESDIR}"/cras.override
+
+	udev_dorules "${FILESDIR}"/udev/*.rules
 }
