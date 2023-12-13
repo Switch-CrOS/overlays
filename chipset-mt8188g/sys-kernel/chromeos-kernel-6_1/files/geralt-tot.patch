@@ -180,17 +180,17 @@ index c00be39af64e53e801a5d4d551235b5e16f504fe..2e055e06bed1495c310d3dc4a4fa4843
      maxItems: 6
  
 diff --git a/Documentation/devicetree/bindings/sound/mediatek,mt8188-mt6359.yaml b/Documentation/devicetree/bindings/sound/mediatek,mt8188-mt6359.yaml
-index 05e532b5d50a664e1145984accead4ff87485f64..97d0f432caccce8f52f10dd52446f59c9edc05fb 100644
+index 4c8c95057ef7cac9fbc9a6cc2e997370e9fe0cbb..f94ad0715e3239653c74553e27231f1395babefa 100644
 --- a/Documentation/devicetree/bindings/sound/mediatek,mt8188-mt6359.yaml
 +++ b/Documentation/devicetree/bindings/sound/mediatek,mt8188-mt6359.yaml
-@@ -12,6 +12,7 @@ maintainers:
+@@ -15,6 +15,7 @@ allOf:
  properties:
    compatible:
      enum:
 +      - mediatek,mt8188-es8326
        - mediatek,mt8188-mt6359-evb
        - mediatek,mt8188-nau8825
- 
+       - mediatek,mt8188-rt5682s
 diff --git a/Documentation/devicetree/bindings/thermal/mediatek,mt8188-lvts.yaml b/Documentation/devicetree/bindings/thermal/mediatek,mt8188-lvts.yaml
 new file mode 100644
 index 0000000000000000000000000000000000000000..d270db378419cf0a3b0eb8fe23509526da8e975e
@@ -527,7 +527,7 @@ index 0000000000000000000000000000000000000000..1581588f4192580d19fa548fdb32e886
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8188-ciri.dtsi b/arch/arm64/boot/dts/mediatek/mt8188-ciri.dtsi
 new file mode 100644
-index 0000000000000000000000000000000000000000..21d1c094963db043a85dc1cdcf077d86a30bd6f9
+index 0000000000000000000000000000000000000000..10f6e21337ed9e7224ba53f8c6a4a3f88f135baf
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt8188-ciri.dtsi
 @@ -0,0 +1,357 @@
@@ -544,8 +544,8 @@ index 0000000000000000000000000000000000000000..21d1c094963db043a85dc1cdcf077d86
 +/delete-node/ &backlight_lcd0;
 +/delete-node/ &pp3300_dx_edp;
 +/delete-node/ &nau8825;
-+/delete-node/ &max98390_fr;
-+/delete-node/ &max98390_fl;
++/delete-node/ &max98390_rl;
++/delete-node/ &max98390_rr;
 +
 +&disp_dsi0 {
 +	panel1@0 {
@@ -574,10 +574,10 @@ index 0000000000000000000000000000000000000000..21d1c094963db043a85dc1cdcf077d86
 +	};
 +};
 +
-+&max98390_rr {
++&max98390_fl {
 +	#sound-dai-cells = <0>;
 +	compatible = "maxim,max98390";
-+	reg = <0x38>;
++	reg = <0x39>;
 +	sound-name-prefix = "Front Left";
 +	reset-gpios = <&pio 118 1>;
 +	pinctrl-names = "default";
@@ -585,10 +585,10 @@ index 0000000000000000000000000000000000000000..21d1c094963db043a85dc1cdcf077d86
 +	status = "okay";
 +};
 +
-+&max98390_rl {
++&max98390_fr {
 +	#sound-dai-cells = <0>;
 +	compatible = "maxim,max98390";
-+	reg = <0x39>;
++	reg = <0x38>;
 +	sound-name-prefix = "Front Right";
 +	status = "okay";
 +};
@@ -643,8 +643,8 @@ index 0000000000000000000000000000000000000000..21d1c094963db043a85dc1cdcf077d86
 +		dai-format = "dsp_b";
 +		mediatek,clk-provider = "cpu";
 +		codec {
-+			sound-dai = <&max98390_rr>,
-+				    <&max98390_rl>;
++			sound-dai = <&max98390_fl>,
++				    <&max98390_fr>;
 +		};
 +	};
 +};
@@ -668,7 +668,7 @@ index 0000000000000000000000000000000000000000..21d1c094963db043a85dc1cdcf077d86
 +		reset-gpios = <&pio 5  GPIO_ACTIVE_LOW>;
 +		himax_gpio_irq = <&pio 143  IRQ_TYPE_LEVEL_LOW>;
 +		himax,pid = <0x1002>;
-+		himax,ic-det-delay-ms = <500>;
++		himax,ic-det-delay-ms = <1000>;
 +		himax,ic-resume-delay-ms = <150>;
 +
 +		interrupt-parent = <&pio>;
@@ -6586,7 +6586,7 @@ index 59d158873f4cb451b5a5db4f0691e25d6a56909c..0d84c7f268781a2282b7fa1875568eee
  static char *dma_heap_devnode(struct device *dev, umode_t *mode)
  {
 diff --git a/drivers/gpu/arm/mali/Kconfig b/drivers/gpu/arm/mali/Kconfig
-index 0fc2dd0eec163f09fe7abd447e472fad0d37146c..18db639f01ccf086b595f2bbe40b31c90eaada15 100644
+index daf1eaaa159b4f45030d6c991877ad46d8cede5a..d33208c5aef16b32b05b63bc92f310139ccddacf 100644
 --- a/drivers/gpu/arm/mali/Kconfig
 +++ b/drivers/gpu/arm/mali/Kconfig
 @@ -25,7 +25,6 @@ menuconfig MALI
@@ -6598,7 +6598,7 @@ index 0fc2dd0eec163f09fe7abd447e472fad0d37146c..18db639f01ccf086b595f2bbe40b31c9
  	default n
  	help
 diff --git a/drivers/gpu/arm/mali/backend/gpu/mali_kbase_devfreq.c b/drivers/gpu/arm/mali/backend/gpu/mali_kbase_devfreq.c
-index 1012fd76acd52e72d4cce0c2d1e8f54dea1e058f..fa336c6f3ce9711c4a1aa1fc354c12404a789f14 100644
+index 57527315abdbf3518f7e005ea4ab4239bb8d9bf2..07468e3fce25197a9cc3c458a5abce2880c72aa9 100644
 --- a/drivers/gpu/arm/mali/backend/gpu/mali_kbase_devfreq.c
 +++ b/drivers/gpu/arm/mali/backend/gpu/mali_kbase_devfreq.c
 @@ -642,6 +642,12 @@ static int kbase_devfreq_init_core_mask_table(struct kbase_device *kbdev)
@@ -7335,7 +7335,7 @@ index e09edffd91a69bf8aeaf70093f1d8b52016f2ffb..b83c147cbb11452169989a589f884f10
  	{ .compatible = "mediatek,mt8195-dp-intf", .data = &mt8195_dpintf_conf },
  	{ /* sentinel */ },
 diff --git a/drivers/gpu/drm/mediatek/mtk_drm_crtc.c b/drivers/gpu/drm/mediatek/mtk_drm_crtc.c
-index aa21c947e67314ef6b5e148f2db1ebcff44fc718..6890bb827c15467cb3c17da9003b68337f3b29dd 100644
+index f65ad41dffdfddecd8c8a2f8584f33ab14f127f8..6890bb827c15467cb3c17da9003b68337f3b29dd 100644
 --- a/drivers/gpu/drm/mediatek/mtk_drm_crtc.c
 +++ b/drivers/gpu/drm/mediatek/mtk_drm_crtc.c
 @@ -6,7 +6,6 @@
@@ -7436,26 +7436,6 @@ index aa21c947e67314ef6b5e148f2db1ebcff44fc718..6890bb827c15467cb3c17da9003b6833
  
  	mtk_crtc->enabled = false;
  }
-@@ -787,6 +773,7 @@ static void mtk_drm_crtc_atomic_begin(struct drm_crtc *crtc,
- 									  crtc);
- 	struct mtk_crtc_state *mtk_crtc_state = to_mtk_crtc_state(crtc_state);
- 	struct mtk_drm_crtc *mtk_crtc = to_mtk_crtc(crtc);
-+	unsigned long flags;
- 
- 	if (mtk_crtc->event && mtk_crtc_state->base.event)
- 		DRM_ERROR("new event while there is still a pending event\n");
-@@ -794,7 +781,11 @@ static void mtk_drm_crtc_atomic_begin(struct drm_crtc *crtc,
- 	if (mtk_crtc_state->base.event) {
- 		mtk_crtc_state->base.event->pipe = drm_crtc_index(crtc);
- 		WARN_ON(drm_crtc_vblank_get(crtc) != 0);
-+
-+		spin_lock_irqsave(&crtc->dev->event_lock, flags);
- 		mtk_crtc->event = mtk_crtc_state->base.event;
-+		spin_unlock_irqrestore(&crtc->dev->event_lock, flags);
-+
- 		mtk_crtc_state->base.event = NULL;
- 	}
- }
 diff --git a/drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.c b/drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.c
 index f3345af12cb82ab762a18f94a38851624ab621b9..9633e860cc3ce9220be4caa2ef0931f6b8f17934 100644
 --- a/drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.c
@@ -7515,7 +7495,7 @@ index 0797b3ac75d8c41d424fcdf53cfa1de500d50a76..f8c7e8d8ddc12efa49f2395975b5d104
  {
  	if (comp->funcs && comp->funcs->clk_enable)
 diff --git a/drivers/gpu/drm/mediatek/mtk_drm_drv.c b/drivers/gpu/drm/mediatek/mtk_drm_drv.c
-index e6bb94bf4726349fc94f71c85327cc0bd66bf9c3..f63847feb47fe7b85bc8ad35d21338c0d7c1923f 100644
+index 702dc99f0aa30650c8b42e87d33f956a101eb857..cc746de91834ca8ab94dd6aefce09fa7c261d67f 100644
 --- a/drivers/gpu/drm/mediatek/mtk_drm_drv.c
 +++ b/drivers/gpu/drm/mediatek/mtk_drm_drv.c
 @@ -295,7 +295,7 @@ static const struct mtk_mmsys_driver_data mt8188_vdosys0_driver_data = {
@@ -7536,7 +7516,7 @@ index e6bb94bf4726349fc94f71c85327cc0bd66bf9c3..f63847feb47fe7b85bc8ad35d21338c0
  	{ .compatible = "mediatek,mt8192-mmsys",
  	  .data = &mt8192_mmsys_driver_data},
  	{ .compatible = "mediatek,mt8195-mmsys",
-@@ -1024,6 +1026,7 @@ static struct platform_driver * const mtk_drm_drivers[] = {
+@@ -1027,6 +1029,7 @@ static struct platform_driver * const mtk_drm_drivers[] = {
  	&mtk_dsi_driver,
  	&mtk_ethdr_driver,
  	&mtk_mdp_rdma_driver,
@@ -7896,7 +7876,7 @@ index 0000000000000000000000000000000000000000..14efb6ab2341a74a22c09dec59471d15
 +	},
 +};
 diff --git a/drivers/gpu/drm/panel/panel-boe-tv101wum-nl6.c b/drivers/gpu/drm/panel/panel-boe-tv101wum-nl6.c
-index df7727a58e7fddb8cb50b85a7eb4387c4a98f03e..b08a7bbcbd07d31710c76866f94e654f89c4a76e 100644
+index 388e980ef5ec017bc09ae0d54da0a8d708626c32..4be3c08b075d2069ead688fdabcc04d49997553c 100644
 --- a/drivers/gpu/drm/panel/panel-boe-tv101wum-nl6.c
 +++ b/drivers/gpu/drm/panel/panel-boe-tv101wum-nl6.c
 @@ -37,6 +37,7 @@ struct panel_desc {
@@ -8002,7 +7982,7 @@ index df7727a58e7fddb8cb50b85a7eb4387c4a98f03e..b08a7bbcbd07d31710c76866f94e654f
  };
  
  static const struct drm_display_mode inx_hj110iz_default_mode = {
-@@ -1794,6 +1876,36 @@ static const struct panel_desc starry_himax83102_j02_desc = {
+@@ -1796,6 +1878,36 @@ static const struct panel_desc starry_himax83102_j02_desc = {
  	.lp11_before_reset = true,
  };
  
@@ -8039,7 +8019,7 @@ index df7727a58e7fddb8cb50b85a7eb4387c4a98f03e..b08a7bbcbd07d31710c76866f94e654f
  static int boe_panel_get_modes(struct drm_panel *panel,
  			       struct drm_connector *connector)
  {
-@@ -1904,6 +2016,8 @@ static int boe_panel_probe(struct mipi_dsi_device *dsi)
+@@ -1906,6 +2018,8 @@ static int boe_panel_probe(struct mipi_dsi_device *dsi)
  	dsi->lanes = desc->lanes;
  	dsi->format = desc->format;
  	dsi->mode_flags = desc->mode_flags;
@@ -8048,7 +8028,7 @@ index df7727a58e7fddb8cb50b85a7eb4387c4a98f03e..b08a7bbcbd07d31710c76866f94e654f
  	boe->desc = desc;
  	boe->dsi = dsi;
  	ret = boe_panel_add(boe);
-@@ -1970,6 +2084,9 @@ static const struct of_device_id boe_of_match[] = {
+@@ -1972,6 +2086,9 @@ static const struct of_device_id boe_of_match[] = {
  	{ .compatible = "starry,himax83102-j02",
  	  .data = &starry_himax83102_j02_desc
  	},
