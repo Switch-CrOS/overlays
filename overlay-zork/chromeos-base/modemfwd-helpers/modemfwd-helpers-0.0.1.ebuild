@@ -13,7 +13,9 @@ SRC_URI="
 	${MIRROR_PATH}/cellular-firmware-fibocom-l850-18500.5001.00.05.27.16_Secureboot.tar.xz
 	${MIRROR_PATH}/cellular-firmware-fibocom-l850-OEM_cust.6003.02.tar.xz
 	${MIRROR_PATH}/cellular-firmware-fibocom-l850-zork-carriers_OEM_6003-r2.tar.xz
-	${MIRROR_PATH}/cellular-firmware-fibocom-nl668-19006.1000.00.02.79.62.tar.xz
+	${MIRROR_PATH}/cellular-firmware-fibocom-nl668-19006.1000.00.02.79.62-1.tar.xz
+	${MIRROR_PATH}/cellular-firmware-fibocom-nl668-A04.tar.xz
+	${MIRROR_PATH}/cellular-firmware-fibocom-nl668-OEM_cust.6002.01.tar.xz
 "
 LICENSE="BSD-Google"
 SLOT="0"
@@ -31,7 +33,7 @@ src_install() {
 
 	udev_dorules "${FILESDIR}/94-usb-modem-gpio.rules"
 
-	cellular_dofirmware "${FILESDIR}/firmware_manifest.prototxt"
+	cellular_dofirmware "${FILESDIR}/firmware_manifest.textproto"
 	# cellular_dofirmware cannot handle this case yet
 	insinto "$(_cellular_get_firmwaredir)/l850"
 	doins -r cellular-firmware-fibocom-l850-*/*
