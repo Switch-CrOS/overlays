@@ -16,7 +16,10 @@ USE=""
 # and supports that.
 BOARD_COMPILER_FLAGS="-march=armv8-a+crc+crypto -mtune=cortex-a55 -ftree-vectorize"
 # TODO(gbiv): Porting -mtune may be interesting
-BOARD_RUSTFLAGS="-Ctarget-feature=+crc"
+# TODO(b/316583777): replace `+aes,+neon,+sha2` with `+crypto` once rustc
+# supports the latter; they boil down to the same thing, but more consistency
+# with BOARD_COMPILER_FLAGS would be nice.
+BOARD_RUSTFLAGS="-Ctarget-feature=+crc,+aes,+neon,+sha2"
 USE="${USE} march_armv8-a"
 
 USE="${USE} mt8195"
