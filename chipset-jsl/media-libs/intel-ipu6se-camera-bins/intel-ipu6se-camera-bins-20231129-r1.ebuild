@@ -1,0 +1,1 @@
+intel-ipu6se-camera-bins-20231129.ebuild
