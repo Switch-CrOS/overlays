@@ -4,15 +4,15 @@ clearer API boundaries.**
 
 Starlark -- a Python-like configuration-management language -- will be used to
 generate Protocol Buffer configuration payloads in [chromeos/project/keeby](https://chrome-internal.googlesource.com/chromeos/project/keeby)
-repos and model.yaml will be deleted from [overlay-keeby](https://chromium.googlesource.com/chromiumos/overlays/board-overlays/+/refs/heads/master/overlay-keeby)
+repos and model.yaml will be deleted from [overlay-keeby](https://chromium.googlesource.com/chromiumos/overlays/board-overlays/+/HEAD/overlay-keeby)
 and [overlay-keeby-private](https://chrome-internal.googlesource.com/chromeos/overlays/overlay-keeby-private).
 A few resources to get started:
 
 *   [Starlark language guide](https://docs.bazel.build/versions/master/skylark/language.html): A quick introduction guide to Starlark.
-*   [chromiumos/config README](https://chromium.googlesource.com/chromiumos/config/+/refs/heads/master/README.md):
+*   [chromiumos/config README](https://chromium.googlesource.com/chromiumos/config/+/HEAD/README.md):
     Steps for partners and Googlers to check out their repos and contribute
     changes.
-*   [fake test data project](https://chromium.googlesource.com/chromiumos/config/+/refs/heads/master/test/project/fake/fake):
+*   [fake test data project](https://chromium.googlesource.com/chromiumos/config/+/HEAD/test/project/fake/fake):
     Working example of the new config ecosystem.
 
 Changes will be made in the following repos:
@@ -52,7 +52,7 @@ Benefits include:
 
 No. For the time being, the protobuf payloads will be translated backwards into
 JSON payloads conforming to
-[cros\_config\_schema.yaml](https://chromium.git.corp.google.com/chromiumos/platform2/+/refs/heads/master/chromeos-config/cros_config_host/cros_config_schema.yaml).
+[cros\_config\_schema.yaml](https://chromium.git.corp.google.com/chromiumos/platform2/+/HEAD/chromeos-config/cros_config_host/cros_config_schema.yaml).
 From the platform point-of-view, the configuration will not change.
 
 3. **Will this break my builds?**
