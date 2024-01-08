@@ -122,11 +122,16 @@ chromeos-board-pyro: &pyro_board_config
     - $device-name: pyro
       $brand-code: LEAN
       $chassis: PYRO
-      products:
-        - $loem: NEWTON2
-        - $loem: LENOVO
       skus:
-        - config: *pyro_config
+        - $loem: NEWTON2
+          config: *pyro_config
+        - $loem: LENOVO
+          config: *pyro_config
+        # Tolerate a missing customization_id for devices with modified/missing
+        # VPD values.
+        - config:
+            <<: *pyro_config
+            identity: *identity_common
 
 chromeos-board-sand: &sand_board_config
   devices:
@@ -137,6 +142,11 @@ chromeos-board-sand: &sand_board_config
           $loem: ACER
       skus:
         - config: *sand_config
+        # Tolerate a missing customization_id for devices with modified/missing
+        # VPD values.
+        - config:
+            <<: *sand_config
+            identity: *identity_common
 
 chromeos-board-snappy: &snappy_board_config
   devices:
