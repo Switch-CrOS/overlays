@@ -12,7 +12,9 @@ KEYWORDS="*"
 IUSE=""
 
 DEPEND=""
-RDEPEND="${DEPEND}"
+RDEPEND="
+	media-libs/mt8188g-max98390-dsm-param-geralt
+"
 BDEPEND=""
 
 S=${WORKDIR}/${PN}-mt8188-${PV}
