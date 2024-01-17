@@ -1,1 +1,1 @@
-sof-binary-0.2.4.ebuild
+sof-binary-0.2.5.ebuild
