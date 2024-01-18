@@ -48,6 +48,8 @@ eval set -- "${FLAGS_ARGV}"
 KERNEL_DIR="${CROS_SRC}/third_party/kernel/v${FLAGS_ver}"
 EBUILD_DIR="${SCRIPT_DIR}/.."
 PKG_NAME="chromeos-kernel-${FLAGS_ver/./_}"
+TOT_SQUASH="0000-${FLAGS_board}-tot.patch"
+SCMVERSION="0001-scmversion.patch"
 base=""
 tree=""
 cl_commit=""
@@ -79,7 +81,7 @@ generate_new_squash() {
 
   info "Generating new squash..."
   git diff --full-index "${base}" FETCH_HEAD > \
-    "${EBUILD_DIR}/files/${FLAGS_board}-tot.patch"
+    "${EBUILD_DIR}/files/${TOT_SQUASH}"
 
   popd 1>/dev/null || die "Couldn't popd"
 }
@@ -123,7 +125,7 @@ update_ebuild() {
 update_scmversion() {
   info "Updating .scmversion..."
 
-  cat > "${EBUILD_DIR}/files/scmversion.patch" <<EOF
+  cat > "${EBUILD_DIR}/files/${SCMVERSION}" <<EOF
 diff --git a/.scmversion b/.scmversion
 new file mode 100644
 index 000000000000..aabbccddeeff
@@ -140,8 +142,8 @@ commit_change() {
   pushd "${EBUILD_DIR}" 1>/dev/null || die "Couldn't pushd ${EBUILD_DIR}"
 
   git add "${EBUILD_DIR}/${ebuild}"
-  git add "${EBUILD_DIR}/files/${FLAGS_board}-tot.patch"
-  git add "${EBUILD_DIR}/files/scmversion.patch"
+  git add "${EBUILD_DIR}/files/${TOT_SQUASH}"
+  git add "${EBUILD_DIR}/files/${SCMVERSION}"
 
   git commit --edit -m "$(cat <<EOM
 ${FLAGS_board}: sys-kernel: Update to private kernel ToT #${FLAGS_ps}
@@ -162,7 +164,7 @@ The squash is created by \`$(basename "$0")\` which does the following:
 
 Diff file is generated via:
 
-  git diff --full-index ${base:0:12} ${cl_commit} > ${FLAGS_board}-tot.patch
+  git diff --full-index ${base:0:12} ${cl_commit} > ${TOT_SQUASH}
 
 Change notes:
   <TODO: Add summary for major changes, or ignore this on trivial ToT rebase>
