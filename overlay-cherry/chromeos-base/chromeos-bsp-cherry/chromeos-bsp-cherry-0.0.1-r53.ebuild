@@ -19,7 +19,7 @@ or portage actions."
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="-* arm64 arm"
-IUSE="cheets cherry64"
+IUSE="cheets cherry64 cherry-kernelnext"
 
 # Add dependencies on other ebuilds from within this board overlay
 RDEPEND="
@@ -37,6 +37,8 @@ DEPEND="
 src_install() {
 	if use cherry64; then
 		doappid "{3A965B03-9B6D-4111-BD71-53C44B38849B}" "CHROMEBOOK"
+	elif use cherry-kernelnext; then
+		doappid "{09A2C964-41CB-4201-BDAC-B2BBD57736CD}" "CHROMEBOOK"
 	else
 		doappid "{D756EC88-0BC0-4875-ABFC-2B67369526AC}" "CHROMEBOOK"
 	fi
