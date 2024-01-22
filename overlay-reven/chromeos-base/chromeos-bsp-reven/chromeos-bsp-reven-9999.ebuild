@@ -15,6 +15,8 @@ LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="~*"
 
+# TODO(b/321687359), remove once root issue is resolved.
+DEPEND="sys-apps/busybox"
 RDEPEND="
 	!<chromeos-base/gestures-conf-0.0.2
 	!<chromeos-base/chromeos-bsp-reven-private-0.0.1-r20
