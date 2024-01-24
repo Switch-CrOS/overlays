@@ -14,7 +14,7 @@ index 1dfb6c4346956009435155b0b4bfde0c56192fe6..325999819bd2633e3c46d5a2dbe4b2c7
            - enum:
                - mediatek,mt8192-evb
 diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mmsys.yaml b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mmsys.yaml
-index d1410345ef180c5df9597f6e506fdd10f68d8dd9..8180199d65731580d41a760857f6c455d66bf0b7 100644
+index 4e31e396711fafc09f01ba96a6c07c9f1f1779cd..6e51cf1f38ddf1439d61c0f2209cd5d3318859f1 100644
 --- a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mmsys.yaml
 +++ b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mmsys.yaml
 @@ -32,6 +32,7 @@ properties:
@@ -22,9 +22,9 @@ index d1410345ef180c5df9597f6e506fdd10f68d8dd9..8180199d65731580d41a760857f6c455
                - mediatek,mt8186-mmsys
                - mediatek,mt8188-vdosys0
 +              - mediatek,mt8188-vdosys1
+               - mediatek,mt8188-vppsys0
+               - mediatek,mt8188-vppsys1
                - mediatek,mt8192-mmsys
-               - mediatek,mt8195-vdosys1
-               - mediatek,mt8195-vppsys0
 diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,pericfg.yaml b/Documentation/devicetree/bindings/arm/mediatek/mediatek,pericfg.yaml
 index ef62cbb13590402354a19bdb8da22702ae6bf977..cd825949412a60cdbf3e2762c00fa5808c1f360e 100644
 --- a/Documentation/devicetree/bindings/arm/mediatek/mediatek,pericfg.yaml
@@ -1381,10 +1381,10 @@ index 0000000000000000000000000000000000000000..7016f743b308ded7003ba4a753789759
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8188-geralt-ciri.dtsi b/arch/arm64/boot/dts/mediatek/mt8188-geralt-ciri.dtsi
 new file mode 100644
-index 0000000000000000000000000000000000000000..1053369bda9784a44c92150391c2850e8a5ba587
+index 0000000000000000000000000000000000000000..d1a7b3e57c58bcb57d1d827b86b840977c295b49
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt8188-geralt-ciri.dtsi
-@@ -0,0 +1,391 @@
+@@ -0,0 +1,396 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
 +/*
 + * Copyright 2023 Google LLC
@@ -1451,6 +1451,11 @@ index 0000000000000000000000000000000000000000..1053369bda9784a44c92150391c2850e
 +	sound-name-prefix = "Front Right";
 +	maxim,dsm_param_name = "dsm_param.bin";
 +	status = "okay";
++};
++
++&mipi_tx_config0 {
++	status = "okay";
++	drive-strength-microamp = <5200>;
 +};
 +
 +&i2c2 {
@@ -6527,10 +6532,10 @@ index 7e752a6dc8bc4f863ad25bb7d8cab58c1349b0c1..43f513b9db1f00b21025404a2ac4469c
  			clocks = <&ccusys CLK_CCU_LARB18>,
  				 <&ccusys CLK_CCU_LARB18>;
  			clock-names = "apb", "smi";
-diff --git a/chromeos/config/chromeos/arm64/chromiumos-arm64.flavour.config b/chromeos/config/chromeos/arm64/chromiumos-arm64.flavour.config
+diff --git a/chromeos/config/chromeos/arm64/chromiumos-arm64-generic.flavour.config b/chromeos/config/chromeos/arm64/chromiumos-arm64-generic.flavour.config
 index 36975105058db864ad94397f96af284ded83734a..8b50a0c9ae4b1d30a6a2ff82d7e4f5089a3bfe96 100644
---- a/chromeos/config/chromeos/arm64/chromiumos-arm64.flavour.config
-+++ b/chromeos/config/chromeos/arm64/chromiumos-arm64.flavour.config
+--- a/chromeos/config/chromeos/arm64/chromiumos-arm64-generic.flavour.config
++++ b/chromeos/config/chromeos/arm64/chromiumos-arm64-generic.flavour.config
 @@ -112,6 +112,7 @@ CONFIG_MSM_GCC_8916=y
  CONFIG_MT7921E=m
  CONFIG_MT7921S=m
@@ -6607,236 +6612,6 @@ index 84d2fbc07ec5c779e257d442c8a11dcbe17a8662..7933718ce05d39c8e4513beadc89bc02
  CONFIG_TMPFS=y
  CONFIG_TOUCHSCREEN_MELFAS_MIP4=y
  CONFIG_TYPEC=y
-diff --git a/drivers/clk/mediatek/clk-mt8188-topckgen.c b/drivers/clk/mediatek/clk-mt8188-topckgen.c
-index 8699b87b130de6a3d9c4363b720d50f8287306ac..75a4e5ea025273296bf85e0fc539059269753b69 100644
---- a/drivers/clk/mediatek/clk-mt8188-topckgen.c
-+++ b/drivers/clk/mediatek/clk-mt8188-topckgen.c
-@@ -475,29 +475,28 @@ static const char * const sspm_parents[] = {
- 	"mainpll_d4_d2"
- };
- 
-+/*
-+ * Both DP/eDP can be parented to TVDPLL1 and TVDPLL2, but we force using
-+ * TVDPLL1 on eDP and TVDPLL2 on DP to avoid changing the "other" PLL rate
-+ * in dual output case, which would lead to corruption of functionality loss.
-+ */
- static const char * const dp_parents[] = {
- 	"clk26m",
--	"tvdpll1_d2",
- 	"tvdpll2_d2",
--	"tvdpll1_d4",
- 	"tvdpll2_d4",
--	"tvdpll1_d8",
- 	"tvdpll2_d8",
--	"tvdpll1_d16",
- 	"tvdpll2_d16"
- };
-+static const u8 dp_parents_idx[] = { 0, 2, 4, 6, 8 };
- 
- static const char * const edp_parents[] = {
- 	"clk26m",
- 	"tvdpll1_d2",
--	"tvdpll2_d2",
- 	"tvdpll1_d4",
--	"tvdpll2_d4",
- 	"tvdpll1_d8",
--	"tvdpll2_d8",
--	"tvdpll1_d16",
--	"tvdpll2_d16"
-+	"tvdpll1_d16"
- };
-+static const u8 edp_parents_idx[] = { 0, 1, 3, 5, 7 };
- 
- static const char * const dpi_parents[] = {
- 	"clk26m",
-@@ -1038,10 +1037,12 @@ static const struct mtk_mux top_mtk_muxes[] = {
- 	MUX_GATE_CLR_SET_UPD(CLK_TOP_SSPM, "top_sspm",
- 			     sspm_parents, 0x080, 0x084, 0x088, 24, 4, 31, 0x08, 3),
- 	/* CLK_CFG_9 */
--	MUX_GATE_CLR_SET_UPD(CLK_TOP_DP, "top_dp",
--			     dp_parents, 0x08C, 0x090, 0x094, 0, 4, 7, 0x08, 4),
--	MUX_GATE_CLR_SET_UPD(CLK_TOP_EDP, "top_edp",
--			     edp_parents, 0x08C, 0x090, 0x094, 8, 4, 15, 0x08, 5),
-+	MUX_GATE_CLR_SET_UPD_INDEXED(CLK_TOP_DP, "top_dp",
-+				     dp_parents, dp_parents_idx, 0x08C, 0x090, 0x094,
-+				     0, 4, 7, 0x08, 4),
-+	MUX_GATE_CLR_SET_UPD_INDEXED(CLK_TOP_EDP, "top_edp",
-+				     edp_parents, edp_parents_idx, 0x08C, 0x090, 0x094,
-+				     8, 4, 15, 0x08, 5),
- 	MUX_GATE_CLR_SET_UPD(CLK_TOP_DPI, "top_dpi",
- 			     dpi_parents, 0x08C, 0x090, 0x094, 16, 4, 23, 0x08, 6),
- 	MUX_GATE_CLR_SET_UPD(CLK_TOP_DISP_PWM0, "top_disp_pwm0",
-diff --git a/drivers/clk/mediatek/clk-mt8195-topckgen.c b/drivers/clk/mediatek/clk-mt8195-topckgen.c
-index f4b3d8ba9ff4f63ce0ad96b1acbacd5afe68775e..6013c504590bcb55f49be7ab784036907ee7b831 100644
---- a/drivers/clk/mediatek/clk-mt8195-topckgen.c
-+++ b/drivers/clk/mediatek/clk-mt8195-topckgen.c
-@@ -415,17 +415,28 @@ static const char * const pwrmcu_parents[] = {
- 	"mainpll_d4_d2"
- };
- 
-+/*
-+ * Both DP/eDP can be parented to TVDPLL1 and TVDPLL2, but we force using
-+ * TVDPLL1 on eDP and TVDPLL2 on DP to avoid changing the "other" PLL rate
-+ * in dual output case, which would lead to corruption of functionality loss.
-+ */
- static const char * const dp_parents[] = {
- 	"clk26m",
--	"tvdpll1_d2",
- 	"tvdpll2_d2",
--	"tvdpll1_d4",
- 	"tvdpll2_d4",
--	"tvdpll1_d8",
- 	"tvdpll2_d8",
--	"tvdpll1_d16",
- 	"tvdpll2_d16"
- };
-+static const u8 dp_parents_idx[] = { 0, 2, 4, 6, 8 };
-+
-+static const char * const edp_parents[] = {
-+	"clk26m",
-+	"tvdpll1_d2",
-+	"tvdpll1_d4",
-+	"tvdpll1_d8",
-+	"tvdpll1_d16"
-+};
-+static const u8 edp_parents_idx[] = { 0, 1, 3, 5, 7 };
- 
- static const char * const disp_pwm_parents[] = {
- 	"clk26m",
-@@ -957,11 +968,11 @@ static const struct mtk_mux top_mtk_muxes[] = {
- 	MUX_GATE_CLR_SET_UPD_FLAGS(CLK_TOP_PWRMCU, "top_pwrmcu",
- 		pwrmcu_parents, 0x08C, 0x090, 0x094, 16, 3, 23, 0x08, 6,
- 		CLK_IS_CRITICAL | CLK_SET_RATE_PARENT),
--	MUX_GATE_CLR_SET_UPD(CLK_TOP_DP, "top_dp",
--		dp_parents, 0x08C, 0x090, 0x094, 24, 4, 31, 0x08, 7),
-+	MUX_GATE_CLR_SET_UPD_INDEXED(CLK_TOP_DP, "top_dp",
-+		dp_parents, dp_parents_idx, 0x08C, 0x090, 0x094, 24, 4, 31, 0x08, 7),
- 	/* CLK_CFG_10 */
--	MUX_GATE_CLR_SET_UPD(CLK_TOP_EDP, "top_edp",
--		dp_parents, 0x098, 0x09C, 0x0A0, 0, 4, 7, 0x08, 8),
-+	MUX_GATE_CLR_SET_UPD_INDEXED(CLK_TOP_EDP, "top_edp",
-+		edp_parents, edp_parents_idx, 0x098, 0x09C, 0x0A0, 0, 4, 7, 0x08, 8),
- 	MUX_GATE_CLR_SET_UPD(CLK_TOP_DPI, "top_dpi",
- 		dp_parents, 0x098, 0x09C, 0x0A0, 8, 4, 15, 0x08, 9),
- 	MUX_GATE_CLR_SET_UPD(CLK_TOP_DISP_PWM0, "top_disp_pwm0",
-diff --git a/drivers/clk/mediatek/clk-mux.c b/drivers/clk/mediatek/clk-mux.c
-index c93bc7f926e5d47956aecd516bff58f6ce726139..60990296450bbb46f262fd1bc9effa4d13758acb 100644
---- a/drivers/clk/mediatek/clk-mux.c
-+++ b/drivers/clk/mediatek/clk-mux.c
-@@ -89,6 +89,17 @@ static u8 mtk_clk_mux_get_parent(struct clk_hw *hw)
- 	regmap_read(mux->regmap, mux->data->mux_ofs, &val);
- 	val = (val >> mux->data->mux_shift) & mask;
- 
-+	if (mux->data->parent_index) {
-+		int i;
-+
-+		for (i = 0; i < mux->data->num_parents; i++)
-+			if (mux->data->parent_index[i] == val)
-+				return i;
-+
-+		/* Not found: return an impossible index to generate error */
-+		return mux->data->num_parents + 1;
-+	}
-+
- 	return val;
- }
- 
-@@ -104,6 +115,9 @@ static int mtk_clk_mux_set_parent_setclr_lock(struct clk_hw *hw, u8 index)
- 	else
- 		__acquire(mux->lock);
- 
-+	if (mux->data->parent_index)
-+		index = mux->data->parent_index[index];
-+
- 	regmap_read(mux->regmap, mux->data->mux_ofs, &orig);
- 	val = (orig & ~(mask << mux->data->mux_shift))
- 			| (index << mux->data->mux_shift);
-diff --git a/drivers/clk/mediatek/clk-mux.h b/drivers/clk/mediatek/clk-mux.h
-index 7ecb963b0ec6880e52466248e1832eb25d9eef41..943ad1d7ce4bed5c6b6e644fe368393b7eebbd17 100644
---- a/drivers/clk/mediatek/clk-mux.h
-+++ b/drivers/clk/mediatek/clk-mux.h
-@@ -21,6 +21,7 @@ struct mtk_mux {
- 	int id;
- 	const char *name;
- 	const char * const *parent_names;
-+	const u8 *parent_index;
- 	unsigned int flags;
- 
- 	u32 mux_ofs;
-@@ -37,9 +38,10 @@ struct mtk_mux {
- 	signed char num_parents;
- };
- 
--#define GATE_CLR_SET_UPD_FLAGS(_id, _name, _parents, _mux_ofs,		\
--			_mux_set_ofs, _mux_clr_ofs, _shift, _width,	\
--			_gate, _upd_ofs, _upd, _flags, _ops) {		\
-+#define __GATE_CLR_SET_UPD_FLAGS(_id, _name, _parents, _paridx,		\
-+			 _num_parents, _mux_ofs, _mux_set_ofs,		\
-+			 _mux_clr_ofs, _shift, _width, _gate, _upd_ofs,	\
-+			 _upd, _flags, _ops) {				\
- 		.id = _id,						\
- 		.name = _name,						\
- 		.mux_ofs = _mux_ofs,					\
-@@ -51,11 +53,28 @@ struct mtk_mux {
- 		.gate_shift = _gate,					\
- 		.upd_shift = _upd,					\
- 		.parent_names = _parents,				\
--		.num_parents = ARRAY_SIZE(_parents),			\
-+		.parent_index = _paridx,				\
-+		.num_parents = _num_parents,				\
- 		.flags = _flags,					\
- 		.ops = &_ops,						\
- 	}
- 
-+#define GATE_CLR_SET_UPD_FLAGS(_id, _name, _parents, _mux_ofs,		\
-+			_mux_set_ofs, _mux_clr_ofs, _shift, _width,	\
-+			_gate, _upd_ofs, _upd, _flags, _ops)		\
-+		__GATE_CLR_SET_UPD_FLAGS(_id, _name, _parents,		\
-+			NULL, ARRAY_SIZE(_parents), _mux_ofs,		\
-+			_mux_set_ofs, _mux_clr_ofs, _shift, _width,	\
-+			_gate, _upd_ofs, _upd, _flags, _ops)		\
-+
-+#define GATE_CLR_SET_UPD_FLAGS_INDEXED(_id, _name, _parents, _paridx,	\
-+			 _mux_ofs, _mux_set_ofs, _mux_clr_ofs, _shift,	\
-+			 _width, _gate, _upd_ofs, _upd, _flags, _ops)	\
-+		__GATE_CLR_SET_UPD_FLAGS(_id, _name, _parents,		\
-+			_paridx, ARRAY_SIZE(_paridx), _mux_ofs,		\
-+			_mux_set_ofs, _mux_clr_ofs, _shift, _width,	\
-+			_gate, _upd_ofs, _upd, _flags, _ops)		\
-+
- extern const struct clk_ops mtk_mux_clr_set_upd_ops;
- extern const struct clk_ops mtk_mux_gate_clr_set_upd_ops;
- 
-@@ -67,6 +86,14 @@ extern const struct clk_ops mtk_mux_gate_clr_set_upd_ops;
- 			_gate, _upd_ofs, _upd, _flags,			\
- 			mtk_mux_gate_clr_set_upd_ops)
- 
-+#define MUX_GATE_CLR_SET_UPD_FLAGS_INDEXED(_id, _name, _parents,	\
-+			_paridx, _mux_ofs, _mux_set_ofs, _mux_clr_ofs,	\
-+			_shift, _width, _gate, _upd_ofs, _upd, _flags)	\
-+		GATE_CLR_SET_UPD_FLAGS_INDEXED(_id, _name, _parents,	\
-+			_paridx, _mux_ofs, _mux_set_ofs, _mux_clr_ofs,	\
-+			_shift, _width, _gate, _upd_ofs, _upd, _flags,	\
-+			mtk_mux_gate_clr_set_upd_ops)
-+
- #define MUX_GATE_CLR_SET_UPD(_id, _name, _parents, _mux_ofs,		\
- 			_mux_set_ofs, _mux_clr_ofs, _shift, _width,	\
- 			_gate, _upd_ofs, _upd)				\
-@@ -75,6 +102,14 @@ extern const struct clk_ops mtk_mux_gate_clr_set_upd_ops;
- 			_width, _gate, _upd_ofs, _upd,			\
- 			CLK_SET_RATE_PARENT)
- 
-+#define MUX_GATE_CLR_SET_UPD_INDEXED(_id, _name, _parents, _paridx,	\
-+			_mux_ofs, _mux_set_ofs, _mux_clr_ofs, _shift,	\
-+			_width, _gate, _upd_ofs, _upd)			\
-+		MUX_GATE_CLR_SET_UPD_FLAGS_INDEXED(_id, _name,		\
-+			_parents, _paridx, _mux_ofs, _mux_set_ofs,	\
-+			_mux_clr_ofs, _shift, _width, _gate, _upd_ofs,	\
-+			_upd, CLK_SET_RATE_PARENT)
-+
- #define MUX_CLR_SET_UPD(_id, _name, _parents, _mux_ofs,			\
- 			_mux_set_ofs, _mux_clr_ofs, _shift, _width,	\
- 			_upd_ofs, _upd)					\
 diff --git a/drivers/dma-buf/dma-heap.c b/drivers/dma-buf/dma-heap.c
 index 59d158873f4cb451b5a5db4f0691e25d6a56909c..0d84c7f268781a2282b7fa1875568eee9b497910 100644
 --- a/drivers/dma-buf/dma-heap.c
@@ -16277,7 +16052,7 @@ index 9897b16e75b4473be2c6e55d53984368cebfa836..b09381004efd5aa3d33c1599e2266eb5
  };
  
 diff --git a/drivers/media/platform/mediatek/jpeg/mtk_jpeg_core.c b/drivers/media/platform/mediatek/jpeg/mtk_jpeg_core.c
-index 7194f88edc0fb41c037b7fe91a80f5df6b755b03..a6ab85d995f8acf35c576d8dbf7573bb5a040ccf 100644
+index c3456c700c07e2effe4e5673c78b88b62be6e9c5..871217b0875ebf782c5eac6c38f80558f2936968 100644
 --- a/drivers/media/platform/mediatek/jpeg/mtk_jpeg_core.c
 +++ b/drivers/media/platform/mediatek/jpeg/mtk_jpeg_core.c
 @@ -1031,6 +1031,7 @@ static void mtk_jpeg_dec_device_run(void *priv)
@@ -16303,7 +16078,7 @@ index 7194f88edc0fb41c037b7fe91a80f5df6b755b03..a6ab85d995f8acf35c576d8dbf7573bb
  	if (!jpeg->variant->multi_core) {
  		ret = mtk_jpeg_single_core_init(pdev, jpeg);
  		if (ret) {
-@@ -1566,7 +1575,8 @@ static irqreturn_t mtk_jpeg_enc_done(struct mtk_jpeg_dev *jpeg)
+@@ -1565,7 +1574,8 @@ static irqreturn_t mtk_jpeg_enc_done(struct mtk_jpeg_dev *jpeg)
  	src_buf = v4l2_m2m_src_buf_remove(ctx->fh.m2m_ctx);
  	dst_buf = v4l2_m2m_dst_buf_remove(ctx->fh.m2m_ctx);
  
@@ -16313,7 +16088,7 @@ index 7194f88edc0fb41c037b7fe91a80f5df6b755b03..a6ab85d995f8acf35c576d8dbf7573bb
  	vb2_set_plane_payload(&dst_buf->vb2_buf, 0, result_size);
  
  	buf_state = VB2_BUF_STATE_DONE;
-@@ -1766,6 +1776,7 @@ static void mtk_jpegdec_worker(struct work_struct *work)
+@@ -1765,6 +1775,7 @@ static void mtk_jpegdec_worker(struct work_struct *work)
  	ctx->total_frame_num++;
  	mtk_jpeg_dec_reset(comp_jpeg[hw_id]->reg_base);
  	mtk_jpeg_dec_set_config(comp_jpeg[hw_id]->reg_base,
@@ -18778,10 +18553,10 @@ index 0000000000000000000000000000000000000000..3aa7dae5c22fbdd22dd9fea0ae6d59e7
 +MODULE_DESCRIPTION("MediaTek Fsource Driver");
 +MODULE_LICENSE("GPL v2");
 diff --git a/drivers/soc/mediatek/mtk-mmsys.c b/drivers/soc/mediatek/mtk-mmsys.c
-index 9619faa796e8fee95324ee9f0b79d435ce4ec432..afb2c40c85c15965ebd92693df940351a0eff2e5 100644
+index 1f6b65658eed41cd86b4f761f12e4d1e2c9454b2..afb2c40c85c15965ebd92693df940351a0eff2e5 100644
 --- a/drivers/soc/mediatek/mtk-mmsys.c
 +++ b/drivers/soc/mediatek/mtk-mmsys.c
-@@ -87,6 +87,29 @@ static const struct mtk_mmsys_driver_data mt8188_vdosys0_driver_data = {
+@@ -87,6 +87,19 @@ static const struct mtk_mmsys_driver_data mt8188_vdosys0_driver_data = {
  	.clk_driver = "clk-mt8188-vdo0",
  	.routes = mmsys_mt8188_routing_table,
  	.num_routes = ARRAY_SIZE(mmsys_mt8188_routing_table),
@@ -18798,20 +18573,10 @@ index 9619faa796e8fee95324ee9f0b79d435ce4ec432..afb2c40c85c15965ebd92693df940351
 +	.rst_tb = mmsys_mt8188_vdo1_rst_tb,
 +	.num_resets = ARRAY_SIZE(mmsys_mt8188_vdo1_rst_tb),
 +	.vsync_len = 1,
-+};
-+
-+static const struct mtk_mmsys_driver_data mt8188_vppsys0_driver_data = {
-+	.clk_driver = "clk-mt8188-vpp0",
-+	.is_vppsys = true,
-+};
-+
-+static const struct mtk_mmsys_driver_data mt8188_vppsys1_driver_data = {
-+	.clk_driver = "clk-mt8188-vpp1",
-+	.is_vppsys = true,
  };
  
- static const struct mtk_mmsys_driver_data mt8192_mmsys_driver_data = {
-@@ -169,6 +192,10 @@ void mtk_mmsys_ddp_connect(struct device *dev,
+ static const struct mtk_mmsys_driver_data mt8188_vppsys0_driver_data = {
+@@ -179,6 +192,10 @@ void mtk_mmsys_ddp_connect(struct device *dev,
  		if (cur == routes[i].from_comp && next == routes[i].to_comp)
  			mtk_mmsys_update_bits(mmsys, routes[i].addr, routes[i].mask,
  					      routes[i].val, NULL);
@@ -18822,7 +18587,7 @@ index 9619faa796e8fee95324ee9f0b79d435ce4ec432..afb2c40c85c15965ebd92693df940351
  }
  EXPORT_SYMBOL_GPL(mtk_mmsys_ddp_connect);
  
-@@ -302,6 +329,15 @@ static int mtk_mmsys_reset_update(struct reset_controller_dev *rcdev, unsigned l
+@@ -312,6 +329,15 @@ static int mtk_mmsys_reset_update(struct reset_controller_dev *rcdev, unsigned l
  	u32 offset;
  	u32 reg;
  
@@ -18838,16 +18603,14 @@ index 9619faa796e8fee95324ee9f0b79d435ce4ec432..afb2c40c85c15965ebd92693df940351
  	offset = (id / MMSYS_SW_RESET_PER_REG) * sizeof(u32);
  	id = id % MMSYS_SW_RESET_PER_REG;
  	reg = mmsys->data->sw0_rst_offset + offset;
-@@ -431,6 +467,9 @@ static const struct of_device_id of_match_mtk_mmsys[] = {
+@@ -441,6 +467,7 @@ static const struct of_device_id of_match_mtk_mmsys[] = {
  	{ .compatible = "mediatek,mt8183-mmsys", .data = &mt8183_mmsys_driver_data },
  	{ .compatible = "mediatek,mt8186-mmsys", .data = &mt8186_mmsys_driver_data },
  	{ .compatible = "mediatek,mt8188-vdosys0", .data = &mt8188_vdosys0_driver_data },
 +	{ .compatible = "mediatek,mt8188-vdosys1", .data = &mt8188_vdosys1_driver_data },
-+	{ .compatible = "mediatek,mt8188-vppsys0", .data = &mt8188_vppsys0_driver_data },
-+	{ .compatible = "mediatek,mt8188-vppsys1", .data = &mt8188_vppsys1_driver_data },
+ 	{ .compatible = "mediatek,mt8188-vppsys0", .data = &mt8188_vppsys0_driver_data },
+ 	{ .compatible = "mediatek,mt8188-vppsys1", .data = &mt8188_vppsys1_driver_data },
  	{ .compatible = "mediatek,mt8192-mmsys", .data = &mt8192_mmsys_driver_data },
- 	/* "mediatek,mt8195-mmsys" compatible is deprecated */
- 	{ .compatible = "mediatek,mt8195-mmsys", .data = &mt8195_vdosys0_driver_data },
 diff --git a/drivers/soc/mediatek/mtk-mmsys.h b/drivers/soc/mediatek/mtk-mmsys.h
 index 6725403d2e3ac4a91956c07276814445588fff3e..d370192737ca45ed480f2167dfb1ac94dd16baad 100644
 --- a/drivers/soc/mediatek/mtk-mmsys.h
@@ -25256,3 +25019,492 @@ index 000eb1cf68b7a7bb5e151d023238281ceb400c8a..22a457b798a7b8bd07a8d6ca8fcc881e
 +void mtk_smi_larb_clamp(struct device *larbdev, bool on);
 +
  #endif
+diff --git a/sound/soc/codecs/es8326.c b/sound/soc/codecs/es8326.c
+old mode 100755
+new mode 100644
+index 28522a792d4b897c08f3773b17aebcd3da843df0..8a905eaebbc924f528bf52b88f8a674c9157b64f
+--- a/sound/soc/codecs/es8326.c
++++ b/sound/soc/codecs/es8326.c
+@@ -45,6 +45,148 @@ struct es8326_priv {
+ 	int jack_remove_retry;
+ };
+ 
++static int es8326_crosstalk1_get(struct snd_kcontrol *kcontrol,
++		struct snd_ctl_elem_value *ucontrol)
++{
++	struct snd_soc_component *component = snd_kcontrol_chip(kcontrol);
++	struct es8326_priv *es8326 = snd_soc_component_get_drvdata(component);
++	unsigned int crosstalk_h, crosstalk_l;
++	unsigned int crosstalk;
++
++	regmap_read(es8326->regmap, ES8326_DAC_RAMPRATE, &crosstalk_h);
++	regmap_read(es8326->regmap, ES8326_DAC_CROSSTALK, &crosstalk_l);
++	crosstalk_h &= 0x20;
++	crosstalk_l &= 0xf0;
++	crosstalk = crosstalk_h >> 1 | crosstalk_l >> 4;
++	ucontrol->value.integer.value[0] = crosstalk;
++
++	return 0;
++}
++
++static int es8326_crosstalk1_set(struct snd_kcontrol *kcontrol,
++		struct snd_ctl_elem_value *ucontrol)
++{
++	struct snd_soc_component *component = snd_kcontrol_chip(kcontrol);
++	struct es8326_priv *es8326 = snd_soc_component_get_drvdata(component);
++	unsigned int crosstalk_h, crosstalk_l;
++	unsigned int crosstalk;
++
++	crosstalk = ucontrol->value.integer.value[0];
++	regmap_read(es8326->regmap, ES8326_DAC_CROSSTALK, &crosstalk_l);
++	crosstalk_h = (crosstalk & 0x10) << 1;
++	crosstalk_l &= 0x0f;
++	crosstalk_l |= (crosstalk & 0x0f) << 4;
++	regmap_update_bits(es8326->regmap, ES8326_DAC_RAMPRATE,
++			0x20, crosstalk_h);
++	regmap_write(es8326->regmap, ES8326_DAC_CROSSTALK, crosstalk_l);
++
++	return 0;
++}
++
++static int es8326_crosstalk2_get(struct snd_kcontrol *kcontrol,
++		struct snd_ctl_elem_value *ucontrol)
++{
++	struct snd_soc_component *component = snd_kcontrol_chip(kcontrol);
++	struct es8326_priv *es8326 = snd_soc_component_get_drvdata(component);
++	unsigned int crosstalk_h, crosstalk_l;
++	unsigned int crosstalk;
++
++	regmap_read(es8326->regmap, ES8326_DAC_RAMPRATE, &crosstalk_h);
++	regmap_read(es8326->regmap, ES8326_DAC_CROSSTALK, &crosstalk_l);
++	crosstalk_h &= 0x10;
++	crosstalk_l &= 0x0f;
++	crosstalk = crosstalk_h  | crosstalk_l;
++	ucontrol->value.integer.value[0] = crosstalk;
++
++	return 0;
++}
++
++static int es8326_crosstalk2_set(struct snd_kcontrol *kcontrol,
++		struct snd_ctl_elem_value *ucontrol)
++{
++	struct snd_soc_component *component = snd_kcontrol_chip(kcontrol);
++	struct es8326_priv *es8326 = snd_soc_component_get_drvdata(component);
++	unsigned int crosstalk_h, crosstalk_l;
++	unsigned int crosstalk;
++
++	crosstalk = ucontrol->value.integer.value[0];
++	regmap_read(es8326->regmap, ES8326_DAC_CROSSTALK, &crosstalk_l);
++	crosstalk_h = crosstalk & 0x10;
++	crosstalk_l &= 0xf0;
++	crosstalk_l |= crosstalk & 0x0f;
++	regmap_update_bits(es8326->regmap, ES8326_DAC_RAMPRATE,
++			0x10, crosstalk_h);
++	regmap_write(es8326->regmap, ES8326_DAC_CROSSTALK, crosstalk_l);
++
++	return 0;
++}
++
++static int es8326_hplvol_get(struct snd_kcontrol *kcontrol,
++		struct snd_ctl_elem_value *ucontrol)
++{
++	struct snd_soc_component *component = snd_kcontrol_chip(kcontrol);
++	struct es8326_priv *es8326 = snd_soc_component_get_drvdata(component);
++	unsigned int hp_vol;
++
++	regmap_read(es8326->regmap, ES8326_HP_VOL, &hp_vol);
++	hp_vol &= 0x70;
++	ucontrol->value.integer.value[0] = hp_vol >> 4;
++
++	return 0;
++}
++
++static int es8326_hplvol_set(struct snd_kcontrol *kcontrol,
++		struct snd_ctl_elem_value *ucontrol)
++{
++	struct snd_soc_component *component = snd_kcontrol_chip(kcontrol);
++	struct es8326_priv *es8326 = snd_soc_component_get_drvdata(component);
++	unsigned int hp_vol;
++
++	if (ucontrol->value.integer.value[0] == 3) {
++		dev_dbg(component->dev, "HPL_VOL does not change");
++		return 0;
++	}
++	regmap_read(es8326->regmap, ES8326_HP_VOL, &hp_vol);
++	hp_vol &= 0x8F;
++	hp_vol |= ucontrol->value.integer.value[0] << 4;
++	regmap_write(es8326->regmap, ES8326_HP_VOL, hp_vol);
++
++	return 0;
++}
++
++static int es8326_hprvol_get(struct snd_kcontrol *kcontrol,
++		struct snd_ctl_elem_value *ucontrol)
++{
++	struct snd_soc_component *component = snd_kcontrol_chip(kcontrol);
++	struct es8326_priv *es8326 = snd_soc_component_get_drvdata(component);
++	unsigned int hp_vol;
++
++	regmap_read(es8326->regmap, ES8326_HP_VOL, &hp_vol);
++	hp_vol &= 0x07;
++	ucontrol->value.integer.value[0] = hp_vol;
++
++	return 0;
++}
++
++static int es8326_hprvol_set(struct snd_kcontrol *kcontrol,
++		struct snd_ctl_elem_value *ucontrol)
++{
++	struct snd_soc_component *component = snd_kcontrol_chip(kcontrol);
++	struct es8326_priv *es8326 = snd_soc_component_get_drvdata(component);
++	unsigned int hp_vol;
++
++	if (ucontrol->value.integer.value[0] == 3) {
++		dev_dbg(component->dev, "HPR_VOL does not change");
++		return 0;
++	}
++	regmap_read(es8326->regmap, ES8326_HP_VOL, &hp_vol);
++	hp_vol &= 0xF8;
++	hp_vol |= ucontrol->value.integer.value[0];
++	regmap_write(es8326->regmap, ES8326_HP_VOL, hp_vol);
++
++	return 0;
++}
++
+ static const SNDRV_CTL_TLVD_DECLARE_DB_SCALE(dac_vol_tlv, -9550, 50, 0);
+ static const SNDRV_CTL_TLVD_DECLARE_DB_SCALE(adc_vol_tlv, -9550, 50, 0);
+ static const SNDRV_CTL_TLVD_DECLARE_DB_SCALE(adc_analog_pga_tlv, 0, 300, 0);
+@@ -75,15 +217,24 @@ static const char *const winsize[] = {
+ static const char *const dacpol_txt[] =	{
+ 	"Normal", "R Invert", "L Invert", "L + R Invert" };
+ 
++static const char *const hp_spkvol_switch[] = {
++	"HPVOL: HPL+HPL, SPKVOL: HPL+HPL",
++	"HPVOL: HPL+HPR, SPKVOL: HPL+HPR",
++	"HPVOL: HPL+HPL, SPKVOL: SPKL+SPKR",
++	"HPVOL: HPL+HPR, SPKVOL: SPKL+SPKR",
++};
++
+ static const struct soc_enum dacpol =
+ 	SOC_ENUM_SINGLE(ES8326_DAC_DSM, 4, 4, dacpol_txt);
+ static const struct soc_enum alc_winsize =
+ 	SOC_ENUM_SINGLE(ES8326_ADC_RAMPRATE, 4, 16, winsize);
+ static const struct soc_enum drc_winsize =
+ 	SOC_ENUM_SINGLE(ES8326_DRC_WINSIZE, 4, 16, winsize);
++static const struct soc_enum hpvol_spkvol_switch =
++	SOC_ENUM_SINGLE(ES8326_HP_MISC, 6, 4, hp_spkvol_switch);
+ 
+ static const struct snd_kcontrol_new es8326_snd_controls[] = {
+-	SOC_SINGLE_TLV("DAC Playback Volume", ES8326_DAC_VOL, 0, 0xbf, 0, dac_vol_tlv),
++	SOC_SINGLE_TLV("DAC Playback Volume", ES8326_DACL_VOL, 0, 0xbf, 0, dac_vol_tlv),
+ 	SOC_ENUM("Playback Polarity", dacpol),
+ 	SOC_SINGLE_TLV("DAC Ramp Rate", ES8326_DAC_RAMPRATE, 0, 0x0f, 0, softramp_rate),
+ 	SOC_SINGLE_TLV("DRC Recovery Level", ES8326_DRC_RECOVERY, 0, 4, 0, drc_recovery_tlv),
+@@ -102,6 +253,21 @@ static const struct snd_kcontrol_new es8326_snd_controls[] = {
+ 	SOC_SINGLE_TLV("ALC Capture Target Level", ES8326_ALC_LEVEL,
+ 			0, 0x0f, 0, drc_target_tlv),
+ 
++	SOC_SINGLE_EXT("CROSSTALK1", SND_SOC_NOPM, 0, 31, 0,
++			es8326_crosstalk1_get, es8326_crosstalk1_set),
++	SOC_SINGLE_EXT("CROSSTALK2", SND_SOC_NOPM, 0, 31, 0,
++			es8326_crosstalk2_get, es8326_crosstalk2_set),
++	SOC_SINGLE_EXT("HPL Volume", SND_SOC_NOPM, 0, 6, 0,
++			es8326_hplvol_get, es8326_hplvol_set),
++	SOC_SINGLE_EXT("HPR Volume", SND_SOC_NOPM, 0, 6, 0,
++			es8326_hprvol_get, es8326_hprvol_set),
++
++	SOC_SINGLE_TLV("HPL Playback Volume", ES8326_DACL_VOL, 0, 0xbf, 0, dac_vol_tlv),
++	SOC_SINGLE_TLV("HPR Playback Volume", ES8326_DACR_VOL, 0, 0xbf, 0, dac_vol_tlv),
++	SOC_SINGLE_TLV("SPKL Playback Volume", ES8326_SPKL_VOL, 0, 0xbf, 0, dac_vol_tlv),
++	SOC_SINGLE_TLV("SPKR Playback Volume", ES8326_SPKR_VOL, 0, 0xbf, 0, dac_vol_tlv),
++
++	SOC_ENUM("HPVol SPKVol switch", hpvol_spkvol_switch),
+ };
+ 
+ static const struct snd_soc_dapm_widget es8326_dapm_widgets[] = {
+@@ -117,12 +283,6 @@ static const struct snd_soc_dapm_widget es8326_dapm_widgets[] = {
+ 	SND_SOC_DAPM_AIF_OUT("I2S OUT", "I2S1 Capture", 0, SND_SOC_NOPM, 0, 0),
+ 	SND_SOC_DAPM_AIF_IN("I2S IN", "I2S1 Playback", 0, SND_SOC_NOPM, 0, 0),
+ 
+-	/* ADC Digital Mute */
+-	SND_SOC_DAPM_PGA("ADC L1", ES8326_ADC_MUTE, 0, 1, NULL, 0),
+-	SND_SOC_DAPM_PGA("ADC R1", ES8326_ADC_MUTE, 1, 1, NULL, 0),
+-	SND_SOC_DAPM_PGA("ADC L2", ES8326_ADC_MUTE, 2, 1, NULL, 0),
+-	SND_SOC_DAPM_PGA("ADC R2", ES8326_ADC_MUTE, 3, 1, NULL, 0),
+-
+ 	/* Analog Power Supply*/
+ 	SND_SOC_DAPM_DAC("Right DAC", NULL, ES8326_ANA_PDN, 0, 1),
+ 	SND_SOC_DAPM_DAC("Left DAC", NULL, ES8326_ANA_PDN, 1, 1),
+@@ -142,15 +302,10 @@ static const struct snd_soc_dapm_widget es8326_dapm_widgets[] = {
+ };
+ 
+ static const struct snd_soc_dapm_route es8326_dapm_routes[] = {
+-	{"ADC L1", NULL, "MIC1"},
+-	{"ADC R1", NULL, "MIC2"},
+-	{"ADC L2", NULL, "MIC3"},
+-	{"ADC R2", NULL, "MIC4"},
+-
+-	{"ADC L", NULL, "ADC L1"},
+-	{"ADC R", NULL, "ADC R1"},
+-	{"ADC L", NULL, "ADC L2"},
+-	{"ADC R", NULL, "ADC R2"},
++	{"ADC L", NULL, "MIC1"},
++	{"ADC R", NULL, "MIC2"},
++	{"ADC L", NULL, "MIC3"},
++	{"ADC R", NULL, "MIC4"},
+ 
+ 	{"I2S OUT", NULL, "ADC L"},
+ 	{"I2S OUT", NULL, "ADC R"},
+@@ -440,10 +595,16 @@ static int es8326_mute(struct snd_soc_dai *dai, int mute, int direction)
+ 	unsigned int offset_l, offset_r;
+ 
+ 	if (mute) {
+-		regmap_write(es8326->regmap, ES8326_HP_CAL, ES8326_HP_OFF);
+-		regmap_update_bits(es8326->regmap, ES8326_DAC_MUTE,
+-				ES8326_MUTE_MASK, ES8326_MUTE);
+-		regmap_write(es8326->regmap, ES8326_HP_DRIVER, 0xf0);
++		if (direction == SNDRV_PCM_STREAM_PLAYBACK) {
++			regmap_write(es8326->regmap, ES8326_HP_CAL, ES8326_HP_OFF);
++			regmap_update_bits(es8326->regmap, ES8326_DAC_MUTE,
++					ES8326_MUTE_MASK, ES8326_MUTE);
++			regmap_update_bits(es8326->regmap, ES8326_HP_DRIVER_REF,
++					0x30, 0x00);
++		} else {
++			regmap_update_bits(es8326->regmap,  ES8326_ADC_MUTE,
++					0x0F, 0x0F);
++		}
+ 	} else {
+ 		if (!es8326->calibrated) {
+ 			regmap_write(es8326->regmap, ES8326_HP_CAL, ES8326_HP_FORCE_CAL);
+@@ -456,11 +617,22 @@ static int es8326_mute(struct snd_soc_dai *dai, int mute, int direction)
+ 			regmap_write(es8326->regmap, ES8326_HPR_OFFSET_INI, offset_r);
+ 			es8326->calibrated = true;
+ 		}
+-		regmap_write(es8326->regmap, ES8326_HP_DRIVER, 0xa1);
+-		regmap_write(es8326->regmap, ES8326_HP_VOL, 0x91);
+-		regmap_write(es8326->regmap, ES8326_HP_CAL, ES8326_HP_ON);
+-		regmap_update_bits(es8326->regmap, ES8326_DAC_MUTE,
+-				ES8326_MUTE_MASK, ~(ES8326_MUTE));
++		if (direction == SNDRV_PCM_STREAM_PLAYBACK) {
++			regmap_update_bits(es8326->regmap, ES8326_DAC_DSM, 0x01, 0x01);
++			usleep_range(1000, 5000);
++			regmap_update_bits(es8326->regmap, ES8326_DAC_DSM, 0x01, 0x00);
++			usleep_range(1000, 5000);
++			regmap_update_bits(es8326->regmap, ES8326_HP_DRIVER_REF, 0x30, 0x20);
++			regmap_update_bits(es8326->regmap, ES8326_HP_DRIVER_REF, 0x30, 0x30);
++			regmap_write(es8326->regmap, ES8326_HP_DRIVER, 0xa1);
++			regmap_write(es8326->regmap, ES8326_HP_CAL, ES8326_HP_ON);
++			regmap_update_bits(es8326->regmap, ES8326_DAC_MUTE,
++					ES8326_MUTE_MASK, ~(ES8326_MUTE));
++		} else {
++			msleep(300);
++			regmap_update_bits(es8326->regmap,  ES8326_ADC_MUTE,
++					0x0F, 0x00);
++		}
+ 	}
+ 	return 0;
+ }
+@@ -477,23 +649,20 @@ static int es8326_set_bias_level(struct snd_soc_component *codec,
+ 		if (ret)
+ 			return ret;
+ 
+-		regmap_update_bits(es8326->regmap, ES8326_DAC_DSM, 0x01, 0x00);
++		regmap_update_bits(es8326->regmap, ES8326_RESET, 0x02, 0x02);
++		usleep_range(5000, 10000);
+ 		regmap_write(es8326->regmap, ES8326_INTOUT_IO, es8326->interrupt_clk);
+ 		regmap_write(es8326->regmap, ES8326_SDINOUT1_IO,
+ 			    (ES8326_IO_DMIC_CLK << ES8326_SDINOUT1_SHIFT));
+-		regmap_write(es8326->regmap, ES8326_VMIDSEL, 0x0E);
+ 		regmap_write(es8326->regmap, ES8326_PGA_PDN, 0x40);
+ 		regmap_write(es8326->regmap, ES8326_ANA_PDN, 0x00);
+ 		regmap_update_bits(es8326->regmap,  ES8326_CLK_CTL, 0x20, 0x20);
+-
+-		regmap_update_bits(es8326->regmap, ES8326_RESET,
+-				ES8326_CSM_ON, ES8326_CSM_ON);
++		regmap_update_bits(es8326->regmap, ES8326_RESET, 0x02, 0x00);
+ 		break;
+ 	case SND_SOC_BIAS_PREPARE:
+ 		break;
+ 	case SND_SOC_BIAS_STANDBY:
+ 		regmap_write(es8326->regmap, ES8326_ANA_PDN, 0x3b);
+-		regmap_write(es8326->regmap, ES8326_VMIDSEL, 0x00);
+ 		regmap_update_bits(es8326->regmap, ES8326_CLK_CTL, 0x20, 0x00);
+ 		regmap_write(es8326->regmap, ES8326_SDINOUT1_IO, ES8326_IO_INPUT);
+ 		break;
+@@ -513,7 +682,7 @@ static const struct snd_soc_dai_ops es8326_ops = {
+ 	.set_fmt = es8326_set_dai_fmt,
+ 	.set_sysclk = es8326_set_dai_sysclk,
+ 	.mute_stream = es8326_mute,
+-	.no_capture_mute = 1,
++	.no_capture_mute = 0,
+ };
+ 
+ static struct snd_soc_dai_driver es8326_dai = {
+@@ -672,6 +841,8 @@ static void es8326_jack_detect_handler(struct work_struct *work)
+ 			es8326->hp = 0;
+ 		}
+ 		regmap_update_bits(es8326->regmap, ES8326_HPDET_TYPE, 0x03, 0x01);
++		regmap_write(es8326->regmap, ES8326_SYS_BIAS, 0x0a);
++		regmap_update_bits(es8326->regmap, ES8326_HP_DRIVER_REF, 0x0f, 0x03);
+ 		/*
+ 		 * Inverted HPJACK_POL bit to trigger one IRQ to double check HP Removal event
+ 		 */
+@@ -695,8 +866,11 @@ static void es8326_jack_detect_handler(struct work_struct *work)
+ 			 * Don't report jack status.
+ 			 */
+ 			regmap_update_bits(es8326->regmap, ES8326_HPDET_TYPE, 0x03, 0x01);
++			es8326_enable_micbias(es8326->component);
+ 			usleep_range(50000, 70000);
+ 			regmap_update_bits(es8326->regmap, ES8326_HPDET_TYPE, 0x03, 0x00);
++			regmap_write(es8326->regmap, ES8326_SYS_BIAS, 0x1f);
++			regmap_update_bits(es8326->regmap, ES8326_HP_DRIVER_REF, 0x0f, 0x08);
+ 			queue_delayed_work(system_wq, &es8326->jack_detect_work,
+ 					msecs_to_jiffies(400));
+ 			es8326->hp = 1;
+@@ -736,13 +910,10 @@ static void es8326_jack_detect_handler(struct work_struct *work)
+ static irqreturn_t es8326_irq(int irq, void *dev_id)
+ {
+ 	struct es8326_priv *es8326 = dev_id;
+-	struct snd_soc_component *comp = es8326->component;
+ 
+ 	if (!es8326->jack)
+ 		goto out;
+ 
+-	es8326_enable_micbias(comp);
+-
+ 	if (es8326->jack->status & SND_JACK_HEADSET)
+ 		queue_delayed_work(system_wq, &es8326->jack_detect_work,
+ 				   msecs_to_jiffies(10));
+@@ -766,14 +937,14 @@ static int es8326_calibrate(struct snd_soc_component *component)
+ 	if ((es8326->version == ES8326_VERSION_B) && (es8326->calibrated == false)) {
+ 		dev_dbg(component->dev, "ES8326_VERSION_B, calibrating\n");
+ 		regmap_write(es8326->regmap, ES8326_CLK_INV, 0xc0);
+-		regmap_write(es8326->regmap, ES8326_CLK_DIV1, 0x01);
++		regmap_write(es8326->regmap, ES8326_CLK_DIV1, 0x03);
+ 		regmap_write(es8326->regmap, ES8326_CLK_DLL, 0x30);
+ 		regmap_write(es8326->regmap, ES8326_CLK_MUX, 0xed);
+ 		regmap_write(es8326->regmap, ES8326_CLK_DAC_SEL, 0x08);
+ 		regmap_write(es8326->regmap, ES8326_CLK_TRI, 0xc1);
+ 		regmap_write(es8326->regmap, ES8326_DAC_MUTE, 0x03);
+ 		regmap_write(es8326->regmap, ES8326_ANA_VSEL, 0x7f);
+-		regmap_write(es8326->regmap, ES8326_VMIDLOW, 0x03);
++		regmap_write(es8326->regmap, ES8326_VMIDLOW, 0x23);
+ 		regmap_write(es8326->regmap, ES8326_DAC2HPMIX, 0x88);
+ 		usleep_range(15000, 20000);
+ 		regmap_write(es8326->regmap, ES8326_HP_OFFSET_CAL, 0x8c);
+@@ -814,13 +985,13 @@ static int es8326_resume(struct snd_soc_component *component)
+ 	/* reset internal clock state */
+ 	regmap_write(es8326->regmap, ES8326_RESET, 0x1f);
+ 	regmap_write(es8326->regmap, ES8326_VMIDSEL, 0x0E);
++	regmap_write(es8326->regmap, ES8326_ANA_LP, 0xf0);
+ 	usleep_range(10000, 15000);
+ 	regmap_write(es8326->regmap, ES8326_HPJACK_TIMER, 0xe9);
+-	regmap_write(es8326->regmap, ES8326_ANA_MICBIAS, 0x4b);
++	regmap_write(es8326->regmap, ES8326_ANA_MICBIAS, 0xcb);
+ 	/* set headphone default type and detect pin */
+ 	regmap_write(es8326->regmap, ES8326_HPDET_TYPE, 0x83);
+ 	regmap_write(es8326->regmap, ES8326_CLK_RESAMPLE, 0x05);
+-	regmap_write(es8326->regmap, ES8326_HP_MISC, 0x30);
+ 
+ 	/* set internal oscillator as clock source of headpone cp */
+ 	regmap_write(es8326->regmap, ES8326_CLK_DIV_CPC, 0x89);
+@@ -828,14 +999,15 @@ static int es8326_resume(struct snd_soc_component *component)
+ 	/* clock manager reset release */
+ 	regmap_write(es8326->regmap, ES8326_RESET, 0x17);
+ 	/* set headphone detection as half scan mode */
+-	regmap_write(es8326->regmap, ES8326_HP_MISC, 0x30);
++	regmap_write(es8326->regmap, ES8326_HP_MISC, 0x3d);
+ 	regmap_write(es8326->regmap, ES8326_PULLUP_CTL, 0x00);
+ 
+ 	/* enable headphone driver */
++	regmap_write(es8326->regmap, ES8326_HP_VOL, 0xc4);
+ 	regmap_write(es8326->regmap, ES8326_HP_DRIVER, 0xa7);
+ 	usleep_range(2000, 5000);
+-	regmap_write(es8326->regmap, ES8326_HP_DRIVER_REF, 0xa3);
+-	regmap_write(es8326->regmap, ES8326_HP_DRIVER_REF, 0xb3);
++	regmap_write(es8326->regmap, ES8326_HP_DRIVER_REF, 0x23);
++	regmap_write(es8326->regmap, ES8326_HP_DRIVER_REF, 0x33);
+ 	regmap_write(es8326->regmap, ES8326_HP_DRIVER, 0xa1);
+ 
+ 	regmap_write(es8326->regmap, ES8326_CLK_INV, 0x00);
+@@ -844,6 +1016,8 @@ static int es8326_resume(struct snd_soc_component *component)
+ 	regmap_write(es8326->regmap, ES8326_CLK_CAL_TIME, 0x00);
+ 	/* calibrate for B version */
+ 	es8326_calibrate(component);
++	regmap_write(es8326->regmap, ES8326_DAC_CROSSTALK, 0xaa);
++	regmap_write(es8326->regmap, ES8326_DAC_RAMPRATE, 0x00);
+ 	/* turn off headphone out */
+ 	regmap_write(es8326->regmap, ES8326_HP_CAL, 0x00);
+ 	/* set ADC and DAC in low power mode */
+@@ -856,6 +1030,14 @@ static int es8326_resume(struct snd_soc_component *component)
+ 	regmap_write(es8326->regmap, ES8326_DAC_DSM, 0x08);
+ 	regmap_write(es8326->regmap, ES8326_DAC_VPPSCALE, 0x15);
+ 
++	regmap_write(es8326->regmap, ES8326_HPDET_TYPE, 0x80 |
++			((es8326->version == ES8326_VERSION_B) ?
++			(ES8326_HP_DET_SRC_PIN9 | es8326->jack_pol) :
++			(ES8326_HP_DET_SRC_PIN9 | es8326->jack_pol | 0x04)));
++	usleep_range(5000, 10000);
++	es8326_enable_micbias(es8326->component);
++	usleep_range(50000, 70000);
++	regmap_update_bits(es8326->regmap, ES8326_HPDET_TYPE, 0x03, 0x00);
+ 	regmap_write(es8326->regmap, ES8326_INT_SOURCE,
+ 		    (ES8326_INT_SRC_PIN9 | ES8326_INT_SRC_BUTTON));
+ 	regmap_write(es8326->regmap, ES8326_INTOUT_IO,
+@@ -864,7 +1046,7 @@ static int es8326_resume(struct snd_soc_component *component)
+ 		    (ES8326_IO_DMIC_CLK << ES8326_SDINOUT1_SHIFT));
+ 	regmap_write(es8326->regmap, ES8326_SDINOUT23_IO, ES8326_IO_INPUT);
+ 
+-	regmap_write(es8326->regmap, ES8326_ANA_PDN, 0x3b);
++	regmap_write(es8326->regmap, ES8326_ANA_PDN, 0x00);
+ 	regmap_write(es8326->regmap, ES8326_RESET, ES8326_CSM_ON);
+ 	regmap_update_bits(es8326->regmap, ES8326_PGAGAIN, ES8326_MIC_SEL_MASK,
+ 			   ES8326_MIC1_SEL);
+@@ -872,11 +1054,7 @@ static int es8326_resume(struct snd_soc_component *component)
+ 	regmap_update_bits(es8326->regmap, ES8326_DAC_MUTE, ES8326_MUTE_MASK,
+ 			   ES8326_MUTE);
+ 
+-	regmap_write(es8326->regmap, ES8326_HPDET_TYPE, 0x80 |
+-			((es8326->version == ES8326_VERSION_B) ?
+-			(ES8326_HP_DET_SRC_PIN9 | es8326->jack_pol) :
+-			(ES8326_HP_DET_SRC_PIN9 | es8326->jack_pol | 0x04)));
+-	regmap_write(es8326->regmap, ES8326_HP_VOL, 0x11);
++	regmap_write(es8326->regmap, ES8326_ADC_MUTE, 0x0f);
+ 
+ 	es8326->jack_remove_retry = 0;
+ 	es8326->hp = 0;
+diff --git a/sound/soc/codecs/es8326.h b/sound/soc/codecs/es8326.h
+index 90a08351d6acd043b42a6ebed574591a3defc6a0..ee12caef810532380cdf1b5d6b0b204afef78e63 100644
+--- a/sound/soc/codecs/es8326.h
++++ b/sound/soc/codecs/es8326.h
+@@ -69,9 +69,10 @@
+ #define ES8326_DAC_DSM		0x4D
+ #define ES8326_DAC_RAMPRATE	0x4E
+ #define ES8326_DAC_VPPSCALE	0x4F
+-#define ES8326_DAC_VOL		0x50
++#define ES8326_DACL_VOL	        0x50
+ #define ES8326_DRC_RECOVERY	0x53
+ #define ES8326_DRC_WINSIZE	0x54
++#define ES8326_DAC_CROSSTALK	0x55
+ #define ES8326_HPJACK_TIMER	0x56
+ #define ES8326_HPDET_TYPE	0x57
+ #define ES8326_INT_SOURCE	0x58
+@@ -80,6 +81,9 @@
+ #define ES8326_SDINOUT23_IO	0x5B
+ #define ES8326_JACK_PULSE	0x5C
+ 
++#define ES8326_DACR_VOL		0xF4
++#define ES8326_SPKL_VOL		0xF5
++#define ES8326_SPKR_VOL		0xF6
+ #define ES8326_HP_MISC		0xF7
+ #define ES8326_CTIA_OMTP_STA	0xF8
+ #define ES8326_PULLUP_CTL	0xF9
+@@ -100,7 +104,7 @@
+ #define ES8326_MUTE (3 << 0)
+ 
+ /* ES8326_CLK_CTL */
+-#define ES8326_CLK_ON (0x7f << 0)
++#define ES8326_CLK_ON (0x7e << 0)
+ #define ES8326_CLK_OFF (0 << 0)
+ 
+ /* ES8326_CLK_INV */
