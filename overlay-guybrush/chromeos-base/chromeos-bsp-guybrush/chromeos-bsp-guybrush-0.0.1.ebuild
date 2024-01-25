@@ -40,4 +40,10 @@ src_install() {
 
 	# Install USB quirks
 	udev_dorules "${FILESDIR}/common/20-usb-quirks.rules"
+
+	# Install platform-specific bluetooth sysprops.
+	insinto "/etc/bluetooth/sysprops.conf.d"
+	insopts -m0640
+	doins "${FILESDIR}/common/guybrush-bluetooth-sysprops.conf"
+	insopts -m0644
 }

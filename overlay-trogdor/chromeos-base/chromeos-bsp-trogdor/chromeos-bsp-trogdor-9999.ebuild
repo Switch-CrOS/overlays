@@ -47,4 +47,10 @@ src_install() {
 
 	# Install semtech configuration files
 	unibuild_install_files proximity-sensor-files
+
+	# Install platform-specific bluetooth sysprops.
+	insinto "/etc/bluetooth/sysprops.conf.d"
+	insopts -m0640
+	doins "${FILESDIR}/trogdor-bluetooth-sysprops.conf"
+	insopts -m0644
 }
