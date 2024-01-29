@@ -1,4 +1,4 @@
-From 264b28bba2286c60ea894977c46711bde23a4492 Mon Sep 17 00:00:00 2001
+From def5fa1a7dd3bcc824d8aae02c54e5ba5424573b Mon Sep 17 00:00:00 2001
 From: Chiahsun Wu <chiahsun.wu@mediatek.corp-partner.google.com>
 Date: Fri, 16 Dec 2022 16:01:03 +0800
 Subject: [PATCH] mt8188: camera squash patch
@@ -25,10 +25,10 @@ Change-Id: I73ad292c7a459e9401082f95d69ccd70870e7a48
  .../dts/mediatek/mt8188-geralt-ciri-sku1.dts  |    1 +
  .../arm64/boot/dts/mediatek/mt8188-geralt.dts |    1 +
  .../boot/dts/mediatek/mt8188-geralt.dtsi      |   12 +-
- arch/arm64/boot/dts/mediatek/mt8188.dtsi      | 1710 +++++
+ arch/arm64/boot/dts/mediatek/mt8188.dtsi      | 1712 ++++-
  .../dts/mediatek/mt8188_ciri_camera_v4l2.dtsi |  169 +
  .../mediatek/mt8188_geralt_camera_v4l2.dtsi   |  228 +
- .../arm64/chromiumos-arm64.flavour.config     |    8 +
+ .../chromiumos-arm64-generic.flavour.config   |    8 +
  .../arm64/chromiumos-mediatek.flavour.config  |   15 +
  drivers/dma-buf/heaps/cma_heap.c              |   12 +
  drivers/media/i2c/Kconfig                     |   45 +
@@ -195,7 +195,7 @@ Change-Id: I73ad292c7a459e9401082f95d69ccd70870e7a48
  include/linux/dma-heap.h                      |    9 +
  include/uapi/linux/v4l2-controls.h            |   32 +
  include/uapi/linux/videodev2.h                |   96 +-
- 188 files changed, 92842 insertions(+), 8 deletions(-)
+ 188 files changed, 92843 insertions(+), 9 deletions(-)
  create mode 100644 Documentation/devicetree/bindings/media/i2c/galaxycore,gc05a2.yaml
  create mode 100644 Documentation/devicetree/bindings/media/i2c/galaxycore,gc08a3.yaml
  create mode 100644 Documentation/devicetree/bindings/media/i2c/giantec,gt97xx.yaml
@@ -1538,7 +1538,7 @@ index d1f35fe3fe0d..7329d8cf594c 100644
  / {
  	model = "Google Ciri sku0/unprovisioned board";
 diff --git a/arch/arm64/boot/dts/mediatek/mt8188-geralt-ciri-sku1.dts b/arch/arm64/boot/dts/mediatek/mt8188-geralt-ciri-sku1.dts
-index ec0e6c92940d..e8e9be5a1bff 100644
+index 7016f743b308..13af079c1b2c 100644
 --- a/arch/arm64/boot/dts/mediatek/mt8188-geralt-ciri-sku1.dts
 +++ b/arch/arm64/boot/dts/mediatek/mt8188-geralt-ciri-sku1.dts
 @@ -7,6 +7,7 @@
@@ -1562,7 +1562,7 @@ index 70db95d2c751..e968cbec8ded 100644
  / {
  	model = "Google Geralt board";
 diff --git a/arch/arm64/boot/dts/mediatek/mt8188-geralt.dtsi b/arch/arm64/boot/dts/mediatek/mt8188-geralt.dtsi
-index 29bf395e67f2..9ccc45f8509d 100644
+index d475a11531d6..88fa0df1cfd7 100644
 --- a/arch/arm64/boot/dts/mediatek/mt8188-geralt.dtsi
 +++ b/arch/arm64/boot/dts/mediatek/mt8188-geralt.dtsi
 @@ -183,9 +183,15 @@ afe_dma_mem_reserved: snd_dma_mem_region {
@@ -1582,7 +1582,7 @@ index 29bf395e67f2..9ccc45f8509d 100644
  	};
  
  	usb_p1_vbus: regulator-usb-p1-vbus {
-@@ -213,6 +219,10 @@ &afe {
+@@ -218,6 +224,10 @@ &afe {
  	status = "okay";
  };
  
@@ -1596,10 +1596,10 @@ index 29bf395e67f2..9ccc45f8509d 100644
 diff --git a/arch/arm64/boot/dts/mediatek/mt8188.dtsi b/arch/arm64/boot/dts/mediatek/mt8188.dtsi
 old mode 100755
 new mode 100644
-index e234161a1d99..4b549923b86c
+index c09cbdff85b5..f4ad48ebf2b5
 --- a/arch/arm64/boot/dts/mediatek/mt8188.dtsi
 +++ b/arch/arm64/boot/dts/mediatek/mt8188.dtsi
-@@ -2214,6 +2214,1173 @@ larb11a: larb@15230000 {
+@@ -2262,6 +2262,1173 @@ larb11a: larb@15230000 {
  			power-domains = <&spm MT8188_POWER_DOMAIN_DIP>;
  		};
  
@@ -2770,10 +2770,10 @@ index e234161a1d99..4b549923b86c
 +#endif
 +			};
 +
- 		ipesys: syscon@15330000 {
+ 		ipesys: clock-controller@15330000 {
  			compatible = "mediatek,mt8188-ipesys", "syscon";
  			reg = <0 0x15330000 0 0x1000>;
-@@ -2277,6 +3444,72 @@ camsys: syscon@16000000 {
+@@ -2325,6 +3492,72 @@ camsys: clock-controller@16000000 {
  			#clock-cells = <1>;
  		};
  
@@ -2846,7 +2846,7 @@ index e234161a1d99..4b549923b86c
  		larb13: larb@16001000 {
  			compatible = "mediatek,mt8188-smi-larb";
  			reg = <0 0x16001000 0 0x1000>;
-@@ -2365,30 +3598,507 @@ larb17b: larb@1600b000 {
+@@ -2413,32 +3646,509 @@ larb17b: larb@1600b000 {
  			power-domains = <&spm MT8188_POWER_DOMAIN_CAM_SUBB>;
  		};
  
@@ -2923,7 +2923,7 @@ index e234161a1d99..4b549923b86c
 +					<&vpp_iommu M4U_PORT_L16A_FLKO_R1>;
 +		};
 +
- 		camsys_rawa: syscon@1604f000 {
+ 		camsys_rawa: clock-controller@1604f000 {
  			compatible = "mediatek,mt8188-camsys-rawa", "syscon";
  			reg = <0 0x1604f000 0 0x1000>;
  			#clock-cells = <1>;
@@ -2961,7 +2961,7 @@ index e234161a1d99..4b549923b86c
 +					<&vpp_iommu M4U_PORT_L17A_TNCSO_R1>;
 +		};
 +
- 		camsys_yuva: syscon@1606f000 {
+ 		camsys_yuva: clock-controller@1606f000 {
  			compatible = "mediatek,mt8188-camsys-yuva", "syscon";
  			reg = <0 0x1606f000 0 0x1000>;
  			#clock-cells = <1>;
@@ -3020,7 +3020,7 @@ index e234161a1d99..4b549923b86c
 +					 <&vdo_iommu M4U_PORT_L16B_FLKO_R1>;
 +		};
 +
- 		camsys_rawb: syscon@1608f000 {
+ 		camsys_rawb: clock-controller@1608f000 {
  			compatible = "mediatek,mt8188-camsys-rawb", "syscon";
  			reg = <0 0x1608f000 0 0x1000>;
  			#clock-cells = <1>;
@@ -3058,7 +3058,7 @@ index e234161a1d99..4b549923b86c
 +					 <&vdo_iommu M4U_PORT_L17B_TNCSO_R1>;
 +		};
 +
- 		camsys_yuvb: syscon@160af000 {
+ 		camsys_yuvb: clock-controller@160af000 {
  			compatible = "mediatek,mt8188-camsys-yuvb", "syscon";
  			reg = <0 0x160af000 0 0x1000>;
  			#clock-cells = <1>;
@@ -3351,9 +3351,12 @@ index e234161a1d99..4b549923b86c
 +			assigned-clock-parents = <&topckgen CLK_TOP_UNIVPLL_D5>;
 +		};
 +
- 		ccusys: syscon@17200000 {
- 			compatible = "mediatek,mt8188-ccusys", "syscon";
+ 		ccusys: clock-controller@17200000 {
+-			compatible = "mediatek,mt8188-ccusys";
++			compatible = "mediatek,mt8188-ccusys", "syscon";
  			reg = <0 0x17200000 0 0x1000>;
+ 			#clock-cells = <1>;
+ 		};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8188_ciri_camera_v4l2.dtsi b/arch/arm64/boot/dts/mediatek/mt8188_ciri_camera_v4l2.dtsi
 new file mode 100644
 index 000000000000..81db50f84cda
@@ -3764,7 +3767,7 @@ index 000000000000..bddfa64ccfb5
 +};
 +
 diff --git a/chromeos/config/chromeos/arm64/chromiumos-arm64-generic.flavour.config b/chromeos/config/chromeos/arm64/chromiumos-arm64-generic.flavour.config
-index 36975105058d..359061d70a23 100644
+index 8b50a0c9ae4b..8952a72342a9 100644
 --- a/chromeos/config/chromeos/arm64/chromiumos-arm64-generic.flavour.config
 +++ b/chromeos/config/chromeos/arm64/chromiumos-arm64-generic.flavour.config
 @@ -25,6 +25,7 @@ CONFIG_BT_HCIUART_RTL=y
@@ -3786,7 +3789,7 @@ index 36975105058d..359061d70a23 100644
  CONFIG_DRM_ANALOGIX_ANX7625=m
  CONFIG_DRM_ANALOGIX_ANX78XX=y
  CONFIG_DRM_ITE_IT6505=m
-@@ -295,6 +300,9 @@ CONFIG_USB_ULPI=y
+@@ -296,6 +301,9 @@ CONFIG_USB_ULPI=y
  CONFIG_VIDEO_DW9768=m
  CONFIG_VIDEO_HANTRO=y
  CONFIG_VIDEO_MEDIATEK_JPEG=m
@@ -3799,7 +3802,7 @@ index 36975105058d..359061d70a23 100644
 diff --git a/chromeos/config/chromeos/arm64/chromiumos-mediatek.flavour.config b/chromeos/config/chromeos/arm64/chromiumos-mediatek.flavour.config
 old mode 100644
 new mode 100755
-index d8e8fcbc06d1..73db5cca1148
+index 7933718ce05d..a8384ae1992d
 --- a/chromeos/config/chromeos/arm64/chromiumos-mediatek.flavour.config
 +++ b/chromeos/config/chromeos/arm64/chromiumos-mediatek.flavour.config
 @@ -13,6 +13,7 @@ CONFIG_BT_HCIUART_RTL=y
@@ -3821,7 +3824,7 @@ index d8e8fcbc06d1..73db5cca1148
  CONFIG_DMA_RESTRICTED_POOL=y
  CONFIG_DRM_ANALOGIX_ANX7625=y
  CONFIG_DRM_ANALOGIX_ANX78XX=y
-@@ -137,11 +142,21 @@ CONFIG_TYPEC=y
+@@ -138,11 +143,21 @@ CONFIG_TYPEC=y
  CONFIG_USB_MTU3=y
  CONFIG_USB_MTU3_HOST=y
  CONFIG_VIDEO_DW9768=m
@@ -94690,5 +94693,5 @@ index 067b69a554ac..d2db58640e21 100644
  /* Payload for V4L2_EVENT_VSYNC */
  struct v4l2_event_vsync {
 -- 
-2.43.0.381.gb435a96ce8-goog
+2.43.0.429.g432eaa2c6b-goog
 
