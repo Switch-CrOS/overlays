@@ -6,7 +6,7 @@ EAPI=7
 
 CROS_WORKON_COMMIT="d2d95e8af89939f893b1443135497c1f5572aebc"
 CROS_WORKON_TREE="776139a53bc86333de8672a51ed7879e75909ac9"
-inherit appid cros-unibuild cros-workon udev
+inherit appid cros-unibuild cros-workon
 
 # This ebuild only cares about its own FILESDIR and ebuild file, so it tracks
 # the canonical empty project.
@@ -19,34 +19,40 @@ or portage actions."
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="-* arm64 arm"
-IUSE="strongbad-kernelnext strongbad-userdebug"
+IUSE="trogdor-kernelnext trogdor-userdebug zephyr_ec trogdor-connectivitynext"
+
 
 RDEPEND="
+	!<chromeos-base/gestures-conf-0.0.2
 	chromeos-base/chromeos-bsp-baseboard-trogdor
 "
 DEPEND="${RDEPEND}"
 
 src_install() {
-	if use strongbad-kernelnext; then
-		doappid "{CAF7DF76-5722-4B6F-9994-D7D222F191D7}" "CHROMEBOOK"
-	elif use strongbad-userdebug; then
-		doappid "{9B15802E-94AF-24C2-5DC4-D9A3A80E0FF5}" "CHROMEBOOK"
+	insinto "/etc/gesture"
+	doins "${FILESDIR}"/gesture/*
+
+	if use zephyr_ec; then
+		doappid "{486D6593-708E-4878-8CC9-A7E9AF2F5811}" "CHROMEBOOK"
+	elif use trogdor-userdebug; then
+		doappid "{5FA67FD4-FEA5-971E-8DB9-D40672EF4F0D}" "CHROMEBOOK"
+	elif use trogdor-connectivitynext; then
+		doappid "{7DCFEAA2-E592-49FE-81C3-C27C828CE218}" "CHROMEBOOK"
+	elif use trogdor-kernelnext; then
+		doappid "{9F765BCD-AC24-C22B-B39A-467B190B7FEF}" "CHROMEBOOK"
 	else
-		doappid "{ABD68995-5A83-31CA-9AC6-49D8194EEA52}" "CHROMEBOOK"
+		doappid "{9023C063-08D6-4A4F-908C-BCF97DE8BA69}" "CHROMEBOOK"
 	fi
-
-	# Install a rule tagging keyboard as internal
-	udev_dorules "${FILESDIR}/91-hammer-keyboard.rules"
-
-	# Install hammerd udev rules and override for chromeos-base/hammerd.
-	udev_dorules "${FILESDIR}/99-hammerd.rules"
-
-	# Install udev rule to keep the USB hub always powered during system suspend.
-	udev_dorules "${FILESDIR}/99-usb-hub-power.rules"
 
 	# Install audio config
 	unibuild_install_files audio-files
 
 	# Install semtech configuration files
 	unibuild_install_files proximity-sensor-files
+
+	# Install platform-specific bluetooth sysprops.
+	insinto "/etc/bluetooth/sysprops.conf.d"
+	insopts -m0640
+	doins "${FILESDIR}/trogdor-bluetooth-sysprops.conf"
+	insopts -m0644
 }
