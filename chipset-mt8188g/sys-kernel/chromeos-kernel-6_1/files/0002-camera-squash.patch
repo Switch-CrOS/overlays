@@ -1,4 +1,4 @@
-From def5fa1a7dd3bcc824d8aae02c54e5ba5424573b Mon Sep 17 00:00:00 2001
+From 7542edd9c957105c930294bd44a48597ce2b924d Mon Sep 17 00:00:00 2001
 From: Chiahsun Wu <chiahsun.wu@mediatek.corp-partner.google.com>
 Date: Fri, 16 Dec 2022 16:01:03 +0800
 Subject: [PATCH] mt8188: camera squash patch
@@ -43,7 +43,7 @@ Change-Id: I73ad292c7a459e9401082f95d69ccd70870e7a48
  drivers/media/platform/mediatek/aie/Makefile  |   22 +
  drivers/media/platform/mediatek/aie/mtk_aie.h | 1076 +++
  .../media/platform/mediatek/aie/mtk_aie_53.c  | 1845 +++++
- .../media/platform/mediatek/aie/mtk_aie_drv.c | 3748 ++++++++++
+ .../media/platform/mediatek/aie/mtk_aie_drv.c | 3745 ++++++++++
  drivers/media/platform/mediatek/isp/Kconfig   |  122 +
  .../mediatek/isp/common/mtk_cam-fmt.h         |   87 +
  .../platform/mediatek/isp/isp_7x/Makefile     |   19 +
@@ -195,7 +195,7 @@ Change-Id: I73ad292c7a459e9401082f95d69ccd70870e7a48
  include/linux/dma-heap.h                      |    9 +
  include/uapi/linux/v4l2-controls.h            |   32 +
  include/uapi/linux/videodev2.h                |   96 +-
- 188 files changed, 92843 insertions(+), 9 deletions(-)
+ 188 files changed, 92840 insertions(+), 9 deletions(-)
  create mode 100644 Documentation/devicetree/bindings/media/i2c/galaxycore,gc05a2.yaml
  create mode 100644 Documentation/devicetree/bindings/media/i2c/galaxycore,gc08a3.yaml
  create mode 100644 Documentation/devicetree/bindings/media/i2c/giantec,gt97xx.yaml
@@ -13988,10 +13988,10 @@ index 000000000000..d3062f379839
 +MODULE_DESCRIPTION("Mediatek AIE driver");
 diff --git a/drivers/media/platform/mediatek/aie/mtk_aie_drv.c b/drivers/media/platform/mediatek/aie/mtk_aie_drv.c
 new file mode 100644
-index 000000000000..28f6ca1c078d
+index 000000000000..8c313b715aaa
 --- /dev/null
 +++ b/drivers/media/platform/mediatek/aie/mtk_aie_drv.c
-@@ -0,0 +1,3748 @@
+@@ -0,0 +1,3745 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
 + * Copyright (c) 2020 MediaTek Inc.
@@ -15718,7 +15718,7 @@ index 000000000000..28f6ca1c078d
 +	ret = request_firmware(&fw, name, fd->dev);
 +	if (ret) {
 +		dev_err(fd->dev, "%s: fail to load firmware %s\n", __func__, name);
-+		goto fw_error;
++		return ret;
 +	}
 +
 +	if (size < fw->size) {
@@ -15729,10 +15729,7 @@ index 000000000000..28f6ca1c078d
 +	memcpy(buf, fw->data, fw->size);
 +
 +fw_error:
-+	if (!fw) {
-+		release_firmware(fw);
-+		fw = NULL;
-+	}
++	release_firmware(fw);
 +	return ret;
 +}
 +
@@ -94693,5 +94690,5 @@ index 067b69a554ac..d2db58640e21 100644
  /* Payload for V4L2_EVENT_VSYNC */
  struct v4l2_event_vsync {
 -- 
-2.43.0.429.g432eaa2c6b-goog
+2.43.0.594.gd9cf4e227d-goog
 
