@@ -4,7 +4,7 @@
 
 EAPI=7
 
-inherit appid arc-build-constants cros-unibuild cros-workon
+inherit appid arc-build-constants cros-unibuild cros-workon udev
 
 # This ebuild only cares about its own FILESDIR and ebuild file, so it tracks
 # the canonical empty project.
@@ -41,4 +41,7 @@ src_install() {
 		insinto "${ARC_PREFIX:?}/vendor/etc/init"
 		doins "${FILESDIR}/init.cpusets.rc"
 	fi
+
+	# Install hammerd udev rules and override for chromeos-base/hammerd.
+	udev_dorules "${FILESDIR}/99-hammerd.rules"
 }
