@@ -17,7 +17,7 @@ or portage actions."
 
 LICENSE="BSD-Google"
 KEYWORDS="-* amd64 x86"
-IUSE="iioservice puff-borealis puff-kernelnext kernel-4_19"
+IUSE="iioservice puff-borealis puff-kernelnext kernel-4_19 kernel-5_15"
 
 # Add dependencies on other ebuilds from within this board overlay
 RDEPEND="
@@ -44,4 +44,10 @@ src_install() {
 	udev_dorules "${FILESDIR}/99-chromeos-puff-usb-runtime-suspend.rules"
 
 	unibuild_install_files audio-files
+
+	if use kernel-5_15; then
+		insinto /etc/init
+		doins "${FILESDIR}/puff-quirk.conf"
+		dosbin "${FILESDIR}/puff_quirk.sh"
+	fi
 }
