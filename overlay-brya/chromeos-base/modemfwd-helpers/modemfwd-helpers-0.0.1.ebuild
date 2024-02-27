@@ -14,7 +14,7 @@ SRC_URI="
 	${MIRROR_PATH}/cellular-firmware-fibocom-l850-brya-carriers_OEM_6001-r6.tar.xz
 	${MIRROR_PATH}/cellular-firmware-fibocom-l850-OEM_cust.6001.04.tar.xz
 	${MIRROR_PATH}/cellular-firmware-fibocom-fm350-81600.0000.00.29.19.16.tar.xz
-	${MIRROR_PATH}/cellular-firmware-fibocom-fm350-FM350.C82.tar.xz
+	${MIRROR_PATH}/cellular-firmware-fibocom-fm350-FM350.C86.tar.xz
 	${MIRROR_PATH}/cellular-firmware-fibocom-fm350-DEV_OTA_5001.000F.0000_Default_001.000.000.001.img.tar.xz
 	${MIRROR_PATH}/cellular-firmware-fibocom-fm350-DEV_OTA_5001.0001.0000_Default_001.000.000.015.img.tar.xz
 	${MIRROR_PATH}/cellular-firmware-fibocom-fm350-OP_OTA_000.037.img.tar.xz

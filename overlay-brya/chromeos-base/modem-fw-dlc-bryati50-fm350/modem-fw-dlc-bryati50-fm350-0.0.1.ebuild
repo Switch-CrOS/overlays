@@ -10,7 +10,7 @@ HOMEPAGE="http://src.chromium.org"
 MIRROR_PATH="gs://chromeos-localmirror/distfiles"
 SRC_URI="
 	${MIRROR_PATH}/cellular-firmware-fibocom-fm350-81600.0000.00.29.19.16.tar.xz
-	${MIRROR_PATH}/cellular-firmware-fibocom-fm350-FM350.C82.tar.xz
+	${MIRROR_PATH}/cellular-firmware-fibocom-fm350-FM350.C86.tar.xz
 	${MIRROR_PATH}/cellular-firmware-fibocom-fm350-DEV_OTA_5001.0001.0000_Default_001.000.000.015.img.tar.xz
 	${MIRROR_PATH}/cellular-firmware-fibocom-fm350-OP_OTA_000.037.img.tar.xz
 	${MIRROR_PATH}/cellular-firmware-fibocom-fm350-OEM_OTA_6001.0000.001.img.tar.xz
