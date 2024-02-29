@@ -23,6 +23,7 @@ RDEPEND="
 	chromeos-base/chromeos-bsp-baseboard-brox:=
 	chromeos-base/sof-binary:=
 	chromeos-base/sof-topology:=
+	chromeos-base/chromeos-zephyr-ish:=
 "
 DEPEND="
 	${RDEPEND}
