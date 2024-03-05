@@ -38,21 +38,18 @@ src_install() {
 	cellular_domanifest "${FILESDIR}/helper_manifest.textproto"
 
 	insinto /etc/init/
-	doins "${FILESDIR}/modemfwd-helpers.conf"
+	doins "${FILESDIR}"/modemfwd-{helpers,mount}.conf
 
 	udev_dorules "${FILESDIR}/94-usb-modem-gpio.rules"
 
-	cellular_dofirmware "${FILESDIR}/firmware_manifest.textproto"
-	insinto "$(_cellular_get_firmwaredir)/fm350"
-	doins -r cellular-firmware-fibocom-fm350-*/*
-
-	insinto "$(_cellular_get_firmwaredir)/fm101"
-	doins -r cellular-firmware-fibocom-fm101-*/*
+	# Generate and install squashfs with firmware files and manifest.
+	cellular_create_squashfs_bundle
 
 	# Create symbolic link to allow FM350 firmware to be accessible with
 	# /lib/firmware as root directory. This is required for devlink to be able
 	# to flash firmware to the modem.
 	dosym "$(_cellular_get_firmwaredir)/fm350" "/lib/firmware/fm350"
+	keepdir "$(_cellular_get_firmwaredir)/fm350"
 }
 
 pkg_preinst() {
