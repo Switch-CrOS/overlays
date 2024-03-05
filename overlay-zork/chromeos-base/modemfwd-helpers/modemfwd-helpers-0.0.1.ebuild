@@ -29,17 +29,12 @@ src_install() {
 	# TODO(ejcaruso): remove these after b/71870985 is fixed and we can
 	# use MBIM commands to reset the modem instead of toggling GPIOs
 	insinto /etc/init/
-	doins "${FILESDIR}/modemfwd-helpers.conf"
+	doins "${FILESDIR}"/modemfwd-{helpers,mount}.conf
 
 	udev_dorules "${FILESDIR}/94-usb-modem-gpio.rules"
 
-	cellular_dofirmware "${FILESDIR}/firmware_manifest.textproto"
-	# cellular_dofirmware cannot handle this case yet
-	insinto "$(_cellular_get_firmwaredir)/l850"
-	doins -r cellular-firmware-fibocom-l850-*/*
-
-	insinto "$(_cellular_get_firmwaredir)/nl668"
-	doins -r cellular-firmware-fibocom-nl668-*/*
+	# Generate and install squashfs with firmware files and manifest.
+	cellular_create_squashfs_bundle
 }
 
 pkg_preinst() {
