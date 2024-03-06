@@ -13,7 +13,7 @@ or portage actions."
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="-* amd64 x86"
-IUSE="eve-arcnext eve-arc-r eve-arm64 eve-campfire eve-kvm eve-lacros eve-swap eve-userdebug eve-kernelnext"
+IUSE="eve-arcnext eve-arc-r eve-arm64 eve-campfire eve-kvm eve-lacros eve-swap eve-userdebug eve-kernelnext kernel-5_4"
 S="${WORKDIR}"
 
 # Add dependencies on other ebuilds from within this board overlay
@@ -55,7 +55,12 @@ src_install() {
 	doins "${FILESDIR}"/powerd_prefs/*
 
 	# Install audio config files
-	install_audio_configs eve "${FILESDIR}/audio-config"
+	if use kernel-5_4; then
+		local audio_config_dir="${FILESDIR}/legacy-skl-audio-config"
+	else
+		local audio_config_dir="${FILESDIR}/audio-config"
+	fi
+	install_audio_configs eve "${audio_config_dir}"
 
 	# Install platform-specific internal keyboard keymap.
 	# It should probbaly go into /lib/udev/hwdb.d but
