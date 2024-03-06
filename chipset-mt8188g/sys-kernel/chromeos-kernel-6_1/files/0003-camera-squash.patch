@@ -1,6 +1,6 @@
-From 5fe3384b71a9f37a161b7d66d52012ca512a0c2d Mon Sep 17 00:00:00 2001
-From: Chiahsun Wu <chiahsun.wu@mediatek.corp-partner.google.com>
-Date: Fri, 16 Dec 2022 16:01:03 +0800
+From c4b0e89fdb9aa6dc7734b58663e4caa9ebc3c276 Mon Sep 17 00:00:00 2001
+From: Yunke Cao <yunkec@chromium.org>
+Date: Wed, 6 Mar 2024 17:41:13 +0900
 Subject: [PATCH] mt8188: camera squash patch
 
 Squash patch based on 8188 IMGSYS V4L2 TOT crrev/c/5061752/8
@@ -126,7 +126,7 @@ Change-Id: I5a361227568ed25956e7c660ce43da1bc18f03a0
  .../platforms/isp_71/modules/mtk_imgsys-wpe.h |   20 +
  .../isp_71/modules/mtk_me_v4l2_vnode.h        |  410 ++
  .../isp_71/modules/mtk_pqdip_v4l2_vnode.h     |  155 +
- .../isp_71/modules/mtk_traw_v4l2_vnode.h      |  374 ++
+ .../isp_71/modules/mtk_traw_v4l2_vnode.h      |  378 ++
  .../isp_71/modules/mtk_wpe_v4l2_vnode.h       |  367 ++
  .../platforms/isp_71/mtk_imgsys-cmdq-plat.h   |  597 ++
  .../platforms/isp_71/mtk_imgsys-debug.c       | 1088 ++++
@@ -157,7 +157,7 @@ Change-Id: I5a361227568ed25956e7c660ce43da1bc18f03a0
  include/media/videobuf2-core.h                |    2 +-
  include/uapi/linux/v4l2-controls.h            |   38 +
  include/uapi/linux/videodev2.h                |   98 +-
- 150 files changed, 64786 insertions(+), 28 deletions(-)
+ 150 files changed, 64790 insertions(+), 28 deletions(-)
  create mode 100644 Documentation/devicetree/bindings/media/i2c/galaxycore,gc05a2.yaml
  create mode 100644 Documentation/devicetree/bindings/media/i2c/galaxycore,gc08a3.yaml
  create mode 100644 Documentation/devicetree/bindings/media/i2c/giantec,gt97xx.yaml
@@ -59964,10 +59964,10 @@ index 000000000000..8cfef4b0a9c0
 +#endif /* _MTK_PQDIP_V4L2_VNODE_H_ */
 diff --git a/drivers/media/platform/mediatek/isp/isp_7x/imgsys/platforms/isp_71/modules/mtk_traw_v4l2_vnode.h b/drivers/media/platform/mediatek/isp/isp_7x/imgsys/platforms/isp_71/modules/mtk_traw_v4l2_vnode.h
 new file mode 100644
-index 000000000000..40eaff26f9d5
+index 000000000000..1283684671c5
 --- /dev/null
 +++ b/drivers/media/platform/mediatek/isp/isp_7x/imgsys/platforms/isp_71/modules/mtk_traw_v4l2_vnode.h
-@@ -0,0 +1,374 @@
+@@ -0,0 +1,378 @@
 +/* SPDX-License-Identifier: GPL-2.0 */
 +/*
 + * Copyright (c) 2020 MediaTek Inc.
@@ -60038,7 +60038,11 @@ index 000000000000..40eaff26f9d5
 +	{
 +		.format = V4L2_PIX_FMT_MTISP_SRGGB10,
 +		.num_planes = 1,
-+	}
++	},
++	{
++		.format = V4L2_PIX_FMT_MTISP_SGRBG10,
++		.num_planes = 1,
++	},
 +};
 +
 +static const struct mtk_imgsys_dev_format traw_metai_fmts[] = {
@@ -66384,5 +66388,5 @@ index 067b69a554ac..5e10d7f2cc9d 100644
  /* Payload for V4L2_EVENT_VSYNC */
  struct v4l2_event_vsync {
 -- 
-2.44.0.rc1.240.g4c46232300-goog
+2.44.0.278.ge034bb2e1d-goog
 
