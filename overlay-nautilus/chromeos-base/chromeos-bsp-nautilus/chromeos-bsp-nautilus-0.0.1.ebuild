@@ -11,7 +11,7 @@ or portage actions."
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="-* amd64 x86"
-IUSE="kernel-5_4 modemfwd"
+IUSE="kernel-5_4 modemfwd nautilus-kernelnext"
 S="${WORKDIR}"
 
 # Add dependencies on other ebuilds from within this board overlay
@@ -19,7 +19,11 @@ RDEPEND="modemfwd? ( chromeos-base/modemfwd-helpers )"
 DEPEND="${RDEPEND}"
 
 src_install() {
-	doappid "{85F8FA82-F276-4EA6-8980-93FE091F6D25}" "CHROMEBOOK"
+	if use nautilus-kernelnext; then
+		doappid "{5E7BAA07-E48A-4C2D-A90D-52030BECE7E8}" "CHROMEBOOK"
+	else
+		doappid "{85F8FA82-F276-4EA6-8980-93FE091F6D25}" "CHROMEBOOK"
+	fi
 	# Install audio config files
 	if use kernel-5_4; then
 		local audio_config_dir="${FILESDIR}/audio-config-kernelnext"
