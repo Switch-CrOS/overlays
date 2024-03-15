@@ -9,8 +9,9 @@ DESCRIPTION="Chrome OS Modem Update Helpers (sarien)"
 HOMEPAGE="http://src.chromium.org"
 MIRROR_PATH="gs://chromeos-localmirror/distfiles"
 SRC_URI="
-	${MIRROR_PATH}/cellular-firmware-fibocom-l850-18500.5001.00.03.25.18_6005.03_Secureboot.tar.xz
-	${MIRROR_PATH}/cellular-firmware-fibocom-l850-sarien-carriers_OEM_6005-r2.tar.xz
+	${MIRROR_PATH}/cellular-firmware-fibocom-l850-18500.5001.00.07.29.08_Secureboot.tar.xz
+	${MIRROR_PATH}/cellular-firmware-fibocom-l850-OEM_cust.6005.13.tar.xz
+	${MIRROR_PATH}/cellular-firmware-fibocom-l850-sarien-carriers_OEM_6005-r3.tar.xz
 "
 LICENSE="BSD-Google"
 SLOT="0"
