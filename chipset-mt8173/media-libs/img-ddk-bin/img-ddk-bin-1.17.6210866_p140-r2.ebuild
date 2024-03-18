@@ -1,1 +1,0 @@
-img-ddk-bin-1.17.6210866_p140.ebuild
