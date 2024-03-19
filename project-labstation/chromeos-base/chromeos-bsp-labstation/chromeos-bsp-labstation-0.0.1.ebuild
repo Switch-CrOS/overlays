@@ -63,6 +63,11 @@ RDEPEND="${RDEPEND}
 	chromeos-base/chromeos-adb-env
 "
 
+# These packages are for labstation specific tooling.
+RDEPEND="${RDEPEND}
+	sys-apps/labstation
+"
+
 DEPEND=""
 
 S=${WORKDIR}
