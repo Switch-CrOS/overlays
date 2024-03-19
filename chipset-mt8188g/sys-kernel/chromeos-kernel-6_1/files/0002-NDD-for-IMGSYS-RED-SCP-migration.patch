@@ -1,0 +1,1668 @@
+From f39de13d00dbb2ff6c00f5255553556a8ca1894d Mon Sep 17 00:00:00 2001
+From: Bruce Cheng <bruce.cheng@mediatek.corp-partner.google.com>
+Date: Wed, 17 Jan 2024 17:39:18 +0800
+Subject: [PATCH] WIP: media: platform: mediatek: isp: NDD for IMGSYS RED SCP
+ migration
+
+NDD for IMGSYS RED SCP migration
+
+Change-Id: Iad2559f24f1c3bbabcd0556de37cc7ec611df3f4
+---
+ .../platform/mediatek/isp/isp_7x/Makefile     |   6 +-
+ .../mediatek/isp/isp_7x/imgsys/Makefile       |   2 +-
+ .../mediatek/isp/isp_7x/imgsys/mtk-img-ipi.h  |   0
+ .../isp/isp_7x/imgsys/mtk_header_desc.h       |   0
+ .../isp/isp_7x/imgsys/mtk_imgsys-dev.c        |   0
+ .../isp/isp_7x/imgsys/mtk_imgsys-dev.h        |  17 ++
+ .../isp/isp_7x/imgsys/mtk_imgsys-module.h     |   2 +
+ .../isp/isp_7x/imgsys/mtk_imgsys-sys.c        | 125 ++++++++-
+ .../isp/isp_7x/imgsys/mtk_imgsys-v4l2.c       |  34 ++-
+ .../isp_7x/imgsys/platforms/isp_71/Makefile   |   2 +-
+ .../platforms/isp_71/modules/mtk_imgsys-adl.c |   0
+ .../platforms/isp_71/modules/mtk_imgsys-dip.c |  81 ++++++
+ .../platforms/isp_71/modules/mtk_imgsys-dip.h |   8 +-
+ .../isp_71/modules/mtk_imgsys-pqdip.c         |  90 ++++++-
+ .../isp_71/modules/mtk_imgsys-pqdip.h         |   7 +-
+ .../isp_71/modules/mtk_imgsys-traw.c          |  85 ++++++
+ .../isp_71/modules/mtk_imgsys-traw.h          |   7 +-
+ .../platforms/isp_71/modules/mtk_imgsys-wpe.c |  98 +++++++
+ .../platforms/isp_71/modules/mtk_imgsys-wpe.h |   8 +-
+ .../platforms/isp_71/mtk_imgsys-debug.c       | 255 ++++++++++++++++++
+ .../platforms/isp_71/mtk_imgsys-debug.h       |  33 +++
+ .../platforms/isp_71/mtk_imgsys-engine.h      |  15 +-
+ .../platforms/isp_71/mtk_imgsys-modops.h      |   7 +
+ .../isp_7x/imgsys/platforms/mtk_imgsys-data.h |   0
+ .../mediatek/isp/isp_7x/mtk-hcp/mtk-hcp.c     |  23 ++
+ .../mediatek/isp/isp_7x/mtk-hcp/mtk-hcp.h     |   3 +
+ .../isp/isp_7x/mtk-hcp/mtk-hcp_isp71.c        |   1 +
+ .../isp/isp_7x/mtk-ipesys-me/mtk-ipesys-me.c  |  81 ++++++
+ .../isp/isp_7x/mtk-ipesys-me/mtk-ipesys-me.h  |   7 +-
+ 29 files changed, 954 insertions(+), 43 deletions(-)
+ mode change 100644 => 100755 drivers/media/platform/mediatek/isp/isp_7x/Makefile
+ mode change 100644 => 100755 drivers/media/platform/mediatek/isp/isp_7x/imgsys/mtk-img-ipi.h
+ mode change 100644 => 100755 drivers/media/platform/mediatek/isp/isp_7x/imgsys/mtk_header_desc.h
+ mode change 100644 => 100755 drivers/media/platform/mediatek/isp/isp_7x/imgsys/mtk_imgsys-dev.c
+ mode change 100644 => 100755 drivers/media/platform/mediatek/isp/isp_7x/imgsys/mtk_imgsys-dev.h
+ mode change 100644 => 100755 drivers/media/platform/mediatek/isp/isp_7x/imgsys/mtk_imgsys-module.h
+ mode change 100644 => 100755 drivers/media/platform/mediatek/isp/isp_7x/imgsys/mtk_imgsys-sys.c
+ mode change 100644 => 100755 drivers/media/platform/mediatek/isp/isp_7x/imgsys/mtk_imgsys-v4l2.c
+ mode change 100644 => 100755 drivers/media/platform/mediatek/isp/isp_7x/imgsys/platforms/isp_71/modules/mtk_imgsys-adl.c
+ mode change 100644 => 100755 drivers/media/platform/mediatek/isp/isp_7x/imgsys/platforms/isp_71/modules/mtk_imgsys-dip.c
+ mode change 100644 => 100755 drivers/media/platform/mediatek/isp/isp_7x/imgsys/platforms/isp_71/modules/mtk_imgsys-dip.h
+ mode change 100644 => 100755 drivers/media/platform/mediatek/isp/isp_7x/imgsys/platforms/isp_71/modules/mtk_imgsys-pqdip.c
+ mode change 100644 => 100755 drivers/media/platform/mediatek/isp/isp_7x/imgsys/platforms/isp_71/modules/mtk_imgsys-pqdip.h
+ mode change 100644 => 100755 drivers/media/platform/mediatek/isp/isp_7x/imgsys/platforms/isp_71/modules/mtk_imgsys-traw.c
+ mode change 100644 => 100755 drivers/media/platform/mediatek/isp/isp_7x/imgsys/platforms/isp_71/modules/mtk_imgsys-traw.h
+ mode change 100644 => 100755 drivers/media/platform/mediatek/isp/isp_7x/imgsys/platforms/isp_71/modules/mtk_imgsys-wpe.c
+ mode change 100644 => 100755 drivers/media/platform/mediatek/isp/isp_7x/imgsys/platforms/isp_71/modules/mtk_imgsys-wpe.h
+ mode change 100644 => 100755 drivers/media/platform/mediatek/isp/isp_7x/imgsys/platforms/isp_71/mtk_imgsys-debug.c
+ mode change 100644 => 100755 drivers/media/platform/mediatek/isp/isp_7x/imgsys/platforms/isp_71/mtk_imgsys-debug.h
+ mode change 100644 => 100755 drivers/media/platform/mediatek/isp/isp_7x/imgsys/platforms/isp_71/mtk_imgsys-engine.h
+ mode change 100644 => 100755 drivers/media/platform/mediatek/isp/isp_7x/imgsys/platforms/isp_71/mtk_imgsys-modops.h
+ mode change 100644 => 100755 drivers/media/platform/mediatek/isp/isp_7x/imgsys/platforms/mtk_imgsys-data.h
+ mode change 100644 => 100755 drivers/media/platform/mediatek/isp/isp_7x/mtk-hcp/mtk-hcp.c
+ mode change 100644 => 100755 drivers/media/platform/mediatek/isp/isp_7x/mtk-hcp/mtk-hcp.h
+ mode change 100644 => 100755 drivers/media/platform/mediatek/isp/isp_7x/mtk-ipesys-me/mtk-ipesys-me.c
+ mode change 100644 => 100755 drivers/media/platform/mediatek/isp/isp_7x/mtk-ipesys-me/mtk-ipesys-me.h
+
+diff --git a/drivers/media/platform/mediatek/isp/isp_7x/Makefile b/drivers/media/platform/mediatek/isp/isp_7x/Makefile
+old mode 100644
+new mode 100755
+index d2efc2bd68a5..393c00e1db0e
+--- a/drivers/media/platform/mediatek/isp/isp_7x/Makefile
++++ b/drivers/media/platform/mediatek/isp/isp_7x/Makefile
+@@ -7,8 +7,10 @@ subdir-ccflags-$(CONFIG_VIDEO_MTK_ISP_71_CAMSYS) += -DISP7_1
+ obj-$(CONFIG_VIDEO_MTK_ISP_71_CAMSYS) += camsys/
+ 
+ subdir-ccflags-$(CONFIG_VIDEO_MTK_ISP_71_IMGSYS) += -DIMGSYS_VER_ISP71
+-subdir-ccflags-$(CONFIG_VIDEO_MTK_ISP_71_IMGSYS) += -DIMGSYS_WPE_NUM=2
+-subdir-ccflags-$(CONFIG_VIDEO_MTK_ISP_71_IMGSYS) += -DIMGSYS_TRAW_NUM=2
++#subdir-ccflags-$(CONFIG_VIDEO_MTK_ISP_71_IMGSYS) += -DIMGSYS_SCP_SUPPORT
++#subdir-ccflags-$(CONFIG_VIDEO_MTK_ISP_71_IMGSYS) += -DIMGSYS_NDD_FROM_KERNEL
++subdir-ccflags-$(CONFIG_VIDEO_MTK_ISP_71_IMGSYS) += -DIMGSYS_WPE_NUM=3
++subdir-ccflags-$(CONFIG_VIDEO_MTK_ISP_71_IMGSYS) += -DIMGSYS_TRAW_NUM=3
+ 
+ obj-$(CONFIG_VIDEO_MTK_ISP_71_IMGSYS) += imgsys/
+ obj-$(CONFIG_VIDEO_MTK_ISP_71_IMGSYS) += mtk-hcp/
+diff --git a/drivers/media/platform/mediatek/isp/isp_7x/imgsys/Makefile b/drivers/media/platform/mediatek/isp/isp_7x/imgsys/Makefile
+index c58873c5098e..d7799b09eaa6 100644
+--- a/drivers/media/platform/mediatek/isp/isp_7x/imgsys/Makefile
++++ b/drivers/media/platform/mediatek/isp/isp_7x/imgsys/Makefile
+@@ -1,7 +1,7 @@
+ # SPDX-License-Identifier: GPL-2.0
+ #
+ 
+-ccflags-y += -I$(srctree)/drivers/media/platform/mediatek/isp/isp_7x/mtk-hcp
++ccflags-y += -I$(srctree)/drivers/media/platform/mediatek/isp/isp_7x/mtk-hcp/
+ ccflags-y += -I$(srctree)/include/linux/mailbox/
+ ccflags-y += -I$(srctree)/drivers/media/platform/mediatek/isp/isp_7x/imgsys/
+ ccflags-y += -I$(srctree)/drivers/media/platform/mediatek/isp/isp_7x/imgsys/platforms/
+diff --git a/drivers/media/platform/mediatek/isp/isp_7x/imgsys/mtk-img-ipi.h b/drivers/media/platform/mediatek/isp/isp_7x/imgsys/mtk-img-ipi.h
+old mode 100644
+new mode 100755
+diff --git a/drivers/media/platform/mediatek/isp/isp_7x/imgsys/mtk_header_desc.h b/drivers/media/platform/mediatek/isp/isp_7x/imgsys/mtk_header_desc.h
+old mode 100644
+new mode 100755
+diff --git a/drivers/media/platform/mediatek/isp/isp_7x/imgsys/mtk_imgsys-dev.c b/drivers/media/platform/mediatek/isp/isp_7x/imgsys/mtk_imgsys-dev.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/media/platform/mediatek/isp/isp_7x/imgsys/mtk_imgsys-dev.h b/drivers/media/platform/mediatek/isp/isp_7x/imgsys/mtk_imgsys-dev.h
+old mode 100644
+new mode 100755
+index 1aaadcd0f607..7ec126962f35
+--- a/drivers/media/platform/mediatek/isp/isp_7x/imgsys/mtk_imgsys-dev.h
++++ b/drivers/media/platform/mediatek/isp/isp_7x/imgsys/mtk_imgsys-dev.h
+@@ -28,6 +28,8 @@
+ #include "mtk_imgsys-hw.h"
+ #include "mtk_imgsys-module.h"
+ #include "mtk-img-ipi.h"
++#include "mtk-hcp_isp71.h"
++
+ 
+ #define MTK_IMGSYS_PIPE_ID_PREVIEW				0
+ #define MTK_IMGSYS_PIPE_ID_CAPTURE				1
+@@ -192,6 +194,9 @@ struct mtk_imgsys_dev {
+ 	atomic_t num_composing;	/* increase after ipi */
+ 	/*MDP/GCE callback workqueue */
+ 	struct workqueue_struct *mdpcb_wq;
++#if defined(IMGSYS_NDD_FROM_KERNEL)
++	struct workqueue_struct *ndd_wq;
++#endif
+ 	/* for SCP driver  */
+ 	struct platform_device *scp_pdev;
+ 
+@@ -219,6 +224,14 @@ struct mtk_imgsys_dev {
+ 	struct kref init_kref;
+ };
+ 
++#if defined(IMGSYS_NDD_FROM_KERNEL)
++struct scp_work {
++	struct work_struct work;
++	struct mtk_imgsys_request *req;
++	void *req_sbuf_kva;
++};
++#endif
++
+ struct gce_timeout_work {
+ 	struct work_struct work;
+ 	struct mtk_imgsys_request *req;
+@@ -480,6 +493,10 @@ struct swfrm_info_t {
+ 	struct timeval eqtime;
+ 	int chan_id;
+ 	char *hw_ts_log;
++	struct completion *ndd_user_complete;
++#if defined(IMGSYS_NDD_FROM_KERNEL)
++	struct completion *ndd_kernel_complete;
++#endif
+ } __attribute((__packed__));
+ 
+ struct reqfd_cbinfo_t {
+diff --git a/drivers/media/platform/mediatek/isp/isp_7x/imgsys/mtk_imgsys-module.h b/drivers/media/platform/mediatek/isp/isp_7x/imgsys/mtk_imgsys-module.h
+old mode 100644
+new mode 100755
+index d627d9b7f028..39c5f432f629
+--- a/drivers/media/platform/mediatek/isp/isp_7x/imgsys/mtk_imgsys-module.h
++++ b/drivers/media/platform/mediatek/isp/isp_7x/imgsys/mtk_imgsys-module.h
+@@ -10,12 +10,14 @@
+ #define _MTK_IMGSYS_MODULES_H_
+ 
+ struct mtk_imgsys_dev;
++struct imgsys_ndd_frm_dump_info;
+ 
+ struct module_ops {
+ 	int module_id;
+ 	void (*init)(struct mtk_imgsys_dev *imgsys_dev);
+ 	void (*set)(struct mtk_imgsys_dev *imgsys_dev);
+ 	void (*dump)(struct mtk_imgsys_dev *imgsys_dev, unsigned int engine);
++	void (*ndddump)(struct mtk_imgsys_dev *imgsys_dev, struct imgsys_ndd_frm_dump_info *frm_dump_info);
+ 	void (*uninit)(struct mtk_imgsys_dev *imgsys_dev);
+ };
+ 
+diff --git a/drivers/media/platform/mediatek/isp/isp_7x/imgsys/mtk_imgsys-sys.c b/drivers/media/platform/mediatek/isp/isp_7x/imgsys/mtk_imgsys-sys.c
+old mode 100644
+new mode 100755
+index 0c2f25c1498a..c24db614b062
+--- a/drivers/media/platform/mediatek/isp/isp_7x/imgsys/mtk_imgsys-sys.c
++++ b/drivers/media/platform/mediatek/isp/isp_7x/imgsys/mtk_imgsys-sys.c
+@@ -30,6 +30,7 @@
+ #include "mtk-hcp.h"
+ #include "mtk_imgsys-cmdq.h"
+ #include "mtk_imgsys-module.h"
++#include "mtk_imgsys-debug.h"
+ 
+ int imgsys_quick_onoff_en;
+ module_param(imgsys_quick_onoff_en, int, 0644);
+@@ -321,9 +322,10 @@ static void cmdq_cb_done_worker(struct work_struct *work)
+ 	struct mtk_imgsys_pipe *pipe;
+ 	struct swfrm_info_t *gwfrm_info = NULL;
+ 	struct gce_cb_work *gwork = NULL;
+-	struct img_sw_buffer swbuf_data;
++	struct img_sw_buffer swbuf_data = {0};
+ 
+ 	gwork = container_of(work, struct gce_cb_work, work);
++	gwfrm_info = (struct swfrm_info_t *)gwork->req_sbuf_kva;
+ 
+ 	pipe = (struct mtk_imgsys_pipe *)gwork->pipe;
+ 	if (!pipe->streaming) {
+@@ -331,14 +333,32 @@ static void cmdq_cb_done_worker(struct work_struct *work)
+ 		goto release_work;
+ 	}
+ 
++#if defined(IMGSYS_NDD_FROM_KERNEL)
++	if( (gwfrm_info->user_info[0].ndd_fp[0] != '\0') && (gwfrm_info->ndd_kernel_complete != NULL) ) {
++		wait_for_completion(gwfrm_info->ndd_kernel_complete);
++        }
++#endif
++	if( (gwfrm_info->user_info[0].ndd_fp[0] != '\0') && (gwfrm_info->ndd_user_complete != NULL) ) {
++
++		wait_for_completion(gwfrm_info->ndd_user_complete);
++        }
+ 	/* send to HCP after frame done & del node from list */
+-	gwfrm_info = (struct swfrm_info_t *)gwork->req_sbuf_kva;
+ 	swbuf_data.offset = gwfrm_info->req_sbuf_goft;
+ 	imgsys_send(pipe->imgsys_dev->scp_pdev, HCP_IMGSYS_DEQUE_DONE_ID,
+ 		    &swbuf_data, sizeof(struct img_sw_buffer),
+ 		    gwork->reqfd, 1);
+ 
+ release_work:
++
++#if defined(IMGSYS_NDD_FROM_KERNEL)
++	if( (gwfrm_info->user_info[0].ndd_fp[0] != '\0') && (gwfrm_info->ndd_kernel_complete != NULL) )
++		kfree(gwfrm_info->ndd_kernel_complete);
++#endif
++	if( (gwfrm_info->user_info[0].ndd_fp[0] != '\0') && (gwfrm_info->ndd_user_complete != NULL) ) {
++		kfree(gwfrm_info->ndd_user_complete);
++	}
++
++	kfree(gwork);
+ 	return;
+ }
+ 
+@@ -349,10 +369,9 @@ static void imgsys_mdp_cb_func(struct imgsys_cb_data data,
+ 	struct mtk_imgsys_pipe *pipe;
+ 	struct mtk_imgsys_request *req;
+ 	struct mtk_imgsys_dev *imgsys_dev;
+-	//struct swfrm_info_t *frm_info_cb;
+ 	struct swfrm_info_t *swfrminfo_cb;
+ 	struct imgsys_event_status ev;
+-	struct gce_cb_work gwork;
++	struct gce_cb_work *gwork = NULL;
+ 	bool need_notify_daemon = false;
+ 	bool last_frame_in_req = false;
+ 	struct reqfd_cbinfo_t *reqfdcb_info = NULL;
+@@ -363,13 +382,18 @@ static void imgsys_mdp_cb_func(struct imgsys_cb_data data,
+ 	int exp_cnt = 0;
+ 	int cur_cnt = 0;
+ 
+-	if (!data.data)
++	if (!data.data) {
++		pr_err("%s: data->data is NULL\n",
++		       __func__);
+ 		return;
++        }
+ 
+ 	swfrminfo_cb = data.data;
+ 	pipe = (struct mtk_imgsys_pipe *)swfrminfo_cb->pipe;
+-	if (!pipe->streaming)
++	if (!pipe->streaming) {
+ 		pr_info("%s pipe already streamoff\n", __func__);
++		return;
++	}
+ 
+ 	req = (struct mtk_imgsys_request *)(swfrminfo_cb->req);
+ 	if (!req) {
+@@ -469,15 +493,66 @@ static void imgsys_mdp_cb_func(struct imgsys_cb_data data,
+ 			mtk_imgsys_notify(req, swfrminfo_cb->frm_owner);
+ 
+ 		if (need_notify_daemon) {
+-			gwork.reqfd = swfrminfo_cb->request_fd;
+-			//memcpy((void *)(&(gwork->user_info)), (void *)(&(frm_info_cb->user_info)),
+-			//	sizeof(struct img_swfrm_info));
+-			gwork.req_sbuf_kva = swfrminfo_cb->req_sbuf_kva;
+-			gwork.pipe = swfrminfo_cb->pipe;
+-			cmdq_cb_done_worker(&gwork.work);
++			gwork = kzalloc(sizeof(struct gce_cb_work), GFP_KERNEL);
++			gwork->reqfd = swfrminfo_cb->request_fd;
++			gwork->req_sbuf_kva = swfrminfo_cb->req_sbuf_kva;
++			gwork->pipe = swfrminfo_cb->pipe;
++
++			if(swfrminfo_cb->user_info[subfidx].ndd_fp[0] != '\0') {
++				INIT_WORK(&gwork->work, cmdq_cb_done_worker);
++				queue_work(req->imgsys_pipe->imgsys_dev->mdpcb_wq, &gwork->work);
++			} else {
++				cmdq_cb_done_worker(&(gwork->work));
++			}
++		}
++	}
++}
++
++#if defined(IMGSYS_NDD_FROM_KERNEL)
++static void imgsys_ndd_worker(struct work_struct *work)
++{
++	struct mtk_imgsys_request *req = NULL;
++	struct swfrm_info_t *gwfrm_info = NULL;
++	struct scp_work *gwork = NULL;
++	struct img_swfrm_info *subfrm_info = NULL;
++	struct imgsys_ndd_frm_dump_info frm_dump_info = { 0 };
++	int frm = 0;
++
++	gwork = container_of(work, struct scp_work, work);
++	gwfrm_info = (struct swfrm_info_t *)gwork->req_sbuf_kva;
++	req = gwork->req;
++
++	if (!req) {
++		pr_info("%s NULL request Address\n", __func__);
++		goto release_work;
++	}
++
++	dev_dbg(req->imgsys_pipe->imgsys_dev->dev,
++		"%s:%s:req fd/no(%d/%d)frame no(%d), total_frmnum:%d\n",
++		__func__, (char *)(&(gwfrm_info->frm_owner)), gwfrm_info->request_fd,
++		gwfrm_info->request_no,
++		gwfrm_info->frame_no,
++		gwfrm_info->total_frmnum);
++
++	for (frm = 0 ; frm < gwfrm_info->total_frmnum ; frm++) {
++		subfrm_info = &(gwfrm_info->user_info[frm]);
++		if (subfrm_info->ndd_fp[0] != '\0') {
++			frm_dump_info.user_buffer = NULL;
++			frm_dump_info.hw_comb = subfrm_info->hw_comb;
++			frm_dump_info.cq_ofst = subfrm_info->ndd_cq_ofst;
++			frm_dump_info.wpe_psp_ofst = subfrm_info->ndd_wpe_psp_ofst;
++			frm_dump_info.wpe_fp = subfrm_info->ndd_wpe_fp;
++			frm_dump_info.fp = subfrm_info->ndd_fp;
++
++			imgsys_ndd_dump_routine(req->imgsys_pipe->imgsys_dev, &frm_dump_info);
+ 		}
+ 	}
++	complete(gwfrm_info->ndd_kernel_complete);
++
++release_work:
++	kfree(gwork);
+ }
++#endif
+ 
+ static void imgsys_runner_func(struct work_struct *work)
+ {
+@@ -485,7 +560,9 @@ static void imgsys_runner_func(struct work_struct *work)
+ 	struct mtk_imgsys_dev *imgsys_dev = req->imgsys_pipe->imgsys_dev;
+ 	struct swfrm_info_t *frm_info;
+ 	int ret;
+-
++#if defined(IMGSYS_NDD_FROM_KERNEL)
++	struct scp_work *nddwork = NULL;
++#endif
+ 	frm_info = req->swfrm_info;
+ 	frm_info->is_sent = true;
+ 
+@@ -499,6 +576,18 @@ static void imgsys_runner_func(struct work_struct *work)
+ 	if (ret)
+ 		dev_info(imgsys_dev->dev,
+ 			 "%s: imgsys_cmdq_sendtask fail(%d)\n", __func__, ret);
++
++#if defined(IMGSYS_NDD_FROM_KERNEL)
++	if (frm_info->user_info[0].ndd_fp[0] != '\0') {
++		nddwork = kzalloc(sizeof(struct scp_work), GFP_KERNEL);
++		nddwork->req = req;
++		nddwork->req_sbuf_kva = frm_info->req_sbuf_kva;
++
++		INIT_WORK(&nddwork->work, imgsys_ndd_worker);
++		queue_work(req->imgsys_pipe->imgsys_dev->ndd_wq,
++			&nddwork->work);
++	}
++#endif
+ }
+ 
+ static void imgsys_scp_handler(void *data, unsigned int len, void *priv)
+@@ -614,6 +703,16 @@ static void imgsys_scp_handler(void *data, unsigned int len, void *priv)
+ 
+ 	up(&imgsys_dev->sem);
+ 
++	if (swfrm_info->user_info[0].ndd_fp[0] != '\0') {
++		swfrm_info->ndd_user_complete = kzalloc(sizeof(struct completion), GFP_KERNEL);
++		init_completion(swfrm_info->ndd_user_complete);
++		imgsys_ndd_swfrm_list_add(imgsys_dev, swfrm_info);
++#if defined(IMGSYS_NDD_FROM_KERNEL)
++		swfrm_info->ndd_kernel_complete = kzalloc(sizeof(struct completion), GFP_KERNEL);
++		init_completion(swfrm_info->ndd_kernel_complete);
++#endif
++	}
++
+ 	INIT_WORK(&req->runner_work, imgsys_runner_func);
+ 	queue_work(req->imgsys_pipe->imgsys_dev->runner_wq,
+ 		   &req->runner_work);
+diff --git a/drivers/media/platform/mediatek/isp/isp_7x/imgsys/mtk_imgsys-v4l2.c b/drivers/media/platform/mediatek/isp/isp_7x/imgsys/mtk_imgsys-v4l2.c
+old mode 100644
+new mode 100755
+index 8d60ef878090..8cb3d8989b47
+--- a/drivers/media/platform/mediatek/isp/isp_7x/imgsys/mtk_imgsys-v4l2.c
++++ b/drivers/media/platform/mediatek/isp/isp_7x/imgsys/mtk_imgsys-v4l2.c
+@@ -1613,21 +1613,37 @@ static int mtk_imgsys_res_init(struct platform_device *pdev,
+ 					WQ_FREEZABLE,
+ 					"imgsys_mdp_callback");
+ 	if (!imgsys_dev->mdpcb_wq) {
+-		dev_info(imgsys_dev->dev,
+-			 "%s: unable to alloc mdpcb workqueue\n", __func__);
++		dev_err(imgsys_dev->dev,
++			"%s: unable to alloc mdpcb workqueue\n", __func__);
+ 		return -ENOMEM;
+ 	}
+-
++#if defined(IMGSYS_NDD_FROM_KERNEL)
++	imgsys_dev->ndd_wq =
++		alloc_ordered_workqueue("%s",
++					__WQ_LEGACY | WQ_MEM_RECLAIM |
++					WQ_FREEZABLE,
++					"imgsys_ndd_callback");
++	if (!imgsys_dev->ndd_wq) {
++		dev_err(imgsys_dev->dev,
++			"%s: unable to alloc ndd workqueue\n", __func__);
++		ret = -ENOMEM;
++		goto destroy_mdpcb_wq;
++	}
++#endif
+ 	imgsys_dev->composer_wq =
+ 		alloc_ordered_workqueue("%s",
+ 					__WQ_LEGACY | WQ_MEM_RECLAIM |
+ 					WQ_FREEZABLE | WQ_HIGHPRI,
+ 					"imgsys_composer");
+ 	if (!imgsys_dev->composer_wq) {
+-		dev_info(imgsys_dev->dev,
+-			 "%s: unable to alloc composer workqueue\n", __func__);
++		dev_err(imgsys_dev->dev,
++			"%s: unable to alloc composer workqueue\n", __func__);
+ 		ret = -ENOMEM;
++#if defined(IMGSYS_NDD_FROM_KERNEL)
++		goto destroy_ndd_wq;
++#else
+ 		goto destroy_mdpcb_wq;
++#endif
+ 	}
+ 
+ 	imgsys_dev->runner_wq =
+@@ -1636,7 +1652,7 @@ static int mtk_imgsys_res_init(struct platform_device *pdev,
+ 					WQ_FREEZABLE | WQ_HIGHPRI,
+ 					"imgsys_runner");
+ 	if (!imgsys_dev->runner_wq) {
+-		dev_info(imgsys_dev->dev,
++		dev_err(imgsys_dev->dev,
+ 			 "%s: unable to alloc runner workqueue\n", __func__);
+ 		ret = -ENOMEM;
+ 		goto destroy_composer_wq;
+@@ -1649,6 +1665,11 @@ static int mtk_imgsys_res_init(struct platform_device *pdev,
+ destroy_composer_wq:
+ 	destroy_workqueue(imgsys_dev->composer_wq);
+ 
++#if defined(IMGSYS_NDD_FROM_KERNEL)
++destroy_ndd_wq:
++	destroy_workqueue(imgsys_dev->ndd_wq);
++#endif
++
+ destroy_mdpcb_wq:
+ 	destroy_workqueue(imgsys_dev->mdpcb_wq);
+ 
+@@ -1690,7 +1711,6 @@ static int __maybe_unused mtk_imgsys_pm_suspend(struct device *dev)
+ 		return -EBUSY;
+ 	}
+ #ifdef NEED_PM
+-
+ 	if (pm_runtime_suspended(dev)) {
+ 		dev_info(dev, "%s: pm_runtime_suspended is true, no action\n",
+ 			 __func__);
+diff --git a/drivers/media/platform/mediatek/isp/isp_7x/imgsys/platforms/isp_71/Makefile b/drivers/media/platform/mediatek/isp/isp_7x/imgsys/platforms/isp_71/Makefile
+index 5b3633026989..9568f5297ff9 100644
+--- a/drivers/media/platform/mediatek/isp/isp_7x/imgsys/platforms/isp_71/Makefile
++++ b/drivers/media/platform/mediatek/isp/isp_7x/imgsys/platforms/isp_71/Makefile
+@@ -3,7 +3,7 @@
+ # Copyright (C) 2018 MediaTek Inc.
+ #
+ ccflags-$(CONFIG_MTK_AEE_FEATURE) += -I$(srctree)/drivers/misc/mediatek/include/mt-plat
+-ccflags-y += -I$(srctree)/drivers/media/platform/mtk-isp/mtk-hcp/
++ccflags-y += -I$(srctree)/drivers/media/platform/mediatek/isp/isp_7x/mtk-hcp/
+ ccflags-y += -I$(srctree)/drivers/media/platform/mtk-isp/mtk-ipesys-me/
+ ccflags-y += -I$(srctree)/drivers/media/platform/mtk-isp/imgsys/
+ ccflags-y += -I$(srctree)/drivers/misc/mediatek/mtk-interconnect/
+diff --git a/drivers/media/platform/mediatek/isp/isp_7x/imgsys/platforms/isp_71/modules/mtk_imgsys-adl.c b/drivers/media/platform/mediatek/isp/isp_7x/imgsys/platforms/isp_71/modules/mtk_imgsys-adl.c
+old mode 100644
+new mode 100755
+diff --git a/drivers/media/platform/mediatek/isp/isp_7x/imgsys/platforms/isp_71/modules/mtk_imgsys-dip.c b/drivers/media/platform/mediatek/isp/isp_7x/imgsys/platforms/isp_71/modules/mtk_imgsys-dip.c
+old mode 100644
+new mode 100755
+index 19bba41288f1..d7f63b0e9e14
+--- a/drivers/media/platform/mediatek/isp/isp_7x/imgsys/platforms/isp_71/modules/mtk_imgsys-dip.c
++++ b/drivers/media/platform/mediatek/isp/isp_7x/imgsys/platforms/isp_71/modules/mtk_imgsys-dip.c
+@@ -274,6 +274,87 @@ void imgsys_dip_debug_dump(struct mtk_imgsys_dev *imgsys_dev,
+ }
+ EXPORT_SYMBOL(imgsys_dip_debug_dump);
+ 
++void imgsys_dip_ndd_dump(struct mtk_imgsys_dev *imgsys_dev,
++				struct imgsys_ndd_frm_dump_info *frm_dump_info)
++{
++	char *dip_name;
++	char file_name[256] = "\0";
++	ssize_t ret;
++	uint32_t *cq_va = NULL;
++#if defined(IMGSYS_NDD_FROM_KERNEL)
++	struct file *cfile;
++	loff_t pos = 0;
++#endif
++	if ((frm_dump_info->eng_e != IMGSYS_NDD_ENG_DIP)) {
++		dev_err(imgsys_dev->dev, "%s wrong ndd dip eng enum %d\n", __func__, frm_dump_info->eng_e);
++		return;
++	}
++
++	cq_va = (uint32_t *)((uint64_t)mtk_hcp_get_reserve_mem_virt(imgsys_dev->scp_pdev, DIP_MEM_C_ID) + frm_dump_info->cq_ofst[frm_dump_info->eng_e]);
++	if (cq_va == NULL) {
++		dev_err(imgsys_dev->dev, "%s get null dip cq_va with ofst 0x%llx\n", __func__, frm_dump_info->cq_ofst[frm_dump_info->eng_e]);
++		return;
++	}
++
++	dip_name = frm_dump_info->user_buffer ? "REG_DIP_dip.reg" : "REG_DIP_dip.regKernel";
++	ret = snprintf(file_name, sizeof(file_name), "%s%s", frm_dump_info->fp, dip_name);
++	if ((ret < 0) || (ret >= sizeof(file_name))) {
++		dev_err(imgsys_dev->dev, "wrong dip ndd file name %s\n", file_name);
++		return;
++	}
++
++	dev_dbg(imgsys_dev->dev, "%s: dip ndd dump from 0x%llx to file %s +\n", __func__, (uint64_t)cq_va, file_name);
++
++	if (frm_dump_info->user_buffer) {
++		ret = copy_to_user(frm_dump_info->user_buffer, (u8 *)file_name, FP_SIZE);
++		if (ret != 0) {
++			dev_err(imgsys_dev->dev, "%s failed to copy file name to user\n", __func__);
++			return;
++		}
++		frm_dump_info->user_buffer += FP_SIZE;
++
++		ret = copy_to_user(frm_dump_info->user_buffer, (u8 *)cq_va, 0x9000);
++		if (ret != 0) {
++			dev_err(imgsys_dev->dev, "%s failed to copy register data to user\n", __func__);
++			return;
++		}
++		frm_dump_info->user_buffer += (0x48000 + 0x9000);
++
++		ret = copy_to_user(frm_dump_info->user_buffer, (u8 *)(cq_va + (0x9000 / 4)), DIP_REG_RANGE - 0x9000);
++		if (ret != 0) {
++			dev_err(imgsys_dev->dev, "%s failed to copy register data to user\n", __func__);
++			return;
++		}
++		frm_dump_info->user_buffer += (DIP_REG_RANGE - 0x9000);
++	} else {
++#if defined(IMGSYS_NDD_FROM_KERNEL)
++		cfile = filp_open(file_name, O_CREAT | O_RDWR, 0666);
++		if (IS_ERR(cfile)) {
++			dev_err(imgsys_dev->dev, "%s open file %s failed\n", __func__, file_name);
++			return;
++		}
++
++		ret = kernel_write(cfile, (void *)cq_va, 0x9000, &pos);
++		if (ret < 0) {
++			dev_err(imgsys_dev->dev, "%s failed to write register data to file\n", __func__);
++			filp_close(cfile, NULL);
++			return;
++		}
++		pos += 0x48000; // DIP REG OFFSET
++
++		ret = kernel_write(cfile, (void *)(cq_va + (0x9000 / 4)), DIP_REG_RANGE - 0x9000, &pos);
++		if (ret < 0) {
++			dev_err(imgsys_dev->dev, "%s failed to write register data to file\n", __func__);
++			filp_close(cfile, NULL);
++			return;
++		}
++		filp_close(cfile, NULL);
++#endif
++	}
++		dev_dbg(imgsys_dev->dev, "%s: -\n", __func__);
++}
++EXPORT_SYMBOL(imgsys_dip_ndd_dump);
++
+ void imgsys_dip_uninit(struct mtk_imgsys_dev *imgsys_dev)
+ {
+ 	unsigned int i;
+diff --git a/drivers/media/platform/mediatek/isp/isp_7x/imgsys/platforms/isp_71/modules/mtk_imgsys-dip.h b/drivers/media/platform/mediatek/isp/isp_7x/imgsys/platforms/isp_71/modules/mtk_imgsys-dip.h
+old mode 100644
+new mode 100755
+index a4a59b9c11b4..9f3a7f27f6ee
+--- a/drivers/media/platform/mediatek/isp/isp_7x/imgsys/platforms/isp_71/modules/mtk_imgsys-dip.h
++++ b/drivers/media/platform/mediatek/isp/isp_7x/imgsys/platforms/isp_71/modules/mtk_imgsys-dip.h
+@@ -10,6 +10,9 @@
+ #define _MTK_DIP_DIP_H_
+ 
+ #include "mtk_imgsys-dev.h"
++#include "mtk_imgsys-cmdq.h"
++#include "mtk_imgsys-engine.h"
++#include "mtk_imgsys-debug.h"
+ 
+ /* DIP */
+ #define TOP_CTL_OFFSET	0x0000
+@@ -38,11 +41,12 @@
+ #define N_WDMA_OFFSET	0x2000
+ #define N_WDMA_RANGE	0x0DEC
+ 
++#define DIP_REG_RANGE 	0x17000
+ 
+ void imgsys_dip_set_initial_value(struct mtk_imgsys_dev *imgsys_dev);
+ void imgsys_dip_set_hw_initial_value(struct mtk_imgsys_dev *imgsys_dev);
+-void imgsys_dip_debug_dump(struct mtk_imgsys_dev *imgsys_dev,
+-							unsigned int engine);
++void imgsys_dip_debug_dump(struct mtk_imgsys_dev *imgsys_dev, unsigned int engine);
++void imgsys_dip_ndd_dump(struct mtk_imgsys_dev *imgsys_dev, struct imgsys_ndd_frm_dump_info *frm_dump_info);
+ 
+ void imgsys_dip_uninit(struct mtk_imgsys_dev *imgsys_dev);
+ 
+diff --git a/drivers/media/platform/mediatek/isp/isp_7x/imgsys/platforms/isp_71/modules/mtk_imgsys-pqdip.c b/drivers/media/platform/mediatek/isp/isp_7x/imgsys/platforms/isp_71/modules/mtk_imgsys-pqdip.c
+old mode 100644
+new mode 100755
+index 18b25af953a0..cfa383460ede
+--- a/drivers/media/platform/mediatek/isp/isp_7x/imgsys/platforms/isp_71/modules/mtk_imgsys-pqdip.c
++++ b/drivers/media/platform/mediatek/isp/isp_7x/imgsys/platforms/isp_71/modules/mtk_imgsys-pqdip.c
+@@ -22,7 +22,7 @@
+ 
+ #define PQDIP_BASE_ADDR		0x15210000
+ #define PQDIP_OFST		0x300000
+-#define PQDIP_ALL_REG_CNT	0x6000
++#define PQDIP_REG_RANGE		0x6000
+ 
+ #define PQDIP_CTL_OFST		0x0
+ #define PQDIP_CQ_OFST		0x200
+@@ -137,7 +137,7 @@ void imgsys_pqdip_debug_dump(struct mtk_imgsys_dev *imgsys_dev, unsigned int eng
+ 	for (hw_idx = 0 ; hw_idx < PQDIP_HW_SET ; hw_idx++) {
+ 		pqdip_reg_base = gpqdip_reg_base[hw_idx];
+ #ifdef DUMP_PQ_ALL
+-		for (i = 0x0; i < PQDIP_ALL_REG_CNT; i += 0x10) {
++		for (i = 0x0; i < PQDIP_REG_RANGE; i += 0x10) {
+ 			dev_info(imgsys_dev->dev, "%s:  [0x%08x] 0x%08x 0x%08x 0x%08x 0x%08x",
+ 				 __func__,
+ 				 PQDIP_BASE_ADDR + PQDIP_OFST * hw_idx + i,
+@@ -513,6 +513,92 @@ void imgsys_pqdip_debug_dump(struct mtk_imgsys_dev *imgsys_dev, unsigned int eng
+ }
+ EXPORT_SYMBOL(imgsys_pqdip_debug_dump);
+ 
++void imgsys_pqdip_ndd_dump(struct mtk_imgsys_dev *imgsys_dev,
++				struct imgsys_ndd_frm_dump_info *frm_dump_info)
++{
++	char *pqdip_name;
++	char file_name[256] = "\0";
++	ssize_t ret;
++	uint32_t *cq_va = NULL;
++#if defined(IMGSYS_NDD_FROM_KERNEL)
++	struct file *cfile;
++	loff_t pos = 0;
++#endif
++	// Check for valid engine enum
++	if (frm_dump_info->eng_e < IMGSYS_NDD_ENG_PQDIP_A || frm_dump_info->eng_e > IMGSYS_NDD_ENG_PQDIP_B) {
++		dev_err(imgsys_dev->dev, "%s wrong ndd pqdip eng enum %d\n", __func__, frm_dump_info->eng_e);
++		return;
++	}
++
++	// Get base address of the registers
++	cq_va = (uint32_t *)((uint64_t)mtk_hcp_get_reserve_mem_virt(imgsys_dev->scp_pdev, PQDIP_MEM_C_ID) + frm_dump_info->cq_ofst[frm_dump_info->eng_e]);
++	if (cq_va == NULL) {
++		dev_err(imgsys_dev->dev, "%s get null pqdip cq_va with ofst 0x%llx\n", __func__, frm_dump_info->cq_ofst[frm_dump_info->eng_e]);
++		return;
++	}
++
++	// Construct appropriate pqdip_name based on the engine enum
++	switch (frm_dump_info->eng_e) {
++	case IMGSYS_NDD_ENG_PQDIP_A:
++		pqdip_name = frm_dump_info->user_buffer ? "REG_PQDIP_A_pqdipa.reg" : "REG_PQDIP_A_pqdipa.regKernel";
++		break;
++	case IMGSYS_NDD_ENG_PQDIP_B:
++		pqdip_name = frm_dump_info->user_buffer ? "REG_PQDIP_B_pqdipb.reg" : "REG_PQDIP_B_pqdipb.regKernel";
++		break;
++	default:
++		dev_err(imgsys_dev->dev, "%s invalid pqdip eng enum %d\n", __func__, frm_dump_info->eng_e);
++		return;
++	}
++
++	// Construct file name
++	ret = snprintf(file_name, sizeof(file_name), "%s%s", frm_dump_info->fp, pqdip_name);
++	if ((ret < 0) || (ret >= sizeof(file_name))) {
++		dev_err(imgsys_dev->dev, "wrong pqdip ndd file name %s\n", file_name);
++		return;
++	}
++
++	// Debug print
++	dev_dbg(imgsys_dev->dev, "%s: pqdip ndd dump from 0x%llx to file %s +\n", __func__, (uint64_t)cq_va, file_name);
++
++	// Depending on whether user_buffer is non-null, copy data to user or write to file
++	if (frm_dump_info->user_buffer) {
++		ret = copy_to_user(frm_dump_info->user_buffer, (u8 *)file_name, FP_SIZE);
++		if (ret != 0) {
++			dev_err(imgsys_dev->dev, "%s failed to copy file name to user\n", __func__);
++			return;
++		}
++		frm_dump_info->user_buffer += FP_SIZE;
++
++		ret = copy_to_user(frm_dump_info->user_buffer, (u8 *)cq_va, PQDIP_REG_RANGE);
++		if (ret != 0) {
++			dev_err(imgsys_dev->dev, "%s failed to copy register data to user\n", __func__);
++			return;
++		}
++		frm_dump_info->user_buffer += PQDIP_REG_RANGE;
++	// Consider increasing user_buffer pointer if you return the buffer to userspace
++	} else {
++#if defined(IMGSYS_NDD_FROM_KERNEL)
++		cfile = filp_open(file_name, O_CREAT | O_RDWR, 0666);
++		if (IS_ERR(cfile)) {
++			dev_err(imgsys_dev->dev, "%s open file %s failed\n", __func__, file_name);
++			return;
++		}
++
++		ret = kernel_write(cfile, (void *)cq_va, PQDIP_REG_RANGE, &pos);
++		if (ret < 0) {
++			dev_err(imgsys_dev->dev, "%s failed to write register data to file\n", __func__);
++			filp_close(cfile, NULL);
++			return;
++		}
++		filp_close(cfile, NULL);
++#endif // IMGSYS_NDD_FROM_KERNEL
++	}
++
++    // End of debug print
++    dev_dbg(imgsys_dev->dev, "%s: -\n", __func__);
++}
++EXPORT_SYMBOL(imgsys_pqdip_ndd_dump);
++
+ void imgsys_pqdip_uninit(struct mtk_imgsys_dev *imgsys_dev)
+ {
+ 	unsigned int i;
+diff --git a/drivers/media/platform/mediatek/isp/isp_7x/imgsys/platforms/isp_71/modules/mtk_imgsys-pqdip.h b/drivers/media/platform/mediatek/isp/isp_7x/imgsys/platforms/isp_71/modules/mtk_imgsys-pqdip.h
+old mode 100644
+new mode 100755
+index 63c0f7cddd89..7fd7e39e0523
+--- a/drivers/media/platform/mediatek/isp/isp_7x/imgsys/platforms/isp_71/modules/mtk_imgsys-pqdip.h
++++ b/drivers/media/platform/mediatek/isp/isp_7x/imgsys/platforms/isp_71/modules/mtk_imgsys-pqdip.h
+@@ -11,11 +11,14 @@
+ 
+ #include <mtk_imgsys-dev.h>
+ #include <mtk_imgsys-cmdq.h>
++#include "mtk_imgsys-engine.h"
++#include "mtk_imgsys-debug.h"
+ 
+ void imgsys_pqdip_set_initial_value(struct mtk_imgsys_dev *imgsys_dev);
+ void imgsys_pqdip_set_hw_initial_value(struct mtk_imgsys_dev *imgsys_dev);
+-void imgsys_pqdip_debug_dump(struct mtk_imgsys_dev *imgsys_dev,
+-							unsigned int engine);
++void imgsys_pqdip_debug_dump(struct mtk_imgsys_dev *imgsys_dev, unsigned int engine);
++void imgsys_pqdip_ndd_dump(struct mtk_imgsys_dev *imgsys_dev, struct imgsys_ndd_frm_dump_info *frm_dump_info);
++
+ void imgsys_pqdip_uninit(struct mtk_imgsys_dev *imgsys_dev);
+ 
+ #endif /* _MTK_IMGSYS_PQDIP_H_ */
+diff --git a/drivers/media/platform/mediatek/isp/isp_7x/imgsys/platforms/isp_71/modules/mtk_imgsys-traw.c b/drivers/media/platform/mediatek/isp/isp_7x/imgsys/platforms/isp_71/modules/mtk_imgsys-traw.c
+old mode 100644
+new mode 100755
+index e0046c67b8fe..63d66ac991b1
+--- a/drivers/media/platform/mediatek/isp/isp_7x/imgsys/platforms/isp_71/modules/mtk_imgsys-traw.c
++++ b/drivers/media/platform/mediatek/isp/isp_7x/imgsys/platforms/isp_71/modules/mtk_imgsys-traw.c
+@@ -26,6 +26,7 @@
+ #define TRAW_DMA_ADDR_END		0x5300
+ #define TRAW_DATA_ADDR_OFST		0x8000
+ #define TRAW_MAX_ADDR_OFST		0xBD00
++#define TRAW_REG_RANGE		 	0xC000
+ 
+ #define TRAW_HW_SET		3
+ #define WPE_HW_SET		3
+@@ -604,6 +605,90 @@ void imgsys_traw_debug_dump(struct mtk_imgsys_dev *imgsys_dev, unsigned int engi
+ 	/* SMTO debug data */
+ 	imgsys_traw_dump_smto(imgsys_dev, traw_reg_ba, TRAW_CTL_DBG_SEL, TRAW_CTL_DBG_PORT);
+ }
++void imgsys_traw_ndd_dump(struct mtk_imgsys_dev *imgsys_dev,
++				struct imgsys_ndd_frm_dump_info *frm_dump_info)
++{
++	const char *traw_name;
++	char file_name[256] = "\0";
++	ssize_t ret;
++	uint32_t *cq_va = NULL;
++	uint64_t cq_ofst = 0;
++#if defined(IMGSYS_NDD_FROM_KERNEL)
++	struct file *cfile;
++	loff_t pos = 0;
++#endif
++	if ((frm_dump_info->eng_e > IMGSYS_NDD_ENG_XTR) || (frm_dump_info->eng_e < IMGSYS_NDD_ENG_TRAW)) {
++		dev_err(imgsys_dev->dev, "%s wrong ndd traw eng enum %d\n", __func__, frm_dump_info->eng_e);
++		return;
++	}
++
++	cq_ofst = frm_dump_info->cq_ofst[frm_dump_info->eng_e];
++
++	switch (frm_dump_info->eng_e) {
++	case IMGSYS_NDD_ENG_TRAW:
++		traw_name = frm_dump_info->user_buffer ? "REG_TRAW_traw.reg" : "REG_TRAW_traw.regKernel";
++		break;
++	case IMGSYS_NDD_ENG_LTR:
++		traw_name = frm_dump_info->user_buffer ? "REG_LTRAW_ltraw.reg" : "REG_LTRAW_ltraw.regKernel";
++		break;
++	case IMGSYS_NDD_ENG_XTR:
++		traw_name = frm_dump_info->user_buffer ? "REG_XTRAW_xtraw.reg" : "REG_XTRAW_xtraw.regKernel";
++		break;
++	default:
++		dev_err(imgsys_dev->dev, "%s invalid  ndd traw eng enum %d\n", __func__, frm_dump_info->eng_e);
++		return;
++	}
++
++	cq_va = (uint32_t *)((uint64_t)mtk_hcp_get_reserve_mem_virt(imgsys_dev->scp_pdev, TRAW_MEM_C_ID) + cq_ofst);
++	if (cq_va == NULL) {
++		dev_err(imgsys_dev->dev, "%s get null cq_va with ofst 0x%llx\n", __func__, cq_ofst);
++		return;
++	}
++
++	ret = snprintf(file_name, sizeof(file_name), "%s%s", frm_dump_info->fp, traw_name);
++	if ((ret < 0) || (ret >= sizeof(file_name))) {
++		dev_err(imgsys_dev->dev, "wrong traw ndd file name %s\n", file_name);
++		return;
++	}
++	dev_dbg(imgsys_dev->dev, "%s: traw ndd dump from 0x%llx to file %s +\n", __func__, (uint64_t)cq_va, file_name);
++
++	if (frm_dump_info->user_buffer) {
++		ret = copy_to_user(frm_dump_info->user_buffer,
++				(u8 *)file_name, FP_SIZE);
++		if (ret != 0) {
++			dev_err(imgsys_dev->dev, "%s failed to copy file name to user\n", __func__);
++			return;
++		}
++		frm_dump_info->user_buffer += FP_SIZE;
++
++		ret = copy_to_user(frm_dump_info->user_buffer,
++				(u8 *)cq_va, TRAW_REG_RANGE);
++		if (ret != 0) {
++			dev_err(imgsys_dev->dev, "%s failed to copy register data to user\n", __func__);
++			return;
++		}
++		frm_dump_info->user_buffer += TRAW_REG_RANGE;
++	} else {
++#if defined(IMGSYS_NDD_FROM_KERNEL)
++		cfile = filp_open(file_name, O_CREAT | O_RDWR, 0666);
++		if (IS_ERR(cfile)) {
++			dev_err(imgsys_dev->dev, "%s open file %s failed\n", __func__, file_name);
++			return;
++		}
++
++		ret = kernel_write(cfile, (void *)cq_va, TRAW_REG_RANGE, &pos);
++		if (ret < 0) {
++			dev_err(imgsys_dev->dev, "%s failed to write register data to file\n", __func__);
++			filp_close(cfile, NULL);
++			return;
++		}
++		filp_close(cfile, NULL);
++#endif
++	}
++
++	dev_dbg(imgsys_dev->dev, "%s: -\n", __func__);
++}
++EXPORT_SYMBOL(imgsys_traw_ndd_dump);
+ 
+ void imgsys_traw_uninit(struct mtk_imgsys_dev *imgsys_dev)
+ {
+diff --git a/drivers/media/platform/mediatek/isp/isp_7x/imgsys/platforms/isp_71/modules/mtk_imgsys-traw.h b/drivers/media/platform/mediatek/isp/isp_7x/imgsys/platforms/isp_71/modules/mtk_imgsys-traw.h
+old mode 100644
+new mode 100755
+index 7048117e9e14..7b11bd5e5155
+--- a/drivers/media/platform/mediatek/isp/isp_7x/imgsys/platforms/isp_71/modules/mtk_imgsys-traw.h
++++ b/drivers/media/platform/mediatek/isp/isp_7x/imgsys/platforms/isp_71/modules/mtk_imgsys-traw.h
+@@ -11,6 +11,8 @@
+ 
+ #include <mtk_imgsys-dev.h>
+ #include <mtk_imgsys-cmdq.h>
++#include "mtk_imgsys-engine.h"
++#include "mtk_imgsys-debug.h"
+ 
+ #define TRAW_A_BASE_ADDR	0x15020000
+ #define TRAW_B_BASE_ADDR	0x15040000
+@@ -71,8 +73,9 @@ struct traw_dma_dbg_info {
+ 
+ void imgsys_traw_set_initial_value(struct mtk_imgsys_dev *imgsys_dev);
+ void imgsys_traw_set_initial_value_hw(struct mtk_imgsys_dev *imgsys_dev);
+-void imgsys_traw_debug_dump(struct mtk_imgsys_dev *imgsys_dev,
+-							unsigned int engine);
++void imgsys_traw_debug_dump(struct mtk_imgsys_dev *imgsys_dev, unsigned int engine);
++void imgsys_traw_ndd_dump(struct mtk_imgsys_dev *imgsys_dev, struct imgsys_ndd_frm_dump_info *frm_dump_info);
++
+ void imgsys_traw_uninit(struct mtk_imgsys_dev *imgsys_dev);
+ 
+ #endif /* _MTK_IMGSYS_TRAW_H_ */
+diff --git a/drivers/media/platform/mediatek/isp/isp_7x/imgsys/platforms/isp_71/modules/mtk_imgsys-wpe.c b/drivers/media/platform/mediatek/isp/isp_7x/imgsys/platforms/isp_71/modules/mtk_imgsys-wpe.c
+old mode 100644
+new mode 100755
+index 4adcf40dfeca..3b0b3fd9a013
+--- a/drivers/media/platform/mediatek/isp/isp_7x/imgsys/platforms/isp_71/modules/mtk_imgsys-wpe.c
++++ b/drivers/media/platform/mediatek/isp/isp_7x/imgsys/platforms/isp_71/modules/mtk_imgsys-wpe.c
+@@ -36,6 +36,10 @@ const unsigned int mtk_imgsys_wpe_base_ofst[] = {0x0, 0x300000, 0x400000};
+ #define WPE_REG_CQ_THR0_CTL (0xB08)
+ #define WPE_REG_CQ_THR1_CTL (0xB18)
+ 
++#define WPE_REG_RANGE		0x1000
++#define WPE_PSP_END_OFST	0x554
++#define WPE_COEF_END_OFST	0x5D8
++
+ const struct mtk_imgsys_init_array mtk_imgsys_wpe_init_ary[] = {
+ 	{0x0018, 0x80000000}, /* WPE_TOP_CTL_INT_EN, en w-clr */
+ 	{0x0024, 0xFFFFFFFF}, /* WPE_TOP_CTL_INT_STATUSX, w-clr */
+@@ -330,6 +334,100 @@ void imgsys_wpe_debug_dump(struct mtk_imgsys_dev *imgsys_dev,
+ }
+ EXPORT_SYMBOL(imgsys_wpe_debug_dump);
+ 
++void imgsys_wpe_ndd_dump(struct mtk_imgsys_dev *imgsys_dev,
++				struct imgsys_ndd_frm_dump_info *frm_dump_info)
++{
++	char file_name[256] = "\0";
++	ssize_t ret;
++	uint32_t *cq_va = NULL;
++	uint32_t *psp_va = NULL;
++	uint64_t cq_ofst = 0;
++	uint64_t psp_ofst = 0;
++#if defined(IMGSYS_NDD_FROM_KERNEL)
++	struct file *cfile;
++	loff_t pos = 0;
++#endif
++	if (frm_dump_info->eng_e > IMGSYS_NDD_ENG_WPE_LITE ) {
++		dev_err(imgsys_dev->dev, "%s wrong ndd wpe eng enum %d\n", __func__, frm_dump_info->eng_e);
++		return;
++	}
++
++	cq_ofst = frm_dump_info->cq_ofst[frm_dump_info->eng_e];
++	psp_ofst = frm_dump_info->wpe_psp_ofst[frm_dump_info->eng_e];
++
++	cq_va = (uint32_t *)((uint64_t)mtk_hcp_get_reserve_mem_virt(imgsys_dev->scp_pdev, WPE_MEM_C_ID) + cq_ofst);
++	if (cq_va == NULL) {
++		dev_err(imgsys_dev->dev, "%s get null wpe cq_va ofst 0x%llx\n", __func__, cq_ofst);
++		return;
++	}
++
++	psp_va = (uint32_t *)((uint64_t)mtk_hcp_get_reserve_mem_virt(imgsys_dev->scp_pdev, WPE_MEM_C_ID) + psp_ofst);
++	if (psp_va == NULL) {
++		dev_err(imgsys_dev->dev, "%s get null wpe psp ofst 0x%llx\n", __func__, psp_ofst);
++		return;
++	}
++	if (frm_dump_info->user_buffer)
++		ret = snprintf(file_name, sizeof(file_name), "%s%s", frm_dump_info->fp, frm_dump_info->wpe_fp);
++	else
++		ret = snprintf(file_name, sizeof(file_name), "%s%sKernel", frm_dump_info->fp, frm_dump_info->wpe_fp);
++
++	if ((ret < 0) || (ret >= sizeof(file_name))) {
++		dev_err(imgsys_dev->dev, "wrong wpe ndd file name %s\n", file_name);
++		return;
++	}
++
++	if (frm_dump_info->user_buffer) {
++		dev_dbg(imgsys_dev->dev, "%s: wpe ndd copy from 0x%llx to user buffer +\n",
++		        __func__, (uint64_t)cq_va);
++
++		ret = copy_to_user(frm_dump_info->user_buffer , (u8 *)file_name, FP_SIZE);
++		frm_dump_info->user_buffer += FP_SIZE;
++
++		if (psp_ofst != 0) {
++
++			ret = copy_to_user(frm_dump_info->user_buffer,
++					(u8 *)cq_va, WPE_PSP_END_OFST);
++			frm_dump_info->user_buffer += WPE_PSP_END_OFST;
++
++			ret = copy_to_user(frm_dump_info->user_buffer,
++					(u8 *)psp_va, WPE_COEF_END_OFST - WPE_PSP_END_OFST);
++			frm_dump_info->user_buffer += (WPE_COEF_END_OFST - WPE_PSP_END_OFST);
++
++			ret = copy_to_user(frm_dump_info->user_buffer,
++					(u8 *)(cq_va+(WPE_COEF_END_OFST/4)), WPE_REG_RANGE - WPE_COEF_END_OFST);
++			frm_dump_info->user_buffer += (WPE_REG_RANGE - WPE_COEF_END_OFST);
++
++		} else {
++			ret = copy_to_user(frm_dump_info->user_buffer,
++					(u8 *)cq_va, WPE_REG_RANGE);
++			frm_dump_info->user_buffer += WPE_REG_RANGE;
++		}
++	} else {
++#if defined(IMGSYS_NDD_FROM_KERNEL)
++		cfile = filp_open(file_name, O_CREAT | O_RDWR, 0666);
++		if (IS_ERR(cfile)) {
++			dev_err(imgsys_dev->dev, "%s open file %s failed\n", __func__, file_name);
++			return;
++		}
++		dev_dbg(imgsys_dev->dev, "%s: wpe ndd dump from 0x%llx to file %s +\n",
++		        __func__, (uint64_t)cq_va, file_name);
++
++		if (psp_ofst != 0) {
++			kernel_write(cfile, (void *)cq_va, WPE_PSP_END_OFST, &pos);
++			kernel_write(cfile, (void *)psp_va, (WPE_COEF_END_OFST - WPE_PSP_END_OFST), &pos);
++			kernel_write(cfile, (void *)(cq_va+(WPE_COEF_END_OFST/4)),
++							(WPE_REG_RANGE - WPE_COEF_END_OFST), &pos);
++		} else {
++
++			kernel_write(cfile, (void *)cq_va, WPE_REG_RANGE, &pos);
++		}
++		filp_close(cfile, NULL);
++#endif
++	}
++	dev_dbg(imgsys_dev->dev, "%s: -\n", __func__);
++}
++EXPORT_SYMBOL(imgsys_wpe_ndd_dump);
++
+ void imgsys_wpe_uninit(struct mtk_imgsys_dev *imgsys_dev)
+ {
+ 	unsigned int i;
+diff --git a/drivers/media/platform/mediatek/isp/isp_7x/imgsys/platforms/isp_71/modules/mtk_imgsys-wpe.h b/drivers/media/platform/mediatek/isp/isp_7x/imgsys/platforms/isp_71/modules/mtk_imgsys-wpe.h
+old mode 100644
+new mode 100755
+index c5a00a610c66..9f880829a6f4
+--- a/drivers/media/platform/mediatek/isp/isp_7x/imgsys/platforms/isp_71/modules/mtk_imgsys-wpe.h
++++ b/drivers/media/platform/mediatek/isp/isp_7x/imgsys/platforms/isp_71/modules/mtk_imgsys-wpe.h
+@@ -10,11 +10,15 @@
+ #define _MTK_IMGSYS_WPE_H_
+ 
+ #include "mtk_imgsys-dev.h"
++#include "mtk_imgsys-cmdq.h"
++#include "mtk_imgsys-engine.h"
++#include "mtk_imgsys-debug.h"
+ 
+ void imgsys_wpe_set_initial_value(struct mtk_imgsys_dev *imgsys_dev);
+ void imgsys_wpe_set_hw_initial_value(struct mtk_imgsys_dev *imgsys_dev);
+-void imgsys_wpe_debug_dump(struct mtk_imgsys_dev *imgsys_dev,
+-							unsigned int engine);
++void imgsys_wpe_debug_dump(struct mtk_imgsys_dev *imgsys_dev, unsigned int engine);
++void imgsys_wpe_ndd_dump(struct mtk_imgsys_dev *imgsys_dev, struct imgsys_ndd_frm_dump_info *frm_dump_info);
++
+ void imgsys_wpe_uninit(struct mtk_imgsys_dev *imgsys_dev);
+ 
+ #endif /* _MTK_IMGSYS_WPE_H_ */
+diff --git a/drivers/media/platform/mediatek/isp/isp_7x/imgsys/platforms/isp_71/mtk_imgsys-debug.c b/drivers/media/platform/mediatek/isp/isp_7x/imgsys/platforms/isp_71/mtk_imgsys-debug.c
+old mode 100644
+new mode 100755
+index 06985080868a..3c558f5d9f92
+--- a/drivers/media/platform/mediatek/isp/isp_7x/imgsys/platforms/isp_71/mtk_imgsys-debug.c
++++ b/drivers/media/platform/mediatek/isp/isp_7x/imgsys/platforms/isp_71/mtk_imgsys-debug.c
+@@ -14,6 +14,151 @@
+ #include "mtk_imgsys-engine.h"
+ #include "mtk_imgsys-debug.h"
+ 
++#include <linux/debugfs.h>
++#include <linux/uaccess.h>
++#include <linux/list.h>
++#include <linux/mutex.h>
++
++static DEFINE_MUTEX(ndd_mutex);
++
++struct ndd_swfrm_info_t {
++	struct mtk_imgsys_dev *imgsys_dev;
++	struct swfrm_info_t *gwfrm_info;
++	struct list_head list;
++}__attribute__ ((__packed__));
++
++LIST_HEAD(ndd_swfrm_list);
++
++#define DEBUGFS_DIR "mtk_imgsys_debug"
++#define DEBUGFS_FILE "mtk_imgsys_ndd"
++#define FILE_PERMISSIONS 0644
++
++static struct dentry *debugfs_dir, *debugfs_file;
++
++#define WPE_ENG_NUM	3
++#define TRAW_ENG_NUM	3
++#define DIP_ENG_NUM	1
++#define PQDIP_ENG_NUM	2
++#define ME_ENG_NUM	1
++
++#define WPE_NDD_SIZE	0x1000
++#define TRAW_NDD_SIZE	0xC000
++#define DIP_NDD_SIZE	0x5F000
++#define PQDIP_NDD_SIZE	0x6000
++#define ME_NDD_SIZE	0xA20
++
++struct ndd_request_t {
++	int fd;
++	int total_frmnum;
++}__attribute__ ((__packed__));
++
++static struct ndd_request_t ndd_request;
++
++struct ndd_wpe_info_t {
++	char fp[FP_SIZE];
++	u8 data[WPE_NDD_SIZE];
++};
++struct ndd_traw_info_t {
++	char fp[FP_SIZE];
++	u8 data[TRAW_NDD_SIZE];
++};
++struct ndd_dip_info_t {
++	char fp[FP_SIZE];
++	u8 data[DIP_NDD_SIZE];
++};
++struct ndd_pqdip_info_t {
++	char fp[FP_SIZE];
++	u8 data[PQDIP_NDD_SIZE];
++};
++struct ndd_me_info_t {
++	char fp[FP_SIZE];
++	u8 data[ME_NDD_SIZE];
++};
++
++struct ndd_frm_info_t {
++	struct ndd_wpe_info_t	wpe[WPE_ENG_NUM];
++	struct ndd_traw_info_t	traw[TRAW_ENG_NUM];
++	struct ndd_dip_info_t	dip[DIP_ENG_NUM];
++	struct ndd_pqdip_info_t	pqdip[PQDIP_ENG_NUM];
++	struct ndd_me_info_t	me[ME_ENG_NUM];
++}__attribute__ ((__packed__));
++
++static ssize_t debugfs_write(struct file *file, const char __user *user_buffer, size_t count, loff_t *ppos)
++{
++	mutex_lock(&ndd_mutex);
++	if (count != sizeof(ndd_request)) {
++		return -EINVAL;
++	}
++
++	if (copy_from_user(&ndd_request, user_buffer, count)) {
++		return -EFAULT;
++	}
++
++	pr_debug("[%s][%d] fd:%d  total_frmnum:%d \n", __func__, __LINE__,
++			ndd_request.fd, ndd_request.total_frmnum);
++
++	*ppos += count;
++
++	return count;
++}
++
++static ssize_t debugfs_read(struct file *file, char __user *user_buffer, size_t count, loff_t *ppos)
++{
++	struct ndd_swfrm_info_t *cur_ndd_swfrm = NULL, *temp = NULL;
++	int frm = 0, list_frm_cnt = 0;
++	size_t read_count = 0;
++	struct img_swfrm_info *subfrm_info = NULL;
++	struct imgsys_ndd_frm_dump_info frm_dump_info = { 0 };
++
++	list_for_each_entry_safe(cur_ndd_swfrm, temp, &ndd_swfrm_list, list) {
++		if (cur_ndd_swfrm->gwfrm_info->request_fd == ndd_request.fd) {
++			for (frm = 0 ; frm < cur_ndd_swfrm->gwfrm_info->total_frmnum ; frm++) {
++				subfrm_info = &(cur_ndd_swfrm->gwfrm_info->user_info[frm]);
++				if (subfrm_info->ndd_fp[0] != '\0') {
++					frm_dump_info.user_buffer = user_buffer + sizeof(struct ndd_frm_info_t)*list_frm_cnt;
++					frm_dump_info.hw_comb = subfrm_info->hw_comb;
++					frm_dump_info.cq_ofst = subfrm_info->ndd_cq_ofst;
++					frm_dump_info.wpe_psp_ofst = subfrm_info->ndd_wpe_psp_ofst;
++					frm_dump_info.wpe_fp = subfrm_info->ndd_wpe_fp;
++					frm_dump_info.fp = subfrm_info->ndd_fp;
++
++					pr_debug("[%s][%d] frame_no %d reqfd %d |owner %s hw_comb 0x%x frm:%d total_frmnum:%d\n",
++						__func__, __LINE__,
++						cur_ndd_swfrm->gwfrm_info->frame_no,
++						cur_ndd_swfrm->gwfrm_info->request_fd,
++						(char *)(&(cur_ndd_swfrm->gwfrm_info->frm_owner)),
++						subfrm_info->hw_comb,
++						frm,
++						cur_ndd_swfrm->gwfrm_info->total_frmnum);
++					/* dump module ndd */
++					imgsys_ndd_dump_routine(cur_ndd_swfrm->imgsys_dev, &frm_dump_info);
++					list_frm_cnt++;
++					read_count = list_frm_cnt*sizeof(struct ndd_frm_info_t);
++				}
++			}
++			complete(cur_ndd_swfrm->gwfrm_info->ndd_user_complete);
++			list_del(&cur_ndd_swfrm->list);
++			kfree(cur_ndd_swfrm);
++		}
++	}
++	mutex_unlock(&ndd_mutex);
++
++	if(list_frm_cnt != ndd_request.total_frmnum) {
++		pr_err("[%s][%d] list_frm_cnt:%d != ndd_request.total_frmnum:%d \n",
++		__func__, __LINE__,list_frm_cnt, ndd_request.total_frmnum);
++	}
++
++	pr_debug("[%s][%d] list_frm_cnt:%d  ndd_request.total_frmnum:%d \n",
++		__func__, __LINE__,list_frm_cnt, ndd_request.total_frmnum);
++
++	return read_count;
++}
++
++static const struct file_operations debugfs_fops = {
++	.write = debugfs_write,
++	.read = debugfs_read,
++};
++
+ #define DL_CHECK_ENG_NUM 11
+ #define WPE_HW_SET    3
+ #define ADL_HW_SET    2
+@@ -124,6 +269,22 @@ void imgsys_main_init(struct mtk_imgsys_dev *imgsys_dev)
+ 		adlb_reg_base = NULL;
+ 		dev_info(imgsys_dev->dev, "%s Do not have ADL hardware.\n", __func__);
+ 	}
++
++	debugfs_dir = debugfs_create_dir(DEBUGFS_DIR, NULL);
++	if (!debugfs_dir) {
++		dev_info(imgsys_dev->dev, "%s Failed to create debugfs directory\n",
++									__func__);
++		return;
++	}
++
++	debugfs_file = debugfs_create_file(DEBUGFS_FILE, FILE_PERMISSIONS, debugfs_dir, NULL, &debugfs_fops);
++	if (!debugfs_file) {
++		dev_info(imgsys_dev->dev, "%s Failed to create debugfs file\n",
++									__func__);
++		return;
++	}
++
++	mutex_init(&ndd_mutex);
+ }
+ 
+ void imgsys_main_set_init(struct mtk_imgsys_dev *imgsys_dev)
+@@ -248,6 +409,9 @@ void imgsys_main_uninit(struct mtk_imgsys_dev *imgsys_dev)
+ 		iounmap(adlb_reg_base);
+ 		adlb_reg_base = 0L;
+ 	}
++
++	debugfs_remove(debugfs_file);
++	debugfs_remove(debugfs_dir);
+ }
+ 
+ void imgsys_debug_dump_routine(struct mtk_imgsys_dev *imgsys_dev,
+@@ -290,6 +454,97 @@ void imgsys_debug_dump_routine(struct mtk_imgsys_dev *imgsys_dev,
+ }
+ EXPORT_SYMBOL(imgsys_debug_dump_routine);
+ 
++void imgsys_ndd_swfrm_list_add(struct mtk_imgsys_dev *imgsys_dev,
++	struct swfrm_info_t *gwfrm_info)
++{
++	struct ndd_swfrm_info_t *new_ndd_swfrm = kmalloc(sizeof(struct ndd_swfrm_info_t), GFP_KERNEL);
++
++	if (!new_ndd_swfrm) {
++		dev_err(imgsys_dev->dev, "%s: Memory allocation for new_ndd_swfrm failed\n", __func__);
++    		return;
++	}
++
++	new_ndd_swfrm->imgsys_dev = imgsys_dev;
++	new_ndd_swfrm->gwfrm_info = gwfrm_info;
++
++	mutex_lock(&ndd_mutex);
++	list_add_tail(&new_ndd_swfrm->list, &ndd_swfrm_list);
++	mutex_unlock(&ndd_mutex);
++
++	dev_info(imgsys_dev->dev,
++		"%s: frame_no:%d reqfd:%d |owner:%.*s total_frmnum:%d\n",
++		__func__,
++		gwfrm_info->frame_no, gwfrm_info->request_fd,
++		(int)sizeof(gwfrm_info->frm_owner), (char *)(&(gwfrm_info->frm_owner)),
++		gwfrm_info->total_frmnum);
++}
++EXPORT_SYMBOL(imgsys_ndd_swfrm_list_add);
++
++void imgsys_ndd_dump_routine(struct mtk_imgsys_dev *imgsys_dev, struct imgsys_ndd_frm_dump_info *frm_dump_info)
++{
++	int i = 0;
++	int mid = 0;
++	unsigned int hw_num = 0x1;
++	unsigned int module_copy_ofst = 0;
++	const struct module_ops *imgsys_modules = imgsys_dev->modules;
++
++	dev_dbg(imgsys_dev->dev,
++			"%s: hw comb set: 0x%x\n", __func__, frm_dump_info->hw_comb);
++
++	for (i = 0; hw_num < IMGSYS_ENG_MAX_NUM; i++, hw_num = (0x1 << i)) {
++		switch (hw_num) {
++		case IMGSYS_ENG_WPE_EIS:
++		case IMGSYS_ENG_WPE_TNR:
++		case IMGSYS_ENG_WPE_LITE:
++			module_copy_ofst = (FP_SIZE + WPE_NDD_SIZE);
++			mid = IMGSYS_MOD_WPE;
++			break;
++		case IMGSYS_ENG_ADL_A:
++		case IMGSYS_ENG_ADL_B:
++			module_copy_ofst = 0;
++			break;
++		case IMGSYS_ENG_TRAW:
++		case IMGSYS_ENG_LTR:
++		case IMGSYS_ENG_XTR:
++			module_copy_ofst = (FP_SIZE + TRAW_NDD_SIZE);
++			mid = IMGSYS_MOD_TRAW;
++			break;
++		case IMGSYS_ENG_DIP:
++			module_copy_ofst = (FP_SIZE + DIP_NDD_SIZE);
++			mid = IMGSYS_MOD_DIP;
++			break;
++		case IMGSYS_ENG_PQDIP_A:
++		case IMGSYS_ENG_PQDIP_B:
++			module_copy_ofst = (FP_SIZE + PQDIP_NDD_SIZE);
++			mid = IMGSYS_MOD_PQDIP;
++			break;
++		case IMGSYS_ENG_ME:
++			module_copy_ofst = (FP_SIZE + ME_NDD_SIZE);
++			mid = IMGSYS_MOD_ME;
++			break;
++		default:
++			dev_err(imgsys_dev->dev, "%s get wrong hw id %d\n", __func__, hw_num);
++			break;
++		}
++
++		if (frm_dump_info->hw_comb & hw_num) {
++			frm_dump_info->eng_e = i;
++			if(frm_dump_info->eng_e <= IMGSYS_NDD_ENG_ME )
++				imgsys_modules[mid].ndddump(imgsys_dev, frm_dump_info);
++		} else {
++			if(frm_dump_info->user_buffer)
++				frm_dump_info->user_buffer += module_copy_ofst;
++			else
++				frm_dump_info->user_buffer = NULL;
++		}
++
++		/* reduce unnecessary loop */
++		if ((frm_dump_info->hw_comb >> i) == 0)
++			return;
++	}
++}
++EXPORT_SYMBOL(imgsys_ndd_dump_routine);
++
+ void imgsys_cg_debug_dump(struct mtk_imgsys_dev *imgsys_dev)
+ {
+ 	unsigned int i = 0;
+diff --git a/drivers/media/platform/mediatek/isp/isp_7x/imgsys/platforms/isp_71/mtk_imgsys-debug.h b/drivers/media/platform/mediatek/isp/isp_7x/imgsys/platforms/isp_71/mtk_imgsys-debug.h
+old mode 100644
+new mode 100755
+index 594abd33fc57..fd08db36aa7a
+--- a/drivers/media/platform/mediatek/isp/isp_7x/imgsys/platforms/isp_71/mtk_imgsys-debug.h
++++ b/drivers/media/platform/mediatek/isp/isp_7x/imgsys/platforms/isp_71/mtk_imgsys-debug.h
+@@ -12,6 +12,9 @@
+ #include "mtk_imgsys-dev.h"
+ #include "mtk_imgsys-module.h"
+ #include "mtk_imgsys-engine.h"
++
++#define FP_SIZE 256 // NDD file path size
++
+ /**
+  * enum IMGSYS_DL_PATH_E
+  *
+@@ -34,15 +37,45 @@ enum IMGSYS_DL_PATH_E {
+ 	IMGSYS_DL_WPEL_TRAW, /*no this*/
+ };
+ 
++enum mtk_imgsys_ndd_eng {
++	IMGSYS_NDD_ENG_WPE_EIS	= 0,
++	IMGSYS_NDD_ENG_WPE_TNR	= 1,
++	IMGSYS_NDD_ENG_WPE_LITE	= 2,
++	IMGSYS_NDD_ENG_ADL_A	= 3,
++	IMGSYS_NDD_ENG_ADL_B	= 4,
++	IMGSYS_NDD_ENG_TRAW	= 5,
++	IMGSYS_NDD_ENG_LTR	= 6,
++	IMGSYS_NDD_ENG_XTR	= 7,
++	IMGSYS_NDD_ENG_DIP	= 8,
++	IMGSYS_NDD_ENG_PQDIP_A	= 9,
++	IMGSYS_NDD_ENG_PQDIP_B	= 10,
++	IMGSYS_NDD_ENG_ME	= 11,
++	IMGSYS_NDD_ENG_MAX_NUM	= 12
++};
++
+ struct imgsys_dbg_engine_t {
+ 	enum mtk_imgsys_engine eng_e;
+ 	char eng_name[8];
+ };
+ 
++struct imgsys_ndd_frm_dump_info {
++	char __user *user_buffer;
++	unsigned int hw_comb;
++	enum mtk_imgsys_ndd_eng eng_e;
++	uint64_t *cq_ofst;
++	uint64_t *wpe_psp_ofst;
++	char *wpe_fp;
++	char *fp;
++};
++
+ void imgsys_dl_debug_dump(struct mtk_imgsys_dev *imgsys_dev, unsigned int hw_comb);
+ void imgsys_debug_dump_routine(struct mtk_imgsys_dev *imgsys_dev,
+ 	const struct module_ops *imgsys_modules, int imgsys_module_num,
+ 	unsigned int hw_comb);
++void imgsys_ndd_dump_routine(struct mtk_imgsys_dev *imgsys_dev,
++	struct imgsys_ndd_frm_dump_info *frm_dump_info);
++void imgsys_ndd_swfrm_list_add(struct mtk_imgsys_dev *imgsys_dev,
++	struct swfrm_info_t *gwfrm_info);
+ void imgsys_main_init(struct mtk_imgsys_dev *imgsys_dev);
+ void imgsys_main_set_init(struct mtk_imgsys_dev *imgsys_dev);
+ void imgsys_main_uninit(struct mtk_imgsys_dev *imgsys_dev);
+diff --git a/drivers/media/platform/mediatek/isp/isp_7x/imgsys/platforms/isp_71/mtk_imgsys-engine.h b/drivers/media/platform/mediatek/isp/isp_7x/imgsys/platforms/isp_71/mtk_imgsys-engine.h
+old mode 100644
+new mode 100755
+index 114698be6b8f..bf37e0625cf8
+--- a/drivers/media/platform/mediatek/isp/isp_7x/imgsys/platforms/isp_71/mtk_imgsys-engine.h
++++ b/drivers/media/platform/mediatek/isp/isp_7x/imgsys/platforms/isp_71/mtk_imgsys-engine.h
+@@ -34,15 +34,16 @@ enum mtk_imgsys_engine {
+ 	IMGSYS_ENG_WPE_EIS	= 0x00000001,
+ 	IMGSYS_ENG_WPE_TNR	= 0x00000002,
+ 	IMGSYS_ENG_WPE_LITE	= 0x00000004,
+-	IMGSYS_ENG_ADL_A    = 0x00000008,
+-	IMGSYS_ENG_ADL_B    = 0x00000010,
+-	IMGSYS_ENG_TRAW		  = 0x00000020,
+-	IMGSYS_ENG_LTR		  = 0x00000040,
+-	IMGSYS_ENG_XTR		  = 0x00000080,
+-	IMGSYS_ENG_DIP		  = 0x00000100,
++	IMGSYS_ENG_ADL_A	= 0x00000008,
++	IMGSYS_ENG_ADL_B	= 0x00000010,
++	IMGSYS_ENG_TRAW		= 0x00000020,
++	IMGSYS_ENG_LTR		= 0x00000040,
++	IMGSYS_ENG_XTR		= 0x00000080,
++	IMGSYS_ENG_DIP		= 0x00000100,
+ 	IMGSYS_ENG_PQDIP_A	= 0x00000200,
+ 	IMGSYS_ENG_PQDIP_B	= 0x00000400,
+-	IMGSYS_ENG_ME		    = 0x00000800
++	IMGSYS_ENG_ME		= 0x00000800,
++	IMGSYS_ENG_MAX_NUM	= 0x00001000
+ };
+ 
+ /**
+diff --git a/drivers/media/platform/mediatek/isp/isp_7x/imgsys/platforms/isp_71/mtk_imgsys-modops.h b/drivers/media/platform/mediatek/isp/isp_7x/imgsys/platforms/isp_71/mtk_imgsys-modops.h
+old mode 100644
+new mode 100755
+index dae7975a2911..91a477618903
+--- a/drivers/media/platform/mediatek/isp/isp_7x/imgsys/platforms/isp_71/mtk_imgsys-modops.h
++++ b/drivers/media/platform/mediatek/isp/isp_7x/imgsys/platforms/isp_71/mtk_imgsys-modops.h
+@@ -26,6 +26,7 @@ const struct module_ops imgsys_isp7_modules[] = {
+ 		.init = imgsys_traw_set_initial_value,
+ 		.set = imgsys_traw_set_initial_value_hw,
+ 		.dump = imgsys_traw_debug_dump,
++		.ndddump = imgsys_traw_ndd_dump,
+ 		.uninit = imgsys_traw_uninit,
+ 	},
+ 	[IMGSYS_MOD_DIP] = {
+@@ -33,6 +34,7 @@ const struct module_ops imgsys_isp7_modules[] = {
+ 		.init = imgsys_dip_set_initial_value,
+ 		.set = imgsys_dip_set_hw_initial_value,
+ 		.dump = imgsys_dip_debug_dump,
++		.ndddump = imgsys_dip_ndd_dump,
+ 		.uninit = imgsys_dip_uninit,
+ 	},
+ 	[IMGSYS_MOD_PQDIP] = {
+@@ -40,6 +42,7 @@ const struct module_ops imgsys_isp7_modules[] = {
+ 		.init = imgsys_pqdip_set_initial_value,
+ 		.set = imgsys_pqdip_set_hw_initial_value,
+ 		.dump = imgsys_pqdip_debug_dump,
++		.ndddump = imgsys_pqdip_ndd_dump,
+ 		.uninit = imgsys_pqdip_uninit,
+ 	},
+ 	[IMGSYS_MOD_ME] = {
+@@ -47,6 +50,7 @@ const struct module_ops imgsys_isp7_modules[] = {
+ 		.init = ipesys_me_set_initial_value,
+ 		.set = NULL,
+ 		.dump = ipesys_me_debug_dump,
++		.ndddump = ipesys_me_ndd_dump,
+ 		.uninit = ipesys_me_uninit,
+ 	},
+ 	[IMGSYS_MOD_WPE] = {
+@@ -54,6 +58,7 @@ const struct module_ops imgsys_isp7_modules[] = {
+ 		.init = imgsys_wpe_set_initial_value,
+ 		.set = imgsys_wpe_set_hw_initial_value,
+ 		.dump = imgsys_wpe_debug_dump,
++		.ndddump = imgsys_wpe_ndd_dump,
+ 		.uninit = imgsys_wpe_uninit,
+ 	},
+ 	[IMGSYS_MOD_ADL] = {
+@@ -61,6 +66,7 @@ const struct module_ops imgsys_isp7_modules[] = {
+ 		.init = imgsys_adl_init,
+ 		.set = imgsys_adl_set,
+ 		.dump = imgsys_adl_debug_dump,
++		.ndddump = NULL,
+ 		.uninit = imgsys_adl_uninit,
+ 	},
+ 	/*pure sw usage for timeout debug dump*/
+@@ -69,6 +75,7 @@ const struct module_ops imgsys_isp7_modules[] = {
+ 		.init = imgsys_main_init,
+ 		.set = imgsys_main_set_init,
+ 		.dump = NULL,
++		.ndddump = NULL,
+ 		.uninit = imgsys_main_uninit,
+ 	},
+ };
+diff --git a/drivers/media/platform/mediatek/isp/isp_7x/imgsys/platforms/mtk_imgsys-data.h b/drivers/media/platform/mediatek/isp/isp_7x/imgsys/platforms/mtk_imgsys-data.h
+old mode 100644
+new mode 100755
+diff --git a/drivers/media/platform/mediatek/isp/isp_7x/mtk-hcp/mtk-hcp.c b/drivers/media/platform/mediatek/isp/isp_7x/mtk-hcp/mtk-hcp.c
+old mode 100644
+new mode 100755
+index ace0481e68f5..29963fbf5d45
+--- a/drivers/media/platform/mediatek/isp/isp_7x/mtk-hcp/mtk-hcp.c
++++ b/drivers/media/platform/mediatek/isp/isp_7x/mtk-hcp/mtk-hcp.c
+@@ -232,6 +232,29 @@ struct platform_device *mtk_hcp_get_plat_device(struct platform_device *pdev)
+ }
+ EXPORT_SYMBOL(mtk_hcp_get_plat_device);
+ 
++void *mtk_hcp_get_reserve_mem_virt(struct platform_device *pdev, unsigned int id)
++{
++	struct mtk_hcp *hcp_dev = platform_get_drvdata(pdev);
++	void *buffer;
++
++	if ((id < 0) || (id >= NUMS_MEM_ID)) {
++		pr_info("[HCP] no reserve memory for %d", id);
++		return 0;
++	} else {
++		if (!hcp_dev->data->get_reserve_mem_virt) {
++			dev_info(&pdev->dev, "%s: not supported\n", __func__);
++			return NULL;
++		}
++
++		buffer = hcp_dev->data->get_reserve_mem_virt(id);
++		if (!buffer)
++			dev_info(&pdev->dev, "%s: get_reserve_mem_virt is null for id:%u\n", __func__, id);
++
++		return buffer;
++	}
++}
++EXPORT_SYMBOL(mtk_hcp_get_reserve_mem_virt);
++
+ void *mtk_hcp_get_gce_mem_virt(struct platform_device *pdev)
+ {
+ 	struct mtk_hcp *hcp_dev = platform_get_drvdata(pdev);
+diff --git a/drivers/media/platform/mediatek/isp/isp_7x/mtk-hcp/mtk-hcp.h b/drivers/media/platform/mediatek/isp/isp_7x/mtk-hcp/mtk-hcp.h
+old mode 100644
+new mode 100755
+index 2a6ebff36109..fa9a7ca28059
+--- a/drivers/media/platform/mediatek/isp/isp_7x/mtk-hcp/mtk-hcp.h
++++ b/drivers/media/platform/mediatek/isp/isp_7x/mtk-hcp/mtk-hcp.h
+@@ -161,6 +161,8 @@ void *mtk_hcp_get_gce_mem_virt(struct platform_device *pdev);
+ phys_addr_t mtk_hcp_get_gce_mem_size(struct platform_device *pdev);
+ int mtk_hcp_get_init_info(struct platform_device *pdev, struct img_init_info *info);
+ 
++void *mtk_hcp_get_reserve_mem_virt(struct platform_device *pdev, unsigned int id);
++
+ /**
+  * struct hcp_desc - hcp descriptor
+  *
+@@ -224,6 +226,7 @@ struct mtk_hcp_data {
+ 	int (*get_gce)(void);
+ 	int (*put_gce)(void);
+ 	phys_addr_t (*get_gce_mem_size)(void);
++	void* (*get_reserve_mem_virt)(unsigned int id);
+ };
+ 
+ #define HCP_RESERVED_MEM  (1)
+diff --git a/drivers/media/platform/mediatek/isp/isp_7x/mtk-hcp/mtk-hcp_isp71.c b/drivers/media/platform/mediatek/isp/isp_7x/mtk-hcp/mtk-hcp_isp71.c
+index b36dc5ae05d6..b0bedf0f156e 100644
+--- a/drivers/media/platform/mediatek/isp/isp_7x/mtk-hcp/mtk-hcp_isp71.c
++++ b/drivers/media/platform/mediatek/isp/isp_7x/mtk-hcp/mtk-hcp_isp71.c
+@@ -527,5 +527,6 @@ struct mtk_hcp_data isp71_hcp_data = {
+ 	.get_init_info = isp71_get_init_info,
+ 	.get_gce_virt = isp71_get_gce_virt,
+ 	.get_gce_mem_size = isp71_get_gce_mem_size,
++	.get_reserve_mem_virt = isp71_get_reserve_mem_virt,
+ };
+ 
+diff --git a/drivers/media/platform/mediatek/isp/isp_7x/mtk-ipesys-me/mtk-ipesys-me.c b/drivers/media/platform/mediatek/isp/isp_7x/mtk-ipesys-me/mtk-ipesys-me.c
+old mode 100644
+new mode 100755
+index e1f92072c0db..48237270bb44
+--- a/drivers/media/platform/mediatek/isp/isp_7x/mtk-ipesys-me/mtk-ipesys-me.c
++++ b/drivers/media/platform/mediatek/isp/isp_7x/mtk-ipesys-me/mtk-ipesys-me.c
+@@ -72,6 +72,87 @@ void ipesys_me_debug_dump(struct mtk_imgsys_dev *imgsys_dev, unsigned int engine
+ }
+ EXPORT_SYMBOL(ipesys_me_debug_dump);
+ 
++void ipesys_me_ndd_dump(struct mtk_imgsys_dev *imgsys_dev,
++				struct imgsys_ndd_frm_dump_info *frm_dump_info)
++{
++	char *me_name;
++	char file_name[256] = "\0";
++	ssize_t ret;
++	uint32_t *reg_va;
++#if defined(IMGSYS_NDD_FROM_KERNEL)
++	struct file *cfile;
++	loff_t pos = 0;
++#endif
++	// Check for valid engine enum
++	if (frm_dump_info->eng_e != IMGSYS_NDD_ENG_ME) {
++		dev_err(imgsys_dev->dev, "%s wrong ndd me eng enum %d\n", __func__, frm_dump_info->eng_e);
++		return;
++	}
++
++	// Map register memory space
++	reg_va = (uint32_t *)ioremap(frm_dump_info->cq_ofst[frm_dump_info->eng_e], ME_REG_RANGE);
++	if (reg_va == NULL) {
++		dev_err(imgsys_dev->dev, "%s da to va failed, ofst 0x%llx\n", __func__, frm_dump_info->cq_ofst[frm_dump_info->eng_e]);
++		return;
++	}
++
++	// Decide whether we're dumping to user space or kernel space
++	me_name = frm_dump_info->user_buffer ? "REG_ME_me.reg" : "REG_ME_me.regKernel";
++
++	ret = snprintf(file_name, sizeof(file_name), "%s%s", frm_dump_info->fp, me_name);
++	if ((ret < 0) || (ret >= sizeof(file_name))) {
++		dev_err(imgsys_dev->dev, "wrong me ndd file name %s\n", file_name);
++		iounmap(reg_va);
++		return;
++	}
++	dev_dbg(imgsys_dev->dev, "%s: ME ndd dump from 0x%llx to %s +\n", __func__,
++	    (uint64_t)reg_va, file_name);
++
++	if (frm_dump_info->user_buffer) {
++		// Copy file name to user buffer
++		ret = copy_to_user(frm_dump_info->user_buffer, file_name, FP_SIZE);
++		if (ret != 0) {
++			dev_err(imgsys_dev->dev, "%s failed to copy file name to user\n", __func__);
++			iounmap(reg_va);
++			return;
++		}
++		frm_dump_info->user_buffer += FP_SIZE;
++
++		// Copy ME register data to user buffer
++		ret = copy_to_user(frm_dump_info->user_buffer, reg_va, ME_REG_RANGE);
++		if (ret != 0) {
++			dev_err(imgsys_dev->dev, "%s failed to copy register data to user\n", __func__);
++			iounmap(reg_va);
++			return;
++		}
++		frm_dump_info->user_buffer += ME_REG_RANGE;
++	} else {
++#if defined(IMGSYS_NDD_FROM_KERNEL)
++		cfile = filp_open(file_name, O_CREAT | O_RDWR, 0666);
++		if (IS_ERR(cfile)) {
++			dev_err(imgsys_dev->dev, "%s open file %s failed\n", __func__, file_name);
++			iounmap(reg_va);
++			return;
++		}
++
++		// Write ME register data to kernel file
++		ret = kernel_write(cfile, reg_va, ME_REG_RANGE, &pos);
++		if (ret < 0) {
++			dev_err(imgsys_dev->dev, "%s failed to write register data to file\n", __func__);
++			filp_close(cfile, NULL);
++			iounmap(reg_va);
++			return;
++		}
++		filp_close(cfile, NULL);
++#endif // IMGSYS_NDD_FROM_KERNEL
++	}
++
++	// Unmap register memory space
++	iounmap(reg_va);
++	dev_dbg(imgsys_dev->dev, "%s: -\n", __func__);
++}
++EXPORT_SYMBOL(ipesys_me_ndd_dump);
++
+ static int mtk_ipesys_me_probe(struct platform_device *pdev)
+ {
+ 	int ret = 0;
+diff --git a/drivers/media/platform/mediatek/isp/isp_7x/mtk-ipesys-me/mtk-ipesys-me.h b/drivers/media/platform/mediatek/isp/isp_7x/mtk-ipesys-me/mtk-ipesys-me.h
+old mode 100644
+new mode 100755
+index 7ad6b7a40ece..90da9bfba0bf
+--- a/drivers/media/platform/mediatek/isp/isp_7x/mtk-ipesys-me/mtk-ipesys-me.h
++++ b/drivers/media/platform/mediatek/isp/isp_7x/mtk-ipesys-me/mtk-ipesys-me.h
+@@ -10,6 +10,7 @@
+ #define _MTK_IMGSYS_ME_H_
+ 
+ #include "mtk_imgsys-dev.h"
++#include "mtk_imgsys-debug.h"
+ 
+ struct ipesys_me_clocks {
+ 	struct clk_bulk_data *clks;
+@@ -25,10 +26,12 @@ struct ipesys_me_device {
+ #define ME_CTL_OFFSET      0x0000
+ #define ME_CTL_RANGE       0xA10
+ #define ME_CTL_RANGE_TF    0x120
++#define ME_REG_RANGE       0xA20
+ 
+ void ipesys_me_set_initial_value(struct mtk_imgsys_dev *imgsys_dev);
+-void ipesys_me_debug_dump(struct mtk_imgsys_dev *imgsys_dev,
+-							unsigned int engine);
++void ipesys_me_debug_dump(struct mtk_imgsys_dev *imgsys_dev, unsigned int engine);
++void ipesys_me_ndd_dump(struct mtk_imgsys_dev *imgsys_dev, struct imgsys_ndd_frm_dump_info *frm_dump_info);
++
+ void ipesys_me_uninit(struct mtk_imgsys_dev *imgsys_dev);
+ 
+ #endif /* _MTK_IMGSYS_ME_H_ */
+-- 
+2.44.0.291.gc1ea87d7ee-goog
+
