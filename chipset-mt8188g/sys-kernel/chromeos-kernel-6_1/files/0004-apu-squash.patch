@@ -1,4 +1,4 @@
-From b8f24f5773ebfc47fb23689f7cbdfb0f63959058 Mon Sep 17 00:00:00 2001
+From 1429b7236a8289da101f5aecfd9f2ef558a0ce30 Mon Sep 17 00:00:00 2001
 From: Chengci Xu <chengci.xu@mediatek.corp-partner.google.com>
 Date: Thu, 11 May 2023 17:55:25 +0800
 Subject: [PATCH] DO-NOT-SUBMIT: mt8188 apu squash
@@ -164,10 +164,10 @@ index 1bc3bcebf13b..4f5f3c8d31fa 100644
 +apu-upstream
 +mt8188 apusys ToT
 diff --git a/arch/arm64/boot/dts/mediatek/mt8188-evb.dts b/arch/arm64/boot/dts/mediatek/mt8188-evb.dts
-index d581daa7dc27..c4e6b4ef533b 100644
+index 08924ad51b0c..5de10c3045e8 100644
 --- a/arch/arm64/boot/dts/mediatek/mt8188-evb.dts
 +++ b/arch/arm64/boot/dts/mediatek/mt8188-evb.dts
-@@ -44,6 +44,10 @@
+@@ -44,6 +44,10 @@ scp_mem_reserved: memory@50000000 {
  			no-map;
  		};
  
@@ -178,7 +178,7 @@ index d581daa7dc27..c4e6b4ef533b 100644
  		scp_dual_mem_reserved: scp-dual-mem-region {
  			compatible = "shared-dma-pool";
  			reg = <0 0x70000000 0 0xd000000>;
-@@ -52,10 +56,52 @@
+@@ -52,10 +56,52 @@ scp_dual_mem_reserved: scp-dual-mem-region {
  	};
  };
  
@@ -232,10 +232,10 @@ index d581daa7dc27..c4e6b4ef533b 100644
  	domain-supply = <&mt6359_vproc1_buck_reg>;
  };
 diff --git a/arch/arm64/boot/dts/mediatek/mt8188-geralt.dtsi b/arch/arm64/boot/dts/mediatek/mt8188-geralt.dtsi
-index ed0d963c8304..d28ab7f8b400 100644
+index dda13f5a108a..a2d0ef8c5624 100644
 --- a/arch/arm64/boot/dts/mediatek/mt8188-geralt.dtsi
 +++ b/arch/arm64/boot/dts/mediatek/mt8188-geralt.dtsi
-@@ -175,6 +175,10 @@
+@@ -189,6 +189,10 @@ scp_mem_reserved: scp_mem_region {
  			no-map;
  		};
  
@@ -246,8 +246,8 @@ index ed0d963c8304..d28ab7f8b400 100644
  		afe_dma_mem_reserved: snd_dma_mem_region {
  			compatible = "shared-dma-pool";
  			no-map;
-@@ -218,6 +222,40 @@
- 	status = "okay";
+@@ -248,6 +252,40 @@ &camisp {
+ 	memory-region = <&scp_isp_cma_reserved>;
  };
  
 +&mt6359_vmodem_buck_reg {
@@ -287,7 +287,7 @@ index ed0d963c8304..d28ab7f8b400 100644
  &auxadc {
  	status = "okay";
  };
-@@ -614,6 +652,14 @@
+@@ -644,6 +682,14 @@ &mt6359_vpa_buck_reg {
  	regulator-max-microvolt = <3100000>;
  };
  
@@ -303,10 +303,10 @@ index ed0d963c8304..d28ab7f8b400 100644
  	status = "okay";
  	pinctrl-names = "default";
 diff --git a/arch/arm64/boot/dts/mediatek/mt8188.dtsi b/arch/arm64/boot/dts/mediatek/mt8188.dtsi
-index bdee66c98f7a..a636528333e1 100644
+index 86c6a06b5136..cd9fc8c6d725 100644
 --- a/arch/arm64/boot/dts/mediatek/mt8188.dtsi
 +++ b/arch/arm64/boot/dts/mediatek/mt8188.dtsi
-@@ -2543,6 +2543,126 @@
+@@ -4265,6 +4265,126 @@ vdecsys: clock-controller@1802f000 {
  			#clock-cells = <1>;
  		};
  
@@ -433,7 +433,7 @@ index bdee66c98f7a..a636528333e1 100644
  		vencsys: clock-controller@1a000000 {
  			compatible = "mediatek,mt8188-vencsys";
  			reg = <0 0x1a000000 0 0x1000>;
-@@ -2814,6 +2934,22 @@
+@@ -4538,6 +4658,22 @@ vdosys1: syscon@1c100000 {
  			#reset-cells = <1>;
  		};
  
@@ -457,10 +457,10 @@ index bdee66c98f7a..a636528333e1 100644
  			compatible = "mediatek,mt8188-disp-mutex";
  			reg = <0 0x1c101000 0 0x1000>;
 diff --git a/chromeos/config/chromeos/arm64/chromiumos-arm64-generic.flavour.config b/chromeos/config/chromeos/arm64/chromiumos-arm64-generic.flavour.config
-index 8b50a0c9ae4b..1c45dda0c5ec 100644
+index 8952a72342a9..7106c55ea657 100644
 --- a/chromeos/config/chromeos/arm64/chromiumos-arm64-generic.flavour.config
 +++ b/chromeos/config/chromeos/arm64/chromiumos-arm64-generic.flavour.config
-@@ -111,6 +111,8 @@ CONFIG_MMC_SDHCI_OF_ARASAN=y
+@@ -116,6 +116,8 @@ CONFIG_MMC_SDHCI_OF_ARASAN=y
  CONFIG_MSM_GCC_8916=y
  CONFIG_MT7921E=m
  CONFIG_MT7921S=m
@@ -470,10 +470,10 @@ index 8b50a0c9ae4b..1c45dda0c5ec 100644
  CONFIG_MTK_FSOURCE=m
  CONFIG_MTK_IOMMU=y
 diff --git a/chromeos/config/chromeos/arm64/chromiumos-mediatek.flavour.config b/chromeos/config/chromeos/arm64/chromiumos-mediatek.flavour.config
-index 7933718ce05d..fc6f86562181 100644
+index dfb387a4dde9..7bffd24a3e98 100755
 --- a/chromeos/config/chromeos/arm64/chromiumos-mediatek.flavour.config
 +++ b/chromeos/config/chromeos/arm64/chromiumos-mediatek.flavour.config
-@@ -58,6 +58,8 @@ CONFIG_MT7921E=m
+@@ -60,6 +60,8 @@ CONFIG_MT7921E=m
  CONFIG_MT7921S=m
  CONFIG_MTK_ADSP_IPC=y
  CONFIG_MTK_ADSP_MBOX=y
@@ -483,7 +483,7 @@ index 7933718ce05d..fc6f86562181 100644
  CONFIG_MTK_FSOURCE=m
  CONFIG_MTK_IOMMU=y
 diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index 1155782b8010..509099683cf7 100644
+index 4793f30e890b..aa9370268406 100644
 --- a/drivers/iommu/mtk_iommu.c
 +++ b/drivers/iommu/mtk_iommu.c
 @@ -138,6 +138,7 @@
@@ -494,7 +494,7 @@ index 1155782b8010..509099683cf7 100644
  #define MTK_IOMMU_TYPE_MASK		(0x3 << 13)
  /* PM and clock always on. e.g. infra iommu */
  #define PM_CLK_AO			BIT(15)
-@@ -335,6 +336,7 @@ static int mtk_iommu_hw_init(const struct mtk_iommu_data *data, unsigned int ban
+@@ -342,6 +343,7 @@ static int mtk_iommu_hw_init(const struct mtk_iommu_data *data, unsigned int ban
  #define MTK_IOMMU_4GB_MODE_REMAP_BASE	 0x140000000UL
  
  static LIST_HEAD(m4ulist);	/* List all the M4U HWs */
@@ -502,7 +502,7 @@ index 1155782b8010..509099683cf7 100644
  
  #define for_each_m4u(data, head)  list_for_each_entry(data, head, list)
  
-@@ -361,6 +363,15 @@ static const struct mtk_iommu_iova_region mt8192_multi_dom[MT8192_MULTI_REGION_N
+@@ -368,6 +370,15 @@ static const struct mtk_iommu_iova_region mt8192_multi_dom[MT8192_MULTI_REGION_N
  	#endif
  };
  
@@ -518,7 +518,7 @@ index 1155782b8010..509099683cf7 100644
  /* If 2 M4U share a domain(use the same hwlist), Put the corresponding info in first data.*/
  static struct mtk_iommu_data *mtk_iommu_get_frst_data(struct list_head *hwlist)
  {
-@@ -851,7 +862,7 @@ static phys_addr_t mtk_iommu_iova_to_phys(struct iommu_domain *domain,
+@@ -877,7 +888,7 @@ static phys_addr_t mtk_iommu_iova_to_phys(struct iommu_domain *domain,
  static struct iommu_device *mtk_iommu_probe_device(struct device *dev)
  {
  	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
@@ -527,7 +527,7 @@ index 1155782b8010..509099683cf7 100644
  	struct device_link *link;
  	struct device *larbdev;
  	unsigned int larbid, larbidx, i;
-@@ -861,34 +872,44 @@ static struct iommu_device *mtk_iommu_probe_device(struct device *dev)
+@@ -887,34 +898,44 @@ static struct iommu_device *mtk_iommu_probe_device(struct device *dev)
  
  	data = dev_iommu_priv_get(dev);
  
@@ -596,7 +596,7 @@ index 1155782b8010..509099683cf7 100644
  	return &data->iommu;
  }
  
-@@ -904,6 +925,10 @@ static void mtk_iommu_release_device(struct device *dev)
+@@ -930,6 +951,10 @@ static void mtk_iommu_release_device(struct device *dev)
  		larbid = MTK_M4U_TO_LARB(fwspec->ids[0]);
  		larbdev = data->larb_imu[larbid].dev;
  		device_link_remove(dev, larbdev);
@@ -607,7 +607,7 @@ index 1155782b8010..509099683cf7 100644
  	}
  }
  
-@@ -1250,6 +1275,8 @@ static int mtk_iommu_probe(struct platform_device *pdev)
+@@ -1276,6 +1301,8 @@ static int mtk_iommu_probe(struct platform_device *pdev)
  	struct mtk_iommu_bank_data *bank;
  	void __iomem		*base;
  
@@ -616,7 +616,7 @@ index 1155782b8010..509099683cf7 100644
  	data = devm_kzalloc(dev, sizeof(*data), GFP_KERNEL);
  	if (!data)
  		return -ENOMEM;
-@@ -1604,6 +1631,27 @@ static const struct mtk_iommu_plat_data mt8186_data_mm = {
+@@ -1646,6 +1673,27 @@ static const struct mtk_iommu_plat_data mt8186_data_mm = {
  	.iova_region_larb_msk = mt8186_larb_region_msk,
  };
  
@@ -644,7 +644,7 @@ index 1155782b8010..509099683cf7 100644
  static const struct mtk_iommu_plat_data mt8188_data_infra = {
  	.m4u_plat         = M4U_MT8188,
  	.flags            = WR_THROT_EN | DCM_DISABLE | STD_AXI_MODE | PM_CLK_AO |
-@@ -1773,6 +1821,7 @@ static const struct of_device_id mtk_iommu_of_ids[] = {
+@@ -1815,6 +1863,7 @@ static const struct of_device_id mtk_iommu_of_ids[] = {
  	{ .compatible = "mediatek,mt8173-m4u", .data = &mt8173_data},
  	{ .compatible = "mediatek,mt8183-m4u", .data = &mt8183_data},
  	{ .compatible = "mediatek,mt8186-iommu-mm",    .data = &mt8186_data_mm}, /* mm: m4u */
@@ -673,7 +673,7 @@ index 05d6fae800e3..96e940507054 100644
  	tristate "MediaTek CMDQ Mailbox Support"
  	depends on ARCH_MEDIATEK || COMPILE_TEST
 diff --git a/drivers/mailbox/Makefile b/drivers/mailbox/Makefile
-index fc9376117111..413a3b7542ae 100644
+index 82da2f4ee81a..1c712b981ee1 100644
 --- a/drivers/mailbox/Makefile
 +++ b/drivers/mailbox/Makefile
 @@ -51,6 +51,8 @@ obj-$(CONFIG_STM32_IPCC) 	+= stm32-ipcc.o
@@ -682,7 +682,7 @@ index fc9376117111..413a3b7542ae 100644
  
 +obj-$(CONFIG_MTK_APU_MBOX)	+= mtk-apu-mailbox.o
 +
- obj-$(CONFIG_MTK_CMDQ_MBOX)	+= mtk-cmdq-mailbox.o
+ obj-$(CONFIG_MTK_CMDQ_MBOX)	+= mtk-cmdq-mailbox.o mtk-cmdq-sec-mailbox.o mtk-cmdq-sec-tee.o
  
  obj-$(CONFIG_ZYNQMP_IPI_MBOX)	+= zynqmp-ipi-mailbox.o
 diff --git a/drivers/mailbox/mailbox.c b/drivers/mailbox/mailbox.c
@@ -2999,7 +2999,7 @@ index 000000000000..e6ce32d3b2a0
 +MODULE_LICENSE("GPL");
 diff --git a/drivers/remoteproc/mediatek_apusys/mtk_apu_rproc.h b/drivers/remoteproc/mediatek_apusys/mtk_apu_rproc.h
 new file mode 100644
-index 000000000000..30ca1c7e41c2
+index 000000000000..e6a82ce57d08
 --- /dev/null
 +++ b/drivers/remoteproc/mediatek_apusys/mtk_apu_rproc.h
 @@ -0,0 +1,35 @@
@@ -7409,7 +7409,7 @@ index 000000000000..cbe5bea87df4
 +}
 diff --git a/drivers/soc/mediatek/apusys/midware/2.0/mdw_mem_drv.h b/drivers/soc/mediatek/apusys/midware/2.0/mdw_mem_drv.h
 new file mode 100644
-index 000000000000..6c95544b1aad
+index 000000000000..072f41ffa199
 --- /dev/null
 +++ b/drivers/soc/mediatek/apusys/midware/2.0/mdw_mem_drv.h
 @@ -0,0 +1,12 @@
