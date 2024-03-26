@@ -38,7 +38,7 @@ src_install() {
 
 	# Install audio config files
 	if use kernel-5_4; then
-		local audio_config_dir="${FILESDIR}/kernelnext-audio-config"
+		local audio_config_dir="${FILESDIR}/legacy-skl-audio-config"
 	else
 		local audio_config_dir="${FILESDIR}/audio-config"
 	fi
