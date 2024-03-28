@@ -42,6 +42,10 @@ DEPEND="
 "
 RDEPEND="${DEPEND}"
 
+BDEPEND="
+	sys-fs/squashfs-tools
+"
+
 src_install() {
 	cellular_domanifest "${FILESDIR}/helper_manifest.textproto"
 
