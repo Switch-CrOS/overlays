@@ -50,8 +50,5 @@ modify_kernel_command_line() {
     #                   Model: 2678
     #                   Made in week 25 of 2021
     echo "i915.enable_psr=1"
-
-    # Display kernel debug messages on the UART
-    echo "earlyprintk=serial,ttyS0,115200n8 console=ttyS0,115200n8,keep"
   } >> "$1"
 }
