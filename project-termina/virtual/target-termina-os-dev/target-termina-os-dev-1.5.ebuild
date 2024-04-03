@@ -34,7 +34,6 @@ RDEPEND="
 	)
 	app-admin/sysstat
 	app-arch/gzip
-	app-editors/qemacs
 	app-editors/vim
 	app-misc/screen
 	app-shells/bash
