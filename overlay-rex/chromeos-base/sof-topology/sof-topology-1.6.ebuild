@@ -5,7 +5,7 @@
 EAPI=7
 
 DESCRIPTION="SOF topology files for Rex"
-SRC_URI="gs://chromeos-localmirror/distfiles/${PN}-rex-${PV}.tar.gz"
+SRC_URI="gs://chromeos-localmirror/distfiles/${PN}-rex-${PV}.tar.xz"
 
 LICENSE="SOF"
 SLOT="0"
