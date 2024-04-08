@@ -5,7 +5,7 @@
 EAPI=7
 
 DESCRIPTION="Meteor Lake SOF firmware binary"
-SRC_URI="gs://chromeos-localmirror/distfiles/${PN}-mtl-${PV}.tar.gz"
+SRC_URI="gs://chromeos-localmirror/distfiles/${PN}-mtl-${PV}.tar.xz"
 
 LICENSE="SOF"
 SLOT="0"
