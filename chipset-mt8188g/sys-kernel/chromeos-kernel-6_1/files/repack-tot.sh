@@ -36,7 +36,7 @@ DEFINE_string ver '6.1' \
   "Kernel version string, for example '6.1'"
 DEFINE_integer bugid 245739330 \
   "Bug ID in the commit message."
-DEFINE_integer cl 4259239 \
+DEFINE_integer cl 5437613 \
   "ChromiumOS Gerrit CL ID."
 DEFINE_integer ps 0 \
   "Patchset number, 0 for the latest version."
