@@ -1,11 +1,11 @@
 This file should always contain information regarding which
 branch/commit the firmware was built from.
 
-MTL SOF FW 8.0.1 release.
+MTL-008 SOF FW release.
 
 repo : https://github.com/thesofproject/sof
 branch : mtl-008-drop-stable
-commit id : 5f683a97418810712e9bbff74ff2f9903fa5fffe
+commit id : 90ca1ae7060dfbd22c376c5dd052b0630cf7f5a4
 
 MD5sums:
-bcd76a211a9efab10084bcea882c5742  sof-mtl.ri
+716ef08d3aed9b1b71ef98bb123aec7f  sof-mtl.ri
