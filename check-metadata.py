@@ -251,7 +251,6 @@ MISSING_OVERLAYS_OWNERS = {
     "baseboard-volteer",
     "chipset-apl",
     "chipset-bdw",
-    "chipset-cml",
     "chipset-glk",
     "chipset-kbl",
     "chipset-picasso",
