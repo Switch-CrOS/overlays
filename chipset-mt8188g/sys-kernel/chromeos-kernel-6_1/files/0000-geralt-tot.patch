@@ -626,76 +626,6 @@ index 0000000000000000000000000000000000000000..649b10b4dac30d772ab2b4bffe8cccce
 +    };
 +
 +...
-diff --git a/Documentation/devicetree/bindings/media/mediatek/mediatek,camisp-larb.yaml b/Documentation/devicetree/bindings/media/mediatek/mediatek,camisp-larb.yaml
-new file mode 100644
-index 0000000000000000000000000000000000000000..1bef4b82cf9386bc34ddffd1952bece00ad10ddd
---- /dev/null
-+++ b/Documentation/devicetree/bindings/media/mediatek/mediatek,camisp-larb.yaml
-@@ -0,0 +1,64 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+# Copyright (c) 2023 MediaTek Inc.
-+
-+%YAML 1.2
-+---
-+$id: "http://devicetree.org/schemas/media/mediatek,camisp-larb.yaml#"
-+$schema: "http://devicetree.org/meta-schemas/core.yaml#"
-+
-+title: The camisp-larb unit of Mediatek ISP system
-+
-+maintainers:
-+  - MTK ISD <MTK_ISD_SW2@mediatek.com>
-+
-+description:
-+  MediaTek camisp-larb is the ISP dma_port module in MediaTek SoC.
-+
-+properties:
-+  compatible:
-+    const: mediatek,camisp-larb
-+
-+  ranges: true
-+
-+  power-domains:
-+    maxItems: 1
-+
-+required:
-+  - compatible
-+  - mediatek,larb-id
-+  - dma-ranges
-+  - iommus
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    camisp_l14 {
-+      compatible = "mediatek,camisp-larb";
-+      mediatek,larb-id = <14>;
-+      dma-ranges = <0x2 0x0 0x0 0x40000000 0x1 0x0>;
-+      iommus = <&vpp_iommu M4U_PORT_L14_GCAMSV_B_IMGO_1>,
-+          <&vpp_iommu M4U_PORT_L14_GCAMSV_B_IMGO_2>,
-+          <&vpp_iommu M4U_PORT_L14_SCAMSV_A_IMGO_1>,
-+          <&vpp_iommu M4U_PORT_L14_SCAMSV_A_IMGO_2>,
-+          <&vpp_iommu M4U_PORT_L14_SCAMSV_B_IMGO_1>,
-+          <&vpp_iommu M4U_PORT_L14_SCAMSV_B_IMGO_2>,
-+          <&vpp_iommu M4U_PORT_L14_PDAI_B_0>,
-+          <&vpp_iommu M4U_PORT_L14_PDAI_B_1>,
-+          <&vpp_iommu M4U_PORT_L14_GCAMSV_D_IMGO_1>,
-+          <&vpp_iommu M4U_PORT_L14_GCAMSV_D_IMGO_2>,
-+          <&vpp_iommu M4U_PORT_L14_GCAMSV_F_IMGO_1>,
-+          <&vpp_iommu M4U_PORT_L14_GCAMSV_F_IMGO_2>,
-+          <&vpp_iommu M4U_PORT_L14_GCAMSV_H_IMGO_1>,
-+          <&vpp_iommu M4U_PORT_L14_GCAMSV_B_UFEO_1>,
-+          <&vpp_iommu M4U_PORT_L14_GCAMSV_B_UFEO_2>,
-+          <&vpp_iommu M4U_PORT_L14_GCAMSV_D_UFEO_1>,
-+          <&vpp_iommu M4U_PORT_L14_GCAMSV_D_UFEO_2>,
-+          <&vpp_iommu M4U_PORT_L14_PDAO_B>,
-+          <&vpp_iommu M4U_PORT_L14_IPUI>,
-+          <&vpp_iommu M4U_PORT_L14_IPUO>,
-+          <&vpp_iommu M4U_PORT_L14_IPU3O>,
-+          <&vpp_iommu M4U_PORT_L14_FAKE>;
-+    };
-+
-+...
 diff --git a/Documentation/devicetree/bindings/media/mediatek/mediatek,camisp.yaml b/Documentation/devicetree/bindings/media/mediatek/mediatek,camisp.yaml
 new file mode 100644
 index 0000000000000000000000000000000000000000..b541ba1726d735eee6a7b0722f2684adeca10f5b
@@ -750,102 +680,6 @@ index 0000000000000000000000000000000000000000..b541ba1726d735eee6a7b0722f2684ad
 +      reg-names = "base";
 +      mediatek,scp = <&scp_dual>;
 +      power-domains = <&spm MT8188_POWER_DOMAIN_CAM_MAIN>;
-+    };
-+
-+...
-diff --git a/Documentation/devicetree/bindings/media/mediatek/mediatek,camsv.yaml b/Documentation/devicetree/bindings/media/mediatek/mediatek,camsv.yaml
-new file mode 100644
-index 0000000000000000000000000000000000000000..d7fc6edabe124f2f18f1c972fa09dcdce441491a
---- /dev/null
-+++ b/Documentation/devicetree/bindings/media/mediatek/mediatek,camsv.yaml
-@@ -0,0 +1,90 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+# Copyright (c) 2023 MediaTek Inc.
-+
-+%YAML 1.2
-+---
-+$id: "http://devicetree.org/schemas/media/mediatek,camsv.yaml#"
-+$schema: "http://devicetree.org/meta-schemas/core.yaml#"
-+
-+title: The camsv unit of Mediatek ISP system
-+
-+maintainers:
-+  - MTK ISD <MTK_ISD_SW2@mediatek.com>
-+
-+description:
-+  MediaTek camsv is the ISP Pass1 unit in MediaTek SoC.
-+
-+properties:
-+  compatible:
-+    const: mediatek,camsv
-+
-+  "#address-cells":
-+    maxItems: 2
-+
-+  "#size-cells":
-+    maxItems: 2
-+
-+  ranges: true
-+
-+  power-domains:
-+    maxItems: 1
-+
-+  iommus:
-+    description:
-+      Points to the respective IOMMU block with master port as argument, see
-+      Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml for details.
-+      Ports are according to the HW.
-+
-+required:
-+  - compatible
-+  - reg
-+  - reg-names
-+  - ranges
-+  - interrupts
-+  - power-domains
-+  - clocks
-+  - clock-names
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    camsv1@16110000 {
-+      compatible = "mediatek,camsv";
-+      reg = <0 0x16110000 0 0x1000>,
-+          <0 0x16118000 0 0x1000>;
-+      reg-names = "base", "inner_base";
-+      mediatek,camsv-id = <0>;
-+      mediatek,camsv-hwcap = <0x110051>;
-+      mediatek,cammux-id = <2>;
-+      interrupts = <GIC_SPI 317 IRQ_TYPE_LEVEL_HIGH 0>;
-+      power-domains = <&spm MT8188_POWER_DOMAIN_CAM_MAIN>;
-+      clocks = <&camsys CLK_CAM_MAIN_CAM2MM0_GALS>,
-+              <&camsys CLK_CAM_MAIN_CAM2MM1_GALS>,
-+              <&camsys CLK_CAM_MAIN_CAM2SYS_GALS>,
-+              <&camsys CLK_CAM_MAIN_CAM>,
-+              <&camsys CLK_CAM_MAIN_CAMTG>,
-+              <&camsys CLK_CAM_MAIN_LARB13>,
-+              <&camsys CLK_CAM_MAIN_GCAMSVA>,
-+              <&camsys CLK_CAM_MAIN_CAMSV_TOP>,
-+              <&camsys CLK_CAM_MAIN_CAMSV_CQ_A>,
-+              <&topckgen CLK_TOP_CAM>,
-+              <&topckgen CLK_TOP_CAMTG>,
-+              <&topckgen CLK_TOP_CAMTM>;
-+      clock-names = "cam_main_cam2mm0_gals_con",
-+                    "cam_main_cam2mm1_gals_con",
-+                    "cam_main_cam2sys_gals_con",
-+                    "cam_main_cam_con",
-+                    "cam_main_camtg_con",
-+                    "cam_main_larb13_con",
-+                    "cam_main_gcamsva_con",
-+                    "cam_main_camsv_top_con",
-+                    "cam_main_camsv_cq_a_con",
-+                    "topckgen_top_cam",
-+                    "topckgen_top_camtg",
-+                    "topckgen_top_camtm";
-+      assigned-clocks = <&topckgen CLK_TOP_CAM>;
-+      assigned-clock-parents = <&topckgen CLK_TOP_UNIVPLL_D5>;
 +    };
 +
 +...
@@ -1182,186 +1016,6 @@ index dce43318ee9f21427ed6e80a8fcf277cd2007568..ae76ce4fbd9f03567c772ed9f483a8ba
  		};
  
  		nor_flash: spi@1100d000 {
-diff --git a/arch/arm64/boot/dts/mediatek/mt8188-ciri-camera-v4l2.dtsi b/arch/arm64/boot/dts/mediatek/mt8188-ciri-camera-v4l2.dtsi
-new file mode 100644
-index 0000000000000000000000000000000000000000..77a9a052c23979845c96c8d210bd5b3ccde90b49
---- /dev/null
-+++ b/arch/arm64/boot/dts/mediatek/mt8188-ciri-camera-v4l2.dtsi
-@@ -0,0 +1,174 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2023 MediaTek Inc. */
-+
-+#include <dt-bindings/gpio/gpio.h>
-+
-+#define V4L2_FWNODE_BUS_TYPE_CSI2_CPHY 1
-+#define V4L2_FWNODE_BUS_TYPE_CSI2_DPHY 4
-+
-+/ {
-+	pp1200_ucam_x: pp1200-ucam-x {
-+		compatible = "regulator-fixed";
-+		regulator-name = "pp1200_ucam_x";
-+		gpio = <&pio 140 GPIO_ACTIVE_HIGH>;
-+		enable-active-high;
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&pp1200_ucam_x_pins>;
-+	};
-+
-+	pp2800_wcam_x: pp2800-ucam-x {
-+		compatible = "regulator-fixed";
-+		regulator-name = "pp2800_wcam_x";
-+		gpio = <&pio 142 GPIO_ACTIVE_HIGH>;
-+		enable-active-high;
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&pp2800_wcam_x_pins>;
-+	};
-+};
-+
-+&seninf_top {
-+		seninf_csi_port_0: csi_receiver@0 {
-+			compatible = "mediatek,seninf";
-+			csi-port = "0";
-+			port {
-+				seninf_csi_port_0_in_2: endpoint@2 {
-+					data-lanes = <1 2 3 4>;
-+					remote-endpoint = <&main_sensor_out_2>;
-+				};
-+			};
-+		};
-+
-+		seninf_csi_port_1: csi_receiver@1 {
-+			compatible = "mediatek,seninf";
-+			csi-port = "1";
-+			port {
-+				seninf_csi_port_1_in_2: endpoint@2 {
-+					data-lanes = <1 4>;
-+					remote-endpoint = <&sub_sensor_out_2>;
-+				};
-+			};
-+		};
-+};
-+
-+&pio {
-+	camera_main_sensor_pins: camera-main-sensor-pins@0 {
-+		pins_cmd_dat {
-+			pinmux = <PINMUX_GPIO22__FUNC_O_CMMCLK0>;
-+			drive-strength = <MTK_DRIVE_2mA>;
-+		};
-+	};
-+
-+	camera_sub_sensor_pins: camera-sub-sensor-pins@1 {
-+		pins_cmd_dat {
-+			pinmux = <PINMUX_GPIO23__FUNC_O_CMMCLK1>;
-+			drive-strength = <MTK_DRIVE_2mA>;
-+		};
-+	};
-+
-+	pp1200_ucam_x_pins: pp1200-ucam-x-pins {
-+		pins-cmd-dat {
-+			pinmux = <PINMUX_GPIO140__FUNC_B_GPIO140>;
-+			output-low;
-+		};
-+	};
-+
-+	pp2800_wcam_x_pins: pp2800-wcam-x-pins {
-+		pins-cmd-dat {
-+			pinmux = <PINMUX_GPIO142__FUNC_B_GPIO142>;
-+			output-low;
-+		};
-+	};
-+};
-+
-+&mt6359_vibr_ldo_reg {
-+	regulator-min-microvolt = <2800000>;
-+	regulator-max-microvolt = <2800000>;
-+};
-+
-+&i2c5 {
-+	status = "okay";
-+	clock-frequency = <400000>;
-+
-+	camera_sub_sensor@37 {
-+		compatible =  "galaxycore,gc05a2";
-+		reg = <0x37>;
-+
-+		clocks = <&topckgen CLK_TOP_CAMTG2>;
-+
-+		reset-gpios = <&pio 21 GPIO_ACTIVE_LOW>;
-+
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&camera_sub_sensor_pins>;
-+
-+		dovdd-supply = <&mt6359_vcamio_ldo_reg>;
-+		avdd-supply = <&mt6359_vio28_ldo_reg>;
-+		dvdd-supply = <&pp1200_ucam_x>;
-+
-+		port {
-+			sub_sensor_out_2: endpoint {
-+				bus-type = <V4L2_FWNODE_BUS_TYPE_CSI2_DPHY>;
-+				data-lanes = <1 4>;
-+				link-frequencies = /bits/ 64 <448000000 224000000>;
-+				remote-endpoint = <&seninf_csi_port_1_in_2>;
-+			};
-+		};
-+	};
-+
-+		eeprom@50 {
-+			compatible = "atmel,24c64";
-+			reg = <0x50>;
-+			pagesize = <32>;
-+			vcc-supply = <&mt6359_vcamio_ldo_reg>;
-+			device-id = <0>;
-+		};
-+};
-+
-+&i2c6 {
-+	status = "okay";
-+	clock-frequency = <400000>;
-+
-+	camera_main_lens: camera-main-lens@c {
-+		compatible = "giantec,gt9769";
-+		reg = <0x0c>;
-+
-+		vin-supply = <&mt6359_vrf18_ldo_reg>;
-+		vdd-supply = <&mt6359_vibr_ldo_reg>;
-+	};
-+
-+	camera_main_sensor@31 {
-+		compatible = "galaxycore,gc08a3";
-+		reg = <0x31>;
-+
-+		clocks = <&topckgen CLK_TOP_CAMTG>;
-+
-+		reset-gpios = <&pio 19 GPIO_ACTIVE_LOW>;
-+
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&camera_main_sensor_pins>;
-+
-+		dovdd-supply = <&mt6359_vrf18_ldo_reg>;
-+		avdd-supply = <&mt6359_vfe28_ldo_reg>;
-+		dvdd-supply = <&pp2800_wcam_x>;
-+
-+		lens-focus = <&camera_main_lens>;
-+
-+		port {
-+			main_sensor_out_2: endpoint {
-+				bus-type = <V4L2_FWNODE_BUS_TYPE_CSI2_DPHY>;
-+				data-lanes = <1 2 3 4>;
-+				link-frequencies = /bits/ 64 <336000000 207000000>;
-+				remote-endpoint = <&seninf_csi_port_0_in_2>;
-+			};
-+		};
-+	};
-+
-+	eeprom@58 {
-+		compatible = "atmel,24c64";
-+		reg = <0x58>;
-+		pagesize = <32>;
-+		vcc-supply = <&mt6359_vibr_ldo_reg>;
-+		dovdd-supply = <&mt6359_vrf18_ldo_reg>;
-+		device-id = <0>;
-+	};
-+};
-+
 diff --git a/arch/arm64/boot/dts/mediatek/mt8188-evb.dts b/arch/arm64/boot/dts/mediatek/mt8188-evb.dts
 index 97839df21b24a32aee0d14c33b5c9ebb5010524c..e526ec4bdf4aa264e8b60d7c154518ceb97e9889 100644
 --- a/arch/arm64/boot/dts/mediatek/mt8188-evb.dts
@@ -1392,81 +1046,10 @@ index 97839df21b24a32aee0d14c33b5c9ebb5010524c..e526ec4bdf4aa264e8b60d7c154518ce
  	firmware-name = "scp-dual.img";
  };
  
-diff --git a/arch/arm64/boot/dts/mediatek/mt8188-geralt-ciri-sku0.dts b/arch/arm64/boot/dts/mediatek/mt8188-geralt-ciri-sku0.dts
-index d1f35fe3fe0da618c088507e7fc6bb5e222c1c3b..eb16902aa46629e6a06eb58e0ce1df26460315f6 100644
---- a/arch/arm64/boot/dts/mediatek/mt8188-geralt-ciri-sku0.dts
-+++ b/arch/arm64/boot/dts/mediatek/mt8188-geralt-ciri-sku0.dts
-@@ -7,6 +7,7 @@
-  */
- /dts-v1/;
- #include "mt8188-geralt-ciri.dtsi"
-+#include "mt8188-ciri-camera-v4l2.dtsi"
- 
- / {
- 	model = "Google Ciri sku0/unprovisioned board";
-diff --git a/arch/arm64/boot/dts/mediatek/mt8188-geralt-ciri-sku1.dts b/arch/arm64/boot/dts/mediatek/mt8188-geralt-ciri-sku1.dts
-index 325a0708b876d60f39ee4d87e63438fb6ca039fa..0a7248fbffd91ca540c0036bea0673eccec3b1a9 100644
---- a/arch/arm64/boot/dts/mediatek/mt8188-geralt-ciri-sku1.dts
-+++ b/arch/arm64/boot/dts/mediatek/mt8188-geralt-ciri-sku1.dts
-@@ -7,6 +7,7 @@
-  */
- /dts-v1/;
- #include "mt8188-geralt-ciri.dtsi"
-+#include "mt8188-ciri-camera-v4l2.dtsi"
- 
- /delete-node/ &rt5682s;
- 
-diff --git a/arch/arm64/boot/dts/mediatek/mt8188-geralt-ciri-sku2.dts b/arch/arm64/boot/dts/mediatek/mt8188-geralt-ciri-sku2.dts
-index 9a73d75be85bbad4d1d7ce0e474f034c27fbf76b..047549936626203130e62f4d0e569ea5faa7a114 100644
---- a/arch/arm64/boot/dts/mediatek/mt8188-geralt-ciri-sku2.dts
-+++ b/arch/arm64/boot/dts/mediatek/mt8188-geralt-ciri-sku2.dts
-@@ -4,6 +4,7 @@
-  */
- /dts-v1/;
- #include "mt8188-geralt-ciri.dtsi"
-+#include "mt8188-ciri-camera-v4l2.dtsi"
- 
- /delete-node/ &rt5682s;
- 
-diff --git a/arch/arm64/boot/dts/mediatek/mt8188-geralt-ciri-sku3.dts b/arch/arm64/boot/dts/mediatek/mt8188-geralt-ciri-sku3.dts
-index 6687ed1313fad1571b06cbfa4fff8afeff170057..2e196f99d886d3a6864aea5e6acd5581138b4784 100644
---- a/arch/arm64/boot/dts/mediatek/mt8188-geralt-ciri-sku3.dts
-+++ b/arch/arm64/boot/dts/mediatek/mt8188-geralt-ciri-sku3.dts
-@@ -4,6 +4,7 @@
-  */
- /dts-v1/;
- #include "mt8188-geralt-ciri.dtsi"
-+#include "mt8188-ciri-camera-v4l2.dtsi"
- 
- / {
- 	model = "Google Ciri sku3 board";
-diff --git a/arch/arm64/boot/dts/mediatek/mt8188-geralt.dts b/arch/arm64/boot/dts/mediatek/mt8188-geralt.dts
-index 70db95d2c7517c882c81038d74280d87c046705e..e968cbec8deddfbfaddea411cc8f5f47625758d3 100644
---- a/arch/arm64/boot/dts/mediatek/mt8188-geralt.dts
-+++ b/arch/arm64/boot/dts/mediatek/mt8188-geralt.dts
-@@ -4,6 +4,7 @@
-  */
- /dts-v1/;
- #include "mt8188-geralt.dtsi"
-+#include "mt8188_geralt_camera_v4l2.dtsi"
- 
- / {
- 	model = "Google Geralt board";
 diff --git a/arch/arm64/boot/dts/mediatek/mt8188-geralt.dtsi b/arch/arm64/boot/dts/mediatek/mt8188-geralt.dtsi
-index 12f4bc8198e5a81a76df6b5ab63d3549b6b53c44..7a119a2c65c699c69e30599037170c6305aa172e 100644
+index 68f3204a87ba07b50db1ecd4776a367336e431d5..7a119a2c65c699c69e30599037170c6305aa172e 100644
 --- a/arch/arm64/boot/dts/mediatek/mt8188-geralt.dtsi
 +++ b/arch/arm64/boot/dts/mediatek/mt8188-geralt.dtsi
-@@ -217,8 +217,8 @@ scp_isp_cma_reserved: scp-isp-cma-region {
- 		};
- 
- 		secure_cma_reserved: secure_cma_region {
--			compatible = "mediatek,secure_cma_chunkmem";
--			reg = <0 0x81000000 0 0x18000000>;
-+			compatible = "mediatek,dynamic-restricted-region";
-+			reg = <0 0xB5000000 0 0x18000000>;
- 			reusable;
- 		};
- 	};
 @@ -265,6 +265,10 @@ &apusys_rv {
  	status = "okay";
  };
@@ -1533,7 +1116,7 @@ index 12f4bc8198e5a81a76df6b5ab63d3549b6b53c44..7a119a2c65c699c69e30599037170c63
  };
  
 diff --git a/arch/arm64/boot/dts/mediatek/mt8188.dtsi b/arch/arm64/boot/dts/mediatek/mt8188.dtsi
-index 03569a330b636b866b4a8b73542022a4bbaff963..40bc9c121158d109a223e7cb961b784b98aabb8b 100644
+index 95f55ad776be428b4ddff698a9462b82a79619d2..40bc9c121158d109a223e7cb961b784b98aabb8b 100644
 --- a/arch/arm64/boot/dts/mediatek/mt8188.dtsi
 +++ b/arch/arm64/boot/dts/mediatek/mt8188.dtsi
 @@ -1331,21 +1331,30 @@ gce1: mailbox@10330000 {
@@ -1550,7 +1133,7 @@ index 03569a330b636b866b4a8b73542022a4bbaff963..40bc9c121158d109a223e7cb961b784b
 -
 -		scp_dual: scp-dual@105af000 {
 -			compatible = "mediatek,mt8195-scp-dual";
--			reg = <0 0x105e0000 0 0x1f000>,
+-			reg = <0 0x105d0000 0 0x2f000>,
 -			      <0 0x10720000 0 0xe0000>;
 -			reg-names = "sram", "cfg";
 -			interrupts = <GIC_SPI 463 IRQ_TYPE_LEVEL_HIGH 0>;
@@ -1581,1434 +1164,34 @@ index 03569a330b636b866b4a8b73542022a4bbaff963..40bc9c121158d109a223e7cb961b784b
  		};
  
  		afe: afe@10b10000 {
-@@ -2258,6 +2267,1188 @@ larb11a: larb@15230000 {
- 			power-domains = <&spm MT8188_POWER_DOMAIN_DIP>;
- 		};
- 
-+		vmm_proxy_label: vmm-proxy {
-+			regulator-name = "dvfs-vmm";
-+			regulator-min-microvolt = <550000>;
-+			regulator-max-microvolt = <725000>;
-+		};
-+
-+		opp_table_img: opp-table-img {
-+			compatible = "operating-points-v2";
-+			opp-0 {
-+				opp-hz = /bits/ 64 <273000000>;
-+				opp-microvolt = <550000>;
-+			};
-+			opp-1 {
-+				opp-hz = /bits/ 64 <364000000>;
-+				opp-microvolt = <600000>;
-+			};
-+			opp-2 {
-+				opp-hz = /bits/ 64 <546000000>;
-+				opp-microvolt = <650000>;
-+			};
-+			opp-3 {
-+				opp-hz = /bits/ 64 <660000000>;
-+				opp-microvolt = <725000>;
-+			};
-+		};
-+
-+		opp_table_ipe: opp-table-ipe {
-+			compatible = "operating-points-v2";
-+			opp-0 {
-+				opp-hz = /bits/ 64 <273000000>;
-+				opp-microvolt = <550000>;
-+			};
-+			opp-1 {
-+				opp-hz = /bits/ 64 <364000000>;
-+				opp-microvolt = <600000>;
-+			};
-+			opp-2 {
-+				opp-hz = /bits/ 64 <458000000>;
-+				opp-microvolt = <650000>;
-+			};
-+			opp-3 {
-+				opp-hz = /bits/ 64 <546000000>;
-+				opp-microvolt = <725000>;
-+			};
-+		};
-+
-+		hcp: hcp@0 {
-+			compatible = "mediatek,hcp";
-+			#address-cells = <2>;
-+			#size-cells = <2>;
-+			dma-ranges = <0x2 0x0 0x0 0x40000000 0x1 0x0>;
+@@ -2309,7 +2318,7 @@ hcp: hcp@0 {
+ 			#address-cells = <2>;
+ 			#size-cells = <2>;
+ 			dma-ranges = <0x2 0x0 0x0 0x40000000 0x1 0x0>;
+-			mediatek,scp = <&scp_dual>;
 +			mediatek,scp = <&scp_c1>;
-+			iommus = <&vpp_iommu M4U_PORT_L11B_WPE_RDMA_0>,
-+				 <&vpp_iommu M4U_PORT_L11B_WPE_RDMA_1>,
-+				 <&vpp_iommu M4U_PORT_L11B_WPE_RDMA_4P_0>,
-+				 <&vpp_iommu M4U_PORT_L11B_WPE_RDMA_4P_1>,
-+				 <&vpp_iommu M4U_PORT_L11B_WPE_CQ0>,
-+				 <&vpp_iommu M4U_PORT_L11B_WPE_CQ1>,
-+				 <&vpp_iommu M4U_PORT_L11B_PIMGI_P1>,
-+				 <&vpp_iommu M4U_PORT_L11B_PIMGBI_P1>,
-+				 <&vpp_iommu M4U_PORT_L11B_PIMGCI_P1>,
-+				 <&vpp_iommu M4U_PORT_L11B_IMGI_T1_C>,
-+				 <&vpp_iommu M4U_PORT_L11B_IMGBI_T1_C>,
-+				 <&vpp_iommu M4U_PORT_L11B_IMGCI_T1_C>,
-+				 <&vpp_iommu M4U_PORT_L11B_SMTI_T1_C>,
-+				 <&vpp_iommu M4U_PORT_L11B_SMTI_T4_C>,
-+				 <&vpp_iommu M4U_PORT_L11B_SMTI_T6_C>,
-+				 <&vpp_iommu M4U_PORT_L11B_YUVO_T1_C>,
-+				 <&vpp_iommu M4U_PORT_L11B_YUVBO_T1_C>,
-+				 <&vpp_iommu M4U_PORT_L11B_YUVCO_T1_C>,
-+				 <&vpp_iommu M4U_PORT_L11B_WPE_WDMA_0>,
-+				 <&vpp_iommu M4U_PORT_L11B_WPE_WDMA_4P_0>,
-+				 <&vpp_iommu M4U_PORT_L11B_WROT_P1>,
-+				 <&vpp_iommu M4U_PORT_L11B_TCCSO_P1>,
-+				 <&vpp_iommu M4U_PORT_L11B_TCCSI_P1>,
-+				 <&vpp_iommu M4U_PORT_L11B_TIMGO_T1_C>,
-+				 <&vpp_iommu M4U_PORT_L11B_YUVO_T2_C>,
-+				 <&vpp_iommu M4U_PORT_L11B_YUVO_T5_C>,
-+				 <&vpp_iommu M4U_PORT_L11B_SMTO_T1_C>,
-+				 <&vpp_iommu M4U_PORT_L11B_SMTO_T4_C>,
-+				 <&vpp_iommu M4U_PORT_L11B_SMTO_T6_C>,
-+				 <&vpp_iommu M4U_PORT_L11B_DBGO_T1_C>;
-+		};
-+
-+		hcp_l15 {
-+			compatible = "mediatek,imgsys-larb";
-+			#address-cells = <2>;
-+			#size-cells = <2>;
-+			dma-ranges = <0x2 0x0 0x0 0x40000000 0x1 0x0>;
-+			iommus = <&vpp_iommu M4U_PORT_L15_VIPI_D1>,
-+				 <&vpp_iommu M4U_PORT_L15_VIPBI_D1>,
-+				 <&vpp_iommu M4U_PORT_L15_SMTI_D6>,
-+				 <&vpp_iommu M4U_PORT_L15_TNCSTI_D1>,
-+				 <&vpp_iommu M4U_PORT_L15_TNCSTI_D4>,
-+				 <&vpp_iommu M4U_PORT_L15_SMTI_D4>,
-+				 <&vpp_iommu M4U_PORT_L15_IMG3O_D1>,
-+				 <&vpp_iommu M4U_PORT_L15_IMG3BO_D1>,
-+				 <&vpp_iommu M4U_PORT_L15_IMG3CO_D1>,
-+				 <&vpp_iommu M4U_PORT_L15_IMG2O_D1>,
-+				 <&vpp_iommu M4U_PORT_L15_SMTI_D9>,
-+				 <&vpp_iommu M4U_PORT_L15_SMTO_D4>,
-+				 <&vpp_iommu M4U_PORT_L15_FEO_D1>,
-+				 <&vpp_iommu M4U_PORT_L15_TNCSO_D1>,
-+				 <&vpp_iommu M4U_PORT_L15_TNCSTO_D1>,
-+				 <&vpp_iommu M4U_PORT_L15_SMTO_D6>,
-+				 <&vpp_iommu M4U_PORT_L15_SMTO_D9>,
-+				 <&vpp_iommu M4U_PORT_L15_TNCO_D1>,
-+				 <&vpp_iommu M4U_PORT_L15_TNCO_D1_N>;
-+		};
-+
-+		imgsys_fw: imgsys_fw@15000000 {
-+			compatible = "mediatek,imgsys";
-+			#address-cells = <2>;
-+			#size-cells = <2>;
-+			dma-ranges = <0x2 0x0 0x0 0x40000000 0x1 0x0>;
-+			reg = <0 0x15000000 0 0x4000>,	/* 0 IMGSYS_TOP */
-+			      <0 0x15020000 0 0x10000>,	/* 1 IMGSYS_TRAW */
-+			      <0 0x15040000 0 0x10000>,	/* 2 IMGSYS_LTRAW */
-+			      <0 0x15640000 0 0x10000>,	/* 3 IMGSYS_XTRAW */
-+			      <0 0x15100000 0 0x10000>,	/* 4 IMGSYS_DIP */
-+			      <0 0x15150000 0 0x10000>,	/* 4 IMGSYS_DIP_NR */
-+			      <0 0x15210000 0 0x10000>,	/* 5 IMGSYS_PQDIP_A */
-+			      <0 0x15510000 0 0x10000>,	/* 6 IMGSYS_PQDIP_B */
-+			      <0 0x15200000 0 0x10000>,	/* 7 IMGSYS_WPE_EIS */
-+			      <0 0x15500000 0 0x10000>,	/* 8 IMGSYS_WPE_TNR */
-+			      <0 0x15600000 0 0x10000>,	/* 9 IMGSYS_WPE_LITE */
-+			      <0 0x15220000 0 0x00100>,	/* 10 IMGSYS_WPE1_DIP1 */
-+			      <0 0x15320000 0 0x10000>,	/* 11 IMGSYS_ME */
-+			      <0 0x00000000 0 0x01000>,	/* 12 IMGSYS_ADL_A */
-+			      <0 0x00000000 0 0x01000>,	/* 13 IMGSYS_ADL_B */
-+			      <0 0x15520000 0 0x00100>,	/* 14 IMGSYS_WPE2_DIP1 */
-+			      <0 0x15620000 0 0x00100>,	/* 15 IMGSYS_WPE3_DIP1 */
-+			      <0 0x15110000 0 0x00100>,	/* 16 IMGSYS_DIP_TOP */
-+			      <0 0x15130000 0 0x00100>;	/* 17 IMGSYS_DIP_TOP_NR */
+ 			iommus = <&vpp_iommu M4U_PORT_L11B_WPE_RDMA_0>,
+ 				 <&vpp_iommu M4U_PORT_L11B_WPE_RDMA_1>,
+ 				 <&vpp_iommu M4U_PORT_L11B_WPE_RDMA_4P_0>,
+@@ -2392,7 +2401,7 @@ imgsys_fw: imgsys_fw@15000000 {
+ 			      <0 0x15620000 0 0x00100>,	/* 15 IMGSYS_WPE3_DIP1 */
+ 			      <0 0x15110000 0 0x00100>,	/* 16 IMGSYS_DIP_TOP */
+ 			      <0 0x15130000 0 0x00100>;	/* 17 IMGSYS_DIP_TOP_NR */
+-			mediatek,scp = <&scp_dual>;
 +			mediatek,scp = <&scp_c1>;
-+			mediatek,hcp = <&hcp>;
-+			mediatek,larbs = <&larb9>,
-+					 <&larb10>,
-+					 <&larb11a>,
-+					 <&larb11b>,
-+					 <&larb11c>,
-+					 <&larb15>;
-+			iommus = <&vdo_iommu M4U_PORT_L9_IMGI_T1_A>,
-+				 <&vdo_iommu M4U_PORT_L9_UFDI_T1_A>,
-+				 <&vdo_iommu M4U_PORT_L9_IMGBI_T1_A>,
-+				 <&vdo_iommu M4U_PORT_L9_IMGCI_T1_A>,
-+				 <&vdo_iommu M4U_PORT_L9_SMTI_T1_A>,
-+				 <&vdo_iommu M4U_PORT_L9_SMTI_T4_A>,
-+				 <&vdo_iommu M4U_PORT_L9_TNCSTI_T1_A>,
-+				 <&vdo_iommu M4U_PORT_L9_TNCSTI_T4_A>,
-+				 <&vdo_iommu M4U_PORT_L9_YUVO_T1_A>,
-+				 <&vdo_iommu M4U_PORT_L9_YUVBO_T1_A>,
-+				 <&vdo_iommu M4U_PORT_L9_YUVCO_T1_A>,
-+				 <&vdo_iommu M4U_PORT_L9_TIMGO_T1_A>,
-+				 <&vdo_iommu M4U_PORT_L9_YUVO_T2_A>,
-+				 <&vdo_iommu M4U_PORT_L9_YUVO_T5_A>,
-+				 <&vdo_iommu M4U_PORT_L9_IMGI_T1_B>,
-+				 <&vdo_iommu M4U_PORT_L9_IMGBI_T1_B>,
-+				 <&vdo_iommu M4U_PORT_L9_IMGCI_T1_B>,
-+				 <&vdo_iommu M4U_PORT_L9_SMTI_T4_B>,
-+				 <&vdo_iommu M4U_PORT_L9_TNCSO_T1_A>,
-+				 <&vdo_iommu M4U_PORT_L9_SMTO_T1_A>,
-+				 <&vdo_iommu M4U_PORT_L9_SMTO_T4_A>,
-+				 <&vdo_iommu M4U_PORT_L9_TNCSTO_T1_A>,
-+				 <&vdo_iommu M4U_PORT_L9_YUVO_T2_B>,
-+				 <&vdo_iommu M4U_PORT_L9_YUVO_T5_B>,
-+				 <&vdo_iommu M4U_PORT_L9_SMTO_T4_B>;
-+			mboxes = <&gce1 13 CMDQ_THR_PRIO_2>,
-+				 <&gce1 14 CMDQ_THR_PRIO_2>,
-+				 <&gce1 19 CMDQ_THR_PRIO_2>,
-+				 <&gce1 20 CMDQ_THR_PRIO_2>,
-+				 <&gce1 21 CMDQ_THR_PRIO_2>,
-+				 <&gce1 24 CMDQ_THR_PRIO_2>,
-+				 <&gce1 25 CMDQ_THR_PRIO_2>,
-+				 <&gce1 26 CMDQ_THR_PRIO_1>,
-+				 <&gce1 27 CMDQ_THR_PRIO_1>,
-+				 <&gce1 28 CMDQ_THR_PRIO_1>;
-+			traw_cq_thread0_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_TRAW0_CQ_THR_DONE_0>;
-+			traw_cq_thread1_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_TRAW0_CQ_THR_DONE_1>;
-+			traw_cq_thread2_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_TRAW0_CQ_THR_DONE_2>;
-+			traw_cq_thread3_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_TRAW0_CQ_THR_DONE_3>;
-+			traw_cq_thread4_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_TRAW0_CQ_THR_DONE_4>;
-+			traw_cq_thread5_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_TRAW0_CQ_THR_DONE_5>;
-+			traw_cq_thread6_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_TRAW0_CQ_THR_DONE_6>;
-+			traw_cq_thread7_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_TRAW0_CQ_THR_DONE_7>;
-+			traw_cq_thread8_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_TRAW0_CQ_THR_DONE_8>;
-+			traw_cq_thread9_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_TRAW0_CQ_THR_DONE_9>;
-+			ltraw_cq_thread0_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_TRAW1_CQ_THR_DONE_0>;
-+			ltraw_cq_thread1_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_TRAW1_CQ_THR_DONE_1>;
-+			ltraw_cq_thread2_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_TRAW1_CQ_THR_DONE_2>;
-+			ltraw_cq_thread3_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_TRAW1_CQ_THR_DONE_3>;
-+			ltraw_cq_thread4_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_TRAW1_CQ_THR_DONE_4>;
-+			ltraw_cq_thread5_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_TRAW1_CQ_THR_DONE_5>;
-+			ltraw_cq_thread6_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_TRAW1_CQ_THR_DONE_6>;
-+			ltraw_cq_thread7_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_TRAW1_CQ_THR_DONE_7>;
-+			ltraw_cq_thread8_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_TRAW1_CQ_THR_DONE_8>;
-+			ltraw_cq_thread9_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_TRAW1_CQ_THR_DONE_9>;
-+			xtraw_cq_thread0_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_XTRAW_CQ_THR_DONE_0>;
-+			xtraw_cq_thread1_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_XTRAW_CQ_THR_DONE_1>;
-+			xtraw_cq_thread2_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_XTRAW_CQ_THR_DONE_2>;
-+			xtraw_cq_thread3_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_XTRAW_CQ_THR_DONE_3>;
-+			xtraw_cq_thread4_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_XTRAW_CQ_THR_DONE_4>;
-+			xtraw_cq_thread5_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_XTRAW_CQ_THR_DONE_5>;
-+			xtraw_cq_thread6_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_XTRAW_CQ_THR_DONE_6>;
-+			xtraw_cq_thread7_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_XTRAW_CQ_THR_DONE_7>;
-+			xtraw_cq_thread8_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_XTRAW_CQ_THR_DONE_8>;
-+			xtraw_cq_thread9_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_XTRAW_CQ_THR_DONE_9>;
-+			dip_cq_thread0_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_DIP_CQ_THR_DONE_0>;
-+			dip_cq_thread1_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_DIP_CQ_THR_DONE_1>;
-+			dip_cq_thread2_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_DIP_CQ_THR_DONE_2>;
-+			dip_cq_thread3_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_DIP_CQ_THR_DONE_3>;
-+			dip_cq_thread4_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_DIP_CQ_THR_DONE_4>;
-+			dip_cq_thread5_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_DIP_CQ_THR_DONE_5>;
-+			dip_cq_thread6_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_DIP_CQ_THR_DONE_6>;
-+			dip_cq_thread7_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_DIP_CQ_THR_DONE_7>;
-+			dip_cq_thread8_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_DIP_CQ_THR_DONE_8>;
-+			dip_cq_thread9_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_DIP_CQ_THR_DONE_9>;
-+			pqa_cq_thread0_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_PQDIP_A_CQ_THR_DONE_0>;
-+			pqa_cq_thread1_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_PQDIP_A_CQ_THR_DONE_1>;
-+			pqa_cq_thread2_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_PQDIP_A_CQ_THR_DONE_2>;
-+			pqa_cq_thread3_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_PQDIP_A_CQ_THR_DONE_3>;
-+			pqa_cq_thread4_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_PQDIP_A_CQ_THR_DONE_4>;
-+			pqa_cq_thread5_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_PQDIP_A_CQ_THR_DONE_5>;
-+			pqa_cq_thread6_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_PQDIP_A_CQ_THR_DONE_6>;
-+			pqa_cq_thread7_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_PQDIP_A_CQ_THR_DONE_7>;
-+			pqa_cq_thread8_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_PQDIP_A_CQ_THR_DONE_8>;
-+			pqa_cq_thread9_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_PQDIP_A_CQ_THR_DONE_9>;
-+			pqb_cq_thread0_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_PQDIP_B_CQ_THR_DONE_0>;
-+			pqb_cq_thread1_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_PQDIP_B_CQ_THR_DONE_1>;
-+			pqb_cq_thread2_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_PQDIP_B_CQ_THR_DONE_2>;
-+			pqb_cq_thread3_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_PQDIP_B_CQ_THR_DONE_3>;
-+			pqb_cq_thread4_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_PQDIP_B_CQ_THR_DONE_4>;
-+			pqb_cq_thread5_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_PQDIP_B_CQ_THR_DONE_5>;
-+			pqb_cq_thread6_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_PQDIP_B_CQ_THR_DONE_6>;
-+			pqb_cq_thread7_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_PQDIP_B_CQ_THR_DONE_7>;
-+			pqb_cq_thread8_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_PQDIP_B_CQ_THR_DONE_8>;
-+			pqb_cq_thread9_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_PQDIP_B_CQ_THR_DONE_9>;
-+			wpe_eis_cq_thread0_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_WPE_EIS_CQ_THR_DONE_0>;
-+			wpe_eis_cq_thread1_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_WPE_EIS_CQ_THR_DONE_1>;
-+			wpe_eis_cq_thread2_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_WPE_EIS_CQ_THR_DONE_2>;
-+			wpe_eis_cq_thread3_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_WPE_EIS_CQ_THR_DONE_3>;
-+			wpe_eis_cq_thread4_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_WPE_EIS_CQ_THR_DONE_4>;
-+			wpe_eis_cq_thread5_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_WPE_EIS_CQ_THR_DONE_5>;
-+			wpe_eis_cq_thread6_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_WPE_EIS_CQ_THR_DONE_6>;
-+			wpe_eis_cq_thread7_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_WPE_EIS_CQ_THR_DONE_7>;
-+			wpe_eis_cq_thread8_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_WPE_EIS_CQ_THR_DONE_8>;
-+			wpe_eis_cq_thread9_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_WPE_EIS_CQ_THR_DONE_9>;
-+			wpe_tnr_cq_thread0_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_WPE_TNR_CQ_THR_DONE_0>;
-+			wpe_tnr_cq_thread1_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_WPE_TNR_CQ_THR_DONE_1>;
-+			wpe_tnr_cq_thread2_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_WPE_TNR_CQ_THR_DONE_2>;
-+			wpe_tnr_cq_thread3_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_WPE_TNR_CQ_THR_DONE_3>;
-+			wpe_tnr_cq_thread4_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_WPE_TNR_CQ_THR_DONE_4>;
-+			wpe_tnr_cq_thread5_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_WPE_TNR_CQ_THR_DONE_5>;
-+			wpe_tnr_cq_thread6_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_WPE_TNR_CQ_THR_DONE_6>;
-+			wpe_tnr_cq_thread7_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_WPE_TNR_CQ_THR_DONE_7>;
-+			wpe_tnr_cq_thread8_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_WPE_TNR_CQ_THR_DONE_8>;
-+			wpe_tnr_cq_thread9_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_WPE_TNR_CQ_THR_DONE_9>;
-+			wpe_lite_cq_thread0_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_WPE_LITE_CQ_THR_DONE_0>;
-+			wpe_lite_cq_thread1_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_WPE_LITE_CQ_THR_DONE_1>;
-+			wpe_lite_cq_thread2_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_WPE_LITE_CQ_THR_DONE_2>;
-+			wpe_lite_cq_thread3_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_WPE_LITE_CQ_THR_DONE_3>;
-+			wpe_lite_cq_thread4_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_WPE_LITE_CQ_THR_DONE_4>;
-+			wpe_lite_cq_thread5_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_WPE_LITE_CQ_THR_DONE_5>;
-+			wpe_lite_cq_thread6_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_WPE_LITE_CQ_THR_DONE_6>;
-+			wpe_lite_cq_thread7_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_WPE_LITE_CQ_THR_DONE_7>;
-+			wpe_lite_cq_thread8_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_WPE_LITE_CQ_THR_DONE_8>;
-+			wpe_lite_cq_thread9_frame_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_WPE_LITE_CQ_THR_DONE_9>;
-+			me_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_IMGSYS_IPE_ME_DONE>;
-+			adl_tile_done =
-+				/bits/ 16 <CMDQ_EVENT_IMG_ADL_RESERVED>;
-+			wpe_eis_sync_token =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_WPE_EIS>;
-+			wpe_tnr_sync_token =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_WPE_TNR>;
-+			wpe_lite_sync_token =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_WPE_LITE>;
-+			traw_sync_token =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_TRAW>;
-+			ltraw_sync_token =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_LTRAW>;
-+			xtraw_sync_token =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_XTRAW>;
-+			dip_sync_token =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_DIP>;
-+			pqdip_a_sync_token =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_PQDIP_A>;
-+			pqdip_b_sync_token =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_PQDIP_B>;
-+			me_sync_token =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IPESYS_ME>;
-+			vss_traw_sync_token =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_VSS_TRAW>;
-+			vss_ltraw_sync_token =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_VSS_LTRAW>;
-+			vss_xtraw_sync_token =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_VSS_XTRAW>;
-+			vss_dip_sync_token =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_VSS_DIP>;
-+			sw_sync_token_pool_1 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_1>;
-+			sw_sync_token_pool_2 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_2>;
-+			sw_sync_token_pool_3 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_3>;
-+			sw_sync_token_pool_4 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_4>;
-+			sw_sync_token_pool_5 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_5>;
-+			sw_sync_token_pool_6 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_6>;
-+			sw_sync_token_pool_7 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_7>;
-+			sw_sync_token_pool_8 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_8>;
-+			sw_sync_token_pool_9 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_9>;
-+			sw_sync_token_pool_10 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_10>;
-+			sw_sync_token_pool_11 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_11>;
-+			sw_sync_token_pool_12 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_12>;
-+			sw_sync_token_pool_13 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_13>;
-+			sw_sync_token_pool_14 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_14>;
-+			sw_sync_token_pool_15 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_15>;
-+			sw_sync_token_pool_16 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_16>;
-+			sw_sync_token_pool_17 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_17>;
-+			sw_sync_token_pool_18 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_18>;
-+			sw_sync_token_pool_19 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_19>;
-+			sw_sync_token_pool_20 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_20>;
-+			sw_sync_token_pool_21 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_21>;
-+			sw_sync_token_pool_22 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_22>;
-+			sw_sync_token_pool_23 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_23>;
-+			sw_sync_token_pool_24 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_24>;
-+			sw_sync_token_pool_25 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_25>;
-+			sw_sync_token_pool_26 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_26>;
-+			sw_sync_token_pool_27 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_27>;
-+			sw_sync_token_pool_28 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_28>;
-+			sw_sync_token_pool_29 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_29>;
-+			sw_sync_token_pool_30 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_30>;
-+			sw_sync_token_pool_31 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_31>;
-+			sw_sync_token_pool_32 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_32>;
-+			sw_sync_token_pool_33 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_33>;
-+			sw_sync_token_pool_34 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_34>;
-+			sw_sync_token_pool_35 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_35>;
-+			sw_sync_token_pool_36 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_36>;
-+			sw_sync_token_pool_37 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_37>;
-+			sw_sync_token_pool_38 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_38>;
-+			sw_sync_token_pool_39 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_39>;
-+			sw_sync_token_pool_40 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_40>;
-+			sw_sync_token_pool_41 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_41>;
-+			sw_sync_token_pool_42 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_42>;
-+			sw_sync_token_pool_43 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_43>;
-+			sw_sync_token_pool_44 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_44>;
-+			sw_sync_token_pool_45 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_45>;
-+			sw_sync_token_pool_46 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_46>;
-+			sw_sync_token_pool_47 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_47>;
-+			sw_sync_token_pool_48 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_48>;
-+			sw_sync_token_pool_49 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_49>;
-+			sw_sync_token_pool_50 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_50>;
-+			sw_sync_token_pool_51 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_51>;
-+			sw_sync_token_pool_52 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_52>;
-+			sw_sync_token_pool_53 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_53>;
-+			sw_sync_token_pool_54 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_54>;
-+			sw_sync_token_pool_55 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_55>;
-+			sw_sync_token_pool_56 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_56>;
-+			sw_sync_token_pool_57 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_57>;
-+			sw_sync_token_pool_58 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_58>;
-+			sw_sync_token_pool_59 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_59>;
-+			sw_sync_token_pool_60 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_60>;
-+			sw_sync_token_tzmp_isp_wait =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_TZMP_ISP_WAIT>;
-+			sw_sync_token_tzmp_isp_set =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_TZMP_ISP_SET>;
-+#if 0
-+			sw_sync_token_pool_61 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_61>;
-+			sw_sync_token_pool_62 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_62>;
-+			sw_sync_token_pool_63 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_63>;
-+			sw_sync_token_pool_64 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_64>;
-+			sw_sync_token_pool_65 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_65>;
-+			sw_sync_token_pool_66 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_66>;
-+			sw_sync_token_pool_67 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_67>;
-+			sw_sync_token_pool_68 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_68>;
-+			sw_sync_token_pool_69 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_69>;
-+			sw_sync_token_pool_70 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_70>;
-+			sw_sync_token_pool_71 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_71>;
-+			sw_sync_token_pool_72 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_72>;
-+			sw_sync_token_pool_73 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_73>;
-+			sw_sync_token_pool_74 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_74>;
-+			sw_sync_token_pool_75 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_75>;
-+			sw_sync_token_pool_76 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_76>;
-+			sw_sync_token_pool_77 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_77>;
-+			sw_sync_token_pool_78 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_78>;
-+			sw_sync_token_pool_79 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_79>;
-+			sw_sync_token_pool_80 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_80>;
-+			sw_sync_token_pool_81 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_81>;
-+			sw_sync_token_pool_82 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_82>;
-+			sw_sync_token_pool_83 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_83>;
-+			sw_sync_token_pool_84 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_84>;
-+			sw_sync_token_pool_85 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_85>;
-+			sw_sync_token_pool_86 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_86>;
-+			sw_sync_token_pool_87 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_87>;
-+			sw_sync_token_pool_88 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_88>;
-+			sw_sync_token_pool_89 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_89>;
-+			sw_sync_token_pool_90 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_90>;
-+			sw_sync_token_pool_91 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_91>;
-+			sw_sync_token_pool_92 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_92>;
-+			sw_sync_token_pool_93 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_93>;
-+			sw_sync_token_pool_94 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_94>;
-+			sw_sync_token_pool_95 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_95>;
-+			sw_sync_token_pool_96 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_96>;
-+			sw_sync_token_pool_97 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_97>;
-+			sw_sync_token_pool_98 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_98>;
-+			sw_sync_token_pool_99 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_99>;
-+			sw_sync_token_pool_100 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_IMGSYS_POOL_100>;
-+#endif
-+			sw_sync_token_camsys_pool_1 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_CAMSYS_POOL_1>;
-+			sw_sync_token_camsys_pool_2 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_CAMSYS_POOL_2>;
-+			sw_sync_token_camsys_pool_3 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_CAMSYS_POOL_3>;
-+			sw_sync_token_camsys_pool_4 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_CAMSYS_POOL_4>;
-+			sw_sync_token_camsys_pool_5 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_CAMSYS_POOL_5>;
-+			sw_sync_token_camsys_pool_6 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_CAMSYS_POOL_6>;
-+			sw_sync_token_camsys_pool_7 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_CAMSYS_POOL_7>;
-+			sw_sync_token_camsys_pool_8 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_CAMSYS_POOL_8>;
-+			sw_sync_token_camsys_pool_9 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_CAMSYS_POOL_9>;
-+			sw_sync_token_camsys_pool_10 =
-+				/bits/ 16 <CMDQ_SYNC_TOKEN_CAMSYS_POOL_10>;
-+			clocks = <&imgsys CLK_IMGSYS_MAIN_TRAW0>,
-+				 <&imgsys CLK_IMGSYS_MAIN_TRAW1>,
-+				 <&imgsys CLK_IMGSYS_MAIN_VCORE_GALS>,
-+				 <&imgsys CLK_IMGSYS_MAIN_DIP0>,
-+				 <&imgsys CLK_IMGSYS_MAIN_WPE0>,
-+				 <&imgsys CLK_IMGSYS_MAIN_WPE1>,
-+				 <&imgsys CLK_IMGSYS_MAIN_WPE2>,
-+				 <&imgsys CLK_IMGSYS_MAIN_WPE0>,
-+				 <&imgsys CLK_IMGSYS_MAIN_WPE1>,
-+				 <&imgsys CLK_IMGSYS_MAIN_WPE2>,
-+				 <&imgsys CLK_IMGSYS_MAIN_GALS>,
-+				 <&imgsys1_dip_top CLK_IMGSYS1_DIP_TOP_DIP_TOP>,
-+				 <&imgsys1_dip_nr CLK_IMGSYS1_DIP_NR_DIP_NR>,
-+				 <&imgsys_wpe1 CLK_IMGSYS_WPE1>,
-+				 <&imgsys_wpe2 CLK_IMGSYS_WPE2>,
-+				 <&imgsys_wpe3 CLK_IMGSYS_WPE3>,
-+				 <&imgsys CLK_IMGSYS_MAIN_IPE>;
-+
-+			clock-names = "IMGSYS_CG_IMG_TRAW0",
-+				      "IMGSYS_CG_IMG_TRAW1",
-+				      "IMGSYS_CG_IMG_VCORE_GALS",
-+				      "IMGSYS_CG_IMG_DIP0",
-+				      "IMGSYS_CG_IMG_WPE0",
-+				      "IMGSYS_CG_IMG_WPE1",
-+				      "IMGSYS_CG_IMG_WPE2",
-+				      "IMGSYS_CG_IMG_ADL_LARB",
-+				      "IMGSYS_CG_IMG_ADL_TOP0",
-+				      "IMGSYS_CG_IMG_ADL_TOP1",
-+				      "IMGSYS_CG_IMG_GALS",
-+				      "DIP_TOP_DIP_TOP",
-+				      "DIP_NR_DIP_NR",
-+				      "WPE1_CG_DIP1_WPE",
-+				      "WPE2_CG_DIP1_WPE",
-+				      "WPE3_CG_DIP1_WPE",
-+				      "ME_CG_IPE";
-+
-+			operating-points-v2 = <&opp_table_img>, <&opp_table_ipe>;
-+			dvfsrc-vmm-supply = <&vmm_proxy_label>;
-+			assigned-clocks = <&topckgen CLK_TOP_IMG>;
-+			assigned-clock-parents = <&apmixedsys CLK_APMIXED_IMGPLL>;
-+#if 0
-+			interconnects =
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L9_IMGI_T1_A)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L9_UFDI_T1_A)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L9_IMGBI_T1_A)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L9_IMGCI_T1_A)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L9_SMTI_T1_A)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L9_SMTI_T4_A)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L9_TNCSTI_T1_A)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L9_TNCSTI_T4_A)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L9_YUVO_T1_A)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L9_YUVBO_T1_A)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L9_YUVCO_T1_A)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L9_TIMGO_T1_A)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L9_YUVO_T2_A)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L9_YUVO_T5_A)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L9_IMGI_T1_B)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L9_IMGBI_T1_B)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L9_IMGCI_T1_B)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L9_SMTI_T4_B)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L9_TNCSO_T1_A)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L9_SMTO_T1_A)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L9_SMTO_T4_A)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L9_TNCSTO_T1_A)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L9_YUVO_T2_B)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L9_YUVO_T5_B)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L9_SMTO_T4_B)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L11A_IMGI_T1_C)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L11A_IMGBI_T1_C)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L11A_IMGCI_T1_C)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L11A_SMTI_T1_C)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L11A_SMTI_T4_C)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L11A_SMTI_T6_C)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L11A_YUVO_T1_C)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L11A_YUVBO_T1_C)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L11A_YUVCO_T1_C)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L11A_TIMGO_T1_C)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L11A_YUVO_T2_C)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L11A_YUVO_T5_C)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L11A_SMTO_T1_C)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L11A_SMTO_T4_C)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L11A_SMTO_T6_C)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L11A_DBGO_T1_C)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L10_IMGI_D1)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L10_IMGBI_D1)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L10_IMGCI_D1)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L10_IMGDI_D1)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L10_DEPI_D1)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L10_DMGI_D1)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L10_SMTI_D1)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L10_RECI_D1)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L10_RECI_D1_N)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L10_TNRWI_D1)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L10_TNRCI_D1)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L10_TNRCI_D1_N)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L10_IMG4O_D1)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L10_IMG4BO_D1)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L10_SMTI_D8)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L10_SMTO_D1)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L10_TNRMO_D1)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L10_TNRMO_D1_N)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L10_SMTO_D8)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L10_DBGO_D1)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L15_VIPI_D1)
-+					&mmqos SLAVE_COMMON(1)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L15_VIPBI_D1)
-+					&mmqos SLAVE_COMMON(1)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L15_SMTI_D6)
-+					&mmqos SLAVE_COMMON(1)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L15_TNCSTI_D1)
-+					&mmqos SLAVE_COMMON(1)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L15_TNCSTI_D4)
-+					&mmqos SLAVE_COMMON(1)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L15_SMTI_D4)
-+					&mmqos SLAVE_COMMON(1)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L15_IMG3O_D1)
-+					&mmqos SLAVE_COMMON(1)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L15_IMG3BO_D1)
-+					&mmqos SLAVE_COMMON(1)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L15_IMG3CO_D1)
-+					&mmqos SLAVE_COMMON(1)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L15_IMG2O_D1)
-+					&mmqos SLAVE_COMMON(1)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L15_SMTI_D9)
-+					&mmqos SLAVE_COMMON(1)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L15_SMTO_D4)
-+					&mmqos SLAVE_COMMON(1)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L15_FEO_D1)
-+					&mmqos SLAVE_COMMON(1)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L15_TNCSO_D1)
-+					&mmqos SLAVE_COMMON(1)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L15_TNCSTO_D1)
-+					&mmqos SLAVE_COMMON(1)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L15_SMTO_D6)
-+					&mmqos SLAVE_COMMON(1)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L15_SMTO_D9)
-+					&mmqos SLAVE_COMMON(1)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L15_TNCO_D1)
-+					&mmqos SLAVE_COMMON(1)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L15_TNCO_D1_N)
-+					&mmqos SLAVE_COMMON(1)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L11A_PIMGI_P1)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L11A_PIMGBI_P1)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L11A_PIMGCI_P1)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L11A_WROT_P1)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L11A_TCCSO_P1)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L11A_TCCSI_P1)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L11B_PIMGI_P1)
-+					&mmqos SLAVE_COMMON(1)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L11B_PIMGBI_P1)
-+					&mmqos SLAVE_COMMON(1)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L11B_PIMGCI_P1)
-+					&mmqos SLAVE_COMMON(1)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L11B_WROT_P1)
-+					&mmqos SLAVE_COMMON(1)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L11B_TCCSO_P1)
-+					&mmqos SLAVE_COMMON(1)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L11B_TCCSI_P1)
-+					&mmqos SLAVE_COMMON(1)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L11A_WPE_RDMA_0)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L11A_WPE_RDMA_1)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L11A_WPE_RDMA_4P_0)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L11A_WPE_RDMA_4P_1)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L11A_WPE_CQ0)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L11A_WPE_CQ1)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L11A_WPE_WDMA_0)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L11A_WPE_WDMA_4P_0)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L11B_WPE_RDMA_0)
-+					&mmqos SLAVE_COMMON(1)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L11B_WPE_RDMA_1)
-+					&mmqos SLAVE_COMMON(1)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L11B_WPE_RDMA_4P_0)
-+					&mmqos SLAVE_COMMON(1)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L11B_WPE_RDMA_4P_1)
-+					&mmqos SLAVE_COMMON(1)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L11B_WPE_CQ0)
-+					&mmqos SLAVE_COMMON(1)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L11B_WPE_CQ1)
-+					&mmqos SLAVE_COMMON(1)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L11B_WPE_WDMA_0)
-+					&mmqos SLAVE_COMMON(1)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L11B_WPE_WDMA_4P_0)
-+					&mmqos SLAVE_COMMON(1)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L11C_WPE_RDMA_0)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L11C_WPE_RDMA_1)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L11C_WPE_RDMA_4P_0)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L11C_WPE_RDMA_4P_1)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L11C_WPE_CQ0)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L11C_WPE_CQ1)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L11C_WPE_WDMA_0)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L11C_WPE_WDMA_4P_0)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L12_ME_RDMA)
-+					&mmqos SLAVE_COMMON(1)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L12_ME_WDMA)
-+					&mmqos SLAVE_COMMON(1)>,
-+				<&mmqos SLAVE_LARB(SMI_L9_ID)
-+					&mmqos SLAVE_COMMON(0)>,
-+				<&mmqos SLAVE_LARB(SMI_L12_ID)
-+					&mmqos SLAVE_COMMON(1)>;
-+#endif
-+			interconnect-names =
-+				"l9_imgi_t1_a",
-+				"l9_ufdi_t1_a",
-+				"l9_imgbi_t1_a",
-+				"l9_imgci_t1_a",
-+				"l9_smti_t1_a",
-+				"l9_smti_t4_a",
-+				"l9_tncsti_t1_a",
-+				"l9_tncsti_t4_a",
-+				"l9_yuvo_t1_a",
-+				"l9_yuvbo_t1_a",
-+				"l9_yuvco_t1_a",
-+				"l9_timgo_t1_a",
-+				"l9_yuvo_t2_a",
-+				"l9_yuvo_t5_a",
-+				"l9_tncso_t1_a",
-+				"l9_smto_t1_a",
-+				"l9_smto_t4_a",
-+				"l9_tncsto_t1_a",
-+				"l9_imgi_t1_b",
-+				"l9_imgbi_t1_b",
-+				"l9_imgci_t1_b",
-+				"l9_smti_t4_b",
-+				"l9_yuvo_t2_b",
-+				"l9_yuvo_t5_b",
-+				"l9_smto_t4_b",
-+				"l11a_imgi_t1_c",
-+				"l11a_imgbi_t1_c",
-+				"l11a_imgci_t1_c",
-+				"l11a_smti_t1_c",
-+				"l11a_smti_t4_c",
-+				"l11a_smti_t6_c",
-+				"l11a_yuvo_t1_c",
-+				"l11a_yuvbo_t1_c",
-+				"l11a_yuvco_t1_c",
-+				"l11a_timgo_t1_c",
-+				"l11a_yuvo_t2_c",
-+				"l11a_yuvo_t5_c",
-+				"l11a_smto_t1_c",
-+				"l11a_smto_t4_c",
-+				"l11a_smto_t6_c",
-+				"l11a_dbgo_t1_c",
-+				"l10_imgi_d1",
-+				"l10_imgbi_d1",
-+				"l10_imgci_d1",
-+				"l10_imgdi_d1",
-+				"l10_depi_d1",
-+				"l10_dmgi_d1",
-+				"l10_smti_d1",
-+				"l10_reci_d1",
-+				"l10_reci_d1_n",
-+				"l10_tnrwi_d1",
-+				"l10_tnrci_d1",
-+				"l10_tnrci_d1_n",
-+				"l10_img4o_d1",
-+				"l10_img4bo_d1",
-+				"l10_smti_d8",
-+				"l10_smto_d1",
-+				"l10_tnrmo_d1",
-+				"l10_tnrmo_d1_n",
-+				"l10_smto_d8",
-+				"l10_dbgo_d1",
-+				"l15_vipi_d1",
-+				"l15_vipbi_d1",
-+				"l15_smti_d6",
-+				"l15_tncsti_d1",
-+				"l15_tncsti_d4",
-+				"l15_smti_d4",
-+				"l15_img3o_d1",
-+				"l15_img3bo_d1",
-+				"l15_img3co_d1",
-+				"l15_img2o_d1",
-+				"l15_smti_d9",
-+				"l15_smto_d4",
-+				"l15_feo_d1",
-+				"l15_tncso_d1",
-+				"l15_tncsto_d1",
-+				"l15_smto_d6",
-+				"l15_smto_d9",
-+				"l15_tnco_d1",
-+				"l15_tnco_d1_n",
-+				"l11a_pimgi_p1",
-+				"l11a_pimgbi_p1",
-+				"l11a_pimgci_p1",
-+				"l11a_wrot_p1",
-+				"l11a_tccso_p1",
-+				"l11a_tccsi_p1",
-+				"l11b_pimgi_p1",
-+				"l11b_pimgbi_p1",
-+				"l11b_pimgci_p1",
-+				"l11b_wrot_p1",
-+				"l11b_tccso_p1",
-+				"l11b_tccsi_p1",
-+				"l11a_wpe_rdma0",
-+				"l11a_wpe_rdma1",
-+				"l11a_wpe_rdma_4p0",
-+				"l11a_wpe_rdma_4p1",
-+				"l11a_wpe_cq0",
-+				"l11a_wpe_cq1",
-+				"l11a_wpe_wdma0",
-+				"l11a_wpe_wdma_4p0",
-+				"l11b_wpe_rdma0",
-+				"l11b_wpe_rdma1",
-+				"l11b_wpe_rdma_4p0",
-+				"l11b_wpe_rdma_4p1",
-+				"l11b_wpe_cq0",
-+				"l11b_wpe_cq1",
-+				"l11b_wpe_wdma0",
-+				"l11b_wpe_wdma_4p0",
-+				"l11c_wpe_rdma0",
-+				"l11c_wpe_rdma1",
-+				"l11c_wpe_rdma_4p0",
-+				"l11c_wpe_rdma_4p1",
-+				"l11c_wpe_cq0",
-+				"l11c_wpe_cq1",
-+				"l11c_wpe_wdma0",
-+				"l11c_wpe_wdma_4p0",
-+				"l12_me_rdma",
-+				"l12_me_wdma",
-+				"l9_common_0",
-+				"l12_common_1";
-+		};
-+
-+		imgsys_l10 {
-+			compatible = "mediatek,imgsys-larb";
-+			#address-cells = <2>;
-+			#size-cells = <2>;
-+			dma-ranges = <0x2 0x0 0x0 0x40000000 0x1 0x0>;
-+			iommus = <&vdo_iommu M4U_PORT_L10_IMGI_D1>,
-+				 <&vdo_iommu M4U_PORT_L10_IMGBI_D1>,
-+				 <&vdo_iommu M4U_PORT_L10_IMGCI_D1>,
-+				 <&vdo_iommu M4U_PORT_L10_IMGDI_D1>,
-+				 <&vdo_iommu M4U_PORT_L10_DEPI_D1>,
-+				 <&vdo_iommu M4U_PORT_L10_DMGI_D1>,
-+				 <&vdo_iommu M4U_PORT_L10_SMTI_D1>,
-+				 <&vdo_iommu M4U_PORT_L10_RECI_D1>,
-+				 <&vdo_iommu M4U_PORT_L10_RECI_D1_N>,
-+				 <&vdo_iommu M4U_PORT_L10_TNRWI_D1>,
-+				 <&vdo_iommu M4U_PORT_L10_TNRCI_D1>,
-+				 <&vdo_iommu M4U_PORT_L10_TNRCI_D1_N>,
-+				 <&vdo_iommu M4U_PORT_L10_IMG4O_D1>,
-+				 <&vdo_iommu M4U_PORT_L10_IMG4BO_D1>,
-+				 <&vdo_iommu M4U_PORT_L10_SMTI_D8>,
-+				 <&vdo_iommu M4U_PORT_L10_SMTO_D1>,
-+				 <&vdo_iommu M4U_PORT_L10_TNRMO_D1>,
-+				 <&vdo_iommu M4U_PORT_L10_TNRMO_D1_N>,
-+				 <&vdo_iommu M4U_PORT_L10_SMTO_D8>,
-+				 <&vdo_iommu M4U_PORT_L10_DBGO_D1>;
-+		};
-+
-+		imgsys_l11A {
-+			compatible = "mediatek,imgsys-larb";
-+			#address-cells = <2>;
-+			#size-cells = <2>;
-+			dma-ranges = <0x2 0x0 0x0 0x40000000 0x1 0x0>;
-+			iommus = <&vdo_iommu M4U_PORT_L11A_WPE_RDMA_0>,
-+				 <&vdo_iommu M4U_PORT_L11A_WPE_RDMA_1>,
-+				 <&vdo_iommu M4U_PORT_L11A_WPE_RDMA_4P_0>,
-+				 <&vdo_iommu M4U_PORT_L11A_WPE_RDMA_4P_1>,
-+				 <&vdo_iommu M4U_PORT_L11A_WPE_CQ0>,
-+				 <&vdo_iommu M4U_PORT_L11A_WPE_CQ1>,
-+				 <&vdo_iommu M4U_PORT_L11A_PIMGI_P1>,
-+				 <&vdo_iommu M4U_PORT_L11A_PIMGBI_P1>,
-+				 <&vdo_iommu M4U_PORT_L11A_PIMGCI_P1>,
-+				 <&vdo_iommu M4U_PORT_L11A_IMGI_T1_C>,
-+				 <&vdo_iommu M4U_PORT_L11A_IMGBI_T1_C>,
-+				 <&vdo_iommu M4U_PORT_L11A_IMGCI_T1_C>,
-+				 <&vdo_iommu M4U_PORT_L11A_SMTI_T1_C>,
-+				 <&vdo_iommu M4U_PORT_L11A_SMTI_T4_C>,
-+				 <&vdo_iommu M4U_PORT_L11A_SMTI_T6_C>,
-+				 <&vdo_iommu M4U_PORT_L11A_YUVO_T1_C>,
-+				 <&vdo_iommu M4U_PORT_L11A_YUVBO_T1_C>,
-+				 <&vdo_iommu M4U_PORT_L11A_YUVCO_T1_C>,
-+				 <&vdo_iommu M4U_PORT_L11A_WPE_WDMA_0>,
-+				 <&vdo_iommu M4U_PORT_L11A_WPE_WDMA_4P_0>,
-+				 <&vdo_iommu M4U_PORT_L11A_WROT_P1>,
-+				 <&vdo_iommu M4U_PORT_L11A_TCCSO_P1>,
-+				 <&vdo_iommu M4U_PORT_L11A_TCCSI_P1>,
-+				 <&vdo_iommu M4U_PORT_L11A_TIMGO_T1_C>,
-+				 <&vdo_iommu M4U_PORT_L11A_YUVO_T2_C>,
-+				 <&vdo_iommu M4U_PORT_L11A_YUVO_T5_C>,
-+				 <&vdo_iommu M4U_PORT_L11A_SMTO_T1_C>,
-+				 <&vdo_iommu M4U_PORT_L11A_SMTO_T4_C>,
-+				 <&vdo_iommu M4U_PORT_L11A_SMTO_T6_C>,
-+				 <&vdo_iommu M4U_PORT_L11A_DBGO_T1_C>;
-+		};
-+
-+		imgsys_l11C {
-+			compatible = "mediatek,imgsys-larb";
-+			#address-cells = <2>;
-+			#size-cells = <2>;
-+			dma-ranges = <0x2 0x0 0x0 0x40000000 0x1 0x0>;
-+			iommus = <&vdo_iommu M4U_PORT_L11C_WPE_RDMA_0>,
-+				 <&vdo_iommu M4U_PORT_L11C_WPE_RDMA_1>,
-+				 <&vdo_iommu M4U_PORT_L11C_WPE_RDMA_4P_0>,
-+				 <&vdo_iommu M4U_PORT_L11C_WPE_RDMA_4P_1>,
-+				 <&vdo_iommu M4U_PORT_L11C_WPE_CQ0>,
-+				 <&vdo_iommu M4U_PORT_L11C_WPE_CQ1>,
-+				 <&vdo_iommu M4U_PORT_L11C_PIMGI_P1>,
-+				 <&vdo_iommu M4U_PORT_L11C_PIMGBI_P1>,
-+				 <&vdo_iommu M4U_PORT_L11C_PIMGCI_P1>,
-+				 <&vdo_iommu M4U_PORT_L11C_IMGI_T1_C>,
-+				 <&vdo_iommu M4U_PORT_L11C_IMGBI_T1_C>,
-+				 <&vdo_iommu M4U_PORT_L11C_IMGCI_T1_C>,
-+				 <&vdo_iommu M4U_PORT_L11C_SMTI_T1_C>,
-+				 <&vdo_iommu M4U_PORT_L11C_SMTI_T4_C>,
-+				 <&vdo_iommu M4U_PORT_L11C_SMTI_T6_C>,
-+				 <&vdo_iommu M4U_PORT_L11C_YUVO_T1_C>,
-+				 <&vdo_iommu M4U_PORT_L11C_YUVBO_T1_C>,
-+				 <&vdo_iommu M4U_PORT_L11C_YUVCO_T1_C>,
-+				 <&vdo_iommu M4U_PORT_L11C_WPE_WDMA_0>,
-+				 <&vdo_iommu M4U_PORT_L11C_WPE_WDMA_4P_0>,
-+				 <&vdo_iommu M4U_PORT_L11C_WROT_P1>,
-+				 <&vdo_iommu M4U_PORT_L11C_TCCSO_P1>,
-+				 <&vdo_iommu M4U_PORT_L11C_TCCSI_P1>,
-+				 <&vdo_iommu M4U_PORT_L11C_TIMGO_T1_C>,
-+				 <&vdo_iommu M4U_PORT_L11C_YUVO_T2_C>,
-+				 <&vdo_iommu M4U_PORT_L11C_YUVO_T5_C>,
-+				 <&vdo_iommu M4U_PORT_L11C_SMTO_T1_C>,
-+				 <&vdo_iommu M4U_PORT_L11C_SMTO_T4_C>,
-+				 <&vdo_iommu M4U_PORT_L11C_SMTO_T6_C>,
-+				 <&vdo_iommu M4U_PORT_L11C_DBGO_T1_C>;
-+		};
-+
-+		ipesys_me: ipesys_me@15320000 {
-+			compatible = "mediatek,ipesys-me";
-+			reg = <0 0x15320000 0 0x10000>;	/* IPESYS_ME */
-+			mediatek,larb = <&larb12>;
-+			#address-cells = <2>;
-+			#size-cells = <2>;
-+			dma-ranges = <0x2 0x0 0x0 0x40000000 0x1 0x0>;
-+			iommus = <&vpp_iommu M4U_PORT_L12_ME_RDMA>,
-+				 <&vpp_iommu M4U_PORT_L12_ME_WDMA>;
-+			clocks =
-+				<&imgsys CLK_IMGSYS_MAIN_IPE>,
-+				<&ipesys CLK_IPESYS_TOP>,
-+				<&ipesys CLK_IPE_ME>,
-+				<&ipesys CLK_IPE_SMI_LARB12>;
-+			clock-names =
-+				"ME_CG_IPE",
-+				"ME_CG_IPE_TOP",
-+				"ME_CG",
-+				"ME_CG_LARB12";
-+
-+		};
-+
-+		aie: aie@15310000 {
-+			compatible = "mediatek,mt8188-aie", "mediatek,aie-hw3.1";
-+			reg = <0 0x15310000 0 0x1000>;
-+			interrupts = <GIC_SPI 787 IRQ_TYPE_LEVEL_HIGH 0>;
-+			mediatek,larb = <&larb12>;
-+			iommus = <&vpp_iommu M4U_PORT_L12_FDVT_RDA_0>,
-+				 <&vpp_iommu M4U_PORT_L12_FDVT_RDB_0>,
-+				 <&vpp_iommu M4U_PORT_L12_FDVT_WRA_0>,
-+				 <&vpp_iommu M4U_PORT_L12_FDVT_WRB_0>;
-+			power-domains = <&spm MT8188_POWER_DOMAIN_IPE>;
-+			clocks = <&imgsys CLK_IMGSYS_MAIN_IPE>,
-+				 <&ipesys CLK_IPE_FDVT>,
-+				 <&ipesys CLK_IPE_SMI_LARB12>,
-+				 <&ipesys CLK_IPESYS_TOP>;
-+			clock-names = "IMG_IPE",
-+				      "IPE_FDVT",
-+				      "IPE_SMI_LARB12",
-+				      "IPE_TOP";
-+			operating-points-v2 = <&opp_table_ipe>;
-+			dvfsrc-vcore-supply = <&vmm_proxy_label>;
-+#if 0
-+			interconnects =
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L12_FDVT_RDA_0)
-+				 &mmqos SLAVE_COMMON(1)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L12_FDVT_RDB_0)
-+				 &mmqos SLAVE_COMMON(1)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L12_FDVT_WRA_0)
-+				 &mmqos SLAVE_COMMON(1)>,
-+				<&mmqos MASTER_LARB_PORT(M4U_PORT_L12_FDVT_WRB_0)
-+				 &mmqos SLAVE_COMMON(1)>;
-+			interconnect-names = "l12_fdvt_rda",
-+					     "l12_fdvt_rdb",
-+					     "l12_fdvt_wra",
-+					     "l12_fdvt_wrb";
-+
-+#endif
-+			};
-+
- 		ipesys: clock-controller@15330000 {
- 			compatible = "mediatek,mt8188-ipesys";
- 			reg = <0 0x15330000 0 0x1000>;
-@@ -2321,6 +3512,14 @@ camsys: clock-controller@16000000 {
- 			#clock-cells = <1>;
- 		};
- 
-+		camisp: camisp@16000000 {
-+			compatible = "mediatek,camisp";
-+			reg = <0 0x16000000 0 0x1000>;
-+			reg-names = "base";
+ 			mediatek,hcp = <&hcp>;
+ 			mediatek,larbs = <&larb9>,
+ 					 <&larb10>,
+@@ -3507,7 +3516,7 @@ camisp: camisp@16000000 {
+ 			compatible = "mediatek,camisp";
+ 			reg = <0 0x16000000 0 0x1000>;
+ 			reg-names = "base";
+-			mediatek,scp = <&scp_dual>;
 +			mediatek,scp = <&scp_c1>;
-+			power-domains = <&spm MT8188_POWER_DOMAIN_CAM_MAIN>;
-+		};
-+
- 		larb13: larb@16001000 {
- 			compatible = "mediatek,mt8188-smi-larb";
- 			reg = <0 0x16001000 0 0x1000>;
-@@ -2409,24 +3608,222 @@ larb17b: larb@1600b000 {
- 			power-domains = <&spm MT8188_POWER_DOMAIN_CAM_SUBB>;
+ 			power-domains = <&spm MT8188_POWER_DOMAIN_CAM_MAIN>;
  		};
  
-+		seninf_top: seninf-top@16010000 {
-+			compatible = "mediatek,seninf-core";
-+			reg = <0 0x16010000 0 0x8000>,
-+			      <0 0x11ed0000 0 0xc000>;
-+			reg-names = "base", "ana-rx";
-+			mtk_csi_phy_ver = "mtk_csi_phy_2_0";
-+			interrupts = <GIC_SPI 316 IRQ_TYPE_LEVEL_HIGH 0>;
-+			power-domains = <&spm MT8188_POWER_DOMAIN_CSIRX_TOP>,
-+					<&spm MT8188_POWER_DOMAIN_CAM_VCORE>,
-+					<&spm MT8188_POWER_DOMAIN_CAM_MAIN>;
-+			clocks = <&camsys CLK_CAM_MAIN_SENINF>,
-+				 <&topckgen CLK_TOP_SENINF>,
-+				 <&topckgen CLK_TOP_SENINF1>,
-+				 <&topckgen CLK_TOP_CAMTM>;
-+			clock-names = "clk_cam_seninf",
-+				      "clk_top_seninf",
-+				      "clk_top_seninf1",
-+				      "clk_top_camtm";
-+		};
-+
-+		cam-raw-a@16030000 {
-+			compatible = "mediatek,cam-raw";
-+			reg = <0 0x16030000 0 0x8000>,
-+			      <0 0x16038000 0 0x8000>;
-+			reg-names = "base", "inner_base";
-+			mediatek,cam-id = <0>;
-+			mediatek,larbs = <&larb16a>;
-+			interrupts = <GIC_SPI 300 IRQ_TYPE_LEVEL_HIGH 0>;
-+			#address-cells = <2>;
-+			#size-cells = <2>;
-+			dma-ranges = <0x2 0x0 0x0 0x40000000 0x1 0x0>;
-+			power-domains = <&spm MT8188_POWER_DOMAIN_CAM_SUBA>;
-+			clocks = <&camsys CLK_CAM_MAIN_CAM2MM0_GALS>,
-+				 <&camsys CLK_CAM_MAIN_CAM2MM1_GALS>,
-+				 <&camsys CLK_CAM_MAIN_CAM2SYS_GALS>,
-+				 <&camsys CLK_CAM_MAIN_CAM>,
-+				 <&camsys CLK_CAM_MAIN_CAMTG>,
-+				 <&camsys_rawa CLK_CAM_RAWA_LARBX>,
-+				 <&camsys_rawa CLK_CAM_RAWA_CAM>,
-+				 <&camsys_rawa CLK_CAM_RAWA_CAMTG>,
-+				 <&topckgen CLK_TOP_CAM>,
-+				 <&topckgen CLK_TOP_CAMTG>,
-+				 <&topckgen CLK_TOP_CAMTM>;
-+			clock-names = "camsys_cam2mm0_cgpdn",
-+				      "camsys_cam2mm1_cgpdn",
-+				      "camsys_cam2sys_cgpdn",
-+				      "camsys_cam_cgpdn",
-+				      "camsys_camtg_cgpdn",
-+				      "camsys_rawa_larbx_cgpdn",
-+				      "camsys_rawa_cam_cgpdn",
-+				      "camsys_rawa_camtg_cgpdn",
-+				      "topckgen_top_cam",
-+				      "topckgen_top_camtg",
-+				      "topckgen_top_camtm";
-+			assigned-clocks = <&topckgen CLK_TOP_CAM>;
-+			assigned-clock-parents = <&topckgen CLK_TOP_UNIVPLL_D5>;
-+			iommus = <&vpp_iommu M4U_PORT_L16A_IMGO_R1>,
-+				 <&vpp_iommu M4U_PORT_L16A_CQI_R1>,
-+				 <&vpp_iommu M4U_PORT_L16A_CQI_R2>,
-+				 <&vpp_iommu M4U_PORT_L16A_BPCI_R1>,
-+				 <&vpp_iommu M4U_PORT_L16A_LSCI_R1>,
-+				 <&vpp_iommu M4U_PORT_L16A_RAWI_R2>,
-+				 <&vpp_iommu M4U_PORT_L16A_RAWI_R3>,
-+				 <&vpp_iommu M4U_PORT_L16A_UFDI_R2>,
-+				 <&vpp_iommu M4U_PORT_L16A_UFDI_R3>,
-+				 <&vpp_iommu M4U_PORT_L16A_RAWI_R4>,
-+				 <&vpp_iommu M4U_PORT_L16A_RAWI_R5>,
-+				 <&vpp_iommu M4U_PORT_L16A_AAI_R1>,
-+				 <&vpp_iommu M4U_PORT_L16A_UFDI_R5>,
-+				 <&vpp_iommu M4U_PORT_L16A_FHO_R1>,
-+				 <&vpp_iommu M4U_PORT_L16A_AAO_R1>,
-+				 <&vpp_iommu M4U_PORT_L16A_TSFSO_R1>,
-+				 <&vpp_iommu M4U_PORT_L16A_FLKO_R1>;
-+		};
-+
- 		camsys_rawa: clock-controller@1604f000 {
- 			compatible = "mediatek,mt8188-camsys-rawa";
- 			reg = <0 0x1604f000 0 0x1000>;
- 			#clock-cells = <1>;
- 		};
- 
-+		cam-yuv-a@16050000 {
-+			compatible = "mediatek,cam-yuv";
-+			reg = <0 0x16050000 0 0x8000>;
-+			reg-names = "base";
-+			mediatek,cam-id = <0>;
-+			mediatek,larbs = <&larb17a>;
-+			interrupts = <GIC_SPI 301 IRQ_TYPE_LEVEL_HIGH 0>;
-+			#address-cells = <2>;
-+			#size-cells = <2>;
-+			dma-ranges = <0x2 0x0 0x0 0x40000000 0x1 0x0>;
-+			power-domains = <&spm MT8188_POWER_DOMAIN_CAM_SUBA>;
-+			clocks = <&camsys CLK_CAM_MAIN_CAM2MM0_GALS>,
-+				 <&camsys CLK_CAM_MAIN_CAM2MM1_GALS>,
-+				 <&camsys CLK_CAM_MAIN_CAM2SYS_GALS>,
-+				 <&camsys_yuva CLK_CAM_YUVA_LARBX>,
-+				 <&camsys_yuva CLK_CAM_YUVA_CAM>,
-+				 <&camsys_yuva CLK_CAM_YUVA_CAMTG>;
-+			clock-names = "camsys_cam2mm0_cgpdn",
-+				      "camsys_cam2mm1_cgpdn",
-+				      "camsys_cam2sys_cgpdn",
-+				      "camsys_yuva_larbx_cgpdn",
-+				      "camsys_yuva_cam_cgpdn",
-+				      "camsys_yuva_camtg_cgpdn";
-+			assigned-clocks = <&topckgen CLK_TOP_CAM>;
-+			assigned-clock-parents = <&topckgen CLK_TOP_UNIVPLL_D5>;
-+			iommus = <&vpp_iommu M4U_PORT_L17A_YUVO_R1>,
-+				 <&vpp_iommu M4U_PORT_L17A_YUVO_R3>,
-+				 <&vpp_iommu M4U_PORT_L17A_YUVCO_R1>,
-+				 <&vpp_iommu M4U_PORT_L17A_YUVO_R2>,
-+				 <&vpp_iommu M4U_PORT_L17A_RZH1N2TO_R1>,
-+				 <&vpp_iommu M4U_PORT_L17A_DRZS4NO_R1>,
-+				 <&vpp_iommu M4U_PORT_L17A_TNCSO_R1>;
-+		};
-+
- 		camsys_yuva: clock-controller@1606f000 {
- 			compatible = "mediatek,mt8188-camsys-yuva";
- 			reg = <0 0x1606f000 0 0x1000>;
- 			#clock-cells = <1>;
- 		};
- 
-+		cam-raw-b@16070000 {
-+			compatible = "mediatek,cam-raw";
-+			reg = <0 0x16070000 0 0x8000>,
-+			      <0 0x16078000 0 0x8000>;
-+			reg-names = "base", "inner_base";
-+			mediatek,cam-id = <1>;
-+			mediatek,larbs = <&larb16b>;
-+			#address-cells = <2>;
-+			#size-cells = <2>;
-+			dma-ranges = <0x2 0x0 0x0 0x40000000 0x1 0x0>;
-+			interrupts = <GIC_SPI 302 IRQ_TYPE_LEVEL_HIGH 0>;
-+			power-domains = <&spm MT8188_POWER_DOMAIN_CAM_SUBB>;
-+			clocks = <&camsys CLK_CAM_MAIN_CAM2MM0_GALS>,
-+				 <&camsys CLK_CAM_MAIN_CAM2MM1_GALS>,
-+				 <&camsys CLK_CAM_MAIN_CAM2SYS_GALS>,
-+				 <&camsys CLK_CAM_MAIN_CAM>,
-+				 <&camsys CLK_CAM_MAIN_CAMTG>,
-+				 <&camsys_rawb CLK_CAM_RAWB_LARBX>,
-+				 <&camsys_rawb CLK_CAM_RAWB_CAM>,
-+				 <&camsys_rawb CLK_CAM_RAWB_CAMTG>,
-+				 <&topckgen CLK_TOP_CAM>,
-+				 <&topckgen CLK_TOP_CAMTG>,
-+				 <&topckgen CLK_TOP_CAMTM>;
-+			clock-names = "camsys_cam2mm0_cgpdn",
-+				 "camsys_cam2mm1_cgpdn",
-+				 "camsys_cam2sys_cgpdn",
-+				 "camsys_cam_cgpdn",
-+				 "camsys_camtg_cgpdn",
-+				 "camsys_rawb_larbx_cgpdn",
-+				 "camsys_rawb_cam_cgpdn",
-+				 "camsys_rawb_camtg_cgpdn",
-+				 "topckgen_top_cam",
-+				 "topckgen_top_camtg",
-+				 "topckgen_top_camtm";
-+			assigned-clocks = <&topckgen CLK_TOP_CAM>;
-+			assigned-clock-parents = <&topckgen CLK_TOP_UNIVPLL_D5>;
-+			iommus = <&vdo_iommu M4U_PORT_L16B_IMGO_R1>,
-+				 <&vdo_iommu M4U_PORT_L16B_CQI_R1>,
-+				 <&vdo_iommu M4U_PORT_L16B_CQI_R2>,
-+				 <&vdo_iommu M4U_PORT_L16B_BPCI_R1>,
-+				 <&vdo_iommu M4U_PORT_L16B_LSCI_R1>,
-+				 <&vdo_iommu M4U_PORT_L16B_RAWI_R2>,
-+				 <&vdo_iommu M4U_PORT_L16B_RAWI_R3>,
-+				 <&vdo_iommu M4U_PORT_L16B_UFDI_R2>,
-+				 <&vdo_iommu M4U_PORT_L16B_UFDI_R3>,
-+				 <&vdo_iommu M4U_PORT_L16B_RAWI_R4>,
-+				 <&vdo_iommu M4U_PORT_L16B_RAWI_R5>,
-+				 <&vdo_iommu M4U_PORT_L16B_AAI_R1>,
-+				 <&vdo_iommu M4U_PORT_L16B_UFDI_R5>,
-+				 <&vdo_iommu M4U_PORT_L16B_FHO_R1>,
-+				 <&vdo_iommu M4U_PORT_L16B_AAO_R1>,
-+				 <&vdo_iommu M4U_PORT_L16B_TSFSO_R1>,
-+				 <&vdo_iommu M4U_PORT_L16B_FLKO_R1>;
-+		};
-+
- 		camsys_rawb: clock-controller@1608f000 {
- 			compatible = "mediatek,mt8188-camsys-rawb";
- 			reg = <0 0x1608f000 0 0x1000>;
- 			#clock-cells = <1>;
- 		};
- 
-+		cam-yuv-b@16090000 {
-+			compatible = "mediatek,cam-yuv";
-+			reg = <0 0x16090000 0 0x8000>;
-+			reg-names = "base";
-+			mediatek,cam-id = <1>;
-+			mediatek,larbs = <&larb17b>;
-+			interrupts = <GIC_SPI 303 IRQ_TYPE_LEVEL_HIGH 0>;
-+			#address-cells = <2>;
-+			#size-cells = <2>;
-+			dma-ranges = <0x2 0x0 0x0 0x40000000 0x1 0x0>;
-+			power-domains = <&spm MT8188_POWER_DOMAIN_CAM_SUBB>;
-+			clocks = <&camsys CLK_CAM_MAIN_CAM2MM0_GALS>,
-+				 <&camsys CLK_CAM_MAIN_CAM2MM1_GALS>,
-+				 <&camsys CLK_CAM_MAIN_CAM2SYS_GALS>,
-+				 <&camsys_yuvb CLK_CAM_YUVB_LARBX>,
-+				 <&camsys_yuvb CLK_CAM_YUVB_CAM>,
-+				 <&camsys_yuvb CLK_CAM_YUVB_CAMTG>;
-+			clock-names = "camsys_cam2mm0_cgpdn",
-+				      "camsys_cam2mm1_cgpdn",
-+				      "camsys_cam2sys_cgpdn",
-+				      "camsys_yuvb_larbx_cgpdn",
-+				      "camsys_yuvb_cam_cgpdn",
-+				      "camsys_yuvb_camtg_cgpdn";
-+			assigned-clocks = <&topckgen CLK_TOP_CAM>;
-+			assigned-clock-parents = <&topckgen CLK_TOP_UNIVPLL_D5>;
-+			iommus = <&vdo_iommu M4U_PORT_L17B_YUVO_R1>,
-+				 <&vdo_iommu M4U_PORT_L17B_YUVO_R3>,
-+				 <&vdo_iommu M4U_PORT_L17B_YUVCO_R1>,
-+				 <&vdo_iommu M4U_PORT_L17B_YUVO_R2>,
-+				 <&vdo_iommu M4U_PORT_L17B_RZH1N2TO_R1>,
-+				 <&vdo_iommu M4U_PORT_L17B_DRZS4NO_R1>,
-+				 <&vdo_iommu M4U_PORT_L17B_TNCSO_R1>;
-+		};
-+
- 		camsys_yuvb: clock-controller@160af000 {
- 			compatible = "mediatek,mt8188-camsys-yuvb";
- 			reg = <0 0x160af000 0 0x1000>;
-@@ -2456,7 +3853,7 @@ video-codec@18000000 {
+@@ -3844,7 +3853,7 @@ video-codec@18000000 {
  			compatible = "mediatek,mt8188-vcodec-dec";
  			reg = <0 0x18000000 0 0x1000>,          /* VDEC_SYS */
  			      <0 0x18004000 0 0x1000>;      /* VDEC_RACING_CTRL */
@@ -3017,7 +1200,7 @@ index 03569a330b636b866b4a8b73542022a4bbaff963..40bc9c121158d109a223e7cb961b784b
  			iommus = <&vpp_iommu M4U_PORT_L23_HW_VDEC_UFO_ENC_EXT>;
  			#address-cells = <1>;
  			#size-cells = <1>;
-@@ -2681,7 +4078,7 @@ venc: venc@1a020000 {
+@@ -4069,7 +4078,7 @@ venc: venc@1a020000 {
  				 <&vdo_iommu M4U_PORT_L19_VENC_SUB_W_LUMA>,
  				 <&vdo_iommu M4U_PORT_L19_VENC_SUB_R_LUMA>;
  			interrupts = <GIC_SPI 353 IRQ_TYPE_LEVEL_HIGH 0>;
@@ -3026,265 +1209,6 @@ index 03569a330b636b866b4a8b73542022a4bbaff963..40bc9c121158d109a223e7cb961b784b
  			clocks = <&vencsys CLK_VENC1_VENC>;
  			clock-names = "venc_clk";
  			assigned-clocks = <&topckgen CLK_TOP_VENC>;
-@@ -2735,6 +4132,8 @@ ovl0: ovl@1c000000 {
- 			iommus = <&vdo_iommu M4U_PORT_L0_DISP_OVL0_RDMA0>;
- 			mediatek,gce-client-reg =
- 				<&gce0 SUBSYS_1c00XXXX 0x0000 0x1000>;
-+			mboxes = <&gce0 10 CMDQ_THR_PRIO_1>;
-+			mediatek,gce-events = <CMDQ_EVENT_VDO0_DISP_OVL0_O_FRAME_DONE>;
- 		};
- 
- 		rdma0: rdma@1c002000 {
-@@ -3188,6 +4587,8 @@ ethdr0: ethdr@1c114000 {
- 				 <&vdosys1 MT8188_VDO1_RST_HDR_GFX_FE0_DL_ASYNC>,
- 				 <&vdosys1 MT8188_VDO1_RST_HDR_GFX_FE1_DL_ASYNC>,
- 				 <&vdosys1 MT8188_VDO1_RST_HDR_VDO_BE_DL_ASYNC>;
-+			mboxes = <&gce0 11 CMDQ_THR_PRIO_1>;
-+			mediatek,gce-events = <CMDQ_EVENT_VDO1_DISP_MIXER_FRAME_DONE_MM>;
- 		};
- 
- 		padding0: padding@1c11d000 {
-diff --git a/arch/arm64/boot/dts/mediatek/mt8188_geralt_camera_v4l2.dtsi b/arch/arm64/boot/dts/mediatek/mt8188_geralt_camera_v4l2.dtsi
-new file mode 100644
-index 0000000000000000000000000000000000000000..8f998825bdaea29aa39a5feb9989424575a01ed9
---- /dev/null
-+++ b/arch/arm64/boot/dts/mediatek/mt8188_geralt_camera_v4l2.dtsi
-@@ -0,0 +1,235 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2020 MediaTek Inc. */
-+
-+//#include <dt-bindings/clock/mt8188-clk.h>
-+#include <dt-bindings/gpio/gpio.h>
-+
-+#define V4L2_FWNODE_BUS_TYPE_CSI2_CPHY 1
-+#define V4L2_FWNODE_BUS_TYPE_CSI2_DPHY 4
-+
-+#define HI1339_GT9768  1
-+#define GC08A3_GT9769  0
-+
-+&seninf_top {
-+		seninf_csi_port_1: csi_receiver@1 {
-+			compatible = "mediatek,seninf";
-+			hs_trail_parameter = <0x28>;
-+			csi-port = "1";
-+			port {
-+				seninf_csi_port_1_in_1: endpoint {
-+					data-lanes = <1 2 3 4>;
-+					remote-endpoint = <&sub_sensor_out_1>;
-+				};
-+				seninf_csi_port_1_in_2: endpoint@2 {
-+					data-lanes = <1 4>;
-+					remote-endpoint = <&sub_sensor_out_2>;
-+				};
-+			};
-+		};
-+		seninf_csi_port_0: csi_receiver@0 {
-+			compatible = "mediatek,seninf";
-+			csi-port = "0";
-+			port {
-+				seninf_csi_port_0_in_1: endpoint {
-+					data-lanes = <1 2 3 4>;
-+					remote-endpoint = <&main_sensor_out_1>;
-+				};
-+				seninf_csi_port_0_in_2: endpoint@2 {
-+					data-lanes = <1 2 3 4>;
-+					remote-endpoint = <&main_sensor_out_2>;
-+				};
-+			};
-+		};
-+};
-+
-+&pio {
-+	camera_pins_cam1: cam1@1 {
-+		pins_cmd_dat {
-+			pinmux = <PINMUX_GPIO23__FUNC_O_CMMCLK1>;
-+			drive-strength = <MTK_DRIVE_2mA>;
-+		};
-+		pins_dvdd_en {
-+			pinmux = <PINMUX_GPIO140__FUNC_B_GPIO140>;
-+			output-high;
-+		};
-+	};
-+
-+	camera_pins_cam0: cam0@0 {
-+		pins_cmd_dat {
-+			pinmux = <PINMUX_GPIO22__FUNC_O_CMMCLK0>;
-+			drive-strength = <MTK_DRIVE_2mA>;
-+		};
-+		pins_dvdd_en {
-+			pinmux = <PINMUX_GPIO142__FUNC_B_GPIO142>;
-+			output-high;
-+		};
-+	};
-+};
-+
-+&mt6359_vibr_ldo_reg {
-+	regulator-min-microvolt = <2800000>;
-+	regulator-max-microvolt = <2800000>;
-+};
-+
-+&i2c6 {
-+	status = "okay";
-+	clock-frequency = <400000>;
-+
-+    //================================================
-+#if HI1339_GT9768
-+	camera_main_lens: vcm@0c {
-+		compatible = "giantec,gt9768";
-+		reg = <0x0c>;
-+
-+		vin-supply = <&mt6359_vrf18_ldo_reg>;
-+		vdd-supply = <&mt6359_vibr_ldo_reg>;
-+	};
-+#endif
-+
-+	camera_main_sensor@20 {
-+		compatible = "hynix,hi1339";
-+		reg = <0x20>;
-+
-+		clocks = <&topckgen CLK_TOP_CAMTG>;
-+
-+		reset-gpios = <&pio 19 GPIO_ACTIVE_LOW>;
-+
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&camera_pins_cam0>;
-+
-+		dovdd-supply = <&mt6359_vrf18_ldo_reg>;
-+		avdd-supply = <&mt6359_vfe28_ldo_reg>;
-+
-+#if HI1339_GT9768
-+		lens-focus = <&camera_main_lens>;
-+#endif
-+
-+		port {
-+			main_sensor_out_1: endpoint {
-+				bus-type = <V4L2_FWNODE_BUS_TYPE_CSI2_DPHY>;
-+				data-lanes = <1 2 3 4>;
-+				link-frequencies =
-+					/bits/ 64 <1440000000 624000000>;
-+				remote-endpoint = <&seninf_csi_port_0_in_1>;
-+			};
-+		};
-+	};
-+    //================================================
-+
-+    //================================================
-+#if GC08A3_GT9769
-+	camera_main_lens: vcm@0c {
-+		compatible = "giantec,gt9769";
-+		reg = <0x0c>;
-+
-+		vin-supply = <&mt6359_vrf18_ldo_reg>;
-+		vdd-supply = <&mt6359_vibr_ldo_reg>;
-+	};
-+#endif
-+
-+	camera_main_sensor@31 {
-+		compatible = "galaxycore,gc08a3";
-+		reg = <0x31>;
-+
-+		clocks = <&topckgen CLK_TOP_CAMTG>;
-+
-+		reset-gpios = <&pio 19 GPIO_ACTIVE_LOW>;
-+
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&camera_pins_cam0>;
-+
-+		dovdd-supply = <&mt6359_vrf18_ldo_reg>;
-+		avdd-supply = <&mt6359_vfe28_ldo_reg>;
-+
-+#if GC08A3_GT9769
-+		lens-focus = <&camera_main_lens>;
-+#endif
-+		port {
-+			main_sensor_out_2: endpoint {
-+				bus-type = <V4L2_FWNODE_BUS_TYPE_CSI2_DPHY>;
-+				data-lanes = <1 2 3 4>;
-+				link-frequencies =
-+					/bits/ 64 <336000000 207000000>;
-+				remote-endpoint = <&seninf_csi_port_0_in_2>;
-+			};
-+		};
-+	};
-+    //================================================
-+
-+	eeprom@58 {
-+		compatible = "atmel,24c64";
-+		reg = <0x58>;
-+		pagesize = <32>;
-+		vcc-supply = <&mt6359_vibr_ldo_reg>;
-+		dovdd-supply = <&mt6359_vrf18_ldo_reg>;
-+		device-id = <0>;
-+	};
-+};
-+
-+&i2c5 {
-+	status = "okay";
-+	clock-frequency = <400000>;
-+
-+    //================================================
-+	camera_sub_sensor@31 {
-+		compatible = "galaxycore,gc08a3";
-+		reg = <0x31>;
-+
-+		clocks = <&topckgen CLK_TOP_CAMTG2>;
-+
-+		reset-gpios = <&pio 21 GPIO_ACTIVE_LOW>;
-+
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&camera_pins_cam1>;
-+
-+		dovdd-supply = <&mt6359_vcamio_ldo_reg>;
-+		avdd-supply = <&mt6359_vio28_ldo_reg>;
-+
-+		port {
-+			sub_sensor_out_1: endpoint {
-+				bus-type = <V4L2_FWNODE_BUS_TYPE_CSI2_DPHY>;
-+				data-lanes = <1 2 3 4>;
-+				link-frequencies =
-+					/bits/ 64 <336000000 207000000>;
-+				remote-endpoint = <&seninf_csi_port_1_in_1>;
-+			};
-+		};
-+	};
-+    //================================================
-+
-+    //================================================
-+	camera_sub_sensor@37 {
-+		compatible =  "galaxycore,gc05a2";
-+		reg = <0x37>;
-+
-+		clocks = <&topckgen CLK_TOP_CAMTG2>;
-+
-+		reset-gpios = <&pio 21 GPIO_ACTIVE_LOW>;
-+
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&camera_pins_cam1>;
-+
-+		dovdd-supply = <&mt6359_vcamio_ldo_reg>;
-+		avdd-supply = <&mt6359_vio28_ldo_reg>;
-+
-+		port {
-+			sub_sensor_out_2: endpoint {
-+				bus-type = <V4L2_FWNODE_BUS_TYPE_CSI2_DPHY>;
-+				data-lanes = <1 4>;
-+				link-frequencies =
-+					/bits/ 64 <448000000 224000000>;
-+				remote-endpoint = <&seninf_csi_port_1_in_2>;
-+			};
-+		};
-+	};
-+    //================================================
-+
-+	eeprom@51 {
-+		compatible = "atmel,24c64";
-+		reg = <0x51>;
-+		pagesize = <32>;
-+		vcc-supply = <&mt6359_vcamio_ldo_reg>;
-+		device-id = <0>;
-+	};
-+};
-+
 diff --git a/arch/arm64/boot/dts/mediatek/mt8192.dtsi b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
 index 7ac53731ed6084c059719020086cc1a1132549c6..84131c207a708690bd79a9a3af593580bfe0c26b 100644
 --- a/arch/arm64/boot/dts/mediatek/mt8192.dtsi
@@ -3968,16 +1892,10 @@ index 7ac53731ed6084c059719020086cc1a1132549c6..84131c207a708690bd79a9a3af593580
 -	};
  };
 diff --git a/chromeos/config/chromeos/arm64/chromiumos-mediatek.flavour.config b/chromeos/config/chromeos/arm64/chromiumos-mediatek.flavour.config
-index b7599902617bacb6b5d1c15dd4fd7a7fd032d81a..c6fee8886f3690b6dbf3ce3c1b2a210c1cb58bb9 100644
+index 22c9f03dc12639b0a1a45ec68059a9a1c30c1651..c6fee8886f3690b6dbf3ce3c1b2a210c1cb58bb9 100644
 --- a/chromeos/config/chromeos/arm64/chromiumos-mediatek.flavour.config
 +++ b/chromeos/config/chromeos/arm64/chromiumos-mediatek.flavour.config
-@@ -46,11 +46,13 @@ CONFIG_EEPROM_AT24=y
- # CONFIG_EFI is not set
- CONFIG_GENERIC_ADC_THERMAL=y
- CONFIG_HID_GOOGLE_HAMMER=m
-+CONFIG_HID_HIMAX=y
- CONFIG_I2C_HID_OF=y
- CONFIG_I2C_HID_OF_GOODIX=y
+@@ -52,6 +52,7 @@ CONFIG_I2C_HID_OF_GOODIX=y
  CONFIG_I2C_MT65XX=y
  CONFIG_IIO_CROS_EC_SENSORS_LID_ANGLE=m
  CONFIG_LEDS_PWM=y
@@ -3985,7 +1903,7 @@ index b7599902617bacb6b5d1c15dd4fd7a7fd032d81a..c6fee8886f3690b6dbf3ce3c1b2a210c
  CONFIG_MALI=y
  CONFIG_MALI_EXPERT=y
  CONFIG_MALI_PLATFORM_NAME="mediatek"
-@@ -65,9 +67,9 @@ CONFIG_MTK_APUSYS_PM=y
+@@ -66,9 +67,9 @@ CONFIG_MTK_APUSYS_PM=y
  CONFIG_MTK_APU_RPROC=m
  CONFIG_MTK_CMDQ=y
  CONFIG_MTK_IOMMU=y
@@ -3996,7 +1914,7 @@ index b7599902617bacb6b5d1c15dd4fd7a7fd032d81a..c6fee8886f3690b6dbf3ce3c1b2a210c
  CONFIG_MTK_SVS=y
  CONFIG_MTK_THERMAL=y
  CONFIG_MWIFIEX_SDIO=m
-@@ -142,11 +144,17 @@ CONFIG_TYPEC=y
+@@ -143,11 +144,17 @@ CONFIG_TYPEC=y
  CONFIG_USB_MTU3=y
  CONFIG_USB_MTU3_HOST=y
  CONFIG_VIDEO_DW9768=m
@@ -7523,119 +5441,6 @@ index bfe8653005dbfd03abafe33d53da5ec1366d69af..6f85753c0c82eb5073da6892ad6644f2
  	return 0;
  
  err_cleanup:
-diff --git a/drivers/gpu/drm/mediatek/mtk_dsi.c b/drivers/gpu/drm/mediatek/mtk_dsi.c
-index 04fed171cfd4f80f5866122be9f33ca1e6feecbb..56df6f60d2d2eeab55c134b19427a4aaa7d7b4d4 100644
---- a/drivers/gpu/drm/mediatek/mtk_dsi.c
-+++ b/drivers/gpu/drm/mediatek/mtk_dsi.c
-@@ -83,6 +83,7 @@
- #define DSI_HSA_WC		0x50
- #define DSI_HBP_WC		0x54
- #define DSI_HFP_WC		0x58
-+#define DSI_BLLP_WC		0x5C
- 
- #define DSI_CMDQ_SIZE		0x60
- #define CMDQ_SIZE			0x3f
-@@ -210,6 +211,7 @@ struct mtk_dsi {
- 	u32 irq_data;
- 	wait_queue_head_t irq_wait_queue;
- 	const struct mtk_dsi_driver_data *driver_data;
-+	unsigned int vdo_per_frame_lp_enable;
- };
- 
- static inline struct mtk_dsi *bridge_to_dsi(struct drm_bridge *b)
-@@ -517,6 +519,83 @@ static void mtk_dsi_config_vdo_timing(struct mtk_dsi *dsi)
- 			(vm->hactive * dsi_tmp_buf_bpp + 2) % dsi->lanes;
- 	}
- 
-+	if (dsi->vdo_per_frame_lp_enable) {
-+		unsigned int lpx = 0, da_hs_exit = 0, da_hs_prep = 0, da_hs_trail = 0;
-+		unsigned int da_hs_zero = 0, ps_wc = 0, hs_vb_ps_wc = 0;
-+		u32 bllp_wc, bllp_en, v_active_roundup, hstx_cklp_wc, hstx_cklp_wc_max, hstx_cklp_wc_min;
-+
-+		da_hs_trail = (readl(dsi->regs + DSI_PHY_TIMECON0) >> 24) & 0xff;
-+		bllp_en = (readl(dsi->regs + DSI_TXRX_CTRL) >> 7) & 0x1;
-+		if (dsi->mode_flags & MIPI_DSI_MODE_VIDEO_SYNC_PULSE) {
-+			horizontal_sync_active_byte = (vm->hsync_len * dsi_tmp_buf_bpp - 10);
-+
-+			horizontal_backporch_byte = (vm->hback_porch * dsi_tmp_buf_bpp - 10);
-+			horizontal_frontporch_byte = (vm->hfront_porch * dsi_tmp_buf_bpp - 12);
-+
-+			ps_wc = readl(dsi->regs + DSI_PSCTRL) & 0x7fff;
-+			v_active_roundup = (32 + horizontal_sync_active_byte + horizontal_backporch_byte + ps_wc +
-+				horizontal_frontporch_byte) % dsi->lanes;
-+			if (v_active_roundup)
-+				horizontal_backporch_byte = horizontal_backporch_byte + dsi->lanes - v_active_roundup;
-+			hstx_cklp_wc_min = (DIV_ROUND_UP((12 + 4 + 4 + horizontal_sync_active_byte), dsi->lanes) + da_hs_trail + 1) * dsi->lanes / 6 - 1;
-+			hstx_cklp_wc_max = (DIV_ROUND_UP((20 + 6 + 4 + horizontal_sync_active_byte + horizontal_backporch_byte + ps_wc)
-+									, dsi->lanes) + da_hs_trail + 1) * dsi->lanes / 6 - 1;
-+		} else {
-+			horizontal_sync_active_byte = vm->hsync_len * dsi_tmp_buf_bpp - 4;
-+
-+			horizontal_backporch_byte =(vm->hback_porch + vm->hsync_len) * dsi_tmp_buf_bpp - 10;
-+			hstx_cklp_wc_min = (DIV_ROUND_UP(4, dsi->lanes) + da_hs_trail + 1) * dsi->lanes / 6 - 1;
-+
-+			if (dsi->mode_flags & MIPI_DSI_MODE_VIDEO_BURST) {
-+				ps_wc = readl(dsi->regs + DSI_PSCTRL) & 0x7fff;
-+				bllp_wc = readl(dsi->regs + DSI_BLLP_WC) & 0xfff;
-+				horizontal_frontporch_byte =(vm->hfront_porch * dsi_tmp_buf_bpp - 18);
-+
-+				v_active_roundup = (28 + horizontal_backporch_byte + ps_wc +
-+					horizontal_frontporch_byte + bllp_wc) % dsi->lanes;
-+				if (v_active_roundup)
-+					horizontal_backporch_byte = horizontal_backporch_byte + dsi->lanes - v_active_roundup;
-+				if (bllp_en) {
-+					hstx_cklp_wc_max = (DIV_ROUND_UP((16 + 6 + 4 + horizontal_backporch_byte + bllp_wc + ps_wc)
-+						, dsi->lanes) + da_hs_trail + 1) * dsi->lanes / 6 - 1;
-+				} else {
-+					hstx_cklp_wc_max = (DIV_ROUND_UP((12 + 4 + 4 + horizontal_backporch_byte + bllp_wc + ps_wc)
-+						, dsi->lanes) + da_hs_trail + 1) * dsi->lanes / 6 - 1;
-+				}
-+			} else {
-+				ps_wc = readl(dsi->regs + DSI_PSCTRL) & 0x7fff;
-+				horizontal_frontporch_byte =(vm->hfront_porch * dsi_tmp_buf_bpp - 12);
-+
-+				v_active_roundup = (22 + horizontal_backporch_byte + ps_wc +
-+					horizontal_frontporch_byte) % dsi->lanes;
-+				if (v_active_roundup)
-+					horizontal_backporch_byte = horizontal_backporch_byte + dsi->lanes - v_active_roundup;
-+
-+				hstx_cklp_wc_max = (DIV_ROUND_UP((12 + 4 + 4 + horizontal_backporch_byte + ps_wc)
-+										, dsi->lanes) + da_hs_trail + 1) * dsi->lanes / 6 - 1;
-+			}
-+		}
-+		hstx_cklp_wc = (readl(dsi->regs + DSI_HSTX_CKL_WC) >> 2) & 0x3fff;
-+		if (hstx_cklp_wc <= hstx_cklp_wc_min || hstx_cklp_wc >= hstx_cklp_wc_max) {
-+			hstx_cklp_wc = (hstx_cklp_wc_max / 2) << 2;
-+			writel(hstx_cklp_wc, dsi->regs + DSI_HSTX_CKL_WC);
-+		}
-+		hstx_cklp_wc = hstx_cklp_wc >> 2;
-+		if (hstx_cklp_wc <= hstx_cklp_wc_min || hstx_cklp_wc >= hstx_cklp_wc_max)
-+			DRM_WARN("Wrong setting of hstx_ckl_wc will cause clock keep hs or fps to be inaccurate \n");
-+
-+		lpx = readl(dsi->regs + DSI_PHY_TIMECON0) & 0xff;
-+		da_hs_exit = (readl(dsi->regs + DSI_PHY_TIMECON1) >> 24) & 0xff;
-+		da_hs_prep = (readl(dsi->regs + DSI_PHY_TIMECON0) >> 8) & 0xff;
-+		da_hs_zero = (readl(dsi->regs + DSI_PHY_TIMECON0) >> 16) & 0xff;
-+		ps_wc = readl(dsi->regs + DSI_PSCTRL) & 0x7fff;
-+		hs_vb_ps_wc = ps_wc -
-+			(lpx + da_hs_exit + da_hs_prep + da_hs_zero + 2)
-+			* dsi->lanes;
-+		horizontal_frontporch_byte = (1 << 31)
-+			| (hs_vb_ps_wc << 16)
-+			| (horizontal_frontporch_byte);
-+	}
- 	writel(horizontal_sync_active_byte, dsi->regs + DSI_HSA_WC);
- 	writel(horizontal_backporch_byte, dsi->regs + DSI_HBP_WC);
- 	writel(horizontal_frontporch_byte, dsi->regs + DSI_HFP_WC);
-@@ -933,6 +1012,8 @@ static int mtk_dsi_host_attach(struct mipi_dsi_host *host,
- 	dsi->lanes = device->lanes;
- 	dsi->format = device->format;
- 	dsi->mode_flags = device->mode_flags;
-+	dsi->vdo_per_frame_lp_enable = device->vdo_per_frame_lp_enable;
-+
- 	dsi->next_bridge = devm_drm_of_get_bridge(dev, dev->of_node, 0, 0);
- 	if (IS_ERR(dsi->next_bridge))
- 		return PTR_ERR(dsi->next_bridge);
 diff --git a/drivers/gpu/drm/mediatek/mtk_gem.c b/drivers/gpu/drm/mediatek/mtk_gem.c
 index e336c253b0f38452922f2efad7df2ed8e62c842b..f084df67cfd599a7fb62ad1940731259e5863177 100644
 --- a/drivers/gpu/drm/mediatek/mtk_gem.c
@@ -9081,35 +6886,6 @@ index 0000000000000000000000000000000000000000..493d3c51a7a03d3874ddc5edf81d15ab
 +#endif
 +
 +#endif /* _TLC_DP_HDCP_H_ */
-diff --git a/drivers/gpu/drm/panel/panel-boe-tv101wum-nl6.c b/drivers/gpu/drm/panel/panel-boe-tv101wum-nl6.c
-index c1278bb00645b2645d36338bf1c5a28ee246bd78..f0bce22fdcae844ff3d972e9738a29cf63304dbf 100644
---- a/drivers/gpu/drm/panel/panel-boe-tv101wum-nl6.c
-+++ b/drivers/gpu/drm/panel/panel-boe-tv101wum-nl6.c
-@@ -36,6 +36,7 @@ struct panel_desc {
- 	unsigned int lanes;
- 	bool discharge_on_disable;
- 	bool lp11_before_reset;
-+	unsigned int vdo_per_frame_lp_enable;
- };
- 
- struct boe_panel {
-@@ -1725,6 +1726,7 @@ static const struct panel_desc boe_tv110c9m_desc = {
- 			| MIPI_DSI_CLOCK_NON_CONTINUOUS
- 			| MIPI_DSI_MODE_VIDEO_BURST,
- 	.init_cmds = boe_tv110c9m_init_cmd,
-+	.vdo_per_frame_lp_enable = 1,
- };
- 
- static const struct drm_display_mode inx_hj110iz_default_mode = {
-@@ -2116,6 +2118,8 @@ static int boe_panel_probe(struct mipi_dsi_device *dsi)
- 	dsi->lanes = desc->lanes;
- 	dsi->format = desc->format;
- 	dsi->mode_flags = desc->mode_flags;
-+	dsi->vdo_per_frame_lp_enable = desc->vdo_per_frame_lp_enable;
-+
- 	boe->desc = desc;
- 	boe->dsi = dsi;
- 	ret = boe_panel_add(boe);
 diff --git a/drivers/hid/hid-google-hammer.c b/drivers/hid/hid-google-hammer.c
 index c6bdb9c4ef3e004cf27fba53b6f5e0eccbe21b55..c2bc1077ef0d4e02be2e51f07b4cc1c8cd572b01 100644
 --- a/drivers/hid/hid-google-hammer.c
@@ -11226,10 +9002,10 @@ index 83be451ef326a5d0056c7ab4a0391fab0b691d19..266381f67127a5375cf7f84562a7efda
  obj-$(CONFIG_VIDEO_HI847) += hi847.o
 diff --git a/drivers/media/i2c/gc05a2.c b/drivers/media/i2c/gc05a2.c
 new file mode 100644
-index 0000000000000000000000000000000000000000..881bd40b6e25dd03d4262d7eb85855b3600f4d3c
+index 0000000000000000000000000000000000000000..71619466007347bdd76da1d69c9e00a48bade720
 --- /dev/null
 +++ b/drivers/media/i2c/gc05a2.c
-@@ -0,0 +1,1402 @@
+@@ -0,0 +1,1379 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
 + * Driver for GalaxyCore gc05a2 image sensor
@@ -11331,6 +9107,7 @@ index 0000000000000000000000000000000000000000..881bd40b6e25dd03d4262d7eb85855b3
 +	struct v4l2_ctrl *vflip;
 +
 +	struct regmap *regmap;
++	unsigned long link_freq_bitmap;
 +
 +	/* True if the device has been identified */
 +	bool identified;
@@ -11934,15 +9711,6 @@ index 0000000000000000000000000000000000000000..881bd40b6e25dd03d4262d7eb85855b3
 +	return 0;
 +}
 +
-+static int gc05a2_get_format(struct v4l2_subdev *sd,
-+			     struct v4l2_subdev_state *sd_state,
-+			     struct v4l2_subdev_format *fmt)
-+{
-+	fmt->format = *v4l2_subdev_get_pad_format(sd, sd_state, fmt->pad);
-+
-+	return 0;
-+}
-+
 +static int gc05a2_update_cur_mode_controls(struct gc05a2 *gc05a2,
 +					   const struct gc05a2_mode *mode)
 +{
@@ -12314,7 +10082,7 @@ index 0000000000000000000000000000000000000000..881bd40b6e25dd03d4262d7eb85855b3
 +static const struct v4l2_subdev_pad_ops gc05a2_subdev_pad_ops = {
 +	.enum_mbus_code = gc05a2_enum_mbus_code,
 +	.enum_frame_size = gc05a2_enum_frame_size,
-+	.get_fmt = gc05a2_get_format,
++	.get_fmt = v4l2_subdev_get_fmt,
 +	.set_fmt = gc05a2_set_format,
 +	.get_selection = gc05a2_get_selection,
 +	.init_cfg = gc05a2_init_state,
@@ -12348,7 +10116,6 @@ index 0000000000000000000000000000000000000000..881bd40b6e25dd03d4262d7eb85855b3
 +	struct v4l2_fwnode_endpoint bus_cfg = {
 +		.bus_type = V4L2_MBUS_CSI2_DPHY,
 +	};
-+	unsigned int i, j;
 +	int ret;
 +	struct device *dev = gc05a2->dev;
 +
@@ -12366,27 +10133,13 @@ index 0000000000000000000000000000000000000000..881bd40b6e25dd03d4262d7eb85855b3
 +		goto done;
 +	}
 +
-+	if (!bus_cfg.nr_of_link_frequencies) {
-+		dev_err(dev, "no link frequencies defined");
-+		ret = -EINVAL;
++	ret = v4l2_link_freq_to_bitmap(dev, bus_cfg.link_frequencies,
++				       bus_cfg.nr_of_link_frequencies,
++				       gc05a2_link_freq_menu_items,
++				       ARRAY_SIZE(gc05a2_link_freq_menu_items),
++				       &gc05a2->link_freq_bitmap);
++	if (ret)
 +		goto done;
-+	}
-+
-+	for (i = 0; i < ARRAY_SIZE(gc05a2_link_freq_menu_items); i++) {
-+		for (j = 0; j < bus_cfg.nr_of_link_frequencies; j++) {
-+			if (gc05a2_link_freq_menu_items[i] ==
-+			    bus_cfg.link_frequencies[j])
-+				break;
-+		}
-+
-+		if (j == bus_cfg.nr_of_link_frequencies) {
-+			dev_err(dev,
-+				"no link frequency %lld supported, please check DT",
-+				gc05a2_link_freq_menu_items[i]);
-+			ret = -EINVAL;
-+			goto done;
-+		}
-+	}
 +
 +done:
 +	v4l2_fwnode_endpoint_free(&bus_cfg);
@@ -12634,10 +10387,10 @@ index 0000000000000000000000000000000000000000..881bd40b6e25dd03d4262d7eb85855b3
 +MODULE_LICENSE("GPL");
 diff --git a/drivers/media/i2c/gc08a3.c b/drivers/media/i2c/gc08a3.c
 new file mode 100644
-index 0000000000000000000000000000000000000000..3846f10c35965789ef17249f81400f6486334784
+index 0000000000000000000000000000000000000000..00735ea1216dc190ba031962b1555864196e7830
 --- /dev/null
 +++ b/drivers/media/i2c/gc08a3.c
-@@ -0,0 +1,1360 @@
+@@ -0,0 +1,1336 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
 + * Driver for GalaxyCore gc08a3 image sensor
@@ -12646,7 +10399,7 @@ index 0000000000000000000000000000000000000000..3846f10c35965789ef17249f81400f64
 + *
 + * Zhi Mao <zhi.mao@mediatek.com>
 + */
-+// #include <linux/array_size.h>
++
 +#include <linux/bits.h>
 +#include <linux/clk.h>
 +#include <linux/container_of.h>
@@ -12740,7 +10493,7 @@ index 0000000000000000000000000000000000000000..3846f10c35965789ef17249f81400f64
 +	struct v4l2_ctrl *vflip;
 +
 +	struct regmap *regmap;
-+
++	unsigned long link_freq_bitmap;
 +	const struct gc08a3_mode *cur_mode;
 +};
 +
@@ -13297,15 +11050,6 @@ index 0000000000000000000000000000000000000000..3846f10c35965789ef17249f81400f64
 +	return 0;
 +}
 +
-+static int gc08a3_get_format(struct v4l2_subdev *sd,
-+			     struct v4l2_subdev_state *sd_state,
-+			     struct v4l2_subdev_format *fmt)
-+{
-+	fmt->format = *v4l2_subdev_get_pad_format(sd, sd_state, fmt->pad);
-+
-+	return 0;
-+}
-+
 +static int gc08a3_update_cur_mode_controls(struct gc08a3 *gc08a3,
 +					   const struct gc08a3_mode *mode)
 +{
@@ -13645,7 +11389,7 @@ index 0000000000000000000000000000000000000000..3846f10c35965789ef17249f81400f64
 +static const struct v4l2_subdev_pad_ops gc08a3_subdev_pad_ops = {
 +	.enum_mbus_code = gc08a3_enum_mbus_code,
 +	.enum_frame_size = gc08a3_enum_frame_size,
-+	.get_fmt = gc08a3_get_format,
++	.get_fmt = v4l2_subdev_get_fmt,
 +	.set_fmt = gc08a3_set_format,
 +	.get_selection = gc08a3_get_selection,
 +	.init_cfg = gc08a3_init_state,
@@ -13679,7 +11423,6 @@ index 0000000000000000000000000000000000000000..3846f10c35965789ef17249f81400f64
 +	struct v4l2_fwnode_endpoint bus_cfg = {
 +		.bus_type = V4L2_MBUS_CSI2_DPHY,
 +	};
-+	unsigned int i, j;
 +	int ret;
 +	struct device *dev = gc08a3->dev;
 +
@@ -13697,27 +11440,13 @@ index 0000000000000000000000000000000000000000..3846f10c35965789ef17249f81400f64
 +		goto done;
 +	}
 +
-+	if (!bus_cfg.nr_of_link_frequencies) {
-+		dev_err(dev, "no link frequencies defined");
-+		ret = -EINVAL;
++	ret = v4l2_link_freq_to_bitmap(dev, bus_cfg.link_frequencies,
++				       bus_cfg.nr_of_link_frequencies,
++				       gc08a3_link_freq_menu_items,
++				       ARRAY_SIZE(gc08a3_link_freq_menu_items),
++				       &gc08a3->link_freq_bitmap);
++	if (ret)
 +		goto done;
-+	}
-+
-+	for (i = 0; i < ARRAY_SIZE(gc08a3_link_freq_menu_items); i++) {
-+		for (j = 0; j < bus_cfg.nr_of_link_frequencies; j++) {
-+			if (gc08a3_link_freq_menu_items[i] ==
-+			    bus_cfg.link_frequencies[j])
-+				break;
-+		}
-+
-+		if (j == bus_cfg.nr_of_link_frequencies) {
-+			dev_err(dev,
-+				"no link frequency %lld supported, please check DT",
-+				gc08a3_link_freq_menu_items[i]);
-+			ret = -EINVAL;
-+			goto done;
-+		}
-+	}
 +
 +done:
 +	v4l2_fwnode_endpoint_free(&bus_cfg);
@@ -21352,10 +19081,10 @@ index 0000000000000000000000000000000000000000..8ca0afd3daa6a8628f480a953f123859
 +#endif              /* _KD_IMGSENSOR_DATA_H */
 diff --git a/drivers/media/platform/mediatek/isp/isp_7x/camsys/mtk_cam-ctrl.c b/drivers/media/platform/mediatek/isp/isp_7x/camsys/mtk_cam-ctrl.c
 new file mode 100644
-index 0000000000000000000000000000000000000000..3839fc1622490088f91ba256133dc73ff2be42b2
+index 0000000000000000000000000000000000000000..66c50706c698edd7bb0208d1be360665954ebfde
 --- /dev/null
 +++ b/drivers/media/platform/mediatek/isp/isp_7x/camsys/mtk_cam-ctrl.c
-@@ -0,0 +1,1665 @@
+@@ -0,0 +1,1657 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
 + * Copyright (c) 2022 MediaTek Inc.
@@ -21552,7 +19281,7 @@ index 0000000000000000000000000000000000000000..3839fc1622490088f91ba256133dc73f
 +{
 +	spin_lock(&ctx->streaming_lock);
 +	if (ctx->streaming)
-+		stream_on(raw_dev, 1);
++		mtk_cam_raw_stream_on(raw_dev, 1);
 +
 +	spin_unlock(&ctx->streaming_lock);
 +}
@@ -21606,7 +19335,7 @@ index 0000000000000000000000000000000000000000..3839fc1622490088f91ba256133dc73f
 +	 * request setup
 +	 * 1st frame sensor setting is treated like normal frame
 +	 * and is set with other settings like max fps.
-+	 * 2nd is special, only expsure is set.
++	 * 2nd is special, only exposure is set.
 +	 */
 +	if (!mtk_cam_is_m2m(ctx)) {
 +		if (s_data->flags & MTK_CAM_REQ_S_DATA_FLAG_SENSOR_HDL_EN) {
@@ -22145,11 +19874,11 @@ index 0000000000000000000000000000000000000000..3839fc1622490088f91ba256133dc73f
 +		req_stream_data->timestamp = time_boot;
 +		req_stream_data->timestamp_mono = time_mono;
 +
-+		apply_cq(raw_dev, base_addr,
-+			 buf_entry->cq_desc_size,
-+			 buf_entry->cq_desc_offset,
-+			 buf_entry->sub_cq_desc_size,
-+			 buf_entry->sub_cq_desc_offset);
++		mtk_cam_raw_apply_cq(raw_dev, base_addr,
++				     buf_entry->cq_desc_size,
++				     buf_entry->cq_desc_offset,
++				     buf_entry->sub_cq_desc_size,
++				     buf_entry->sub_cq_desc_offset);
 +		/* Transit state from Sensor -> CQ */
 +		if (ctx->sensor) {
 +			state_transition(state_sensor, E_STATE_SENSOR, E_STATE_CQ);
@@ -22240,11 +19969,11 @@ index 0000000000000000000000000000000000000000..3839fc1622490088f91ba256133dc73f
 +		ctx->processing_buffer_list.cnt++;
 +		spin_unlock(&ctx->processing_buffer_list.lock);
 +		base_addr = buf_entry->buffer.iova;
-+		apply_cq(raw_dev, base_addr,
-+			 buf_entry->cq_desc_size,
-+			 buf_entry->cq_desc_offset,
-+			 buf_entry->sub_cq_desc_size,
-+			 buf_entry->sub_cq_desc_offset);
++		mtk_cam_raw_apply_cq(raw_dev, base_addr,
++				     buf_entry->cq_desc_size,
++				     buf_entry->cq_desc_offset,
++				     buf_entry->sub_cq_desc_size,
++				     buf_entry->sub_cq_desc_offset);
 +
 +		/* req_stream_data of req_cq*/
 +		req_stream_data = mtk_cam_ctrl_state_to_req_s_data(current_state);
@@ -22274,7 +20003,7 @@ index 0000000000000000000000000000000000000000..3839fc1622490088f91ba256133dc73f
 +	struct mtk_cam_request_stream_data *req_stream_data;
 +
 +	if (frame_seq_no_outer == 1)
-+		stream_on(raw_dev, 1);
++		mtk_cam_raw_stream_on(raw_dev, 1);
 +
 +	dev_dbg(raw_dev->dev,
 +		"[M2M CQD] frame_seq_no_outer:%d composed_buffer_list.cnt:%d\n",
@@ -22367,7 +20096,7 @@ index 0000000000000000000000000000000000000000..3839fc1622490088f91ba256133dc73f
 +	if (!mtk_cam_is_m2m(ctx))
 +		return;
 +
-+	trigger_rawi(raw_dev, ctx, -1);
++	mtk_cam_raw_trigger_rawi(raw_dev, ctx, -1);
 +
 +	spin_lock(&sensor_ctrl->camsys_state_lock);
 +	triggered = false;
@@ -22785,14 +20514,6 @@ index 0000000000000000000000000000000000000000..3839fc1622490088f91ba256133dc73f
 +{
 +	int ret = 0;
 +
-+	/*
-+	 * Here it will be implemented dispatch rules for some scenarios
-+	 * like twin/m-stream,
-+	 * such cases that camsys will collect all coworked sub-engine's
-+	 * signals and trigger some engine of them to do some job
-+	 * individually.
-+	 * twin - rawx2
-+	 */
 +	switch (engine_type) {
 +	case CAMSYS_ENGINE_RAW:
 +		ret = mtk_camsys_event_handle_raw(cam, engine_id, irq_info);
@@ -27535,10 +25256,10 @@ index 0000000000000000000000000000000000000000..7ff937b796f347783edf69afc7168477
 +#endif
 diff --git a/drivers/media/platform/mediatek/isp/isp_7x/camsys/mtk_cam-raw.c b/drivers/media/platform/mediatek/isp/isp_7x/camsys/mtk_cam-raw.c
 new file mode 100644
-index 0000000000000000000000000000000000000000..b91c5ae942c72f1b3ccfe5ec40ab54b87fbb6c17
+index 0000000000000000000000000000000000000000..2e98ee3652ed145c94f0a7bd7f252ed231b74c3c
 --- /dev/null
 +++ b/drivers/media/platform/mediatek/isp/isp_7x/camsys/mtk_cam-raw.c
-@@ -0,0 +1,5463 @@
+@@ -0,0 +1,5295 @@
 +// SPDX-License-Identifier: GPL-2.0
 +//
 +// Copyright (c) 2022 MediaTek Inc.
@@ -27696,12 +25417,59 @@ index 0000000000000000000000000000000000000000..b91c5ae942c72f1b3ccfe5ec40ab54b8
 +	.quantization = V4L2_QUANTIZATION_DEFAULT,
 +};
 +
-+static bool mtk_raw_resource_calc(struct mtk_cam_device *cam,
-+				  struct mtk_cam_resource_config *res,
-+				  s64 pixel_rate, int res_plan, int in_w,
-+				  int in_h, int *out_w, int *out_h);
++static bool mtk_cam_raw_resource_calc(struct mtk_cam_device *cam,
++				      struct mtk_cam_resource_config *res,
++				      s64 pixel_rate, int res_plan, int in_w,
++				      int in_h, int *out_w, int *out_h);
 +
-+static int mtk_raw_get_ctrl(struct v4l2_ctrl *ctrl)
++static int mtk_cam_raw_res_copy_fmt_from_user(struct mtk_raw_pipeline *pipeline,
++					      struct mtk_cam_resource *res_user,
++					      struct v4l2_mbus_framefmt *dest)
++{
++	long bytes;
++	struct device *dev = pipeline->raw->devs[pipeline->id];
++
++	if (!res_user->sink_fmt) {
++		dev_err(dev,
++			"%s:pipe(%d): sink_fmt can't be NULL for res ctrl\n",
++			__func__, pipeline->id);
++
++		return -EINVAL;
++	}
++
++	bytes = copy_from_user(dest, (void __user *)res_user->sink_fmt,
++			       sizeof(*dest));
++	if (bytes) {
++		dev_err(dev,
++			"%s:pipe(%d): copy_from_user on sink_fmt failed (%ld)\n",
++			__func__, pipeline->id, bytes);
++		return -EINVAL;
++	}
++
++	return 0;
++}
++
++static int mtk_cam_raw_res_copy_fmt_to_user(struct mtk_raw_pipeline *pipeline,
++					    struct mtk_cam_resource *res_user,
++					    struct v4l2_mbus_framefmt *src)
++{
++	long bytes;
++	struct device *dev = pipeline->raw->devs[pipeline->id];
++
++	/* return the fmt to the users */
++	bytes = copy_to_user((void __user *)res_user->sink_fmt, src, sizeof(*src));
++	if (bytes) {
++		dev_err(dev,
++			"%s:pipe(%d): copy_to_user on sink_fmt failed (%ld)\n",
++			__func__, pipeline->id, bytes);
++
++		return -EINVAL;
++	}
++
++	return 0;
++}
++
++static int mtk_cam_raw_get_ctrl(struct v4l2_ctrl *ctrl)
 +{
 +	struct mtk_cam_resource *user_res;
 +	struct mtk_raw_pipeline *pipeline;
@@ -27716,10 +25484,10 @@ index 0000000000000000000000000000000000000000..b91c5ae942c72f1b3ccfe5ec40ab54b8
 +		user_res->sensor_res = pipeline->user_res.sensor_res;
 +		user_res->raw_res = pipeline->user_res.raw_res;
 +		if (user_res->sink_fmt)
-+			ret = mtk_cam_res_copy_fmt_to_user(pipeline,
-+							   user_res,
-+							   (struct v4l2_mbus_framefmt *)
-+							   pipeline->user_res.sink_fmt);
++			ret = mtk_cam_raw_res_copy_fmt_to_user(pipeline,
++							       user_res,
++							       (struct v4l2_mbus_framefmt *)
++							       pipeline->user_res.sink_fmt);
 +	} else if (ctrl->id == V4L2_CID_MTK_CAM_RAW_RESOURCE_UPDATE) {
 +		ctrl->val = pipeline->sensor_mode_update;
 +		dev_info(dev,
@@ -27786,53 +25554,6 @@ index 0000000000000000000000000000000000000000..b91c5ae942c72f1b3ccfe5ec40ab54b8
 +	dev_dbg(dev, "%s:pipe(%d):id(%s) val(%d)\n",
 +		__func__, pipeline->id, ctrl->name, ctrl->val);
 +	return ret;
-+}
-+
-+int mtk_cam_res_copy_fmt_from_user(struct mtk_raw_pipeline *pipeline,
-+				   struct mtk_cam_resource *res_user,
-+				   struct v4l2_mbus_framefmt *dest)
-+{
-+	long bytes;
-+	struct device *dev = pipeline->raw->devs[pipeline->id];
-+
-+	if (!res_user->sink_fmt) {
-+		dev_err(dev,
-+			"%s:pipe(%d): sink_fmt can't be NULL for res ctrl\n",
-+			__func__, pipeline->id);
-+
-+		return -EINVAL;
-+	}
-+
-+	bytes = copy_from_user(dest, (void __user *)res_user->sink_fmt,
-+			       sizeof(*dest));
-+	if (bytes) {
-+		dev_err(dev,
-+			"%s:pipe(%d): copy_from_user on sink_fmt failed (%ld)\n",
-+			__func__, pipeline->id, bytes);
-+		return -EINVAL;
-+	}
-+
-+	return 0;
-+}
-+
-+int mtk_cam_res_copy_fmt_to_user(struct mtk_raw_pipeline *pipeline,
-+				 struct mtk_cam_resource *res_user,
-+				 struct v4l2_mbus_framefmt *src)
-+{
-+	long bytes;
-+	struct device *dev = pipeline->raw->devs[pipeline->id];
-+
-+	/* return the fmt to the users */
-+	bytes = copy_to_user((void *)res_user->sink_fmt, src, sizeof(*src));
-+	if (bytes) {
-+		dev_err(dev,
-+			"%s:pipe(%d): copy_to_user on sink_fmt failed (%ld)\n",
-+			__func__, pipeline->id, bytes);
-+
-+		return -EINVAL;
-+	}
-+
-+	return 0;
 +}
 +
 +static int mtk_cam_raw_res_store(struct mtk_raw_pipeline *pipeline,
@@ -27926,10 +25647,10 @@ index 0000000000000000000000000000000000000000..b91c5ae942c72f1b3ccfe5ec40ab54b8
 +	return prate;
 +}
 +
-+int mtk_cam_raw_try_res_ctrl(struct mtk_raw_pipeline *pipeline,
-+			     struct mtk_cam_resource *res_user,
-+			     struct mtk_cam_resource_config *res_cfg,
-+			     struct v4l2_mbus_framefmt *sink_fmt)
++static int mtk_cam_raw_try_res_ctrl(struct mtk_raw_pipeline *pipeline,
++				    struct mtk_cam_resource *res_user,
++				    struct mtk_cam_resource_config *res_cfg,
++				    struct v4l2_mbus_framefmt *sink_fmt)
 +{
 +	s64 prate = 0;
 +	int width, height;
@@ -27961,9 +25682,9 @@ index 0000000000000000000000000000000000000000..b91c5ae942c72f1b3ccfe5ec40ab54b8
 +						      res_user->sensor_res.interval.numerator,
 +						      res_user->sensor_res.pixel_rate);
 +
-+	mtk_raw_resource_calc(dev_get_drvdata(pipeline->raw->cam_dev), res_cfg,
-+			      prate, res_cfg->res_plan, sink_fmt->width,
-+			      sink_fmt->height, &width, &height);
++	mtk_cam_raw_resource_calc(dev_get_drvdata(pipeline->raw->cam_dev), res_cfg,
++				  prate, res_cfg->res_plan, sink_fmt->width,
++				  sink_fmt->height, &width, &height);
 +
 +	if (res_user->raw_res.bin && !res_cfg->bin_enable) {
 +		dev_err(dev,
@@ -28039,7 +25760,7 @@ index 0000000000000000000000000000000000000000..b91c5ae942c72f1b3ccfe5ec40ab54b8
 +		pipeline->feature_pending, pipeline->user_res.raw_res.feature,
 +		pipeline->feature_active);
 +
-+	ret = mtk_cam_res_copy_fmt_from_user(pipeline, res_user, &sink_fmt);
++	ret = mtk_cam_raw_res_copy_fmt_from_user(pipeline, res_user, &sink_fmt);
 +	if (ret)
 +		return ret;
 +
@@ -28110,7 +25831,7 @@ index 0000000000000000000000000000000000000000..b91c5ae942c72f1b3ccfe5ec40ab54b8
 +	return ret;
 +}
 +
-+static int mtk_raw_try_ctrl(struct v4l2_ctrl *ctrl)
++static int mtk_cam_raw_try_ctrl(struct v4l2_ctrl *ctrl)
 +{
 +	struct device *dev;
 +	struct mtk_raw_pipeline *pipeline;
@@ -28128,8 +25849,8 @@ index 0000000000000000000000000000000000000000..b91c5ae942c72f1b3ccfe5ec40ab54b8
 +		if (ret)
 +			break;
 +
-+		ret = mtk_cam_res_copy_fmt_from_user(pipeline, res_user,
-+						     &res_cfg.sink_fmt);
++		ret = mtk_cam_raw_res_copy_fmt_from_user(pipeline, res_user,
++							 &res_cfg.sink_fmt);
 +		if (ret) {
 +			ret = 0;
 +			/* only corret the user's input, it may be request-based try and set fmt */
@@ -28174,7 +25895,7 @@ index 0000000000000000000000000000000000000000..b91c5ae942c72f1b3ccfe5ec40ab54b8
 +	return ret;
 +}
 +
-+static int mtk_raw_set_ctrl(struct v4l2_ctrl *ctrl)
++static int mtk_cam_raw_set_ctrl(struct v4l2_ctrl *ctrl)
 +{
 +	struct device *dev;
 +	struct mtk_raw_pipeline *pipeline;
@@ -28232,9 +25953,9 @@ index 0000000000000000000000000000000000000000..b91c5ae942c72f1b3ccfe5ec40ab54b8
 +}
 +
 +static const struct v4l2_ctrl_ops cam_ctrl_ops = {
-+	.g_volatile_ctrl = mtk_raw_get_ctrl,
-+	.s_ctrl = mtk_raw_set_ctrl,
-+	.try_ctrl = mtk_raw_try_ctrl,
++	.g_volatile_ctrl = mtk_cam_raw_get_ctrl,
++	.s_ctrl = mtk_cam_raw_set_ctrl,
++	.try_ctrl = mtk_cam_raw_try_ctrl,
 +};
 +
 +static int mtk_raw_pde_get_ctrl(struct v4l2_ctrl *ctrl)
@@ -28516,8 +26237,29 @@ index 0000000000000000000000000000000000000000..b91c5ae942c72f1b3ccfe5ec40ab54b8
 +	.def = DEFAULT,
 +};
 +
-+void trigger_rawi(struct mtk_raw_device *dev, struct mtk_cam_ctx *ctx,
-+		  signed int hw_scene)
++static void mtk_cam_raw_toggle_db(struct mtk_raw_device *dev)
++{
++	int value;
++	u32 val_cfg, val_dcif_ctl, val_sen;
++
++	value = readl_relaxed(dev->base + REG_CTL_MISC);
++	val_cfg = readl_relaxed(dev->base_inner + REG_TG_PATH_CFG);
++	val_dcif_ctl = readl_relaxed(dev->base_inner + REG_TG_DCIF_CTL);
++	val_sen = readl_relaxed(dev->base_inner + REG_TG_SEN_MODE);
++	writel_relaxed(value & ~CTL_DB_EN, dev->base + REG_CTL_MISC);
++	wmb(); /* make sure committed */
++	writel_relaxed(value | CTL_DB_EN, dev->base + REG_CTL_MISC);
++	wmb(); /* make sure committed */
++	dev_info(dev->dev,
++		 "%s,  read inner AsIs->ToBe TG_PATH_CFG:0x%x->0x%x, TG_DCIF:0x%x->0x%x, TG_SEN:0x%x->0x%x\n",
++		 __func__, val_cfg,
++		 readl_relaxed(dev->base_inner + REG_TG_PATH_CFG), val_dcif_ctl,
++		 readl_relaxed(dev->base_inner + REG_TG_DCIF_CTL), val_sen,
++		 readl_relaxed(dev->base_inner + REG_TG_SEN_MODE));
++}
++
++void mtk_cam_raw_trigger_rawi(struct mtk_raw_device *dev, struct mtk_cam_ctx *ctx,
++			      signed int hw_scene)
 +{
 +#define TRIGGER_RAWI_R6 0x10
 +#define TRIGGER_RAWI_R2 0x01
@@ -28530,9 +26272,9 @@ index 0000000000000000000000000000000000000000..b91c5ae942c72f1b3ccfe5ec40ab54b8
 +	wmb(); /* make sure committed */
 +}
 +
-+void apply_cq(struct mtk_raw_device *dev, dma_addr_t cq_addr,
-+	      unsigned int cq_size, unsigned int cq_offset,
-+	      unsigned int sub_cq_size, unsigned int sub_cq_offset)
++void mtk_cam_raw_apply_cq(struct mtk_raw_device *dev, dma_addr_t cq_addr,
++			  unsigned int cq_size, unsigned int cq_offset,
++			  unsigned int sub_cq_size, unsigned int sub_cq_offset)
 +{
 +	dma_addr_t main, sub;
 +
@@ -28568,7 +26310,7 @@ index 0000000000000000000000000000000000000000..b91c5ae942c72f1b3ccfe5ec40ab54b8
 +}
 +
 +/* sw check again for rawi dcif case */
-+static bool is_dma_idle(struct mtk_raw_device *dev)
++static bool mtk_cam_raw_is_dma_idle(struct mtk_raw_device *dev)
 +{
 +	bool ret = false;
 +	int chasing_stat;
@@ -28617,7 +26359,7 @@ index 0000000000000000000000000000000000000000..b91c5ae942c72f1b3ccfe5ec40ab54b8
 +	return ret;
 +}
 +
-+void reset(struct mtk_raw_device *dev)
++void mtk_cam_raw_reset(struct mtk_raw_device *dev)
 +{
 +	int sw_ctl;
 +	int ret;
@@ -28632,7 +26374,7 @@ index 0000000000000000000000000000000000000000..b91c5ae942c72f1b3ccfe5ec40ab54b8
 +	/* enable CQI_R1 ~ R4 before reset and make sure loaded to inner */
 +	writel(readl(dev->base + REG_CTL_MOD6_EN) | 0x78000,
 +	       dev->base + REG_CTL_MOD6_EN);
-+	toggle_db(dev);
++	mtk_cam_raw_toggle_db(dev);
 +
 +	writel(0, dev->base + REG_CTL_SW_CTL);
 +	writel(1, dev->base + REG_CTL_SW_CTL);
@@ -28643,7 +26385,7 @@ index 0000000000000000000000000000000000000000..b91c5ae942c72f1b3ccfe5ec40ab54b8
 +				 1 /* delay, us */,
 +				 5000 /* timeout, us */);
 +
-+	if (ret < 0 && !is_dma_idle(dev)) {
++	if (ret < 0 && !mtk_cam_raw_is_dma_idle(dev)) {
 +		dev_info(dev->dev,
 +			 "%s: timeout: tg_sen_mode: 0x%x, ctl_en: 0x%x, mod6_en: 0x%x, ctl_sw_ctl:0x%x, frame_no:0x%x,rst_stat:0x%x,rst_stat2:0x%x,yuv_rst_stat:0x%x\n",
 +			 __func__,
@@ -28672,7 +26414,7 @@ index 0000000000000000000000000000000000000000..b91c5ae942c72f1b3ccfe5ec40ab54b8
 +	wmb(); /* make sure committed */
 +}
 +
-+static void reset_reg(struct mtk_raw_device *dev)
++static void mtk_cam_raw_reset_reg(struct mtk_raw_device *dev)
 +{
 +	int cq_en, sw_done;
 +
@@ -28714,7 +26456,7 @@ index 0000000000000000000000000000000000000000..b91c5ae942c72f1b3ccfe5ec40ab54b8
 +		readl_relaxed(dev->base + REG_CTL_SW_PASS1_DONE));
 +}
 +
-+void dump_aa_info(struct mtk_cam_ctx *ctx, struct mtk_ae_debug_data *ae_info)
++void mtk_cam_raw_dump_aa_info(struct mtk_cam_ctx *ctx, struct mtk_ae_debug_data *ae_info)
 +{
 +	struct mtk_raw_device *raw_dev = NULL;
 +	struct mtk_raw_pipeline *pipe = ctx->pipe;
@@ -28843,56 +26585,6 @@ index 0000000000000000000000000000000000000000..b91c5ae942c72f1b3ccfe5ec40ab54b8
 +		       dma_base + DMA_OFFSET_CON4);
 +}
 +
-+void toggle_db(struct mtk_raw_device *dev)
-+{
-+	int value;
-+	u32 val_cfg, val_dcif_ctl, val_sen;
-+
-+	value = readl_relaxed(dev->base + REG_CTL_MISC);
-+	val_cfg = readl_relaxed(dev->base_inner + REG_TG_PATH_CFG);
-+	val_dcif_ctl = readl_relaxed(dev->base_inner + REG_TG_DCIF_CTL);
-+	val_sen = readl_relaxed(dev->base_inner + REG_TG_SEN_MODE);
-+	writel_relaxed(value & ~CTL_DB_EN, dev->base + REG_CTL_MISC);
-+	wmb(); /* make sure committed */
-+	writel_relaxed(value | CTL_DB_EN, dev->base + REG_CTL_MISC);
-+	wmb(); /* make sure committed */
-+	dev_info(dev->dev,
-+		 "%s,  read inner AsIs->ToBe TG_PATH_CFG:0x%x->0x%x, TG_DCIF:0x%x->0x%x, TG_SEN:0x%x->0x%x\n",
-+		 __func__, val_cfg,
-+		 readl_relaxed(dev->base_inner + REG_TG_PATH_CFG), val_dcif_ctl,
-+		 readl_relaxed(dev->base_inner + REG_TG_DCIF_CTL), val_sen,
-+		 readl_relaxed(dev->base_inner + REG_TG_SEN_MODE));
-+}
-+
-+void enable_tg_db(struct mtk_raw_device *dev, int en)
-+{
-+	int value;
-+	u32 val_cfg, val_dcif_ctl, val_sen;
-+
-+	value = readl_relaxed(dev->base_inner + REG_TG_PATH_CFG);
-+	if (en == 0) {
-+		/* disable tg db */
-+		val_cfg = readl_relaxed(dev->base_inner + REG_TG_PATH_CFG);
-+		val_dcif_ctl = readl_relaxed(dev->base_inner + REG_TG_DCIF_CTL);
-+		val_sen = readl_relaxed(dev->base_inner + REG_TG_SEN_MODE);
-+		writel_relaxed(value | TG_DB_LOAD_DIS, dev->base + REG_TG_PATH_CFG);
-+		wmb(); /* make sure committed */
-+		dev_dbg(dev->dev, "%s disable,  TG_PATH_CFG:0x%x->0x%x, TG_DCIF:0x%x->0x%x, TG_SEN:0x%x->0x%x\n",
-+			__func__,
-+			val_cfg,
-+			readl_relaxed(dev->base_inner + REG_TG_PATH_CFG),
-+			val_dcif_ctl,
-+			readl_relaxed(dev->base_inner + REG_TG_DCIF_CTL),
-+			val_sen,
-+			readl_relaxed(dev->base_inner + REG_TG_SEN_MODE));
-+	} else {
-+		/*enable tg db*/
-+		writel_relaxed(value & ~TG_DB_LOAD_DIS, dev->base + REG_TG_PATH_CFG);
-+		wmb(); /* make sure committed */
-+		dev_dbg(dev->dev, "%s enable, TG_PATH_CFG:0x%x\n", __func__, value);
-+	}
-+}
-+
 +static void init_dma_threshold(struct mtk_raw_device *dev)
 +{
 +	struct mtk_cam_device *cam_dev;
@@ -29002,7 +26694,7 @@ index 0000000000000000000000000000000000000000..b91c5ae942c72f1b3ccfe5ec40ab54b8
 +		return 1;
 +}
 +
-+void initialize(struct mtk_raw_device *dev, int is_sub)
++void mtk_cam_raw_initialize(struct mtk_raw_device *dev, int is_sub)
 +{
 +	u32 val;
 +
@@ -29035,102 +26727,7 @@ index 0000000000000000000000000000000000000000..b91c5ae942c72f1b3ccfe5ec40ab54b8
 +		readl_relaxed(dev->base + REG_CQ_THR0_CTL));
 +}
 +
-+static void immediate_stream_off_log(struct mtk_raw_device *dev, char *reg_name,
-+				     void __iomem *base,
-+				     void __iomem *base_inner,
-+				     u32 offset, u32 cur_val, u32 cfg_val)
-+{
-+	u32 read_val, read_val_2;
-+
-+	read_val = readl_relaxed(base_inner + offset);
-+	read_val_2 = readl_relaxed(base + offset);
-+	dev_dbg(dev->dev,
-+		"%s:%s: before: r(0x%x), w(0x%x), after:inner(0x%x),outer(0x%x)\n",
-+		__func__, reg_name, cur_val, cfg_val,
-+		read_val, read_val_2);
-+}
-+
-+void immediate_stream_off(struct mtk_raw_device *dev)
-+
-+{
-+	u32 chk_val, cur_val, cfg_val;
-+	u32 offset;
-+
-+	atomic_set(&dev->vf_en, 0);
-+	writel_relaxed((u32)~CQ_THR0_EN, dev->base + REG_CQ_THR0_CTL);
-+	wmb(); /* make sure committed */
-+
-+	/* Disable Double Buffer */
-+	offset = REG_TG_PATH_CFG;
-+	cur_val = readl_relaxed(dev->base + offset);
-+	cfg_val = cur_val | 0x100; /* clear TG_DB_LOAD_DIS */
-+	writel(cfg_val, dev->base + offset); /* has double buffer */
-+	wmb(); /* make sure committed */
-+	immediate_stream_off_log(dev, "TG_PATH_CFG", dev->base, dev->base_inner,
-+				 offset, cur_val, cfg_val);
-+
-+	/* Disable MISC CTRL */
-+	offset = REG_CTL_MISC;
-+	cur_val = readl_relaxed(dev->base + offset);
-+	cfg_val = cur_val & ~CTL_DB_EN;
-+	writel_relaxed(cfg_val, dev->base + offset);
-+	wmb(); /* make sure committed */
-+	immediate_stream_off_log(dev, "CTL_MISC", dev->base, dev->base_inner,
-+				 offset, cur_val, cfg_val);
-+
-+	/* Disable VF */
-+	offset = REG_TG_VF_CON;
-+	cur_val = readl_relaxed(dev->base + offset);
-+	cfg_val = cur_val & ~TG_VFDATA_EN;
-+	writel(cfg_val, dev->base + offset);
-+	wmb(); /* make sure committed */
-+	if (readx_poll_timeout(readl, dev->base_inner + offset,
-+			       chk_val, chk_val == cfg_val,
-+			       1 /* sleep, us */,
-+			       10000 /* timeout, us*/) < 0) {
-+		dev_info(dev->dev, "%s: wait vf off timeout: TG_VF_CON 0x%x\n",
-+			 __func__, chk_val);
-+		immediate_stream_off_log(dev, "TG_VF_CON", dev->base,
-+					 dev->base_inner, offset,
-+					 cur_val, cfg_val);
-+	} else {
-+		dev_dbg(dev->dev, "%s: VF OFF success\n", __func__);
-+	}
-+
-+	/* Disable CMOS */
-+	offset = REG_TG_SEN_MODE;
-+	cur_val = readl_relaxed(dev->base + offset);
-+	cfg_val = cur_val & ~TG_SEN_MODE_CMOS_EN;
-+	writel(cfg_val, dev->base + offset);
-+	wmb(); /* make sure committed */
-+	immediate_stream_off_log(dev, "TG_SEN_MODE", dev->base, dev->base_inner,
-+				 offset, cur_val, cfg_val);
-+
-+	reset_reg(dev);
-+	reset(dev);
-+
-+	wmb(); /* make sure committed */
-+
-+	/* Enable MISC CTRL */
-+	offset = REG_CTL_MISC;
-+	cur_val = readl_relaxed(dev->base + offset);
-+	cfg_val = cur_val | CTL_DB_EN;
-+	writel_relaxed(cfg_val, dev->base + offset);
-+	wmb(); /* make sure committed */
-+	immediate_stream_off_log(dev, "CTL_MISC", dev->base, dev->base_inner,
-+				 offset, cur_val, cfg_val);
-+
-+	/* nable Double Buffer */
-+	offset = REG_TG_PATH_CFG;
-+	cur_val = readl_relaxed(dev->base + offset);
-+	cfg_val = cur_val & ~0x100;
-+	writel(cfg_val, dev->base + offset);
-+	wmb(); /* make sure committed */
-+	immediate_stream_off_log(dev, "TG_PATH_CFG", dev->base, dev->base_inner,
-+				 offset, cur_val, cfg_val);
-+}
-+
-+void stream_on(struct mtk_raw_device *dev, int on)
++void mtk_cam_raw_stream_on(struct mtk_raw_device *dev, int on)
 +{
 +	u32 val;
 +	u32 chk_val;
@@ -29203,7 +26800,7 @@ index 0000000000000000000000000000000000000000..b91c5ae942c72f1b3ccfe5ec40ab54b8
 +				 __func__, chk_val);
 +		}
 +
-+		reset_reg(dev);
++		mtk_cam_raw_reset_reg(dev);
 +	}
 +}
 +
@@ -29311,10 +26908,10 @@ index 0000000000000000000000000000000000000000..b91c5ae942c72f1b3ccfe5ec40ab54b8
 +	}
 +}
 +
-+static bool mtk_raw_resource_calc(struct mtk_cam_device *cam,
-+				  struct mtk_cam_resource_config *res,
-+				  s64 pixel_rate, int res_plan,
-+				  int in_w, int in_h, int *out_w, int *out_h)
++static bool mtk_cam_raw_resource_calc(struct mtk_cam_device *cam,
++				      struct mtk_cam_resource_config *res,
++				      s64 pixel_rate, int res_plan,
++				      int in_w, int in_h, int *out_w, int *out_h)
 +{
 +	int res_step_type = 0;
 +	int tgo_pxl_mode = 1;
@@ -30191,7 +27788,7 @@ index 0000000000000000000000000000000000000000..b91c5ae942c72f1b3ccfe5ec40ab54b8
 +	return true;
 +}
 +
-+struct v4l2_mbus_framefmt*
++static struct v4l2_mbus_framefmt*
 +mtk_raw_pipeline_get_fmt(struct mtk_raw_pipeline *pipe,
 +			 struct v4l2_subdev_state *sd_state, int padid,
 +			 int which)
@@ -30206,7 +27803,7 @@ index 0000000000000000000000000000000000000000..b91c5ae942c72f1b3ccfe5ec40ab54b8
 +	return &pipe->cfg[padid].mbus_fmt;
 +}
 +
-+struct v4l2_rect*
++static struct v4l2_rect*
 +mtk_raw_pipeline_get_selection(struct mtk_raw_pipeline *pipe,
 +			       struct v4l2_subdev_state *sd_state, int pad,
 +			       int which)
@@ -30231,9 +27828,9 @@ index 0000000000000000000000000000000000000000..b91c5ae942c72f1b3ccfe5ec40ab54b8
 +	source_mf->height = h;
 +}
 +
-+bool mtk_raw_fmt_get_res(struct v4l2_subdev *sd,
-+			 struct v4l2_subdev_format *fmt,
-+			 struct mtk_cam_resource *res)
++static bool mtk_raw_fmt_get_res(struct v4l2_subdev *sd,
++				struct v4l2_subdev_format *fmt,
++				struct mtk_cam_resource *res)
 +{
 +	void *user_ptr;
 +	u64 addr;
@@ -30743,33 +28340,6 @@ index 0000000000000000000000000000000000000000..b91c5ae942c72f1b3ccfe5ec40ab54b8
 +	return 0;
 +}
 +
-+struct v4l2_subdev *mtk_cam_find_sensor(struct mtk_cam_ctx *ctx,
-+					struct media_entity *entity)
-+{
-+	struct v4l2_subdev *sensor = NULL;
-+	struct media_pipeline_pad *ppad;
-+
-+	list_for_each_entry(ppad, &ctx->pipeline.pads, list) {
-+		entity = ppad->pad->entity;
-+		dev_dbg(ctx->cam->dev, "linked entity: %s\n", entity->name);
-+
-+		sensor = NULL;
-+
-+		switch (entity->function) {
-+		case MEDIA_ENT_F_CAM_SENSOR:
-+			sensor = media_entity_to_v4l2_subdev(entity);
-+			break;
-+		default:
-+			break;
-+		}
-+
-+		if (sensor)
-+			break;
-+	}
-+
-+	return sensor;
-+}
-+
 +static int mtk_cam_media_link_setup(struct media_entity *entity,
 +				    const struct media_pad *local,
 +				    const struct media_pad *remote, u32 flags)
@@ -30795,23 +28365,6 @@ index 0000000000000000000000000000000000000000..b91c5ae942c72f1b3ccfe5ec40ab54b8
 +			media_entity_to_v4l2_subdev(remote->entity);
 +
 +	return 0;
-+}
-+
-+struct mtk_raw_pipeline*
-+mtk_cam_get_link_enabled_raw(struct v4l2_subdev *seninf)
-+{
-+	struct mtk_cam_device *cam;
-+	int i;
-+
-+	cam = container_of(seninf->v4l2_dev->mdev, struct mtk_cam_device, media_dev);
-+
-+	for (i = MTKCAM_SUBDEV_RAW_START;
-+	     i < MTKCAM_SUBDEV_RAW_START + cam->num_raw_devices; i++) {
-+		if (cam->raw.pipelines[i].res_config.seninf == seninf)
-+			return &cam->raw.pipelines[i];
-+	}
-+
-+	return NULL;
 +}
 +
 +static int
@@ -32537,7 +30090,7 @@ index 0000000000000000000000000000000000000000..b91c5ae942c72f1b3ccfe5ec40ab54b8
 +	media_entity_cleanup(&pipe->subdev.entity);
 +}
 +
-+int mtk_raw_setup_dependencies(struct mtk_raw *raw)
++int mtk_cam_raw_setup_dependencies(struct mtk_raw *raw)
 +{
 +	struct device *dev = raw->cam_dev;
 +	struct mtk_cam_device *cam_dev = dev_get_drvdata(dev);
@@ -32572,7 +30125,7 @@ index 0000000000000000000000000000000000000000..b91c5ae942c72f1b3ccfe5ec40ab54b8
 +	return 0;
 +}
 +
-+int mtk_raw_register_entities(struct mtk_raw *raw, struct v4l2_device *v4l2_dev)
++int mtk_cam_raw_register_entities(struct mtk_raw *raw, struct v4l2_device *v4l2_dev)
 +{
 +	struct device *dev = raw->cam_dev;
 +	struct mtk_cam_device *cam_dev = dev_get_drvdata(dev);
@@ -32593,7 +30146,7 @@ index 0000000000000000000000000000000000000000..b91c5ae942c72f1b3ccfe5ec40ab54b8
 +	return 0;
 +}
 +
-+void mtk_raw_unregister_entities(struct mtk_raw *raw)
++void mtk_cam_raw_unregister_entities(struct mtk_raw *raw)
 +{
 +	struct device *dev = raw->cam_dev;
 +	struct mtk_cam_device *cam_dev = dev_get_drvdata(dev);
@@ -32676,7 +30229,7 @@ index 0000000000000000000000000000000000000000..b91c5ae942c72f1b3ccfe5ec40ab54b8
 +
 +	disable_irq(drvdata->irq);
 +
-+	reset(drvdata);
++	mtk_cam_raw_reset(drvdata);
 +
 +	clk_bulk_disable_unprepare(drvdata->num_clks, drvdata->clk_b);
 +
@@ -32704,7 +30257,7 @@ index 0000000000000000000000000000000000000000..b91c5ae942c72f1b3ccfe5ec40ab54b8
 +		return ret;
 +	}
 +
-+	reset(drvdata);
++	mtk_cam_raw_reset(drvdata);
 +
 +	return 0;
 +}
@@ -33004,10 +30557,10 @@ index 0000000000000000000000000000000000000000..b91c5ae942c72f1b3ccfe5ec40ab54b8
 +};
 diff --git a/drivers/media/platform/mediatek/isp/isp_7x/camsys/mtk_cam-raw.h b/drivers/media/platform/mediatek/isp/isp_7x/camsys/mtk_cam-raw.h
 new file mode 100644
-index 0000000000000000000000000000000000000000..23a303d625585b7a73be10017c8863a3984353fa
+index 0000000000000000000000000000000000000000..0a16d35e7183a9ea21a2d2aca87a3efc100dedbf
 --- /dev/null
 +++ b/drivers/media/platform/mediatek/isp/isp_7x/camsys/mtk_cam-raw.h
-@@ -0,0 +1,362 @@
+@@ -0,0 +1,325 @@
 +/* SPDX-License-Identifier: GPL-2.0 */
 +/*
 + * Copyright (c) 2022 MediaTek Inc.
@@ -33295,67 +30848,30 @@ index 0000000000000000000000000000000000000000..23a303d625585b7a73be10017c8863a3
 +	return container_of(handler, struct mtk_raw_pipeline, ctrl_handler);
 +};
 +
-+int mtk_raw_setup_dependencies(struct mtk_raw *raw);
++int mtk_cam_raw_setup_dependencies(struct mtk_raw *raw);
 +
-+int mtk_raw_register_entities(struct mtk_raw *raw,
-+			      struct v4l2_device *v4l2_dev);
-+void mtk_raw_unregister_entities(struct mtk_raw *raw);
++int mtk_cam_raw_register_entities(struct mtk_raw *raw,
++				  struct v4l2_device *v4l2_dev);
++void mtk_cam_raw_unregister_entities(struct mtk_raw *raw);
 +
 +int mtk_cam_raw_select(struct mtk_cam_ctx *ctx,
 +		       struct mtkcam_ipi_input_param *cfg_in_param);
 +
-+void toggle_db(struct mtk_raw_device *dev);
++void mtk_cam_raw_initialize(struct mtk_raw_device *dev, int is_sub);
 +
-+void enable_tg_db(struct mtk_raw_device *dev, int en);
++void mtk_cam_raw_stream_on(struct mtk_raw_device *dev, int on);
 +
-+void initialize(struct mtk_raw_device *dev, int is_sub);
++void mtk_cam_raw_apply_cq(struct mtk_raw_device *dev, dma_addr_t cq_addr,
++			  unsigned int cq_size, unsigned int cq_offset,
++			  unsigned int sub_cq_size, unsigned int sub_cq_offset);
 +
-+void stream_on(struct mtk_raw_device *dev, int on);
++void mtk_cam_raw_trigger_rawi(struct mtk_raw_device *dev, struct mtk_cam_ctx *ctx,
++			      signed int hw_scene);
 +
-+void immediate_stream_off(struct mtk_raw_device *dev);
++void mtk_cam_raw_reset(struct mtk_raw_device *dev);
 +
-+void apply_cq(struct mtk_raw_device *dev, dma_addr_t cq_addr,
-+	      unsigned int cq_size, unsigned int cq_offset,
-+	      unsigned int sub_cq_size, unsigned int sub_cq_offset);
++void mtk_cam_raw_dump_aa_info(struct mtk_cam_ctx *ctx, struct mtk_ae_debug_data *ae_info);
 +
-+void trigger_rawi(struct mtk_raw_device *dev, struct mtk_cam_ctx *ctx,
-+		  signed int hw_scene);
-+
-+void reset(struct mtk_raw_device *dev);
-+
-+void dump_aa_info(struct mtk_cam_ctx *ctx, struct mtk_ae_debug_data *ae_info);
-+
-+struct v4l2_subdev *mtk_cam_find_sensor(struct mtk_cam_ctx *ctx,
-+					struct media_entity *entity);
-+
-+struct mtk_raw_pipeline*
-+mtk_cam_get_link_enabled_raw(struct v4l2_subdev *seninf);
-+
-+bool
-+mtk_raw_fmt_get_res(struct v4l2_subdev *sd, struct v4l2_subdev_format *fmt,
-+		    struct mtk_cam_resource *res);
-+
-+struct v4l2_mbus_framefmt *
-+mtk_raw_pipeline_get_fmt(struct mtk_raw_pipeline *pipe,
-+			 struct v4l2_subdev_state *sd_state, int padid,
-+			 int which);
-+struct v4l2_rect *
-+mtk_raw_pipeline_get_selection(struct mtk_raw_pipeline *pipe,
-+			       struct v4l2_subdev_state *sd_state, int pad,
-+			       int which);
-+
-+int mtk_cam_raw_try_res_ctrl(struct mtk_raw_pipeline *pipeline,
-+			     struct mtk_cam_resource *res_user,
-+			     struct mtk_cam_resource_config *res_cfg,
-+			     struct v4l2_mbus_framefmt *sink_fmt);
-+
-+int mtk_cam_res_copy_fmt_from_user(struct mtk_raw_pipeline *pipeline,
-+				   struct mtk_cam_resource *res_user,
-+				   struct v4l2_mbus_framefmt *dest);
-+
-+int mtk_cam_res_copy_fmt_to_user(struct mtk_raw_pipeline *pipeline,
-+				 struct mtk_cam_resource *res_user,
-+				 struct v4l2_mbus_framefmt *src);
 +extern struct platform_driver mtk_cam_raw_driver;
 +extern struct platform_driver mtk_cam_yuv_driver;
 +
@@ -37353,10 +34869,10 @@ index 0000000000000000000000000000000000000000..8b4e81f4c7d60caf2904d12470e76499
 +#endif // __UFBC_DEF_H__
 diff --git a/drivers/media/platform/mediatek/isp/isp_7x/camsys/mtk_cam-video.c b/drivers/media/platform/mediatek/isp/isp_7x/camsys/mtk_cam-video.c
 new file mode 100644
-index 0000000000000000000000000000000000000000..a03ed7e25784781c0b36bda88045cad51122cdc1
+index 0000000000000000000000000000000000000000..221ce315297dd8ba8f250be42e8397bd43bd9405
 --- /dev/null
 +++ b/drivers/media/platform/mediatek/isp/isp_7x/camsys/mtk_cam-video.c
-@@ -0,0 +1,1797 @@
+@@ -0,0 +1,1794 @@
 +// SPDX-License-Identifier: GPL-2.0
 +//
 +// Copyright (c) 2022 MediaTek Inc.
@@ -37430,9 +34946,6 @@ index 0000000000000000000000000000000000000000..a03ed7e25784781c0b36bda88045cad5
 +	const struct v4l2_format *fmt = &node->active_fmt;
 +	unsigned int size;
 +	int i;
-+	int min_buf_sz;
-+
-+	min_buf_sz = ALIGN(IMG_MIN_WIDTH, IMG_PIX_ALIGN) * IMG_MIN_HEIGHT;
 +
 +	/* Check the limitation of buffer size */
 +	if (max_buffer_count)
@@ -37445,7 +34958,7 @@ index 0000000000000000000000000000000000000000..a03ed7e25784781c0b36bda88045cad5
 +	    vq->type == V4L2_BUF_TYPE_META_CAPTURE)
 +		size = fmt->fmt.meta.buffersize;
 +	else
-+		size = min_buf_sz;
++		size = fmt->fmt.pix_mp.plane_fmt[0].sizeimage;
 +
 +	/* Add for q.create_bufs with fmt.g_sizeimage(p) / 2 test */
 +	if (*num_planes) {
@@ -39378,10 +36891,10 @@ index 0000000000000000000000000000000000000000..efe812175d1afce506747aff31a207f0
 +#endif /*__MTK_CAM_VIDEO_H*/
 diff --git a/drivers/media/platform/mediatek/isp/isp_7x/camsys/mtk_cam.c b/drivers/media/platform/mediatek/isp/isp_7x/camsys/mtk_cam.c
 new file mode 100644
-index 0000000000000000000000000000000000000000..f10f9dc65132e5c4f69c5711a26040502c2816ab
+index 0000000000000000000000000000000000000000..44a21fb42a7bdb4bfe6cfdec97510c7bacc765aa
 --- /dev/null
 +++ b/drivers/media/platform/mediatek/isp/isp_7x/camsys/mtk_cam.c
-@@ -0,0 +1,3883 @@
+@@ -0,0 +1,3854 @@
 +// SPDX-License-Identifier: GPL-2.0
 +//
 +// Copyright (c) 2022 MediaTek Inc.
@@ -39427,7 +36940,7 @@ index 0000000000000000000000000000000000000000..f10f9dc65132e5c4f69c5711a2604050
 +
 +MODULE_DEVICE_TABLE(of, mtk_cam_of_ids);
 +
-+/**
++/*
 + * All member of mtk_cam_request_stream_data which may be used
 + * after media_request_ioctl_reinit and before the next
 + * media_request_ioctl_queue must be clean here. For
@@ -39819,7 +37332,7 @@ index 0000000000000000000000000000000000000000..f10f9dc65132e5c4f69c5711a2604050
 +		spin_unlock(&req->done_status_lock);
 +
 +		if (is_raw_subdev(pipe_id) && debug_ae) {
-+			dump_aa_info(ctx, &ae_data);
++			mtk_cam_raw_dump_aa_info(ctx, &ae_data);
 +			dev_dbg(ctx->cam->dev,
 +				"%s:%s:ctx(%d):pipe(%d):de-queue seq(%d):handle seq(%d),done(0x%x),pipes(req:0x%x,ctx:0x%x,all:0x%x),del_job(%d),del_req(%d),metaout,size(%u,%u),AA(0x%llx,0x%llx,0x%llx,0x%llx)(0x%llx,0x%llx,0x%llx,0x%llx)(0x%llx,0x%llx,0x%llx,0x%llx)(0x%llx,0x%llx,0x%llx,0x%llx)(0x%llx,0x%llx,0x%llx,0x%llx)\n",
 +				__func__, req->req.debug_str, ctx->stream_id, pipe_id,
@@ -41283,7 +38796,7 @@ index 0000000000000000000000000000000000000000..f10f9dc65132e5c4f69c5711a2604050
 +	list_del(&buf_entry->list_entry);
 +	ctx->using_buffer_list.cnt--;
 +
-+	s_data = mtk_cam_wbuf_get_s_data(buf_entry);
++	s_data = buf_entry->s_data;
 +	if (!s_data) {
 +		dev_dbg(dev, "ctx:%d no req for ack frame_num:%d\n",
 +			ctx->stream_id, ctx->composed_frame_seq_no);
@@ -41351,11 +38864,11 @@ index 0000000000000000000000000000000000000000..f10f9dc65132e5c4f69c5711a2604050
 +			mtk_cam_m2m_enter_cq_state(&s_data->state);
 +		}
 +
-+		apply_cq(raw_dev, buf_entry->buffer.iova,
-+			 buf_entry->cq_desc_size,
-+			 buf_entry->cq_desc_offset,
-+			 buf_entry->sub_cq_desc_size,
-+			 buf_entry->sub_cq_desc_offset);
++		mtk_cam_raw_apply_cq(raw_dev, buf_entry->buffer.iova,
++				     buf_entry->cq_desc_size,
++				     buf_entry->cq_desc_offset,
++				     buf_entry->sub_cq_desc_size,
++				     buf_entry->sub_cq_desc_offset);
 +
 +		s_data->timestamp = ktime_get_boottime_ns();
 +		s_data->timestamp_mono = ktime_get_ns();
@@ -41614,7 +39127,7 @@ index 0000000000000000000000000000000000000000..f10f9dc65132e5c4f69c5711a2604050
 +	struct mtkcam_ipi_event event;
 +	struct mtkcam_ipi_session_cookie *session = &event.cookie;
 +	struct mtkcam_ipi_frame_info *frame_info = &event.frame_data;
-+	struct mtkcam_ipi_frame_param *frame_data, *frame_param;
++	struct mtkcam_ipi_frame_param *frame_data;
 +	struct mtk_cam_request *req;
 +	struct mtk_cam_request_stream_data *req_stream_data;
 +	struct mtk_cam_ctx *ctx;
@@ -41622,7 +39135,6 @@ index 0000000000000000000000000000000000000000..f10f9dc65132e5c4f69c5711a2604050
 +	struct mtk_cam_working_buf_entry *buf_entry;
 +	struct mtk_cam_resource *res_user;
 +	struct mtk_cam_req_raw_pipe_data *s_raw_pipe_data;
-+	int i;
 +
 +	req_stream_data = mtk_cam_req_work_get_s_data(req_work);
 +	if (!req_stream_data) {
@@ -41697,34 +39209,6 @@ index 0000000000000000000000000000000000000000..f10f9dc65132e5c4f69c5711a2604050
 +	frame_info->cur_msgbuf_size = buf_entry->msg_buffer.size;
 +	frame_data = (struct mtkcam_ipi_frame_param *)buf_entry->msg_buffer.va;
 +	session->frame_no = req_stream_data->frame_seq_no;
-+
-+	if (!(req_stream_data->frame_params.raw_param.exposure_num == 1)) {
-+		frame_param = &req_stream_data->frame_params;
-+		for (i = 0; i < CAM_MAX_IMAGE_INPUT; i++) {
-+			if (frame_param->img_ins[i].buf[0].iova != 0 &&
-+			    frame_param->img_ins[i].uid.id != 0)
-+				req_stream_data->raw_dmas |=
-+					(1ULL << frame_param->img_ins[i].uid.id);
-+		}
-+		for (i = 0; i < CAM_MAX_IMAGE_OUTPUT; i++) {
-+			if (frame_param->img_outs[i].buf[0][0].iova != 0 &&
-+			    frame_param->img_outs[i].uid.id != 0)
-+				req_stream_data->raw_dmas |=
-+					(1ULL << frame_param->img_outs[i].uid.id);
-+		}
-+		for (i = 0; i < CAM_MAX_META_OUTPUT; i++) {
-+			if (frame_param->meta_outputs[i].buf.iova != 0 &&
-+			    frame_param->meta_outputs[i].uid.id != 0)
-+				req_stream_data->raw_dmas |=
-+					(1ULL << frame_param->meta_outputs[i].uid.id);
-+		}
-+		for (i = 0; i < CAM_MAX_PIPE_USED; i++) {
-+			if (frame_param->meta_inputs[i].buf.iova != 0 &&
-+			    frame_param->meta_outputs[i].uid.id != 0)
-+				req_stream_data->raw_dmas |=
-+					(1ULL << frame_param->meta_inputs[i].uid.id);
-+		}
-+	}
 +
 +	memcpy(frame_data, &req_stream_data->frame_params,
 +	       sizeof(req_stream_data->frame_params));
@@ -42005,7 +39489,7 @@ index 0000000000000000000000000000000000000000..f10f9dc65132e5c4f69c5711a2604050
 +			break;
 +		}
 +
-+	reset(raw_dev);
++	mtk_cam_raw_reset(raw_dev);
 +	isp_composer_hw_config(cam, ctx, &config_param);
 +	dev_dbg(dev, "raw %d %s done\n", raw_dev->id, __func__);
 +
@@ -42483,16 +39967,16 @@ index 0000000000000000000000000000000000000000..f10f9dc65132e5c4f69c5711a2604050
 +		dev_dbg(cam->dev, "[M2M] reset processing_buffer_list.cnt & composed_buffer_list.cnt\n");
 +	}
 +	if (ctx->used_raw_num) {
-+		initialize(raw_dev, 0);
++		mtk_cam_raw_initialize(raw_dev, 0);
 +		/* Twin */
 +		if (ctx->pipe->res_config.raw_num_used != 1) {
 +			struct mtk_raw_device *raw_dev_sub =
 +			get_sub_raw_dev(cam, ctx->pipe);
-+			initialize(raw_dev_sub, 1);
++			mtk_cam_raw_initialize(raw_dev_sub, 1);
 +			if (ctx->pipe->res_config.raw_num_used == 3) {
 +				struct mtk_raw_device *raw_dev_sub2 =
 +					get_sub2_raw_dev(cam, ctx->pipe);
-+				initialize(raw_dev_sub2, 1);
++				mtk_cam_raw_initialize(raw_dev_sub2, 1);
 +			}
 +		}
 +	}
@@ -42587,16 +40071,16 @@ index 0000000000000000000000000000000000000000..f10f9dc65132e5c4f69c5711a2604050
 +			goto fail_stream_off;
 +		}
 +		raw_dev = dev_get_drvdata(dev);
-+		stream_on(raw_dev, 0);
++		mtk_cam_raw_stream_on(raw_dev, 0);
 +		/* Twin */
 +		if (ctx->pipe->res_config.raw_num_used != 1) {
 +			struct mtk_raw_device *raw_dev_sub =
 +						get_sub_raw_dev(cam, ctx->pipe);
-+			stream_on(raw_dev_sub, 0);
++			mtk_cam_raw_stream_on(raw_dev_sub, 0);
 +			if (ctx->pipe->res_config.raw_num_used == 3) {
 +				struct mtk_raw_device *raw_dev_sub2 =
 +					get_sub2_raw_dev(cam, ctx->pipe);
-+				stream_on(raw_dev_sub2, 0);
++				mtk_cam_raw_stream_on(raw_dev_sub2, 0);
 +			}
 +		}
 +	}
@@ -42992,14 +40476,14 @@ index 0000000000000000000000000000000000000000..f10f9dc65132e5c4f69c5711a2604050
 +	dev_info(dev, "cmasys | trigger %s\n", __func__);
 +
 +	/* set raw and yuv internal */
-+	ret = mtk_raw_setup_dependencies(&cam_dev->raw);
++	ret = mtk_cam_raw_setup_dependencies(&cam_dev->raw);
 +	if (ret) {
-+		dev_err(dev, "Failed to mtk_raw_setup_dependencies: %d\n", ret);
++		dev_err(dev, "Failed to mtk_cam_raw_setup_dependencies: %d\n", ret);
 +		goto fail_unbind_all;
 +	}
 +
 +	/* register raw subdev */
-+	ret = mtk_raw_register_entities(&cam_dev->raw, &cam_dev->v4l2_dev);
++	ret = mtk_cam_raw_register_entities(&cam_dev->raw, &cam_dev->v4l2_dev);
 +	if (ret) {
 +		dev_err(dev, "Failed to init raw subdevs: %d\n", ret);
 +		goto fail_remove_dependencies;
@@ -43019,7 +40503,7 @@ index 0000000000000000000000000000000000000000..f10f9dc65132e5c4f69c5711a2604050
 +	return 0;
 +
 +fail_unreg_raw_entities:
-+	mtk_raw_unregister_entities(&cam_dev->raw);
++	mtk_cam_raw_unregister_entities(&cam_dev->raw);
 +
 +fail_remove_dependencies:
 +	/* nothing to do for now */
@@ -43078,7 +40562,7 @@ index 0000000000000000000000000000000000000000..f10f9dc65132e5c4f69c5711a2604050
 +	} else if (strcmp(dev_driver_string(dev), "mtk-cam raw") == 0) {
 +		struct mtk_raw_device *raw_dev = dev_get_drvdata(dev);
 +
-+		mtk_raw_unregister_entities(&cam_dev->raw);
++		mtk_cam_raw_unregister_entities(&cam_dev->raw);
 +
 +		raw_dev->cam = NULL;
 +		raw->devs[raw_dev->id] = NULL;
@@ -43267,10 +40751,10 @@ index 0000000000000000000000000000000000000000..f10f9dc65132e5c4f69c5711a2604050
 +MODULE_LICENSE("GPL");
 diff --git a/drivers/media/platform/mediatek/isp/isp_7x/camsys/mtk_cam.h b/drivers/media/platform/mediatek/isp/isp_7x/camsys/mtk_cam.h
 new file mode 100644
-index 0000000000000000000000000000000000000000..3b7f92102d5e618926ff9097d7ab7c0a7cc91fe6
+index 0000000000000000000000000000000000000000..80627b70ecb2c7a9d8fb722c6dd0770616ff0749
 --- /dev/null
 +++ b/drivers/media/platform/mediatek/isp/isp_7x/camsys/mtk_cam.h
-@@ -0,0 +1,734 @@
+@@ -0,0 +1,721 @@
 +/* SPDX-License-Identifier: GPL-2.0 */
 +/*
 + * Copyright (c) 2022 MediaTek Inc.
@@ -43714,19 +41198,6 @@ index 0000000000000000000000000000000000000000..3b7f92102d5e618926ff9097d7ab7c0a
 +		return NULL;
 +
 +	return mtk_cam_req_get_s_data_no_chk(req, pipe_id, idx);
-+}
-+
-+static inline struct mtk_cam_request_stream_data*
-+mtk_cam_wbuf_get_s_data(struct mtk_cam_working_buf_entry *buf_entry)
-+{
-+	return buf_entry->s_data;
-+}
-+
-+static inline void
-+mtk_cam_img_wbuf_set_s_data(struct mtk_cam_img_working_buf_entry *buf_entry,
-+			    struct mtk_cam_request_stream_data *s_data)
-+{
-+	buf_entry->s_data = s_data;
 +}
 +
 +static inline struct mtk_cam_ctx*
@@ -46465,7 +43936,7 @@ index 0000000000000000000000000000000000000000..c3a0782eddb1c1707e9706f77827ced3
 +#endif
 diff --git a/drivers/media/platform/mediatek/isp/isp_7x/camsys/mtk_csi_phy_2_0/mtk_cam-seninf-hw_phy_2_0.c b/drivers/media/platform/mediatek/isp/isp_7x/camsys/mtk_csi_phy_2_0/mtk_cam-seninf-hw_phy_2_0.c
 new file mode 100644
-index 0000000000000000000000000000000000000000..cf66b1a1e2cb7fa5213dc7d7481f7f6166f60858
+index 0000000000000000000000000000000000000000..70225c9d11abc3e94081e393a73b4fbffbfa7735
 --- /dev/null
 +++ b/drivers/media/platform/mediatek/isp/isp_7x/camsys/mtk_csi_phy_2_0/mtk_cam-seninf-hw_phy_2_0.c
 @@ -0,0 +1,2872 @@
@@ -46499,7 +43970,7 @@ index 0000000000000000000000000000000000000000..cf66b1a1e2cb7fa5213dc7d7481f7f61
 +
 +struct mtk_cam_seninf_cfg *g_seninf_cfg = &_seninf_cfg;
 +
-+static inline void mtk_cam_seninf_set_di_ch_ctrl(void *pseninf,
++static inline void mtk_cam_seninf_set_di_ch_ctrl(void __iomem *pseninf,
 +						 unsigned int stream_id,
 +						 struct seninf_vc *vc)
 +{
@@ -46700,7 +44171,7 @@ index 0000000000000000000000000000000000000000..cf66b1a1e2cb7fa5213dc7d7481f7f61
 +
 +int mtk_cam_seninf_cammux(struct seninf_ctx *ctx, int cam_mux)
 +{
-+	void *seninf_cam_mux = ctx->reg_if_cam_mux;
++	void __iomem *seninf_cam_mux = ctx->reg_if_cam_mux;
 +	u32 temp;
 +
 +	if (cam_mux >= _seninf_cfg.cam_mux_num) {
@@ -46728,7 +44199,7 @@ index 0000000000000000000000000000000000000000..cf66b1a1e2cb7fa5213dc7d7481f7f61
 +
 +int mtk_cam_seninf_disable_cammux(struct seninf_ctx *ctx, int cam_mux)
 +{
-+	void *base = ctx->reg_if_cam_mux;
++	void __iomem *base = ctx->reg_if_cam_mux;
 +	u32 temp;
 +
 +	if (cam_mux >= _seninf_cfg.cam_mux_num) {
@@ -46756,7 +44227,7 @@ index 0000000000000000000000000000000000000000..cf66b1a1e2cb7fa5213dc7d7481f7f61
 +
 +int mtk_cam_seninf_disable_all_cammux(struct seninf_ctx *ctx)
 +{
-+	void *seninf_cam_mux = ctx->reg_if_cam_mux;
++	void __iomem *seninf_cam_mux = ctx->reg_if_cam_mux;
 +
 +	SENINF_WRITE_REG(seninf_cam_mux, SENINF_CAM_MUX_EN, 0);
 +
@@ -47434,7 +44905,7 @@ index 0000000000000000000000000000000000000000..cf66b1a1e2cb7fa5213dc7d7481f7f61
 +
 +int mtk_cam_seninf_is_mux_used(struct seninf_ctx *ctx, int mux)
 +{
-+	void *seninf_mux = ctx->reg_if_mux[mux];
++	void __iomem *seninf_mux = ctx->reg_if_mux[mux];
 +
 +	return SENINF_READ_BITS(seninf_mux, SENINF_MUX_CTRL_0, SENINF_MUX_EN);
 +}
@@ -68300,6 +65771,21 @@ index d7024a1443358449ec33e8b486274c43ba2c26e4..a03579d6e031e372b30f3497c4a79d49
  	return 0;
  }
  
+diff --git a/drivers/soc/mediatek/apusys/mtk_apu_pm.c b/drivers/soc/mediatek/apusys/mtk_apu_pm.c
+index bb58d4c5388d8885be4d13ac838fc1d1de1f2376..4265f98105290cccca5465ea8eca424a8194f505 100644
+--- a/drivers/soc/mediatek/apusys/mtk_apu_pm.c
++++ b/drivers/soc/mediatek/apusys/mtk_apu_pm.c
+@@ -191,6 +191,10 @@ static struct generic_pm_domain *mtk_apu_add_one_domain(struct apusys *apusys,
+ 		goto err_put_clocks;
+ 	}
+ 
++	/* Workaround to prevent power on/off triggered by system-wise suspend/resume */
++	pd->genpd.domain.ops.suspend_noirq = NULL;
++	pd->genpd.domain.ops.resume_noirq = NULL;
++
+ 	apusys->domains[id] = &pd->genpd;
+ 
+ 	return apusys->pd_data.domains[id];
 diff --git a/drivers/soc/mediatek/mtk-cmdq-helper.c b/drivers/soc/mediatek/mtk-cmdq-helper.c
 index dd1bbd6f53aa44934c7b9bc367e69ab6c19f6a0a..cd659fafcff0358c4fb5ee226ad066de5c02d496 100644
 --- a/drivers/soc/mediatek/mtk-cmdq-helper.c
@@ -75198,18 +72684,6 @@ index 5132f7d4eb38fad85a2ac34a9e4c7ac809faa2cb..4111d99ef50e302f9bf32c8a80aa6bf3
  	struct regmap *map = tdev->regmap;
  	int ret;
  	u32 temp;
-diff --git a/include/drm/drm_mipi_dsi.h b/include/drm/drm_mipi_dsi.h
-index 2a944b137ec629a2e4a2eed32673fb50b98d74b5..57d6343205c74de14ef6d00f9879bf4d1ce9cef8 100644
---- a/include/drm/drm_mipi_dsi.h
-+++ b/include/drm/drm_mipi_dsi.h
-@@ -195,6 +195,7 @@ struct mipi_dsi_device {
- 	unsigned long hs_rate;
- 	unsigned long lp_rate;
- 	struct drm_dsc_config *dsc;
-+	unsigned int vdo_per_frame_lp_enable;
- };
- 
- #define MIPI_DSI_MODULE_PREFIX "mipi-dsi:"
 diff --git a/include/dt-bindings/gce/mt8195-gce.h b/include/dt-bindings/gce/mt8195-gce.h
 index dcfb302b8a5bc4baa239db2154c1f0a450d8e7f3..b6b3db82c381e956a3cdb44ac2ae7b15995567c3 100644
 --- a/include/dt-bindings/gce/mt8195-gce.h
