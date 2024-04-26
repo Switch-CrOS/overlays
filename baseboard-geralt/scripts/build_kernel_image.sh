@@ -13,8 +13,5 @@
 
 modify_kernel_command_line() {
   echo "cpuidle.governor=teo" >> "$1"
-  # TODO (b/316517822): pseudo-NMI causes kernel hard lockup on Geralt, so
-  # disable it for now.
-  # Uncomment below and ask MTK to investigate when they have time to.
-  # echo "irqchip.gicv3_pseudo_nmi=1" >> "$1"
+  echo "irqchip.gicv3_pseudo_nmi=1" >> "$1"
 }
