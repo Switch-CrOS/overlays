@@ -5,7 +5,7 @@ CAVS2.5 001 drop stable release, with dynamic pipeline removed.
 
 repo      : https://chrome-internal.googlesource.com/chromeos/third_party/sound-open-firmware-private/
 branch    : cavs2.5-001-drop-stable
-commit id : d3799fa0e43992c6b5b4fa426957d43b35afda98
+commit id : 25d9941510829c738922b206fe21a0badb1eb35f
 
 and cherry-pick the following commit(s):
 https://chrome-internal-review.googlesource.com/c/chromeos/third_party/sound-open-firmware-private/+/7050433
@@ -58,5 +58,5 @@ ec09adf23d8529dd7979c64beecfad72  sof-adl-rt1015-nau8825.tplg
 aac137f4c2d2ef39a42026404cf729a3  sof-adl-rt5650.tplg
 1680e57948f92e60afdacb3882769bc6  sof-adl-rt5682.tplg
 db14e0a21e66b94fb61abf233cb77ca6  sof-adl-rt711.tplg
-b8c0e3e96c24842dae2ed7c8eed8dc91  sof-adl-sdw-max98373-rt5682.tplg
+cc758a80048fec38bdc622859d4493a8  sof-adl-sdw-max98373-rt5682.tplg
 8959f1d7c734df128b120e2cc223bc3c  pdm1/sof-adl-max98360a-rt5682-2way.tplg

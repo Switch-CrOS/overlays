@@ -29,4 +29,8 @@ src_install() {
 	# max98360a-cs42l42 shares the same tplg as max98360a-rt5682 for both ADL and RPL
 	dosym ./sof-adl-max98360a-rt5682.tplg /lib/firmware/intel/sof-tplg/sof-adl-max98360a-cs42l42.tplg
 	dosym ./sof-adl-max98360a-rt5682.tplg /lib/firmware/intel/sof-tplg/sof-rpl-max98360a-cs42l42.tplg
+
+        # TODO(htcheong): rename the topology file directly on next release
+	dosym ./sof-adl-sdw-max98373-rt5682.tplg /lib/firmware/intel/sof-tplg/sof-adl-sdw-max98373-rt5682-4ch.tplg
+	dosym ./sof-adl-sdw-max98373-rt5682.tplg /lib/firmware/intel/sof-tplg/sof-rpl-sdw-max98373-rt5682-4ch.tplg
 }
