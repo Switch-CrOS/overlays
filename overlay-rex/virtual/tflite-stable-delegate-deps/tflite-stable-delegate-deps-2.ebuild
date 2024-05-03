@@ -12,6 +12,6 @@ KEYWORDS="*"
 
 DEPEND="
 	chromeos-base/intel-openvino:=
-	chromeos-base/intel-vpu-umd:=
+	chromeos-base/intel-npu-umd:=
 "
 RDEPEND="${DEPEND}"
