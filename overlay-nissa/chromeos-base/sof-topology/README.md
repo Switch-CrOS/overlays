@@ -1,14 +1,11 @@
 This file should always contain information regarding which
 branch/commit the firmware was built from.
 
-CAVS2.5-001 drop stable
+CAVS2.5 release with HDA topology
 
 repo : https://chrome-internal.googlesource.com/chromeos/third_party/sound-open-firmware-private
 branch : cavs2.5-001-drop-stable
-commit id : 2c8f88ad48394e06444e93c77faaf8b41a7b3573
-
-And cherry-pick commit(s) in the following PR:
-        https://github.com/thesofproject/sof/pull/8706
+commit id : f2ae23784b7f6b34283e1905e49b389102d353d7
 
 Once built, copy and rename topology files as the following map:
 [DRC/EQ-integrated]
@@ -20,7 +17,9 @@ tools/build_tools/topology/sof-adl-rt5650-drceq.tplg            renamed to sof-a
 
 MD5SUMs
 9573b8a59e8c93bdad0fb9b64efdd002  sof-adl-max98360a-da7219.tplg
-0108c5b61c96c269940b53882cc17a5d  sof-adl-max98360a-nau8825.tplg
-10e776f117883a67cec8cdb76f26b8dd  sof-adl-max98360a-rt5682.tplg
-cafcd5dbb4a73a0b5dc365a669a730b6  sof-adl-rt1019-rt5682.tplg
+81697d13d9f10d0008fe979c2df620cc  sof-adl-max98360a-nau8825.tplg
+af22fd43229ed6a849768a8163716572  sof-adl-max98360a-rt5682.tplg
+6da21c3d653cb96f3cdbe8725d9a8758  sof-adl-rt1019-rt5682.tplg
 aac137f4c2d2ef39a42026404cf729a3  sof-adl-rt5650.tplg
+9fc2792b84cbe7e85d99d19f29d84c59  sof-hda-generic-2ch.tplg
+cccbc85342c3f63632477a93c918a00b  sof-hda-generic-4ch.tplg
