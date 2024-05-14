@@ -121,7 +121,6 @@ MISSING_OVERLAYS_DIR_METADATA = {
     "overlay-tael",
     "overlay-tatl",
     "overlay-trogdor-kernelnext",
-    "overlay-variant-guado-labstation",
     "project-labstation",
     "project-termina",
 }
@@ -227,7 +226,6 @@ MISSING_OVERLAYS_README_MD = {
     "overlay-strongbad-kernelnext",
     "overlay-trogdor",
     "overlay-trogdor-kernelnext",
-    "overlay-variant-guado-labstation",
     "overlay-volteer",
     "overlay-zork",
     "project-labstation",
