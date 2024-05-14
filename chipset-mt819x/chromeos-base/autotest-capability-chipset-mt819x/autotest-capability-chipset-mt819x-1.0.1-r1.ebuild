@@ -1,0 +1,1 @@
+autotest-capability-chipset-mt819x-1.0.1.ebuild
