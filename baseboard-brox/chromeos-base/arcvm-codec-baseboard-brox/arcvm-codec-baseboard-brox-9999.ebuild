@@ -1,17 +1,19 @@
-# Copyright 2021 The ChromiumOS Authors
+# Copyright 2024 The ChromiumOS Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
 
-inherit arc-build-constants
+CROS_WORKON_PROJECT="chromiumos/infra/build/empty-project"
+CROS_WORKON_LOCALNAME="platform/empty-project"
+
+inherit arc-build-constants cros-unibuild cros-workon
 
 DESCRIPTION="Install codec configuration for ARCVM"
 
 LICENSE="BSD-Google"
 SLOT="0"
-KEYWORDS="*"
+KEYWORDS="~*"
 IUSE=""
-S="${WORKDIR}"
 
 RDEPEND="!chromeos-base/arcvm-codec-software"
 

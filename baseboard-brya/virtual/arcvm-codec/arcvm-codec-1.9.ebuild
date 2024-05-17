@@ -10,4 +10,4 @@ LICENSE="metapackage"
 SLOT="0"
 KEYWORDS="*"
 
-RDEPEND="chromeos-base/arcvm-codec-chipset-rpl"
+RDEPEND="chromeos-base/arcvm-codec-baseboard-brya"
