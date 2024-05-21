@@ -56,6 +56,14 @@ audio-boardini-setting: &audio_boardini_setting
       - *files_map_card_conf
       - *files_map_board_ini
 
+rmad-common: &rmad_common
+  enabled: True
+  has-cbi: True
+  use-legacy-custom-label: True
+
+rmad-disabled: &rmad_disabled
+  enabled: False
+
 common-config: &common_config
   name: "{{$device-name}}"
   identity:
@@ -98,6 +106,7 @@ common-config: &common_config
     $form-factor: CHROMEBOOK
     form-factor: "{{$form-factor}}"
     psu-type: "battery"
+  rmad: *rmad_common
 
 device-specific-audio-device-config: &device_specific_audio_device_config
   <<: *common_config
@@ -157,6 +166,7 @@ chromeos:
           config:
             <<: *device_specific_audio_device_config
             <<: *cros_healthd_sku_number_enabled
+            rmad: *rmad_disabled
     - $device-name: "pantheon"
       $internal-backlight-no-als-battery-brightness: "51.0"
       skus:
@@ -164,25 +174,36 @@ chromeos:
           config:
             <<: *convertible_device_config
             $has-keyboard-backlight: "0"
+            rmad: *rmad_disabled
         - $sku-id: 0x3f63
-          config: *convertible_device_config
+          config:
+            <<: *convertible_device_config
+            rmad: *rmad_disabled
         - $sku-id: 0x3f67
-          config: *convertible_device_config
+          config:
+            <<: *convertible_device_config
+            rmad: *rmad_disabled
 # TODO (EVT only, to be removed)
         - $sku-id: 0x3e63
-          config: *convertible_device_config
+          config:
+            <<: *convertible_device_config
+            rmad: *rmad_disabled
 # TODO (EVT only, to be removed)
         - $sku-id: 0x3e67
-          config: *convertible_device_config
+          config:
+            <<: *convertible_device_config
+            rmad: *rmad_disabled
         - $sku-id: 0x100bf62
           config:
             <<: *convertible_device_config
             $has-keyboard-backlight: "0"
             $dptf-file: "dptf-pyke.dv"
+            rmad: *rmad_disabled
         - $sku-id: 0x100bf63
           config:
             <<: *convertible_device_config
             $dptf-file: "dptf-pyke.dv"
+            rmad: *rmad_disabled
     - $device-name: "sona"
       $internal-backlight-no-als-battery-brightness: "63.0"
       skus:
@@ -193,12 +214,14 @@ chromeos:
             <<: *cros_healthd_sku_number_enabled
             $set-wifi-transmit-power-for-tablet-mode: "0"
             $has-keyboard-backlight: "0"
+            rmad: *rmad_disabled
         - $sku-id: 0x3ae3
           config:
             <<: *convertible_device_config
             <<: *device_specific_audio_config_boardini
             <<: *cros_healthd_sku_number_enabled
             $set-wifi-transmit-power-for-tablet-mode: "0"
+            rmad: *rmad_disabled
     - $device-name: "syndra"
       $touchpad-wakeup: "1"
       $internal-backlight-no-als-battery-brightness: "63.0"
@@ -209,6 +232,7 @@ chromeos:
             <<: *cros_healthd_sku_number_enabled
             keyboard:
               backlight: True
+            rmad: *rmad_disabled
         - $sku-id: 0x2bc62
           config:
             <<: *device_specific_audio_device_config
@@ -216,10 +240,12 @@ chromeos:
             power:
               <<: *power_common
               $has-keyboard-backlight: "0"
+            rmad: *rmad_disabled
         - $sku-id: 0x2bc61
           config:
             <<: *device_specific_audio_device_config
             <<: *cros_healthd_sku_number_enabled
+            rmad: *rmad_disabled
         - $sku-id: 0x2bc60
           config:
             <<: *device_specific_audio_device_config
@@ -227,10 +253,12 @@ chromeos:
             power:
               <<: *power_common
               $has-keyboard-backlight: "0"
+            rmad: *rmad_disabled
         - $sku-id: 0x6bc63
           config:
             <<: *device_specific_audio_device_config
             <<: *cros_healthd_sku_number_enabled
+            rmad: *rmad_disabled
         - $sku-id: 0x6bc62
           config:
             <<: *device_specific_audio_device_config
@@ -238,10 +266,12 @@ chromeos:
             power:
               <<: *power_common
               $has-keyboard-backlight: "0"
+            rmad: *rmad_disabled
         - $sku-id: 0x6bc61
           config:
             <<: *device_specific_audio_device_config
             <<: *cros_healthd_sku_number_enabled
+            rmad: *rmad_disabled
         - $sku-id: 0x6bc60
           config:
             <<: *device_specific_audio_device_config
@@ -249,16 +279,23 @@ chromeos:
             power:
               <<: *power_common
               $has-keyboard-backlight: "0"
+            rmad: *rmad_disabled
     - $device-name: "vayne"
       skus:
         - $sku-id: 0x3a67
-          config: *convertible_device_config
+          config:
+            <<: *convertible_device_config
+            rmad: *rmad_disabled
 # TODO (EVT only, to be removed)
         - $sku-id: 0x3a63
-          config: *convertible_device_config
+          config:
+            <<: *convertible_device_config
+            rmad: *rmad_disabled
 # TODO (EVT only, to be removed)
         - $sku-id: 0x3a7f
-          config: *convertible_device_config
+          config:
+            <<: *convertible_device_config
+            rmad: *rmad_disabled
     - $device-name: "ekko"
       $touchpad-wakeup: "1"
       skus:
