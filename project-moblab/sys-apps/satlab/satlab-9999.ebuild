@@ -20,7 +20,7 @@ SLOT="0"
 KEYWORDS="~*"
 
 RDEPEND="
-	app-containers/docker
+	app-emulation/docker
 	${PYTHON_DEPS}
 	$(python_gen_cond_dep '
 		dev-python/grpcio[${PYTHON_USEDEP}]
