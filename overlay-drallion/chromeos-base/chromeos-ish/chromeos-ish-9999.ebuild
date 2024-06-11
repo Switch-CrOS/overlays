@@ -16,6 +16,7 @@ CROS_WORKON_DESTDIR=(
 	"${S}/platform/ec"
 	"${S}/third_party/cryptoc"
 )
+CROS_WORKON_MANUAL_UPREV=1
 
 inherit cros-workon cros-ish
 
