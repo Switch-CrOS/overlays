@@ -45,4 +45,6 @@ src_install() {
 
 	exeinto "$(get_udevdir)"
 	doexe "${FILESDIR}"/control_usb_nfc_beep.sh
+
+	dosbin "${FILESDIR}/r8169_aspm_quirk.sh"
 }
