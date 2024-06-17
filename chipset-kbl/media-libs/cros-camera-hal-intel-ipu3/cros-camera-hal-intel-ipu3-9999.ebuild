@@ -19,6 +19,9 @@ LICENSE="Apache-2.0"
 SLOT="0"
 KEYWORDS="-* ~amd64"
 
+IUSE="cros_camera_algo"
+REQUIRED_USE="cros_camera_algo"
+
 RDEPEND="
 	chromeos-base/cros-camera-android-deps
 	chromeos-base/cros-camera-libs
