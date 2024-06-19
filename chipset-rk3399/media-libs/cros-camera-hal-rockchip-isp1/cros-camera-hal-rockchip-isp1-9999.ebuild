@@ -19,7 +19,7 @@ LICENSE="Apache-2.0"
 SLOT="0"
 KEYWORDS="-* ~arm ~arm64"
 
-IUSE="cros_camera_algo""
+IUSE="cros_camera_algo"
 REQUIRED_USE="cros_camera_algo"
 
 RDEPEND="
