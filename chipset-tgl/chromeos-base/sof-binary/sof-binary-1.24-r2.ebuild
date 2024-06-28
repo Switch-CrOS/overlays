@@ -1,1 +1,0 @@
-sof-binary-1.24.ebuild
