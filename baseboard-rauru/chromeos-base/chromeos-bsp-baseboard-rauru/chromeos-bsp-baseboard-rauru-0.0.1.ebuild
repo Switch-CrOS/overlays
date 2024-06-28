@@ -22,6 +22,10 @@ RDEPEND="${DEPEND}"
 BDEPEND=""
 
 src_install() {
+	# Override default CPUFreq governor
+	insinto "/etc"
+	doins "${FILESDIR}/cpufreq.conf"
+
 	# Install udev rules for codecs
 	insinto "/etc/init"
 	doins "${FILESDIR}/udev-trigger-codec.conf"
