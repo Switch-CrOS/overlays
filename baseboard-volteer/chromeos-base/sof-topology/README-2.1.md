@@ -11,9 +11,9 @@ cp ${SOF}/tools/build_tools/topology/sof-tgl-max98357a-rt5682-pdm1-drceq.tplg ./
 
 md5sums
 5b1ec8bd48aaafcb282e8e3505e9e551  sof-tgl-max98357a-rt5682.tplg
-e5755f93105731b2e2603e83adc85b7b  sof-tgl-max98373-rt5682.tplg
+3b435c4df7488202f0b539813a000671  sof-tgl-max98373-rt5682.tplg
 f3bd3405de0d676464317b7d475a8379  sof-tgl-rt1011-rt5682.tplg
-e1ca35229e0bad866dc1b037539a1987  sof-tgl-rt5682-ssp0-max98373-ssp2.tplg
+a7d647e50eb651ad02d6d778d5d2ac7c  sof-tgl-rt5682-ssp0-max98373-ssp2.tplg
 035903a7623b9c98c75390cc4cffae46  sof-tgl-sdw-max98373-rt5682.tplg
 684b5382062514c568b54e7fb5ad92f5  pdm1/sof-tgl-max98357a-rt5682.tplg
 b624b8fe216b9600bdf3291178edaa12  pdm1-drceq/sof-tgl-max98357a-rt5682.tplg

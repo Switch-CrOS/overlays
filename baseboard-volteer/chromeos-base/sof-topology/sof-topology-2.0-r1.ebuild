@@ -1,1 +1,0 @@
-sof-topology-2.0.ebuild
