@@ -24,6 +24,7 @@ RDEPEND="
 	chromeos-base/sof-binary:=
 	chromeos-base/sof-topology:=
 	chromeos-base/chromeos-zephyr-ish:=
+	chromeos-base/touch_updater:=
 "
 DEPEND="
 	${RDEPEND}
