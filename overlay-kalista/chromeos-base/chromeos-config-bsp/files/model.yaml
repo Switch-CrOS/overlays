@@ -38,6 +38,16 @@ audio_common: &audio_common
       - source: "{{$ucm-source}}/{{$card}}.conf"
         destination: "{{$ucm-dest}}/{{$card}}.{{ucm-suffix}}.conf"
 
+camera_common: &camera_common
+  count: 1
+  devices:
+    - interface: "usb"
+      facing: "front"
+      orientation: 0
+      flags:
+        support-autofocus: False
+        support-1080p: True
+
 device_config: &device_config
   name: "{{$device-name}}"
   identity:
@@ -53,6 +63,7 @@ device_config: &device_config
   audio:
     <<: *audio_common
     $ucm-source-suffix: ""
+  camera: *camera_common
   power:
     suspend-to-idle: "0"
     # Max brightness is 7500, as reported by
