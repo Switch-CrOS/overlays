@@ -33,6 +33,9 @@ src_install() {
 
 	udev_dorules "${FILESDIR}/94-usb-modem-gpio.rules"
 
+	# Generate firmware patches.
+	cellular_generate_firmware_patches
+
 	# Generate and install squashfs with firmware files and manifest.
 	cellular_create_squashfs_bundle
 }
