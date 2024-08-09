@@ -5,7 +5,7 @@
 EAPI=7
 
 DESCRIPTION="SOF topology files for Nissa"
-SRC_URI="gs://chromeos-localmirror/distfiles/${PN}-nissa-${PV}.tar.bz2"
+SRC_URI="gs://chromeos-localmirror/distfiles/${PN}-nissa-${PV}.tar.xz"
 
 LICENSE="SOF"
 SLOT="0"
@@ -16,5 +16,9 @@ S=${WORKDIR}/${PN}-nissa-${PV}
 src_install() {
 	insinto /lib/firmware/intel/sof-tplg
 	doins ./*.tplg
+	# TODO(b/358520389): Remove this part when b/327997966 is fixed.
+	insinto /lib/firmware/intel/sof-tplg/craaskov
+	doins ./craaskov/*.tplg
+
 	dosym ./sof-adl-max98360a-rt5682.tplg /lib/firmware/intel/sof-tplg/sof-adl-max98360a-cs42l42.tplg
 }
