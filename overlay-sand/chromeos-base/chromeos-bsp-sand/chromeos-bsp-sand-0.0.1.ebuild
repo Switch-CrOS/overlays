@@ -11,7 +11,7 @@ or portage actions."
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="-* amd64 x86"
-IUSE=""
+IUSE="sand-kernelnext"
 S="${WORKDIR}"
 
 # Add dependencies on other ebuilds from within this board overlay
@@ -21,5 +21,9 @@ RDEPEND="
 DEPEND="${RDEPEND}"
 
 src_install() {
-	doappid "{533B7092-5828-48E6-9F77-C7ADCBF8F7E9}" "CHROMEBOOK"
+	if use sand-kernelnext; then
+		doappid "{48AA7FE1-4811-46BA-BFF5-B43257B13B7C}" "CHROMEBOOK"
+	else
+		doappid "{533B7092-5828-48E6-9F77-C7ADCBF8F7E9}" "CHROMEBOOK"
+	fi
 }
