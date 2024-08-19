@@ -27,6 +27,7 @@ RDEPEND="
 DEPEND="
 	${RDEPEND}
 	chromeos-base/chromeos-config:=
+	chromeos-base/chromeos-zephyr-ish:=
 	bootimage? ( sys-boot/chromeos-bootimage:= )
 	zephyr_ec? ( chromeos-base/chromeos-zephyr:= )
 "
@@ -57,4 +58,7 @@ src_install() {
 	# Install platform specific config files for power_manager.
 	insinto "/usr/share/power_manager/board_specific"
 	doins "${FILESDIR}"/powerd_prefs/*
+
+	insinto "/lib/firmware/intel"
+	newins "${SYSROOT}/lib/firmware/intel/orisa_ish.bin" ish_fw.bin
 }
