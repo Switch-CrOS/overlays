@@ -11,6 +11,34 @@ rmad-common: &rmad_common
   has-cbi: False
   use-legacy-custom-label: True
 
+camera-base-config: &camera_base_config
+  count: 1
+  devices:
+    - interface: "usb"
+      facing: "front"
+      orientation: 0
+      flags:
+        support-autofocus: False
+        support-1080p: False
+  legacy-usb: True
+
+camera-two-override-config: &camera_two_override_config
+  count: 2
+  devices:
+    - interface: "usb"
+      facing: "front"
+      orientation: 0
+      flags:
+        support-autofocus: False
+        support-1080p: False
+    - interface: "usb"
+      facing: "back"
+      orientation: 0
+      flags:
+        support-autofocus: False
+        support-1080p: False
+  legacy-usb: True
+
 device-config: &device_config
   $dptf-device: "{{$device-name}}"
   $touchpad-wakeup: "1"
@@ -18,8 +46,7 @@ device-config: &device_config
   name: "{{$device-name}}"
   audio:
     main: *audio_common
-  camera:
-    legacy-usb: True
+  camera: *camera_base_config
   firmware:
     no-firmware: True
   test-label: "{{$test-label}}"
@@ -173,8 +200,10 @@ chromeos:
       skus:
         - $sku-id: 37
           config: *wl_convertible_config
+          camera: *camera_two_override_config
         - $sku-id: 38
           config: *wl_convertible_config
+          camera: *camera_two_override_config
     - $device-name: "blacktiplte"
       $dptf-device: "astronaut"
       products:
@@ -326,6 +355,7 @@ chromeos:
       skus:
         - $sku-id: 71
           config: *convertible_config
+          camera: *camera_two_override_config
     - $device-name: "santa"
       $help-content-id: "SANTA"
       $cras: "astronaut"
