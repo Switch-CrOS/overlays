@@ -5,38 +5,7 @@
 # found in the LICENSE file.
 
 imports:
-  - "include/kernel-info.yaml"
-
-audio_common: &audio_common
-  main:
-    <<: *kernel-info
-    $cras_root: "/etc/cras"
-    $ucm_root: "/usr/share/alsa/ucm"
-    $card: "kblda7219max"
-
-    cras-config-dir: "{{$device-name}}"
-    ucm-suffix: "{{$device-name}}"
-
-    $cras-source: "{{cras-config-dir}}/audio/cras-config"
-    $cras-dest: "{{$cras_root}}/{{cras-config-dir}}"
-    $ucm-source: "{{cras-config-dir}}/audio/ucm-config{{$ucm-source-suffix}}"
-    $ucm-dest: "{{$ucm_root}}/{{$card}}.{{ucm-suffix}}"
-
-    files:
-      - source: "{{$cras-source}}/{{$card}}"
-        destination: "{{$cras-dest}}/{{$card}}"
-      - source: "{{$cras-source}}/aec.ini"
-        destination: "{{$cras-dest}}/aec.ini"
-      - source: "{{$cras-source}}/apm.ini"
-        destination: "{{$cras-dest}}/apm.ini"
-      - source: "{{$cras-source}}/board.ini"
-        destination: "{{$cras-dest}}/board.ini"
-      - source: "{{$cras-source}}/dsp.ini"
-        destination: "{{$cras-dest}}/dsp.ini"
-      - source: "{{$ucm-source}}/HiFi{{$kernel-specific-suffix}}.conf"
-        destination: "{{$ucm-dest}}/HiFi.conf"
-      - source: "{{$ucm-source}}/{{$card}}.conf"
-        destination: "{{$ucm-dest}}/{{$card}}.{{ucm-suffix}}.conf"
+  - "include/audio.yaml"
 
 camera_common: &camera_common
   count: 1
