@@ -263,7 +263,6 @@ MISSING_OVERLAYS_OWNERS = {
     "overlay-cherry64",
     "overlay-coral",
     "overlay-eve",
-    "overlay-fizz",
     "overlay-guado",
     "overlay-hatch",
     "overlay-kalista",
