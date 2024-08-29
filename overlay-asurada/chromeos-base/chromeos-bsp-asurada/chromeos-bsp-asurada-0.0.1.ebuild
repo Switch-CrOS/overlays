@@ -4,7 +4,7 @@
 
 EAPI=7
 
-inherit appid cros-unibuild
+inherit appid cros-unibuild udev
 
 DESCRIPTION="Ebuild which pulls in any necessary ebuilds as dependencies
 or portage actions."
@@ -12,7 +12,7 @@ or portage actions."
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="-* arm64 arm"
-IUSE="zephyr_ec asurada-connectivitynext asurada-kernelnext asurada64"
+IUSE="zephyr_ec asurada-connectivitynext asurada-kernelnext asurada64 kernel-5_4"
 S="${WORKDIR}"
 
 # Add dependencies on other ebuilds from within this board overlay
@@ -37,4 +37,9 @@ src_install() {
 
 	# Install audio config
 	unibuild_install_files audio-files
+
+	if ! use kernel-5_4; then
+		udev_dorules "${FILESDIR}/99-chromeos-asurada-aspm-quirk.rules"
+		dosbin "${FILESDIR}/asurada_aspm.sh"
+	fi
 }
