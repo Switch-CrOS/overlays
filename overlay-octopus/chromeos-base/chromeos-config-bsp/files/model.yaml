@@ -222,6 +222,74 @@ audio-setting-two-cards-extra-suffix: &audio_setting_two_cards_extra_suffix
         - *files_map_HiFi_conf_extra_suffix
         - *files_map_HiFi_card2_conf_extra_suffix
 
+camera-ufc: &camera_ufc
+  interface: "usb"
+  facing: "front"
+  orientation: 0
+  flags:
+    support-autofocus: False
+    support-1080p: False
+
+camera-wfc: &camera_wfc
+  interface: "usb"
+  facing: "back"
+  orientation: 0
+  flags:
+    support-autofocus: True
+    support-1080p: True
+
+camera-wfc-noaf: &camera_wfc_noaf
+  interface: "usb"
+  facing: "back"
+  orientation: 0
+  flags:
+    support-autofocus: False
+    support-1080p: True
+
+camera-wfc-noaf-no1080: &camera_wfc_noaf_no1080
+  interface: "usb"
+  facing: "back"
+  orientation: 0
+  flags:
+    support-autofocus: False
+    support-1080p: False
+
+camera: &camera_common
+  $camera-clock: "monotonic"
+  count: "{{$num-mic-locations}}"
+  clock: "{{$camera-clock}}"
+
+camera-one-config: &camera_one_config
+  camera:
+    <<: *camera_common
+    count: 1
+    devices:
+      - *camera_ufc
+
+camera-two-config: &camera_two_config
+  camera:
+    <<: *camera_common
+    count: 2
+    devices:
+      - *camera_ufc
+      - *camera_wfc
+
+camera-two-noaf-config: &camera_two_noaf_config
+  camera:
+    <<: *camera_common
+    count: 2
+    devices:
+      - *camera_ufc
+      - *camera_wfc_noaf
+
+camera-two-noaf-no1080-config: &camera_two_noaf_no1080_config
+  camera:
+    <<: *camera_common
+    count: 2
+    devices:
+      - *camera_ufc
+      - *camera_wfc_noaf_no1080
+
 rmad-common: &rmad_common
   enabled: True
   has-cbi: True
@@ -239,10 +307,7 @@ device-config: &device_config
         - *files_map_card_conf
         - *files_map_HiFi_conf
   bluetooth: *bluetooth_default
-  camera:
-    $camera-clock: "monotonic"
-    count: "{{$num-mic-locations}}"
-    clock: "{{$camera-clock}}"
+  camera: *camera_common
   power: &power_default
     $low-battery-shutdown-percent: "4.0"
     low-battery-shutdown-percent: "{{$low-battery-shutdown-percent}}"
@@ -378,6 +443,7 @@ chromeos:
           config:
             <<: *clamshell_config
             <<: *audio_two_cards_setting
+            <<: *camera_one_config
             bluetooth: *bluetooth_block_floss
     - $device-name: "phaser360"
       $fw-name: "Phaser"
@@ -395,6 +461,7 @@ chromeos:
           config:
             <<: *convertible_wl_config
             <<: *audio_two_cards_setting
+            <<: *camera_one_config
             bluetooth: *bluetooth_block_floss
             $set-wifi-transmit-power-for-tablet-mode: "0"
         - $sku-id-val: 3
@@ -405,6 +472,7 @@ chromeos:
           config:
             <<: *convertible_wl_config
             <<: *audio_two_cards_setting
+            <<: *camera_two_config
             bluetooth: *bluetooth_block_floss
             $set-wifi-transmit-power-for-tablet-mode: "0"
         - $sku-id-val: 4
@@ -414,6 +482,7 @@ chromeos:
           config:
             <<: *convertible_wl_config
             <<: *audio_two_cards_setting
+            <<: *camera_two_config
             bluetooth: *bluetooth_block_floss
             $set-wifi-transmit-power-for-tablet-mode: "0"
         - $sku-id-val: 5
@@ -435,7 +504,9 @@ chromeos:
       skus:
         - $sku-id-val: 6
           $num-mic-locations: 1
-          config: *clamshell_wl_config
+          config:
+            <<: *clamshell_wl_config
+            <<: *camera_one_config
         - $sku-id-val: 7
           $num-mic-locations: 1
           config: *clamshell_wl_config
@@ -465,11 +536,13 @@ chromeos:
           config:
             <<: *clamshell_config
             <<: *audio_two_cards_boardini_setting
+            <<: *camera_one_config
         - $sku-id-val: 2
           $num-mics: ".1mic"
           config:
             <<: *clamshell_config
             <<: *audio_two_cards_boardini_setting
+            <<: *camera_one_config
         - $sku-id-val: 3
           $num-mics: ".1mic"
           config:
@@ -505,11 +578,13 @@ chromeos:
           config:
             <<: *convertible_config
             <<: *audio_two_cards_setting
+            <<: *camera_one_config
         - $sku-id-val: 34
           $num-mic-locations: 2
           config:
             <<: *convertible_config
             <<: *audio_two_cards_setting
+            <<: *camera_two_config
         - $sku-id-val: 35
           $num-mic-locations: 2
           $stylus-category: "external"
@@ -526,7 +601,9 @@ chromeos:
       $hibernate-power-ua: "1150"
       skus:
         - $sku-id-val: 65
-          config: *clamshell_config
+          config:
+            <<: *clamshell_config
+            <<: *camera_one_config
         - $sku-id-val: 129
           config: *clamshell_config
     # This is a temporary model with SKU ID - 255 which is expected to be
@@ -561,6 +638,7 @@ chromeos:
           config:
             <<: *clamshell_wl_config
             <<: *audio_two_cards_boardini_setting
+            <<: *camera_one_config
         - $sku-id-val: 4
           config:
             <<: *clamshell_touchscreen_wl_config
@@ -581,6 +659,7 @@ chromeos:
           config:
             <<: *convertible_wl_config
             <<: *audio_two_cards_boardini_setting
+            <<: *camera_two_config
         - $sku-id-val: 10
           $num-mic-locations: 2
           config:
@@ -597,6 +676,7 @@ chromeos:
           config:
             <<: *convertible_wl_config
             <<: *audio_two_cards_boardini_setting
+            <<: *camera_one_config
     - $device-name: "sparky"
       $fw-name: "Bobba"
       $fw-build-name: "bobba"
@@ -608,6 +688,7 @@ chromeos:
           config:
             <<: *clamshell_config
             <<: *audio_two_cards_setting
+            <<: *camera_two_config
         - $sku-id-val: 18
           $num-mic-locations: 2
           config:
@@ -618,6 +699,7 @@ chromeos:
           config:
             <<: *clamshell_config
             <<: *audio_two_cards_setting
+            <<: *camera_one_config
         - $sku-id-val: 20
           $num-mic-locations: 1
           config:
@@ -641,6 +723,7 @@ chromeos:
           config:
             <<: *convertible_config
             <<: *audio_two_cards_setting
+            <<: *camera_two_config
         - $sku-id-val: 27
           config:
             <<: *convertible_config
@@ -669,10 +752,12 @@ chromeos:
           config:
             <<: *clamshell_wl_config
             <<: *audio_two_cards_setting
+            <<: *camera_one_config
         - $sku-id-val: 36
           config:
             <<: *clamshell_touchscreen_wl_config
             <<: *audio_two_cards_setting
+            <<: *camera_one_config
         - $sku-id-val: 37
           $sub_cras_config: ".droid_lte"
           config:
@@ -724,10 +809,12 @@ chromeos:
           config:
             <<: *clamshell_config
             <<: *audio_two_cards_setting
+            <<: *camera_one_config
         - $sku-id-val: 44
           config:
             <<: *clamshell_config
             <<: *audio_two_cards_setting
+            <<: *camera_one_config
     # This is a temporary model with SKU ID - 255 which is expected to be
     # provisioned with correct SKU ID in the factory flow. And HWID verification
     # will also catch the DUT still with 255 and report error.
@@ -749,6 +836,7 @@ chromeos:
           config:
             <<: *convertible_config
             <<: *cros_healthd_sku_number_enabled
+            <<: *camera_two_noaf_config
         - $sku-id-val: 2
           $num-mic-locations: 2
           config:
@@ -759,6 +847,7 @@ chromeos:
           config:
             <<: *convertible_config
             <<: *cros_healthd_sku_number_enabled
+            <<: *camera_one_config
         - $sku-id-val: 4
           $num-mic-locations: 1
           config:
@@ -773,10 +862,12 @@ chromeos:
           config:
             <<: *clamshell_config
             <<: *cros_healthd_sku_number_enabled
+            <<: *camera_one_config
         - $sku-id-val: 18
           config:
             <<: *clamshell_touchscreen_config
             <<: *cros_healthd_sku_number_enabled
+            <<: *camera_one_config
     - $device-name: "dorp"
       $fw-name: "Meep"
       $fw-build-name: "meep"
@@ -811,6 +902,7 @@ chromeos:
             <<: *clamshell_touchscreen_config
             <<: *audio_two_cards_setting
             <<: *cros_healthd_sku_number_enabled
+            <<: *camera_one_config
             bluetooth: *bluetooth_block_floss
             keyboard:
               backlight: True
@@ -840,6 +932,7 @@ chromeos:
             <<: *convertible_config
             <<: *audio_two_cards_setting
             <<: *cros_healthd_sku_number_enabled
+            <<: *camera_two_noaf_config
         - $sku-id-val: 52
           $num-mic-locations: 1
           config:
@@ -858,12 +951,14 @@ chromeos:
             <<: *clamshell_config
             <<: *audio_two_cards_setting
             <<: *cros_healthd_sku_number_enabled
+            <<: *camera_one_config
             bluetooth: *bluetooth_block_floss
         - $sku-id-val: 66
           config:
             <<: *clamshell_touchscreen_config
             <<: *audio_two_cards_setting
             <<: *cros_healthd_sku_number_enabled
+            <<: *camera_one_config
             bluetooth: *bluetooth_block_floss
     # This is a temporary model with SKU ID - 255 which is expected to be
     # provisioned with correct SKU ID in the factory flow. And HWID verification
@@ -887,11 +982,13 @@ chromeos:
           config:
             <<: *convertible_config
             $set-wifi-transmit-power-for-tablet-mode: "0"
+            <<: *camera_two_config
         - $sku-id-val: 2
           $stylus-category: "internal"
           config:
             <<: *convertible_config
             $set-wifi-transmit-power-for-tablet-mode: "0"
+            <<: *camera_two_config
         - $sku-id-val: 3
           config:
             <<: *convertible_config
@@ -911,11 +1008,15 @@ chromeos:
       $ucm_extra_suffix: "apel"
       skus:
         - $sku-id-val: 17
-          config: *clamshell_config
+          config:
+            <<: *clamshell_config
+            <<: *camera_one_config
         - $sku-id-val: 18
           config: *clamshell_touchscreen_config
         - $sku-id-val: 19
-          config: *clamshell_config
+          config:
+            <<: *clamshell_config
+            <<: *camera_one_config
     - $device-name: "apele"
       $fw-name: "Ampton"
       $fw-build-name: "ampton"
@@ -967,7 +1068,9 @@ chromeos:
       $ucm_extra_suffix: "casta"
       skus:
         - $sku-id-val: 1
-          config: *clamshell_config
+          config:
+            <<: *clamshell_config
+            <<: *camera_one_config
       $defer-external-display-timeout: "5"
     - $device-name: "bluebird"
       $fw-name: "Casta"
@@ -977,7 +1080,9 @@ chromeos:
       $ucm_extra_suffix: "casta"
       skus:
         - $sku-id-val: 2
-          config: *clamshell_config
+          config:
+            <<: *clamshell_config
+            <<: *camera_one_config
       $defer-external-display-timeout: "5"
     - $device-name: "nospike"
       $fw-name: "Ampton"
@@ -989,7 +1094,9 @@ chromeos:
       skus:
         - $sku-id-val: 33
           $ucm_extra_suffix: "nospike"
-          config: *clamshell_config
+          config:
+            <<: *clamshell_config
+            <<: *camera_one_config
         - $sku-id-val: 34
           $ucm_extra_suffix: "nospike"
           config: *clamshell_config
@@ -1046,6 +1153,7 @@ chromeos:
             <<: *convertible_config
             <<: *audio_two_cards_setting
             <<: *cros_healthd_sku_number_enabled
+            <<: *camera_one_config
             keyboard:
               backlight: True
         - $sku-id-val: 36
@@ -1083,6 +1191,7 @@ chromeos:
             <<: *convertible_config
             <<: *audio_two_cards_setting
             <<: *cros_healthd_sku_number_enabled
+            <<: *camera_one_config
             bluetooth: *bluetooth_block_floss
             keyboard:
               backlight: True
@@ -1351,6 +1460,7 @@ chromeos:
             <<: *clamshell_touchscreen_config
             <<: *audio_two_cards_boardini_setting
             <<: *cros_healthd_sku_number_enabled
+            <<: *camera_one_config
             bluetooth: *bluetooth_stop_on_suspend_and_block_floss
         - $sku-id-val: 66
           $ucm_extra_suffix: "{{$device-name}}"
@@ -1367,6 +1477,7 @@ chromeos:
             <<: *clamshell_config
             <<: *audio_two_cards_boardini_setting
             <<: *cros_healthd_sku_number_enabled
+            <<: *camera_one_config
             bluetooth: *bluetooth_stop_on_suspend_and_block_floss
         - $sku-id-val: 68
           $ucm_extra_suffix: "{{$device-name}}"
@@ -1447,6 +1558,7 @@ chromeos:
           config:
             <<: *clamshell_wl_config
             <<: *audio_two_cards_setting
+            <<: *camera_one_config
         - $sku-id-val: 9
           config:
             <<: *clamshell_wl_config
@@ -1461,6 +1573,7 @@ chromeos:
           config:
             <<: *clamshell_wl_config
             <<: *audio_two_cards_setting
+            <<: *camera_one_config
             modem:
               firmware-variant: "{{$device-name}}"
         - $sku-id-val: 19
@@ -1509,6 +1622,7 @@ chromeos:
           config:
             <<: *convertible_wl_config
             <<: *audio_two_cards_setting
+            <<: *camera_two_noaf_no1080_config
             $set-wifi-transmit-power-for-tablet-mode: "0"
         - $sku-id-val: 39
           $num-mic-locations: 2
@@ -1541,6 +1655,7 @@ chromeos:
           config:
             <<: *clamshell_wl_config
             <<: *audio_two_cards_setting
+            <<: *camera_one_config
         - $sku-id-val: 51
           config:
             <<: *clamshell_wl_config
@@ -1579,6 +1694,7 @@ chromeos:
           $num-mic-locations: 2
           config:
             <<: *convertible_config
+            <<: *camera_two_config
             $set-wifi-transmit-power-for-tablet-mode: "0"
             modem:
               firmware-variant: "{{$device-name}}"
@@ -1602,7 +1718,9 @@ chromeos:
       $num-mic-locations: 1
       skus:
         - $sku-id-val: 1
-          config: *clamshell_config
+          config:
+            <<: *clamshell_config
+            <<: *camera_one_config
     # This is a temporary model with SKU ID - 255 which is expected to be
     # provisioned with correct SKU ID in the factory flow. And HWID verification
     # will also catch the DUT still with 255 and report error.
@@ -1623,7 +1741,9 @@ chromeos:
       skus:
         - $sku-id-val: 1
           $num-mic-locations: 1
-          config: *clamshell_wl_config
+          config:
+            <<: *clamshell_wl_config
+            <<: *camera_one_config
     - $device-name: "foob360"
       $fw-name: "Foob"
       $fw-build-name: "foob"
@@ -1635,4 +1755,6 @@ chromeos:
       skus:
         - $sku-id-val: 9
           $num-mic-locations: 2
-          config: *convertible_wl_config
+          config:
+            <<: *convertible_wl_config
+            <<: *camera_two_config
