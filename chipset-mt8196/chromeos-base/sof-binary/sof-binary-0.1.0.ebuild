@@ -12,7 +12,9 @@ KEYWORDS="*"
 IUSE=""
 
 DEPEND=""
-RDEPEND=""
+RDEPEND="
+	media-libs/mt8196-tas2563-dsm-param-navi
+"
 BDEPEND=""
 
 S=${WORKDIR}/${PN}-mt8196-${PV}
