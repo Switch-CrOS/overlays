@@ -18,6 +18,7 @@ IUSE="arcvm kernel-5_10"
 # Add dependencies on other ebuilds from within this board overlay
 RDEPEND="
 	chromeos-base/chromeos-scp-firmware-kukui
+	chromeos-base/chromeos-scp-firmware-kukui-legacy
 "
 DEPEND="${RDEPEND}"
 
