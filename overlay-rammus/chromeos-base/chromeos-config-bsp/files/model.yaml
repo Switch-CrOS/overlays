@@ -41,6 +41,16 @@ common_config: &common_config
     form-factor: CHROMEBOOK
     psu-type: battery
 
+camera_config: &camera_config
+  count: 1
+  devices:
+    - interface: "usb"
+      facing: "front"
+      orientation: 0
+      flags:
+        support-autofocus: False
+        support-1080p: False
+
 chromeos:
   devices:
     - $device-name: "shyvana"
@@ -48,7 +58,9 @@ chromeos:
         - $sku-id: 0x2a67
           config: *common_config
         - $sku-id: 0x2a63
-          config: *common_config
+          config:
+            <<: *common_config
+            camera: *camera_config
         - $sku-id: 0x2ae3  # shyvana-m
           $cras: "shyvana-m"
           $ucm: "shyvana-m"
@@ -70,6 +82,7 @@ chromeos:
         - $sku-id: 0x2861  # non-touch
           config:
             <<: *common_config
+            camera: *camera_config
             power:
               << : *power_common
               $internal-backlight-no-als-battery-brightness: "62.5"
