@@ -13,12 +13,13 @@ LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="-* amd64 x86"
 S="${WORKDIR}"
-IUSE="guybrush-arc-t guybrush-cbx guybrush-kernelnext"
+IUSE="guybrush-arc-t guybrush-cbx guybrush-kernelnext modemfwd"
 
 # Add dependencies on other ebuilds from within this board overlay
 RDEPEND="
 	chromeos-base/sof-binary
 	chromeos-base/sof-topology
+	modemfwd? ( chromeos-base/modemfwd-helpers )
 "
 DEPEND="
 	${RDEPEND}
