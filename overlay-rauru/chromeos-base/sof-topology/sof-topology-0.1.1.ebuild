@@ -19,5 +19,5 @@ S=${WORKDIR}/${PN}-rauru-${PV}
 
 src_install() {
 	insinto /lib/firmware/mediatek/sof-tplg
-	doins sof-mt8196.tplg
+	doins ./*.tplg
 }
