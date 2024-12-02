@@ -1,1 +1,0 @@
-autotest-capability-scarlet-1.0.3.ebuild
