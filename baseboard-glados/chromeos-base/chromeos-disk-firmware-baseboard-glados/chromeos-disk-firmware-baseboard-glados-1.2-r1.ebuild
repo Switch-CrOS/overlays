@@ -1,1 +1,0 @@
-chromeos-disk-firmware-baseboard-glados-1.2.ebuild
