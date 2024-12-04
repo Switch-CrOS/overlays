@@ -14,4 +14,5 @@
 modify_kernel_command_line() {
   echo "cpuidle.governor=teo" >> "$1"
   echo "irqchip.gicv3_pseudo_nmi=1" >> "$1"
+  echo "log_buf_len=524288" >> "$1"
 }
