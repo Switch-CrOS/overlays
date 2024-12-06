@@ -11,7 +11,6 @@ Once built, copy and rename topology files as the following map:
 [DRC/EQ-integrated candidates]
 tools/build_tools/topology/sof-adl-cs35l41-drceq.tplg                   renamed to sof-adl-cs35l41.tplg
 tools/build_tools/topology/sof-adl-max98357a-rt5682-drceq.tplg          renamed to sof-adl-max98357a-rt5682.tplg
-tools/build_tools/topology/sof-adl-max98360a-da7219-drceq.tplg          renamed to sof-adl-max98360a-da7219.tplg
 tools/build_tools/topology/sof-adl-max98360a-rt5682-drceq.tplg          renamed to sof-adl-max98360a-rt5682.tplg
 tools/build_tools/topology/sof-adl-max98390-rt5682-drceq.tplg           renamed to sof-adl-max98390-rt5682.tplg
 tools/build_tools/topology/sof-adl-max98390-ssp2-rt5682-ssp0-drceq.tplg renamed to sof-adl-max98390-ssp2-rt5682-ssp0.tplg
@@ -21,6 +20,8 @@ tools/build_tools/topology/sof-adl-rt1019-rt5682-drceq.tplg             renamed 
 tools/build_tools/topology/sof-adl-rt5650-drceq.tplg                    renamed to sof-adl-rt5650.tplg
 // TODO(b/340951837): get back DRC/EQ after fix
 tools/build_tools/topology/sof-adl-max98360a-nau8825.tplg               renamed to sof-adl-max98360a-nau8825.tplg
+// TODO(b/382634062): get back DRC/EQ after fix
+tools/build_tools/topology/sof-adl-max98360a-da7219.tplg                renamed to sof-adl-max98360a-da7219.tplg
 [PDM1]
 tools/build_tools/topology/sof-adl-max98360a-rt5682-2way-pdm1.tplg      renamed to pdm1/sof-adl-max98360a-rt5682-2way.tplg
 
@@ -39,7 +40,7 @@ Md5sum
 3ae2fe040eab3f0184c683bc067da6e5  sof-adl-cs35l41.tplg
 fa6667f1d2815e074c3b3e42d6f31d25  sof-adl-max98357a-rt5682-4ch.tplg
 f5d4ee4f615bb6e377c46e6688c2c894  sof-adl-max98357a-rt5682.tplg
-9573b8a59e8c93bdad0fb9b64efdd002  sof-adl-max98360a-da7219.tplg
+e313e87fc8141bc62d9fb67853546685  sof-adl-max98360a-da7219.tplg
 e2104dd408abe169e11407dafb0b90b4  sof-adl-max98360a-nau8825.tplg
 ae727de38b8fd9389dc62fd90e0f221d  sof-adl-max98360a-rt5682-2way.tplg
 76bf8c5e3061f86e122335e0559300e3  sof-adl-max98360a-rt5682-4ch.tplg
