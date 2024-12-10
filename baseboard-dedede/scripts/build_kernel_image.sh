@@ -18,4 +18,7 @@ modify_kernel_command_line() {
 
   # Check for S0ix failures and show warnings on failures
   echo "intel_pmc_core.warn_on_s0ix_failures=1" >> "$1"
+
+  # Decrease CrOS EC log polling period to 2s
+  echo "cros_ec_debugfs.log_poll_period_ms=2000" >> "$1"
 }
