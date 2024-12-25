@@ -2,8 +2,8 @@ This file should always contain information regarding which branch/commit
 the firmware was built from.
 
 repo      : https://github.com/thesofproject/sof/
-branch    : MTK provided build in b:371503725#comment2
-commit id : MTK provided build in b:371503725#comment2
+branch    : MTK provided build in b:383961615#comment22
+commit id : MTK provided build in b:383961615#comment22
 
 Md5sum
-21e620dc5aeacc4bb4fbdc740a710109 sof-mt8196.ri
+f4c5c5ebca7ef41fa2d37f331db1bf40 sof-mt8196.ri
