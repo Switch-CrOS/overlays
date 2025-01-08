@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 EAPI=7
-PYTHON_COMPAT=( python3_{6..9} )
+PYTHON_COMPAT=( python3_{6..11} )
 
 inherit distutils-r1
 
