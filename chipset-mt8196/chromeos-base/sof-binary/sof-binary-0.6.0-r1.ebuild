@@ -1,0 +1,1 @@
+sof-binary-0.6.0.ebuild
