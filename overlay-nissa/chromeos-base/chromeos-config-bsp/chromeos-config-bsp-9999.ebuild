@@ -10,6 +10,7 @@ PROJECTS=(
 	"adlnrvp"
 	"craask"
 	"dirks"
+	"guren"
 	"meliks"
 	"nereid"
 	"nivviks"
