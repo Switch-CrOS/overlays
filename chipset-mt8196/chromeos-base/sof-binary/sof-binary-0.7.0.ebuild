@@ -4,7 +4,7 @@
 EAPI=7
 
 DESCRIPTION="MT8196 SOF firmware binary"
-SRC_URI="gs://chromeos-localmirror/distfiles/${PN}-mt8196-${PV}.tar.gz"
+SRC_URI="gs://chromeos-localmirror/distfiles/${PN}-mt8196-${PV}.tar.xz"
 
 LICENSE="SOF"
 SLOT="0"
