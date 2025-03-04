@@ -4,7 +4,7 @@
 
 EAPI=7
 
-inherit appid arc-build-constants cros-unibuild cros-workon
+inherit appid arc-build-constants cros-unibuild cros-workon udev
 
 # This ebuild only cares about its own FILESDIR and ebuild file, so it tracks
 # the canonical empty project.
@@ -29,4 +29,7 @@ DEPEND="${RDEPEND}"
 
 src_install() {
 	doappid "{DF097AF0-D652-4B6F-8D58-5B172C4E3539}" "CHROMEBOOK"
+
+	# Install Proximity sensor rules
+	udev_dorules "${FILESDIR}/99-cros-sx-proximity.rules"
 }
