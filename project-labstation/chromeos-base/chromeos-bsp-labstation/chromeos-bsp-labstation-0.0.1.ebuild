@@ -41,7 +41,7 @@ RDEPEND="${RDEPEND}
 	app-editors/vim
 	app-misc/screen
 	app-shells/bash
-	dev-util/strace
+	dev-debug/strace
 	net-analyzer/tcpdump
 	net-dialup/minicom
 	net-misc/iputils

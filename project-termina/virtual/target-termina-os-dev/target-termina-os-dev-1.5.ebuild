@@ -40,7 +40,7 @@ RDEPEND="
 	dev-python/cherrypy
 	dev-python/dbus-python
 	dev-util/mem
-	dev-util/strace
+	dev-debug/strace
 	net-analyzer/tcpdump
 	net-fs/sshfs
 	net-misc/curl
