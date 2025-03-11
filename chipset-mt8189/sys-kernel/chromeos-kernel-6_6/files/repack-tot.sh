@@ -137,6 +137,8 @@ EOF
 }
 
 commit_change() {
+  local relative_path
+  local overlay_name
   info "Committing change..."
 
   pushd "${EBUILD_DIR}" 1>/dev/null || die "Couldn't pushd ${EBUILD_DIR}"
@@ -145,8 +147,12 @@ commit_change() {
   git add "${EBUILD_DIR}/files/${TOT_SQUASH}"
   git add "${EBUILD_DIR}/files/${LOCALVERSION}"
 
+  # Retrieve the overlay name from the working directory
+  relative_path=$(pwd | sed "s|^$(git rev-parse --show-toplevel)/||")
+  overlay_name=$(echo "${relative_path}" | cut -d '/' -f 1 | cut -d '-' -f 2-)
+
   git commit --edit -m "$(cat <<EOM
-${FLAGS_board}: sys-kernel: Update to private kernel ToT #${FLAGS_ps}
+${overlay_name}: sys-kernel: Update to private kernel ToT #${FLAGS_ps}
 
 Apply ${cl_title} #${FLAGS_ps} (CL:${FLAGS_cl}/${FLAGS_ps}, ${cl_commit})
 based on commit ${base:0:12} in ${FLAGS_ver} kernel.
