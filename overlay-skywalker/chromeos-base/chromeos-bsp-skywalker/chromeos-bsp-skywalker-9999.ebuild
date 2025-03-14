@@ -23,6 +23,7 @@ IUSE=""
 RDEPEND="
 	chromeos-base/chromeos-config
 	chromeos-base/chromeos-bsp-baseboard-skywalker
+	chromeos-base/lte_power_control
 	chromeos-base/touch_updater
 "
 DEPEND="${RDEPEND}"
