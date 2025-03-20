@@ -1,5 +1,5 @@
 diff --git a/arch/arm64/boot/dts/mediatek/Makefile b/arch/arm64/boot/dts/mediatek/Makefile
-index 68af0d455e480a737e1a3d5b25e8a70a61f332f7..0a2a96bfae733e62ecbdc1151e76f457967d62b9 100644
+index bf464af80be0478adf92959ba37bae8ed79cce3a..7d5491462bcfbd896f8feb4dd32c772613dad1b6 100644
 --- a/arch/arm64/boot/dts/mediatek/Makefile
 +++ b/arch/arm64/boot/dts/mediatek/Makefile
 @@ -104,6 +104,11 @@ dtb-$(CONFIG_ARCH_MEDIATEK) += mt8188-geralt-ciri-sku4.dtb
@@ -7,16 +7,16 @@ index 68af0d455e480a737e1a3d5b25e8a70a61f332f7..0a2a96bfae733e62ecbdc1151e76f457
  dtb-$(CONFIG_ARCH_MEDIATEK) += mt8188-geralt-ciri-sku6.dtb
  dtb-$(CONFIG_ARCH_MEDIATEK) += mt8188-geralt-ciri-sku7.dtb
 +dtb-$(CONFIG_ARCH_MEDIATEK) += mt8189-evb.dtb
++dtb-$(CONFIG_ARCH_MEDIATEK) += mt8189-skywalker.dtb
 +dtb-$(CONFIG_ARCH_MEDIATEK) += mt8189-evb-test-sku1.dtb
 +dtb-$(CONFIG_ARCH_MEDIATEK) += mt8189-evb-test-sku2.dtb
 +dtb-$(CONFIG_ARCH_MEDIATEK) += mt8189-evb-test-sku3.dtb
-+dtb-$(CONFIG_ARCH_MEDIATEK) += mt8189-skywalker.dtb
  dtb-$(CONFIG_ARCH_MEDIATEK) += mt8192-asurada-hayato-r1.dtb
  dtb-$(CONFIG_ARCH_MEDIATEK) += mt8192-asurada-spherion-r0.dtb
  dtb-$(CONFIG_ARCH_MEDIATEK) += mt8192-evb.dtb
-@@ -122,4 +127,4 @@ dtb-$(CONFIG_ARCH_MEDIATEK) += mt8196-rauru-navi-sku0.dtb
- dtb-$(CONFIG_ARCH_MEDIATEK) += mt8196-rauru-navi-sku1.dtb
+@@ -123,4 +128,4 @@ dtb-$(CONFIG_ARCH_MEDIATEK) += mt8196-rauru-navi-sku1.dtb
  dtb-$(CONFIG_ARCH_MEDIATEK) += mt8196-rauru-navi-sku2.dtb
+ dtb-$(CONFIG_ARCH_MEDIATEK) += mt8196-rauru-navi-sku5.dtb
  dtb-$(CONFIG_ARCH_MEDIATEK) += mt8365-evk.dtb
 -dtb-$(CONFIG_ARCH_MEDIATEK) += mt8516-pumpkin.dtb
 \ No newline at end of file
@@ -47,174 +47,6 @@ index 8e1b8c85c6ede94a7beaefcdfc74ce47b3ab50fe..4a96be34289f4db33fc8893c71441d10
  		};
  	};
  };
-diff --git a/arch/arm64/boot/dts/mediatek/mt6779.dtsi b/arch/arm64/boot/dts/mediatek/mt6779.dtsi
-index 5c579e88e749abea5d121720dde1fdf1da01b98f..620a681ffce896cbab3c10a52981df9609ae0ac6 100644
---- a/arch/arm64/boot/dts/mediatek/mt6779.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt6779.dtsi
-@@ -181,6 +181,15 @@ pio: pinctrl@10005000 {
- 			interrupt-controller;
- 			#interrupt-cells = <2>;
- 			interrupts = <GIC_SPI 204 IRQ_TYPE_LEVEL_HIGH>;
-+			mediatek,eint = <&eint>;
-+		};
-+
-+		eint: apirq@1000b000 {
-+			compatible = "mediatek,mtk-eint";
-+			reg = <0 0x1000b000 0 0x1000>;
-+			reg-name = "eint";
-+			interrupts = <GIC_SPI 204 IRQ_TYPE_LEVEL_HIGH>;
-+			mediatek,total-pin-number = <195>;
- 		};
- 
- 		apmixed: clock-controller@1000c000 {
-diff --git a/arch/arm64/boot/dts/mediatek/mt6795.dtsi b/arch/arm64/boot/dts/mediatek/mt6795.dtsi
-index 597bce2fed7293c3343d8035bb1cfdff8842a5f0..8a9b6f4163d39532a46012279faf45dfef427a14 100644
---- a/arch/arm64/boot/dts/mediatek/mt6795.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt6795.dtsi
-@@ -356,6 +356,7 @@ pio: pinctrl@10005000 {
- 			gpio-ranges = <&pio 0 0 196>;
- 			interrupt-controller;
- 			#interrupt-cells = <2>;
-+			mediatek,eint = <&eint>;
- 		};
- 
- 		watchdog: watchdog@10007000 {
-@@ -374,6 +375,14 @@ timer: timer@10008000 {
- 			clocks = <&system_clk>, <&clk32k>;
- 		};
- 
-+		eint: apirq@1000b000 {
-+			compatible = "mediatek,mtk-eint";
-+			reg = <0 0x1000b000 0 0x1000>;
-+			reg-name = "eint";
-+			interrupts = <GIC_SPI 154 IRQ_TYPE_LEVEL_HIGH>;
-+			mediatek,total-pin-number = <224>;
-+		};
-+
- 		pwrap: pwrap@1000d000 {
- 			compatible = "mediatek,mt6795-pwrap";
- 			reg = <0 0x1000d000 0 0x1000>;
-diff --git a/arch/arm64/boot/dts/mediatek/mt7986a.dtsi b/arch/arm64/boot/dts/mediatek/mt7986a.dtsi
-index 559990dcd1d1790b2f985dda29e6bd2ebdfd08c0..1527bbf49e45dc7f6f27b1522040ca51df2668ca 100644
---- a/arch/arm64/boot/dts/mediatek/mt7986a.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt7986a.dtsi
-@@ -192,6 +192,15 @@ pio: pinctrl@1001f000 {
- 			interrupts = <GIC_SPI 225 IRQ_TYPE_LEVEL_HIGH>;
- 			interrupt-parent = <&gic>;
- 			#interrupt-cells = <2>;
-+			mediatek,eint = <&eint>;
-+		};
-+
-+		eint: apirq@1000b000 {
-+			compatible = "mediatek,mtk-eint";
-+			reg = <0 0x1000b000 0 0x1000>;
-+			reg-name = "eint";
-+			interrupts = <GIC_SPI 225 IRQ_TYPE_LEVEL_HIGH>;
-+			mediatek,total-pin-number = <101>;
- 		};
- 
- 		pwm: pwm@10048000 {
-diff --git a/arch/arm64/boot/dts/mediatek/mt8167.dtsi b/arch/arm64/boot/dts/mediatek/mt8167.dtsi
-index 2374c095305755a2aad6d51a3a173b18109a7a75..80f92988c815685b61dc77248ae49a90f218c417 100644
---- a/arch/arm64/boot/dts/mediatek/mt8167.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt8167.dtsi
-@@ -122,6 +122,15 @@ pio: pinctrl@1000b000 {
- 			interrupt-controller;
- 			#interrupt-cells = <2>;
- 			interrupts = <GIC_SPI 134 IRQ_TYPE_LEVEL_HIGH>;
-+			mediatek,eint = <&eint>;
-+		};
-+
-+		eint: apirq@1000b000 {
-+			compatible = "mediatek,mtk-eint";
-+			reg = <0 0x1000b000 0 0x1000>;
-+			reg-name = "eint";
-+			interrupts = <GIC_SPI 134 IRQ_TYPE_LEVEL_HIGH>;
-+			mediatek,total-pin-number = <169>;
- 		};
- 
- 		mmsys: syscon@14000000 {
-diff --git a/arch/arm64/boot/dts/mediatek/mt8173.dtsi b/arch/arm64/boot/dts/mediatek/mt8173.dtsi
-index c9a667a34471f6befc13653048cc6a88c74195a0..ce621fe6371ed6053c25fdd09532a0770807f564 100644
---- a/arch/arm64/boot/dts/mediatek/mt8173.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt8173.dtsi
-@@ -387,6 +387,7 @@ pio: pinctrl@1000b000 {
- 			interrupts = <GIC_SPI 145 IRQ_TYPE_LEVEL_HIGH>,
- 				     <GIC_SPI 146 IRQ_TYPE_LEVEL_HIGH>,
- 				     <GIC_SPI 147 IRQ_TYPE_LEVEL_HIGH>;
-+			mediatek,eint = <&eint>;
- 
- 			hdmi_pin: xxx {
- 
-@@ -539,6 +540,14 @@ timer: timer@10008000 {
- 				 <&topckgen CLK_TOP_RTC_SEL>;
- 		};
- 
-+		eint: apirq@1000b000 {
-+			compatible = "mediatek,mtk-eint";
-+			reg = <0 0x1000b000 0 0x1000>;
-+			reg-name = "eint";
-+			interrupts = <GIC_SPI 145 IRQ_TYPE_LEVEL_HIGH>;
-+			mediatek,total-pin-number = <224>;
-+		};
-+
- 		pwrap: pwrap@1000d000 {
- 			compatible = "mediatek,mt8173-pwrap";
- 			reg = <0 0x1000d000 0 0x1000>;
-diff --git a/arch/arm64/boot/dts/mediatek/mt8183.dtsi b/arch/arm64/boot/dts/mediatek/mt8183.dtsi
-index 2ad6a83e973a4d390441db94d916ebb4d3848064..72d805026954ea17922bc387aa8077cb68457338 100644
---- a/arch/arm64/boot/dts/mediatek/mt8183.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt8183.dtsi
-@@ -863,6 +863,7 @@ pio: pinctrl@10005000 {
- 			interrupt-controller;
- 			interrupts = <GIC_SPI 177 IRQ_TYPE_LEVEL_HIGH>;
- 			#interrupt-cells = <2>;
-+			mediatek,eint = <&eint>;
- 		};
- 
- 		scpsys: syscon@10006000 {
-@@ -1029,6 +1030,14 @@ watchdog: watchdog@10007000 {
- 			#reset-cells = <1>;
- 		};
- 
-+		eint: apirq@1000b000 {
-+			compatible = "mediatek,mtk-eint";
-+			reg = <0 0x1000b000 0 0x1000>;
-+			reg-name = "eint";
-+			interrupts = <GIC_SPI 177 IRQ_TYPE_LEVEL_HIGH>;
-+			mediatek,total-pin-number = <212>;
-+		};
-+
- 		apmixedsys: syscon@1000c000 {
- 			compatible = "mediatek,mt8183-apmixedsys", "syscon";
- 			reg = <0 0x1000c000 0 0x1000>;
-diff --git a/arch/arm64/boot/dts/mediatek/mt8186.dtsi b/arch/arm64/boot/dts/mediatek/mt8186.dtsi
-index 5253f9748a22f0fa311d664b2f0c2dca54763932..ea12f37e3fac202c6aaa67b883877ee348b7ffc4 100644
---- a/arch/arm64/boot/dts/mediatek/mt8186.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt8186.dtsi
-@@ -880,6 +880,7 @@ pio: pinctrl@10005000 {
- 			interrupt-controller;
- 			interrupts = <GIC_SPI 186 IRQ_TYPE_LEVEL_HIGH 0>;
- 			#interrupt-cells = <2>;
-+			mediatek,eint = <&eint>;
- 		};
- 
- 		scpsys: syscon@10006000 {
-@@ -1089,6 +1090,14 @@ watchdog: watchdog@10007000 {
- 			#reset-cells = <1>;
- 		};
- 
-+		eint: apirq@1000b000 {
-+			compatible = "mediatek,mtk-eint";
-+			reg = <0 0x1000b000 0 0x1000>;
-+			reg-name = "eint";
-+			interrupts = <GIC_SPI 186 IRQ_TYPE_LEVEL_HIGH 0>;
-+			mediatek,total-pin-number = <217>;
-+		};
-+
- 		apmixedsys: syscon@1000c000 {
- 			compatible = "mediatek,mt8186-apmixedsys", "syscon";
- 			reg = <0 0x1000c000 0 0x1000>;
 diff --git a/arch/arm64/boot/dts/mediatek/mt8189-clkao.dtsi b/arch/arm64/boot/dts/mediatek/mt8189-clkao.dtsi
 new file mode 100644
 index 0000000000000000000000000000000000000000..3e7cb6c754e7deeed59698fd528c8da8a65c72b6
@@ -2197,10 +2029,10 @@ index 0000000000000000000000000000000000000000..acae81aa8c7c5be1663622ed4a896f07
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8189-skywalker.dtsi b/arch/arm64/boot/dts/mediatek/mt8189-skywalker.dtsi
 new file mode 100644
-index 0000000000000000000000000000000000000000..06414516719d6fc3ce89d4f64a9141e46ba07ab4
+index 0000000000000000000000000000000000000000..f3568b2132f9c01d79c0fced6dd6bb41d8f336ef
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt8189-skywalker.dtsi
-@@ -0,0 +1,1108 @@
+@@ -0,0 +1,1109 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
 +/*
 + * Copyright (C) 2025 Google Inc.
@@ -2322,7 +2154,7 @@ index 0000000000000000000000000000000000000000..06414516719d6fc3ce89d4f64a9141e4
 +		type = "a";
 +		pinctrl-names = "default";
 +		pinctrl-0 = <&hdmi_hpd_pins>;
-+		hpd-gpios = <&pio 139 GPIO_ACTIVE_HIGH>;
++		hpd-gpios = <&pio 139 GPIO_ACTIVE_LOW>;
 +
 +		port {
 +			hdmi_connector_in: endpoint {
@@ -2593,7 +2425,7 @@ index 0000000000000000000000000000000000000000..06414516719d6fc3ce89d4f64a9141e4
 +		svdd-supply = <&mt6359_vio18_ldo_reg>;
 +		vdd-supply = <&mt6359_vio18_ldo_reg>;
 +		#io-channel-cells = <1>;
-+		status = "disabled";
++		status = "okay";
 +	};
 +};
 +
@@ -3132,7 +2964,7 @@ index 0000000000000000000000000000000000000000..06414516719d6fc3ce89d4f64a9141e4
 +		pins-int {
 +			pinmux = <PINMUX_GPIO132__FUNC_GPIO132>;
 +			input-enable;
-+			bias-pull-up;
++			bias-disable;
 +		};
 +	};
 +
@@ -3183,6 +3015,7 @@ index 0000000000000000000000000000000000000000..06414516719d6fc3ce89d4f64a9141e4
 +		pins-int {
 +			pinmux = <PINMUX_GPIO129__FUNC_GPIO129>;
 +			input-enable;
++			bias-disable;
 +		};
 +	};
 +
@@ -3311,10 +3144,10 @@ index 0000000000000000000000000000000000000000..06414516719d6fc3ce89d4f64a9141e4
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8189.dtsi b/arch/arm64/boot/dts/mediatek/mt8189.dtsi
 new file mode 100644
-index 0000000000000000000000000000000000000000..d4ed8f19e29a6b156f50b717dba743871c117aec
+index 0000000000000000000000000000000000000000..aaa768ee17e18f85509f368f404718382da2504c
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt8189.dtsi
-@@ -0,0 +1,2699 @@
+@@ -0,0 +1,2709 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
 +/*
 + * Copyright (c) 2024 MediaTek Inc.
@@ -4115,7 +3948,12 @@ index 0000000000000000000000000000000000000000..d4ed8f19e29a6b156f50b717dba74387
 +				<0 0x11d40000 0 0x1000>,
 +				<0 0x11e20000 0 0x1000>,
 +				<0 0x11e30000 0 0x1000>,
-+				<0 0x11f20000 0 0x1000>;
++				<0 0x11f20000 0 0x1000>,
++				<0 0x11ce0000 0 0x1000>,
++				<0 0x11de0000 0 0x1000>,
++				<0 0x11e60000 0 0x1000>,
++				<0 0x1c01e000 0 0x1000>,
++				<0 0x11f00000 0 0x1000>;
 +			reg-names = "gpio_base",
 +					"iocfg_lm_base",
 +					"iocfg_rb0_base",
@@ -4125,13 +3963,18 @@ index 0000000000000000000000000000000000000000..d4ed8f19e29a6b156f50b717dba74387
 +					"iocfg_bm2_base",
 +					"iocfg_lt0_base",
 +					"iocfg_lt1_base",
-+					"iocfg_rt_base";
++					"iocfg_rt_base",
++					"eint-e",
++					"eint-s",
++					"eint-w",
++					"eint-c",
++					"eint-n";
 +			gpio-controller;
 +			#gpio-cells = <2>;
 +			gpio-ranges = <&pio 0 0 182>;
 +			interrupt-controller;
++			interrupts = <GIC_SPI 239 IRQ_TYPE_LEVEL_HIGH 0>;
 +			#interrupt-cells = <2>;
-+			mediatek,eint = <&eint>;
 +		};
 +
 +		emicen: emicen@10219000 {
@@ -5278,8 +5121,8 @@ index 0000000000000000000000000000000000000000..d4ed8f19e29a6b156f50b717dba74387
 +			interrupts = <GIC_SPI 218 IRQ_TYPE_LEVEL_HIGH 0>,
 +				<GIC_SPI 219 IRQ_TYPE_LEVEL_HIGH 0>;
 +
-+			nvmem-cells = <&lvts_e_data1 &lvts_e_data2>;
-+			nvmem-cell-names = "e_data1","e_data2";
++			nvmem-cells = <&lvts_e_data1>, <&lvts_e_data2>;
++			nvmem-cell-names = "e_data1", "e_data2";
 +		};
 +
 +		spmi: spmi@1cc06000 {
@@ -6014,107 +5857,25 @@ index 0000000000000000000000000000000000000000..d4ed8f19e29a6b156f50b717dba74387
 +&pmic {
 +	interrupts-extended = <&pio 194 IRQ_TYPE_LEVEL_HIGH>;
 +};
-diff --git a/arch/arm64/boot/dts/mediatek/mt8192.dtsi b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-index 03c134ace7f00d0e9ecf88f79afcb26b624d3583..f5850910f8a4dfe4e5d26328d8ce1af6654b1172 100644
---- a/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-@@ -583,6 +583,7 @@ pio: pinctrl@10005000 {
- 			interrupt-controller;
- 			interrupts = <GIC_SPI 212 IRQ_TYPE_LEVEL_HIGH 0>;
- 			#interrupt-cells = <2>;
-+			mediatek,eint = <&eint>;
+diff --git a/arch/arm64/boot/dts/mediatek/mt8196.dtsi b/arch/arm64/boot/dts/mediatek/mt8196.dtsi
+index dfc881df54d3491575a884c9f561a5c8482caa8b..227d3c6c9bb38331c6069bdc051e17d30d685adc 100644
+--- a/arch/arm64/boot/dts/mediatek/mt8196.dtsi
++++ b/arch/arm64/boot/dts/mediatek/mt8196.dtsi
+@@ -4366,6 +4366,14 @@ dp_tx: dp-tx@3ec00000 {
+ 			clock-names = "mux_dp",
+ 				      "ck_26m";
+ 			mediatek,vdisp-ao = <&disp_vdisp_ao_config_clk>;
++			max-link-rate = <0x1e>;
++			max-lane-count = <0x2>;
++			encoder-num = <0x2>;
++			phyd-dig-glb-offset = <0x1000>;
++			phyd-dig-lan0-offset = <0x1100>;
++			phyd-dig-lan1-offset = <0x1200>;
++			phyd-dig-lan2-offset = <0x1300>;
++			phyd-dig-lan3-offset = <0x1400>;
  		};
  
- 		scpsys: syscon@10006000 {
-@@ -791,6 +792,14 @@ watchdog: watchdog@10007000 {
- 			#reset-cells = <1>;
- 		};
- 
-+		eint: apirq@1000b000 {
-+			compatible = "mediatek,mtk-eint";
-+			reg = <0 0x1000b000 0 0x1000>;
-+			reg-name = "eint";
-+			interrupts = <GIC_SPI 212 IRQ_TYPE_LEVEL_HIGH 0>;
-+			mediatek,total-pin-number = <224>;
-+		};
-+
- 		apmixedsys: syscon@1000c000 {
- 			compatible = "mediatek,mt8192-apmixedsys", "syscon";
- 			reg = <0 0x1000c000 0 0x1000>;
-diff --git a/arch/arm64/boot/dts/mediatek/mt8195.dtsi b/arch/arm64/boot/dts/mediatek/mt8195.dtsi
-index 4b56c10d3a2066c18e23d85cf8f277b6a0eb9c54..5479d568575ce9080c54c1c02f1c74190b29defa 100644
---- a/arch/arm64/boot/dts/mediatek/mt8195.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt8195.dtsi
-@@ -518,6 +518,7 @@ pio: pinctrl@10005000 {
- 			interrupt-controller;
- 			interrupts = <GIC_SPI 235 IRQ_TYPE_LEVEL_HIGH 0>;
- 			#interrupt-cells = <2>;
-+			mediatek,eint = <&eint>;
- 		};
- 
- 		scpsys: syscon@10006000 {
-@@ -860,6 +861,14 @@ watchdog: watchdog@10007000 {
- 			#reset-cells = <1>;
- 		};
- 
-+		eint: apirq@1000b000 {
-+			compatible = "mediatek,mtk-eint";
-+			reg = <0 0x1000b000 0 0x1000>;
-+			reg-name = "eint";
-+			interrupts = <GIC_SPI 235 IRQ_TYPE_LEVEL_HIGH 0>;
-+			mediatek,total-pin-number = <225>;
-+		};
-+
- 		apmixedsys: syscon@1000c000 {
- 			compatible = "mediatek,mt8195-apmixedsys", "syscon";
- 			reg = <0 0x1000c000 0 0x1000>;
-diff --git a/arch/arm64/boot/dts/mediatek/mt8365.dtsi b/arch/arm64/boot/dts/mediatek/mt8365.dtsi
-index 413496c9206954588da59718e121a948b0b2ed8a..bb2edb931f898faaa1fa4d870b3cb1d20d92782c 100644
---- a/arch/arm64/boot/dts/mediatek/mt8365.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt8365.dtsi
-@@ -313,6 +313,15 @@ pio: pinctrl@1000b000 {
- 			interrupt-controller;
- 			#interrupt-cells = <2>;
- 			interrupts = <GIC_SPI 115 IRQ_TYPE_LEVEL_HIGH>;
-+			mediatek,eint = <&eint>;
-+		};
-+
-+		eint: apirq@1000b000 {
-+			compatible = "mediatek,mtk-eint";
-+			reg = <0 0x1000b000 0 0x1000>;
-+			reg-name = "eint";
-+			interrupts = <GIC_SPI 115 IRQ_TYPE_LEVEL_HIGH>;
-+			mediatek,total-pin-number = <160>;
- 		};
- 
- 		apmixedsys: syscon@1000c000 {
-diff --git a/arch/arm64/boot/dts/mediatek/mt8516.dtsi b/arch/arm64/boot/dts/mediatek/mt8516.dtsi
-index 9cbd6dd8f671aa1c7056314481f776cb00c2b3fe..f95ccf8b3161ec13a75e0565f872b327c627e2e4 100644
---- a/arch/arm64/boot/dts/mediatek/mt8516.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt8516.dtsi
-@@ -234,6 +234,7 @@ pio: pinctrl@1000b000 {
- 			interrupt-controller;
- 			#interrupt-cells = <2>;
- 			interrupts = <GIC_SPI 134 IRQ_TYPE_LEVEL_HIGH>;
-+			mediatek,eint = <&eint>;
- 		};
- 
- 		efuse: efuse@10009000 {
-@@ -243,6 +244,14 @@ efuse: efuse@10009000 {
- 			#size-cells = <1>;
- 		};
- 
-+		eint: apirq@1000b000 {
-+			compatible = "mediatek,mtk-eint";
-+			reg = <0 0x1000b000 0 0x1000>;
-+			reg-name = "eint";
-+			interrupts = <GIC_SPI 134 IRQ_TYPE_LEVEL_HIGH>;
-+			mediatek,total-pin-number = <169>;
-+		};
-+
- 		pwrap: pwrap@1000f000 {
- 			compatible = "mediatek,mt8516-pwrap";
- 			reg = <0 0x1000f000 0 0x1000>;
+ 		edp_tx: edp-tx@3ec40000 {
 diff --git a/chromeos/config/chromeos/arm64/chromiumos-mediatek.flavour.config b/chromeos/config/chromeos/arm64/chromiumos-mediatek.flavour.config
 index 139d6e48cbcff53510b516851de86a0305a1cf82..584779e0f5358f0fc66fbe5dfbe7d75562a77c0d 100644
 --- a/chromeos/config/chromeos/arm64/chromiumos-mediatek.flavour.config
@@ -19689,10 +19450,10 @@ index 83a3136895c4b107f348a5b8f182897d604a56b7..c9798613efc90e8cada64cbe2a90d3f0
  obj-$(CONFIG_DRM_MEDIATEK) += mediatek-drm.o
  
 diff --git a/drivers/gpu/drm/mediatek/mtk_crtc.c b/drivers/gpu/drm/mediatek/mtk_crtc.c
-index ab22bfb9d3fd5f08d7d5fd9137541dd8d8d040df..7b36f1e3d246e3832bb9cea5d7dedb36551edec3 100644
+index 6950d9418a2ae608c068e9fd463c8a36187f819e..a2a0ba5180172166575efa494f80859bb853b522 100644
 --- a/drivers/gpu/drm/mediatek/mtk_crtc.c
 +++ b/drivers/gpu/drm/mediatek/mtk_crtc.c
-@@ -855,6 +855,7 @@ static void mtk_crtc_ddp_config(struct drm_crtc *crtc,
+@@ -860,6 +860,7 @@ static void mtk_crtc_ddp_config(struct drm_crtc *crtc,
  		if (!cmdq_handle)
  			mtk_crtc->pending_async_planes = false;
  	}
@@ -19803,10 +19564,10 @@ index f06b048c124794c0f1192591136a3d7bc7ce35e4..b3fb71157b4e0b4c003510f35054aff6
  };
  MODULE_DEVICE_TABLE(of, mtk_disp_rdma_driver_dt_match);
 diff --git a/drivers/gpu/drm/mediatek/mtk_dp.c b/drivers/gpu/drm/mediatek/mtk_dp.c
-index 6d1d009cfd966eaebc108e21402ec4acb3375b2c..553eb9a46673124361802ad675a5770b2fd08c24 100644
+index 4d8a539bc5ea0963ad7859028906e3f06d9c90cf..4d78d98205662d7519a9a3b3d54af7cb70bc1e1b 100644
 --- a/drivers/gpu/drm/mediatek/mtk_dp.c
 +++ b/drivers/gpu/drm/mediatek/mtk_dp.c
-@@ -2921,13 +2921,13 @@ static int mtk_dp_register_phy(struct mtk_dp *mtk_dp)
+@@ -2954,13 +2954,13 @@ static int mtk_dp_register_phy(struct mtk_dp *mtk_dp)
  
  	if (mtk_dp->phy_regs)
  		mtk_dp->phy_dev = platform_device_register_data(dev,
@@ -19822,7 +19583,7 @@ index 6d1d009cfd966eaebc108e21402ec4acb3375b2c..553eb9a46673124361802ad675a5770b
  					PLATFORM_DEVID_AUTO,
  					&mtk_dp->regs,
  					sizeof(struct regmap *));
-@@ -3243,6 +3243,10 @@ static const struct of_device_id mtk_dp_of_match[] = {
+@@ -3280,6 +3280,10 @@ static const struct of_device_id mtk_dp_of_match[] = {
  		.compatible = "mediatek,mt8196-edp-tx",
  		.data = &mt8196_edp_data,
  	},
@@ -19834,7 +19595,7 @@ index 6d1d009cfd966eaebc108e21402ec4acb3375b2c..553eb9a46673124361802ad675a5770b
  };
  MODULE_DEVICE_TABLE(of, mtk_dp_of_match);
 diff --git a/drivers/gpu/drm/mediatek/mtk_dp_common.h b/drivers/gpu/drm/mediatek/mtk_dp_common.h
-index 034c4a265baf6c31994c184bcac83542b6368402..434abca7840c77eaebaa51d64913e00fda6543c3 100644
+index 62e7591639b835c19d7e8e73226557bea9c0a619..a970c09cfa99f2f691aff6c73511701eecfdd4e1 100644
 --- a/drivers/gpu/drm/mediatek/mtk_dp_common.h
 +++ b/drivers/gpu/drm/mediatek/mtk_dp_common.h
 @@ -18,9 +18,6 @@
@@ -19885,8 +19646,8 @@ index 034c4a265baf6c31994c184bcac83542b6368402..434abca7840c77eaebaa51d64913e00f
  };
  
  struct dp_training_info {
-@@ -445,5 +437,37 @@ struct mtk_dp {
- 	struct device *codec_dev;
+@@ -447,5 +439,37 @@ struct mtk_dp {
+ 	struct device *vdisp_ao_dev;
  	/* protect the plugged_cb as it's used in both bridge ops and audio */
  	struct mutex update_plugged_status_lock;
 +
@@ -19937,7 +19698,7 @@ index 4284549490fb5b88c93e9d1e9cc8cd23c4f1f076..af50d0a26573debcf4d87952edae7434
  };
  
 diff --git a/drivers/gpu/drm/mediatek/mtk_dp_reg_v2.h b/drivers/gpu/drm/mediatek/mtk_dp_reg_v2.h
-index ac2f9d6ba614777d08ce3fa497eb381ac39bf21a..6bba90dd88f36aa53bf8514acf827802ad65ae1d 100644
+index 20080b349441b6c1dd0a582136ef7323d18db17b..b485619248985cfef878860cfe520dc009343470 100644
 --- a/drivers/gpu/drm/mediatek/mtk_dp_reg_v2.h
 +++ b/drivers/gpu/drm/mediatek/mtk_dp_reg_v2.h
 @@ -46,6 +46,10 @@
@@ -20026,7 +19787,7 @@ index ac2f9d6ba614777d08ce3fa497eb381ac39bf21a..6bba90dd88f36aa53bf8514acf827802
  #define DP_TX_TOP_PWR_STATE									0x2000
  #define DP_PWR_STATE_FLDMASK								0x3
 diff --git a/drivers/gpu/drm/mediatek/mtk_dp_v2.c b/drivers/gpu/drm/mediatek/mtk_dp_v2.c
-index 8e936bd3183e2940715b7a58ff3ddb927fdd8c39..18f7e799c879b2dad98d4d85cc879fc2c521fc7d 100644
+index 925a12f1d333864be4d169918c97bc6cc0f77c05..39ebae50b71142d41dc27d39943ed2de42c8928c 100644
 --- a/drivers/gpu/drm/mediatek/mtk_dp_v2.c
 +++ b/drivers/gpu/drm/mediatek/mtk_dp_v2.c
 @@ -840,7 +840,7 @@ static ssize_t mtk_dp_aux_transfer_v2(struct drm_dp_aux *mtk_aux,
@@ -20047,7 +19808,7 @@ index 8e936bd3183e2940715b7a58ff3ddb927fdd8c39..18f7e799c879b2dad98d4d85cc879fc2
  {
  	WRITE_2BYTE_MASK(mtk_dp, REG_360C_AUX_TX_P0, 0,
  			 AUX_SWAP_AUX_TX_P0_FLDMASK);
-@@ -2901,22 +2901,22 @@ static void mtk_dp_phy_set_rate_param_v2(struct mtk_dp *mtk_dp, enum dp_link_rat
+@@ -2928,22 +2928,22 @@ static void mtk_dp_phy_set_rate_param_v2(struct mtk_dp *mtk_dp, enum dp_link_rat
  	switch (val) {
  	case DP_LINK_RATE_RBR:
  		/* Set gear : 0x0 : RBR, 0x1 : HBR, 0x2 : HBR2, 0x3 : HBR3 */
@@ -20074,7 +19835,7 @@ index 8e936bd3183e2940715b7a58ff3ddb927fdd8c39..18f7e799c879b2dad98d4d85cc879fc2
  		break;
  	default:
  		break;
-@@ -2935,10 +2935,10 @@ static void mtk_dp_phy_set_lane_pwr_v2(struct mtk_dp *mtk_dp, enum dp_lane_count
+@@ -2962,10 +2962,10 @@ static void mtk_dp_phy_set_lane_pwr_v2(struct mtk_dp *mtk_dp, enum dp_lane_count
  
  	do {
  		power_bmp |= BIT(power_indx);
@@ -20087,7 +19848,7 @@ index 8e936bd3183e2940715b7a58ff3ddb927fdd8c39..18f7e799c879b2dad98d4d85cc879fc2
  						+ DP_PHY_DIG_TX_CTL_0) &
  					TX_LN_EN_FLDMASK) >> TX_LN_EN_FLDMASK_POS);
  	} while (--power_indx >= 0);
-@@ -2946,26 +2946,26 @@ static void mtk_dp_phy_set_lane_pwr_v2(struct mtk_dp *mtk_dp, enum dp_lane_count
+@@ -2973,26 +2973,26 @@ static void mtk_dp_phy_set_lane_pwr_v2(struct mtk_dp *mtk_dp, enum dp_lane_count
  
  static void mtk_dp_phy_clear_lane_pwr_v2(struct mtk_dp *mtk_dp)
  {
@@ -20124,7 +19885,7 @@ index 8e936bd3183e2940715b7a58ff3ddb927fdd8c39..18f7e799c879b2dad98d4d85cc879fc2
  			    0x3 << FORCE_PWR_STATE_VAL_FLDMASK_POS, FORCE_PWR_STATE_VAL_FLDMASK);
  
  	dev_dbg(mtk_dp->dev, "DP PHYD power on\n");
-@@ -2975,14 +2975,14 @@ static void mtk_dp_phy_power_down_v2(struct mtk_dp *mtk_dp)
+@@ -3002,14 +3002,14 @@ static void mtk_dp_phy_power_down_v2(struct mtk_dp *mtk_dp)
  {
  	mtk_dp_phy_clear_lane_pwr_v2(mtk_dp);
  
@@ -20143,7 +19904,7 @@ index 8e936bd3183e2940715b7a58ff3ddb927fdd8c39..18f7e799c879b2dad98d4d85cc879fc2
  			    BIT(1) | BIT(3), BIT(1) | BIT(3));
  
  	dev_dbg(mtk_dp->dev, "DP PHYD power down\n");
-@@ -2990,64 +2990,64 @@ static void mtk_dp_phy_power_down_v2(struct mtk_dp *mtk_dp)
+@@ -3017,64 +3017,64 @@ static void mtk_dp_phy_power_down_v2(struct mtk_dp *mtk_dp)
  
  static void mtk_dp_phy_reset_swing_pre_v2(struct mtk_dp *mtk_dp)
  {
@@ -20237,7 +19998,7 @@ index 8e936bd3183e2940715b7a58ff3ddb927fdd8c39..18f7e799c879b2dad98d4d85cc879fc2
 +			 DP_TX_FORCE_PRE_EMPH_VAL_FLDMASK);
  }
  
- static void mtk_dp_phy_ssc_enable_v2(struct mtk_dp *mtk_dp, const u8 enable)
+ static void mtk_dp_phy_ssc_enable_v2(struct mtk_dp *mtk_dp, bool enable)
  {
  	if (enable)
 -		PHY_WRITE_BYTE_MASK(mtk_dp, PHYD_DIG_GLB_OFFSET + DP_PHY_DIG_PLL_CTL_1,
@@ -20249,7 +20010,7 @@ index 8e936bd3183e2940715b7a58ff3ddb927fdd8c39..18f7e799c879b2dad98d4d85cc879fc2
  				    0x0, TPLL_SSC_EN_FLDMASK);
  
  	dev_dbg(mtk_dp->dev, "Phy SSC enable = %d\n", enable);
-@@ -3080,11 +3080,13 @@ static void mtk_dp_phy_4lane_enable_v2(struct mtk_dp *mtk_dp)
+@@ -3107,11 +3107,13 @@ static void mtk_dp_phy_4lane_enable_v2(struct mtk_dp *mtk_dp)
  	value = (BIT(12) | BIT(13));
  
  	tmp = readl(mtk_dp->phy_mux_regs);
@@ -20266,7 +20027,7 @@ index 8e936bd3183e2940715b7a58ff3ddb927fdd8c39..18f7e799c879b2dad98d4d85cc879fc2
  }
  
  static void mtk_dp_phy_4lane_disable_v2(struct mtk_dp *mtk_dp)
-@@ -3098,40 +3100,46 @@ static void mtk_dp_phy_4lane_disable_v2(struct mtk_dp *mtk_dp)
+@@ -3125,40 +3127,46 @@ static void mtk_dp_phy_4lane_disable_v2(struct mtk_dp *mtk_dp)
  	value = BIT(12);
  
  	tmp = readl(mtk_dp->phy_mux_regs);
@@ -20328,7 +20089,7 @@ index 8e936bd3183e2940715b7a58ff3ddb927fdd8c39..18f7e799c879b2dad98d4d85cc879fc2
  	writel(tmp, mtk_dp->phy_mux_regs);
  
  	dev_dbg(mtk_dp->dev, "Swap disable\n");
-@@ -3142,8 +3150,8 @@ static void mtk_dp_phy_set_param_v2(struct mtk_dp *mtk_dp)
+@@ -3169,8 +3177,8 @@ static void mtk_dp_phy_set_param_v2(struct mtk_dp *mtk_dp)
  	u8 i;
  
  	const u32 phyd_dig_lan_base_addr[4] = {
@@ -20339,7 +20100,7 @@ index 8e936bd3183e2940715b7a58ff3ddb927fdd8c39..18f7e799c879b2dad98d4d85cc879fc2
  
  	/* 4-1. PLL */
  	PHY_WRITE_BYTE_MASK(mtk_dp, 0x0614, BIT(0), BIT(0));
-@@ -3163,6 +3171,9 @@ static void mtk_dp_phy_set_param_v2(struct mtk_dp *mtk_dp)
+@@ -3190,6 +3198,9 @@ static void mtk_dp_phy_set_param_v2(struct mtk_dp *mtk_dp)
  
  static void mtk_dp_phy_setting_v2(struct mtk_dp *mtk_dp)
  {
@@ -20349,7 +20110,7 @@ index 8e936bd3183e2940715b7a58ff3ddb927fdd8c39..18f7e799c879b2dad98d4d85cc879fc2
  	/* step1: phy init */
  	if (mtk_dp->training_info.max_link_lane_count == DP_4LANE)
  		mtk_dp_phy_4lane_enable_v2(mtk_dp);
-@@ -3452,37 +3463,37 @@ static bool mtk_dp_swingt_set_pre_emphasis_v2(struct mtk_dp *mtk_dp,
+@@ -3484,37 +3495,37 @@ static bool mtk_dp_swingt_set_pre_emphasis_v2(struct mtk_dp *mtk_dp,
  
  	switch (lane_num) {
  	case DP_LANE0:
@@ -20399,7 +20160,7 @@ index 8e936bd3183e2940715b7a58ff3ddb927fdd8c39..18f7e799c879b2dad98d4d85cc879fc2
  				     (pre_emphasis_level << DP_TX_FORCE_PRE_EMPH_VAL_FLDMASK_POS),
  				     DP_TX_FORCE_PRE_EMPH_VAL_FLDMASK);
  		break;
-@@ -3530,7 +3541,7 @@ static void mtk_dp_set_lane_count_v2(struct mtk_dp *mtk_dp, const enum dp_lane_c
+@@ -3562,7 +3573,7 @@ static void mtk_dp_set_lane_count_v2(struct mtk_dp *mtk_dp, const enum dp_lane_c
  		return;
  	}
  
@@ -20408,7 +20169,7 @@ index 8e936bd3183e2940715b7a58ff3ddb927fdd8c39..18f7e799c879b2dad98d4d85cc879fc2
  		reg_offset = DP_REG_OFFSET(encoder_id);
  
  		WRITE_BYTE_MASK(mtk_dp, REG_3000_DP_ENCODER0_P0 + reg_offset,
-@@ -3561,7 +3572,7 @@ static void mtk_dp_set_enhanced_frame_mode_v2(struct mtk_dp *mtk_dp, bool enable
+@@ -3593,7 +3604,7 @@ static void mtk_dp_set_enhanced_frame_mode_v2(struct mtk_dp *mtk_dp, bool enable
  	enum dp_encoder_id encoder_id;
  	u32 reg_offset;
  
@@ -20417,7 +20178,7 @@ index 8e936bd3183e2940715b7a58ff3ddb927fdd8c39..18f7e799c879b2dad98d4d85cc879fc2
  		reg_offset = DP_REG_OFFSET(encoder_id);
  
  		if (enable)
-@@ -3649,8 +3660,20 @@ static void mtk_dp_set_dp_out_v2(struct mtk_dp *mtk_dp, const enum dp_encoder_id
+@@ -3681,8 +3692,20 @@ static void mtk_dp_set_dp_out_v2(struct mtk_dp *mtk_dp, const enum dp_encoder_id
  	mtk_dp_set_output_timing_v2(mtk_dp, encoder_id);
  	mtk_dp_mn_calculate_v2(mtk_dp, encoder_id);
  
@@ -20440,7 +20201,7 @@ index 8e936bd3183e2940715b7a58ff3ddb927fdd8c39..18f7e799c879b2dad98d4d85cc879fc2
  
  	mtk_dp_mvid_renew_v2(mtk_dp, encoder_id);
  	mtk_dp_tu_set_v2(mtk_dp, encoder_id);
-@@ -3992,15 +4015,15 @@ static void mtk_dp_init_variable_v2(struct mtk_dp *mtk_dp)
+@@ -4026,15 +4049,15 @@ static void mtk_dp_init_variable_v2(struct mtk_dp *mtk_dp)
  	enum dp_encoder_id encoder_id;
  
  	mtk_dp->training_info.dp_version = DP_VER_14;
@@ -20459,7 +20220,7 @@ index 8e936bd3183e2940715b7a58ff3ddb927fdd8c39..18f7e799c879b2dad98d4d85cc879fc2
  		mtk_dp->info[encoder_id].depth = DP_COLOR_DEPTH_8BIT;
  		memset(&mtk_dp->info[encoder_id].dp_output_timing, 0,
  		       sizeof(struct dp_timing_parameter));
-@@ -4027,7 +4050,7 @@ static void mtk_dp_initial_setting_v2(struct mtk_dp *mtk_dp)
+@@ -4061,7 +4084,7 @@ static void mtk_dp_initial_setting_v2(struct mtk_dp *mtk_dp)
  
  	mtk_dp_fec_init_setting_v2(mtk_dp);
  
@@ -20468,7 +20229,7 @@ index 8e936bd3183e2940715b7a58ff3ddb927fdd8c39..18f7e799c879b2dad98d4d85cc879fc2
  		reg_offset = DP_REG_OFFSET(encoder_id);
  		WRITE_4BYTE_MASK(mtk_dp, REG_31EC_DP_ENCODER0_P0  + reg_offset, BIT(4), BIT(4));
  		WRITE_4BYTE_MASK(mtk_dp, REG_304C_DP_ENCODER0_P0  + reg_offset, 0, BIT(8));
-@@ -4125,12 +4148,12 @@ static void mtk_dp_init_port_v2(struct mtk_dp *mtk_dp)
+@@ -4159,12 +4182,12 @@ static void mtk_dp_init_port_v2(struct mtk_dp *mtk_dp)
  	mtk_dp_init_variable_v2(mtk_dp);
  
  	mtk_dp_fec_disable_v2(mtk_dp);
@@ -20483,7 +20244,7 @@ index 8e936bd3183e2940715b7a58ff3ddb927fdd8c39..18f7e799c879b2dad98d4d85cc879fc2
  		mtk_dp_digital_setting_v2(mtk_dp, encoder_id);
  
  	mtk_dp_analog_power_on_v2(mtk_dp);
-@@ -4161,7 +4184,7 @@ static void mtk_dp_disconnect_release_v2(struct mtk_dp *mtk_dp)
+@@ -4199,7 +4222,7 @@ static void mtk_dp_disconnect_release_v2(struct mtk_dp *mtk_dp)
  	mtk_dp_phy_set_idle_pattern_v2(mtk_dp, true);
  	mtk_dp_fec_disable_v2(mtk_dp);
  
@@ -20492,16 +20253,7 @@ index 8e936bd3183e2940715b7a58ff3ddb927fdd8c39..18f7e799c879b2dad98d4d85cc879fc2
  		mtk_dp_dsc_disable_v2(mtk_dp, i);
  
  	mtk_dp_analog_power_off_v2(mtk_dp);
-@@ -4927,7 +4950,7 @@ static u32 *mtk_dp_bridge_atomic_get_input_bus_fmts_v2(struct drm_bridge *bridge
- 	}
- 
- 	/* divide the total equally for one stream */
--	valid_pbn = (dfixed_trunc(state->pbn_div) * 63) / DP_ENCODER_NUM;
-+	valid_pbn = (dfixed_trunc(state->pbn_div) * 63) / mtk_dp->data->encoder_num;
- 	need_pbn = mtk_dp_mst_drv_calculate_pbn(mtk_dp, mode, 24, false);
- 	slots = mtk_dp_mst_drv_find_vcpi_slots(mtk_dp,
- 					       dfixed_trunc(state->pbn_div), need_pbn);
-@@ -5412,7 +5435,7 @@ static int mtk_dp_audio_hw_params_v2(struct device *dev, void *data,
+@@ -5451,7 +5474,7 @@ static int mtk_dp_audio_hw_params_v2(struct device *dev, void *data,
  	struct mtk_dp *mtk_dp = dev_get_drvdata(dev);
  	enum dp_encoder_id encoder_id;
  
@@ -20510,7 +20262,7 @@ index 8e936bd3183e2940715b7a58ff3ddb927fdd8c39..18f7e799c879b2dad98d4d85cc879fc2
  		mtk_dp->info[encoder_id].audio_cur_cfg.channels = params->cea.channels;
  		mtk_dp->info[encoder_id].audio_cur_cfg.word_length_bits = params->sample_width;
  		mtk_dp->info[encoder_id].audio_cur_cfg.sample_rate = params->sample_rate;
-@@ -5428,7 +5451,7 @@ static int mtk_dp_audio_startup_v2(struct device *dev, void *data)
+@@ -5467,7 +5490,7 @@ static int mtk_dp_audio_startup_v2(struct device *dev, void *data)
  	struct mtk_dp *mtk_dp = dev_get_drvdata(dev);
  	enum dp_encoder_id encoder_id;
  
@@ -20519,7 +20271,7 @@ index 8e936bd3183e2940715b7a58ff3ddb927fdd8c39..18f7e799c879b2dad98d4d85cc879fc2
  		mtk_dp_audio_mute_v2(mtk_dp, encoder_id, false);
  
  	return 0;
-@@ -5439,7 +5462,7 @@ static void mtk_dp_audio_shutdown_v2(struct device *dev, void *data)
+@@ -5478,7 +5501,7 @@ static void mtk_dp_audio_shutdown_v2(struct device *dev, void *data)
  	struct mtk_dp *mtk_dp = dev_get_drvdata(dev);
  	enum dp_encoder_id encoder_id;
  
@@ -20528,7 +20280,7 @@ index 8e936bd3183e2940715b7a58ff3ddb927fdd8c39..18f7e799c879b2dad98d4d85cc879fc2
  		mtk_dp_audio_mute_v2(mtk_dp, encoder_id, true);
  }
  
-@@ -5729,7 +5752,7 @@ static void mtk_dp_init_property_v2(struct mtk_dp *mtk_dp)
+@@ -5777,7 +5800,7 @@ static void mtk_dp_init_property_v2(struct mtk_dp *mtk_dp)
  	if (mtk_dp->init_property)
  		return;
  
@@ -20537,7 +20289,7 @@ index 8e936bd3183e2940715b7a58ff3ddb927fdd8c39..18f7e799c879b2dad98d4d85cc879fc2
  		bridge = devm_drm_of_get_bridge(mtk_dp->dev,
  						mtk_dp->dev->of_node, i, DP_ENCODER_ENDPOINT);
  		if (IS_ERR(bridge)) {
-@@ -5968,7 +5991,7 @@ static int mtk_dp_dt_parse_pdata_v2(struct mtk_dp *mtk_dp,
+@@ -6033,7 +6056,7 @@ static int mtk_dp_dt_parse_pdata_v2(struct mtk_dp *mtk_dp,
  	return 0;
  }
  
@@ -20546,7 +20298,7 @@ index 8e936bd3183e2940715b7a58ff3ddb927fdd8c39..18f7e799c879b2dad98d4d85cc879fc2
  {
  	writel((readl(mtk_dp->mac_power_regs) & ~BIT(0)), mtk_dp->mac_power_regs);
  	writel((readl(mtk_dp->mac_power_regs) | BIT(4)), mtk_dp->mac_power_regs);
-@@ -6007,7 +6030,8 @@ static int mtk_dp_suspend_v2(struct device *dev)
+@@ -6072,7 +6095,8 @@ static int mtk_dp_suspend_v2(struct device *dev)
  
  	mtk_dp_disconnect_release_v2(mtk_dp);
  
@@ -20556,7 +20308,7 @@ index 8e936bd3183e2940715b7a58ff3ddb927fdd8c39..18f7e799c879b2dad98d4d85cc879fc2
  
  	clk_disable_unprepare(mtk_dp->pclk);
  
-@@ -6040,7 +6064,8 @@ static int mtk_dp_resume_v2(struct device *dev)
+@@ -6105,7 +6129,8 @@ static int mtk_dp_resume_v2(struct device *dev)
  
  	clk_prepare_enable(mtk_dp->pclk);
  
@@ -20565,8 +20317,8 @@ index 8e936bd3183e2940715b7a58ff3ddb927fdd8c39..18f7e799c879b2dad98d4d85cc879fc2
 +		mtk_dp->data->mac_power(mtk_dp);
  
  	mtk_dp_init_port_v2(mtk_dp);
- 	mtk_dp_hpd_interrupt_enable_v2(mtk_dp, true);
-@@ -6193,7 +6218,8 @@ static int mtk_drm_dp_probe_v2(struct platform_device *pdev)
+ 
+@@ -6264,7 +6289,8 @@ static int mtk_drm_dp_probe_v2(struct platform_device *pdev)
  		return -ENOMEM;
  	}
  
@@ -20576,7 +20328,7 @@ index 8e936bd3183e2940715b7a58ff3ddb927fdd8c39..18f7e799c879b2dad98d4d85cc879fc2
  
  	mtk_dp->pclk = devm_clk_get(mtk_dp->dev, "mux_dp");
  	if (IS_ERR(mtk_dp->pclk))
-@@ -6249,6 +6275,88 @@ static SIMPLE_DEV_PM_OPS(mtk_dp_pm_ops,
+@@ -6320,6 +6346,88 @@ static SIMPLE_DEV_PM_OPS(mtk_dp_pm_ops,
  
  static const struct mtk_dp_efuse_fmt mt8196_dp_efuse_fmt[5] = {0};
  
@@ -20665,7 +20417,7 @@ index 8e936bd3183e2940715b7a58ff3ddb927fdd8c39..18f7e799c879b2dad98d4d85cc879fc2
  static const struct mtk_dp_data mt8196_dp_data = {
  	.bridge_type = DRM_MODE_CONNECTOR_DisplayPort,
  	.smc_cmd = BIT(5),
-@@ -6257,12 +6365,58 @@ static const struct mtk_dp_data mt8196_dp_data = {
+@@ -6328,12 +6436,58 @@ static const struct mtk_dp_data mt8196_dp_data = {
  	.audio_m_div2_bit = 0,
  	.dsc_support = true,
  	.mst_support = true,
@@ -20725,11 +20477,11 @@ index 8e936bd3183e2940715b7a58ff3ddb927fdd8c39..18f7e799c879b2dad98d4d85cc879fc2
  };
  
 diff --git a/drivers/gpu/drm/mediatek/mtk_dp_v2.h b/drivers/gpu/drm/mediatek/mtk_dp_v2.h
-index c2f25c449e3263c73592de972bcab00c653e5b9e..36649c04c25164e107c3c61474e4bb2f210fd091 100644
+index dd1e5304af62fddbc20ff4452a05f59d07b5c9f7..518bfe24538d8bfaf1438ee8b4a05ded92764b49 100644
 --- a/drivers/gpu/drm/mediatek/mtk_dp_v2.h
 +++ b/drivers/gpu/drm/mediatek/mtk_dp_v2.h
-@@ -30,6 +30,8 @@ void mtk_dp_audio_update_plugged_status_v2(struct mtk_dp *mtk_dp, bool video_ena
- void mtk_dp_hdcp_update_value(struct mtk_dp *mtk_dp, u32 value);
+@@ -33,6 +33,8 @@ void mtk_dp_hdcp_disable(struct mtk_dp *mtk_dp);
+ void mtk_dp_hdcp_atomic_check(struct mtk_dp *mtk_dp, enum dp_encoder_id id, struct drm_connector_state *state);
  u32 mtk_dp_dsc_cal_clock_v2(struct drm_display_mode *mode);
  void mtk_dp_dsc_check_prepare_v2(struct mtk_dp *mtk_dp, const enum dp_encoder_id encoder_id);
 +void mtk_dp_aux_swap_enable_v2(struct mtk_dp *mtk_dp);
@@ -20803,7 +20555,7 @@ index bdfcc055474416590706ee686b7b443e24262d94..a4b4fa776f6842ce15333a76728f66ca
 +
  #endif /* __MTK_DPI_REGS_H */
 diff --git a/drivers/gpu/drm/mediatek/mtk_dpi_v2.c b/drivers/gpu/drm/mediatek/mtk_dpi_v2.c
-index e6fc6a3072a5b87b64fa748d0117ff699c6ade80..eefd01bfb59b9cc1109db0aa1e05098cbea13685 100644
+index c31b6765a50dab06e80bc4444b594d924706a521..d386861ee8585deb410a4d176a3e5d66ddeab9bb 100644
 --- a/drivers/gpu/drm/mediatek/mtk_dpi_v2.c
 +++ b/drivers/gpu/drm/mediatek/mtk_dpi_v2.c
 @@ -71,6 +71,19 @@ enum TVDPLL_CLK {
@@ -21242,11 +20994,11 @@ index e6fc6a3072a5b87b64fa748d0117ff699c6ade80..eefd01bfb59b9cc1109db0aa1e05098c
  
  	mtk_dpi_power_on_v2(dpi);
 -	mtk_dpi_set_display_mode_v2(dpi, &dpi->mode);
-+	dpi->conf->set_display_mode(dpi, &dpi->mode);
- }
++        dpi->conf->set_display_mode(dpi, &dpi->mode);
  
- static void mtk_dpi_bridge_enable_v2(struct drm_bridge *bridge)
-@@ -1009,22 +1286,6 @@ static const u32 mt8196_output_fmts[] = {
+ 	/* TODO: Remove temporary solutions and follow API specifications */
+ 	mtk_dpi_enable_v2(dpi);
+@@ -1014,22 +1291,6 @@ static const u32 mt8196_output_fmts[] = {
  	MEDIA_BUS_FMT_YUYV8_1X16,
  };
  
@@ -21269,7 +21021,7 @@ index e6fc6a3072a5b87b64fa748d0117ff699c6ade80..eefd01bfb59b9cc1109db0aa1e05098c
  static void mt8196_get_clk_v2(struct mtk_dpi *dp_intf)
  {
  	dev_dbg(dp_intf->dev, "get clk\n");
-@@ -1051,6 +1312,74 @@ static void mt8196_get_clk_v2(struct mtk_dpi *dp_intf)
+@@ -1056,6 +1317,74 @@ static void mt8196_get_clk_v2(struct mtk_dpi *dp_intf)
  			IS_ERR(dp_intf->pclk_src[TVDPLL_PLL]));
  }
  
@@ -21344,7 +21096,7 @@ index e6fc6a3072a5b87b64fa748d0117ff699c6ade80..eefd01bfb59b9cc1109db0aa1e05098c
  static int mtk_dpi_probe_v2(struct platform_device *pdev)
  {
  	struct device *dev = &pdev->dev;
-@@ -1117,7 +1446,7 @@ static int mtk_dpi_probe_v2(struct platform_device *pdev)
+@@ -1122,7 +1451,7 @@ static int mtk_dpi_probe_v2(struct platform_device *pdev)
  		return ret;
  	}
  
@@ -21353,7 +21105,7 @@ index e6fc6a3072a5b87b64fa748d0117ff699c6ade80..eefd01bfb59b9cc1109db0aa1e05098c
  
  	mtk_dpi_v2 = dpi->conf->use_version_2;
  
-@@ -1149,6 +1478,7 @@ static void mtk_dpi_remove_v2(struct platform_device *pdev)
+@@ -1154,6 +1483,7 @@ static void mtk_dpi_remove_v2(struct platform_device *pdev)
  
  static const struct of_device_id mtk_dpi_of_ids_v2[] = {
  	{ .compatible = "mediatek,mt8196-dp-intf", .data = &mt8196_dpintf_conf },
@@ -24367,1645 +24119,12 @@ index 6d29673dd199539462e202f7977d19794753426a..a1853628d2708a18fb744019cc813da1
  obj-$(CONFIG_PINCTRL_MT8192)		+= pinctrl-mt8192.o
  obj-$(CONFIG_PINCTRL_MT8195)		+= pinctrl-mt8195.o
  obj-$(CONFIG_PINCTRL_MT8196)		+= pinctrl-mt8196.o
-diff --git a/drivers/pinctrl/mediatek/mtk-eint.c b/drivers/pinctrl/mediatek/mtk-eint.c
-index ec18a7a740045a37ae583ec896fc8ddc37dc2531..64d17b5923bfb34fcb93876f77f5adc6c653d5b9 100644
---- a/drivers/pinctrl/mediatek/mtk-eint.c
-+++ b/drivers/pinctrl/mediatek/mtk-eint.c
-@@ -1,36 +1,39 @@
- // SPDX-License-Identifier: GPL-2.0
--// Copyright (c) 2014-2025 MediaTek Inc.
--
-+// Copyright (c) 2014-2018 MediaTek Inc.
- /*
-  * Library for MediaTek External Interrupt Support
-  *
-  * Author: Maoguang Meng <maoguang.meng@mediatek.com>
-- *	   Sean Wang <sean.wang@mediatek.com>
-- *	   Hao Chang <ot_chhao.chang@mediatek.com>
-- *	   Qingliang Li <qingliang.li@mediatek.com>
-+ * Sean Wang <sean.wang@mediatek.com>
-  *
-  */
- 
-+#include <linux/atomic.h>
- #include <linux/delay.h>
- #include <linux/err.h>
- #include <linux/gpio/driver.h>
- #include <linux/io.h>
- #include <linux/irqchip/chained_irq.h>
- #include <linux/irqdomain.h>
-+#include <linux/kernel.h>
- #include <linux/module.h>
-+#include <linux/of_address.h>
-+#include <linux/of_device.h>
- #include <linux/of_irq.h>
- #include <linux/platform_device.h>
- 
- #include "mtk-eint.h"
--#include "pinctrl-mtk-common-v2.h"
- 
- #define MTK_EINT_EDGE_SENSITIVE           0
- #define MTK_EINT_LEVEL_SENSITIVE          1
- #define MTK_EINT_DBNC_SET_DBNC_BITS	  4
--#define MTK_EINT_DBNC_MAX		  16
- #define MTK_EINT_DBNC_RST_BIT		  (0x1 << 1)
- #define MTK_EINT_DBNC_SET_EN		  (0x1 << 0)
- 
-+#define MTK_EINT_NO_OFFSET		  0
-+
-+static struct mtk_eint *global_eintc;
-+
- static const struct mtk_eint_regs mtk_generic_eint_regs = {
- 	.stat      = 0x000,
- 	.ack       = 0x040,
-@@ -50,75 +53,125 @@ static const struct mtk_eint_regs mtk_generic_eint_regs = {
- 	.dbnc_ctrl = 0x500,
- 	.dbnc_set  = 0x600,
- 	.dbnc_clr  = 0x700,
-+	.raw_stat  = 0xa00,
- };
- 
--const unsigned int debounce_time_mt2701[] = {
--	500, 1000, 16000, 32000, 64000, 128000, 256000, 0
--};
--EXPORT_SYMBOL_GPL(debounce_time_mt2701);
--
--const unsigned int debounce_time_mt6765[] = {
--	125, 250, 500, 1000, 16000, 32000, 64000, 128000, 256000, 512000, 0
--};
--EXPORT_SYMBOL_GPL(debounce_time_mt6765);
--
--const unsigned int debounce_time_mt6795[] = {
--	500, 1000, 16000, 32000, 64000, 128000, 256000, 512000, 0
--};
--EXPORT_SYMBOL_GPL(debounce_time_mt6795);
--
-+/*
-+ * Return the iomem of specific register offset and decode the coordinate
-+ * (instance, index) from global eint number.
-+ * If return NULL, then it must be either out-of-range or do-not-support.
-+ */
- static void __iomem *mtk_eint_get_offset(struct mtk_eint *eint,
- 					 unsigned int eint_num,
--					 unsigned int offset)
-+					 unsigned int offset,
-+					 unsigned int *instance,
-+					 unsigned int *index)
- {
--	unsigned int idx = eint->pins[eint_num].index;
--	unsigned int inst = eint->pins[eint_num].instance;
- 	void __iomem *reg;
- 
--	reg = eint->base[inst] + offset + (idx / 32 * 4);
-+	if (eint_num >= eint->total_pin_number ||
-+	    !eint->pins[eint_num].enabled) {
-+		WARN_ON(1);
-+		return NULL;
-+	}
-+
-+	*instance = eint->pins[eint_num].instance;
-+	*index = eint->pins[eint_num].index;
-+	reg = eint->instances[*instance].base + offset + (*index / 32 * 4);
- 
- 	return reg;
- }
- 
-+/*
-+ * Generate helper function to access property register of a dedicate pin.
-+ */
-+#define DEFINE_EINT_GET_FUNCTION(_NAME, _OFFSET) \
-+static unsigned int mtk_eint_get_##_NAME(struct mtk_eint *eint, \
-+				   unsigned int eint_num) \
-+{ \
-+	unsigned int instance, index; \
-+	void __iomem *reg = mtk_eint_get_offset(eint, eint_num, \
-+						_OFFSET, \
-+						&instance, &index); \
-+	unsigned int bit = BIT(index & 0x1f);\
-+\
-+	if (!reg) { \
-+		dev_err(eint->dev, "%s invalid eint_num %d\n", \
-+			__func__, eint_num); \
-+		return 0;\
-+	} \
-+\
-+	return !!(readl(reg) & bit); \
-+}
-+
-+DEFINE_EINT_GET_FUNCTION(stat, eint->comp->regs->stat);
-+DEFINE_EINT_GET_FUNCTION(mask, eint->comp->regs->mask);
-+DEFINE_EINT_GET_FUNCTION(sens, eint->comp->regs->sens);
-+DEFINE_EINT_GET_FUNCTION(pol, eint->comp->regs->pol);
-+DEFINE_EINT_GET_FUNCTION(soft, eint->comp->regs->soft);
-+DEFINE_EINT_GET_FUNCTION(raw_stat, eint->comp->regs->raw_stat);
-+
- static unsigned int mtk_eint_can_en_debounce(struct mtk_eint *eint,
- 					     unsigned int eint_num)
- {
- 	unsigned int sens;
--	unsigned int bit = BIT(eint->pins[eint_num].index % 32);
-+	unsigned int instance, index;
- 	void __iomem *reg = mtk_eint_get_offset(eint, eint_num,
--						eint->regs->sens);
-+						eint->comp->regs->sens,
-+						&instance, &index);
-+	unsigned int bit = BIT(index & 0x1f);
-+
-+	if (!reg) {
-+		dev_err(eint->dev, "%s invalid eint_num %d\n",
-+			__func__, eint_num);
-+		return 0;
-+	}
- 
- 	if (readl(reg) & bit)
- 		sens = MTK_EINT_LEVEL_SENSITIVE;
- 	else
- 		sens = MTK_EINT_EDGE_SENSITIVE;
- 
--	if (eint->pins[eint_num].debounce && sens != MTK_EINT_EDGE_SENSITIVE)
-+	if (eint->pins[eint_num].debounce &&
-+	    sens != MTK_EINT_EDGE_SENSITIVE)
- 		return 1;
- 	else
- 		return 0;
- }
- 
--static int mtk_eint_flip_edge(struct mtk_eint *eint, int hwirq)
-+static int mtk_eint_flip_edge(struct mtk_eint *eint, int eint_num)
- {
- 	int start_level, curr_level;
- 	unsigned int reg_offset;
--	unsigned int mask = BIT(eint->pins[hwirq].index & 0x1f);
--	unsigned int port = (eint->pins[hwirq].index >> 5) & eint->hw->port_mask;
--	void __iomem *reg = eint->base[eint->pins[hwirq].instance] + (port << 2);
-+	unsigned int instance, index, mask, port;
-+	void __iomem *reg;
-+
-+	reg = mtk_eint_get_offset(eint, eint_num, MTK_EINT_NO_OFFSET,
-+				  &instance, &index);
-+
-+	if (!reg) {
-+		dev_err(eint->dev, "%s invalid eint_num %d\n",
-+			__func__, eint_num);
-+		return 0;
-+	}
- 
--	curr_level = eint->gpio_xlate->get_gpio_state(eint->pctl, hwirq);
-+	mask = BIT(index & 0x1f);
-+	port = index >> 5;
-+	reg = eint->instances[instance].base + port * 4;
-+
-+	curr_level = eint->gpio_xlate->get_gpio_state(eint->pctl, eint_num);
- 
- 	do {
- 		start_level = curr_level;
- 		if (start_level)
--			reg_offset = eint->regs->pol_clr;
-+			reg_offset = eint->comp->regs->pol_clr;
- 		else
--			reg_offset = eint->regs->pol_set;
-+			reg_offset = eint->comp->regs->pol_set;
-+
- 		writel(mask, reg + reg_offset);
- 
- 		curr_level = eint->gpio_xlate->get_gpio_state(eint->pctl,
--							      hwirq);
-+							      eint_num);
- 	} while (start_level != curr_level);
- 
- 	return start_level;
-@@ -127,13 +180,19 @@ static int mtk_eint_flip_edge(struct mtk_eint *eint, int hwirq)
- static void mtk_eint_mask(struct irq_data *d)
- {
- 	struct mtk_eint *eint = irq_data_get_irq_chip_data(d);
--	u32 idx = eint->pins[d->hwirq].index;
--	u32 inst = eint->pins[d->hwirq].instance;
--	u32 mask = BIT(idx & 0x1f);
-+	unsigned int instance, index;
- 	void __iomem *reg = mtk_eint_get_offset(eint, d->hwirq,
--						eint->regs->mask_set);
-+						eint->comp->regs->mask_set,
-+						&instance, &index);
-+	u32 mask = BIT(index & 0x1f);
-+
-+	if (!reg) {
-+		dev_err(eint->dev, "%s invalid eint_num %lu\n",
-+			__func__, d->hwirq);
-+		return;
-+	}
- 
--	eint->cur_mask[inst][idx >> 5] &= ~mask;
-+	eint->instances[instance].cur_mask[index >> 5] &= ~mask;
- 
- 	writel(mask, reg);
- }
-@@ -141,13 +200,19 @@ static void mtk_eint_mask(struct irq_data *d)
- static void mtk_eint_unmask(struct irq_data *d)
- {
- 	struct mtk_eint *eint = irq_data_get_irq_chip_data(d);
--	u32 idx = eint->pins[d->hwirq].index;
--	u32 inst = eint->pins[d->hwirq].instance;
--	u32 mask = BIT(idx & 0x1f);
-+	unsigned int instance, index;
- 	void __iomem *reg = mtk_eint_get_offset(eint, d->hwirq,
--						eint->regs->mask_clr);
-+						eint->comp->regs->mask_clr,
-+						&instance, &index);
-+	u32 mask = BIT(index & 0x1f);
-+
-+	if (!reg) {
-+		dev_err(eint->dev, "%s invalid eint_num %lu\n",
-+			__func__, d->hwirq);
-+		return;
-+	}
- 
--	eint->cur_mask[inst][idx >> 5] |= mask;
-+	eint->instances[instance].cur_mask[index >> 5] |= mask;
- 
- 	writel(mask, reg);
- 
-@@ -155,41 +220,104 @@ static void mtk_eint_unmask(struct irq_data *d)
- 		mtk_eint_flip_edge(eint, d->hwirq);
- }
- 
--static unsigned int mtk_eint_get_mask(struct mtk_eint *eint,
--				      unsigned int eint_num)
-+/*
-+ * We need to do extra effort to clear edge-triggered EINT
-+ * which located in eint_c due to hw design limitation.
-+ */
-+void mt6983_eint_ack(struct irq_data *d)
- {
--	unsigned int bit = BIT(eint->pins[eint_num].index % 32);
--	void __iomem *reg = mtk_eint_get_offset(eint, eint_num,
--						eint->regs->mask);
-+	struct mtk_eint *eint = irq_data_get_irq_chip_data(d);
-+	unsigned int instance, index;
-+	void __iomem *sens_reg,
-+		     *ack_reg = mtk_eint_get_offset(eint, d->hwirq,
-+						eint->comp->regs->sens,
-+						&instance, &index);
-+	unsigned int bit = BIT(index & 0x1f);
-+
-+	if (!ack_reg) {
-+		dev_err(eint->dev, "%s invalid eint_num %lu\n",
-+			__func__, d->hwirq);
-+		return;
-+	}
-+
-+	if (instance == 4) {
-+		sens_reg = mtk_eint_get_offset(eint, d->hwirq,
-+					  eint->comp->regs->sens_clr,
-+					  &instance, &index);
-+		writel(bit, sens_reg);
-+		sens_reg = mtk_eint_get_offset(eint, d->hwirq,
-+					  eint->comp->regs->sens_set,
-+					  &instance, &index);
-+		writel(bit, sens_reg);
-+	} else
-+		writel(bit, ack_reg);
-+}
-+
-+static void mtk_eint_ack(struct irq_data *d)
-+{
-+	struct mtk_eint *eint = irq_data_get_irq_chip_data(d);
-+	unsigned int instance, index;
-+	void __iomem *reg;
-+	unsigned int bit;
-+
-+	if (eint->comp->ops.ack)
-+		eint->comp->ops.ack(d);
-+	else {
-+		reg = mtk_eint_get_offset(eint, d->hwirq,
-+					  eint->comp->regs->ack,
-+					  &instance, &index);
-+		bit = BIT(index & 0x1f);
-+		if (!reg) {
-+			dev_err(eint->dev, "%s invalid eint_num %lu\n",
-+				__func__, d->hwirq);
-+			return;
-+		}
- 
--	return !!(readl(reg) & bit);
-+		writel(bit, reg);
-+	}
- }
- 
--static unsigned int mtk_eint_get_status(struct mtk_eint *eint,
--					unsigned int eint_num)
-+static void mtk_eint_soft_set(struct mtk_eint *eint,
-+				      unsigned int eint_num)
- {
--	unsigned int bit = BIT(eint->pins[eint_num].index % 32);
-+	unsigned int instance, index;
- 	void __iomem *reg = mtk_eint_get_offset(eint, eint_num,
--						eint->regs->stat);
-+						eint->comp->regs->soft_set,
-+						&instance, &index);
-+	unsigned int bit = BIT(index & 0x1f);
-+
-+	if (!reg) {
-+		dev_err(eint->dev, "%s invalid eint_num %d\n",
-+			__func__, eint_num);
-+		return;
-+	}
- 
--	return !!(readl(reg) & bit);
-+	writel(bit, reg);
- }
- 
--static void mtk_eint_ack(struct irq_data *d)
-+static void mtk_eint_soft_clr(struct mtk_eint *eint,
-+				      unsigned int eint_num)
- {
--	struct mtk_eint *eint = irq_data_get_irq_chip_data(d);
--	u32 mask = BIT(eint->pins[d->hwirq].index & 0x1f);
--	void __iomem *reg = mtk_eint_get_offset(eint, d->hwirq,
--						eint->regs->ack);
-+	unsigned int instance, index;
-+	void __iomem *reg = mtk_eint_get_offset(eint, eint_num,
-+						eint->comp->regs->soft_clr,
-+						&instance, &index);
-+	unsigned int bit = BIT(index & 0x1f);
-+
-+	if (!reg) {
-+		dev_err(eint->dev, "%s invalid eint_num %d\n",
-+			__func__, eint_num);
-+		return;
-+	}
- 
--	writel(mask, reg);
-+	writel(bit, reg);
- }
- 
- static int mtk_eint_set_type(struct irq_data *d, unsigned int type)
- {
- 	struct mtk_eint *eint = irq_data_get_irq_chip_data(d);
--	bool masked;
--	unsigned int mask = BIT(eint->pins[d->hwirq].index & 0x1f);
-+	u32 mask;
-+	unsigned int instance, index;
- 	void __iomem *reg;
- 
- 	if (((type & IRQ_TYPE_EDGE_BOTH) && (type & IRQ_TYPE_LEVEL_MASK)) ||
-@@ -205,32 +333,38 @@ static int mtk_eint_set_type(struct irq_data *d, unsigned int type)
- 	else
- 		eint->pins[d->hwirq].dual_edge = 0;
- 
--	if (!mtk_eint_get_mask(eint, d->hwirq)) {
--		mtk_eint_mask(d);
--		masked = false;
--	} else {
--		masked = true;
--	}
-+	if (type & (IRQ_TYPE_LEVEL_LOW | IRQ_TYPE_EDGE_FALLING))
-+		reg = mtk_eint_get_offset(eint, d->hwirq,
-+					  eint->comp->regs->pol_clr,
-+					  &instance, &index);
-+	else
-+		reg = mtk_eint_get_offset(eint, d->hwirq,
-+					  eint->comp->regs->pol_set,
-+					  &instance, &index);
- 
--	if (type & (IRQ_TYPE_LEVEL_LOW | IRQ_TYPE_EDGE_FALLING)) {
--		reg = mtk_eint_get_offset(eint, d->hwirq, eint->regs->pol_clr);
--		writel(mask, reg);
--	} else {
--		reg = mtk_eint_get_offset(eint, d->hwirq, eint->regs->pol_set);
--		writel(mask, reg);
--	}
-+	mask = BIT(index & 0x1f);
-+	writel(mask, reg);
- 
--	if (type & (IRQ_TYPE_EDGE_RISING | IRQ_TYPE_EDGE_FALLING)) {
--		reg = mtk_eint_get_offset(eint, d->hwirq, eint->regs->sens_clr);
--		writel(mask, reg);
--	} else {
--		reg = mtk_eint_get_offset(eint, d->hwirq, eint->regs->sens_set);
--		writel(mask, reg);
-+	if (type & (IRQ_TYPE_EDGE_RISING | IRQ_TYPE_EDGE_FALLING))
-+		reg = mtk_eint_get_offset(eint, d->hwirq,
-+					  eint->comp->regs->sens_clr,
-+					  &instance, &index);
-+	else
-+		reg = mtk_eint_get_offset(eint, d->hwirq,
-+					  eint->comp->regs->sens_set,
-+					  &instance, &index);
-+
-+	if (!reg) {
-+		dev_err(eint->dev, "%s invalid eint_num %lu\n",
-+			__func__, d->hwirq);
-+		return 0;
- 	}
- 
--	mtk_eint_ack(d);
--	if (!masked)
--		mtk_eint_unmask(d);
-+	mask = BIT(index & 0x1f);
-+	writel(mask, reg);
-+
-+	if (eint->pins[d->hwirq].dual_edge)
-+		mtk_eint_flip_edge(eint, d->hwirq);
- 
- 	return 0;
- }
-@@ -238,35 +372,28 @@ static int mtk_eint_set_type(struct irq_data *d, unsigned int type)
- static int mtk_eint_irq_set_wake(struct irq_data *d, unsigned int on)
- {
- 	struct mtk_eint *eint = irq_data_get_irq_chip_data(d);
--	unsigned int idx = eint->pins[d->hwirq].index;
--	unsigned int inst = eint->pins[d->hwirq].instance;
--	unsigned int shift = idx & 0x1f;
--	unsigned int port = idx >> 5;
-+	unsigned int instance, index, shift, port;
-+	void __iomem *reg = mtk_eint_get_offset(eint, d->hwirq,
-+						MTK_EINT_NO_OFFSET,
-+						&instance, &index);
-+
-+	if (!reg) {
-+		dev_err(eint->dev, "%s invalid eint_num %lu\n",
-+			__func__, d->hwirq);
-+		return 0;
-+	}
-+
-+	shift = index & 0x1f;
-+	port = index >> 5;
- 
- 	if (on)
--		eint->wake_mask[inst][port] |= BIT(shift);
-+		eint->instances[instance].wake_mask[port] |= BIT(shift);
- 	else
--		eint->wake_mask[inst][port] &= ~BIT(shift);
-+		eint->instances[instance].wake_mask[port] &= ~BIT(shift);
- 
- 	return 0;
- }
- 
--static void mtk_eint_chip_write_mask(const struct mtk_eint *eint,
--				     void __iomem *base, u32 **buf)
--{
--	int inst, port, port_num;
--	void __iomem *reg;
--
--	for (inst = 0; inst < eint->nbase; inst++) {
--		port_num = DIV_ROUND_UP(eint->base_pin_num[inst], 32);
--		for (port = 0; port < port_num; port++) {
--			reg = eint->base[inst] + (port << 2);
--			writel_relaxed(~buf[inst][port], reg + eint->regs->mask_set);
--			writel_relaxed(buf[inst][port], reg + eint->regs->mask_clr);
--		}
--	}
--}
--
- static int mtk_eint_irq_request_resources(struct irq_data *d)
- {
- 	struct mtk_eint *eint = irq_data_get_irq_chip_data(d);
-@@ -278,23 +405,25 @@ static int mtk_eint_irq_request_resources(struct irq_data *d)
- 					   &gpio_n, &gpio_c);
- 	if (err < 0) {
- 		dev_err(eint->dev, "Can not find pin\n");
--		return err;
-+		goto err_out;
- 	}
- 
- 	err = gpiochip_lock_as_irq(gpio_c, gpio_n);
- 	if (err < 0) {
- 		dev_err(eint->dev, "unable to lock HW IRQ %lu for IRQ\n",
- 			irqd_to_hwirq(d));
--		return err;
-+		goto err_out;
- 	}
- 
- 	err = eint->gpio_xlate->set_gpio_as_eint(eint->pctl, d->hwirq);
- 	if (err < 0) {
- 		dev_err(eint->dev, "Can not eint mode\n");
--		return err;
-+		goto err_out;
- 	}
- 
- 	return 0;
-+err_out:
-+	return err;
- }
- 
- static void mtk_eint_irq_release_resources(struct irq_data *d)
-@@ -310,7 +439,7 @@ static void mtk_eint_irq_release_resources(struct irq_data *d)
- }
- 
- static struct irq_chip mtk_eint_irq_chip = {
--	.name = "mt-eint",
-+	.name = "mtk-eint",
- 	.irq_disable = mtk_eint_mask,
- 	.irq_mask = mtk_eint_mask,
- 	.irq_unmask = mtk_eint_unmask,
-@@ -321,19 +450,19 @@ static struct irq_chip mtk_eint_irq_chip = {
- 	.irq_release_resources = mtk_eint_irq_release_resources,
- };
- 
-+/*
-+ * Configure all EINT pins as domain 0, which only belongs to AP.
-+ */
- static unsigned int mtk_eint_hw_init(struct mtk_eint *eint)
- {
--	void __iomem *dom_reg, *mask_reg;
-+	void __iomem *reg;
- 	unsigned int i, j;
- 
--	for (i = 0; i < eint->nbase; i++) {
--		dom_reg = eint->base[i] + eint->regs->dom_en;
--		mask_reg = eint->base[i] + eint->regs->mask_set;
--		for (j = 0; j < eint->base_pin_num[i]; j += 32) {
--			writel(0xffffffff, dom_reg);
--			writel(0xffffffff, mask_reg);
--			dom_reg += 4;
--			mask_reg += 4;
-+	for (i = 0; i < eint->instance_number; i++) {
-+		reg = eint->instances[i].base + eint->comp->regs->dom_en;
-+		for (j = 0; j < eint->instances[i].number; j += 32) {
-+			writel(0xffffffff, reg);
-+			reg += 4;
- 		}
- 	}
- 
-@@ -341,20 +470,30 @@ static unsigned int mtk_eint_hw_init(struct mtk_eint *eint)
- }
- 
- static inline void
--mtk_eint_debounce_process(struct mtk_eint *eint, int index)
-+mtk_eint_debounce_process(struct mtk_eint *eint, int eint_num)
- {
- 	unsigned int rst, ctrl_offset;
- 	unsigned int bit, dbnc;
--	unsigned int inst = eint->pins[index].instance;
--	unsigned int idx = eint->pins[index].index;
-+	unsigned int instance, index;
-+	void __iomem *reg;
-+
-+	reg = mtk_eint_get_offset(eint, eint_num, MTK_EINT_NO_OFFSET,
-+				  &instance, &index);
-+
-+	if (!reg) {
-+		dev_err(eint->dev, "%s invalid eint_num %d\n",
-+			__func__, eint_num);
-+		return;
-+	}
-+
-+	ctrl_offset = (index / 4) * 4 + eint->comp->regs->dbnc_ctrl;
-+	dbnc = readl(eint->instances[instance].base + ctrl_offset);
-+	bit = MTK_EINT_DBNC_SET_EN << ((index % 4) * 8);
- 
--	ctrl_offset = (idx / 4) * 4 + eint->regs->dbnc_ctrl;
--	dbnc = readl(eint->base[inst] + ctrl_offset);
--	bit = MTK_EINT_DBNC_SET_EN << ((idx % 4) * 8);
- 	if ((bit & dbnc) > 0) {
--		ctrl_offset = (idx / 4) * 4 + eint->regs->dbnc_set;
--		rst = MTK_EINT_DBNC_RST_BIT << ((idx % 4) * 8);
--		writel(rst, eint->base[inst] + ctrl_offset);
-+		ctrl_offset = (index / 4) * 4 + eint->comp->regs->dbnc_set;
-+		rst = MTK_EINT_DBNC_RST_BIT << ((index % 4) * 8);
-+		writel(rst, eint->instances[instance].base + ctrl_offset);
- 	}
- }
- 
-@@ -362,65 +501,72 @@ static void mtk_eint_irq_handler(struct irq_desc *desc)
- {
- 	struct irq_chip *chip = irq_desc_get_chip(desc);
- 	struct mtk_eint *eint = irq_desc_get_handler_data(desc);
--	unsigned int index, inst, idx, mask;
--	void __iomem *reg;
--	int dual_edge, start_level, curr_level;
-+	unsigned int status, i, j;
-+	int shift, port, eint_num, virq;
-+	unsigned int dual_edge, start_level, curr_level;
-+	struct mtk_eint_instance eint_instance;
-+	void __iomem *addr;
- 
- 	chained_irq_enter(chip, desc);
--	for (index = 0; index < eint->hw->ap_num; index++) {
--		inst = eint->pins[index].instance;
--		if (inst >= eint->nbase)
--			continue;
--		if (mtk_eint_get_status(eint, index)) {
--			idx = eint->pins[index].index;
--			mask = BIT(idx & 0x1f);
--
--			/*
--			 * If we get an interrupt on pin that was only required
--			 * for wake (but no real interrupt requested), mask the
--			 * interrupt (as would mtk_eint_resume do anyway later
--			 * in the resume sequence).
--			 */
--			if (eint->wake_mask[inst][idx >> 5] & mask &&
--			    !(eint->cur_mask[inst][idx >> 5] & mask)) {
--				reg = mtk_eint_get_offset(eint, index,
--							  eint->regs->mask_set);
--				writel_relaxed(mask, reg);
--			}
- 
--			dual_edge = eint->pins[index].dual_edge;
--			if (dual_edge) {
-+	for (i = 0; i < eint->instance_number; i++) {
-+		eint_instance = eint->instances[i];
-+
-+		/* Iterate all pins by port */
-+		for (j = 0; j < eint_instance.number; j += 32) {
-+			port = j >> 5;
-+			status = readl(eint_instance.base + port * 4 +
-+				       eint->comp->regs->stat);
-+			while (status) {
-+				shift = __ffs(status);
-+				status &= ~BIT(shift);
-+
-+				eint_num = eint->instances[i].pin_list[shift + j];
-+				virq = irq_find_mapping(eint->domain, eint_num);
-+
- 				/*
--				 * Clear soft-irq in case we raised it last
--				 * time.
-+				 * If we get an interrupt on pin that was only required
-+				 * for wake (but no real interrupt requested), mask the
-+				 * interrupt (as would mtk_eint_resume do anyway later
-+				 * in the resume sequence).
- 				 */
--				reg = mtk_eint_get_offset(eint, index,
--							  eint->regs->soft_clr);
--				writel(mask, reg);
-+				if (eint->instances[i].wake_mask[port] & BIT(shift) &&
-+				    !(eint->instances[i].cur_mask[port] & BIT(shift))) {
-+					addr = eint_instance.base + port * 4 +
-+						eint->comp->regs->mask_set;
-+					writel_relaxed(BIT(shift), addr);
-+				}
- 
--				start_level =
--				eint->gpio_xlate->get_gpio_state(eint->pctl,
--								 index);
--			}
-+				dual_edge = eint->pins[eint_num].dual_edge;
-+				if (dual_edge) {
-+					/*
-+					 * Clear soft-irq in case we raised it last
-+					 * time.
-+					 */
-+					mtk_eint_soft_clr(eint, eint_num);
-+
-+					start_level =
-+					eint->gpio_xlate->get_gpio_state(eint->pctl,
-+									 eint_num);
-+				}
- 
--			generic_handle_domain_irq(eint->domain, index);
-+				generic_handle_irq(virq);
- 
--			if (dual_edge) {
--				curr_level = mtk_eint_flip_edge(eint, index);
-+				if (dual_edge) {
-+					curr_level = mtk_eint_flip_edge(eint, eint_num);
- 
--				/*
--				 * If level changed, we might lost one edge
--				 * interrupt, raised it through soft-irq.
--				 */
--				if (start_level != curr_level) {
--					reg = mtk_eint_get_offset(eint, index,
--								  eint->regs->soft_set);
--					writel(mask, reg);
-+					/*
-+					 * If level changed, we might lost one edge
-+					 * interrupt, raised it through soft-irq.
-+					 */
-+					if (start_level != curr_level)
-+						mtk_eint_soft_set(eint, eint_num);
- 				}
--			}
- 
--			if (eint->pins[index].debounce)
--				mtk_eint_debounce_process(eint, index);
-+				if (eint->pins[eint_num].debounce)
-+					mtk_eint_debounce_process(eint, eint_num);
-+
-+			}
- 		}
- 	}
- 	chained_irq_exit(chip, desc);
-@@ -428,7 +574,20 @@ static void mtk_eint_irq_handler(struct irq_desc *desc)
- 
- int mtk_eint_do_suspend(struct mtk_eint *eint)
- {
--	mtk_eint_chip_write_mask(eint, eint->base, eint->wake_mask);
-+	unsigned int i, j, port;
-+
-+	for (i = 0; i < eint->instance_number; i++) {
-+		struct mtk_eint_instance inst = eint->instances[i];
-+
-+		for (j = 0; j < inst.number; j += 32) {
-+			port = j >> 5;
-+			writel_relaxed(~inst.wake_mask[port],
-+				       inst.base + port*4 + eint->comp->regs->mask_set);
-+			writel_relaxed(inst.wake_mask[port],
-+				       inst.base + port*4 + eint->comp->regs->mask_clr);
-+		}
-+	}
-+	dsb(sy);
- 
- 	return 0;
- }
-@@ -436,7 +595,20 @@ EXPORT_SYMBOL_GPL(mtk_eint_do_suspend);
- 
- int mtk_eint_do_resume(struct mtk_eint *eint)
- {
--	mtk_eint_chip_write_mask(eint, eint->base, eint->cur_mask);
-+	unsigned int i, j, port;
-+
-+	for (i = 0; i < eint->instance_number; i++) {
-+		struct mtk_eint_instance inst = eint->instances[i];
-+
-+		for (j = 0; j < inst.number; j += 32) {
-+			port = j >> 5;
-+			writel_relaxed(~inst.cur_mask[port],
-+				       inst.base + port*4 + eint->comp->regs->mask_set);
-+			writel_relaxed(inst.cur_mask[port],
-+				       inst.base + port*4 + eint->comp->regs->mask_clr);
-+		}
-+	}
-+	dsb(sy);
- 
- 	return 0;
- }
-@@ -448,26 +620,42 @@ int mtk_eint_set_debounce(struct mtk_eint *eint, unsigned long eint_num,
- 	int virq, eint_offset;
- 	unsigned int set_offset, bit, clr_bit, clr_offset, rst, i, unmask,
- 		     dbnc;
--	unsigned int inst = eint->pins[eint_num].instance;
--	unsigned int idx = eint->pins[eint_num].index;
-+	static const unsigned int debounce_time[] = { 156, 313, 625, 1250,
-+		20000, 40000, 80000, 160000, 320000, 640000 };
- 	struct irq_data *d;
-+	unsigned int instance, index;
-+	void __iomem *reg;
- 
--	if (!eint->hw->db_time)
--		return -EOPNOTSUPP;
-+	/*
-+	 * Due to different number of bit field, we only decode
-+	 * the coordinate here, instead of get the VA.
-+	 */
-+	reg = mtk_eint_get_offset(eint, eint_num, MTK_EINT_NO_OFFSET,
-+				  &instance, &index);
-+
-+	if (!reg) {
-+		dev_err(eint->dev, "%s invalid eint_num %lu\n",
-+			__func__, eint_num);
-+		return 0;
-+	}
- 
- 	virq = irq_find_mapping(eint->domain, eint_num);
--	eint_offset = (eint_num % 4) * 8;
-+	eint_offset = (index % 4) * 8;
- 	d = irq_get_irq_data(virq);
- 
--	set_offset = (idx / 4) * 4 + eint->regs->dbnc_set;
--	clr_offset = (idx / 4) * 4 + eint->regs->dbnc_clr;
-+	reg = eint->instances[instance].base;
-+	set_offset = (index / 4) * 4 + eint->comp->regs->dbnc_set;
-+	clr_offset = (index / 4) * 4 + eint->comp->regs->dbnc_clr;
- 
- 	if (!mtk_eint_can_en_debounce(eint, eint_num))
- 		return -EINVAL;
- 
--	dbnc = eint->num_db_time;
--	for (i = 0; i < eint->num_db_time; i++) {
--		if (debounce <= eint->hw->db_time[i]) {
-+	/*
-+	 * Check eint number to avoid access out-of-range
-+	 */
-+	dbnc = ARRAY_SIZE(debounce_time) - 1;
-+	for (i = 0; i < ARRAY_SIZE(debounce_time); i++) {
-+		if (debounce <= debounce_time[i]) {
- 			dbnc = i;
- 			break;
- 		}
-@@ -476,23 +664,22 @@ int mtk_eint_set_debounce(struct mtk_eint *eint, unsigned long eint_num,
- 	if (!mtk_eint_get_mask(eint, eint_num)) {
- 		mtk_eint_mask(d);
- 		unmask = 1;
--	} else {
-+	} else
- 		unmask = 0;
--	}
- 
- 	clr_bit = 0xff << eint_offset;
--	writel(clr_bit, eint->base[inst] + clr_offset);
-+	writel(clr_bit, reg + clr_offset);
- 
--	bit = ((dbnc << MTK_EINT_DBNC_SET_DBNC_BITS) | MTK_EINT_DBNC_SET_EN) <<
--		eint_offset;
-+	bit = ((dbnc << MTK_EINT_DBNC_SET_DBNC_BITS)
-+		| MTK_EINT_DBNC_SET_EN) << eint_offset;
- 	rst = MTK_EINT_DBNC_RST_BIT << eint_offset;
--	writel(rst | bit, eint->base[inst] + set_offset);
-+	writel(rst | bit, reg + set_offset);
- 
- 	/*
--	 * Delay a while (more than 2T) to wait for hw debounce counter reset
--	 * work correctly.
-+	 * Delay should be (8T @ 32k) + de-bounce count-down time
-+	 * from dbc rst to work correctly.
- 	 */
--	udelay(1);
-+	udelay(debounce_time[dbnc] + 250);
- 	if (unmask == 1)
- 		mtk_eint_unmask(d);
- 
-@@ -500,6 +687,53 @@ int mtk_eint_set_debounce(struct mtk_eint *eint, unsigned long eint_num,
- }
- EXPORT_SYMBOL_GPL(mtk_eint_set_debounce);
- 
-+unsigned int mtk_eint_get_debounce_en(struct mtk_eint *eint,
-+				      unsigned int eint_num)
-+{
-+	unsigned int instance, index, bit;
-+	void __iomem *reg;
-+
-+	reg = mtk_eint_get_offset(eint, eint_num, MTK_EINT_NO_OFFSET,
-+				  &instance, &index);
-+
-+	if (!reg) {
-+		dev_err(eint->dev, "%s invalid eint_num %d\n",
-+			__func__, eint_num);
-+		return 0;
-+	}
-+
-+	reg = eint->instances[instance].base +
-+		(index / 4) * 4 + eint->comp->regs->dbnc_ctrl;
-+
-+	bit = MTK_EINT_DBNC_SET_EN << ((index % 4) * 8);
-+
-+	return (readl(reg) & bit) ? 1 : 0;
-+}
-+
-+unsigned int mtk_eint_get_debounce_value(struct mtk_eint *eint,
-+					   unsigned int eint_num)
-+{
-+	unsigned int instance, index, mask, offset;
-+	void __iomem *reg;
-+
-+	reg = mtk_eint_get_offset(eint, eint_num, MTK_EINT_NO_OFFSET,
-+				  &instance, &index);
-+
-+	if (!reg) {
-+		dev_err(eint->dev, "%s invalid eint_num %d\n",
-+			__func__, eint_num);
-+		return 0;
-+	}
-+
-+	reg = eint->instances[instance].base +
-+		(index / 4) * 4 + eint->comp->regs->dbnc_ctrl;
-+
-+	offset = MTK_EINT_DBNC_SET_DBNC_BITS + ((index % 4) * 8);
-+	mask = 0xf << offset;
-+
-+	return ((readl(reg) & mask) >> offset);
-+}
-+
- int mtk_eint_find_irq(struct mtk_eint *eint, unsigned long eint_n)
- {
- 	int irq;
-@@ -512,69 +746,266 @@ int mtk_eint_find_irq(struct mtk_eint *eint, unsigned long eint_n)
- }
- EXPORT_SYMBOL_GPL(mtk_eint_find_irq);
- 
-+/*
-+ * Dump the properties/states of the specific EINT pin.
-+ * @eint_num: the global EINT number.
-+ * @buf: the pointer of a string buffer.
-+ * @buf_size: the size of the buffer.
-+ *
-+ * If the return value < 0, it means that the @eint_num is invalid;
-+ * Otherwise, return 0;
-+ */
-+int dump_eint_pin_status(unsigned int eint_num, char *buf, unsigned int buf_size)
-+{
-+	unsigned int len = 0, enabled, stat, raw_stat, soft, mask, sens, pol,
-+		     deb_en, deb_val;
-+
-+	if (eint_num < 0 || eint_num > global_eintc->total_pin_number)
-+		return -ENODEV;
-+
-+	enabled = global_eintc->pins[eint_num].enabled;
-+	stat = mtk_eint_get_stat(global_eintc, eint_num);
-+	raw_stat = mtk_eint_get_raw_stat(global_eintc, eint_num);
-+	soft = mtk_eint_get_soft(global_eintc, eint_num);
-+	mask = mtk_eint_get_mask(global_eintc, eint_num);
-+	sens = mtk_eint_get_sens(global_eintc, eint_num);
-+	pol = mtk_eint_get_pol(global_eintc, eint_num);
-+
-+	len += snprintf(buf + len, buf_size - len,
-+			"%s=%u(%s)\n%s=%s_%s\n%s=%u\n%s=%u\n%s=%u\n%s=%u\n",
-+			"Pin", eint_num, enabled ? "enabled" : "disabled",
-+			"Type", (sens == 1) ? "level" : "edge",
-+			(pol == 1) ? "high" : "low",
-+			"Pending", stat,
-+			"Raw", raw_stat,
-+			"Soft", soft,
-+			"Mask", mask);
-+
-+	if (mtk_eint_can_en_debounce(global_eintc, eint_num)) {
-+		deb_en	= mtk_eint_get_debounce_en(global_eintc, eint_num);
-+		deb_val = mtk_eint_get_debounce_value(global_eintc, eint_num);
-+
-+		len += snprintf(buf + len, buf_size - len,
-+				"Support debounce, %s=%u, %s=%u\n",
-+				"enable", deb_en,
-+				"setting", deb_val);
-+	} else
-+		len += snprintf(buf + len, buf_size - len,
-+				"Not support debounce\n");
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(dump_eint_pin_status);
-+
-+static ssize_t eintc_status_show(struct device_driver *driver, char *buf)
-+{
-+	struct mtk_eint *eint = global_eintc;
-+	unsigned int i, j, len = 0,
-+		     instance_num = eint->instance_number;
-+
-+	len += snprintf(buf + len, PAGE_SIZE - len, "=====EINTC Dump=====\n");
-+
-+	for (i = 0; i < instance_num; i++) {
-+		struct mtk_eint_instance inst = eint->instances[i];
-+
-+		len += snprintf(buf + len, PAGE_SIZE - len,
-+				"Instance %d name=%s with %u pins\n",
-+				i, inst.name, inst.number);
-+
-+		for (j = 0; j < inst.number; j++)
-+			len += snprintf(buf + len, PAGE_SIZE - len,
-+					"%d ", inst.pin_list[j]);
-+
-+		len += snprintf(buf + len, PAGE_SIZE - len,
-+				"position %d on pin %d\n", i, inst.pin_list[j]);
-+	}
-+
-+	return strlen(buf);
-+}
-+
-+static DRIVER_ATTR_RO(eintc_status);
-+
-+static ssize_t eint_pin_status_show(struct device_driver *driver, char *buf)
-+{
-+	struct mtk_eint *eint = global_eintc;
-+	unsigned int len = 0;
-+
-+	len += snprintf(buf + len, PAGE_SIZE - len,
-+			"=====EINT Pin Dump=====\n");
-+
-+	dump_eint_pin_status(eint->dump_target_eint,
-+			     buf + len, PAGE_SIZE - len);
-+
-+	return strlen(buf);
-+
-+}
-+
-+static ssize_t eint_pin_status_store(struct device_driver *driver,
-+				     const char *buf, size_t count)
-+{
-+	int eint_num, ret;
-+
-+	ret = kstrtouint(buf, 10, &eint_num);
-+
-+	if (ret || eint_num > global_eintc->total_pin_number) {
-+		dev_err(global_eintc->dev,
-+			"%s invalid input: %s.\n", __func__, buf);
-+		goto err_out;
-+	}
-+
-+	global_eintc->dump_target_eint = (unsigned int)eint_num;
-+
-+err_out:
-+	return count;
-+}
-+
-+static DRIVER_ATTR_RW(eint_pin_status);
-+
-+static const struct mtk_eint_compatible default_compat = {
-+	.regs = &mtk_generic_eint_regs,
-+};
-+
- int mtk_eint_do_init(struct mtk_eint *eint)
- {
--	unsigned int size, i, port;
--	struct mtk_pinctrl *hw = (struct mtk_pinctrl *)eint->pctl;
-+	int i, matrix_number = 0;
-+	struct device_node *node;
-+	unsigned int ret, size, offset;
-+	unsigned int id, inst, idx, support_deb;
-+
-+	const phandle *ph;
- 
--	/* If clients don't assign a specific regs, let's use generic one */
--	if (!eint->regs)
--		eint->regs = &mtk_generic_eint_regs;
-+#if defined(MTK_EINT_DEBUG)
-+	struct mtk_eint_pin pin;
-+#endif
- 
--	eint->base_pin_num = devm_kmalloc_array(eint->dev, eint->nbase, sizeof(u16),
--						GFP_KERNEL | __GFP_ZERO);
--	if (!eint->base_pin_num)
-+	ph = of_get_property(eint->dev->of_node, "mediatek,eint", NULL);
-+	if (!ph) {
-+		dev_err(eint->dev, "Cannot find EINT phandle in PIO node.\n");
-+		return -ENODEV;
-+	}
-+
-+	node = of_find_node_by_phandle(be32_to_cpup(ph));
-+	if (!node) {
-+		dev_err(eint->dev, "Cannot find EINT node by phandle.\n");
-+		return -ENODEV;
-+	}
-+
-+	ret = of_property_read_u32(node, "mediatek,total-pin-number",
-+				   &eint->total_pin_number);
-+	if (ret) {
-+		dev_err(eint->dev,
-+		       "%s cannot read total-pin-number from device node.\n",
-+		       __func__);
-+		return -EINVAL;
-+	}
-+
-+	ret = of_property_read_u32(node, "mediatek,instance-num",
-+				   &eint->instance_number);
-+	if (ret)
-+		eint->instance_number = 1; // only 1 instance in legacy chip
-+
-+	size = eint->instance_number * sizeof(struct mtk_eint_instance);
-+	eint->instances = devm_kzalloc(eint->dev, size, GFP_KERNEL);
-+	if (!eint->instances)
- 		return -ENOMEM;
- 
--	if (eint->nbase == 1) {
--		size = eint->hw->ap_num * sizeof(struct mtk_eint_pin);
--		eint->pins = devm_kmalloc(eint->dev, size, GFP_KERNEL);
--		if (!eint->pins)
--			goto err_pins;
--
--		eint->base_pin_num[0] = eint->hw->ap_num;
--		for (i = 0; i < eint->hw->ap_num; i++) {
--			eint->pins[i].instance = 0;
--			eint->pins[i].index = i;
--			eint->pins[i].debounce = (i < eint->hw->db_cnt) ? 1 : 0;
-+	size = eint->total_pin_number * sizeof(struct mtk_eint_pin);
-+	eint->pins = devm_kzalloc(eint->dev, size, GFP_KERNEL);
-+	if (!eint->pins)
-+		return -ENOMEM;
-+
-+	for (i = 0; i < eint->instance_number; i++) {
-+		ret = of_property_read_string_index(node, "reg-name", i,
-+						    &(eint->instances[i].name));
-+		if (ret) {
-+			dev_info(eint->dev,
-+				 "%s cannot read the name of instance %d.\n",
-+				 __func__, i);
- 		}
--	} else {
--		eint->pins = hw->soc->eint_pin;
--		for (i = 0; i < eint->hw->ap_num; i++)
--			eint->base_pin_num[eint->pins[i].instance]++;
-+
-+		eint->instances[i].base = of_iomap(node, i);
-+		if (!eint->instances[i].base)
-+			return -ENOMEM;
-+	}
-+	matrix_number = of_property_count_u32_elems(node, "mediatek,pins") / 4;
-+	if (matrix_number < 0) {
-+		matrix_number = eint->total_pin_number;
-+		dev_info(eint->dev, "%s eint in legacy mode, assign the matrix number to %u.\n",
-+				__func__, matrix_number);
-+	} else{
-+		dev_info(eint->dev, "%s eint in new mode, assign the matrix number to %u.\n",
-+				__func__, matrix_number);
- 	}
-+	for (i = 0; i < matrix_number ; i++) {
-+		offset = i * 4;
-+
-+		ret = of_property_read_u32_index(node, "mediatek,pins",
-+					   offset, &id);
-+		ret |= of_property_read_u32_index(node, "mediatek,pins",
-+					   offset+1, &inst);
-+		ret |= of_property_read_u32_index(node, "mediatek,pins",
-+					   offset+2, &idx);
-+		ret |= of_property_read_u32_index(node, "mediatek,pins",
-+					   offset+3, &support_deb);
-+
-+		/* Legacy chip which no need to give coordinate list */
-+		if (ret) {
-+			id = i;
-+			inst = 0;
-+			idx = i;
-+			support_deb = (i < 32) ? 1 : 0;
-+		}
- 
--	eint->wake_mask = devm_kmalloc(eint->dev, eint->nbase * sizeof(u32 *), GFP_KERNEL);
--	if (!eint->wake_mask)
--		goto err_wake_mask;
-+		eint->pins[id].enabled = true;
-+		eint->pins[id].instance = inst;
-+		eint->pins[id].index = idx;
-+		eint->pins[id].debounce = support_deb;
-+
-+		eint->instances[inst].pin_list[idx] = id;
-+		eint->instances[inst].number++;
-+
-+#if defined(MTK_EINT_DEBUG)
-+		pin = eint->pins[id];
-+		dev_info(eint->dev,
-+			 "EINT%u in (%u-%u, %u), deb = %u. %u",
-+			 id,
-+			 pin.instance,
-+			 eint->instances[inst].number,
-+			 pin.index,
-+			 pin.debounce,
-+			 eint->instances[pin.instance].pin_list[pin.index]);
-+#endif
-+	}
- 
--	eint->cur_mask = devm_kmalloc(eint->dev, eint->nbase * sizeof(u32 *), GFP_KERNEL);
--	if (!eint->cur_mask)
--		goto err_cur_mask;
-+	for (i = 0; i < eint->instance_number; i++) {
-+		size = eint->instances[i].number * sizeof(u8);
-+		eint->instances[i].wake_mask =
-+			devm_kzalloc(eint->dev, size, GFP_KERNEL);
-+		eint->instances[i].cur_mask =
-+			devm_kzalloc(eint->dev, size, GFP_KERNEL);
- 
--	for (i = 0; i < eint->nbase; i++) {
--		port = DIV_ROUND_UP(eint->base_pin_num[i], 32);
--		eint->wake_mask[i] = devm_kzalloc(eint->dev, port * sizeof(u32), GFP_KERNEL);
--		eint->cur_mask[i] = devm_kzalloc(eint->dev, port * sizeof(u32), GFP_KERNEL);
--		if (!eint->cur_mask[i] || !eint->wake_mask[i])
--			goto err_eint;
-+		if (!eint->instances[i].wake_mask ||
-+		    !eint->instances[i].cur_mask)
-+			return -ENOMEM;
-+	}
-+
-+	eint->comp = &default_compat;
-+
-+	eint->irq = irq_of_parse_and_map(node, 0);
-+	if (!eint->irq) {
-+		dev_err(eint->dev,
-+			"%s IRQ parse fail.\n", __func__);
-+		return -EINVAL;
- 	}
- 
- 	eint->domain = irq_domain_add_linear(eint->dev->of_node,
--					     eint->hw->ap_num,
-+					     eint->total_pin_number,
- 					     &irq_domain_simple_ops, NULL);
- 	if (!eint->domain)
--		goto err_eint;
--
--	if (eint->hw->db_time) {
--		for (i = 0; i < MTK_EINT_DBNC_MAX; i++)
--			if (eint->hw->db_time[i] == 0)
--				break;
--		eint->num_db_time = i;
--	}
-+		return -ENOMEM;
- 
- 	mtk_eint_hw_init(eint);
--	for (i = 0; i < eint->hw->ap_num; i++) {
-+	for (i = 0; i < eint->total_pin_number; i++) {
- 		int virq = irq_create_mapping(eint->domain, i);
- 
- 		irq_set_chip_and_handler(virq, &mtk_eint_irq_chip,
-@@ -585,24 +1016,18 @@ int mtk_eint_do_init(struct mtk_eint *eint)
- 	irq_set_chained_handler_and_data(eint->irq, mtk_eint_irq_handler,
- 					 eint);
- 
--	return 0;
-+	ret = driver_create_file(eint->dev->driver,
-+				 &driver_attr_eintc_status);
-+
-+	ret |= driver_create_file(eint->dev->driver,
-+				  &driver_attr_eint_pin_status);
- 
--err_eint:
--	for (i = 0; i < eint->nbase; i++) {
--		if (eint->wake_mask[i])
--			devm_kfree(eint->dev, eint->wake_mask[i]);
--		if (eint->cur_mask[i])
--			devm_kfree(eint->dev, eint->cur_mask[i]);
--	}
--	devm_kfree(eint->dev, eint->cur_mask);
--err_cur_mask:
--	devm_kfree(eint->dev, eint->wake_mask);
--err_wake_mask:
--	if (eint->nbase == 1)
--		devm_kfree(eint->dev, eint->pins);
--err_pins:
--	devm_kfree(eint->dev, eint->base_pin_num);
--	return -ENOMEM;
-+	if (ret)
-+		dev_err(eint->dev, "%s create sysfs files failed.\n", __func__);
-+
-+	global_eintc = eint;
-+
-+	return 0;
- }
- EXPORT_SYMBOL_GPL(mtk_eint_do_init);
- 
-diff --git a/drivers/pinctrl/mediatek/mtk-eint.h b/drivers/pinctrl/mediatek/mtk-eint.h
-index 959afc4b950b45aeb5142ed469b92ddc811e1f1a..f79d2ec5073111bec44cc8c57b859ff34211eb36 100644
---- a/drivers/pinctrl/mediatek/mtk-eint.h
-+++ b/drivers/pinctrl/mediatek/mtk-eint.h
-@@ -1,17 +1,19 @@
--/* SPDX-License-Identifier: GPL-2.0 */
-+/* SPDX-License-Identifier: GPL-2.0-only */
- /*
-- * Copyright (C) 2014-2025 MediaTek Inc.
-+ * Copyright (C) 2014-2018 MediaTek Inc.
-  *
-  * Author: Maoguang Meng <maoguang.meng@mediatek.com>
-- *	   Sean Wang <sean.wang@mediatek.com>
-- *	   Hao Chang <ot_chhao.chang@mediatek.com>
-- *	   Qingliang Li <qingliang.li@mediatek.com>
-+ * Sean Wang <sean.wang@mediatek.com>
-+ *
-  */
- #ifndef __MTK_EINT_H
- #define __MTK_EINT_H
- 
- #include <linux/irqdomain.h>
- 
-+#define MAX_PIN 293
-+//#define MTK_EINT_DEBUG
-+
- struct mtk_eint_regs {
- 	unsigned int	stat;
- 	unsigned int	ack;
-@@ -31,27 +33,34 @@ struct mtk_eint_regs {
- 	unsigned int	dbnc_ctrl;
- 	unsigned int	dbnc_set;
- 	unsigned int	dbnc_clr;
-+	unsigned int	raw_stat;
-+};
-+
-+struct mtk_eint_ops {
-+	void (*ack)(struct irq_data *d);
- };
- 
--struct mtk_eint_hw {
--	u8		port_mask;
--	u8		ports;
--	unsigned int	ap_num;
--	unsigned int	db_cnt;
--	const unsigned int *db_time;
-+struct mtk_eint_compatible {
-+	struct mtk_eint_ops ops;
-+	const struct mtk_eint_regs *regs;
- };
- 
- struct mtk_eint_pin {
--	u16 number;
-+	bool enabled;
- 	u8 instance;
- 	u8 index;
- 	bool debounce;
- 	bool dual_edge;
- };
- 
--extern const unsigned int debounce_time_mt2701[];
--extern const unsigned int debounce_time_mt6765[];
--extern const unsigned int debounce_time_mt6795[];
-+struct mtk_eint_instance {
-+	const char *name;
-+	void __iomem *base;
-+	unsigned int number;
-+	u32 pin_list[MAX_PIN];
-+	unsigned int *wake_mask;
-+	unsigned int *cur_mask;
-+};
- 
- struct mtk_eint;
- 
-@@ -65,21 +74,17 @@ struct mtk_eint_xt {
- 
- struct mtk_eint {
- 	struct device *dev;
--	void __iomem **base;
--	u8 nbase;
--	u16 *base_pin_num;
- 	struct irq_domain *domain;
- 	int irq;
- 
--	int *dual_edge;
--	u32 **wake_mask;
--	u32 **cur_mask;
--
--	/* Used to fit into various EINT device */
--	const struct mtk_eint_hw *hw;
--	const struct mtk_eint_regs *regs;
-+	/* An array to record the coordinate, index by global EINT ID */
- 	struct mtk_eint_pin *pins;
--	u16 num_db_time;
-+	/* An array to record the global EINT ID, index by coordinate*/
-+	struct mtk_eint_instance *instances;
-+	unsigned int total_pin_number;
-+	unsigned int instance_number;
-+	unsigned int dump_target_eint;
-+	const struct mtk_eint_compatible *comp;
- 
- 	/* Used to fit into various pinctrl device */
- 	void *pctl;
-@@ -93,6 +98,7 @@ int mtk_eint_do_resume(struct mtk_eint *eint);
- int mtk_eint_set_debounce(struct mtk_eint *eint, unsigned long eint_n,
- 			  unsigned int debounce);
- int mtk_eint_find_irq(struct mtk_eint *eint, unsigned long eint_n);
-+int dump_eint_pin_status(unsigned int eint_num, char *buf, unsigned int buf_size);
- 
- #else
- static inline int mtk_eint_do_init(struct mtk_eint *eint)
-@@ -120,5 +126,10 @@ static inline int mtk_eint_find_irq(struct mtk_eint *eint, unsigned long eint_n)
- {
- 	return -EOPNOTSUPP;
- }
-+
-+static inline void dump_eint_pin_status(unsigned int eint_num)
-+{
-+	return -EOPNOTSUPP;
-+}
- #endif
- #endif /* __MTK_EINT_H */
-diff --git a/drivers/pinctrl/mediatek/pinctrl-mt6765.c b/drivers/pinctrl/mediatek/pinctrl-mt6765.c
-index f6ec41eb6e0c9309da85456dae2af276afbd301e..f073e323e2481492f0dad053378fe03893e0aae0 100644
---- a/drivers/pinctrl/mediatek/pinctrl-mt6765.c
-+++ b/drivers/pinctrl/mediatek/pinctrl-mt6765.c
-@@ -1057,20 +1057,11 @@ static const char * const mt6765_pinctrl_register_base_names[] = {
- 	"iocfg6", "iocfg7",
- };
- 
--static const struct mtk_eint_hw mt6765_eint_hw = {
--	.port_mask = 7,
--	.ports     = 6,
--	.ap_num    = 160,
--	.db_cnt    = 13,
--	.db_time   = debounce_time_mt6765,
--};
--
- static const struct mtk_pin_soc mt6765_data = {
- 	.reg_cal = mt6765_reg_cals,
- 	.pins = mtk_pins_mt6765,
- 	.npins = ARRAY_SIZE(mtk_pins_mt6765),
- 	.ngrps = ARRAY_SIZE(mtk_pins_mt6765),
--	.eint_hw = &mt6765_eint_hw,
- 	.gpio_m = 0,
- 	.base_names = mt6765_pinctrl_register_base_names,
- 	.nbase_names = ARRAY_SIZE(mt6765_pinctrl_register_base_names),
-diff --git a/drivers/pinctrl/mediatek/pinctrl-mt6779.c b/drivers/pinctrl/mediatek/pinctrl-mt6779.c
-index 62d4f5ad6737da75e315aa0b58738a2a40a3c357..084f4ff1e97255130e44116f5270a195c7242e2f 100644
---- a/drivers/pinctrl/mediatek/pinctrl-mt6779.c
-+++ b/drivers/pinctrl/mediatek/pinctrl-mt6779.c
-@@ -732,20 +732,11 @@ static const char * const mt6779_pinctrl_register_base_names[] = {
- 	"iocfg_rt", "iocfg_lt", "iocfg_tl",
- };
- 
--static const struct mtk_eint_hw mt6779_eint_hw = {
--	.port_mask = 7,
--	.ports     = 6,
--	.ap_num    = 195,
--	.db_cnt    = 13,
--	.db_time   = debounce_time_mt2701,
--};
--
- static const struct mtk_pin_soc mt6779_data = {
- 	.reg_cal = mt6779_reg_cals,
- 	.pins = mtk_pins_mt6779,
- 	.npins = ARRAY_SIZE(mtk_pins_mt6779),
- 	.ngrps = ARRAY_SIZE(mtk_pins_mt6779),
--	.eint_hw = &mt6779_eint_hw,
- 	.gpio_m = 0,
- 	.ies_present = true,
- 	.base_names = mt6779_pinctrl_register_base_names,
-diff --git a/drivers/pinctrl/mediatek/pinctrl-mt6795.c b/drivers/pinctrl/mediatek/pinctrl-mt6795.c
-index 01e855ccd4dd9d61b062ae8b520fe6e05ddf52d8..2c2e9874c7e8d8246db860d87ea6f9b5c74cac66 100644
---- a/drivers/pinctrl/mediatek/pinctrl-mt6795.c
-+++ b/drivers/pinctrl/mediatek/pinctrl-mt6795.c
-@@ -470,14 +470,6 @@ static const struct mtk_pin_reg_calc mt6795_reg_cals[PINCTRL_PIN_REG_MAX] = {
- 	[PINCTRL_PIN_REG_PULLSEL] = MTK_RANGE(mt6795_pin_pullsel_range),
- };
- 
--static const struct mtk_eint_hw mt6795_eint_hw = {
--	.port_mask = 7,
--	.ports     = 7,
--	.ap_num    = 224,
--	.db_cnt    = 32,
--	.db_time   = debounce_time_mt6795,
--};
--
- static const unsigned int mt6795_pull_type[] = {
- 	MTK_PULL_PULLSEL_TYPE,/*0*/		MTK_PULL_PULLSEL_TYPE,/*1*/
- 	MTK_PULL_PULLSEL_TYPE,/*2*/		MTK_PULL_PULLSEL_TYPE,/*3*/
-@@ -586,7 +578,6 @@ static const struct mtk_pin_soc mt6795_data = {
- 	.npins = ARRAY_SIZE(mtk_pins_mt6795),
- 	.ngrps = ARRAY_SIZE(mtk_pins_mt6795),
- 	.nfuncs = 8,
--	.eint_hw = &mt6795_eint_hw,
- 	.gpio_m = 0,
- 	.base_names = mtk_default_register_base_names,
- 	.nbase_names = ARRAY_SIZE(mtk_default_register_base_names),
-diff --git a/drivers/pinctrl/mediatek/pinctrl-mt7981.c b/drivers/pinctrl/mediatek/pinctrl-mt7981.c
-index 0fd2c0c451f954c9bd04ec52d71e9f0a0fde260b..2412b1ef993ec38a4f956d25c6481579eb2d970f 100644
---- a/drivers/pinctrl/mediatek/pinctrl-mt7981.c
-+++ b/drivers/pinctrl/mediatek/pinctrl-mt7981.c
-@@ -967,13 +967,6 @@ static const struct function_desc mt7981_functions[] = {
- 	{"pcie", mt7981_pcie_groups, ARRAY_SIZE(mt7981_pcie_groups)},
- };
- 
--static const struct mtk_eint_hw mt7981_eint_hw = {
--	.port_mask = 7,
--	.ports     = 7,
--	.ap_num    = ARRAY_SIZE(mt7981_pins),
--	.db_cnt    = 16,
--};
--
- static const char * const mt7981_pinctrl_register_base_names[] = {
- 	"gpio", "iocfg_rt", "iocfg_rm", "iocfg_rb",
- 	"iocfg_lb", "iocfg_bl", "iocfg_tm", "iocfg_tl",
-@@ -987,7 +980,6 @@ static struct mtk_pin_soc mt7981_data = {
- 	.ngrps = ARRAY_SIZE(mt7981_groups),
- 	.funcs = mt7981_functions,
- 	.nfuncs = ARRAY_SIZE(mt7981_functions),
--	.eint_hw = &mt7981_eint_hw,
- 	.gpio_m = 0,
- 	.ies_present = false,
- 	.base_names = mt7981_pinctrl_register_base_names,
-diff --git a/drivers/pinctrl/mediatek/pinctrl-mt7986.c b/drivers/pinctrl/mediatek/pinctrl-mt7986.c
-index acaac9b38aa8a78ce7c2f1c33d2a956baab450dd..7d9af941268e201e2805336d50b1ede5fced4a33 100644
---- a/drivers/pinctrl/mediatek/pinctrl-mt7986.c
-+++ b/drivers/pinctrl/mediatek/pinctrl-mt7986.c
-@@ -893,22 +893,6 @@ static const struct function_desc mt7986_functions[] = {
- 	{"wifi", mt7986_wf_groups, ARRAY_SIZE(mt7986_wf_groups)},
- };
- 
--static const struct mtk_eint_hw mt7986a_eint_hw = {
--	.port_mask = 7,
--	.ports = 7,
--	.ap_num = ARRAY_SIZE(mt7986a_pins),
--	.db_cnt = 16,
--	.db_time = debounce_time_mt6765,
--};
--
--static const struct mtk_eint_hw mt7986b_eint_hw = {
--	.port_mask = 7,
--	.ports = 7,
--	.ap_num = ARRAY_SIZE(mt7986b_pins),
--	.db_cnt = 16,
--	.db_time = debounce_time_mt6765,
--};
--
- static struct mtk_pin_soc mt7986a_data = {
- 	.reg_cal = mt7986_reg_cals,
- 	.pins = mt7986a_pins,
-@@ -917,7 +901,6 @@ static struct mtk_pin_soc mt7986a_data = {
- 	.ngrps = ARRAY_SIZE(mt7986_groups),
- 	.funcs = mt7986_functions,
- 	.nfuncs = ARRAY_SIZE(mt7986_functions),
--	.eint_hw = &mt7986a_eint_hw,
- 	.gpio_m = 0,
- 	.ies_present = false,
- 	.base_names = mt7986_pinctrl_register_base_names,
-@@ -943,7 +926,6 @@ static struct mtk_pin_soc mt7986b_data = {
- 	.ngrps = ARRAY_SIZE(mt7986_groups),
- 	.funcs = mt7986_functions,
- 	.nfuncs = ARRAY_SIZE(mt7986_functions),
--	.eint_hw = &mt7986b_eint_hw,
- 	.gpio_m = 0,
- 	.ies_present = false,
- 	.base_names = mt7986_pinctrl_register_base_names,
-diff --git a/drivers/pinctrl/mediatek/pinctrl-mt8167.c b/drivers/pinctrl/mediatek/pinctrl-mt8167.c
-index ba7f30c3296fecf60d26978e15fe112f7e36a9ab..19bf500a53a93631752fd97d9944f659623fb3d5 100644
---- a/drivers/pinctrl/mediatek/pinctrl-mt8167.c
-+++ b/drivers/pinctrl/mediatek/pinctrl-mt8167.c
-@@ -313,13 +313,6 @@ static const struct mtk_pinctrl_devdata mt8167_pinctrl_data = {
- 	.mode_mask = 0xf,
- 	.mode_per_reg = 5,
- 	.mode_shf = 4,
--	.eint_hw = {
--		.port_mask = 7,
--		.ports     = 6,
--		.ap_num    = 169,
--		.db_cnt    = 64,
--		.db_time = debounce_time_mt6795,
--	},
- };
- 
- static const struct of_device_id mt8167_pctrl_match[] = {
-diff --git a/drivers/pinctrl/mediatek/pinctrl-mt8173.c b/drivers/pinctrl/mediatek/pinctrl-mt8173.c
-index 455eec018f93e6b5058bb20b59ed283f5da3320b..7d8016b266f68d0355e23513762d7929f14b0c75 100644
---- a/drivers/pinctrl/mediatek/pinctrl-mt8173.c
-+++ b/drivers/pinctrl/mediatek/pinctrl-mt8173.c
-@@ -321,13 +321,6 @@ static const struct mtk_pinctrl_devdata mt8173_pinctrl_data = {
- 	.mode_mask = 0xf,
- 	.mode_per_reg = 5,
- 	.mode_shf = 4,
--	.eint_hw = {
--		.port_mask = 7,
--		.ports     = 6,
--		.ap_num    = 224,
--		.db_cnt    = 16,
--		.db_time   = debounce_time_mt2701,
--	},
- };
- 
- static int mt8173_pinctrl_probe(struct platform_device *pdev)
-diff --git a/drivers/pinctrl/mediatek/pinctrl-mt8183.c b/drivers/pinctrl/mediatek/pinctrl-mt8183.c
-index ddc48b725c22d99a03f3ddd2d3af2e446491ae1d..c9097654698a8afef5008f579735ce94c997f4d2 100644
---- a/drivers/pinctrl/mediatek/pinctrl-mt8183.c
-+++ b/drivers/pinctrl/mediatek/pinctrl-mt8183.c
-@@ -540,20 +540,11 @@ static const char * const mt8183_pinctrl_register_base_names[] = {
- 	"iocfg6", "iocfg7", "iocfg8",
- };
- 
--static const struct mtk_eint_hw mt8183_eint_hw = {
--	.port_mask = 7,
--	.ports     = 6,
--	.ap_num    = 212,
--	.db_cnt    = 13,
--	.db_time   = debounce_time_mt6765,
--};
--
- static const struct mtk_pin_soc mt8183_data = {
- 	.reg_cal = mt8183_reg_cals,
- 	.pins = mtk_pins_mt8183,
- 	.npins = ARRAY_SIZE(mtk_pins_mt8183),
- 	.ngrps = ARRAY_SIZE(mtk_pins_mt8183),
--	.eint_hw = &mt8183_eint_hw,
- 	.gpio_m = 0,
- 	.base_names = mt8183_pinctrl_register_base_names,
- 	.nbase_names = ARRAY_SIZE(mt8183_pinctrl_register_base_names),
-diff --git a/drivers/pinctrl/mediatek/pinctrl-mt8186.c b/drivers/pinctrl/mediatek/pinctrl-mt8186.c
-index 09edcf47effec521b8843ea44900532f5cb0a2b8..7b952ab6c0a6a6c095030f5695ab4158d4e436be 100644
---- a/drivers/pinctrl/mediatek/pinctrl-mt8186.c
-+++ b/drivers/pinctrl/mediatek/pinctrl-mt8186.c
-@@ -1216,14 +1216,6 @@ static const char * const mt8186_pinctrl_register_base_names[] = {
- 	"iocfg_rb", "iocfg_rt",
- };
- 
--static const struct mtk_eint_hw mt8186_eint_hw = {
--	.port_mask = 0xf,
--	.ports     = 7,
--	.ap_num    = 217,
--	.db_cnt    = 32,
--	.db_time   = debounce_time_mt6765,
--};
--
- static const struct mtk_pin_soc mt8186_data = {
- 	.reg_cal = mt8186_reg_cals,
- 	.pins = mtk_pins_mt8186,
-@@ -1231,7 +1223,6 @@ static const struct mtk_pin_soc mt8186_data = {
- 	.ngrps = ARRAY_SIZE(mtk_pins_mt8186),
- 	.nfuncs = 8,
- 	.gpio_m = 0,
--	.eint_hw = &mt8186_eint_hw,
- 	.base_names = mt8186_pinctrl_register_base_names,
- 	.nbase_names = ARRAY_SIZE(mt8186_pinctrl_register_base_names),
- 	.pull_type = mt8186_pull_type,
-diff --git a/drivers/pinctrl/mediatek/pinctrl-mt8188.c b/drivers/pinctrl/mediatek/pinctrl-mt8188.c
-index c067e043e6192d1d15264b4887246a639401b3b1..ffa530ae139854cba00435d4ccf4ba980ec9f7ca 100644
---- a/drivers/pinctrl/mediatek/pinctrl-mt8188.c
-+++ b/drivers/pinctrl/mediatek/pinctrl-mt8188.c
-@@ -1620,20 +1620,11 @@ static const char * const mt8188_pinctrl_register_base_name[] = {
- 	"iocfg0", "iocfg_rm", "iocfg_lt", "iocfg_lm", "iocfg_rt",
- };
- 
--static const struct mtk_eint_hw mt8188_eint_hw = {
--	.port_mask = 0xf,
--	.ports     = 7,
--	.ap_num    = 225,
--	.db_cnt    = 32,
--	.db_time   = debounce_time_mt6765,
--};
--
- static const struct mtk_pin_soc mt8188_data = {
- 	.reg_cal = mt8188_reg_cals,
- 	.pins = mtk_pins_mt8188,
- 	.npins = ARRAY_SIZE(mtk_pins_mt8188),
- 	.ngrps = ARRAY_SIZE(mtk_pins_mt8188),
--	.eint_hw = &mt8188_eint_hw,
- 	.nfuncs = 8,
- 	.gpio_m = 0,
- 	.base_names = mt8188_pinctrl_register_base_name,
 diff --git a/drivers/pinctrl/mediatek/pinctrl-mt8189.c b/drivers/pinctrl/mediatek/pinctrl-mt8189.c
 new file mode 100644
-index 0000000000000000000000000000000000000000..66d12d1bf3dfb4f51ba9a6deb285f9be2bdcd33f
+index 0000000000000000000000000000000000000000..c068095410de5657a60aca5f6c3734df577ee59e
 --- /dev/null
 +++ b/drivers/pinctrl/mediatek/pinctrl-mt8189.c
-@@ -0,0 +1,1670 @@
+@@ -0,0 +1,1680 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
 + * Copyright (C) 2024 MediaTek Inc.
@@ -27636,11 +25755,21 @@ index 0000000000000000000000000000000000000000..66d12d1bf3dfb4f51ba9a6deb285f9be
 +	"iocfg_rt_base"
 +};
 +
++static const struct mtk_eint_hw mt8189_eint_hw = {
++	.port_mask	= 0xf,
++	.ports		= 3,
++	.ap_num		= 210,
++	.db_cnt		= 32,
++	.db_time	= debounce_time_mt6765,
++};
++
 +static const struct mtk_pin_soc mt8189_data = {
 +	.reg_cal = mt8189_reg_cals,
 +	.pins = mtk_pins_mt8189,
 +	.npins = ARRAY_SIZE(mtk_pins_mt8189),
 +	.ngrps = ARRAY_SIZE(mtk_pins_mt8189),
++	.eint_pin = eint_pins_mt8189,
++	.eint_hw = &mt8189_eint_hw,
 +	.nfuncs = 8,
 +	.gpio_m = 0,
 +	.base_names = mt8189_pinctrl_register_base_names,
@@ -27676,266 +25805,12 @@ index 0000000000000000000000000000000000000000..66d12d1bf3dfb4f51ba9a6deb285f9be
 +module_platform_driver(mt8189_pinctrl_driver);
 +MODULE_LICENSE("GPL");
 +
-diff --git a/drivers/pinctrl/mediatek/pinctrl-mt8192.c b/drivers/pinctrl/mediatek/pinctrl-mt8192.c
-index bf5788d6810ff0a16107caed27123038f02aff63..7f249e61f1f55ce39f7cf2fa72af3f9162932774 100644
---- a/drivers/pinctrl/mediatek/pinctrl-mt8192.c
-+++ b/drivers/pinctrl/mediatek/pinctrl-mt8192.c
-@@ -1366,14 +1366,6 @@ static const char * const mt8192_pinctrl_register_base_names[] = {
- 	"iocfg_lm", "iocfg_lb", "iocfg_rt", "iocfg_lt", "iocfg_tl",
- };
- 
--static const struct mtk_eint_hw mt8192_eint_hw = {
--	.port_mask = 7,
--	.ports     = 7,
--	.ap_num    = 224,
--	.db_cnt    = 32,
--	.db_time   = debounce_time_mt6765,
--};
--
- static const struct mtk_pin_reg_calc mt8192_reg_cals[PINCTRL_PIN_REG_MAX] = {
- 	[PINCTRL_PIN_REG_MODE] = MTK_RANGE(mt8192_pin_mode_range),
- 	[PINCTRL_PIN_REG_DIR] = MTK_RANGE(mt8192_pin_dir_range),
-@@ -1399,7 +1391,6 @@ static const struct mtk_pin_soc mt8192_data = {
- 	.base_names = mt8192_pinctrl_register_base_names,
- 	.nbase_names = ARRAY_SIZE(mt8192_pinctrl_register_base_names),
- 	.pull_type = mt8192_pull_type,
--	.eint_hw = &mt8192_eint_hw,
- 	.nfuncs = 8,
- 	.gpio_m = 0,
- 	.bias_set_combo = mtk_pinconf_bias_set_combo,
-diff --git a/drivers/pinctrl/mediatek/pinctrl-mt8195.c b/drivers/pinctrl/mediatek/pinctrl-mt8195.c
-index 09c4dcef933838038969cc3f7a65008c6c87fa12..0fde3c27cc136c62704969d2c08d7c98e0fd45c8 100644
---- a/drivers/pinctrl/mediatek/pinctrl-mt8195.c
-+++ b/drivers/pinctrl/mediatek/pinctrl-mt8195.c
-@@ -930,20 +930,11 @@ static const char * const mt8195_pinctrl_register_base_names[] = {
- 	"iocfg_rb", "iocfg_tl",
- };
- 
--static const struct mtk_eint_hw mt8195_eint_hw = {
--	.port_mask = 0xf,
--	.ports     = 7,
--	.ap_num    = 225,
--	.db_cnt    = 32,
--	.db_time   = debounce_time_mt6765,
--};
--
- static const struct mtk_pin_soc mt8195_data = {
- 	.reg_cal = mt8195_reg_cals,
- 	.pins = mtk_pins_mt8195,
- 	.npins = ARRAY_SIZE(mtk_pins_mt8195),
- 	.ngrps = ARRAY_SIZE(mtk_pins_mt8195),
--	.eint_hw = &mt8195_eint_hw,
- 	.nfuncs = 8,
- 	.gpio_m = 0,
- 	.base_names = mt8195_pinctrl_register_base_names,
-diff --git a/drivers/pinctrl/mediatek/pinctrl-mt8196.c b/drivers/pinctrl/mediatek/pinctrl-mt8196.c
-index e9ef489e26ae74b592680fb5cd1f58551d9c8353..6d2bee7067187b7828fb02b14ddaf0450022e29f 100644
---- a/drivers/pinctrl/mediatek/pinctrl-mt8196.c
-+++ b/drivers/pinctrl/mediatek/pinctrl-mt8196.c
-@@ -1715,21 +1715,11 @@ static const char * const mt8196_pinctrl_register_base_names[] = {
- 	"iocfg_lb2", "iocfg_tm1", "iocfg_tm2", "iocfg_tm3",
- };
- 
--static const struct mtk_eint_hw mt8196_eint_hw = {
--	.port_mask	= 0xf,
--	.ports		= 3,
--	.ap_num		= 293,
--	.db_cnt		= 32,
--	.db_time	= debounce_time_mt6765,
--};
--
- static const struct mtk_pin_soc mt8196_data = {
- 	.reg_cal	= mt8196_reg_cals,
- 	.pins	= mtk_pins_mt8196,
--	.eint_pin = eint_pins_mt8196,
- 	.npins	= ARRAY_SIZE(mtk_pins_mt8196),
- 	.ngrps	= ARRAY_SIZE(mtk_pins_mt8196),
--	.eint_hw = &mt8196_eint_hw,
- 	.nfuncs	= 8,
- 	.gpio_m	= 0,
- 	.base_names	= mt8196_pinctrl_register_base_names,
-diff --git a/drivers/pinctrl/mediatek/pinctrl-mt8365.c b/drivers/pinctrl/mediatek/pinctrl-mt8365.c
-index 1db04bbdb42369a5ceb2241dd0ce512482b7e1b7..4ff3642d38582a2c1e9afb7cfa812e3ff8b65509 100644
---- a/drivers/pinctrl/mediatek/pinctrl-mt8365.c
-+++ b/drivers/pinctrl/mediatek/pinctrl-mt8365.c
-@@ -465,13 +465,6 @@ static const struct mtk_pinctrl_devdata mt8365_pinctrl_data = {
- 	.mode_mask = 0x1f,
- 	.mode_per_reg = 10,
- 	.mode_shf = 5,
--	.eint_hw = {
--		.port_mask = 7,
--		.ports     = 5,
--		.ap_num = 160,
--		.db_cnt = 160,
--		.db_time   = debounce_time_mt6765,
--	},
- };
- 
- static const struct of_device_id mt8365_pctrl_match[] = {
-diff --git a/drivers/pinctrl/mediatek/pinctrl-mt8516.c b/drivers/pinctrl/mediatek/pinctrl-mt8516.c
-index 950275c47122bb917cd0d828ac264e889691ead8..c377668dd2c094782b230b88dbe54df2c2a63616 100644
---- a/drivers/pinctrl/mediatek/pinctrl-mt8516.c
-+++ b/drivers/pinctrl/mediatek/pinctrl-mt8516.c
-@@ -313,13 +313,6 @@ static const struct mtk_pinctrl_devdata mt8516_pinctrl_data = {
- 	.mode_mask = 0xf,
- 	.mode_per_reg = 5,
- 	.mode_shf = 4,
--	.eint_hw = {
--		.port_mask = 7,
--		.ports     = 6,
--		.ap_num    = 169,
--		.db_cnt    = 64,
--		.db_time   = debounce_time_mt6795,
--	},
- };
- 
- static const struct of_device_id mt8516_pctrl_match[] = {
-diff --git a/drivers/pinctrl/mediatek/pinctrl-mtk-common-v2.c b/drivers/pinctrl/mediatek/pinctrl-mtk-common-v2.c
-index 41e575928cd58e91e84fe0f951ea02d8b84369d3..3d12498d36897e4e814c0f0f5667f4800a58b290 100644
---- a/drivers/pinctrl/mediatek/pinctrl-mtk-common-v2.c
-+++ b/drivers/pinctrl/mediatek/pinctrl-mtk-common-v2.c
-@@ -13,7 +13,6 @@
- #include <linux/platform_device.h>
- #include <linux/io.h>
- #include <linux/module.h>
--#include <linux/of_address.h>
- #include <linux/of_irq.h>
- 
- #include "mtk-eint.h"
-@@ -368,70 +367,23 @@ static const struct mtk_eint_xt mtk_eint_xt = {
- int mtk_build_eint(struct mtk_pinctrl *hw, struct platform_device *pdev)
- {
- 	struct device_node *np = pdev->dev.of_node;
--	int ret, i, j, count_reg_names;
- 
-+	pr_err("-------------mtk_build_eint-------------\n");
- 	if (!IS_ENABLED(CONFIG_EINT_MTK))
- 		return 0;
- 
--	if (!hw->soc->eint_hw)
-+	if (!of_property_read_bool(np, "interrupt-controller"))
- 		return -ENODEV;
- 
--	count_reg_names = of_property_count_strings(np, "reg-names");
--	if (count_reg_names < hw->soc->nbase_names)
--		return -EINVAL;
--
--	hw->eint = devm_kmalloc(hw->dev, sizeof(*hw->eint), GFP_KERNEL);
-+	hw->eint = devm_kzalloc(hw->dev, sizeof(*hw->eint), GFP_KERNEL);
- 	if (!hw->eint)
- 		return -ENOMEM;
- 
--	hw->eint->nbase = count_reg_names - hw->soc->nbase_names;
--	hw->eint->base = devm_kmalloc_array(&pdev->dev, hw->eint->nbase,
--					    sizeof(*hw->eint->base), GFP_KERNEL | __GFP_ZERO);
--	if (!hw->eint->base) {
--		ret = -ENOMEM;
--		goto err_free_base;
--	}
--
--	for (i = hw->soc->nbase_names, j = 0; i < count_reg_names; i++, j++) {
--		hw->eint->base[j] = of_iomap(np, i);
--		if (IS_ERR(hw->eint->base[j])) {
--			ret = PTR_ERR(hw->eint->base[j]);
--			goto err_free_eint;
--		}
--	}
--
--	if (!of_property_read_bool(np, "interrupt-controller")) {
--		ret = -ENODEV;
--		goto err_free_eint;
--	}
--
--	hw->eint->irq = irq_of_parse_and_map(np, 0);
--	if (!hw->eint->irq) {
--		ret = -EINVAL;
--		goto err_free_eint;
--	}
--
- 	hw->eint->dev = &pdev->dev;
--	hw->eint->hw = hw->soc->eint_hw;
- 	hw->eint->pctl = hw;
- 	hw->eint->gpio_xlate = &mtk_eint_xt;
- 
--	ret = mtk_eint_do_init(hw->eint);
--	if (ret)
--		goto err_free_eint;
--
--	return 0;
--
--err_free_eint:
--	for (j = 0; j < hw->eint->nbase; j++) {
--		if (hw->eint->base[j])
--			iounmap(hw->eint->base[j]);
--	}
--	devm_kfree(hw->dev, hw->eint->base);
--err_free_base:
--	devm_kfree(hw->dev, hw->eint);
--	hw->eint = NULL;
--	return ret;
-+	return mtk_eint_do_init(hw->eint);
- }
- EXPORT_SYMBOL_GPL(mtk_build_eint);
- 
-diff --git a/drivers/pinctrl/mediatek/pinctrl-mtk-common-v2.h b/drivers/pinctrl/mediatek/pinctrl-mtk-common-v2.h
-index 1dc2ed8a7df2318e9d8e567d85b406076deda791..2d329477f25ca31aca43cf43e78f10bdb97cc7c5 100644
---- a/drivers/pinctrl/mediatek/pinctrl-mtk-common-v2.h
-+++ b/drivers/pinctrl/mediatek/pinctrl-mtk-common-v2.h
-@@ -239,9 +239,6 @@ struct mtk_pin_soc {
- 	unsigned int			ngrps;
- 	const struct function_desc	*funcs;
- 	unsigned int			nfuncs;
--	const struct mtk_eint_regs	*eint_regs;
--	const struct mtk_eint_hw	*eint_hw;
--	struct mtk_eint_pin		*eint_pin;
- 
- 	/* Specific parameters per SoC */
- 	u8				gpio_m;
-diff --git a/drivers/pinctrl/mediatek/pinctrl-mtk-common.c b/drivers/pinctrl/mediatek/pinctrl-mtk-common.c
-index 74b15952b742eb46c61ce68aad011682d77281c0..f9dc19a8ae4f0c2f4e53b4d6c3293f48e34677df 100644
---- a/drivers/pinctrl/mediatek/pinctrl-mtk-common.c
-+++ b/drivers/pinctrl/mediatek/pinctrl-mtk-common.c
-@@ -1024,21 +1024,7 @@ static int mtk_eint_init(struct mtk_pinctrl *pctl, struct platform_device *pdev)
- 	if (!pctl->eint)
- 		return -ENOMEM;
- 
--	pctl->eint->base = devm_platform_ioremap_resource(pdev, 0);
--	if (IS_ERR(pctl->eint->base))
--		return PTR_ERR(pctl->eint->base);
--
--	pctl->eint->irq = irq_of_parse_and_map(np, 0);
--	if (!pctl->eint->irq)
--		return -EINVAL;
--
- 	pctl->eint->dev = &pdev->dev;
--	/*
--	 * If pctl->eint->regs == NULL, it would fall back into using a generic
--	 * register map in mtk_eint_do_init calls.
--	 */
--	pctl->eint->regs = pctl->devdata->eint_regs;
--	pctl->eint->hw = &pctl->devdata->eint_hw;
- 	pctl->eint->pctl = pctl;
- 	pctl->eint->gpio_xlate = &mtk_eint_xt;
- 
-diff --git a/drivers/pinctrl/mediatek/pinctrl-mtk-common.h b/drivers/pinctrl/mediatek/pinctrl-mtk-common.h
-index 11afa12a96cbc29dc1812ecebd20c903ca949fd4..5d58fbafdf394191d433c7681d5c9bfc857462c5 100644
---- a/drivers/pinctrl/mediatek/pinctrl-mtk-common.h
-+++ b/drivers/pinctrl/mediatek/pinctrl-mtk-common.h
-@@ -272,8 +272,6 @@ struct mtk_pinctrl_devdata {
- 	unsigned char  port_shf;
- 	unsigned char  port_mask;
- 	unsigned char  port_align;
--	struct mtk_eint_hw eint_hw;
--	struct mtk_eint_regs *eint_regs;
- 	unsigned int mode_mask;
- 	unsigned int mode_per_reg;
- 	unsigned int mode_shf;
 diff --git a/drivers/pinctrl/mediatek/pinctrl-mtk-mt8189.h b/drivers/pinctrl/mediatek/pinctrl-mtk-mt8189.h
 new file mode 100644
-index 0000000000000000000000000000000000000000..a6f3985812624bd6c565406d2f1b3d8cee586b19
+index 0000000000000000000000000000000000000000..887ee0f5c08e591df757fc140ce68253b6a1db46
 --- /dev/null
 +++ b/drivers/pinctrl/mediatek/pinctrl-mtk-mt8189.h
-@@ -0,0 +1,2240 @@
+@@ -0,0 +1,2453 @@
 +/* SPDX-License-Identifier: GPL-2.0 */
 +/*
 + * Copyright (C) 2024 MediaTek Inc.
@@ -30174,340 +28049,223 @@ index 0000000000000000000000000000000000000000..a6f3985812624bd6c565406d2f1b3d8c
 +
 +};
 +
++static struct mtk_eint_pin eint_pins_mt8189[] = {
++	MTK_EINT_PIN(0, 0, 0, 1),
++	MTK_EINT_PIN(1, 0, 1, 1),
++	MTK_EINT_PIN(2, 0, 2, 1),
++	MTK_EINT_PIN(3, 0, 3, 1),
++	MTK_EINT_PIN(4, 0, 4, 1),
++	MTK_EINT_PIN(5, 0, 5, 1),
++	MTK_EINT_PIN(6, 0, 6, 1),
++	MTK_EINT_PIN(7, 0, 7, 1),
++	MTK_EINT_PIN(8, 0, 8, 1),
++	MTK_EINT_PIN(9, 0, 9, 1),
++	MTK_EINT_PIN(10, 0, 10, 1),
++	MTK_EINT_PIN(11, 0, 11, 1),
++	MTK_EINT_PIN(12, 1, 0, 1),
++	MTK_EINT_PIN(13, 1, 1, 1),
++	MTK_EINT_PIN(14, 1, 2, 1),
++	MTK_EINT_PIN(15, 1, 3, 1),
++	MTK_EINT_PIN(16, 1, 4, 1),
++	MTK_EINT_PIN(17, 1, 5, 1),
++	MTK_EINT_PIN(18, 0, 12, 1),
++	MTK_EINT_PIN(19, 0, 13, 1),
++	MTK_EINT_PIN(20, 0, 14, 1),
++	MTK_EINT_PIN(21, 0, 15, 1),
++	MTK_EINT_PIN(22, 0, 16, 1),
++	MTK_EINT_PIN(23, 0, 17, 1),
++	MTK_EINT_PIN(24, 0, 18, 1),
++	MTK_EINT_PIN(25, 2, 0, 1),
++	MTK_EINT_PIN(26, 2, 1, 1),
++	MTK_EINT_PIN(27, 1, 6, 1),
++	MTK_EINT_PIN(28, 1, 7, 1),
++	MTK_EINT_PIN(29, 2, 2, 1),
++	MTK_EINT_PIN(30, 1, 8, 1),
++	MTK_EINT_PIN(31, 1, 9, 1),
++	MTK_EINT_PIN(32, 1, 10, 1),
++	MTK_EINT_PIN(33, 1, 11, 1),
++	MTK_EINT_PIN(34, 1, 12, 1),
++	MTK_EINT_PIN(35, 1, 13, 1),
++	MTK_EINT_PIN(36, 1, 14, 1),
++	MTK_EINT_PIN(37, 1, 15, 1),
++	MTK_EINT_PIN(38, 1, 16, 1),
++	MTK_EINT_PIN(39, 1, 17, 1),
++	MTK_EINT_PIN(40, 1, 18, 1),
++	MTK_EINT_PIN(41, 1, 19, 1),
++	MTK_EINT_PIN(42, 1, 20, 1),
++	MTK_EINT_PIN(43, 1, 21, 1),
++	MTK_EINT_PIN(44, 0, 19, 1),
++	MTK_EINT_PIN(45, 0, 20, 1),
++	MTK_EINT_PIN(46, 0, 21, 1),
++	MTK_EINT_PIN(47, 0, 22, 1),
++	MTK_EINT_PIN(48, 2, 3, 1),
++	MTK_EINT_PIN(49, 2, 4, 1),
++	MTK_EINT_PIN(50, 2, 5, 1),
++	MTK_EINT_PIN(51, 0, 23, 1),
++	MTK_EINT_PIN(52, 0, 24, 1),
++	MTK_EINT_PIN(53, 0, 25, 1),
++	MTK_EINT_PIN(54, 0, 26, 1),
++	MTK_EINT_PIN(55, 2, 6, 1),
++	MTK_EINT_PIN(56, 2, 7, 1),
++	MTK_EINT_PIN(57, 1, 22, 1),
++	MTK_EINT_PIN(58, 1, 23, 1),
++	MTK_EINT_PIN(59, 1, 24, 1),
++	MTK_EINT_PIN(60, 1, 25, 1),
++	MTK_EINT_PIN(61, 1, 26, 1),
++	MTK_EINT_PIN(62, 1, 27, 1),
++	MTK_EINT_PIN(63, 1, 28, 1),
++	MTK_EINT_PIN(64, 1, 29, 1),
++	MTK_EINT_PIN(65, 0, 27, 1),
++	MTK_EINT_PIN(66, 0, 28, 1),
++	MTK_EINT_PIN(67, 0, 29, 1),
++	MTK_EINT_PIN(68, 0, 30, 1),
++	MTK_EINT_PIN(69, 1, 30, 1),
++	MTK_EINT_PIN(70, 1, 31, 1),
++	MTK_EINT_PIN(71, 1, 32, 1),
++	MTK_EINT_PIN(72, 1, 33, 1),
++	MTK_EINT_PIN(73, 1, 34, 1),
++	MTK_EINT_PIN(74, 1, 35, 1),
++	MTK_EINT_PIN(75, 1, 36, 1),
++	MTK_EINT_PIN(76, 1, 37, 1),
++	MTK_EINT_PIN(77, 0, 31, 1),
++	MTK_EINT_PIN(78, 0, 32, 1),
++	MTK_EINT_PIN(79, 0, 33, 1),
++	MTK_EINT_PIN(80, 0, 34, 1),
++	MTK_EINT_PIN(81, 1, 38, 1),
++	MTK_EINT_PIN(82, 1, 39, 1),
++	MTK_EINT_PIN(83, 1, 40, 1),
++	MTK_EINT_PIN(84, 0, 35, 1),
++	MTK_EINT_PIN(85, 0, 36, 1),
++	MTK_EINT_PIN(86, 0, 37, 1),
++	MTK_EINT_PIN(87, 0, 38, 1),
++	MTK_EINT_PIN(88, 2, 8, 1),
++	MTK_EINT_PIN(89, 2, 9, 1),
++	MTK_EINT_PIN(90, 2, 10, 1),
++	MTK_EINT_PIN(91, 2, 11, 1),
++	MTK_EINT_PIN(92, 2, 12, 1),
++	MTK_EINT_PIN(93, 2, 13, 1),
++	MTK_EINT_PIN(94, 2, 14, 1),
++	MTK_EINT_PIN(95, 2, 15, 1),
++	MTK_EINT_PIN(96, 2, 16, 1),
++	MTK_EINT_PIN(97, 2, 17, 1),
++	MTK_EINT_PIN(98, 2, 18, 1),
++	MTK_EINT_PIN(99, 2, 19, 1),
++	MTK_EINT_PIN(100, 2, 20, 1),
++	MTK_EINT_PIN(101, 2, 21, 1),
++	MTK_EINT_PIN(102, 2, 22, 1),
++	MTK_EINT_PIN(103, 0, 39, 1),
++	MTK_EINT_PIN(104, 0, 40, 1),
++	MTK_EINT_PIN(105, 0, 41, 1),
++	MTK_EINT_PIN(106, 0, 42, 1),
++	MTK_EINT_PIN(107, 0, 43, 1),
++	MTK_EINT_PIN(108, 0, 44, 1),
++	MTK_EINT_PIN(109, 0, 45, 1),
++	MTK_EINT_PIN(110, 0, 46, 1),
++	MTK_EINT_PIN(111, 0, 47, 1),
++	MTK_EINT_PIN(112, 0, 48, 0),
++	MTK_EINT_PIN(113, 0, 49, 1),
++	MTK_EINT_PIN(114, 0, 50, 0),
++	MTK_EINT_PIN(115, 1, 41, 1),
++	MTK_EINT_PIN(116, 1, 42, 1),
++	MTK_EINT_PIN(117, 1, 43, 1),
++	MTK_EINT_PIN(118, 1, 44, 1),
++	MTK_EINT_PIN(119, 1, 45, 1),
++	MTK_EINT_PIN(120, 1, 46, 1),
++	MTK_EINT_PIN(121, 1, 47, 1),
++	MTK_EINT_PIN(122, 1, 48, 1),
++	MTK_EINT_PIN(123, 1, 49, 1),
++	MTK_EINT_PIN(124, 1, 50, 1),
++	MTK_EINT_PIN(125, 1, 51, 1),
++	MTK_EINT_PIN(126, 1, 52, 1),
++	MTK_EINT_PIN(127, 1, 53, 1),
++	MTK_EINT_PIN(128, 1, 54, 1),
++	MTK_EINT_PIN(129, 1, 55, 1),
++	MTK_EINT_PIN(130, 1, 56, 1),
++	MTK_EINT_PIN(131, 1, 57, 1),
++	MTK_EINT_PIN(132, 1, 58, 1),
++	MTK_EINT_PIN(133, 1, 59, 1),
++	MTK_EINT_PIN(134, 1, 60, 1),
++	MTK_EINT_PIN(135, 1, 61, 1),
++	MTK_EINT_PIN(136, 1, 62, 1),
++	MTK_EINT_PIN(137, 1, 63, 1),
++	MTK_EINT_PIN(138, 1, 64, 1),
++	MTK_EINT_PIN(139, 1, 65, 1),
++	MTK_EINT_PIN(140, 1, 66, 1),
++	MTK_EINT_PIN(141, 1, 67, 1),
++	MTK_EINT_PIN(142, 1, 68, 1),
++	MTK_EINT_PIN(143, 1, 69, 1),
++	MTK_EINT_PIN(144, 1, 70, 1),
++	MTK_EINT_PIN(145, 1, 71, 1),
++	MTK_EINT_PIN(146, 1, 72, 1),
++	MTK_EINT_PIN(147, 1, 73, 1),
++	MTK_EINT_PIN(148, 1, 74, 1),
++	MTK_EINT_PIN(149, 1, 75, 1),
++	MTK_EINT_PIN(150, 1, 76, 1),
++	MTK_EINT_PIN(151, 1, 77, 1),
++	MTK_EINT_PIN(152, 1, 78, 1),
++	MTK_EINT_PIN(153, 1, 79, 1),
++	MTK_EINT_PIN(154, 1, 80, 1),
++	MTK_EINT_PIN(155, 1, 81, 1),
++	MTK_EINT_PIN(156, 2, 23, 1),
++	MTK_EINT_PIN(157, 2, 24, 1),
++	MTK_EINT_PIN(158, 2, 25, 1),
++	MTK_EINT_PIN(159, 4, 0, 1),
++	MTK_EINT_PIN(160, 2, 26, 1),
++	MTK_EINT_PIN(161, 2, 27, 1),
++	MTK_EINT_PIN(162, 2, 28, 1),
++	MTK_EINT_PIN(163, 4, 1, 1),
++	MTK_EINT_PIN(164, 2, 29, 1),
++	MTK_EINT_PIN(165, 2, 30, 1),
++	MTK_EINT_PIN(166, 4, 2, 1),
++	MTK_EINT_PIN(167, 2, 31, 0),
++	MTK_EINT_PIN(168, 1, 82, 1),
++	MTK_EINT_PIN(169, 1, 83, 1),
++	MTK_EINT_PIN(170, 1, 84, 1),
++	MTK_EINT_PIN(171, 1, 85, 0),
++	MTK_EINT_PIN(172, 1, 86, 1),
++	MTK_EINT_PIN(173, 1, 87, 0),
++	MTK_EINT_PIN(174, 4, 3, 1),
++	MTK_EINT_PIN(175, 4, 4, 1),
++	MTK_EINT_PIN(176, 4, 5, 1),
++	MTK_EINT_PIN(177, 4, 6, 1),
++	MTK_EINT_PIN(178, 4, 7, 1),
++	MTK_EINT_PIN(179, 4, 8, 1),
++	MTK_EINT_PIN(180, 2, 32, 1),
++	MTK_EINT_PIN(181, 2, 33, 0),
++	MTK_EINT_PIN(182, 3, 0, 1),
++	MTK_EINT_PIN(183, 3, 1, 1),
++	MTK_EINT_PIN(184, 3, 2, 1),
++	MTK_EINT_PIN(185, 3, 3, 1),
++	MTK_EINT_PIN(186, 3, 4, 1),
++	MTK_EINT_PIN(187, 3, 5, 1),
++	MTK_EINT_PIN(188, 3, 6, 1),
++	MTK_EINT_PIN(189, 3, 7, 1),
++	MTK_EINT_PIN(190, 3, 8, 1),
++	MTK_EINT_PIN(191, 3, 9, 1),
++	MTK_EINT_PIN(192, 3, 10, 1),
++	MTK_EINT_PIN(193, 3, 11, 1),
++	MTK_EINT_PIN(194, 3, 12, 1),
++	MTK_EINT_PIN(195, 3, 13, 1),
++	MTK_EINT_PIN(196, 3, 14, 1),
++	MTK_EINT_PIN(197, 3, 15, 1),
++	MTK_EINT_PIN(198, 3, 16, 1),
++	MTK_EINT_PIN(199, 3, 17, 1),
++	MTK_EINT_PIN(200, 3, 18, 1),
++	MTK_EINT_PIN(201, 3, 19, 1),
++	MTK_EINT_PIN(202, 3, 20, 1),
++	MTK_EINT_PIN(203, 3, 21, 1),
++	MTK_EINT_PIN(204, 3, 22, 1),
++	MTK_EINT_PIN(205, 3, 23, 1),
++	MTK_EINT_PIN(206, 3, 24, 1),
++	MTK_EINT_PIN(207, 3, 25, 1),
++	MTK_EINT_PIN(208, 3, 26, 1),
++	MTK_EINT_PIN(209, 3, 27, 1)
++};
++
 +#endif /* __PINCTRL__MTK_MT8189_H */
 +
-diff --git a/drivers/pinctrl/mediatek/pinctrl-mtk-mt8196.h b/drivers/pinctrl/mediatek/pinctrl-mtk-mt8196.h
-index 9c72e3269e5045db0d775b61b410a591b56365d0..9732ede74d9b912cbc0351e5345f66c5fea35d9b 100644
---- a/drivers/pinctrl/mediatek/pinctrl-mtk-mt8196.h
-+++ b/drivers/pinctrl/mediatek/pinctrl-mtk-mt8196.h
-@@ -9,7 +9,6 @@
- #define __PINCTRL_MTK_MT8196_H
- 
- #include "pinctrl-paris.h"
--#define INVALID_BASE 0xff
- 
- static const struct mtk_pin_desc mtk_pins_mt8196[] = {
- 
-@@ -2789,299 +2788,4 @@ static const struct mtk_pin_desc mtk_pins_mt8196[] = {
- 	)
- };
- 
--static struct mtk_eint_pin eint_pins_mt8196[] = {
--	MTK_EINT_PIN(0, 2, 0, 1),
--	MTK_EINT_PIN(1, 2, 1, 1),
--	MTK_EINT_PIN(2, 2, 16, 0),
--	MTK_EINT_PIN(3, 2, 17, 0),
--	MTK_EINT_PIN(4, 2, 2, 1),
--	MTK_EINT_PIN(5, 2, 3, 1),
--	MTK_EINT_PIN(6, 2, 4, 1),
--	MTK_EINT_PIN(7, 2, 5, 1),
--	MTK_EINT_PIN(8, 2, 6, 1),
--	MTK_EINT_PIN(9, 2, 18, 0),
--	MTK_EINT_PIN(10, 2, 7, 1),
--	MTK_EINT_PIN(11, 2, 8, 1),
--	MTK_EINT_PIN(12, 2, 9, 1),
--	MTK_EINT_PIN(13, 1, 4, 0),
--	MTK_EINT_PIN(14, 0, 0, 1),
--	MTK_EINT_PIN(15, 1, 5, 0),
--	MTK_EINT_PIN(16, 1, 6, 0),
--	MTK_EINT_PIN(17, 1, 7, 0),
--	MTK_EINT_PIN(18, 1, 8, 0),
--	MTK_EINT_PIN(19, 1, 9, 0),
--	MTK_EINT_PIN(20, 0, 1, 1),
--	MTK_EINT_PIN(21, 0, 10, 0),
--	MTK_EINT_PIN(22, 0, 11, 0),
--	MTK_EINT_PIN(23, 0, 12, 0),
--	MTK_EINT_PIN(24, 0, 13, 0),
--	MTK_EINT_PIN(25, 0, 14, 0),
--	MTK_EINT_PIN(26, 0, 15, 0),
--	MTK_EINT_PIN(27, 0, 2, 1),
--	MTK_EINT_PIN(28, 0, 16, 0),
--	MTK_EINT_PIN(29, 0, 17, 0),
--	MTK_EINT_PIN(30, 0, 18, 0),
--	MTK_EINT_PIN(31, 0, 3, 1),
--	MTK_EINT_PIN(32, 0, 19, 0),
--	MTK_EINT_PIN(33, 0, 20, 0),
--	MTK_EINT_PIN(34, 0, 21, 0),
--	MTK_EINT_PIN(35, 0, 22, 0),
--	MTK_EINT_PIN(36, 0, 23, 0),
--	MTK_EINT_PIN(37, 0, 24, 0),
--	MTK_EINT_PIN(38, 0, 25, 0),
--	MTK_EINT_PIN(39, 2, 10, 1),
--	MTK_EINT_PIN(40, 2, 11, 1),
--	MTK_EINT_PIN(41, 2, 12, 1),
--	MTK_EINT_PIN(42, 2, 13, 1),
--	MTK_EINT_PIN(43, 2, 14, 1),
--	MTK_EINT_PIN(44, 2, 19, 0),
--	MTK_EINT_PIN(45, 2, 20, 0),
--	MTK_EINT_PIN(46, 2, 21, 0),
--	MTK_EINT_PIN(47, 2, 22, 0),
--	MTK_EINT_PIN(48, 2, 23, 0),
--	MTK_EINT_PIN(49, 2, 24, 0),
--	MTK_EINT_PIN(50, 2, 25, 0),
--	MTK_EINT_PIN(51, 2, 26, 0),
--	MTK_EINT_PIN(52, INVALID_BASE, 0, 0),
--	MTK_EINT_PIN(53, INVALID_BASE, 0, 0),
--	MTK_EINT_PIN(54, INVALID_BASE, 0, 0),
--	MTK_EINT_PIN(55, INVALID_BASE, 0, 0),
--	MTK_EINT_PIN(56, INVALID_BASE, 0, 0),
--	MTK_EINT_PIN(57, INVALID_BASE, 0, 0),
--	MTK_EINT_PIN(58, INVALID_BASE, 0, 0),
--	MTK_EINT_PIN(59, INVALID_BASE, 0, 0),
--	MTK_EINT_PIN(60, 2, 27, 0),
--	MTK_EINT_PIN(61, 2, 28, 0),
--	MTK_EINT_PIN(62, 2, 29, 0),
--	MTK_EINT_PIN(63, 2, 30, 0),
--	MTK_EINT_PIN(64, 2, 31, 0),
--	MTK_EINT_PIN(65, 2, 32, 0),
--	MTK_EINT_PIN(66, INVALID_BASE, 0, 0),
--	MTK_EINT_PIN(67, INVALID_BASE, 0, 0),
--	MTK_EINT_PIN(68, INVALID_BASE, 0, 0),
--	MTK_EINT_PIN(69, INVALID_BASE, 0, 0),
--	MTK_EINT_PIN(70, 2, 33, 0),
--	MTK_EINT_PIN(71, 2, 34, 0),
--	MTK_EINT_PIN(72, 2, 35, 0),
--	MTK_EINT_PIN(73, 2, 36, 0),
--	MTK_EINT_PIN(74, 2, 37, 0),
--	MTK_EINT_PIN(75, INVALID_BASE, 0, 0),
--	MTK_EINT_PIN(76, INVALID_BASE, 0, 0),
--	MTK_EINT_PIN(77, INVALID_BASE, 0, 0),
--	MTK_EINT_PIN(78, INVALID_BASE, 0, 0),
--	MTK_EINT_PIN(79, 2, 38, 0),
--	MTK_EINT_PIN(80, 2, 39, 0),
--	MTK_EINT_PIN(81, 2, 40, 0),
--	MTK_EINT_PIN(82, 2, 41, 0),
--	MTK_EINT_PIN(83, 2, 42, 0),
--	MTK_EINT_PIN(84, 2, 43, 0),
--	MTK_EINT_PIN(85, 2, 44, 0),
--	MTK_EINT_PIN(86, 2, 45, 0),
--	MTK_EINT_PIN(87, 2, 46, 0),
--	MTK_EINT_PIN(88, 2, 47, 0),
--	MTK_EINT_PIN(89, 2, 48, 0),
--	MTK_EINT_PIN(90, 2, 49, 0),
--	MTK_EINT_PIN(91, 2, 50, 0),
--	MTK_EINT_PIN(92, 2, 15, 1),
--	MTK_EINT_PIN(93, 2, 51, 0),
--	MTK_EINT_PIN(94, 2, 52, 0),
--	MTK_EINT_PIN(95, 2, 53, 0),
--	MTK_EINT_PIN(96, 2, 54, 0),
--	MTK_EINT_PIN(97, 2, 55, 0),
--	MTK_EINT_PIN(98, 2, 56, 0),
--	MTK_EINT_PIN(99, INVALID_BASE, 0, 0),
--	MTK_EINT_PIN(100, INVALID_BASE, 0, 0),
--	MTK_EINT_PIN(101, INVALID_BASE, 0, 0),
--	MTK_EINT_PIN(102, INVALID_BASE, 0, 0),
--	MTK_EINT_PIN(103, 2, 57, 0),
--	MTK_EINT_PIN(104, INVALID_BASE, 0, 0),
--	MTK_EINT_PIN(105, INVALID_BASE, 0, 0),
--	MTK_EINT_PIN(106, 1, 10, 0),
--	MTK_EINT_PIN(107, 1, 11, 0),
--	MTK_EINT_PIN(108, 1, 12, 0),
--	MTK_EINT_PIN(109, 1, 13, 0),
--	MTK_EINT_PIN(110, 1, 0, 1),
--	MTK_EINT_PIN(111, 1, 1, 1),
--	MTK_EINT_PIN(112, 1, 2, 1),
--	MTK_EINT_PIN(113, 1, 3, 1),
--	MTK_EINT_PIN(114, 1, 14, 0),
--	MTK_EINT_PIN(115, 1, 15, 0),
--	MTK_EINT_PIN(116, 1, 16, 0),
--	MTK_EINT_PIN(117, 1, 17, 0),
--	MTK_EINT_PIN(118, 1, 18, 0),
--	MTK_EINT_PIN(119, 1, 19, 0),
--	MTK_EINT_PIN(120, 1, 20, 0),
--	MTK_EINT_PIN(121, 1, 21, 0),
--	MTK_EINT_PIN(122, 1, 22, 0),
--	MTK_EINT_PIN(123, INVALID_BASE, 0, 0),
--	MTK_EINT_PIN(124, INVALID_BASE, 0, 0),
--	MTK_EINT_PIN(125, 1, 23, 0),
--	MTK_EINT_PIN(126, 1, 24, 0),
--	MTK_EINT_PIN(127, 1, 25, 0),
--	MTK_EINT_PIN(128, 1, 26, 0),
--	MTK_EINT_PIN(129, 1, 27, 0),
--	MTK_EINT_PIN(130, 1, 28, 0),
--	MTK_EINT_PIN(131, INVALID_BASE, 0, 0),
--	MTK_EINT_PIN(132, INVALID_BASE, 0, 0),
--	MTK_EINT_PIN(133, INVALID_BASE, 0, 0),
--	MTK_EINT_PIN(134, INVALID_BASE, 0, 0),
--	MTK_EINT_PIN(135, INVALID_BASE, 0, 0),
--	MTK_EINT_PIN(136, INVALID_BASE, 0, 0),
--	MTK_EINT_PIN(137, 0, 26, 0),
--	MTK_EINT_PIN(138, 0, 27, 0),
--	MTK_EINT_PIN(139, 0, 28, 0),
--	MTK_EINT_PIN(140, 0, 29, 0),
--	MTK_EINT_PIN(141, 0, 30, 0),
--	MTK_EINT_PIN(142, 0, 31, 0),
--	MTK_EINT_PIN(143, 0, 32, 0),
--	MTK_EINT_PIN(144, 0, 33, 0),
--	MTK_EINT_PIN(145, 0, 34, 0),
--	MTK_EINT_PIN(146, 0, 35, 0),
--	MTK_EINT_PIN(147, 0, 36, 0),
--	MTK_EINT_PIN(148, 0, 4, 1),
--	MTK_EINT_PIN(149, 0, 37, 0),
--	MTK_EINT_PIN(150, 0, 5, 1),
--	MTK_EINT_PIN(151, 0, 38, 0),
--	MTK_EINT_PIN(152, 0, 39, 0),
--	MTK_EINT_PIN(153, 0, 40, 0),
--	MTK_EINT_PIN(154, 0, 41, 0),
--	MTK_EINT_PIN(155, 0, 42, 0),
--	MTK_EINT_PIN(156, 0, 43, 0),
--	MTK_EINT_PIN(157, 0, 44, 0),
--	MTK_EINT_PIN(158, 0, 45, 0),
--	MTK_EINT_PIN(159, 0, 46, 0),
--	MTK_EINT_PIN(160, 0, 47, 0),
--	MTK_EINT_PIN(161, 0, 48, 0),
--	MTK_EINT_PIN(162, 0, 49, 0),
--	MTK_EINT_PIN(163, 0, 50, 0),
--	MTK_EINT_PIN(164, 0, 51, 0),
--	MTK_EINT_PIN(165, 0, 52, 0),
--	MTK_EINT_PIN(166, 0, 53, 0),
--	MTK_EINT_PIN(167, 0, 54, 0),
--	MTK_EINT_PIN(168, 0, 55, 0),
--	MTK_EINT_PIN(169, 0, 56, 0),
--	MTK_EINT_PIN(170, 0, 57, 0),
--	MTK_EINT_PIN(171, 0, 58, 0),
--	MTK_EINT_PIN(172, 0, 6, 1),
--	MTK_EINT_PIN(173, 0, 7, 1),
--	MTK_EINT_PIN(174, 0, 8, 1),
--	MTK_EINT_PIN(175, 0, 9, 1),
--	MTK_EINT_PIN(176, INVALID_BASE, 0, 0),
--	MTK_EINT_PIN(177, INVALID_BASE, 0, 0),
--	MTK_EINT_PIN(178, 0, 59, 0),
--	MTK_EINT_PIN(179, 0, 60, 0),
--	MTK_EINT_PIN(180, 0, 61, 0),
--	MTK_EINT_PIN(181, 0, 62, 0),
--	MTK_EINT_PIN(182, 0, 63, 0),
--	MTK_EINT_PIN(183, 0, 64, 0),
--	MTK_EINT_PIN(184, 0, 65, 0),
--	MTK_EINT_PIN(185, 0, 66, 0),
--	MTK_EINT_PIN(186, 3, 6, 0),
--	MTK_EINT_PIN(187, 3, 7, 0),
--	MTK_EINT_PIN(188, INVALID_BASE, 0, 0),
--	MTK_EINT_PIN(189, INVALID_BASE, 0, 0),
--	MTK_EINT_PIN(190, INVALID_BASE, 0, 0),
--	MTK_EINT_PIN(191, INVALID_BASE, 0, 0),
--	MTK_EINT_PIN(192, 3, 8, 0),
--	MTK_EINT_PIN(193, 3, 9, 0),
--	MTK_EINT_PIN(194, INVALID_BASE, 0, 0),
--	MTK_EINT_PIN(195, INVALID_BASE, 0, 0),
--	MTK_EINT_PIN(196, 3, 10, 0),
--	MTK_EINT_PIN(197, 3, 11, 0),
--	MTK_EINT_PIN(198, INVALID_BASE, 0, 0),
--	MTK_EINT_PIN(199, INVALID_BASE, 0, 0),
--	MTK_EINT_PIN(200, INVALID_BASE, 0, 0),
--	MTK_EINT_PIN(201, INVALID_BASE, 0, 0),
--	MTK_EINT_PIN(202, INVALID_BASE, 0, 0),
--	MTK_EINT_PIN(203, INVALID_BASE, 0, 0),
--	MTK_EINT_PIN(204, 3, 12, 0),
--	MTK_EINT_PIN(205, 3, 13, 0),
--	MTK_EINT_PIN(206, 3, 14, 0),
--	MTK_EINT_PIN(207, 3, 0, 1),
--	MTK_EINT_PIN(208, 3, 1, 1),
--	MTK_EINT_PIN(209, 3, 2, 1),
--	MTK_EINT_PIN(210, 3, 15, 0),
--	MTK_EINT_PIN(211, 3, 3, 1),
--	MTK_EINT_PIN(212, 3, 4, 1),
--	MTK_EINT_PIN(213, 3, 5, 1),
--	MTK_EINT_PIN(214, INVALID_BASE, 0, 0),
--	MTK_EINT_PIN(215, INVALID_BASE, 0, 0),
--	MTK_EINT_PIN(216, 3, 16, 0),
--	MTK_EINT_PIN(217, 3, 17, 0),
--	MTK_EINT_PIN(218, 3, 18, 0),
--	MTK_EINT_PIN(219, 3, 19, 0),
--	MTK_EINT_PIN(220, 3, 20, 0),
--	MTK_EINT_PIN(221, 3, 21, 0),
--	MTK_EINT_PIN(222, 3, 22, 0),
--	MTK_EINT_PIN(223, 3, 23, 0),
--	MTK_EINT_PIN(224, 3, 24, 0),
--	MTK_EINT_PIN(225, 3, 25, 0),
--	MTK_EINT_PIN(226, 3, 26, 0),
--	MTK_EINT_PIN(227, 3, 27, 0),
--	MTK_EINT_PIN(228, 3, 28, 0),
--	MTK_EINT_PIN(229, 3, 29, 0),
--	MTK_EINT_PIN(230, INVALID_BASE, 0, 0),
--	MTK_EINT_PIN(231, INVALID_BASE, 0, 0),
--	MTK_EINT_PIN(232, INVALID_BASE, 0, 0),
--	MTK_EINT_PIN(233, INVALID_BASE, 0, 0),
--	MTK_EINT_PIN(234, INVALID_BASE, 0, 0),
--	MTK_EINT_PIN(235, INVALID_BASE, 0, 0),
--	MTK_EINT_PIN(236, INVALID_BASE, 0, 0),
--	MTK_EINT_PIN(237, INVALID_BASE, 0, 0),
--	MTK_EINT_PIN(238, INVALID_BASE, 0, 0),
--	MTK_EINT_PIN(239, INVALID_BASE, 0, 0),
--	MTK_EINT_PIN(240, INVALID_BASE, 0, 0),
--	MTK_EINT_PIN(241, 3, 30, 0),
--	MTK_EINT_PIN(242, 3, 31, 0),
--	MTK_EINT_PIN(243, 3, 32, 0),
--	MTK_EINT_PIN(244, INVALID_BASE, 0, 0),
--	MTK_EINT_PIN(245, 3, 45, 0),
--	MTK_EINT_PIN(246, INVALID_BASE, 0, 0),
--	MTK_EINT_PIN(247, INVALID_BASE, 0, 0),
--	MTK_EINT_PIN(248, INVALID_BASE, 0, 0),
--	MTK_EINT_PIN(249, INVALID_BASE, 0, 0),
--	MTK_EINT_PIN(250, INVALID_BASE, 0, 0),
--	MTK_EINT_PIN(251, 0, 67, 0),
--	MTK_EINT_PIN(252, 0, 68, 0),
--	MTK_EINT_PIN(253, 0, 69, 0),
--	MTK_EINT_PIN(254, 0, 70, 0),
--	MTK_EINT_PIN(255, 0, 71, 0),
--	MTK_EINT_PIN(256, 0, 72, 0),
--	MTK_EINT_PIN(257, 0, 73, 0),
--	MTK_EINT_PIN(258, 0, 74, 0),
--	MTK_EINT_PIN(259, 3, 33, 0),
--	MTK_EINT_PIN(260, 3, 34, 0),
--	MTK_EINT_PIN(261, 3, 35, 0),
--	MTK_EINT_PIN(262, 3, 36, 0),
--	MTK_EINT_PIN(263, 3, 37, 0),
--	MTK_EINT_PIN(264, 3, 38, 0),
--	MTK_EINT_PIN(265, 3, 39, 0),
--	MTK_EINT_PIN(266, 3, 40, 0),
--	MTK_EINT_PIN(267, 3, 41, 0),
--	MTK_EINT_PIN(268, 3, 42, 0),
--	MTK_EINT_PIN(269, 3, 43, 0),
--	MTK_EINT_PIN(270, 3, 44, 0),
--	MTK_EINT_PIN(271, 4, 0, 0),
--	MTK_EINT_PIN(272, 4, 1, 0),
--	MTK_EINT_PIN(273, 4, 2, 0),
--	MTK_EINT_PIN(274, 4, 3, 0),
--	MTK_EINT_PIN(275, 4, 4, 0),
--	MTK_EINT_PIN(276, 4, 5, 0),
--	MTK_EINT_PIN(277, 4, 6, 0),
--	MTK_EINT_PIN(278, 4, 7, 0),
--	MTK_EINT_PIN(279, 4, 8, 0),
--	MTK_EINT_PIN(280, 4, 9, 0),
--	MTK_EINT_PIN(281, 4, 10, 0),
--	MTK_EINT_PIN(282, 4, 11, 0),
--	MTK_EINT_PIN(283, 4, 12, 0),
--	MTK_EINT_PIN(284, 4, 13, 0),
--	MTK_EINT_PIN(285, 4, 14, 0),
--	MTK_EINT_PIN(286, 4, 15, 0),
--	MTK_EINT_PIN(287, 4, 16, 0),
--	MTK_EINT_PIN(288, 4, 17, 0),
--	MTK_EINT_PIN(289, 4, 18, 0),
--	MTK_EINT_PIN(290, 4, 19, 0),
--	MTK_EINT_PIN(291, 4, 20, 0),
--	MTK_EINT_PIN(292, 4, 21, 0),
--};
- #endif /* __PINCTRL__MTK_MT8196_H */
-diff --git a/drivers/pinctrl/mediatek/pinctrl-paris.h b/drivers/pinctrl/mediatek/pinctrl-paris.h
-index 7c991c8433fb436b7d7384429969870b785aa845..8762ac59932927c14d27d9e58542a68335299ecc 100644
---- a/drivers/pinctrl/mediatek/pinctrl-paris.h
-+++ b/drivers/pinctrl/mediatek/pinctrl-paris.h
-@@ -49,13 +49,6 @@
- 			__VA_ARGS__, { } },				\
- 	}
- 
--#define MTK_EINT_PIN(_number,  _instance, _index, _debounce) {	\
--		.number = _number,				\
--		.instance = _instance,				\
--		.index = _index,				\
--		.debounce = _debounce,				\
--	}
--
- #define PINCTRL_PIN_GROUP(name, id)			\
- 	{						\
- 		name,					\
 diff --git a/drivers/pmdomain/mediatek/mtk-scpsys.c b/drivers/pmdomain/mediatek/mtk-scpsys.c
-index 4e386b7042356a0d939fcff0754087ec040a0937..35d8f4ac25aef67c876fc33073b506982d212be0 100644
+index 6968d97f473b5cffd788d23587b0921656029295..92f13f3d14c81542dbbaa07cb1934d0dd4151bcc 100644
 --- a/drivers/pmdomain/mediatek/mtk-scpsys.c
 +++ b/drivers/pmdomain/mediatek/mtk-scpsys.c
 @@ -21,6 +21,7 @@
@@ -30636,7 +28394,7 @@ index 4e386b7042356a0d939fcff0754087ec040a0937..35d8f4ac25aef67c876fc33073b50698
  			on = false;
  		else
  			on = !WARN_ON(genpd->power_on(genpd) < 0);
-@@ -2257,6 +2311,379 @@ static const struct scp_soc_data mt8196_mmpc_hwv_data = {
+@@ -2256,6 +2310,379 @@ static const struct scp_soc_data mt8196_mmpc_hwv_data = {
  	.post_probe = mt8196_mmpc_post_probe,
  };
  
@@ -31016,7 +28774,7 @@ index 4e386b7042356a0d939fcff0754087ec040a0937..35d8f4ac25aef67c876fc33073b50698
  /*
   * scpsys driver init
   */
-@@ -2286,6 +2713,9 @@ static const struct of_device_id of_scpsys_match_tbl[] = {
+@@ -2285,6 +2712,9 @@ static const struct of_device_id of_scpsys_match_tbl[] = {
  	}, {
  		.compatible = "mediatek,mt8196-hfrpsys-hwv",
  		.data = &mt8196_mmpc_hwv_data,
@@ -31617,11 +29375,100 @@ index 48029724eb2b42172d703664d68bba71a81a84a7..7dccf6a2b93a1d1407011e15bea4e65c
  	{}
  };
  MODULE_DEVICE_TABLE(of, mtk_spi_of_match);
+diff --git a/drivers/spi/spi-mtk-nor.c b/drivers/spi/spi-mtk-nor.c
+index 948c91b2a783744381010edeea4acb15d6b7f079..09c790a945c8ee8a821c1c28a0d460f02bd5e567 100644
+--- a/drivers/spi/spi-mtk-nor.c
++++ b/drivers/spi/spi-mtk-nor.c
+@@ -116,6 +116,7 @@ struct mtk_nor {
+ 	struct spi_controller *ctlr;
+ 	struct device *dev;
+ 	void __iomem *base;
++	void __iomem *dir_base;
+ 	u8 *buffer;
+ 	dma_addr_t buffer_dma;
+ 	struct clk_bulk_data clocks[MAX_CLOCK_CNT];
+@@ -373,6 +374,7 @@ static int mtk_nor_dma_exec(struct mtk_nor *sp, u32 from, unsigned int length,
+ 	writel(from, sp->base + MTK_NOR_REG_DMA_FADR);
+ 	writel(dma_addr, sp->base + MTK_NOR_REG_DMA_DADR);
+ 	writel(dma_addr + length, sp->base + MTK_NOR_REG_DMA_END_DADR);
++	dev_err(sp->dev, "%s high_dma=%d dma_addr=0x%llx \n",__func__,sp->high_dma,dma_addr);
+ 
+ 	if (sp->high_dma) {
+ 		writel(upper_32_bits(dma_addr),
+@@ -425,6 +427,23 @@ static int mtk_nor_read_bounce(struct mtk_nor *sp, const struct spi_mem_op *op)
+ 	return ret;
+ }
+ 
++static int mtk_nor_read_dir(struct mtk_nor *sp, const struct spi_mem_op *op)
++{
++	unsigned int rdlen;
++
++	u8 *buf = op->data.buf.in;
++
++	if (op->data.nbytes & MTK_NOR_DMA_ALIGN_MASK)
++		rdlen = (op->data.nbytes + MTK_NOR_DMA_ALIGN) & ~MTK_NOR_DMA_ALIGN_MASK;
++	else
++		rdlen = op->data.nbytes;
++
++	memcpy(buf, (u8 *)(sp->dir_base + op->addr.val), rdlen);
++
++	return 0;
++}
++
++
+ static int mtk_nor_read_dma(struct mtk_nor *sp, const struct spi_mem_op *op)
+ {
+ 	int ret;
+@@ -621,7 +640,7 @@ static int mtk_nor_exec_op(struct spi_mem *mem, const struct spi_mem_op *op)
+ 		if (op->data.nbytes == 1) {
+ 			mtk_nor_set_addr(sp, op);
+ 			return mtk_nor_read_pio(sp, op);
+-		} else {
++		} else if(op->data.nbytes > 0x1000000) {
+ 			ret = mtk_nor_read_dma(sp, op);
+ 			if (unlikely(ret)) {
+ 				/* Handle rare bus glitch */
+@@ -629,8 +648,10 @@ static int mtk_nor_exec_op(struct spi_mem *mem, const struct spi_mem_op *op)
+ 				mtk_nor_setup_bus(sp, op);
+ 				return mtk_nor_read_dma(sp, op);
+ 			}
+-
+ 			return ret;
++		} else {
++			mtk_nor_read_dir(sp, op);
++			return 0;
+ 		}
+ 	}
+ 
+@@ -836,12 +857,15 @@ static int mtk_nor_probe(struct platform_device *pdev)
+ 	struct mtk_nor *sp;
+ 	struct mtk_nor_caps *caps;
+ 	void __iomem *base;
++	void __iomem *dir_base;
+ 	int ret, irq;
+ 
+ 	base = devm_platform_ioremap_resource(pdev, 0);
+ 	if (IS_ERR(base))
+ 		return PTR_ERR(base);
+ 
++	dir_base = ioremap(0x38000000, 0x1000000);
++
+ 	caps = (struct mtk_nor_caps *)of_device_get_match_data(&pdev->dev);
+ 
+ 	ret = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(caps->dma_bits));
+@@ -870,6 +894,7 @@ static int mtk_nor_probe(struct platform_device *pdev)
+ 
+ 	sp = spi_controller_get_devdata(ctlr);
+ 	sp->base = base;
++	sp->dir_base = dir_base;
+ 	sp->has_irq = false;
+ 	sp->wbuf_en = false;
+ 	sp->ctlr = ctlr;
 diff --git a/drivers/spmi/spmi-mtk-pmif.c b/drivers/spmi/spmi-mtk-pmif.c
-index 865fc36070f3c4dc1541adba2828f821d77fddc2..48681c9cb4ef6510d0e952ac7450c440ea33c374 100644
+index f15966fad99cf11fc311510d7743d6934166440d..bf46c23497595ad7c34630f6e26c0c58aa317e80 100644
 --- a/drivers/spmi/spmi-mtk-pmif.c
 +++ b/drivers/spmi/spmi-mtk-pmif.c
-@@ -1534,6 +1534,9 @@ static const struct of_device_id mtk_spmi_match_table[] = {
+@@ -1537,6 +1537,9 @@ static const struct of_device_id mtk_spmi_match_table[] = {
  	{
  		.compatible = "mediatek,mt6873-spmi",
  		.data = &mt6873_pmif_arb,
@@ -34129,7 +31976,7 @@ index 0000000000000000000000000000000000000000..875563a31fc8647ff531fcc71d90bbe0
 +#define THERMAL_PROTECTION_STAGE_3		0x80000000
 +#endif /* __MTK_SOC_TEMP_LVTS_H__ */
 diff --git a/drivers/ufs/core/ufshcd.c b/drivers/ufs/core/ufshcd.c
-index 02696c7f9beff9baf795fe0f0fbaa6fd73ded65e..115428eaa55327ab5f6364d874c377fce1cee866 100644
+index 91712272ad02d2412c3c432d99fb0379b09152d1..fc0dd9a5e14e1094adff84a572b24f2645ae4542 100644
 --- a/drivers/ufs/core/ufshcd.c
 +++ b/drivers/ufs/core/ufshcd.c
 @@ -2279,17 +2279,7 @@ static inline int ufshcd_hba_capabilities(struct ufs_hba *hba)
@@ -34150,7 +31997,7 @@ index 02696c7f9beff9baf795fe0f0fbaa6fd73ded65e..115428eaa55327ab5f6364d874c377fc
  	if (!hba->mcq_sup)
  		return 0;
  
-@@ -9011,7 +9001,9 @@ static int ufshcd_disable_vreg(struct device *dev, struct ufs_vreg *vreg)
+@@ -9012,7 +9002,9 @@ static int ufshcd_disable_vreg(struct device *dev, struct ufs_vreg *vreg)
  	if (!vreg || !vreg->enabled || vreg->always_on)
  		goto out;
  
@@ -34161,7 +32008,7 @@ index 02696c7f9beff9baf795fe0f0fbaa6fd73ded65e..115428eaa55327ab5f6364d874c377fc
  
  	if (!ret) {
  		/* ignore errors on applying disable config */
-@@ -9467,6 +9459,7 @@ static int ufshcd_link_state_transition(struct ufs_hba *hba,
+@@ -9468,6 +9460,7 @@ static int ufshcd_link_state_transition(struct ufs_hba *hba,
  	return ret;
  }
  
@@ -34169,7 +32016,7 @@ index 02696c7f9beff9baf795fe0f0fbaa6fd73ded65e..115428eaa55327ab5f6364d874c377fc
  static void ufshcd_vreg_set_lpm(struct ufs_hba *hba)
  {
  	bool vcc_off = false;
-@@ -9546,6 +9539,7 @@ static int ufshcd_vreg_set_hpm(struct ufs_hba *hba)
+@@ -9547,6 +9540,7 @@ static int ufshcd_vreg_set_hpm(struct ufs_hba *hba)
  	return ret;
  }
  #endif /* CONFIG_PM */
@@ -34177,7 +32024,7 @@ index 02696c7f9beff9baf795fe0f0fbaa6fd73ded65e..115428eaa55327ab5f6364d874c377fc
  
  static void ufshcd_hba_vreg_set_lpm(struct ufs_hba *hba)
  {
-@@ -9567,6 +9561,9 @@ static int __ufshcd_wl_suspend(struct ufs_hba *hba, enum ufs_pm_op pm_op)
+@@ -9568,6 +9562,9 @@ static int __ufshcd_wl_suspend(struct ufs_hba *hba, enum ufs_pm_op pm_op)
  	enum ufs_dev_pwr_mode req_dev_pwr_mode;
  	enum uic_link_state req_link_state;
  
@@ -34187,7 +32034,7 @@ index 02696c7f9beff9baf795fe0f0fbaa6fd73ded65e..115428eaa55327ab5f6364d874c377fc
  	hba->pm_op_in_progress = true;
  	if (pm_op != UFS_SHUTDOWN_PM) {
  		pm_lvl = pm_op == UFS_RUNTIME_PM ?
-@@ -9745,6 +9742,9 @@ static int __ufshcd_wl_resume(struct ufs_hba *hba, enum ufs_pm_op pm_op)
+@@ -9746,6 +9743,9 @@ static int __ufshcd_wl_resume(struct ufs_hba *hba, enum ufs_pm_op pm_op)
  	int ret;
  	enum uic_link_state old_link_state = hba->uic_link_state;
  
@@ -34197,7 +32044,7 @@ index 02696c7f9beff9baf795fe0f0fbaa6fd73ded65e..115428eaa55327ab5f6364d874c377fc
  	hba->pm_op_in_progress = true;
  
  	/*
-@@ -9838,6 +9838,7 @@ static int ufshcd_wl_runtime_suspend(struct device *dev)
+@@ -9839,6 +9839,7 @@ static int ufshcd_wl_runtime_suspend(struct device *dev)
  	ktime_t start = ktime_get();
  
  	hba = shost_priv(sdev->host);
@@ -34205,7 +32052,7 @@ index 02696c7f9beff9baf795fe0f0fbaa6fd73ded65e..115428eaa55327ab5f6364d874c377fc
  
  	ret = __ufshcd_wl_suspend(hba, UFS_RUNTIME_PM);
  	if (ret)
-@@ -9858,6 +9859,7 @@ static int ufshcd_wl_runtime_resume(struct device *dev)
+@@ -9859,6 +9860,7 @@ static int ufshcd_wl_runtime_resume(struct device *dev)
  	ktime_t start = ktime_get();
  
  	hba = shost_priv(sdev->host);
@@ -34213,7 +32060,7 @@ index 02696c7f9beff9baf795fe0f0fbaa6fd73ded65e..115428eaa55327ab5f6364d874c377fc
  
  	ret = __ufshcd_wl_resume(hba, UFS_RUNTIME_PM);
  	if (ret)
-@@ -9879,6 +9881,8 @@ static int ufshcd_wl_suspend(struct device *dev)
+@@ -9880,6 +9882,8 @@ static int ufshcd_wl_suspend(struct device *dev)
  	int ret = 0;
  	ktime_t start = ktime_get();
  
@@ -34222,7 +32069,7 @@ index 02696c7f9beff9baf795fe0f0fbaa6fd73ded65e..115428eaa55327ab5f6364d874c377fc
  	hba = shost_priv(sdev->host);
  	down(&hba->host_sem);
  	hba->system_suspending = true;
-@@ -9910,6 +9914,7 @@ static int ufshcd_wl_resume(struct device *dev)
+@@ -9911,6 +9915,7 @@ static int ufshcd_wl_resume(struct device *dev)
  	ktime_t start = ktime_get();
  
  	hba = shost_priv(sdev->host);
@@ -34230,7 +32077,7 @@ index 02696c7f9beff9baf795fe0f0fbaa6fd73ded65e..115428eaa55327ab5f6364d874c377fc
  
  	if (pm_runtime_suspended(dev))
  		goto out;
-@@ -9940,6 +9945,7 @@ static int ufshcd_wl_resume(struct device *dev)
+@@ -9941,6 +9946,7 @@ static int ufshcd_wl_resume(struct device *dev)
   */
  static int ufshcd_suspend(struct ufs_hba *hba)
  {
@@ -34238,7 +32085,7 @@ index 02696c7f9beff9baf795fe0f0fbaa6fd73ded65e..115428eaa55327ab5f6364d874c377fc
  	int ret;
  
  	if (!hba->is_powered)
-@@ -9964,6 +9970,9 @@ static int ufshcd_suspend(struct ufs_hba *hba)
+@@ -9965,6 +9971,9 @@ static int ufshcd_suspend(struct ufs_hba *hba)
  	/* Put the host controller in low power mode if possible */
  	ufshcd_hba_vreg_set_lpm(hba);
  	return ret;
@@ -34248,7 +32095,7 @@ index 02696c7f9beff9baf795fe0f0fbaa6fd73ded65e..115428eaa55327ab5f6364d874c377fc
  }
  
  #ifdef CONFIG_PM
-@@ -9978,6 +9987,7 @@ static int ufshcd_suspend(struct ufs_hba *hba)
+@@ -9979,6 +9988,7 @@ static int ufshcd_suspend(struct ufs_hba *hba)
   */
  static int ufshcd_resume(struct ufs_hba *hba)
  {
@@ -34256,7 +32103,7 @@ index 02696c7f9beff9baf795fe0f0fbaa6fd73ded65e..115428eaa55327ab5f6364d874c377fc
  	int ret;
  
  	if (!hba->is_powered)
-@@ -10004,6 +10014,10 @@ static int ufshcd_resume(struct ufs_hba *hba)
+@@ -10005,6 +10015,10 @@ static int ufshcd_resume(struct ufs_hba *hba)
  	if (ret)
  		ufshcd_update_evt_hist(hba, UFS_EVT_RESUME_ERR, (u32)ret);
  	return ret;
@@ -34267,7 +32114,7 @@ index 02696c7f9beff9baf795fe0f0fbaa6fd73ded65e..115428eaa55327ab5f6364d874c377fc
  }
  #endif /* CONFIG_PM */
  
-@@ -10023,6 +10037,8 @@ int ufshcd_system_suspend(struct device *dev)
+@@ -10024,6 +10038,8 @@ int ufshcd_system_suspend(struct device *dev)
  	int ret = 0;
  	ktime_t start = ktime_get();
  
@@ -34276,7 +32123,7 @@ index 02696c7f9beff9baf795fe0f0fbaa6fd73ded65e..115428eaa55327ab5f6364d874c377fc
  	if (pm_runtime_suspended(hba->dev))
  		goto out;
  
-@@ -10080,6 +10096,8 @@ int ufshcd_runtime_suspend(struct device *dev)
+@@ -10081,6 +10097,8 @@ int ufshcd_runtime_suspend(struct device *dev)
  	int ret;
  	ktime_t start = ktime_get();
  
@@ -34285,7 +32132,7 @@ index 02696c7f9beff9baf795fe0f0fbaa6fd73ded65e..115428eaa55327ab5f6364d874c377fc
  	ret = ufshcd_suspend(hba);
  
  	trace_ufshcd_runtime_suspend(dev_name(hba->dev), ret,
-@@ -10107,6 +10125,8 @@ int ufshcd_runtime_resume(struct device *dev)
+@@ -10108,6 +10126,8 @@ int ufshcd_runtime_resume(struct device *dev)
  	int ret;
  	ktime_t start = ktime_get();
  
@@ -34294,7 +32141,7 @@ index 02696c7f9beff9baf795fe0f0fbaa6fd73ded65e..115428eaa55327ab5f6364d874c377fc
  	ret = ufshcd_resume(hba);
  
  	trace_ufshcd_runtime_resume(dev_name(hba->dev), ret,
-@@ -10122,6 +10142,8 @@ static void ufshcd_wl_shutdown(struct device *dev)
+@@ -10123,6 +10143,8 @@ static void ufshcd_wl_shutdown(struct device *dev)
  	struct scsi_device *sdev = to_scsi_device(dev);
  	struct ufs_hba *hba = shost_priv(sdev->host);
  
@@ -34303,7 +32150,7 @@ index 02696c7f9beff9baf795fe0f0fbaa6fd73ded65e..115428eaa55327ab5f6364d874c377fc
  	down(&hba->host_sem);
  	hba->shutting_down = true;
  	up(&hba->host_sem);
-@@ -10155,6 +10177,8 @@ static void ufshcd_wl_shutdown(struct device *dev)
+@@ -10156,6 +10178,8 @@ static void ufshcd_wl_shutdown(struct device *dev)
   */
  void ufshcd_remove(struct ufs_hba *hba)
  {
@@ -34312,7 +32159,7 @@ index 02696c7f9beff9baf795fe0f0fbaa6fd73ded65e..115428eaa55327ab5f6364d874c377fc
  	if (hba->ufs_device_wlun)
  		ufshcd_rpm_get_sync(hba);
  	ufs_hwmon_remove(hba);
-@@ -10175,6 +10199,8 @@ EXPORT_SYMBOL_GPL(ufshcd_remove);
+@@ -10176,6 +10200,8 @@ EXPORT_SYMBOL_GPL(ufshcd_remove);
  #ifdef CONFIG_PM_SLEEP
  int ufshcd_system_freeze(struct device *dev)
  {
@@ -34321,7 +32168,7 @@ index 02696c7f9beff9baf795fe0f0fbaa6fd73ded65e..115428eaa55327ab5f6364d874c377fc
  
  	return ufshcd_system_suspend(dev);
  
-@@ -10433,12 +10459,6 @@ int ufshcd_init(struct ufs_hba *hba, void __iomem *mmio_base, unsigned int irq)
+@@ -10438,12 +10464,6 @@ int ufshcd_init(struct ufs_hba *hba, void __iomem *mmio_base, unsigned int irq)
  	}
  
  	if (!is_mcq_supported(hba)) {
@@ -34334,7 +32181,7 @@ index 02696c7f9beff9baf795fe0f0fbaa6fd73ded65e..115428eaa55327ab5f6364d874c377fc
  		err = scsi_add_host(host, hba->dev);
  		if (err) {
  			dev_err(hba->dev, "scsi_add_host failed\n");
-@@ -10610,6 +10630,7 @@ static int ufshcd_wl_poweroff(struct device *dev)
+@@ -10618,6 +10638,7 @@ static int ufshcd_wl_poweroff(struct device *dev)
  {
  	struct scsi_device *sdev = to_scsi_device(dev);
  	struct ufs_hba *hba = shost_priv(sdev->host);
@@ -34343,10 +32190,10 @@ index 02696c7f9beff9baf795fe0f0fbaa6fd73ded65e..115428eaa55327ab5f6364d874c377fc
  	__ufshcd_wl_suspend(hba, UFS_SHUTDOWN_PM);
  	return 0;
 diff --git a/drivers/ufs/host/ufs-mediatek.c b/drivers/ufs/host/ufs-mediatek.c
-index e101f453df92fb13d3c2b0f437d8301415a1a923..86c214f4456ea98e5c4ec443d3b0ba4b08502329 100644
+index e07c1e0b0c70147ea0f2d70d509fd226c9b11250..6f2ecb3390c1d05c508673e518339a4b81aaff6c 100644
 --- a/drivers/ufs/host/ufs-mediatek.c
 +++ b/drivers/ufs/host/ufs-mediatek.c
-@@ -903,6 +903,8 @@ static int ufs_mtk_init(struct ufs_hba *hba)
+@@ -969,6 +969,8 @@ static int ufs_mtk_init(struct ufs_hba *hba)
  	int err = 0;
  	struct arm_smccc_res res;
  
@@ -34355,7 +32202,7 @@ index e101f453df92fb13d3c2b0f437d8301415a1a923..86c214f4456ea98e5c4ec443d3b0ba4b
  	host = devm_kzalloc(dev, sizeof(*host), GFP_KERNEL);
  	if (!host) {
  		err = -ENOMEM;
-@@ -935,13 +937,17 @@ static int ufs_mtk_init(struct ufs_hba *hba)
+@@ -1001,13 +1003,17 @@ static int ufs_mtk_init(struct ufs_hba *hba)
  		ufs_mtk_mphy_ctrl(UFS_MPHY_BACKUP, res);
  
  	/* Enable runtime autosuspend */
@@ -34375,7 +32222,7 @@ index e101f453df92fb13d3c2b0f437d8301415a1a923..86c214f4456ea98e5c4ec443d3b0ba4b
  
  	/* Enable WriteBooster */
  	hba->caps |= UFSHCD_CAP_WB_EN;
-@@ -1781,8 +1787,9 @@ static int ufs_mtk_remove(struct platform_device *pdev)
+@@ -1877,8 +1883,9 @@ static int ufs_mtk_remove(struct platform_device *pdev)
  }
  
  #ifdef CONFIG_PM_SLEEP
@@ -34386,7 +32233,7 @@ index e101f453df92fb13d3c2b0f437d8301415a1a923..86c214f4456ea98e5c4ec443d3b0ba4b
  	struct ufs_hba *hba = dev_get_drvdata(dev);
  	struct arm_smccc_res res;
  	int ret;
-@@ -1795,12 +1802,13 @@ static int ufs_mtk_system_suspend(struct device *dev)
+@@ -1891,12 +1898,13 @@ static int ufs_mtk_system_suspend(struct device *dev)
  
  	if (ufs_mtk_is_rtff_mtcmos(hba))
  		ufs_mtk_mtcmos_ctrl(false, res);
@@ -34402,7 +32249,7 @@ index e101f453df92fb13d3c2b0f437d8301415a1a923..86c214f4456ea98e5c4ec443d3b0ba4b
  	struct ufs_hba *hba = dev_get_drvdata(dev);
  	struct arm_smccc_res res;
  
-@@ -1810,12 +1818,15 @@ static int ufs_mtk_system_resume(struct device *dev)
+@@ -1906,12 +1914,15 @@ static int ufs_mtk_system_resume(struct device *dev)
  		ufs_mtk_mtcmos_ctrl(true, res);
  
  	return ufshcd_system_resume(dev);
@@ -34418,7 +32265,7 @@ index e101f453df92fb13d3c2b0f437d8301415a1a923..86c214f4456ea98e5c4ec443d3b0ba4b
  	struct ufs_hba *hba = dev_get_drvdata(dev);
  	struct arm_smccc_res res;
  	int ret = 0;
-@@ -1828,12 +1839,13 @@ static int ufs_mtk_runtime_suspend(struct device *dev)
+@@ -1924,12 +1935,13 @@ static int ufs_mtk_runtime_suspend(struct device *dev)
  
  	if (ufs_mtk_is_rtff_mtcmos(hba))
  		ufs_mtk_mtcmos_ctrl(false, res);
@@ -34433,7 +32280,7 @@ index e101f453df92fb13d3c2b0f437d8301415a1a923..86c214f4456ea98e5c4ec443d3b0ba4b
  	struct ufs_hba *hba = dev_get_drvdata(dev);
  	struct arm_smccc_res res;
  
-@@ -1843,12 +1855,12 @@ static int ufs_mtk_runtime_resume(struct device *dev)
+@@ -1939,12 +1951,12 @@ static int ufs_mtk_runtime_resume(struct device *dev)
  	ufs_mtk_dev_vreg_set_lpm(hba, false);
  
  	return ufshcd_runtime_resume(dev);
@@ -34490,7 +32337,7 @@ index 248a49e5e7f3570fd2e4d15add6805b062607efc..782ba31e83512ce18c6023eacfe16e47
  }
  
 diff --git a/drivers/usb/dwc3/core.c b/drivers/usb/dwc3/core.c
-index fcb509059d7c4918982e0e81901dcdb3f399e314..34c501cf674504d13dbe1a3d9a01283a3f418eb2 100644
+index 318ae24a41f482c02c7cda15acbdc5e44d16e3e7..de7914e5f29de37ad2259b383aad069cf7e23a44 100644
 --- a/drivers/usb/dwc3/core.c
 +++ b/drivers/usb/dwc3/core.c
 @@ -1221,6 +1221,7 @@ static int dwc3_core_init(struct dwc3 *dwc)
@@ -37743,7 +35590,7 @@ index 61e37d18f79320c715108a8670990f83df6c3b97..e0de409d9f9ea8debd70a5025c7b4e16
  
  	mpi_free(u1);
 diff --git a/net/ipv6/ip6_fib.c b/net/ipv6/ip6_fib.c
-index afa9073567dc403017f02c62af197bd97e7707a4..3713e222b1d7f4b412ff73f0a22bc207f153e983 100644
+index 023ac39041a21418a4dab8c0352fac440e8413b9..6903541c657c30ecdb58afef8091fbaec73b784a 100644
 --- a/net/ipv6/ip6_fib.c
 +++ b/net/ipv6/ip6_fib.c
 @@ -1812,6 +1812,7 @@ static struct fib6_node *fib6_repair_tree(struct net *net,
