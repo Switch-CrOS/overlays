@@ -53,6 +53,7 @@ RDEPEND="
 	sys-apps/file
 	sys-apps/findutils
 	sys-block/fio
+	sys-devel/binutils
 	sys-devel/gdb
 	sys-process/procps
 	sys-process/psmisc
