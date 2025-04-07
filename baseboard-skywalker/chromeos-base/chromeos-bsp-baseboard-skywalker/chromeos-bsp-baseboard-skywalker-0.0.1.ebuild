@@ -4,6 +4,8 @@
 #
 EAPI=7
 
+inherit udev
+
 DESCRIPTION="Ebuild which pulls in any necessary ebuilds as dependencies
 or portage actions."
 HOMEPAGE=""
@@ -19,3 +21,10 @@ IUSE=""
 DEPEND=""
 RDEPEND="${DEPEND}"
 BDEPEND=""
+
+src_install() {
+	# udev rules for codecs
+	insinto "/etc/init"
+	doins "${FILESDIR}/udev-trigger-codec.conf"
+	udev_dorules "${FILESDIR}/50-media.rules"
+}
