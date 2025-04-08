@@ -14,6 +14,7 @@ PROJECTS=(
 	"kuldax"
 	"lisbon"
 	"moli"
+	"moxie"
 )
 
 CONFIG_PATH="sw_build_config/platform/chromeos-config"
