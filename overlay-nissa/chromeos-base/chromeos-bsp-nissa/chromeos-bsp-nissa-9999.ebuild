@@ -109,4 +109,6 @@ src_install() {
 			_foreach_ish _install_pinned_ish
 		fi
 	fi
+
+	dosbin "${FILESDIR}/r8169_aspm_quirk.sh"
 }
