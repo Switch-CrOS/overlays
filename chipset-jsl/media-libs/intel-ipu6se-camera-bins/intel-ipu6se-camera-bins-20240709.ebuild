@@ -24,6 +24,6 @@ src_install() {
 	insinto /usr/"$(get_libdir)"/pkgconfig
 	doins usr/"$(get_libdir)"/pkgconfig/*.pc
 
-	insinto /lib/firmware/intel
+	insinto /lib/firmware/intel/ipu
 	doins fw/ipu6se_fw.bin
 }
