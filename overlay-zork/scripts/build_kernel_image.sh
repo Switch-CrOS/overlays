@@ -26,5 +26,8 @@ modify_kernel_command_line() {
 
     #see b/399422076
     echo "cs_watchdog_tolerate_skew=1" >> "$1"
+
+    # See b/247635516
+    echo "initcall_blacklist=amdtee_driver_init" >> "$1"
   } >> "$1"
 }
