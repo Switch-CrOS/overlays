@@ -29,5 +29,8 @@ modify_kernel_command_line() {
 
     # See b/247635516
     echo "initcall_blacklist=amdtee_driver_init" >> "$1"
+
+    # Disable AMD virtual APIC (b/247635189)
+    echo "amd_iommu_intr=legacy" >> "$1"
   } >> "$1"
 }
