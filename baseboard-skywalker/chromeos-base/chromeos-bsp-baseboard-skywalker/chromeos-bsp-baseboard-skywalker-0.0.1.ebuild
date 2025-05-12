@@ -18,7 +18,9 @@ S="${WORKDIR}"
 IUSE=""
 
 #Add dependencies on other ebuilds from within this board overlay
-DEPEND=""
+DEPEND="
+	chromeos-base/chromeos-scp-firmware-skywalker
+"
 RDEPEND="${DEPEND}"
 BDEPEND=""
 
