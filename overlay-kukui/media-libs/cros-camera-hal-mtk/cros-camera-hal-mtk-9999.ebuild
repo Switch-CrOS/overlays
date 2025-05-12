@@ -23,18 +23,20 @@ IUSE="cros_camera_algo"
 REQUIRED_USE="cros_camera_algo"
 
 RDEPEND="
-	chromeos-base/chromeos-config-tools
-	chromeos-base/cros-camera-android-deps
-	chromeos-base/cros-camera-libs
-	media-libs/libsync
-	media-libs/mtk-isp-3a-libs-bin
-	media-libs/mtk-sensor-metadata
-	media-libs/mtk-tuning-libs-bin"
+	chromeos-base/chromeos-config-tools:=
+	chromeos-base/cros-camera-android-deps:=
+	chromeos-base/cros-camera-libs:=
+	dev-cpp/abseil-cpp:=
+	media-libs/libsync:=
+	media-libs/mtk-isp-3a-libs-bin:=
+	media-libs/mtk-sensor-metadata:=
+	media-libs/mtk-tuning-libs-bin:="
+
+BDEPEND="virtual/pkgconfig"
 
 DEPEND="${RDEPEND}
 	media-libs/libyuv
-	sys-kernel/linux-headers
-	virtual/pkgconfig"
+	sys-kernel/linux-headers"
 
 MTK_HAL_LIBRARIES=(
 	"libcam.device3.so"
