@@ -21,6 +21,20 @@ RW135["DISABLE_PWR_SLEEP"]=0.1
 RW135["SLEEP_AFTER_ENABLE"]=0.002
 RW135["SLEEP_AFTER_ENABLE_PWR"]=0.014
 
+declare -A RW101
+
+# RW101 GPIO Device and offset values
+RW101["GPIO_DEVICE"]="10005000.pinctrl"
+RW101["LTE_W_DISABLE_OFFSET"]=148
+RW101["LTE_SAR_DETECT_OFFSET"]=124
+RW101["LTE_EN_OFFSET"]=121
+RW101["LTE_PWR_OFF_OFFSET"]=147
+RW101["LTE_RESET_OFFSET"]=10
+RW101["DISABLE_RESET_SLEEP"]=0.02
+RW101["DISABLE_PWR_SLEEP"]=0.1
+RW101["SLEEP_AFTER_ENABLE"]=0.002
+RW101["SLEEP_AFTER_ENABLE_PWR"]=0.014
+
 get_gpio_base() {
   local GPIO_DEVICE="${1}"
   dir_list=$(find /sys/class/gpio -type l -name "gpiochip*")
@@ -121,11 +135,17 @@ main() {
       "rw135")
           enable_modem RW135
           ;;
+      "rw101")
+          enable_modem RW101
+          ;;
     esac
   else
     case ${fw#*_} in
       "rw135")
           disable_modem RW135
+          ;;
+      "rw101")
+          disable_modem RW101
           ;;
     esac
   fi
