@@ -236,6 +236,26 @@ index 0000000000000000000000000000000000000000..43b6f15efad88846405171a8660b5c79
 +            };
 +        };
 +    };
+diff --git a/Documentation/devicetree/bindings/remoteproc/mtk,scp.yaml b/Documentation/devicetree/bindings/remoteproc/mtk,scp.yaml
+index 895415772d1d6b9872f5bcba62f8376c72953719..36a8217f61411fb96fe2e32ea910e5b2db02909d 100644
+--- a/Documentation/devicetree/bindings/remoteproc/mtk,scp.yaml
++++ b/Documentation/devicetree/bindings/remoteproc/mtk,scp.yaml
+@@ -19,6 +19,7 @@ properties:
+       - mediatek,mt8183-scp
+       - mediatek,mt8186-scp
+       - mediatek,mt8188-scp
++      - mediatek,mt8189-scp
+       - mediatek,mt8192-scp
+       - mediatek,mt8195-scp
+ 
+@@ -82,6 +83,7 @@ allOf:
+             - mediatek,mt8183-scp
+             - mediatek,mt8186-scp
+             - mediatek,mt8188-scp
++            - mediatek,mt8189-scp
+     then:
+       properties:
+         reg:
 diff --git a/Documentation/devicetree/bindings/serial/mediatek,uart.yaml b/Documentation/devicetree/bindings/serial/mediatek,uart.yaml
 index 303d02ca4e1ba6eb3f36371d537e640306e1f1a1..d6a0c1a5da02858e34ea2a06ea57c6240f801985 100644
 --- a/Documentation/devicetree/bindings/serial/mediatek,uart.yaml
@@ -2640,10 +2660,10 @@ index 0000000000000000000000000000000000000000..acae81aa8c7c5be1663622ed4a896f07
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8189-skywalker.dtsi b/arch/arm64/boot/dts/mediatek/mt8189-skywalker.dtsi
 new file mode 100644
-index 0000000000000000000000000000000000000000..83c1da2388ebcf1beb33a04dc85cb11def33eedc
+index 0000000000000000000000000000000000000000..680b1e53ba0b8198278a1b1b50158acf47d70323
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt8189-skywalker.dtsi
-@@ -0,0 +1,1625 @@
+@@ -0,0 +1,1626 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
 +/*
 + * Copyright (C) 2025 Google Inc.
@@ -3043,6 +3063,7 @@ index 0000000000000000000000000000000000000000..83c1da2388ebcf1beb33a04dc85cb11d
 +};
 +
 +&scp {
++	firmware-name = "mediatek/mt8189/scp.img";
 +	status = "okay";
 +	memory-region = <&scp_mem_reserved>;
 +};
@@ -3163,7 +3184,7 @@ index 0000000000000000000000000000000000000000..83c1da2388ebcf1beb33a04dc85cb11d
 +		reset-gpios = <&pio 127 GPIO_ACTIVE_LOW>;
 +		ivdd-supply = <&pp1000_hdmi_x>;
 +		ovdd-supply = <&pp3300_vio28_x>;
-+		pwr18-supply = <&pp1800_vcamio_x>;
++		ovdd1833-supply = <&pp1800_vcamio_x>;
 +		dsi-lanes = <4>;
 +		status = "okay";
 +
@@ -4271,10 +4292,10 @@ index 0000000000000000000000000000000000000000..83c1da2388ebcf1beb33a04dc85cb11d
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8189.dtsi b/arch/arm64/boot/dts/mediatek/mt8189.dtsi
 new file mode 100644
-index 0000000000000000000000000000000000000000..702ea696d51cdc823134f1421b8e26ed229eed98
+index 0000000000000000000000000000000000000000..60a19d6ccf2b050ab69e91043353565766df2548
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt8189.dtsi
-@@ -0,0 +1,3040 @@
+@@ -0,0 +1,3061 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
 +/*
 + * Copyright (c) 2025 MediaTek Inc.
@@ -4563,62 +4584,62 @@ index 0000000000000000000000000000000000000000..702ea696d51cdc823134f1421b8e26ed
 +				compatible = "arm,idle-state";
 +				arm,psci-suspend-param = <0x00010000>;
 +				local-timer-stop;
-+				entry-latency-us = <97>;
-+				exit-latency-us = <252>;
-+				min-residency-us = <6710>;
++				entry-latency-us = <25>;
++				exit-latency-us = <57>;
++				min-residency-us = <5700>;
 +			};
 +
 +			cpu_off_b: cpu-off-b {
 +				compatible = "arm,idle-state";
 +				arm,psci-suspend-param = <0x00010000>;
 +				local-timer-stop;
-+				entry-latency-us = <53>;
-+				exit-latency-us = <143>;
-+				min-residency-us = <2120>;
++				entry-latency-us = <35>;
++				exit-latency-us = <82>;
++				min-residency-us = <1890>;
 +			};
 +
 +			cpu_cluster_off_l: cpu-cluster-off-l {
 +				compatible = "arm,idle-state";
 +				arm,psci-suspend-param = <0x01010001>;
 +				local-timer-stop;
-+				entry-latency-us = <109>;
-+				exit-latency-us = <325>;
-+				min-residency-us = <6710>;
++				entry-latency-us = <57>;
++				exit-latency-us = <134>;
++				min-residency-us = <5700>;
 +			};
 +
 +			cpu_cluster_off_b: cpu-cluster-off-b {
 +				compatible = "arm,idle-state";
 +				arm,psci-suspend-param = <0x01010001>;
 +				local-timer-stop;
-+				entry-latency-us = <59>;
-+				exit-latency-us = <188>;
-+				min-residency-us = <2120>;
++				entry-latency-us = <50>;
++				exit-latency-us = <144>;
++				min-residency-us = <2460>;
 +			};
 +
 +			cpu_mcusys_off_l: cpu-mcusys-off-l {
 +				compatible = "arm,idle-state";
 +				arm,psci-suspend-param = <0x02010007>;
 +				local-timer-stop;
-+				entry-latency-us = <1357>;
-+				exit-latency-us = <835>;
-+				min-residency-us = <6710>;
++				entry-latency-us = <863>;
++				exit-latency-us = <1237>;
++				min-residency-us = <5700>;
 +			};
 +
 +			cpu_mcusys_off_b: cpu-mcusys-off-b {
 +				compatible = "arm,idle-state";
 +				arm,psci-suspend-param = <0x02010007>;
 +				local-timer-stop;
-+				entry-latency-us = <1202>;
-+				exit-latency-us = <679>;
-+				min-residency-us = <2120>;
++				entry-latency-us = <648>;
++				exit-latency-us = <1172>;
++				min-residency-us = <4570>;
 +			};
 +
 +			cpu_system_vcore: cpu-system-vcore {
 +				compatible = "arm,idle-state";
 +				arm,psci-suspend-param = <0x020100ff>;
 +				local-timer-stop;
-+				entry-latency-us = <940>;
-+				exit-latency-us = <3500>;
++				entry-latency-us = <2400>;
++				exit-latency-us = <4800>;
 +				min-residency-us = <35200>;
 +			};
 +
@@ -4660,26 +4681,6 @@ index 0000000000000000000000000000000000000000..702ea696d51cdc823134f1421b8e26ed
 +			cache-sets = <2048>;
 +			cache-unified;
 +		};
-+	};
-+
-+	clk_ao: clk-ao {
-+		compatible = "simple-bus";
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+	};
-+
-+	clkitg: clkitg {
-+		compatible = "simple-bus";
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+	};
-+
-+	clkchk {
-+		compatible = "mediatek,mt8189-clkchk";
-+	};
-+
-+	pdchk {
-+		compatible = "mediatek,mt8189-pdchk";
 +	};
 +
 +	infracfg_ao_clk: syscon@10001000 {
@@ -4822,7 +4823,7 @@ index 0000000000000000000000000000000000000000..702ea696d51cdc823134f1421b8e26ed
 +		clock-names = "spi", "sf", "axi", "axi_s";
 +		assigned-clocks = <&topckgen_clk CLK_TOP_SFLASH_SEL>;
 +		assigned-clock-parents = <&topckgen_clk CLK_TOP_UNIVPLL_D6_D8>;
-+		interrupts = <GIC_SPI 422 IRQ_TYPE_LEVEL_HIGH 0>;
++		interrupts = <GIC_SPI 390 IRQ_TYPE_LEVEL_HIGH 0>;
 +		#address-cells = <1>;
 +		#size-cells = <0>;
 +		status = "disabled";
@@ -5025,6 +5026,26 @@ index 0000000000000000000000000000000000000000..702ea696d51cdc823134f1421b8e26ed
 +		reg = <0 0x40000000 0 0xC0000000>;
 +	};
 +
++	clk_ao: clk-ao {
++		compatible = "simple-bus";
++		#address-cells = <1>;
++		#size-cells = <0>;
++	};
++
++	clkitg: clkitg {
++		compatible = "simple-bus";
++		#address-cells = <1>;
++		#size-cells = <0>;
++	};
++
++	clkchk: clkchk {
++		compatible = "mediatek,mt8189-clkchk";
++	};
++
++	pdchk: pdchk {
++		compatible = "mediatek,mt8189-pdchk";
++	};
++
 +	psci {
 +		compatible = "arm,psci-1.0";
 +		method = "smc";
@@ -5086,9 +5107,30 @@ index 0000000000000000000000000000000000000000..702ea696d51cdc823134f1421b8e26ed
 +		ranges;
 +		dma-ranges = <0x0 0x0 0x0 0x0 0x10 0x0>;
 +
-+		performance: performance-controller@11bc10 {
++		cpuhvfs: cpuhvfs@100a00 {
++			compatible = "mediatek,cpufreq-hybrid";
++			reg = <0 0x00100a00 0 0xc00>,
++			      <0 0x00108d68 0 0x1400>,
++			      <0 0x0010a168 0 0x1800>,
++			      <0 0x00103640 0 0xc0>;
++			reg-names = "USRAM", "CSRAM", "ESRAM", "FREQ_HW_STATE";
++
++			/* pll mcucfg */
++			mcucfg-ver = <0>;
++			pll-con = <0x208>, <0x218>, <0x228>;
++			clk-div = <0xa2a0>, <0xa2a4>, <0xa2e0>;
++			/* regulator */
++			proc1-supply = <&mt6359_vmodem_buck_reg>; //L
++			proc2-supply = <&mt6319_7_vbuck1>; //B
++			proc3-supply = <&mt6359_vmodem_buck_reg>; //DSU
++		};
++
++		performance: performance-controller@108d68 {
 +			compatible = "mediatek,cpufreq-hw";
-+			reg = <0 0x0011bc10 0 0x120>, <0 0x0011bd30 0 0x120>;
++			reg = <0 0x00108d78 0 0x120>,
++			      <0 0x00108e98 0 0x120>;
++			reg-names = "performance-domain0",
++				    "performance-domain1";
 +			#performance-domain-cells = <1>;
 +		};
 +
@@ -6381,6 +6423,24 @@ index 0000000000000000000000000000000000000000..702ea696d51cdc823134f1421b8e26ed
 +			};
 +		};
 +
++		dp_tx: dp-tx@11b60000  {
++			compatible = "mediatek,mt8189-dp-tx";
++			reg = <0 0x11b60000 0 0x5000>,
++			      <0 0x11c10000 0 0x1500>,
++			      <0 0x10011018 0 0x4>;
++			power-domains = <&scpsys MT8189_POWER_DOMAIN_DP_TX>,
++					<&scpsys MT8189_POWER_DOMAIN_SSUSB>;
++			power-domain-names = "pd_dp_tx",
++					     "pd_dp_phy";
++			status = "okay";
++			interrupts = <GIC_SPI 199 IRQ_TYPE_LEVEL_HIGH 0>;
++			#phy-cells = <0>;
++			clocks = <&topckgen_clk CLK_TOP_DP_SEL>,
++				 <&topckgen_clk CLK_TOP_TCK_26M_MX9>;
++			clock-names = "mux_dp",
++				      "ck_26m";
++		};
++
 +		u3phy0: xs-phy@11e80000 {
 +			compatible = "mediatek,mt8189-xsphy", "mediatek,xsphy";
 +			reg = <0 0x11e83000 0 0x200>;
@@ -7057,24 +7117,6 @@ index 0000000000000000000000000000000000000000..702ea696d51cdc823134f1421b8e26ed
 +			phy-names = "dp_tx";
 +		};
 +
-+		dp_tx: dp-tx@11b60000  {
-+			compatible = "mediatek,mt8189-dp-tx";
-+			reg = <0 0x11b60000 0 0x5000>,
-+			      <0 0x11c10000 0 0x1500>,
-+			      <0 0x10011018 0 0x4>;
-+			power-domains = <&scpsys MT8189_POWER_DOMAIN_DP_TX>,
-+					<&scpsys MT8189_POWER_DOMAIN_SSUSB>;
-+			power-domain-names = "pd_dp_tx",
-+					     "pd_dp_phy";
-+			status = "okay";
-+			interrupts = <GIC_SPI 199 IRQ_TYPE_LEVEL_HIGH 0>;
-+			#phy-cells = <0>;
-+			clocks = <&topckgen_clk CLK_TOP_DP_SEL>,
-+				 <&topckgen_clk CLK_TOP_TCK_26M_MX9>;
-+			clock-names = "mux_dp",
-+				      "ck_26m";
-+		};
-+
 +		vdec: video-codec@16000000 {
 +			compatible = "mediatek,mt8189-vcodec-dec";
 +			reg = <0 0x16000000 0 0x1000>;
@@ -7316,10 +7358,19 @@ index 0000000000000000000000000000000000000000..702ea696d51cdc823134f1421b8e26ed
 +	interrupts-extended = <&pio 194 IRQ_TYPE_LEVEL_HIGH>;
 +};
 diff --git a/chromeos/config/chromeos/arm64/chromiumos-mediatek.flavour.config b/chromeos/config/chromeos/arm64/chromiumos-mediatek.flavour.config
-index 7676d204555469a97083ce23ce44261d3739759d..4eaeaa6ed471e89578933aae940584caa3093817 100644
+index 7676d204555469a97083ce23ce44261d3739759d..98d1f98a854252197cc6478061bbed4998b47f2b 100644
 --- a/chromeos/config/chromeos/arm64/chromiumos-mediatek.flavour.config
 +++ b/chromeos/config/chromeos/arm64/chromiumos-mediatek.flavour.config
-@@ -110,6 +110,7 @@ CONFIG_MTK_IPI=y
+@@ -58,6 +58,8 @@ CONFIG_DMA_CMA=y
+ CONFIG_DMA_RESTRICTED_POOL=y
+ CONFIG_DRM_ANALOGIX_ANX7625=y
+ CONFIG_DRM_ANALOGIX_ANX78XX=y
++CONFIG_DRM_DISPLAY_CONNECTOR=y
++CONFIG_DRM_ITE_IT61620=y
+ CONFIG_DRM_ITE_IT6505=y
+ CONFIG_DRM_MEDIATEK=y
+ CONFIG_DRM_MEDIATEK_DP=y
+@@ -110,6 +112,7 @@ CONFIG_MTK_IPI=y
  CONFIG_MTK_LVTS_THERMAL=y
  CONFIG_MTK_MBOX=y
  CONFIG_MTK_PMIC_WRAP=y
@@ -7327,7 +7378,7 @@ index 7676d204555469a97083ce23ce44261d3739759d..4eaeaa6ed471e89578933aae940584ca
  CONFIG_MTK_SENINF=m
  CONFIG_MTK_SLBC=y
  CONFIG_MTK_SLBC_IPI=y
-@@ -140,6 +141,7 @@ CONFIG_PHY_MTK_TPHY=y
+@@ -140,6 +143,7 @@ CONFIG_PHY_MTK_TPHY=y
  CONFIG_PHY_MTK_XSPHY=y
  # CONFIG_PINCTRL_MT2712 is not set
  # CONFIG_PINCTRL_MT7622 is not set
@@ -7335,7 +7386,7 @@ index 7676d204555469a97083ce23ce44261d3739759d..4eaeaa6ed471e89578933aae940584ca
  CONFIG_PL330_DMA=y
  # CONFIG_PTP_1588_CLOCK is not set
  CONFIG_PWM_MTK_DISP=y
-@@ -193,6 +195,8 @@ CONFIG_SND_SOC_MT8195=y
+@@ -193,6 +197,8 @@ CONFIG_SND_SOC_MT8195=y
  CONFIG_SND_SOC_MT8195_MT6359=y
  CONFIG_SND_SOC_MT8196=y
  CONFIG_SND_SOC_MT8196_MT6681=m
@@ -7344,7 +7395,7 @@ index 7676d204555469a97083ce23ce44261d3739759d..4eaeaa6ed471e89578933aae940584ca
  CONFIG_SND_SOC_SOF_MT8186=m
  CONFIG_SND_SOC_SOF_MT8195=m
  CONFIG_SND_SOC_SOF_MT8196=m
-@@ -200,6 +204,9 @@ CONFIG_SND_SOC_SOF_MTK_TOPLEVEL=y
+@@ -200,6 +206,9 @@ CONFIG_SND_SOC_SOF_MTK_TOPLEVEL=y
  CONFIG_SND_SOC_SOF_OF=y
  CONFIG_SND_SOC_SOF_TOPLEVEL=y
  CONFIG_SND_SOC_TAS2781_I2C=y
@@ -7354,7 +7405,7 @@ index 7676d204555469a97083ce23ce44261d3739759d..4eaeaa6ed471e89578933aae940584ca
  CONFIG_SPI_GPIO=y
  CONFIG_SPI_MT65XX=y
  CONFIG_SPI_MTK_NOR=y
-@@ -213,9 +220,11 @@ CONFIG_TCG_TIS_I2C_INFINEON=y
+@@ -213,9 +222,11 @@ CONFIG_TCG_TIS_I2C_INFINEON=y
  CONFIG_TEE=y
  CONFIG_THERMAL_DEFAULT_GOV_POWER_ALLOCATOR=y
  CONFIG_THERMAL_GOV_STEP_WISE=y
@@ -7366,7 +7417,7 @@ index 7676d204555469a97083ce23ce44261d3739759d..4eaeaa6ed471e89578933aae940584ca
  CONFIG_TYPEC_UCSI=y
  CONFIG_USB_LINK_LAYER_TEST=m
  CONFIG_USB_MTU3=y
-@@ -229,8 +238,19 @@ CONFIG_VIDEO_MEDIATEK_JPEG=m
+@@ -229,8 +240,19 @@ CONFIG_VIDEO_MEDIATEK_JPEG=m
  CONFIG_VIDEO_MEDIATEK_MDP=m
  CONFIG_VIDEO_MEDIATEK_MDP3=m
  CONFIG_VIDEO_MEDIATEK_VCODEC=m
@@ -20893,6 +20944,3083 @@ index 0000000000000000000000000000000000000000..d985cb2e15d2f1bc6bdb9c4dde328b04
 +	.platform_init_func = platform_init,
 +	.platform_term_func = platform_term
 +};
+diff --git a/drivers/gpu/drm/bridge/Kconfig b/drivers/gpu/drm/bridge/Kconfig
+index 8068c12f74e7ff6508c17eff104c402f6656956b..0cdddd50bf3c47683923f4cf5ed3d6be80199341 100644
+--- a/drivers/gpu/drm/bridge/Kconfig
++++ b/drivers/gpu/drm/bridge/Kconfig
+@@ -73,6 +73,21 @@ config DRM_FSL_LDB
+ 	help
+ 	  Support for i.MX8MP DPI-to-LVDS on-SoC encoder.
+ 
++config DRM_ITE_IT61620
++	tristate "ITE IT61620 DSI/HDMI bridge"
++	depends on OF
++	select DRM_DISPLAY_CONNECTOR
++	select DRM_DISPLAY_HDMI_HELPER
++	select DRM_DISPLAY_HDCP_HELPER
++	select DRM_DISPLAY_HELPER
++	select DRM_MIPI_DSI
++	select DRM_KMS_HELPER
++	select DRM_HDMI_HELPER
++	select CRYPTO
++	select CRYPTO_HASH
++	help
++	  ITE IT61620 DSI to HDMI bridge chip driver.
++
+ config DRM_ITE_IT6505
+ 	tristate "ITE IT6505 DisplayPort bridge"
+ 	depends on OF
+diff --git a/drivers/gpu/drm/bridge/Makefile b/drivers/gpu/drm/bridge/Makefile
+index 2b892b7ed59e805e2b0c18960bddbb4d61530754..ff0c830eff48fb3e903385729824665c09e4c47a 100644
+--- a/drivers/gpu/drm/bridge/Makefile
++++ b/drivers/gpu/drm/bridge/Makefile
+@@ -4,6 +4,7 @@ obj-$(CONFIG_DRM_CHRONTEL_CH7033) += chrontel-ch7033.o
+ obj-$(CONFIG_DRM_CROS_EC_ANX7688) += cros-ec-anx7688.o
+ obj-$(CONFIG_DRM_DISPLAY_CONNECTOR) += display-connector.o
+ obj-$(CONFIG_DRM_FSL_LDB) += fsl-ldb.o
++obj-$(CONFIG_DRM_ITE_IT61620) += ite-it61620.o
+ obj-$(CONFIG_DRM_ITE_IT6505) += ite-it6505.o
+ obj-$(CONFIG_DRM_LONTIUM_LT8912B) += lontium-lt8912b.o
+ obj-$(CONFIG_DRM_LONTIUM_LT9211) += lontium-lt9211.o
+diff --git a/drivers/gpu/drm/bridge/ite-it61620.c b/drivers/gpu/drm/bridge/ite-it61620.c
+new file mode 100644
+index 0000000000000000000000000000000000000000..6f9bd2b194cd25aa6fd000d208bf18dc70b73005
+--- /dev/null
++++ b/drivers/gpu/drm/bridge/ite-it61620.c
+@@ -0,0 +1,3033 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * Copyright 2024 ITE
++ *
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License as published by the
++ * Free Software Foundation; either version 2 of the License, or (at your
++ * option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful, but
++ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
++ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
++ * for more details.
++ */
++#include <linux/gpio/consumer.h>
++#include <linux/i2c.h>
++#include <linux/module.h>
++#include <linux/of.h>
++#include <linux/of_irq.h>
++#include <linux/of_graph.h>
++#include <linux/regmap.h>
++#include <drm/drm_drv.h>
++#include <drm/drm_atomic_helper.h>
++#include <drm/drm_bridge.h>
++#include <drm/drm_probe_helper.h>
++#include <drm/drm_edid.h>
++#include <video/videomode.h>
++#include <drm/drm_mipi_dsi.h>
++#include <drm/drm_print.h>
++#include <sound/hdmi-codec.h>
++#include <linux/pm_runtime.h>
++
++#include <crypto/hash.h>
++#include <drm/display/drm_hdcp_helper.h>
++
++#define EDID_R_BURST_NUM 16
++#define DDC_FIFO_DEPTH 32
++
++#define MIPIRX_I2C_ADDRESS (0x78 >> 1)
++#define TX_I2C_ADDRESS (0xC0 >> 1)
++#define CEC_I2C_ADDRESS (0xC8 >> 1)
++
++#define REG_CTRL_PW 0xFF
++
++#define REG_VENDER_ID_L 0x00
++#define REG_VENDER_ID_H 0x01
++#define REG_DEVICE_ID_L 0x02
++#define REG_DEVICE_ID_H 0x03
++#define REG_DEV_VERSION 0x04
++#define DEV_VERSION_A0 0xA0
++#define DEV_VERSION_C0 0xC0
++
++#define RX_REG_BANK 0x0F
++#define M_MIPIRX_BANK 0x01
++
++#define RX_REG_RESET_CTRL 0x05
++#define B_REF_CLOCK_RESET BIT(3)
++#define RX_REG_CLK_CTRL 0x10
++#define B_MIPI_INT_STATUS BIT(7)
++#define RX_REG_D_RST 0x1A
++#define B_D_RST BIT(0)
++#define RX_REG_INT_STATUS_01 0x0A
++#define B_INI_V_CHG BIT(0)
++#define RX_REG_INT_POL 0x11
++#define RX_REG_INT_MASK 0x114
++#define B_V_CHG BIT(0)
++#define RX_REG_INT_STATUS_02 0x22
++#define B_INI_V_STB BIT(5)
++#define RX_REG_MPPCLKI 0x12
++
++#define RX_REG_HFP_L 0x30
++#define RX_REG_HFP_H 0x31
++#define RX_REG_HSW_L 0x32
++#define RX_REG_HSW_H 0x33
++#define RX_REG_HBP_L 0x34
++#define RX_REG_HBP_H 0x35
++#define RX_REG_HDEW_L 0x36
++#define RX_REG_HDEW_H 0x37
++#define RX_REG_HTOTAL_L 0x48
++#define RX_REG_HTOTAL_H 0x49
++
++#define RX_REG_SELDCLK 0x24
++#define RX_REG_VFP_L 0x3A
++#define RX_REG_VFP_H 0x3B
++#define RX_REG_VSW_L 0x3C
++#define RX_REG_VSW_H 0x3D
++#define RX_REG_VBP_L 0x3E
++#define RX_REG_VBP_H 0x3F
++#define RX_REG_VDEW_L 0x40
++#define RX_REG_VDEW_H 0x41
++#define RX_REG_POL 0x4E
++#define B_MIPI_H_POL BIT(0)
++#define B_MIPI_V_POL BIT(1)
++
++#define RX_REG_DSCCTRL 0x25
++#define RX_REG_SYNC_NUM 0x4D
++#define RX_REG_BSP_SEL 0x1F
++#define RX_REG_PWD_CTRL 0xE0
++#define RX_REG_ENVRR 0x1AC
++#define RX_REG_ENVBLk 0x1AD
++
++#define RX_REG_D2P_RESET 0xA0
++#define RX_REG_D2P_CTRL 0xA1
++#define RX_REG_AUTO_D2P_RESET 0xA2
++#define RX_REG_TUNEOPT 0xA9
++#define RX_REG_TUNETHRE 0xAA
++#define RX_REG_DSC_RESET 0xAB
++#define RX_REG_DSC_VFRD 0xAC
++
++#define RX_REG_MIPI_CONFIG 0x112
++#define B_MIPI_LANE_NUM 0x03
++#define B_MIPI_PN_SWAP BIT(2)
++#define B_MIPI_LANE_SWAP BIT(3)
++#define RX_REG_HS_CTRL 0x118
++#define RX_REG_LP_CTRL 0x119
++#define RX_REG_MIPI_CTRL01 0x44
++#define RX_REG_AUTO_SYNC 0x144
++#define RX_REG_MV_MAX 0x146
++#define RX_REG_FORCE_M 0x147
++#define B_FORCE_MHT_STB BIT(0)
++#define B_FORCE_MVT_STB BIT(3)
++#define RX_REG_MIPI_CTRL02 0x14E
++#define B_FIFO_RST BIT(5)
++
++#define TX_REG_STATUS01 0x07
++#define B_INT_STATUS BIT(0)
++#define B_HPD_STATUS BIT(1)
++#define B_VIDEO_STB BIT(2)
++
++#define TX_REG_HDMITX_BANK 0x0F
++#define M_HDMITX_BANK 0x03
++#define B_INT_EVENT_HDMI BIT(4)
++#define B_INT_EVENT_CEC BIT(5)
++#define TX_REG_RESET_1_CTRL 0x05
++#define B_REFERENCE_CLOCK_RESET BIT(0)
++#define B_VIDEO_RESET BIT(1)
++#define B_AUDIO_RESET BIT(2)
++#define B_AUX_RESET BIT(3)
++#define B_IPCLK_RESET BIT(4)
++#define B_SDM_RESET BIT(5)
++#define B_TCLK_RESET BIT(6)
++
++#define TX_REG_RESET_2_CTRL 0x06
++
++#define TX_REG_V_STS 0x09
++#define B_RXSEN BIT(1)
++#define B_V_STABLE BIT(2)
++#define B_TMDS_STABLE BIT(3)
++
++#define TX_REG_SYS_CONFIG 0x0C
++#define B_EN_HDMI BIT(6)
++#define B_INT_POL BIT(0)
++#define B_INT_MODE BIT(1)
++#define B_INT_OUT_STATUS BIT(2)
++#define B_INT_OUTPUT BIT(3)
++
++#define BIT_OFFSET(x) ((x) * BITS_PER_BYTE)
++
++#define TX_REG_INT1 0x10
++#define TX_REG_INT_MASK1 0x18
++#define INT_HPD_CHG 0
++#define B_HPD_CHG BIT(INT_HPD_CHG)
++#define BIT_HPD_CHG (BIT_OFFSET(0) + INT_HPD_CHG)
++#define INT_RXSEN_CHANGE 2
++#define B_RXSEN_CHANGE BIT(INT_RXSEN_CHANGE)
++#define BIT_RXSEN_CHANGE (BIT_OFFSET(0) + INT_RXSEN_CHANGE)
++#define INT_AUTH_F 3
++#define B_INT_AUTH_F BIT(INT_AUTH_F)
++#define BIT_INT_AUTH_F (BIT_OFFSET(0) + INT_AUTH_F)
++#define INT_AUTH_D 4
++#define B_INT_AUTH_D BIT(INT_AUTH_D)
++#define BIT_INT_AUTH_D (BIT_OFFSET(0) + INT_AUTH_D)
++
++#define TX_REG_INT2 0x11
++#define TX_REG_INT_MASK2 0x19
++#define INT_KSV_CHECK 1
++#define B_KSV_CHECK BIT(INT_KSV_CHECK)
++#define BIT_KSV_CHECK  (BIT_OFFSET(1) + INT_KSV_CHECK)
++
++#define TX_REG_INT3 0x16
++#define TX_REG_INT_MASK3 0x1E
++#define INT_TMDS_STB_CHG 6
++#define B_TMDS_STB_CHG BIT(INT_TMDS_STB_CHG)
++#define BIT_TMDS_STB_CHG (BIT_OFFSET(2) + INT_TMDS_STB_CHG)
++
++#define REG_TX_INT_CTRL 0x21
++#define B_DIS_INT_OUTPUT BIT(5)
++#define TX_REG_CLOCK_PWD_CTRL 0x2B
++
++#define TX_REG_AFE0E 0x0E
++#define TX_REG_AFE30 0x30
++#define TX_REG_AFE33 0x33
++#define TX_REG_AFE34 0x34
++#define TX_REG_AFE35 0x35
++#define TX_REG_AFEE9 0xE9
++#define TX_REG_AFE_XP 0x219
++#define TX_REG_AFE_XLC1 0x220
++#define TX_REG_AFE_XLC2 0x223
++#define TX_REG_AFE_XLC3 0x226
++#define TX_REG_AFE_DRV 0x23B
++
++#define TX_REG_CR_1_CTRL 0x3A
++#define TX_REG_CR_2_CTRL 0x3F
++
++#define TX_REG_R0TM 0x5A
++#define TX_REG_SHA_SEL 0x5D
++
++#define TX_REG_HDCP_CTRL1 0x60
++#define B_CPDESIRED BIT(0)
++#define TX_REG_HDCP_PRO 0x61
++#define B_AUTH_FIRE BIT(0)
++#define B_LIST_CHK_DONE BIT(4)
++#define B_LIST_CHK_FAIL BIT(5)
++#define TX_REG_HDCP_CTRL2 0x62
++#define TX_REG_AUTOMUTE 0x65
++#define B_AN_SEL BIT(0)
++#define B_EN_AN_GEN BIT(1)
++#define B_EN_M0_RD BIT(5)
++#define TX_REG_HDCP_AUTH_CS 0x66
++#define M_AUTH_CH 0x7F
++#define CS_AUTH_DONE 0x4E
++#define CS_AUTH_FAIL 0x02
++#define CS_KSVLIST_CHK 0x19
++#define TX_REG_HDCP_CTRL3 0x1BA
++#define B_ENC_DIS BIT(6)
++#define B_PAUSE BIT(7)
++
++#define TX_REG_VD_CTRL1 0xA8
++#define TX_REG_VD_CTRL2 0xA4
++#define B_VIDEO_FIFO_REST BIT(0)
++#define TX_REG_VD_CTRL3 0xB7
++
++#define TX_REG_AUD_SPDIF 0x23
++#define TX_REG_AUD_CTRL 0xB8
++#define TX_REG_AUD_FMT 0xBA
++#define TX_REG_EN_AUDIO 0xBB
++#define TX_REG_AUD_FIFO1 0xBC
++#define TX_REG_AUD_FIFO2 0xBD
++#define TX_REG_AUD_STS1 0x1F0
++#define B_EN_AUD_NLPCM BIT(1)
++#define TX_REG_AUD_STS2 0x1F3
++#define TX_REG_AUD_STS3 0x1F4
++
++#define TX_REG_LINK_CTRL0 0xD3
++#define B_EN_AUDIO_MUTE BIT(5)
++
++#define TX_REG_V_QUEUE 0xE7
++#define TX_REG_V_TU 0xEB
++
++#define TX_REG_HPD_CONFIG 0xF6
++
++#define TX_REG_CEC_CONFIG 0xFA
++#define B_EN_CEC BIT(0)
++
++#define TX_REG_DDC_CTRL1 0x1A0
++#define TX_REG_DDC_ADDR 0x1A1
++#define DDC_HDCP_ADDR (DRM_HDCP_DDC_ADDR << 1)
++#define DDC_EDID_ADDR (DDC_ADDR << 1)
++#define TX_REG_DDC_OFFSET 0x1A2
++#define TX_REG_DDC_NUM_L 0x1A3
++#define TX_REG_DDC_NUM_H 0x1A4
++#define TX_REG_DDC_SEGMENT 0x1A5
++#define TX_REG_DDC_COMMAND 0x1A6
++#define DDC_COMMAND_BURST_R 0X00
++#define DDC_COMMAND_BURST_W 0X01
++#define DDC_COMMAND_EDID_RD 0X03
++#define DDC_COMMAND_FIFO_CLR 0X09
++#define DDC_COMMAND_ABORT 0X0F
++#define TX_REG_DDC_CTRL2 0x1AD
++#define B_DDC_REST BIT(4)
++#define TX_REG_DDC_STATUS 0x1A7
++#define B_DDC_TX_DONE BIT(7)
++#define B_DDC_NOACK BIT(5)
++#define B_DDC_FULL BIT(2)
++#define TX_REG_DDC_FIFO 0x1A8
++#define TX_REG_DDC_FIFO_STS 0x1AE
++#define M_DDC_STAGE_NUM	0x3F
++
++#define TX_REG_HDMI_CTRL1 0x1B8
++#define B_EN_HDMI_MODE BIT(0)
++#define TX_REG_HDMI_CTRL2 0x1B9
++#define B_EN_AVMUTE BIT(0)
++#define TX_REG_EN_PKT1 0x1BF
++#define B_EN_AVI BIT(0)
++#define B_AVI_RP BIT(1)
++#define B_EN_AUD BIT(2)
++#define B_EN_AUD_RP BIT(3)
++#define TX_REG_EN_PKT2 0x1C0
++#define B_EN_GEN BIT(4)
++#define B_GEN_RP BIT(5)
++
++#define TX_REG_VH_TIME 0x165
++#define TX_REG_PG_HFP_L 0x150
++#define TX_REG_PG_HFP_H 0x151
++#define TX_REG_PG_HSW_L 0x152
++#define TX_REG_PG_HSW_H 0x153
++#define TX_REG_PG_HBP_L 0x154
++#define TX_REG_PG_HBP_H 0x155
++#define TX_REG_PG_DEW_L 0x156
++#define TX_REG_PG_DEW_H 0x157
++#define TX_REG_PG_HVR2_L 0x158
++#define TX_REG_PG_HVR2_H 0x159
++#define TX_REG_PG_VFP_L 0x15A
++#define TX_REG_PG_VFP_H 0x15B
++#define TX_REG_PG_VSW_L 0x15C
++#define TX_REG_PG_VSW_H 0x15D
++#define TX_REG_PG_VBP_L 0x15E
++#define TX_REG_PG_VBP_H 0x15F
++#define TX_REG_PG_VDEW_L 0x160
++#define TX_REG_PG_HDEW_H 0x161
++#define TX_REG_PG_VFP2_L 0x162
++#define TX_REG_PG_VFP2_H 0x163
++#define TX_REG_PG_POL 0x164
++
++#define TX_REG_AVIINFO_DB00 0x1D0
++#define TX_REG_AVIINFO_DB01 0x1D1
++#define TX_REG_AVIINFO_DB02 0x1D2
++#define TX_REG_AVIINFO_DB03 0x1D3
++#define TX_REG_AVIINFO_DB04 0x1D4
++#define TX_REG_AVIINFO_DB05 0x1D5
++#define TX_REG_AVIINFO_DB06 0x1D6
++#define TX_REG_AVIINFO_DB07 0x1D7
++#define TX_REG_AVIINFO_DB08 0x1D8
++#define TX_REG_AVIINFO_DB09 0x1D9
++#define TX_REG_AVIINFO_DB10 0x1DA
++#define TX_REG_AVIINFO_DB11 0x1DB
++#define TX_REG_AVIINFO_DB12 0x1DC
++#define TX_REG_AVIINFO_DB13 0x1DD
++#define TX_REG_AVIINFO_DB14 0x1DE
++
++#define TX_REG_AUDINFO_DB01 0x1E0
++#define TX_REG_AUDINFO_DB02 0x1E1
++#define TX_REG_AUDINFO_DB03 0x1E2
++#define TX_REG_AUDINFO_DB04 0x1E3
++#define TX_REG_AUDINFO_DB05 0x1E4
++#define TX_REG_AUDINFO_DB06 0x1E5
++#define TX_REG_AUDINFO_DB07 0x1E6
++#define TX_REG_AUDINFO_DB08 0x1E7
++#define TX_REG_AUDINFO_DB09 0x1E8
++#define TX_REG_AUDINFO_DB10 0x1E9
++
++#define TX_REG_SSC_PD 0x211
++
++#define TX_REG_TXPLL_CTRL 0x218
++#define TX_REG_XLC_7_CTRL 0x227
++
++#define TX_REG_TXDRV_PD_CTRL 0x23D
++#define TX_REG_TXDRV_CTRL 0x240
++#define TX_REG_AUX_CTRL 0x244
++#define TX_REG_IPLL_CTRL 0x248
++
++#define TX_REG_HDCP_ARI_L 0x63
++#define TX_REG_HDCP_ARI_H 0x64
++
++#define TX_REG_HDCP_AUTH_STS 0x67
++
++#define TX_REG_HDCP_BKSV1 0x68
++#define TX_REG_HDCP_BKSV2 0x69
++#define TX_REG_HDCP_BKSV3 0x6A
++#define TX_REG_HDCP_BKSV4 0x6B
++#define TX_REG_HDCP_BKSV5 0x6C
++
++#define TX_REG_HDCP_BRI_L 0x6D
++#define TX_REG_HDCP_BRI_H 0x6E
++
++#define TX_REG_HDCP_AKSV1 0x6F
++#define TX_REG_HDCP_AKSV2 0x70
++#define TX_REG_HDCP_AKSV3 0x71
++#define TX_REG_HDCP_AKSV4 0x72
++#define TX_REG_HDCP_AKSV5 0x73
++
++#define TX_REG_ANM0V1 0x74
++#define TX_REG_ANM0V2 0x75
++#define TX_REG_ANM0V3 0x76
++#define TX_REG_HDCP_AN_M0_V4 0x77
++#define TX_REG_HDCP_AN_M05 0x78
++#define TX_REG_HDCP_AN_M06 0x79
++#define TX_REG_HDCP_AN_M07 0x7A
++#define TX_REG_HDCP_AN_M08 0x7B
++
++#define TX_REG_HDCP_BCAPS 0x7C
++#define B_KSV_READY BIT(5)
++#define TX_REG_HDCP_BSTS_L 0x7D
++#define TX_REG_HDCP_BSTS_H 0x7E
++
++#define TX_REG_AUDPKT_N_0 0x3AB
++#define TX_REG_AUDPKT_N_1 0x3AC
++#define TX_REG_AUDPKT_N_2 0x3AD
++
++#define SOFT_DDC_TIMEOUT_MS 100
++
++#define MAX_HDCP_DOWN_STREAM_COUNT 127
++#define HDCP_SHA1_FIFO_LEN (MAX_HDCP_DOWN_STREAM_COUNT * DRM_HDCP_KSV_LEN + 10)
++
++#define HI_BYTE(x) (((x) >> 8) & 0xFF)
++#define LO_BYTE(x) ((x) & 0xFF)
++
++enum video_state {
++	it61620_VIDEO_OFF = 0x00,
++	it61620_VIDEO_WAIT,
++	it61620_VIDEO_ON,
++};
++
++enum hdcp_state {
++	CP_NONE = 0x00,
++	CP_GOING = 0x01,
++};
++
++enum it61620_audio_select {
++	I2S = 0,
++	SPDIF,
++};
++
++enum it61620_audio_word_length {
++	WORD_LENGTH_16BIT = 0x0,
++	WORD_LENGTH_18BIT = 0x1,
++	WORD_LENGTH_20BIT = 0x2,
++	WORD_LENGTH_24BIT = 0x3,
++};
++
++enum it61620_audio_sample_rate {
++	SAMPLE_RATE_32K = 0x3,
++	SAMPLE_RATE_48K = 0x2,
++	SAMPLE_RATE_64K = 0xB,
++	SAMPLE_RATE_96K = 0xA,
++	SAMPLE_RATE_192K = 0xE,
++	SAMPLE_RATE_44_1K = 0x0,
++	SAMPLE_RATE_88_2K = 0x8,
++	SAMPLE_RATE_176_4K = 0xC,
++};
++
++enum it61620_audio_type {
++	LPCM = 0,
++	NLPCM,
++};
++
++struct it6162_chip_info {
++	u16 vid;
++	u16 pid;
++};
++
++struct it61620_audio {
++	enum it61620_audio_select select;
++	enum it61620_audio_type type;
++	enum it61620_audio_sample_rate sample_rate;
++	u8 word_length;
++	u8 channel_count;
++	u8 audfmt;
++	unsigned int audio_enable;
++	unsigned int sample_width;
++	unsigned int channel_number;
++	unsigned int user_cts;
++	u8 infoframe[HDMI_INFOFRAME_SIZE(AUDIO)];
++	unsigned char channel_status[AES_IEC958_STATUS_SIZE];
++};
++
++struct it61620_mipirx {
++	u8 lane_num;
++	u8 pn_swap;
++	u8 lane_swap;
++};
++
++struct it61620_hdmi_afe_setting {
++	unsigned int clock;
++	unsigned int h2on_pll;
++	unsigned int hs;
++	unsigned int afe_val[24];
++};
++
++struct it61620_platform_data {
++	struct regulator *ovdd1833;
++	struct regulator *ivdd;
++	struct regulator *ovdd33;
++	struct gpio_desc *gpiod_reset;
++};
++
++struct it61620 {
++	struct drm_bridge bridge;
++	struct drm_connector connector;
++	struct device *dev;
++	enum drm_connector_status connector_status;
++	struct drm_device *drm;
++	struct drm_bridge *next_bridge;
++
++	struct i2c_client *it61620_i2c;
++	struct i2c_client *mipirx_i2c;
++	struct i2c_client *tx_i2c;
++	struct i2c_client *cec_i2c;
++	struct regmap *it61620_regmap;
++	struct regmap *mipirx_regmap;
++	struct regmap *tx_regmap;
++	struct regmap *cec_regmap;
++
++	struct delayed_work hdcp_work;
++
++	struct it61620_platform_data pdata;
++	bool powered;
++	bool is_hdmi;
++	bool en_audio;
++	u8 dev_ver;
++
++	wait_queue_head_t wq;
++
++	/* operations can only be served one at the time */
++	struct mutex ddc_lock;
++
++	enum video_state video_state;
++	struct hdmi_avi_infoframe avi_info;
++
++	struct it61620_audio audio_config;
++
++	/* it61620 DSI RX related params */
++	struct mipi_dsi_device *dsi;
++
++	struct it61620_mipirx mipirx_config;
++
++	struct videomode vm;
++
++	struct platform_device *audio_pdev;
++	hdmi_codec_plugged_cb plugged_cb;
++	struct device *codec_dev;
++
++	struct i2c_adapter ddc;
++
++	enum hdcp_state hdcp_state;
++	u8 sha1_input[HDCP_SHA1_FIFO_LEN];
++	const struct it6162_chip_info *chip_info;
++};
++
++static enum drm_mode_status it61620_mode_valid(struct it61620 *it61620,
++					       const struct drm_display_mode *mode);
++static void it61620_show_drm_video_mode(struct it61620 *it61620,
++					const struct videomode *vm);
++static void it61620_stop_hdcp_work(struct it61620 *it61620);
++static void it61620_start_hdcp_work(struct it61620 *it61620);
++static inline void it61620_hdmi_enable_avmute(struct it61620 *it61620, bool enable);
++static void it61620_hdmi_hdcp_wait_ksv_list(struct it61620 *it61620);
++
++static struct it61620 *bridge_to_it61620(struct drm_bridge *bridge)
++{
++	return container_of(bridge, struct it61620, bridge);
++}
++
++static const struct regmap_config it61620_regmap_config = {
++	.reg_bits = 8,
++	.val_bits = 8,
++	.max_register = 0xff,
++	.cache_type = REGCACHE_NONE,
++};
++
++static const struct regmap_range it61620_tx_volatile_ranges[] = {
++	{ .range_min = 0, .range_max = 0x3ff},
++};
++
++static const struct regmap_access_table it61620_tx_volatile_table = {
++	.yes_ranges = it61620_tx_volatile_ranges,
++	.n_yes_ranges = ARRAY_SIZE(it61620_tx_volatile_ranges),
++};
++
++static const struct regmap_range_cfg it61620_tx_regmap_ranges[] = {
++	{
++		.range_min = 0,
++		.range_max = 0x3ff,
++		.selector_reg = TX_REG_HDMITX_BANK,
++		.selector_mask = M_HDMITX_BANK,
++		.selector_shift = 0,
++		.window_start = 0x00,
++		.window_len = 0x100,
++	},
++};
++
++static const struct regmap_config it61620_tx_regmap_config = {
++	.reg_bits = 8,
++	.val_bits = 8,
++	.volatile_table = &it61620_tx_volatile_table,
++	.ranges = it61620_tx_regmap_ranges,
++	.num_ranges = ARRAY_SIZE(it61620_tx_regmap_ranges),
++	.max_register = 0x3FF,
++	.cache_type = REGCACHE_NONE,
++};
++
++static const struct regmap_range it61620_mipirx_volatile_ranges[] = {
++	{ .range_min = 0, .range_max = 0x1ff },
++};
++
++static const struct regmap_access_table it61620_mipirx_volatile_table = {
++	.yes_ranges = it61620_mipirx_volatile_ranges,
++	.n_yes_ranges = ARRAY_SIZE(it61620_mipirx_volatile_ranges),
++};
++
++static const struct regmap_range_cfg it61620_mipirx_regmap_ranges[] = {
++	{
++		.range_min = 0,
++		.range_max = 0x1ff,
++		.selector_reg = RX_REG_BANK,
++		.selector_mask = M_MIPIRX_BANK,
++		.selector_shift = 0,
++		.window_start = 0x00,
++		.window_len = 0x100,
++	},
++};
++
++static const struct regmap_config it61620_mipi_regmap_config = {
++	.reg_bits = 8,
++	.val_bits = 8,
++	.volatile_table = &it61620_mipirx_volatile_table,
++	.ranges = it61620_mipirx_regmap_ranges,
++	.num_ranges = ARRAY_SIZE(it61620_mipirx_regmap_ranges),
++	.max_register = 0x1FF,
++	.cache_type = REGCACHE_NONE,
++};
++
++static const struct regmap_config it61620_cec_regmap_config = {
++	.reg_bits = 8,
++	.val_bits = 8,
++	.max_register = 0xff,
++	.cache_type = REGCACHE_NONE,
++};
++
++static unsigned int it61620_mipi_reg_read(struct it61620 *it61620, unsigned int reg)
++{
++	unsigned int val;
++	int err;
++	struct device *dev = it61620->dev;
++
++	err = regmap_read(it61620->mipirx_regmap, reg, &val);
++	if (err < 0) {
++		dev_err(dev, "read failed rx reg[0x%x] err: %d", reg, err);
++		return err;
++	}
++
++	return val;
++}
++
++static int it61620_mipi_reg_write(struct it61620 *it61620, unsigned int reg,
++				  unsigned int val)
++{
++	int err;
++	struct device *dev = it61620->dev;
++
++	err = regmap_write(it61620->mipirx_regmap, reg, val);
++
++	if (err < 0) {
++		dev_err(dev, "write failed rx reg[0x%x] = 0x%x err = %d",
++			reg, val, err);
++		return err;
++	}
++
++	return 0;
++}
++
++static int it61620_mipi_reg_set(struct it61620 *it61620, unsigned int reg,
++				unsigned int mask, unsigned int val)
++{
++	int err;
++	struct device *dev = it61620->dev;
++
++	err = regmap_update_bits(it61620->mipirx_regmap, reg, mask, val);
++	if (err < 0) {
++		dev_err(dev,
++			"write rx reg[0x%x] = 0x%x mask = 0x%x failed err %d",
++			reg, val, mask, err);
++		return err;
++	}
++
++	return 0;
++}
++
++static unsigned int it61620_hdmi_reg_read(struct it61620 *it61620, unsigned int reg)
++{
++	unsigned int val;
++	int err;
++	struct device *dev = it61620->dev;
++
++	err = regmap_read(it61620->tx_regmap, reg, &val);
++	if (err < 0) {
++		dev_err(dev, "read failed tx reg[0x%x] err: %d", reg, err);
++		return err;
++	}
++
++	return val;
++}
++
++static int it61620_hdmi_reg_write(struct it61620 *it61620, unsigned int reg,
++				  unsigned int val)
++{
++	int err;
++	struct device *dev = it61620->dev;
++
++	err = regmap_write(it61620->tx_regmap, reg, val);
++
++	if (err < 0) {
++		dev_err(dev, "write failed tx reg[0x%x] = 0x%x err = %d",
++			reg, val, err);
++		return err;
++	}
++
++	return 0;
++}
++
++static int it61620_hdmi_reg_set(struct it61620 *it61620, unsigned int reg,
++				unsigned int mask, unsigned int val)
++{
++	int err;
++	struct device *dev = it61620->dev;
++
++	err = regmap_update_bits(it61620->tx_regmap, reg, mask, val);
++	if (err < 0) {
++		dev_err(dev,
++			"write tx reg[0x%x] = 0x%x mask = 0x%x failed err %d",
++			reg, val, mask, err);
++		return err;
++	}
++
++	return 0;
++}
++
++static void it61620_mipi_reset_video(struct it61620 *it61620)
++{
++	it61620_mipi_reg_write(it61620, RX_REG_DSC_RESET, 0x38);
++	usleep_range(100, 200);
++	it61620_mipi_reg_set(it61620, RX_REG_D2P_RESET, 0x70, 0x70);
++	it61620_mipi_reg_write(it61620, RX_REG_DSC_RESET, 0x00);
++
++	it61620_mipi_reg_set(it61620, RX_REG_RESET_CTRL, 0x57, 0x00);
++	usleep_range(1000, 2000);
++}
++
++static void it61620_mipi_m2p_reset(struct it61620 *it61620)
++{
++	if (it61620->dev_ver != DEV_VERSION_A0)
++		return;
++	it61620_mipi_reg_set(it61620, RX_REG_MIPI_CTRL02, B_FIFO_RST, B_FIFO_RST);
++	usleep_range(1000, 2000);
++	it61620_mipi_reg_set(it61620, RX_REG_MIPI_CTRL02, B_FIFO_RST, 0x00);
++}
++
++static void it61620_mipi_d2p_reset_fifo(struct it61620 *it61620)
++{
++	it61620_mipi_reg_set(it61620, RX_REG_D2P_RESET, 0x70, 0x70);
++	usleep_range(1000, 2000);
++	it61620_mipi_reg_set(it61620, RX_REG_D2P_RESET, 0x70, 0x50);
++	usleep_range(100, 200);
++	it61620_mipi_reg_set(it61620, RX_REG_D2P_RESET, 0x70, 0x10);
++	usleep_range(100, 200);
++	it61620_mipi_reg_set(it61620, RX_REG_D2P_RESET, 0x70, 0x00);
++}
++
++static void it61620_mipi_d2p_reset(struct it61620 *it61620)
++{
++	it61620_mipi_m2p_reset(it61620);
++	it61620_mipi_reg_set(it61620, RX_REG_D_RST, B_D_RST, B_D_RST);
++	usleep_range(1000, 2000);
++	it61620_mipi_reg_set(it61620, RX_REG_D_RST, B_D_RST, 0x00);
++	it61620_mipi_d2p_reset_fifo(it61620);
++}
++
++static void it61620_mipi_reset(struct it61620 *it61620)
++{
++	unsigned int val;
++	u8 dev_ver = it61620->dev_ver;
++	struct it61620_mipirx *mipirx = &it61620->mipirx_config;
++
++	it61620_mipi_reg_set(it61620, RX_REG_RESET_CTRL, B_REF_CLOCK_RESET,
++			     B_REF_CLOCK_RESET);
++	usleep_range(1000, 2000);
++	it61620_mipi_reg_set(it61620, RX_REG_RESET_CTRL, B_REF_CLOCK_RESET, 0x00);
++	usleep_range(1000, 2000);
++
++	it61620_mipi_d2p_reset(it61620);
++
++	it61620_mipi_reg_write(it61620, RX_REG_HS_CTRL, 0x93);
++	it61620_mipi_reg_write(it61620, RX_REG_LP_CTRL, 0x0C);
++	it61620_mipi_reg_write(it61620, RX_REG_AUTO_SYNC, 0x01);
++	it61620_mipi_reg_write(it61620, RX_REG_MV_MAX, 0x0F);
++	it61620_mipi_reg_write(it61620, RX_REG_FORCE_M, B_FORCE_MHT_STB);
++
++	it61620_mipi_reg_write(it61620, RX_REG_MIPI_CTRL01, 0x2C);
++	it61620_mipi_reg_write(it61620, RX_REG_AUTO_D2P_RESET, 0x13);
++	it61620_mipi_reg_write(it61620, RX_REG_D2P_CTRL, 0x28);
++	it61620_mipi_reg_write(it61620, RX_REG_TUNEOPT, 0x9C);
++
++	it61620_mipi_reg_set(it61620, RX_REG_CLK_CTRL, 0x30, 0x20);
++
++	if (dev_ver != DEV_VERSION_A0) {
++		it61620_mipi_reg_write(it61620, RX_REG_TUNETHRE, 0x02);
++		it61620_mipi_reg_write(it61620, RX_REG_AUTO_D2P_RESET, 0x83);
++		it61620_mipi_reg_set(it61620, RX_REG_FORCE_M, B_FORCE_MVT_STB, B_FORCE_MVT_STB);
++		it61620_mipi_reg_set(it61620, RX_REG_SYNC_NUM, 0xF7, 0x44);
++		it61620_mipi_reg_set(it61620, RX_REG_BSP_SEL, 0x03, 0x02);
++		it61620_mipi_reg_set(it61620, RX_REG_PWD_CTRL, 0x24, 0x24);
++		it61620_mipi_reg_set(it61620, RX_REG_ENVRR, 0x01, 0x00);
++		it61620_mipi_reg_write(it61620, RX_REG_ENVBLk, 0x00);
++		it61620_mipi_reg_set(it61620, RX_REG_DSCCTRL, 0x40, 0x00);
++	}
++	val = (mipirx->lane_num - 1) |
++	      (mipirx->pn_swap ? B_MIPI_PN_SWAP : 0x00) |
++	      (mipirx->lane_swap ? B_MIPI_LANE_SWAP : 0x00);
++
++	it61620_mipi_reg_set(it61620, RX_REG_MIPI_CONFIG, 0x0F, val);
++
++	it61620_mipi_reset_video(it61620);
++}
++
++static void it61620_mipi_video_change_irq(struct it61620 *it61620)
++{
++	unsigned int reg22;
++	unsigned int video_stable;
++
++	reg22 = it61620_mipi_reg_read(it61620, RX_REG_INT_STATUS_02);
++	video_stable = reg22 & B_INI_V_STB;
++
++	if (video_stable) {
++		it61620_mipi_m2p_reset(it61620);
++		it61620_mipi_d2p_reset_fifo(it61620);
++	} else {
++		it61620_mipi_reg_set(it61620, RX_REG_D_RST, 0x01, 0x01);
++		usleep_range(1000, 2000);
++		it61620_mipi_reg_set(it61620, RX_REG_D_RST, 0x01, 0x00);
++		it61620_mipi_reg_set(it61620, RX_REG_D2P_RESET, 0x70, 0x70);
++	}
++}
++
++static void it61620_mipi_irq_handler(struct it61620 *it61620)
++{
++	unsigned int reg0a, reg_val;
++
++	reg_val = it61620_mipi_reg_read(it61620, RX_REG_CLK_CTRL) & B_MIPI_INT_STATUS;
++	if (reg_val == 0)
++		return;
++
++	reg0a = it61620_mipi_reg_read(it61620, RX_REG_INT_STATUS_01);
++	it61620_mipi_reg_write(it61620, RX_REG_INT_STATUS_01, reg0a);
++	if (reg0a & B_INI_V_CHG)
++		it61620_mipi_video_change_irq(it61620);
++}
++
++static void it61620_mipi_set_d2v_video_timing(struct it61620 *it61620)
++{
++	u32 htotal, hfp, hsw, hbp, hdew;
++	u32 vtotal, vfp, vsw, vbp, vdew;
++	u32 clock;
++	bool hpol_high = 0, vpol_high = 0, prog = true;
++	struct videomode *vm = &it61620->vm;
++
++	it61620_show_drm_video_mode(it61620, &it61620->vm);
++
++	if (vm->flags & DISPLAY_FLAGS_HSYNC_HIGH)
++		hpol_high = true;
++
++	if (vm->flags & DISPLAY_FLAGS_VSYNC_HIGH)
++		vpol_high = true;
++
++	if (vm->flags & DISPLAY_FLAGS_INTERLACED)
++		prog = false;
++
++	clock = vm->pixelclock / 1000;
++	hdew = vm->hactive;
++
++	hfp = vm->hfront_porch;
++	hsw = vm->hsync_len;
++	hbp = vm->hback_porch;
++	htotal = vm->hactive + vm->hfront_porch + vm->hsync_len +
++		 vm->hback_porch;
++
++	vdew = vm->vactive;
++	vfp = vm->vfront_porch;
++	vsw = vm->vsync_len;
++	vbp = vm->vback_porch;
++	vtotal = vm->vactive + vm->vfront_porch + vm->vsync_len +
++		 vm->vback_porch;
++
++	if (it61620->dev_ver != DEV_VERSION_A0) {
++		if (clock > 180000)
++			it61620_mipi_reg_set(it61620, RX_REG_SELDCLK, 0x1C, 0x0C);
++		else
++			it61620_mipi_reg_set(it61620, RX_REG_SELDCLK, 0x1C, 0x18);
++	}
++
++	if (hdew > 1920)
++		it61620_mipi_reg_write(it61620, RX_REG_DSC_VFRD, 0x50);
++	else
++		it61620_mipi_reg_write(it61620, RX_REG_DSC_VFRD, hdew / 36);
++
++	it61620_mipi_reg_write(it61620, RX_REG_HFP_L, LO_BYTE(hfp));
++	it61620_mipi_reg_write(it61620, RX_REG_HFP_H, HI_BYTE(hfp));
++
++	it61620_mipi_reg_write(it61620, RX_REG_HSW_L, LO_BYTE(hsw));
++	it61620_mipi_reg_write(it61620, RX_REG_HSW_H, HI_BYTE(hsw));
++
++	it61620_mipi_reg_write(it61620, RX_REG_HBP_L, LO_BYTE(hbp));
++	it61620_mipi_reg_write(it61620, RX_REG_HBP_H, HI_BYTE(hbp));
++
++	it61620_mipi_reg_write(it61620, RX_REG_HDEW_L, LO_BYTE(hdew));
++	it61620_mipi_reg_write(it61620, RX_REG_HDEW_H, HI_BYTE(hdew));
++
++	it61620_mipi_reg_write(it61620, RX_REG_HTOTAL_L, LO_BYTE(htotal));
++	it61620_mipi_reg_write(it61620, RX_REG_HTOTAL_H, HI_BYTE(htotal));
++
++	it61620_mipi_reg_write(it61620, RX_REG_VFP_L, LO_BYTE(vfp));
++	it61620_mipi_reg_write(it61620, RX_REG_VFP_H, HI_BYTE(vfp));
++
++	it61620_mipi_reg_write(it61620, RX_REG_VSW_L, LO_BYTE(vsw));
++	it61620_mipi_reg_write(it61620, RX_REG_VSW_H, HI_BYTE(vsw));
++
++	it61620_mipi_reg_write(it61620, RX_REG_VBP_L, LO_BYTE(vbp));
++	it61620_mipi_reg_write(it61620, RX_REG_VBP_H, HI_BYTE(vbp));
++
++	it61620_mipi_reg_write(it61620, RX_REG_VDEW_L, LO_BYTE(vdew));
++	it61620_mipi_reg_write(it61620, RX_REG_VDEW_H, HI_BYTE(vdew));
++
++	it61620_mipi_reg_set(it61620, RX_REG_POL, 0x03, ((!vpol_high) << 1) | (!hpol_high));
++
++	if (it61620->dev_ver == DEV_VERSION_A0 &&
++	    hdew == 2560 && vdew == 1440 && clock == 241500) {
++		dev_dbg(it61620->dev, "device A0 2560x1440@60");
++		it61620_mipi_reg_set(it61620, RX_REG_MPPCLKI, 0x80, 0x80);
++		it61620_hdmi_reg_set(it61620, TX_REG_VH_TIME, 0x48, 0x48);
++
++		it61620_hdmi_reg_write(it61620, TX_REG_PG_HFP_L, LO_BYTE(hfp));
++		it61620_hdmi_reg_write(it61620, TX_REG_PG_HFP_H, HI_BYTE(hfp));
++
++		it61620_hdmi_reg_write(it61620, TX_REG_PG_HSW_L, LO_BYTE(hsw));
++		it61620_hdmi_reg_write(it61620, TX_REG_PG_HSW_H, HI_BYTE(hsw));
++
++		it61620_hdmi_reg_write(it61620, TX_REG_PG_HBP_L, LO_BYTE(hbp));
++		it61620_hdmi_reg_write(it61620, TX_REG_PG_HBP_H, HI_BYTE(hbp));
++
++		it61620_hdmi_reg_write(it61620, TX_REG_PG_DEW_L, LO_BYTE(hdew));
++		it61620_hdmi_reg_write(it61620, TX_REG_PG_DEW_H, HI_BYTE(hdew));
++
++		it61620_hdmi_reg_write(it61620, TX_REG_PG_HVR2_L, 0xFF);
++		it61620_hdmi_reg_write(it61620, TX_REG_PG_HVR2_H, 0x0F);
++
++		it61620_hdmi_reg_write(it61620, TX_REG_PG_VFP_L, LO_BYTE(vfp));
++		it61620_hdmi_reg_write(it61620, TX_REG_PG_VFP_H, HI_BYTE(vfp));
++
++		it61620_hdmi_reg_write(it61620, TX_REG_PG_VSW_L, LO_BYTE(vsw));
++		it61620_hdmi_reg_write(it61620, TX_REG_PG_VSW_H, HI_BYTE(vsw));
++
++		it61620_hdmi_reg_write(it61620, TX_REG_PG_VBP_L, LO_BYTE(vbp));
++		it61620_hdmi_reg_write(it61620, TX_REG_PG_VBP_H, HI_BYTE(vbp));
++
++		it61620_hdmi_reg_write(it61620, TX_REG_PG_VDEW_L, LO_BYTE(vdew));
++		it61620_hdmi_reg_write(it61620, TX_REG_PG_HDEW_H, HI_BYTE(vdew));
++
++		it61620_hdmi_reg_write(it61620, TX_REG_PG_VFP2_L, 0xFF);
++		it61620_hdmi_reg_write(it61620, TX_REG_PG_VFP2_H, 0x0F);
++
++		it61620_hdmi_reg_set(it61620, TX_REG_PG_POL, 0x07, ((vpol_high) << 1) | (hpol_high));
++
++	} else {
++		it61620_mipi_reg_set(it61620, RX_REG_MPPCLKI, 0x80, 0x00);
++		it61620_hdmi_reg_set(it61620, TX_REG_VH_TIME, 0x48, 0x00);
++	}
++
++	it61620_mipi_d2p_reset(it61620);
++}
++
++static void it61620_hdmi_reset(struct it61620 *it61620)
++{
++	it61620_hdmi_reg_set(it61620, TX_REG_RESET_1_CTRL, 0x7E, 0x7E);
++	it61620_hdmi_reg_set(it61620, TX_REG_RESET_2_CTRL, 0x37, 0x37);
++	usleep_range(1000, 2000);
++
++	it61620_hdmi_reg_set(it61620, TX_REG_RESET_1_CTRL, 0x1F, 0x00);
++	usleep_range(1000, 2000);
++	it61620_hdmi_reg_set(it61620, TX_REG_RESET_1_CTRL, 0x40, 0x00);
++
++	it61620_hdmi_reg_set(it61620, TX_REG_SYS_CONFIG, B_EN_HDMI, B_EN_HDMI);
++
++	/* Reset AFE */
++	it61620_hdmi_reg_set(it61620, TX_REG_XLC_7_CTRL, 0x04, 0x00);
++	it61620_hdmi_reg_set(it61620, TX_REG_IPLL_CTRL, 0x02, 0x00);
++	it61620_hdmi_reg_set(it61620, TX_REG_TXPLL_CTRL, 0x04, 0x00);
++	it61620_hdmi_reg_set(it61620, TX_REG_TXDRV_CTRL, 0x01, 0x00);
++
++	it61620_hdmi_reg_set(it61620, TX_REG_XLC_7_CTRL, 0x04, 0x04);
++	it61620_hdmi_reg_set(it61620, TX_REG_IPLL_CTRL, 0x02, 0x02);
++	it61620_hdmi_reg_set(it61620, TX_REG_TXPLL_CTRL, 0x04, 0x04);
++
++	it61620_hdmi_reg_set(it61620, TX_REG_TXDRV_CTRL, 0x01, 0x01);
++
++	it61620_hdmi_reg_set(it61620, TX_REG_TXDRV_CTRL, 0x08, 0x08);
++
++	it61620_hdmi_reg_write(it61620, TX_REG_V_QUEUE, 0x08);
++	it61620_hdmi_reg_write(it61620, TX_REG_V_TU, 0x07);
++
++	it61620_hdmi_reg_write(it61620, TX_REG_CR_1_CTRL, 0x09);
++
++	it61620_hdmi_reg_write(it61620, TX_REG_CR_2_CTRL, 0x16);
++
++	it61620_hdmi_reg_write(it61620, TX_REG_VD_CTRL1, 0x04);
++
++	it61620_hdmi_reg_write(it61620, TX_REG_HDCP_CTRL2, 0x04);
++
++	it61620_hdmi_reg_write(it61620, TX_REG_VD_CTRL3, 0x84);
++	it61620_hdmi_reg_write(it61620, TX_REG_HPD_CONFIG, 0x06);
++	usleep_range(1000, 2000);
++
++	it61620_hdmi_reg_write(it61620, TX_REG_VD_CTRL2, 0x2E);
++	it61620_hdmi_reg_write(it61620, TX_REG_HDMI_CTRL1, 0x30);
++
++	it61620_hdmi_reg_write(it61620, TX_REG_HDMI_CTRL2, 0x04);
++}
++
++static void it61620_hdmi_poweron(struct it61620 *it61620)
++{
++	it61620_hdmi_reg_set(it61620, TX_REG_TXDRV_PD_CTRL, 0x70, 0x00);
++
++	it61620_hdmi_reg_set(it61620, TX_REG_XLC_7_CTRL, 0x07, 0x06);
++	it61620_hdmi_reg_set(it61620, TX_REG_IPLL_CTRL, 0x12, 0x12);
++	it61620_hdmi_reg_set(it61620, TX_REG_TXPLL_CTRL, 0xc6, 0x84);
++	it61620_hdmi_reg_set(it61620, TX_REG_SSC_PD, 0x03, 0x03);
++
++	it61620_hdmi_reg_set(it61620, TX_REG_CLOCK_PWD_CTRL, 0x0F, 0x00);
++	it61620_hdmi_reg_set(it61620, TX_REG_VD_CTRL2, B_VIDEO_FIFO_REST,
++			     B_VIDEO_FIFO_REST);
++	usleep_range(1000, 2000);
++	it61620_hdmi_reg_set(it61620, TX_REG_VD_CTRL2, B_VIDEO_FIFO_REST, 0x00);
++}
++
++static void it61620_hdmi_powerdown(struct it61620 *it61620)
++{
++	it61620_hdmi_reg_set(it61620, TX_REG_TXDRV_PD_CTRL, 0x70, 0x70);
++
++	it61620_hdmi_reg_set(it61620, TX_REG_SSC_PD, 0x03, 0x00);
++	it61620_hdmi_reg_set(it61620, TX_REG_IPLL_CTRL, 0x12, 0x00);
++	it61620_hdmi_reg_set(it61620, TX_REG_TXPLL_CTRL, 0xc6, 0xc2);
++	it61620_hdmi_reg_set(it61620, TX_REG_XLC_7_CTRL, 0x07, 0x01);
++
++	it61620_hdmi_reg_set(it61620, TX_REG_TXDRV_CTRL, 0xf9, 0x00);
++	it61620_hdmi_reg_set(it61620, TX_REG_AUX_CTRL, 0x90, 0x00);
++
++	it61620_hdmi_reg_set(it61620, TX_REG_CLOCK_PWD_CTRL, 0x0F, 0x0a);
++	it61620_hdmi_reg_set(it61620, TX_REG_CEC_CONFIG, B_EN_CEC, 0x00);
++}
++
++static bool it61620_hdmi_get_hpd_status(struct it61620 *it61620)
++{
++	int val;
++
++	val = it61620_hdmi_reg_read(it61620, TX_REG_STATUS01);
++	if (val < 0)
++		return false;
++
++	return !!(val & B_HPD_STATUS);
++}
++
++static void it61620_hdmi_ddc_abort(struct it61620 *it61620)
++{
++	struct device *dev = it61620->dev;
++
++	it61620_hdmi_reg_set(it61620, TX_REG_DDC_CTRL2, B_DDC_REST, B_DDC_REST);
++	usleep_range(1000, 2000);
++	it61620_hdmi_reg_set(it61620, TX_REG_DDC_CTRL2, B_DDC_REST, 0x00);
++	it61620_hdmi_reg_write(it61620, TX_REG_DDC_COMMAND, DDC_COMMAND_ABORT);
++	usleep_range(1000, 2000);
++	dev_dbg(dev, "tx ddc ststus %02X\n",
++		it61620_hdmi_reg_read(it61620, TX_REG_DDC_STATUS));
++}
++
++static int it61620_hdmi_ddc_wait(struct it61620 *it61620)
++{
++	struct device *dev = it61620->dev;
++	unsigned int ddc_status;
++	int ret = 0;
++	unsigned long timeout;
++
++	timeout = jiffies + msecs_to_jiffies(SOFT_DDC_TIMEOUT_MS) + 1;
++
++	for (;;) {
++		usleep_range(1000, 2000);
++		ddc_status = it61620_hdmi_reg_read(it61620, TX_REG_DDC_STATUS);
++
++		if (ddc_status & B_DDC_NOACK) {
++			dev_dbg(dev, "DDC no ack");
++			ret = -EIO;
++			break;
++		}
++
++		if (ddc_status & B_DDC_TX_DONE)
++			break;
++
++		if (ddc_status & B_DDC_FULL) {
++			dev_dbg(dev, "DDC FULL");
++			break;
++		}
++
++		if (time_after(jiffies, timeout)) {
++			dev_dbg(dev, "DDC SOFT timeout %x\n", ddc_status);
++			ret = -ETIMEDOUT;
++			break;
++		}
++	}
++
++	return ret;
++}
++
++static inline void it61620_hdmi_get_ddc_fifo(struct it61620 *it61620, u8 *buf,
++					     size_t len)
++{
++	regmap_bulk_read(it61620->tx_regmap, TX_REG_DDC_FIFO, buf, len);
++}
++
++static inline void it61620_hdmi_set_ddc_fifo(struct it61620 *it61620, u8 *buf,
++					     size_t len)
++{
++	regmap_bulk_write(it61620->tx_regmap, TX_REG_DDC_FIFO, buf, len);
++}
++
++static const struct it61620_hdmi_afe_setting hdmi_afe[4] = {
++	{375000, 0x01, 0x02,
++		{0x03, 0x53, 0x1A, 0x03, 0x00, 0x04,
++		0x03, 0x53, 0x1A, 0x03, 0x00, 0x04,
++		0x03, 0x53, 0x1A, 0x03, 0x00, 0x04,
++		0x01, 0x4B, 0x0F, 0x00, 0x07, 0x04}},
++	{340000, 0x01, 0x02,
++		{0x03, 0x53, 0x1A, 0x03, 0x00, 0x04,
++		0x03, 0x53, 0x1A, 0x03, 0x00, 0x04,
++		0x03, 0x53, 0x1A, 0x03, 0x00, 0x04,
++		0x01, 0x4B, 0x0F, 0x00, 0x07, 0x04}},
++	{150000, 0x00, 0x00,
++		{0x03, 0x43, 0x18, 0x03, 0x00, 0x04,
++		0x03, 0x43, 0x18, 0x03, 0x00, 0x04,
++		0x03, 0x43, 0x18, 0x03, 0x00, 0x04,
++		0x03, 0x43, 0x18, 0x03, 0x00, 0x04}},
++	{0, 0x00, 0x00,
++		{0x03, 0x43, 0x18, 0x03, 0x00, 0x04,
++		0x03, 0x43, 0x18, 0x03, 0x00, 0x04,
++		0x03, 0x43, 0x18, 0x03, 0x00, 0x04,
++		0x03, 0x43, 0x18, 0x03, 0x00, 0x04}}
++};
++
++static void it61620_hdmi_setup_afe(struct it61620 *it61620, int clock)
++{
++	int i;
++	unsigned int reg_ofset;
++	const struct it61620_hdmi_afe_setting *afe;
++
++	it61620_hdmi_reg_set(it61620, TX_REG_AFE30, 0x1F, 0x07);
++	it61620_hdmi_reg_write(it61620, TX_REG_AFEE9, 0x10);
++	it61620_hdmi_reg_write(it61620, TX_REG_AFE33, 0x00);
++	it61620_hdmi_reg_write(it61620, TX_REG_AFE34, 0xE4);
++
++	it61620_hdmi_reg_write(it61620, TX_REG_AFE35, 0x00);
++	it61620_hdmi_reg_write(it61620, TX_REG_AFEE9, 0x10);
++
++	for (i = 0; i < sizeof(hdmi_afe); i++) {
++		if (clock > hdmi_afe[i].clock || hdmi_afe[i].clock == 0)
++			break;
++	}
++
++	afe = &hdmi_afe[i];
++
++	it61620_hdmi_reg_write(it61620, TX_REG_AFE0E, 0xF0);
++
++	if (clock > 100000)
++		it61620_hdmi_reg_set(it61620, TX_REG_TXPLL_CTRL, 0x19, 0x08);
++	else
++		it61620_hdmi_reg_set(it61620, TX_REG_TXPLL_CTRL, 0x19, 0x11);
++
++	if (afe->h2on_pll) {
++		it61620_hdmi_reg_write(it61620, TX_REG_AFE_XP, 0x48);
++		it61620_hdmi_reg_set(it61620, TX_REG_AFE_XLC1, 0x87, 0x81);
++		it61620_hdmi_reg_set(it61620, TX_REG_AFE_XLC2, 0x40, 0x00);
++		it61620_hdmi_reg_write(it61620, TX_REG_AFE_XLC3, 0x32);
++		it61620_hdmi_reg_set(it61620, TX_REG_XLC_7_CTRL, 0xFF, 0xB6);
++	} else {
++		it61620_hdmi_reg_write(it61620, TX_REG_AFE_XP, 0x00);
++	}
++
++	it61620_hdmi_reg_write(it61620, TX_REG_AFE_DRV, 0x00);
++	it61620_hdmi_reg_set(it61620, TX_REG_TXDRV_CTRL, 0x02, afe->hs);
++
++	for (i = 0, reg_ofset = 0x280; reg_ofset <= 0x297; reg_ofset++)
++		it61620_hdmi_reg_write(it61620, reg_ofset, afe->afe_val[i++]);
++
++	it61620_hdmi_reg_set(it61620, TX_REG_INT_MASK3, B_TMDS_STB_CHG,
++			     B_TMDS_STB_CHG);
++}
++
++static inline void it61620_hdmi_fire_afe(struct it61620 *it61620)
++{
++	it61620_hdmi_reg_set(it61620, TX_REG_TXDRV_CTRL, 0xF1, 0xF1);
++}
++
++static inline void it61620_hdmi_disable_afe(struct it61620 *it61620)
++{
++	it61620_hdmi_reg_set(it61620, TX_REG_TXDRV_CTRL, 0xF1, 0x00);
++}
++
++int it61620_hdmi_hdcprd(struct it61620 *it61620, int offset, int bytenum)
++{
++	int ret = 0;
++
++	guard(mutex)(&it61620->ddc_lock);
++
++	it61620_hdmi_reg_write(it61620, TX_REG_DDC_COMMAND, DDC_COMMAND_FIFO_CLR);
++	usleep_range(1000, 2000);
++	it61620_hdmi_reg_write(it61620, TX_REG_DDC_ADDR, DDC_HDCP_ADDR);
++	it61620_hdmi_reg_write(it61620, TX_REG_DDC_OFFSET, offset);
++	it61620_hdmi_reg_write(it61620, TX_REG_DDC_NUM_L, bytenum);
++	it61620_hdmi_reg_write(it61620, TX_REG_DDC_NUM_H, (bytenum & 0x300) >> 8);
++	it61620_hdmi_reg_write(it61620, TX_REG_DDC_COMMAND, DDC_COMMAND_BURST_R);
++
++	if (it61620_hdmi_ddc_wait(it61620) < 0) {
++		it61620_hdmi_ddc_abort(it61620);
++		ret = -EIO;
++		dev_dbg(it61620->dev, "ddc fail");
++	}
++	return ret;
++}
++
++int it61620_hdmi_hdcp_ksvlist_rd(struct it61620 *it61620,
++				 unsigned int bytenum, u8 *out)
++{
++	int ret = 0;
++	unsigned int i;
++	unsigned int count;
++
++	guard(mutex)(&it61620->ddc_lock);
++
++	it61620_hdmi_reg_write(it61620, TX_REG_DDC_COMMAND, DDC_COMMAND_FIFO_CLR);
++	usleep_range(1000, 2000);
++	it61620_hdmi_reg_write(it61620, TX_REG_DDC_ADDR, DDC_HDCP_ADDR);
++	it61620_hdmi_reg_write(it61620, TX_REG_DDC_OFFSET, 0x43);
++	it61620_hdmi_reg_write(it61620, TX_REG_DDC_NUM_L, bytenum);
++	it61620_hdmi_reg_write(it61620, TX_REG_DDC_NUM_H, (bytenum & 0x300) >> 8);
++	it61620_hdmi_reg_write(it61620, TX_REG_DDC_COMMAND, DDC_COMMAND_BURST_R);
++
++	for (i = 0; i < bytenum;) {
++		if (it61620_hdmi_ddc_wait(it61620) < 0) {
++			it61620_hdmi_ddc_abort(it61620);
++			ret = -EIO;
++			dev_dbg(it61620->dev, "ddc fail");
++			break;
++		}
++
++		count = it61620_hdmi_reg_read(it61620, TX_REG_DDC_FIFO_STS) &
++			M_DDC_STAGE_NUM;
++		it61620_hdmi_get_ddc_fifo(it61620, (out + i), count);
++		i += count;
++	}
++
++	return ret;
++}
++
++static bool it61620_hdmi_enable_hdcp(struct it61620 *it61620)
++{
++	struct device *dev = it61620->dev;
++	unsigned int sts, auth_cs;
++
++	sts = it61620_hdmi_reg_read(it61620, TX_REG_V_STS);
++	if ((sts & B_TMDS_STABLE) != B_TMDS_STABLE) {
++		dev_dbg(dev, "TMDS not stable, stop hdcp %x", sts);
++		return false;
++	}
++
++	it61620_hdmi_reg_set(it61620, TX_REG_HDCP_CTRL3, B_ENC_DIS, B_ENC_DIS);
++	usleep_range(1000, 2000);
++
++	it61620_hdmi_reg_set(it61620, TX_REG_RESET_2_CTRL, 0x10, 0x10);
++	usleep_range(1000, 2000);
++	it61620_hdmi_reg_set(it61620, TX_REG_RESET_2_CTRL, 0x10, 0x00);
++
++	it61620_hdmi_reg_set(it61620, TX_REG_R0TM, 0xC0, 0x40);
++	it61620_hdmi_reg_write(it61620, TX_REG_SHA_SEL, 0x00);
++
++	it61620_hdmi_reg_write(it61620, TX_REG_AUTOMUTE, 0x00);
++
++	it61620_hdmi_reg_set(it61620, TX_REG_HDCP_CTRL2, B_AN_SEL, B_AN_SEL);
++	it61620_hdmi_reg_set(it61620, TX_REG_HDCP_CTRL2, B_EN_AN_GEN, B_EN_AN_GEN);
++	usleep_range(1000, 2000);
++	it61620_hdmi_reg_set(it61620, TX_REG_HDCP_CTRL2, B_EN_AN_GEN, 0x00);
++
++	it61620_hdmi_reg_set(it61620, TX_REG_HDCP_CTRL1, B_CPDESIRED, B_CPDESIRED);
++	it61620_hdmi_reg_set(it61620, TX_REG_HDCP_CTRL3, (B_PAUSE | B_ENC_DIS), 0x00);
++
++	it61620_hdmi_reg_write(it61620, TX_REG_HDCP_PRO, B_AUTH_FIRE);
++
++	/* HDCP start requires 100ms for the first part of the authentication protocol,*/
++	/* 20ms is used to wait for 61620 HW completion.*/
++	msleep(120);
++
++	auth_cs = it61620_hdmi_reg_read(it61620, TX_REG_HDCP_AUTH_CS) & M_AUTH_CH;
++	if (auth_cs == CS_KSVLIST_CHK) {
++		it61620_hdmi_hdcp_wait_ksv_list(it61620);
++		usleep_range(1000, 2000);
++		auth_cs = it61620_hdmi_reg_read(it61620, TX_REG_HDCP_AUTH_CS) & M_AUTH_CH;
++	}
++
++	if (auth_cs == CS_AUTH_DONE) {
++		it61620_hdmi_enable_avmute(it61620, false);
++		it61620_hdmi_reg_set(it61620, TX_REG_INT1, B_INT_AUTH_F, B_INT_AUTH_F);
++		it61620_hdmi_reg_set(it61620, TX_REG_INT_MASK1, B_INT_AUTH_F, B_INT_AUTH_F);
++		return true;
++	}
++
++	it61620_hdmi_enable_avmute(it61620, true);
++	return false;
++}
++
++static void it61620_hdmi_reset_hdcp(struct it61620 *it61620)
++{
++	it61620_hdmi_reg_set(it61620, TX_REG_INT_MASK1,
++			     (B_INT_AUTH_D | B_INT_AUTH_F), 0x00);
++	it61620_hdmi_reg_set(it61620, TX_REG_INT_MASK2, B_KSV_CHECK, 0x00);
++
++	it61620_hdmi_reg_set(it61620, TX_REG_HDCP_CTRL3, B_ENC_DIS, B_ENC_DIS);
++	usleep_range(1000, 2000);
++
++	it61620_hdmi_reg_set(it61620, TX_REG_RESET_2_CTRL, 0x18, 0x18);
++	usleep_range(1000, 2000);
++	it61620_hdmi_reg_set(it61620, TX_REG_RESET_2_CTRL, 0x18, 0x00);
++
++	it61620_hdmi_reg_set(it61620, TX_REG_HDCP_CTRL1, B_CPDESIRED, B_CPDESIRED);
++	it61620_hdmi_reg_set(it61620, TX_REG_HDCP_CTRL3,
++			     (B_PAUSE | B_ENC_DIS), B_PAUSE);
++	it61620_hdmi_reg_write(it61620, TX_REG_AUTOMUTE, 0x00);
++}
++
++static bool it61620_hdmi_hdcp_is_ksv_valid(u8 *ksv)
++{
++	int i, ones = 0;
++
++	if ((ksv[4] == 0x93 && ksv[3] == 0x43 && ksv[2] == 0x5C &&
++	     ksv[1] == 0xDE && ksv[0] == 0x23) ||
++	    (ksv[4] == 0x7D && ksv[3] == 0xB4 && ksv[2] == 0x21 &&
++	     ksv[1] == 0x37 && ksv[0] == 0x0B))
++		return false;
++
++	/* KSV has 20 1's and 20 0's */
++	for (i = 0; i < 5; i++)
++		ones += hweight8(ksv[i]);
++
++	return ones == 20;
++}
++
++static void it61620_hdmi_disable_hdcp(struct it61620 *it61620)
++{
++	it61620_hdmi_reset_hdcp(it61620);
++}
++
++static bool it61620_hdmi_start_hdcp(struct it61620 *it61620)
++{
++	struct device *dev = it61620->dev;
++	struct drm_device *drm = it61620->drm;
++	u8 rx_hdmi_mode;
++	u8 bksv[DRM_HDCP_KSV_LEN];
++	bool retcheck;
++
++	if (it61620_hdmi_hdcprd(it61620, DRM_HDCP_DDC_BSTATUS, DRM_HDCP_BSTATUS_LEN) < 0) {
++		dev_dbg(dev, "read bstatus fail!\n");
++		return false;
++	}
++
++	rx_hdmi_mode = (it61620_hdmi_reg_read(it61620, 0x7E) & 0x10) >> 4;
++	if (it61620->is_hdmi != rx_hdmi_mode)
++		return false;
++
++	it61620_hdmi_hdcprd(it61620, DRM_HDCP_DDC_BKSV, DRM_HDCP_KSV_LEN);
++	bksv[0] = it61620_hdmi_reg_read(it61620, TX_REG_HDCP_BKSV1);
++	bksv[1] = it61620_hdmi_reg_read(it61620, TX_REG_HDCP_BKSV2);
++	bksv[2] = it61620_hdmi_reg_read(it61620, TX_REG_HDCP_BKSV3);
++	bksv[3] = it61620_hdmi_reg_read(it61620, TX_REG_HDCP_BKSV4);
++	bksv[4] = it61620_hdmi_reg_read(it61620, TX_REG_HDCP_BKSV5);
++	retcheck = it61620_hdmi_hdcp_is_ksv_valid(bksv);
++	if (!retcheck) {
++		dev_dbg(dev, "ksv valid!\n");
++		return false;
++	}
++
++	if (drm_hdcp_check_ksvs_revoked(drm, bksv, 1) > 0)
++		return false;
++
++	return it61620_hdmi_enable_hdcp(it61620);
++}
++
++static int it61620_hdmi_sha1_digest(struct it61620 *it61620, u8 *sha1_input,
++				    unsigned int size, u8 *output_av)
++{
++	struct shash_desc *desc;
++	struct crypto_shash *tfm;
++	int err;
++	struct device *dev = it61620->dev;
++
++	tfm = crypto_alloc_shash("sha1", 0, 0);
++	if (IS_ERR(tfm)) {
++		dev_dbg(dev, "crypto_alloc_shash sha1 failed");
++		return PTR_ERR(tfm);
++	}
++	desc = kzalloc(sizeof(*desc) + crypto_shash_descsize(tfm), GFP_KERNEL);
++	if (!desc) {
++		crypto_free_shash(tfm);
++		return -ENOMEM;
++	}
++
++	desc->tfm = tfm;
++	err = crypto_shash_digest(desc, sha1_input, size, output_av);
++	if (err)
++		dev_dbg(dev, "crypto_shash_digest sha1 failed");
++
++	crypto_free_shash(tfm);
++	kfree(desc);
++	return err;
++}
++
++static int it61620_hdmi_setup_sha1_input(struct it61620 *it61620, u8 *input)
++{
++	struct device *dev = it61620->dev;
++	struct drm_device *drm = it61620->drm;
++	u8 bstatus[2];
++	int down_stream_count, i, count = 0;
++
++	it61620_hdmi_hdcprd(it61620, DRM_HDCP_DDC_BSTATUS, DRM_HDCP_BSTATUS_LEN);
++	bstatus[0] = it61620_hdmi_reg_read(it61620, TX_REG_HDCP_BSTS_L);
++	bstatus[1] = it61620_hdmi_reg_read(it61620, TX_REG_HDCP_BSTS_H);
++
++	down_stream_count = DRM_HDCP_NUM_DOWNSTREAM(bstatus[0]);
++	if (DRM_HDCP_MAX_DEVICE_EXCEEDED(bstatus[0]) ||
++	    DRM_HDCP_MAX_CASCADE_EXCEEDED(bstatus[1])) {
++		it61620_hdmi_reg_set(it61620, TX_REG_HDCP_CTRL3,
++				     (B_PAUSE | B_ENC_DIS), B_PAUSE);
++		return 0;
++	}
++
++	if (!down_stream_count ||
++	    down_stream_count > MAX_HDCP_DOWN_STREAM_COUNT) {
++		dev_dbg(dev, "HDCP down stream count Error %d",
++			down_stream_count);
++		return 0;
++	}
++	dev_dbg(dev, "down stream count %d\n", down_stream_count);
++
++	count = down_stream_count * DRM_HDCP_KSV_LEN;
++	it61620_hdmi_hdcp_ksvlist_rd(it61620, count, input);
++	if (drm_hdcp_check_ksvs_revoked(drm, input, down_stream_count) > 0)
++		return 0;
++
++	input[count++] = bstatus[0];
++	input[count++] = bstatus[1];
++
++	it61620_hdmi_reg_set(it61620, TX_REG_SHA_SEL, 0x70, 0x70);
++	it61620_hdmi_reg_set(it61620, TX_REG_HDCP_CTRL2, B_EN_M0_RD, B_EN_M0_RD);
++	for (i = 0; i < 8; i++)
++		input[count++] = it61620_hdmi_reg_read(it61620, (TX_REG_ANM0V1 + i));
++
++	it61620_hdmi_reg_set(it61620, TX_REG_HDCP_CTRL2, B_EN_M0_RD, 0x00);
++
++	return count;
++}
++
++static bool it61620_hdmi_hdcp_part2_ksvlist_check(struct it61620 *it61620)
++{
++	struct device *dev = it61620->dev;
++	u8 av[5][4], bv[5][4];
++	int i, j;
++
++	i = it61620_hdmi_setup_sha1_input(it61620, it61620->sha1_input);
++	if (i <= 0)
++		return false;
++
++	it61620_hdmi_sha1_digest(it61620, it61620->sha1_input, i, (u8 *)av);
++
++	for (i = 0; i < DRM_HDCP_V_PRIME_NUM_PARTS; i++) {
++		it61620_hdmi_hdcprd(it61620, DRM_HDCP_DDC_V_PRIME(i), DRM_HDCP_V_PRIME_PART_LEN);
++		it61620_hdmi_reg_set(it61620, TX_REG_HDCP_CTRL2,
++				     B_EN_M0_RD, B_EN_M0_RD);
++		it61620_hdmi_reg_set(it61620, TX_REG_SHA_SEL, 0x70, (i << 4));
++
++		for (j = 0; j < DRM_HDCP_V_PRIME_PART_LEN; j++)
++			bv[i][j] = it61620_hdmi_reg_read(it61620, TX_REG_ANM0V1 + j);
++	}
++
++	for (i = 0; i < DRM_HDCP_V_PRIME_NUM_PARTS; i++)
++		if (bv[i][3] != av[i][0] || bv[i][2] != av[i][1] ||
++		    bv[i][1] != av[i][2] || bv[i][0] != av[i][3])
++			break;
++
++	if (i == DRM_HDCP_V_PRIME_NUM_PARTS)
++		return true;
++
++	dev_dbg(dev, "V' Not match!!");
++	return false;
++}
++
++static void it61620_hdmi_hdcp_wait_ksv_list(struct it61620 *it61620)
++{
++	u8 bcaps = 0;
++	unsigned long timeout;
++
++	timeout = jiffies + msecs_to_jiffies(5000) + 1;
++	for (;;) {
++		usleep_range(1000, 2000);
++		it61620_hdmi_hdcprd(it61620, DRM_HDCP_DDC_BCAPS, 1);
++		bcaps = it61620_hdmi_reg_read(it61620, TX_REG_HDCP_BCAPS);
++		if (bcaps & B_KSV_READY)
++			break;
++
++		if (it61620->hdcp_state != CP_GOING)
++			break;
++
++		if (time_after(jiffies, timeout))
++			break;
++	}
++
++	if ((bcaps & B_KSV_READY) && it61620_hdmi_hdcp_part2_ksvlist_check(it61620)) {
++		it61620_hdmi_reg_write(it61620, TX_REG_HDCP_PRO, B_LIST_CHK_DONE);
++		return;
++	}
++	it61620_hdmi_reg_write(it61620, TX_REG_HDCP_PRO, B_LIST_CHK_DONE | B_LIST_CHK_FAIL);
++}
++
++static void it61620_hdmi_irq_hdcp_auth_fail(struct it61620 *it61620)
++{
++	struct device *dev = it61620->dev;
++
++	if (it61620->hdcp_state == CP_GOING) {
++		it61620_hdmi_enable_avmute(it61620, true);
++		dev_dbg(dev, "auth fail after done, set avmute");
++		it61620_start_hdcp_work(it61620);
++	}
++}
++
++static void it61620_hdmi_irq_hpd(struct it61620 *it61620)
++{
++	if (!it61620_hdmi_get_hpd_status(it61620)) {
++		it61620_stop_hdcp_work(it61620);
++		it61620_hdmi_disable_afe(it61620);
++	} else if (it61620->video_state == it61620_VIDEO_ON) {
++		it61620_hdmi_fire_afe(it61620);
++		it61620_start_hdcp_work(it61620);
++	}
++}
++
++static void it61620_hdmi_irq_rxsen_chg(struct it61620 *it61620)
++{
++	unsigned int rxsen;
++
++	if (!it61620_hdmi_get_hpd_status(it61620))
++		return;
++
++	rxsen = it61620_hdmi_reg_read(it61620, TX_REG_V_STS) & B_RXSEN;
++	if (it61620->video_state == it61620_VIDEO_ON) {
++		if (rxsen) {
++			it61620_hdmi_fire_afe(it61620);
++			it61620_start_hdcp_work(it61620);
++		} else {
++			it61620_stop_hdcp_work(it61620);
++			it61620_hdmi_disable_afe(it61620);
++		}
++	}
++}
++
++static void it61620_hdmi_irq_TMDS_stb_change(struct it61620 *it61620)
++{
++	unsigned int video_status;
++
++	video_status = it61620_hdmi_reg_read(it61620, TX_REG_V_STS);
++
++	if (video_status & B_TMDS_STABLE)
++		it61620_start_hdcp_work(it61620);
++}
++
++static bool it61620_test_bit(unsigned int bit, const unsigned int *addr)
++{
++	return 1 & (addr[bit / BITS_PER_BYTE] >> (bit % BITS_PER_BYTE));
++}
++
++static void it61620_hdmi_interrupt_handler(struct it61620 *it61620)
++{
++	unsigned int int_status[3], i;
++	static const struct {
++		int bit;
++		void (*handler)(struct it61620 *it61620);
++	} irq_vec[] = {
++		{ BIT_HPD_CHG, it61620_hdmi_irq_hpd },
++		{ BIT_RXSEN_CHANGE, it61620_hdmi_irq_rxsen_chg },
++		{ BIT_INT_AUTH_F, it61620_hdmi_irq_hdcp_auth_fail },
++		{ BIT_TMDS_STB_CHG, it61620_hdmi_irq_TMDS_stb_change },
++	};
++
++	int_status[0] = it61620_hdmi_reg_read(it61620, TX_REG_INT1);
++	int_status[1] = it61620_hdmi_reg_read(it61620, TX_REG_INT2);
++	int_status[2] = it61620_hdmi_reg_read(it61620, TX_REG_INT3);
++
++	it61620_hdmi_reg_write(it61620, TX_REG_INT1, int_status[0]);
++	it61620_hdmi_reg_write(it61620, TX_REG_INT2, int_status[1]);
++	it61620_hdmi_reg_write(it61620, TX_REG_INT3, int_status[2]);
++
++	for (i = 0; i < ARRAY_SIZE(irq_vec); i++) {
++		if (it61620_test_bit(irq_vec[i].bit, (unsigned int *)int_status))
++			irq_vec[i].handler(it61620);
++	}
++}
++
++static void it61620_hdmi_irq(struct it61620 *it61620)
++{
++	unsigned int reg_val;
++
++	reg_val = it61620_hdmi_reg_read(it61620, TX_REG_HDMITX_BANK);
++	if (reg_val & B_INT_EVENT_HDMI)
++		it61620_hdmi_interrupt_handler(it61620);
++}
++
++static void it61620_hdmi_audio_set_ncts(struct it61620 *it61620)
++{
++	struct device *dev = it61620->dev;
++	unsigned int n;
++
++	switch (it61620->audio_config.sample_rate) {
++	case SAMPLE_RATE_32K:
++		n = 4096;
++		break;
++	case SAMPLE_RATE_44_1K:
++		n = 6272;
++		break;
++	case SAMPLE_RATE_48K:
++		n = 6144;
++		break;
++	case SAMPLE_RATE_64K:
++		n = 8192;
++		break;
++	case SAMPLE_RATE_88_2K:
++		n = 12544;
++		break;
++	case SAMPLE_RATE_96K:
++		n = 12288;
++		break;
++	case SAMPLE_RATE_176_4K:
++		n = 25088;
++		break;
++	case SAMPLE_RATE_192K:
++		n = 24576;
++		break;
++	default:
++		dev_err(dev, "Error: AudFmt Error !!!\n");
++	}
++
++	it61620_hdmi_reg_write(it61620, TX_REG_AUDPKT_N_0, (u8)((n) & 0xFF));
++	it61620_hdmi_reg_write(it61620, TX_REG_AUDPKT_N_1, (u8)((n >> 8) & 0xFF));
++	it61620_hdmi_reg_write(it61620, TX_REG_AUDPKT_N_2, (u8)((n >> 16) & 0x0F));
++}
++
++static inline void it61620_hdmi_disable_audio_infoframe(struct it61620 *it61620)
++{
++	it61620_hdmi_reg_set(it61620, TX_REG_EN_PKT1,
++			     (B_EN_AUD | B_EN_AUD_RP), 0x00);
++}
++
++static inline void it61620_hdmi_enable_audio_infoframe(struct it61620 *it61620)
++{
++	it61620_hdmi_reg_set(it61620, TX_REG_EN_PKT1, (B_EN_AUD | B_EN_AUD_RP),
++			     (B_EN_AUD | B_EN_AUD_RP));
++}
++
++static inline void it61620_hdmi_disable_avi_infoframe(struct it61620 *it61620)
++{
++	it61620_hdmi_reg_set(it61620, TX_REG_EN_PKT1,
++			     (B_EN_AVI | B_AVI_RP), 0x00);
++}
++
++static inline void it61620_hdmi_enable_avi_infoframe(struct it61620 *it61620)
++{
++	it61620_hdmi_reg_set(it61620, TX_REG_EN_PKT1, (B_EN_AVI | B_AVI_RP),
++			     (B_EN_AVI | B_AVI_RP));
++}
++
++static inline void it61620_hdmi_enable_hdmi_mode(struct it61620 *it61620)
++{
++	it61620_hdmi_reg_set(it61620, TX_REG_HDMI_CTRL1, B_EN_HDMI_MODE,
++			     B_EN_HDMI_MODE);
++}
++
++static inline void it61620_hdmi_enable_DVI_mode(struct it61620 *it61620)
++{
++	it61620_hdmi_reg_set(it61620, TX_REG_HDMI_CTRL1, B_EN_HDMI_MODE, 0x00);
++}
++
++static inline void it61620_hdmi_enable_avmute(struct it61620 *it61620, bool enable)
++{
++	it61620_hdmi_reg_set(it61620, TX_REG_HDMI_CTRL2, B_EN_AVMUTE, enable);
++}
++
++static int it61620_hdmi_avi_infoframe_set(struct it61620 *it61620)
++{
++	struct device *dev = it61620->dev;
++	u8 buf[32], i, *ptr;
++	int ret;
++
++	dev_dbg(dev, "avinfo set\n");
++	it61620_hdmi_disable_avi_infoframe(it61620);
++
++	if (!it61620->is_hdmi) {
++		it61620_hdmi_enable_DVI_mode(it61620);
++		return 0;
++	}
++	it61620_hdmi_enable_hdmi_mode(it61620);
++
++	ret = hdmi_avi_infoframe_pack(&it61620->avi_info, buf, sizeof(buf));
++	if (ret < 0) {
++		dev_dbg(dev, "Failed to pack AVI infoframe: %d", ret);
++		return ret;
++	}
++
++	/* fill PB */
++	ptr = buf + HDMI_INFOFRAME_HEADER_SIZE;
++	for (i = 0; i < it61620->avi_info.length; i++)
++		it61620_hdmi_reg_write(it61620, TX_REG_AVIINFO_DB01 + i, ptr[i]);
++
++	it61620_hdmi_reg_write(it61620, TX_REG_AVIINFO_DB14, buf[3]);
++
++	/* Enable */
++	it61620_hdmi_enable_avi_infoframe(it61620);
++	return 0;
++}
++
++static void it61620_hdmi_config_output(struct it61620 *it61620)
++{
++	struct device *dev = it61620->dev;
++
++	it61620_hdmi_reset(it61620);
++	it61620_hdmi_poweron(it61620);
++	it61620_hdmi_reg_set(it61620, TX_REG_HDMI_CTRL2, 0x70, 0x00);
++	if (it61620->is_hdmi) {
++		dev_dbg(dev, "HDMI\n");
++
++		it61620_hdmi_avi_infoframe_set(it61620);
++		it61620_hdmi_enable_hdmi_mode(it61620);
++		it61620_hdmi_reg_set(it61620, TX_REG_EN_PKT2,
++				     (B_EN_GEN | B_GEN_RP),
++				     (B_EN_GEN | B_GEN_RP));
++	} else {
++		dev_dbg(dev, "DVI\n");
++		it61620_hdmi_enable_DVI_mode(it61620);
++		it61620_hdmi_reg_write(it61620, TX_REG_EN_PKT2, 0x00);
++		it61620_hdmi_reg_write(it61620, TX_REG_EN_PKT1, 0x00);
++	}
++
++	it61620_hdmi_enable_avmute(it61620, false);
++	it61620_hdmi_setup_afe(it61620, it61620->vm.pixelclock / 1000);
++	it61620_hdmi_fire_afe(it61620);
++	it61620->video_state = it61620_VIDEO_ON;
++}
++
++static int it61620_hdmi_audio_infoframe_set(struct it61620 *it61620, int length)
++{
++	u8 *buf, i, *ptr;
++
++	it61620_hdmi_disable_audio_infoframe(it61620);
++
++	if (!it61620->is_hdmi)
++		return 0;
++
++	buf = it61620->audio_config.infoframe;
++	/* fill PB */
++	ptr = buf + HDMI_INFOFRAME_HEADER_SIZE;
++	for (i = 0; i < length; i++)
++		it61620_hdmi_reg_write(it61620, TX_REG_AUDINFO_DB01 + i, ptr[i]);
++
++	it61620_hdmi_reg_write(it61620, TX_REG_AUDINFO_DB06, buf[3]);
++	it61620_hdmi_reg_write(it61620, TX_REG_AUDINFO_DB07, 0x00);
++	it61620_hdmi_reg_write(it61620, TX_REG_AUDINFO_DB08, 0x00);
++	it61620_hdmi_reg_write(it61620, TX_REG_AUDINFO_DB09, 0x00);
++	it61620_hdmi_reg_write(it61620, TX_REG_AUDINFO_DB10, 0x00);
++
++	/* Enable */
++	it61620_hdmi_enable_audio_infoframe(it61620);
++	return 0;
++}
++
++static void it61620_start_hdcp_work(struct it61620 *it61620)
++{
++	it61620->hdcp_state = CP_GOING;
++	queue_delayed_work(system_wq, &it61620->hdcp_work,
++			   msecs_to_jiffies(2400));
++}
++
++static void it61620_stop_hdcp_work(struct it61620 *it61620)
++{
++	it61620->hdcp_state = CP_NONE;
++	cancel_delayed_work_sync(&it61620->hdcp_work);
++	it61620_hdmi_disable_hdcp(it61620);
++}
++
++static void it61620_hw_reset(struct it61620 *it61620)
++{
++	struct it61620_platform_data *pdata = &it61620->pdata;
++
++	if (!pdata->gpiod_reset)
++		return;
++
++	gpiod_set_value_cansleep(pdata->gpiod_reset, 1);
++
++	usleep_range(10000, 20000);
++	gpiod_set_value_cansleep(pdata->gpiod_reset, 0);
++	usleep_range(10000, 20000);
++}
++
++static int it61620_enable_devices(struct it61620 *it61620)
++{
++	struct device *dev = &it61620->it61620_i2c->dev;
++	unsigned int device_id[5];
++	unsigned int i, vid, pid;
++
++	regmap_write(it61620->it61620_regmap, REG_CTRL_PW, 0x55);
++	regmap_write(it61620->it61620_regmap, REG_CTRL_PW, 0xAA);
++	regmap_write(it61620->it61620_regmap, REG_CTRL_PW, 0xC3);
++	regmap_write(it61620->it61620_regmap, REG_CTRL_PW, 0xA5);
++	usleep_range(1000, 2000);
++
++	for (i = 0; i < 5; i++)
++		device_id[i] = it61620_mipi_reg_read(it61620, REG_VENDER_ID_L + i);
++
++	dev_dbg(dev, "IT61620 ver %02X", device_id[4]);
++
++	vid = (device_id[1] << 8) | device_id[0];
++	pid = (device_id[3] << 8) | device_id[2];
++
++	if (vid != it61620->chip_info->vid ||
++	    pid != it61620->chip_info->pid) {
++		dev_err(dev, "vid %X != %X",
++			vid, it61620->chip_info->vid);
++		dev_err(dev, "pid %X != %X",
++			pid, it61620->chip_info->pid);
++
++		return -ENODEV;
++	}
++
++	it61620->dev_ver = device_id[4];
++	return 0;
++}
++
++static void it61620_int_setup(struct it61620 *it61620)
++{
++	/* SET INT# to Active Low open-drain */
++	it61620_mipi_reg_set(it61620, RX_REG_INT_POL, 0x08, 0x08);
++	it61620_hdmi_reg_set(it61620, TX_REG_SYS_CONFIG, 0x0F, B_INT_MODE);
++	it61620_hdmi_reg_set(it61620, REG_TX_INT_CTRL, B_DIS_INT_OUTPUT, 0x00);
++}
++
++static void it61620_int_enable(struct it61620 *it61620)
++{
++	it61620_hdmi_reg_set(it61620, TX_REG_INT_MASK1, B_HPD_CHG, B_HPD_CHG);
++}
++
++static int it61620_reset_init(struct it61620 *it61620)
++{
++	it61620_hw_reset(it61620);
++
++	if (it61620_enable_devices(it61620) < 0)
++		return -ENODEV;
++
++	it61620_mipi_reset(it61620);
++	it61620_hdmi_reset(it61620);
++	it61620_int_setup(it61620);
++	it61620_int_enable(it61620);
++	it61620_hdmi_powerdown(it61620);
++
++	return 0;
++}
++
++static int it61620_poweron(struct it61620 *it61620)
++{
++	struct it61620_platform_data *pdata = &it61620->pdata;
++	struct device *dev = it61620->dev;
++	int err;
++
++	if (it61620->powered) {
++		dev_dbg(dev, "Already powered on");
++		return 0;
++	}
++
++	err = regulator_enable(pdata->ivdd);
++	if (err) {
++		dev_err(dev, "Failed to enable IVDD: %d", err);
++		goto poweron_exit;
++	}
++
++	err = regulator_enable(pdata->ovdd1833);
++	if (err) {
++		dev_err(dev, "Failed to enable VDD18: %d", err);
++		goto disable_ivdd;
++	}
++
++	err = regulator_enable(pdata->ovdd33);
++	if (err) {
++		dev_err(dev, "Failed to enable ovdd33: %d", err);
++		goto disable_ovdd1833;
++	}
++
++	gpiod_set_value_cansleep(pdata->gpiod_reset, 1);
++	usleep_range(10000, 20000);
++	gpiod_set_value_cansleep(pdata->gpiod_reset, 0);
++	usleep_range(10000, 20000);
++
++	err = it61620_reset_init(it61620);
++	if (err < 0)
++		goto disable_ovdd33;
++
++	it61620->powered = true;
++	if (it61620->it61620_i2c->irq) {
++		enable_irq(it61620->it61620_i2c->irq);
++		dev_dbg(dev, "enable irq %d\n",
++			it61620->it61620_i2c->irq);
++	}
++	dev_dbg(dev, "it61620 poweron end\n");
++	return 0;
++
++disable_ovdd33:
++	regulator_disable(pdata->ovdd33);
++disable_ovdd1833:
++	regulator_disable(pdata->ovdd1833);
++disable_ivdd:
++	regulator_disable(pdata->ivdd);
++poweron_exit:
++	return err;
++}
++
++static int it61620_poweroff(struct it61620 *it61620)
++{
++	struct it61620_platform_data *pdata = &it61620->pdata;
++	struct device *dev = it61620->dev;
++	int err;
++
++	if (!it61620->powered) {
++		dev_dbg(dev, "Already powered off");
++		return 0;
++	}
++
++	if (it61620->it61620_i2c->irq) {
++		disable_irq(it61620->it61620_i2c->irq);
++		dev_dbg(dev, "disable irq %d\n",
++			it61620->it61620_i2c->irq);
++	}
++
++	gpiod_set_value_cansleep(pdata->gpiod_reset, 1);
++
++	err = regulator_disable(pdata->ovdd33);
++	if (err)
++		dev_err(dev, "Failed to disable ovdd33: %d", err);
++
++	err = regulator_disable(pdata->ivdd);
++	if (err)
++		dev_err(dev, "Failed to disable IVDD: %d", err);
++
++	usleep_range(2000, 3000);
++
++	err = regulator_disable(pdata->ovdd1833);
++	if (err)
++		dev_err(dev, "Failed to disable ovdd1833: %d", err);
++
++	it61620->powered = false;
++	it61620->connector_status = connector_status_disconnected;
++	dev_dbg(dev, "it61620 poweroff\n");
++
++	return 0;
++}
++
++static void it61620_config_default(struct it61620 *it61620)
++{
++	struct it61620_mipirx *mipirx = &it61620->mipirx_config;
++	struct it61620_audio *audio_config = &it61620->audio_config;
++
++	mipirx->lane_num = 4;
++	mipirx->pn_swap = 0;
++	mipirx->lane_swap = 0;
++	it61620->connector_status = connector_status_disconnected;
++
++	audio_config->select = I2S;
++	audio_config->sample_rate = SAMPLE_RATE_48K;
++	audio_config->type = LPCM;
++	audio_config->word_length = WORD_LENGTH_16BIT;
++	audio_config->channel_count = 2;
++	audio_config->audfmt = 0;
++}
++
++static void it61620_show_drm_video_mode(struct it61620 *it61620,
++					const struct videomode *vm)
++{
++	struct device *dev = it61620->dev;
++
++	dev_dbg(dev, "HActive = %u\n", vm->hactive);
++	dev_dbg(dev, "VActive = %u\n", vm->vactive);
++	dev_dbg(dev, "HTotal =  %u\n",
++		vm->hactive + vm->hfront_porch + vm->hsync_len +
++		vm->hback_porch);
++	dev_dbg(dev, "VTotal =  %u\n",
++		vm->vactive + vm->vfront_porch + vm->vsync_len +
++		vm->vback_porch);
++	dev_dbg(dev, "PCLK =	 %lukhz\n", vm->pixelclock / 1000);
++	dev_dbg(dev, "HFP = %u\n", vm->hfront_porch);
++	dev_dbg(dev, "HSW =	 %u\n", vm->hsync_len);
++	dev_dbg(dev, "HBP =	 %u\n",	vm->hback_porch);
++	dev_dbg(dev, "VFP =	 %u\n",	vm->vfront_porch);
++	dev_dbg(dev, "VSW =	 %u\n",	vm->vsync_len);
++	dev_dbg(dev, "VBP =	 %u\n",	vm->vback_porch);
++	if (vm->flags & DISPLAY_FLAGS_HSYNC_HIGH)
++		dev_dbg(dev, "HPOL +\n");
++	else
++		dev_dbg(dev, "HPOL -\n");
++
++	if (vm->flags & DISPLAY_FLAGS_VSYNC_HIGH)
++		dev_dbg(dev, "VPOL +\n");
++	else
++		dev_dbg(dev, "VPOL -\n");
++
++	if (vm->flags & DISPLAY_FLAGS_INTERLACED)
++		dev_dbg(dev, "Intelaced\n");
++	else
++		dev_dbg(dev, "Progressive\n");
++}
++
++static enum drm_mode_status it61620_mode_valid(struct it61620 *it61620,
++					       const struct drm_display_mode *mode)
++{
++	if (mode->clock > 300000)
++		return MODE_CLOCK_HIGH;
++
++	return MODE_OK;
++}
++
++static int it61620_get_edid_block(void *data, u8 *buf, unsigned int block,
++				  size_t len)
++{
++	struct it61620 *it61620 = data;
++	unsigned int edid_offset;
++	unsigned int cnt;
++	unsigned int i;
++	int ret = 0;
++
++	if (len > EDID_LENGTH)
++		return -EINVAL;
++
++	guard(mutex)(&it61620->ddc_lock);
++
++	it61620_hdmi_reg_write(it61620, TX_REG_DDC_COMMAND, DDC_COMMAND_FIFO_CLR);
++
++	it61620_hdmi_reg_write(it61620, TX_REG_DDC_ADDR, DDC_EDID_ADDR);
++	it61620_hdmi_reg_write(it61620, TX_REG_DDC_SEGMENT, block / 2);
++
++	cnt = 0;
++	edid_offset = block * 128;
++
++	for (i = 0; i < EDID_LENGTH; i += EDID_R_BURST_NUM,
++	     edid_offset += EDID_R_BURST_NUM,
++	     cnt += EDID_R_BURST_NUM) {
++		it61620_hdmi_reg_write(it61620, TX_REG_DDC_OFFSET, edid_offset);
++		it61620_hdmi_reg_write(it61620, TX_REG_DDC_SEGMENT, block >> 1);
++		it61620_hdmi_reg_write(it61620, TX_REG_DDC_NUM_L, EDID_R_BURST_NUM);
++		it61620_hdmi_reg_write(it61620, TX_REG_DDC_NUM_H,
++				       (EDID_R_BURST_NUM >> 8));
++		it61620_hdmi_reg_write(it61620, TX_REG_DDC_COMMAND, DDC_COMMAND_EDID_RD);
++
++		if (it61620_hdmi_ddc_wait(it61620) < 0) {
++			it61620_hdmi_ddc_abort(it61620);
++			ret = -EIO;
++			break;
++		}
++
++		it61620_hdmi_get_ddc_fifo(it61620, &buf[cnt], EDID_R_BURST_NUM);
++	}
++
++	return ret;
++}
++
++static void it61620_set_capability_from_edid_parse(struct it61620 *it61620,
++						   const struct edid *edid)
++{
++	struct device *dev = it61620->dev;
++
++	it61620->is_hdmi = drm_detect_hdmi_monitor(edid);
++	it61620->en_audio = drm_detect_monitor_audio(edid);
++
++	dev_dbg(dev, "%s mode, monitor %ssupport audio",
++		it61620->is_hdmi ? "HDMI" : "DVI",
++		it61620->en_audio ? "" : "not ");
++}
++
++static int it61620_ddc_xfer_write(struct it61620 *it61620,
++				  u8 *buf, unsigned int num)
++{
++	it61620_hdmi_set_ddc_fifo(it61620, buf, num);
++
++	it61620_hdmi_reg_write(it61620, TX_REG_DDC_COMMAND, DDC_COMMAND_BURST_W);
++	if (it61620_hdmi_ddc_wait(it61620) < 0) {
++		it61620_hdmi_ddc_abort(it61620);
++		return -EIO;
++	}
++
++	return num;
++}
++
++static int it61620_ddc_xfer_read(struct it61620 *it61620, u8 *buf,
++				 unsigned int num)
++{
++	it61620_hdmi_reg_write(it61620, TX_REG_DDC_COMMAND, DDC_COMMAND_BURST_R);
++	if (it61620_hdmi_ddc_wait(it61620) < 0) {
++		it61620_hdmi_ddc_abort(it61620);
++		return -EIO;
++	}
++	it61620_hdmi_get_ddc_fifo(it61620, buf, num);
++	return num;
++}
++
++static int it61620_ddc_xfer(struct it61620 *it61620, struct i2c_msg *msgs)
++{
++	int ret;
++
++	if (msgs->len > DDC_FIFO_DEPTH)
++		return -EINVAL;
++
++	guard(mutex)(&it61620->ddc_lock);
++
++	it61620_hdmi_reg_write(it61620, TX_REG_DDC_COMMAND, DDC_COMMAND_FIFO_CLR);
++
++	it61620_hdmi_reg_write(it61620, TX_REG_DDC_ADDR, msgs->addr << 1);
++	it61620_hdmi_reg_write(it61620, TX_REG_DDC_OFFSET, 0);
++	it61620_hdmi_reg_write(it61620, TX_REG_DDC_NUM_L, msgs->len);
++	it61620_hdmi_reg_write(it61620, TX_REG_DDC_NUM_H, (msgs->len >> 8));
++	it61620_hdmi_reg_write(it61620, TX_REG_DDC_SEGMENT, 0);
++
++	if ((msgs->flags & I2C_M_RD) == 0)
++		ret = it61620_ddc_xfer_write(it61620, msgs->buf, msgs->len);
++	else
++		ret = it61620_ddc_xfer_read(it61620, msgs->buf, msgs->len);
++
++	return ret;
++}
++
++static void it61620_enable_audio(struct it61620 *it61620)
++{
++	struct it61620_audio *config = &it61620->audio_config;
++	struct device *dev = it61620->dev;
++	u8 infoca, audsrc, chksum;
++	unsigned int i;
++
++	it61620_hdmi_reg_set(it61620, TX_REG_AUD_FMT, 0x7F,
++			     (config->word_length << 5) | config->audfmt);
++	if (config->select == SPDIF) {
++		it61620_hdmi_reg_write(it61620, TX_REG_AUD_FIFO1, 0x00);
++		it61620_hdmi_reg_write(it61620, TX_REG_AUD_FIFO2, 0x00);
++		it61620_hdmi_reg_set(it61620, TX_REG_AUD_SPDIF, 0x0F, 0x02);
++		it61620_hdmi_reg_write(it61620, TX_REG_AUD_CTRL, 0X01);
++	} else {
++		it61620_hdmi_reg_write(it61620, TX_REG_AUD_FIFO1, 0x10);
++		it61620_hdmi_reg_write(it61620, TX_REG_AUD_FIFO2, 0x32);
++		it61620_hdmi_reg_write(it61620, TX_REG_AUD_CTRL, 0X00);
++	}
++
++	if (config->type == LPCM)
++		it61620_hdmi_reg_write(it61620, TX_REG_AUD_STS1, 0x00);
++	else
++		it61620_hdmi_reg_write(it61620, TX_REG_AUD_STS1, B_EN_AUD_NLPCM);
++	it61620_hdmi_reg_write(it61620, TX_REG_AUD_STS2, (config->sample_rate));
++	it61620_hdmi_reg_write(it61620, TX_REG_AUD_STS3,
++			       (~(config->sample_rate << 4)) & 0xF0 + 0x0B);
++
++	switch (config->channel_count) {
++	case 2:
++		infoca = 0x00;
++		audsrc = 0x01;
++		break;
++	case 3:
++		infoca = 0x01;
++		audsrc = 0x03;
++		break;
++	case 4:
++		infoca = 0x03;
++		audsrc = 0x03;
++		break;
++	case 5:
++		infoca = 0x07;
++		audsrc = 0x07;
++		break;
++	case 6:
++		infoca = 0x0B;
++		audsrc = 0x07;
++		break;
++	case 7:
++		infoca = 0x0F;
++		audsrc = 0x0f;
++		break;
++	case 8:
++		infoca = 0x13;
++		audsrc = 0x0f;
++		break;
++	default:
++		dev_dbg(dev,
++			"Error: Audio Channel Number Error !!!\n");
++		infoca = 0x00;
++		audsrc = 0x01;
++		break;
++	}
++
++	it61620_hdmi_reg_write(it61620, TX_REG_AUDINFO_DB01,
++			       config->channel_count - 1);
++	it61620_hdmi_reg_write(it61620, TX_REG_AUDINFO_DB02, 0x00);
++
++	it61620_hdmi_reg_write(it61620, TX_REG_AUDINFO_DB03, 0x00);
++	it61620_hdmi_reg_write(it61620, TX_REG_AUDINFO_DB04, infoca);
++	it61620_hdmi_reg_write(it61620, TX_REG_AUDINFO_DB05, 0x00);
++
++	chksum = 0x84;
++	chksum += 0x01;
++	chksum += 0x0A;
++	for (i = TX_REG_AUDINFO_DB01; i <= TX_REG_AUDINFO_DB05; i++)
++		chksum += it61620_hdmi_reg_read(it61620, i);
++
++	it61620_hdmi_reg_write(it61620, TX_REG_AUDINFO_DB06, 0x100 - chksum);
++
++	it61620_hdmi_reg_write(it61620, TX_REG_AUDINFO_DB07, 0x00);
++	it61620_hdmi_reg_write(it61620, TX_REG_AUDINFO_DB08, 0x00);
++	it61620_hdmi_reg_write(it61620, TX_REG_AUDINFO_DB09, 0x00);
++	it61620_hdmi_reg_write(it61620, TX_REG_AUDINFO_DB10, 0x00);
++
++	it61620_hdmi_reg_write(it61620, TX_REG_EN_AUDIO, audsrc);
++
++	it61620_hdmi_audio_set_ncts(it61620);
++
++	it61620_hdmi_enable_audio_infoframe(it61620);
++	it61620_hdmi_reg_set(it61620, TX_REG_LINK_CTRL0, B_EN_AUDIO_MUTE, 0x00);
++	it61620_hdmi_reg_set(it61620, TX_REG_RESET_2_CTRL, 0x01, 0x00);
++}
++
++static void it61620_disable_audio(struct it61620 *it61620)
++{
++	it61620_hdmi_reg_set(it61620, TX_REG_LINK_CTRL0,
++			     B_EN_AUDIO_MUTE, B_EN_AUDIO_MUTE);
++}
++
++static irqreturn_t it61620_int_threaded_handler(int unused, void *data)
++{
++	struct it61620 *it61620 = data;
++	struct device *dev = it61620->dev;
++
++	pm_runtime_get_sync(dev);
++
++	it61620_mipi_irq_handler(it61620);
++	it61620_hdmi_irq(it61620);
++
++	pm_runtime_mark_last_busy(dev);
++	pm_runtime_put_autosuspend(dev);
++
++	return IRQ_HANDLED;
++}
++
++static void it61620_audio_update_connector_status(struct it61620 *it61620)
++{
++	enum drm_connector_status status;
++
++	status = it61620->connector_status;
++	if (it61620->plugged_cb && it61620->codec_dev)
++		it61620->plugged_cb(it61620->codec_dev,
++				    status == connector_status_connected);
++}
++
++static int it61620_audio_update_hw_params(struct it61620 *it61620,
++					  struct hdmi_codec_daifmt *fmt,
++					  struct hdmi_codec_params *hparms)
++{
++	struct it61620_audio *config = &it61620->audio_config;
++
++	hdmi_audio_infoframe_pack(&hparms->cea, &config->infoframe,
++				  sizeof(config->infoframe));
++
++	memcpy(config->channel_status, &hparms->iec.status[0],
++	       AES_IEC958_STATUS_SIZE);
++
++	config->channel_number = hparms->channels;
++
++	switch (hparms->sample_rate) {
++	case 32000:
++		config->sample_rate = SAMPLE_RATE_32K;
++		break;
++	case 44100:
++		config->sample_rate = SAMPLE_RATE_44_1K;
++		break;
++	case 48000:
++		config->sample_rate = SAMPLE_RATE_48K;
++		break;
++	case 88200:
++		config->sample_rate = SAMPLE_RATE_88_2K;
++		break;
++	case 96000:
++		config->sample_rate = SAMPLE_RATE_96K;
++		break;
++	case 176400:
++		config->sample_rate = SAMPLE_RATE_176_4K;
++		break;
++	case 192000:
++		config->sample_rate = SAMPLE_RATE_192K;
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	switch (hparms->sample_width) {
++	case 16:
++		config->sample_width = WORD_LENGTH_16BIT;
++		break;
++	case 24:
++		config->sample_width = WORD_LENGTH_18BIT;
++		break;
++	case 18:
++		config->sample_width = WORD_LENGTH_20BIT;
++		break;
++	case 20:
++		config->sample_width = WORD_LENGTH_24BIT;
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	switch (fmt->fmt) {
++	case HDMI_I2S:
++		config->select = I2S;
++		break;
++	case HDMI_SPDIF:
++		config->select = SPDIF;
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	it61620_hdmi_audio_infoframe_set(it61620, hparms->cea.length);
++	return 0;
++}
++
++static int it61620_hdmi_hw_params(struct device *dev, void *data,
++				  struct hdmi_codec_daifmt *fmt,
++				  struct hdmi_codec_params *hparms)
++{
++	struct it61620 *it61620 = dev_get_drvdata(dev);
++
++	switch (hparms->sample_rate) {
++	case 32000:
++	case 44100:
++	case 48000:
++	case 88200:
++	case 96000:
++	case 176400:
++	case 192000:
++	case 768000:
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	switch (hparms->sample_width) {
++	case 16:
++	case 24:
++	case 18:
++	case 20:
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	switch (fmt->fmt) {
++	case HDMI_I2S:
++	case HDMI_SPDIF:
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	it61620_audio_update_hw_params(it61620, fmt, hparms);
++
++	return 0;
++}
++
++static int it61620_hdmi_audio_startup(struct device *dev, void *data)
++{
++	struct it61620 *it61620 = dev_get_drvdata(dev);
++
++	it61620_enable_audio(it61620);
++
++	return 0;
++}
++
++static void it61620_hdmi_audio_shutdown(struct device *dev, void *data)
++{
++	struct it61620 *it61620 = dev_get_drvdata(dev);
++
++	it61620_disable_audio(it61620);
++}
++
++static int it61620_hdmi_audio_hook_plugged_cb(struct device *dev,
++					      void *data,
++					      hdmi_codec_plugged_cb fn,
++					      struct device *codec_dev)
++{
++	struct it61620 *it61620 = data;
++
++	it61620->plugged_cb = fn;
++	it61620->codec_dev = codec_dev;
++	it61620_audio_update_connector_status(it61620);
++
++	return 0;
++}
++
++static const struct hdmi_codec_ops it61620_audio_codec_ops = {
++	.hw_params = it61620_hdmi_hw_params,
++	.audio_shutdown = it61620_hdmi_audio_shutdown,
++	.audio_startup = it61620_hdmi_audio_startup,
++	.hook_plugged_cb = it61620_hdmi_audio_hook_plugged_cb,
++};
++
++static int it61620_hdmi_register_audio_driver(struct device *dev)
++{
++	struct it61620 *it61620 = dev_get_drvdata(dev);
++	struct hdmi_codec_pdata codec_data = {
++		.ops = &it61620_audio_codec_ops,
++		.max_i2s_channels = 8,
++		.i2s = 1,
++		.data = it61620,
++	};
++
++	it61620->audio_pdev = platform_device_register_data(dev,
++							    HDMI_CODEC_DRV_NAME,
++							    PLATFORM_DEVID_AUTO,
++							    &codec_data,
++							    sizeof(codec_data));
++
++	return PTR_ERR_OR_ZERO(it61620->audio_pdev);
++}
++
++void it61620_hdmi_audio_dev_exit(struct it61620 *it61620)
++{
++	if (it61620->audio_pdev) {
++		platform_device_unregister(it61620->audio_pdev);
++		it61620->audio_pdev = NULL;
++	}
++}
++
++static void it61620_hdcp_work(struct work_struct *work)
++{
++	struct it61620 *it61620 = container_of(work, struct it61620,
++					     hdcp_work.work);
++
++	it61620_hdmi_reset_hdcp(it61620);
++	if (!it61620_hdmi_start_hdcp(it61620) &&
++	    it61620->hdcp_state == CP_GOING) {
++		it61620_hdmi_disable_hdcp(it61620);
++		it61620_start_hdcp_work(it61620);
++	}
++}
++
++static int it61620_hdmi_i2c_xfer(struct i2c_adapter *adap,
++				 struct i2c_msg *msgs, int num)
++{
++	struct it61620 *it61620 = i2c_get_adapdata(adap);
++	struct device *dev = it61620->dev;
++	int i, j;
++
++	for (i = 0 ; i < num ; i++) {
++		dev_dbg(dev,
++			" msg [%d] addr = %X, flag = %X, len = %d\n",
++			i, msgs[i].addr, msgs[i].flags, msgs[i].len);
++
++		if ((msgs[i].flags & I2C_M_RD) == 0)
++			for (j = 0 ; j < msgs[i].len ; j++)
++				dev_dbg(dev,
++					"buf[%d] = %x\n", j, msgs[i].buf[j]);
++
++		num = it61620_ddc_xfer(it61620, &msgs[i]);
++	}
++
++	return num;
++}
++
++static u32 it61620_hdmi_i2c_func(struct i2c_adapter *adapter)
++{
++	return I2C_FUNC_I2C | I2C_FUNC_SMBUS_EMUL;
++}
++
++static const struct i2c_algorithm hdmi_ddc_algorithm = {
++	.master_xfer	= it61620_hdmi_i2c_xfer,
++	.functionality	= it61620_hdmi_i2c_func,
++};
++
++static struct i2c_adapter *it61620_add_ddc_i2c_adapter(struct it61620 *it61620)
++{
++	struct i2c_adapter *adap = &it61620->ddc;
++	struct device *dev = it61620->dev;
++	int ret;
++
++	adap->owner = THIS_MODULE;
++	adap->dev.parent = dev;
++	adap->algo = &hdmi_ddc_algorithm;
++	strscpy(adap->name, "ITE 61620 HDMI", sizeof(adap->name));
++	i2c_set_adapdata(adap, it61620);
++
++	ret = i2c_add_adapter(adap);
++	if (ret) {
++		dev_err(dev,
++			"cannot add %s I2C adapter\n", adap->name);
++		return ERR_PTR(ret);
++	}
++
++	return 0;
++}
++
++static int it61620_regmap_init(struct i2c_client *client,
++			       struct it61620 *it61620)
++{
++	struct device *dev = it61620->dev;
++
++	it61620->it61620_i2c = client;
++
++	it61620->tx_i2c = devm_i2c_new_dummy_device(dev,
++						    client->adapter,
++						    TX_I2C_ADDRESS);
++	if (IS_ERR(it61620->tx_i2c))
++		return PTR_ERR(it61620->tx_i2c);
++
++	it61620->mipirx_i2c = devm_i2c_new_dummy_device(dev,
++							client->adapter,
++							MIPIRX_I2C_ADDRESS);
++	if (IS_ERR(it61620->mipirx_i2c))
++		return PTR_ERR(it61620->mipirx_i2c);
++
++	it61620->cec_i2c = devm_i2c_new_dummy_device(dev,
++						     client->adapter,
++						     CEC_I2C_ADDRESS);
++	if (IS_ERR(it61620->cec_i2c))
++		return PTR_ERR(it61620->cec_i2c);
++
++	it61620->it61620_regmap = devm_regmap_init_i2c(it61620->it61620_i2c,
++						       &it61620_regmap_config);
++	if (IS_ERR(it61620->it61620_regmap))
++		return PTR_ERR(it61620->it61620_regmap);
++
++	it61620->tx_regmap = devm_regmap_init_i2c(it61620->tx_i2c,
++						  &it61620_tx_regmap_config);
++	if (IS_ERR(it61620->tx_regmap))
++		return PTR_ERR(it61620->tx_regmap);
++
++	it61620->mipirx_regmap = devm_regmap_init_i2c(it61620->mipirx_i2c,
++						      &it61620_mipi_regmap_config);
++	if (IS_ERR(it61620->mipirx_regmap))
++		return PTR_ERR(it61620->mipirx_regmap);
++
++	it61620->cec_regmap = devm_regmap_init_i2c(it61620->cec_i2c,
++						   &it61620_cec_regmap_config);
++	if (IS_ERR(it61620->cec_regmap))
++		return PTR_ERR(it61620->cec_regmap);
++
++	return 0;
++}
++
++static int it61620_of_get_dsi_host(struct it61620 *it61620,
++				   struct mipi_dsi_host **host)
++{
++	struct device *dev = it61620->dev;
++	struct device_node *dsi_node;
++	struct device_node *host_node;
++
++	dsi_node = of_graph_get_next_endpoint(dev->of_node, NULL);
++
++	if (!dsi_node)
++		return dev_err_probe(dev, -ENODEV, "DSI NO endpoint at DT\n");
++
++	host_node = of_graph_get_remote_port_parent(dsi_node);
++	of_node_put(dsi_node);
++
++	if (!host_node)
++		return dev_err_probe(dev, -ENODEV, "DSI NO host node at DT\n");
++
++	*host = of_find_mipi_dsi_host_by_node(host_node);
++	of_node_put(host_node);
++
++	if (*host)
++		return 0;
++
++	return dev_err_probe(dev, -EPROBE_DEFER, "failed to find dsi host\n");
++}
++
++static int it61620_attach_dsi(struct it61620 *it61620,
++			      struct mipi_dsi_host *host)
++{
++	struct device *dev = it61620->dev;
++	const struct mipi_dsi_device_info info = {"it61620",
++						  0,
++						  dev->of_node};
++	struct mipi_dsi_device *dsi;
++	int ret = 0;
++
++	dsi = devm_mipi_dsi_device_register_full(dev, host, &info);
++	if (IS_ERR(dsi)) {
++		dev_dbg(dev, "failed to create dsi device\n");
++		ret = PTR_ERR(dsi);
++		return -ENODEV;
++	}
++
++	it61620->dsi = dsi;
++	dsi->lanes = 4;
++	dsi->format = MIPI_DSI_FMT_RGB888;
++	dsi->mode_flags = MIPI_DSI_MODE_VIDEO |
++			  MIPI_DSI_MODE_VIDEO_SYNC_PULSE;
++	ret = devm_mipi_dsi_attach(dev, dsi);
++
++	return ret;
++}
++
++static void it61620_detach_dsi(struct it61620 *it61620)
++{
++	if (!it61620->dsi)
++		return;
++
++	mipi_dsi_detach(it61620->dsi);
++}
++
++static unsigned int it61620_parse_dt(struct it61620 *it61620)
++{
++	struct device *dev = it61620->dev;
++	struct device_node *np = it61620->dev->of_node;
++
++	u32 num_lanes = 0;
++
++	it61620->en_audio = true;
++	it61620->mipirx_config.lane_num = 4;
++
++	if (!dev->of_node)
++		return -EINVAL;
++
++	if (of_property_read_u32(np, "dsi-lanes", &num_lanes))
++		dev_dbg(dev,
++			"cannot read dsi-lanes reg property\n");
++
++	dev_dbg(dev, "num_lanes = %x\n", num_lanes);
++
++	return 0;
++}
++
++static int it61620_init_pdata(struct it61620 *it61620)
++{
++	struct it61620_platform_data *pdata = &it61620->pdata;
++	struct device *dev = it61620->dev;
++
++	pdata->gpiod_reset = devm_gpiod_get(dev, "reset", GPIOD_OUT_HIGH);
++	if (IS_ERR(pdata->gpiod_reset)) {
++		dev_err(dev, "gpiod_reset not found\n");
++		return PTR_ERR(pdata->gpiod_reset);
++	}
++
++	pdata->ivdd = devm_regulator_get(dev, "ivdd");
++	if (IS_ERR(pdata->ivdd)) {
++		dev_err(dev, "ivdd regulator not found");
++		return PTR_ERR(pdata->ivdd);
++	}
++
++	pdata->ovdd1833 = devm_regulator_get(dev, "ovdd1833");
++	if (IS_ERR(pdata->ovdd1833)) {
++		dev_err(dev, "ovdd1833 regulator not found");
++		return PTR_ERR(pdata->ovdd1833);
++	}
++
++	pdata->ovdd33 = devm_regulator_get(dev, "ovdd");
++	if (IS_ERR(pdata->ovdd33)) {
++		dev_err(dev, "ovdd33 regulator not found");
++		return PTR_ERR(pdata->ovdd33);
++	}
++
++	return 0;
++}
++
++static int it61620_pm_bridge_suspend(struct device *dev)
++{
++	struct it61620 *it61620 = dev_get_drvdata(dev);
++
++	it61620_poweroff(it61620);
++
++	return 0;
++}
++
++static int it61620_pm_bridge_resume(struct device *dev)
++{
++	struct it61620 *it61620 = dev_get_drvdata(dev);
++
++	return it61620_poweron(it61620);
++}
++
++static const struct dev_pm_ops it61620_bridge_pm_ops = {
++	SET_SYSTEM_SLEEP_PM_OPS(pm_runtime_force_suspend,
++				pm_runtime_force_resume)
++	SET_RUNTIME_PM_OPS(it61620_pm_bridge_suspend,
++			   it61620_pm_bridge_resume, NULL)
++};
++
++static int it61620_bridge_attach(struct drm_bridge *bridge,
++				 enum drm_bridge_attach_flags flags)
++{
++	struct it61620 *it61620 = bridge_to_it61620(bridge);
++	struct device *dev = it61620->dev;
++	struct drm_device *drm = bridge->dev;
++	int ret;
++
++	it61620->drm = drm;
++
++	if (!drm_core_check_feature(drm, DRIVER_ATOMIC)) {
++		dev_dbg(dev,
++			"it61620 driver only copes with atomic updates\n");
++		return -EOPNOTSUPP;
++	}
++
++	ret = drm_bridge_attach(bridge->encoder, it61620->next_bridge,
++				bridge, DRM_BRIDGE_ATTACH_NO_CONNECTOR);
++	if (ret < 0)
++		return ret;
++
++	if (!(flags & DRM_BRIDGE_ATTACH_NO_CONNECTOR)) {
++		dev_dbg(dev,
++			"DRM_BRIDGE_ATTACH_NO_CONNECTOR must be supplied");
++		return -EINVAL;
++	}
++	return 0;
++}
++
++static void it61620_bridge_detach(struct drm_bridge *bridge)
++{
++}
++
++static enum drm_mode_status it61620_bridge_mode_valid(struct drm_bridge *bridge,
++						      const struct drm_display_info *info,
++						      const struct drm_display_mode *mode)
++{
++	struct it61620 *it61620 = bridge_to_it61620(bridge);
++
++	return it61620_mode_valid(it61620, mode);
++}
++
++static void it61620_bridge_hpd_notify(struct drm_bridge *bridge,
++				      enum drm_connector_status status)
++{
++	struct it61620 *it61620 = bridge_to_it61620(bridge);
++	struct device *dev = it61620->dev;
++	int hpd, ret;
++
++	hpd = (status == connector_status_connected) ? 1 : 0;
++
++	if (it61620->connector_status != status) {
++		dev_dbg(dev, "GPIO hpd status change %d->%d",
++			!hpd, hpd);
++
++		it61620->connector_status = status;
++		it61620_audio_update_connector_status(it61620);
++		if (hpd) {
++			dev_dbg(dev, "HPD_GPIO get to wake up");
++			ret = pm_runtime_get_sync(dev);
++			if (ret < 0)
++				dev_err(dev,
++					"pm_runtime_get_sync error %d", ret);
++		} else {
++			dev_dbg(dev, "HPD_GPIO put to sleep");
++			pm_runtime_put_sync(dev);
++		}
++
++	} else {
++		dev_dbg(dev, "GPIO hpd status NO change %d", hpd);
++	}
++}
++
++static void it61620_bridge_atomic_pre_enable(struct drm_bridge *bridge,
++					     struct drm_bridge_state *old_state)
++{
++	struct it61620 *it61620 = bridge_to_it61620(bridge);
++	struct device *dev = it61620->dev;
++
++	pm_runtime_get_sync(dev);
++}
++
++static void it61620_bridge_atomic_enable(struct drm_bridge *bridge,
++					 struct drm_bridge_state *old_state)
++{
++	struct it61620 *it61620 = bridge_to_it61620(bridge);
++	struct device *dev = it61620->dev;
++	struct drm_atomic_state *state = old_state->base.state;
++	struct drm_crtc_state *crtc_state;
++	struct drm_connector_state *conn_state;
++	struct drm_display_mode *mode;
++	struct drm_connector *connector;
++	int ret;
++
++	connector = drm_atomic_get_new_connector_for_encoder(state,
++							     bridge->encoder);
++
++	if (!connector)
++		return;
++	it61620->connector = *connector;
++
++	conn_state = drm_atomic_get_new_connector_state(state, connector);
++	if (WARN_ON(!conn_state))
++		return;
++
++	crtc_state = drm_atomic_get_new_crtc_state(state, conn_state->crtc);
++	if (WARN_ON(!crtc_state))
++		return;
++
++	mode = &crtc_state->adjusted_mode;
++	if (WARN_ON(!mode))
++		return;
++
++	if (it61620->is_hdmi) {
++		ret = drm_hdmi_avi_infoframe_from_display_mode(&it61620->avi_info,
++							       connector,
++							       mode);
++		if (ret)
++			dev_dbg(dev, "Failed to setup AVI infoframe: %d", ret);
++	}
++
++	it61620_mipi_set_d2v_video_timing(it61620);
++	it61620_hdmi_config_output(it61620);
++}
++
++static void it61620_bridge_atomic_disable(struct drm_bridge *bridge,
++					  struct drm_bridge_state *old_state)
++{
++	struct it61620 *it61620 = bridge_to_it61620(bridge);
++
++	if (it61620->powered) {
++		it61620_stop_hdcp_work(it61620);
++		it61620_hdmi_disable_afe(it61620);
++		it61620_hdmi_powerdown(it61620);
++		it61620->video_state = it61620_VIDEO_OFF;
++	}
++}
++
++static void it61620_bridge_atomic_post_disable(struct drm_bridge *bridge,
++					       struct drm_bridge_state *old_state)
++{
++	struct it61620 *it61620 = bridge_to_it61620(bridge);
++	struct device *dev = it61620->dev;
++
++	pm_runtime_put_sync(dev);
++}
++
++static const struct drm_edid *it61620_bridge_edid_read(struct drm_bridge *bridge,
++						       struct drm_connector *connector)
++{
++	struct it61620 *it61620 = bridge_to_it61620(bridge);
++	struct device *dev = it61620->dev;
++	const struct drm_edid *cached_edid;
++
++	cached_edid = drm_edid_read_custom(connector,
++					   it61620_get_edid_block,
++					   it61620);
++
++	if (!cached_edid) {
++		dev_err(dev, "failed to get edid!");
++		return NULL;
++	}
++
++	it61620_set_capability_from_edid_parse(it61620, drm_edid_raw(cached_edid));
++	return cached_edid;
++}
++
++static void it61620_bridge_mode_set(struct drm_bridge *bridge,
++				    const struct drm_display_mode *mode,
++				    const struct drm_display_mode *adj)
++{
++	struct it61620 *it61620 = bridge_to_it61620(bridge);
++
++	drm_display_mode_to_videomode(adj, &it61620->vm);
++}
++
++static const struct drm_bridge_funcs it61620_bridge_funcs = {
++	.attach = it61620_bridge_attach,
++	.detach = it61620_bridge_detach,
++	.mode_valid = it61620_bridge_mode_valid,
++	.hpd_notify = it61620_bridge_hpd_notify,
++
++	.atomic_pre_enable = it61620_bridge_atomic_pre_enable,
++	.atomic_enable = it61620_bridge_atomic_enable,
++	.atomic_disable = it61620_bridge_atomic_disable,
++	.atomic_post_disable = it61620_bridge_atomic_post_disable,
++	.atomic_duplicate_state = drm_atomic_helper_bridge_duplicate_state,
++	.atomic_destroy_state = drm_atomic_helper_bridge_destroy_state,
++	.atomic_reset = drm_atomic_helper_bridge_reset,
++
++	.edid_read = it61620_bridge_edid_read,
++	.mode_set = it61620_bridge_mode_set,
++};
++
++static int it61620_probe(struct i2c_client *client)
++{
++	struct device *dev = &client->dev;
++	struct device_node *np = dev->of_node;
++	struct device_node *hdmi_node;
++	struct mipi_dsi_host *host;
++	struct it61620 *it61620;
++	int ret = 0;
++
++	it61620 = devm_kzalloc(dev, sizeof(*it61620), GFP_KERNEL);
++	if (!it61620)
++		return -ENOMEM;
++
++	it61620->dev = dev;
++	it61620->chip_info = of_device_get_match_data(dev);
++
++	ret = it61620_of_get_dsi_host(it61620, &host);
++	if (ret < 0)
++		return ret;
++
++	ret = it61620_regmap_init(client, it61620);
++	if (ret != 0)
++		return ret;
++
++	i2c_set_clientdata(client, it61620);
++
++	ret = it61620_init_pdata(it61620);
++	if (ret) {
++		dev_err(dev, "Failed to initialize pdata: %d", ret);
++		return ret;
++	}
++
++	it61620_config_default(it61620);
++	it61620_parse_dt(it61620);
++	if (!client->irq) {
++		dev_err(dev, "Failed to get INTP IRQ\n");
++		return -ENODEV;
++	}
++
++	ret = devm_request_threaded_irq(&client->dev, client->irq, NULL,
++					it61620_int_threaded_handler,
++					IRQF_TRIGGER_LOW | IRQF_ONESHOT |
++					IRQF_NO_AUTOEN,
++					"it61620-intp", it61620);
++	if (ret) {
++		dev_err(dev, "Failed to request INTP threaded IRQ: %d\n", ret);
++		return ret;
++	}
++
++	INIT_DELAYED_WORK(&it61620->hdcp_work, it61620_hdcp_work);
++
++	mutex_init(&it61620->ddc_lock);
++	init_waitqueue_head(&it61620->wq);
++
++	it61620_add_ddc_i2c_adapter(it61620);
++
++	/*register audio*/
++	if (it61620->en_audio) {
++		ret = it61620_hdmi_register_audio_driver(dev);
++		if (ret < 0) {
++			dev_err(dev,
++				"Failed to register audio driver: %d", ret);
++			return ret;
++		}
++	}
++
++	pm_runtime_enable(dev);
++	pm_runtime_set_autosuspend_delay(dev, 1000);
++	pm_runtime_use_autosuspend(dev);
++
++	it61620->bridge.funcs = &it61620_bridge_funcs;
++	it61620->bridge.of_node = np;
++	it61620->bridge.ops = DRM_BRIDGE_OP_EDID | DRM_BRIDGE_OP_MODES;
++	it61620->bridge.type = DRM_MODE_CONNECTOR_HDMIA;
++
++	hdmi_node = of_graph_get_remote_node(dev->of_node, 1, -1);
++	if (!hdmi_node) {
++		dev_err(it61620->dev, "can't find hdmi_node");
++		return -ENODEV;
++	}
++
++	it61620->next_bridge = of_drm_find_bridge(hdmi_node);
++	of_node_put(hdmi_node);
++
++	if (!it61620->next_bridge)
++		return -EPROBE_DEFER;
++
++	drm_bridge_add(&it61620->bridge);
++
++	ret = it61620_attach_dsi(it61620, host);
++	if (ret < 0) {
++		dev_err(it61620->dev, "failed to attach to DSI host: %d", ret);
++		return ret;
++	}
++
++	return 0;
++}
++
++static void it61620_remove(struct i2c_client *client)
++{
++	struct it61620 *it61620 = i2c_get_clientdata(client);
++	struct device *dev = it61620->dev;
++
++	disable_irq(client->irq);
++
++	pm_runtime_disable(dev);
++	it61620_hdmi_audio_dev_exit(it61620);
++	it61620_detach_dsi(it61620);
++	drm_bridge_remove(&it61620->bridge);
++
++	mutex_destroy(&it61620->ddc_lock);
++}
++
++static const struct it6162_chip_info it61620_chip_info = {
++	.vid = 0x4954,
++	.pid = 0x6152,
++};
++
++static const struct of_device_id it61620_dt_ids[] = {
++	{ .compatible = "ite,it61620", .data = &it61620_chip_info},
++	{ }
++};
++MODULE_DEVICE_TABLE(of, it61620_dt_ids);
++
++static const struct i2c_device_id it61620_i2c_ids[] = {
++	{ "it61620", 0 },
++	{ },
++};
++MODULE_DEVICE_TABLE(i2c, it61620_i2c_ids);
++
++static struct i2c_driver it61620_driver = {
++	.driver = {
++		.name = "it61620",
++		.of_match_table = it61620_dt_ids,
++		.pm = &it61620_bridge_pm_ops,
++	},
++	.probe = it61620_probe,
++	.remove = it61620_remove,
++	.id_table = it61620_i2c_ids,
++};
++
++module_i2c_driver(it61620_driver);
++
++MODULE_AUTHOR("Pet Weng <pet.weng@ite.com.tw>");
++MODULE_AUTHOR("Hermes Wu <Hermes.Wu@ite.com.tw>");
++MODULE_DESCRIPTION("it61620 mipi to hdmi driver");
++MODULE_LICENSE("GPL v2");
 diff --git a/drivers/gpu/drm/mediatek/Makefile b/drivers/gpu/drm/mediatek/Makefile
 index 83a3136895c4b107f348a5b8f182897d604a56b7..966dcf773f1c93941ba25f16e50afa532ea92519 100644
 --- a/drivers/gpu/drm/mediatek/Makefile
@@ -21057,7 +24185,7 @@ index 9fbbbbd52851b0f7eb495e907fe09ed5c21d0c68..3fa6e324bfecd6666308cd1b9290c79f
  };
  MODULE_DEVICE_TABLE(of, mtk_dp_of_match);
 diff --git a/drivers/gpu/drm/mediatek/mtk_dp_common.h b/drivers/gpu/drm/mediatek/mtk_dp_common.h
-index a296b294a88eca5373a2510abcdf07ab375c4ee6..140277b190f1ea7a4ba0c9b270bf67d116890f16 100644
+index a296b294a88eca5373a2510abcdf07ab375c4ee6..841595967ee691337c97a6d2a4020320449d66a6 100644
 --- a/drivers/gpu/drm/mediatek/mtk_dp_common.h
 +++ b/drivers/gpu/drm/mediatek/mtk_dp_common.h
 @@ -18,9 +18,6 @@
@@ -21070,29 +24198,39 @@ index a296b294a88eca5373a2510abcdf07ab375c4ee6..140277b190f1ea7a4ba0c9b270bf67d1
  #define SUPPORT_YUV422		1
  
  #define DP_ENCODER_NUM		2
-@@ -256,21 +253,6 @@ struct mtk_dp_efuse_fmt {
- 	unsigned short default_val;
+@@ -78,6 +75,8 @@
+ #define WRITE_4BYTE_MASK(mtk_dp, addr, val, mask) \
+ 	mtk_dp_mask_v2(mtk_dp, addr, val, mask)
+ 
++struct mtk_dp;
++
+ enum audio_m_div {
+ 	DP_AUDIO_M_DIV_M,
+ 	DP_AUDIO_M_DIV_M2,
+@@ -269,6 +268,22 @@ struct mtk_dp_data {
+ 	u16 max_vdisplay;
+ 	u16 min_hdisplay;
+ 	u16 min_vdisplay;
++	void (*mac_power)(struct mtk_dp *mtk_dp);
++	void (*disable_mac_power)(struct mtk_dp *mtk_dp);
++	u32 patch_phy_settings[6];
++	u32 txfir_settings[6];
++	void (*set_param)(struct mtk_dp *mtk_dp);
++	u32 phyd_dig_glb_offset;
++	u32 phyd_dig_lan_offset[4];
++	u32 phyd_ana_glb_offset;
++	u32 phyd_ana_lan_offset[4];
++	u8 max_link_rate;
++	u8 max_lane_count;
++	u8 encoder_num;
++	bool need_phy_lane_enable_set;
++	bool need_phy_flip_set;
++	u32 phy_4lane_ctrl_bit;
++	u32 phy_flip_ctrl_bit;
  };
  
--struct mtk_dp_data {
--	int bridge_type;
--	unsigned int smc_cmd;
--	const struct mtk_dp_efuse_fmt *efuse_fmt;
--	bool audio_supported;
--	bool audio_pkt_in_hblank_area;
--	u16 audio_m_div2_bit;
--	bool dsc_support;
--	bool mst_support;
--	u16 max_hdisplay;
--	u16 max_vdisplay;
--	u16 min_hdisplay;
--	u16 min_vdisplay;
--};
--
  struct dp_timing_parameter {
- 	u16 htt;
- 	u16 hde;
-@@ -339,6 +321,7 @@ struct dp_training_info {
+@@ -339,6 +354,7 @@ struct dp_training_info {
  	u8 dpcd_rev;
  	u8 sink_count;
  	u8 check_cap_times;
@@ -21100,11 +24238,11 @@ index a296b294a88eca5373a2510abcdf07ab375c4ee6..140277b190f1ea7a4ba0c9b270bf67d1
  };
  
  struct dp_phy_parameter {
-@@ -370,6 +353,109 @@ struct mtk_dp_bridge {
+@@ -370,6 +386,109 @@ struct mtk_dp_bridge {
  	enum dp_encoder_id encoder_id;
  };
  
-+struct dts_port_data {
++struct mtk_dp_typec_port_data {
 +	bool dp_connected;
 +	struct typec_mux_dev *typec_mux;
 +	struct mtk_dp *mtk_dp;
@@ -21116,7 +24254,7 @@ index a296b294a88eca5373a2510abcdf07ab375c4ee6..140277b190f1ea7a4ba0c9b270bf67d1
 +	struct typec_switch_dev *sw;
 +	struct typec_mux_dev *mux;
 +	struct mutex lock;
-+	struct dts_port_data *typec_ports;
++	struct mtk_dp_typec_port_data *typec_ports;
 +	int num_typec_switches;
 +};
 +
@@ -21210,7 +24348,7 @@ index a296b294a88eca5373a2510abcdf07ab375c4ee6..140277b190f1ea7a4ba0c9b270bf67d1
  struct mtk_dp {
  	struct device *dev;
  	struct drm_device *drm_dev;
-@@ -419,6 +505,7 @@ struct mtk_dp {
+@@ -419,6 +538,7 @@ struct mtk_dp {
  	struct dp_phy_parameter phy_params[DP_PHY_LEVEL_COUNT];
  
  	bool swap_enable;
@@ -21218,43 +24356,15 @@ index a296b294a88eca5373a2510abcdf07ab375c4ee6..140277b190f1ea7a4ba0c9b270bf67d1
  	bool need_debounce;
  
  	bool init_property;
-@@ -442,5 +529,38 @@ struct mtk_dp {
+@@ -442,5 +562,10 @@ struct mtk_dp {
  	struct device *vdisp_ao_dev;
  	/* protect the plugged_cb as it's used in both bridge ops and audio */
  	struct mutex update_plugged_status_lock;
 +
-+	struct dp_typec_selector *dts;
++	struct dp_typec_selector *d_t_selector;
 +	bool enable_2c_feature;
 +	struct completion mux_completion;
 +	struct dp_cts_auto_req cts_req;
-+};
-+
-+struct mtk_dp_data {
-+	int bridge_type;
-+	unsigned int smc_cmd;
-+	const struct mtk_dp_efuse_fmt *efuse_fmt;
-+	bool audio_supported;
-+	bool audio_pkt_in_hblank_area;
-+	u16 audio_m_div2_bit;
-+	bool dsc_support;
-+	bool mst_support;
-+	u16 max_hdisplay;
-+	u16 max_vdisplay;
-+	u16 min_hdisplay;
-+	u16 min_vdisplay;
-+	void (*mac_power)(struct mtk_dp *mtk_dp);
-+	void (*set_param)(struct mtk_dp *mtk_dp);
-+	u32 phyd_dig_glb_offset;
-+	u32 phyd_dig_lan_offset[4];
-+	u32 phyd_ana_glb_offset;
-+	u32 phyd_ana_lan_offset[4];
-+	u8 max_link_rate;
-+	u8 max_lane_count;
-+	u8 encoder_num;
-+	bool need_phy_lane_enable_set;
-+	bool need_phy_flip_set;
-+	u32 phy_4lane_ctrl_bit;
-+	u32 phy_flip_ctrl_bit;
  };
  #endif
 diff --git a/drivers/gpu/drm/mediatek/mtk_dp_dsc.c b/drivers/gpu/drm/mediatek/mtk_dp_dsc.c
@@ -21271,7 +24381,7 @@ index 4284549490fb5b88c93e9d1e9cc8cd23c4f1f076..af50d0a26573debcf4d87952edae7434
  };
  
 diff --git a/drivers/gpu/drm/mediatek/mtk_dp_reg_v2.h b/drivers/gpu/drm/mediatek/mtk_dp_reg_v2.h
-index 0e2cd2210501e2b25625828b198c6cf1b93df9fe..4bf7ca70cd3187bf76b1785eec00281e7e821cf8 100644
+index 0e2cd2210501e2b25625828b198c6cf1b93df9fe..08bc369fd993b1f722b762038ffb3b7c7a4a6711 100644
 --- a/drivers/gpu/drm/mediatek/mtk_dp_reg_v2.h
 +++ b/drivers/gpu/drm/mediatek/mtk_dp_reg_v2.h
 @@ -7,7 +7,7 @@
@@ -21301,10 +24411,10 @@ index 0e2cd2210501e2b25625828b198c6cf1b93df9fe..4bf7ca70cd3187bf76b1785eec00281e
  #define DP_PHY_DIG_SW_RST									0x38
  #define DP_PHY_DIG_BIT_RATE									0x3c
  #define DP_PHY_DIG_TX_CTL_0									0x44
-+#define dp_phy_dig_glb_da_reg_00					0xa0
-+#define dp_phy_dig_glb_da_reg_01					0xa4
-+#define dp_phy_dig_glb_da_reg_02					0xa8
-+#define dp_phy_dig_glb_da_reg_03					0xac
++#define DP_PHY_DIG_GLB_DA_REG_00					0xa0
++#define DP_PHY_DIG_GLB_DA_REG_01					0xa4
++#define DP_PHY_DIG_GLB_DA_REG_02					0xa8
++#define DP_PHY_DIG_GLB_DA_REG_03					0xac
  
  #define TPLL_SSC_EN_FLDMASK									0x8
  #define TPLL_SSC_EN_FLDMASK_POS								3
@@ -21318,8 +24428,8 @@ index 0e2cd2210501e2b25625828b198c6cf1b93df9fe..4bf7ca70cd3187bf76b1785eec00281e
 -#define DRIVING_PARAM_6										0x44
 -#define DRIVING_PARAM_7										0x48
 -#define DRIVING_PARAM_8										0x4c
-+#define dp_phy_lane_tx_2						0x0c
-+#define dp_phy_glb_force_ctrl_00					0x30
++#define DP_PHY_LANE_TX_2						0x0c
++#define DP_PHY_GLB_FORCE_CTRL_00					0x30
 +#define DRIVING_PARAM_3							0x38
 +#define DRIVING_PARAM_4						        0x3c
 +#define DRIVING_PARAM_5							0x40
@@ -21345,7 +24455,7 @@ index 0e2cd2210501e2b25625828b198c6cf1b93df9fe..4bf7ca70cd3187bf76b1785eec00281e
  #define REG_360C_AUX_TX_P0									(0x360c)
  #define REG_3614_AUX_TX_P0									(0x3614)
 diff --git a/drivers/gpu/drm/mediatek/mtk_dp_v2.c b/drivers/gpu/drm/mediatek/mtk_dp_v2.c
-index 24289971c7b72e39387f7a83bababc6cf8cdcc48..afcb36483159dd0908a3391d374d10191516eb8d 100644
+index 004f45509cd726e1e6c0b564d0552ad7a7413367..a9ad25b40a7a70f4d32010591d0945ea3273305f 100644
 --- a/drivers/gpu/drm/mediatek/mtk_dp_v2.c
 +++ b/drivers/gpu/drm/mediatek/mtk_dp_v2.c
 @@ -56,9 +56,14 @@
@@ -21363,11 +24473,10 @@ index 24289971c7b72e39387f7a83bababc6cf8cdcc48..afcb36483159dd0908a3391d374d1019
  
  #include <sound/hdmi-codec.h>
  #include <uapi/drm/mediatek_drm.h>
-@@ -101,6 +106,11 @@
+@@ -101,6 +106,10 @@
  #define MAX_PHYD_REG_RANG			0x1500
  #define MST_HPD_EVENT_HANDLE_TIMES		200
  #define MTK_DP_SIP_ATF_VIDEO_UNMUTE		BIT(5)
-+#define MTK_DP_1000_MSECS			1000
 +#define ENABLE_DP_SSC_OUTPUT	0
 +#if (DP_AUTO_TEST_ENABLE == 0x1)
 +extern bool mtk_dp_phy_auto_test(struct dp_cts_auto_req *mtk_dp_test, u8 ubDPCD_201);
@@ -21375,14 +24484,14 @@ index 24289971c7b72e39387f7a83bababc6cf8cdcc48..afcb36483159dd0908a3391d374d1019
  
  enum aux_reply_cmd {
  	AUX_REPLY_ACK = 0x00,
-@@ -2851,22 +2861,30 @@ static void mtk_dp_phy_set_rate_param_v2(struct mtk_dp *mtk_dp, enum dp_link_rat
+@@ -2851,22 +2860,30 @@ static void mtk_dp_phy_set_rate_param_v2(struct mtk_dp *mtk_dp, enum dp_link_rat
  	switch (val) {
  	case DP_LINK_RATE_RBR:
  		/* Set gear : 0x0 : RBR, 0x1 : HBR, 0x2 : HBR2, 0x3 : HBR3 */
 -		PHY_WRITE_4BYTE(mtk_dp, PHYD_DIG_GLB_OFFSET + DP_PHY_DIG_BIT_RATE, 0x0);
 +		PHY_WRITE_4BYTE(mtk_dp,
 +				(mtk_dp->data->phyd_dig_glb_offset
-+				 + DP_PHY_DIG_BIT_RATE), 0x0);
++				+ DP_PHY_DIG_BIT_RATE), 0x0);
  		break;
  
  	case DP_LINK_RATE_HBR:
@@ -21390,7 +24499,7 @@ index 24289971c7b72e39387f7a83bababc6cf8cdcc48..afcb36483159dd0908a3391d374d1019
 -		PHY_WRITE_4BYTE(mtk_dp, PHYD_DIG_GLB_OFFSET + DP_PHY_DIG_BIT_RATE, 0x1);
 +		PHY_WRITE_4BYTE(mtk_dp,
 +				(mtk_dp->data->phyd_dig_glb_offset
-+				 + DP_PHY_DIG_BIT_RATE), 0x1);
++				+ DP_PHY_DIG_BIT_RATE), 0x1);
  		break;
  
  	case DP_LINK_RATE_HBR2:
@@ -21398,7 +24507,7 @@ index 24289971c7b72e39387f7a83bababc6cf8cdcc48..afcb36483159dd0908a3391d374d1019
 -		PHY_WRITE_4BYTE(mtk_dp, PHYD_DIG_GLB_OFFSET + DP_PHY_DIG_BIT_RATE, 0x2);
 +		PHY_WRITE_4BYTE(mtk_dp,
 +				(mtk_dp->data->phyd_dig_glb_offset
-+				 + DP_PHY_DIG_BIT_RATE), 0x2);
++				+ DP_PHY_DIG_BIT_RATE), 0x2);
  		break;
  
  	case DP_LINK_RATE_HBR3:
@@ -21406,29 +24515,28 @@ index 24289971c7b72e39387f7a83bababc6cf8cdcc48..afcb36483159dd0908a3391d374d1019
 -		PHY_WRITE_4BYTE(mtk_dp, PHYD_DIG_GLB_OFFSET + DP_PHY_DIG_BIT_RATE, 0x3);
 +		PHY_WRITE_4BYTE(mtk_dp,
 +				(mtk_dp->data->phyd_dig_glb_offset
-+				 + DP_PHY_DIG_BIT_RATE), 0x3);
++				+ DP_PHY_DIG_BIT_RATE), 0x3);
  		break;
  	default:
  		break;
-@@ -2885,38 +2903,44 @@ static void mtk_dp_phy_set_lane_pwr_v2(struct mtk_dp *mtk_dp, enum dp_lane_count
+@@ -2885,38 +2902,44 @@ static void mtk_dp_phy_set_lane_pwr_v2(struct mtk_dp *mtk_dp, enum dp_lane_count
  
  	do {
  		power_bmp |= BIT(power_indx);
 -		PHY_WRITE_BYTE_MASK(mtk_dp, PHYD_DIG_GLB_OFFSET + DP_PHY_DIG_TX_CTL_0,
--				    power_bmp << TX_LN_EN_FLDMASK_POS,
++		PHY_WRITE_BYTE_MASK(mtk_dp,
++				    (mtk_dp->data->phyd_dig_glb_offset
++				    + DP_PHY_DIG_TX_CTL_0),
+ 				    power_bmp << TX_LN_EN_FLDMASK_POS,
 -				TX_LN_EN_FLDMASK);
 -		drm_dbg_kms(mtk_dp->drm_dev, "[DPTX] set lane pwr %x\n", (PHY_READ_BYTE(mtk_dp, PHYD_DIG_GLB_OFFSET
 -						+ DP_PHY_DIG_TX_CTL_0) &
 -					TX_LN_EN_FLDMASK) >> TX_LN_EN_FLDMASK_POS);
-+		PHY_WRITE_BYTE_MASK(mtk_dp,
-+				    (mtk_dp->data->phyd_dig_glb_offset
-+				     + DP_PHY_DIG_TX_CTL_0),
-+				     power_bmp << TX_LN_EN_FLDMASK_POS,
-+				     TX_LN_EN_FLDMASK);
++				    TX_LN_EN_FLDMASK);
 +		drm_dbg_kms(mtk_dp->drm_dev, "[DPTX] set lane pwr %x\n",
 +			    (PHY_READ_BYTE(mtk_dp, mtk_dp->data->phyd_dig_glb_offset
-+			     + DP_PHY_DIG_TX_CTL_0) &
-+			     TX_LN_EN_FLDMASK) >> TX_LN_EN_FLDMASK_POS);
++			    + DP_PHY_DIG_TX_CTL_0) &
++			    TX_LN_EN_FLDMASK) >> TX_LN_EN_FLDMASK_POS);
  	} while (--power_indx >= 0);
  }
  
@@ -21438,27 +24546,25 @@ index 24289971c7b72e39387f7a83bababc6cf8cdcc48..afcb36483159dd0908a3391d374d1019
 -				      + DP_PHY_DIG_TX_CTL_0) &
 -				      TX_LN_EN_FLDMASK) >> TX_LN_EN_FLDMASK_POS;
 +	u8 power_bmp = (PHY_READ_BYTE(mtk_dp, mtk_dp->data->phyd_dig_glb_offset
-+			 + DP_PHY_DIG_TX_CTL_0) &
-+			 TX_LN_EN_FLDMASK) >> TX_LN_EN_FLDMASK_POS;
++			+ DP_PHY_DIG_TX_CTL_0) &
++			TX_LN_EN_FLDMASK) >> TX_LN_EN_FLDMASK_POS;
  
  	do {
  		power_bmp >>= 1;
 -		PHY_WRITE_BYTE_MASK(mtk_dp, PHYD_DIG_GLB_OFFSET + DP_PHY_DIG_TX_CTL_0,
--				    power_bmp << TX_LN_EN_FLDMASK_POS,
--				    TX_LN_EN_FLDMASK);
 +		PHY_WRITE_BYTE_MASK(mtk_dp,
 +				    (mtk_dp->data->phyd_dig_glb_offset
-+				     + DP_PHY_DIG_TX_CTL_0),
-+				     power_bmp << TX_LN_EN_FLDMASK_POS,
-+				     TX_LN_EN_FLDMASK);
++				    + DP_PHY_DIG_TX_CTL_0),
+ 				    power_bmp << TX_LN_EN_FLDMASK_POS,
+ 				    TX_LN_EN_FLDMASK);
  		drm_dbg_kms(mtk_dp->drm_dev,
 -			    "[DPTX] clear lane pwr %x\n", (PHY_READ_BYTE(mtk_dp, PHYD_DIG_GLB_OFFSET
 -							     + DP_PHY_DIG_TX_CTL_0) &
 -							     TX_LN_EN_FLDMASK) >> TX_LN_EN_FLDMASK_POS);
 +			    "[DPTX] clear lane pwr %x\n",
 +			    (PHY_READ_BYTE(mtk_dp, mtk_dp->data->phyd_dig_glb_offset
-+			     + DP_PHY_DIG_TX_CTL_0) &
-+			     TX_LN_EN_FLDMASK) >> TX_LN_EN_FLDMASK_POS);
++			    + DP_PHY_DIG_TX_CTL_0) &
++			    TX_LN_EN_FLDMASK) >> TX_LN_EN_FLDMASK_POS);
  	} while (power_bmp > 0);
  }
  
@@ -21472,7 +24578,7 @@ index 24289971c7b72e39387f7a83bababc6cf8cdcc48..afcb36483159dd0908a3391d374d1019
  			    0x3 << FORCE_PWR_STATE_VAL_FLDMASK_POS, FORCE_PWR_STATE_VAL_FLDMASK);
  
  	drm_dbg_kms(mtk_dp->drm_dev, "[DPTX] DP PHYD power on\n");
-@@ -2926,14 +2950,15 @@ static void mtk_dp_phy_power_down_v2(struct mtk_dp *mtk_dp)
+@@ -2926,14 +2949,15 @@ static void mtk_dp_phy_power_down_v2(struct mtk_dp *mtk_dp)
  {
  	mtk_dp_phy_clear_lane_pwr_v2(mtk_dp);
  
@@ -21492,7 +24598,7 @@ index 24289971c7b72e39387f7a83bababc6cf8cdcc48..afcb36483159dd0908a3391d374d1019
  			    BIT(1) | BIT(3), BIT(1) | BIT(3));
  
  	drm_dbg_kms(mtk_dp->drm_dev, "[DPTX] DP PHYD power down\n");
-@@ -2941,65 +2966,41 @@ static void mtk_dp_phy_power_down_v2(struct mtk_dp *mtk_dp)
+@@ -2941,64 +2965,40 @@ static void mtk_dp_phy_power_down_v2(struct mtk_dp *mtk_dp)
  
  static void mtk_dp_phy_reset_swing_pre_v2(struct mtk_dp *mtk_dp)
  {
@@ -21574,20 +24680,18 @@ index 24289971c7b72e39387f7a83bababc6cf8cdcc48..afcb36483159dd0908a3391d374d1019
 -				    0x1 << TPLL_SSC_EN_FLDMASK_POS, TPLL_SSC_EN_FLDMASK);
 +		PHY_WRITE_BYTE_MASK(mtk_dp,
 +				    (mtk_dp->data->phyd_dig_glb_offset
-+				     + DP_PHY_DIG_PLL_CTL_1),
-+				     0x1 << TPLL_SSC_EN_FLDMASK_POS,
-+				     TPLL_SSC_EN_FLDMASK);
++				    + DP_PHY_DIG_PLL_CTL_1),
++				    0x1 << TPLL_SSC_EN_FLDMASK_POS,
++				    TPLL_SSC_EN_FLDMASK);
  	else
 -		PHY_WRITE_BYTE_MASK(mtk_dp, PHYD_DIG_GLB_OFFSET + DP_PHY_DIG_PLL_CTL_1,
--				    0x0, TPLL_SSC_EN_FLDMASK);
 +		PHY_WRITE_BYTE_MASK(mtk_dp,
 +				    (mtk_dp->data->phyd_dig_glb_offset
-+				     + DP_PHY_DIG_PLL_CTL_1),
-+				     0x0, TPLL_SSC_EN_FLDMASK);
++				    + DP_PHY_DIG_PLL_CTL_1),
+ 				    0x0, TPLL_SSC_EN_FLDMASK);
  
  	drm_dbg_kms(mtk_dp->drm_dev, "[DPTX] Phy SSC enable = %d\n", enable);
- }
-@@ -3031,11 +3032,13 @@ static void mtk_dp_phy_4lane_enable_v2(struct mtk_dp *mtk_dp)
+@@ -3031,11 +3031,12 @@ static void mtk_dp_phy_4lane_enable_v2(struct mtk_dp *mtk_dp)
  	value = (BIT(12) | BIT(13));
  
  	tmp = readl(mtk_dp->phy_mux_regs);
@@ -21597,14 +24701,13 @@ index 24289971c7b72e39387f7a83bababc6cf8cdcc48..afcb36483159dd0908a3391d374d1019
  
 -	for (i = 1; i <= lane_count; i++)
 -		PHY_WRITE_2BYTE_MASK(mtk_dp, 0x0100 * i, value, (BIT(12) | BIT(13)));
-+	if (mtk_dp->data->need_phy_lane_enable_set) {
++	if (mtk_dp->data->need_phy_lane_enable_set)
 +		for (i = 1; i <= lane_count; i++)
 +			PHY_WRITE_2BYTE_MASK(mtk_dp, 0x0100 * i, value, (BIT(12) | BIT(13)));
-+	}
  }
  
  static void mtk_dp_phy_4lane_disable_v2(struct mtk_dp *mtk_dp)
-@@ -3049,53 +3052,55 @@ static void mtk_dp_phy_4lane_disable_v2(struct mtk_dp *mtk_dp)
+@@ -3049,53 +3050,54 @@ static void mtk_dp_phy_4lane_disable_v2(struct mtk_dp *mtk_dp)
  	value = BIT(12);
  
  	tmp = readl(mtk_dp->phy_mux_regs);
@@ -21614,10 +24717,9 @@ index 24289971c7b72e39387f7a83bababc6cf8cdcc48..afcb36483159dd0908a3391d374d1019
  
 -	for (i = 1; i <= lane_count; i++)
 -		PHY_WRITE_2BYTE_MASK(mtk_dp, 0x0100 * i, value, (BIT(12) | BIT(13)));
-+	if (mtk_dp->data->need_phy_lane_enable_set) {
++	if (mtk_dp->data->need_phy_lane_enable_set)
 +		for (i = 1; i <= lane_count; i++)
 +			PHY_WRITE_2BYTE_MASK(mtk_dp, 0x0100 * i, value, (BIT(12) | BIT(13)));
-+	}
  }
  
 -static void mtk_dp_phy_flip_enable_v2(struct mtk_dp *mtk_dp)
@@ -21681,7 +24783,7 @@ index 24289971c7b72e39387f7a83bababc6cf8cdcc48..afcb36483159dd0908a3391d374d1019
  	/* 4-1. PLL */
  	PHY_WRITE_BYTE_MASK(mtk_dp, 0x0614, BIT(0), BIT(0));
  	/* 4-2. Unused AUX TX High-Z */
-@@ -3103,12 +3108,73 @@ static void mtk_dp_phy_set_param_v2(struct mtk_dp *mtk_dp)
+@@ -3103,12 +3105,79 @@ static void mtk_dp_phy_set_param_v2(struct mtk_dp *mtk_dp)
  
  	/* 4-4. Swing and Pre-emphasis Optimization */
  	for (i = 0; i < 4; i++) {
@@ -21718,50 +24820,56 @@ index 24289971c7b72e39387f7a83bababc6cf8cdcc48..afcb36483159dd0908a3391d374d1019
 +
 +	PHY_WRITE_4BYTE(mtk_dp,
 +			mtk_dp->data->phyd_ana_glb_offset
-+			+ dp_phy_glb_force_ctrl_00, 0x00000021);
++			+ DP_PHY_GLB_FORCE_CTRL_00,
++			mtk_dp->data->patch_phy_settings[0]);
 +
 +	for (i = 0; i < 4; i++) {
 +		PHY_WRITE_4BYTE(mtk_dp,
 +				mtk_dp->data->phyd_ana_lan_offset[i]
-+				+ dp_phy_lane_tx_2, 0x0001000e);
++				+ DP_PHY_LANE_TX_2,
++				mtk_dp->data->patch_phy_settings[1]);
 +	}
 +
 +	PHY_WRITE_4BYTE(mtk_dp,
 +			mtk_dp->data->phyd_dig_glb_offset
-+			 + dp_phy_dig_glb_da_reg_00, 0x020fff00);
++			 + DP_PHY_DIG_GLB_DA_REG_00,
++			 mtk_dp->data->patch_phy_settings[2]);
 +	PHY_WRITE_4BYTE(mtk_dp,
 +			mtk_dp->data->phyd_dig_glb_offset
-+			+ dp_phy_dig_glb_da_reg_01, 0x00020202);
++			+ DP_PHY_DIG_GLB_DA_REG_01,
++			mtk_dp->data->patch_phy_settings[3]);
 +	PHY_WRITE_4BYTE(mtk_dp,
 +			mtk_dp->data->phyd_dig_glb_offset
-+			+ dp_phy_dig_glb_da_reg_02, 0x00a5231a);
++			+ DP_PHY_DIG_GLB_DA_REG_02,
++			mtk_dp->data->patch_phy_settings[4]);
 +	PHY_WRITE_4BYTE(mtk_dp,
 +			mtk_dp->data->phyd_dig_glb_offset
-+			+ dp_phy_dig_glb_da_reg_03, 0xdde70305);
++			+ DP_PHY_DIG_GLB_DA_REG_03,
++			mtk_dp->data->patch_phy_settings[5]);
 +
 +	for (i = 0; i < 4; i++) {
 +		PHY_WRITE_4BYTE(mtk_dp,
 +				mtk_dp->data->phyd_dig_lan_offset[i] + DRIVING_PARAM_3,
-+				0x20181410);
++				mtk_dp->data->txfir_settings[0]);
 +		PHY_WRITE_4BYTE(mtk_dp,
 +				mtk_dp->data->phyd_dig_lan_offset[i] + DRIVING_PARAM_4,
-+				0x20241e18);
++				mtk_dp->data->txfir_settings[1]);
 +		PHY_WRITE_4BYTE(mtk_dp,
 +				mtk_dp->data->phyd_dig_lan_offset[i] + DRIVING_PARAM_5,
-+				0x3028);
++				mtk_dp->data->txfir_settings[2]);
 +		PHY_WRITE_4BYTE(mtk_dp,
 +				mtk_dp->data->phyd_dig_lan_offset[i] + DRIVING_PARAM_6,
-+				0x10080400);
++				mtk_dp->data->txfir_settings[3]);
 +		PHY_WRITE_4BYTE(mtk_dp,
 +				mtk_dp->data->phyd_dig_lan_offset[i] + DRIVING_PARAM_7,
-+				0xc0600);
++				mtk_dp->data->txfir_settings[4]);
 +		PHY_WRITE_4BYTE(mtk_dp,
 +				mtk_dp->data->phyd_dig_lan_offset[i] + DRIVING_PARAM_8,
-+				0x8);
++				mtk_dp->data->txfir_settings[5]);
  	}
  }
  
-@@ -3120,12 +3186,14 @@ static void mtk_dp_phy_setting_v2(struct mtk_dp *mtk_dp)
+@@ -3120,12 +3189,14 @@ static void mtk_dp_phy_setting_v2(struct mtk_dp *mtk_dp)
  	else
  		mtk_dp_phy_4lane_disable_v2(mtk_dp);
  
@@ -21778,61 +24886,64 @@ index 24289971c7b72e39387f7a83bababc6cf8cdcc48..afcb36483159dd0908a3391d374d1019
  	/* step2: phy power ON */
  	mtk_dp_phy_power_on_v2(mtk_dp);
  }
-@@ -3410,37 +3478,45 @@ static bool mtk_dp_swingt_set_pre_emphasis_v2(struct mtk_dp *mtk_dp,
+@@ -3408,48 +3479,18 @@ static bool mtk_dp_swingt_set_pre_emphasis_v2(struct mtk_dp *mtk_dp,
+ 	drm_dbg_kms(mtk_dp->drm_dev, "[DPTX] lane:%d, set Swing:0x%x, Emp:0x%x\n",
+ 	        lane_num, swing_level, pre_emphasis_level);
  
- 	switch (lane_num) {
- 	case DP_LANE0:
+-	switch (lane_num) {
+-	case DP_LANE0:
 -		PHY_WRITE_4BYTE_MASK(mtk_dp, PHYD_DIG_LAN0_OFFSET + DRIVING_FORCE,
-+		PHY_WRITE_4BYTE_MASK(mtk_dp,
-+				     mtk_dp->data->phyd_dig_lan_offset[lane_num] + DRIVING_FORCE,
- 				     (swing_level << DP_TX_FORCE_VOLT_SWING_VAL_FLDMASK_POS),
- 				     DP_TX_FORCE_VOLT_SWING_VAL_FLDMASK);
+-				     (swing_level << DP_TX_FORCE_VOLT_SWING_VAL_FLDMASK_POS),
+-				     DP_TX_FORCE_VOLT_SWING_VAL_FLDMASK);
 -		PHY_WRITE_4BYTE_MASK(mtk_dp, PHYD_DIG_LAN0_OFFSET + DRIVING_FORCE,
-+		PHY_WRITE_4BYTE_MASK(mtk_dp,
-+				     mtk_dp->data->phyd_dig_lan_offset[lane_num] + DRIVING_FORCE,
- 				     (pre_emphasis_level << DP_TX_FORCE_PRE_EMPH_VAL_FLDMASK_POS),
- 				     DP_TX_FORCE_PRE_EMPH_VAL_FLDMASK);
- 		break;
- 
- 	case DP_LANE1:
+-				     (pre_emphasis_level << DP_TX_FORCE_PRE_EMPH_VAL_FLDMASK_POS),
+-				     DP_TX_FORCE_PRE_EMPH_VAL_FLDMASK);
+-		break;
+-
+-	case DP_LANE1:
 -		PHY_WRITE_4BYTE_MASK(mtk_dp, PHYD_DIG_LAN1_OFFSET + DRIVING_FORCE,
-+		PHY_WRITE_4BYTE_MASK(mtk_dp,
-+				     mtk_dp->data->phyd_dig_lan_offset[lane_num] + DRIVING_FORCE,
- 				     (swing_level << DP_TX_FORCE_VOLT_SWING_VAL_FLDMASK_POS),
- 				     DP_TX_FORCE_VOLT_SWING_VAL_FLDMASK);
+-				     (swing_level << DP_TX_FORCE_VOLT_SWING_VAL_FLDMASK_POS),
+-				     DP_TX_FORCE_VOLT_SWING_VAL_FLDMASK);
 -		PHY_WRITE_4BYTE_MASK(mtk_dp, PHYD_DIG_LAN1_OFFSET + DRIVING_FORCE,
-+		PHY_WRITE_4BYTE_MASK(mtk_dp,
-+				     mtk_dp->data->phyd_dig_lan_offset[lane_num] + DRIVING_FORCE,
- 				     (pre_emphasis_level << DP_TX_FORCE_PRE_EMPH_VAL_FLDMASK_POS),
- 				     DP_TX_FORCE_PRE_EMPH_VAL_FLDMASK);
- 		break;
- 
- 	case DP_LANE2:
+-				     (pre_emphasis_level << DP_TX_FORCE_PRE_EMPH_VAL_FLDMASK_POS),
+-				     DP_TX_FORCE_PRE_EMPH_VAL_FLDMASK);
+-		break;
+-
+-	case DP_LANE2:
 -		PHY_WRITE_4BYTE_MASK(mtk_dp, PHYD_DIG_LAN2_OFFSET + DRIVING_FORCE,
-+		PHY_WRITE_4BYTE_MASK(mtk_dp,
-+				     mtk_dp->data->phyd_dig_lan_offset[lane_num] + DRIVING_FORCE,
- 				     (swing_level << DP_TX_FORCE_VOLT_SWING_VAL_FLDMASK_POS),
- 				     DP_TX_FORCE_VOLT_SWING_VAL_FLDMASK);
+-				     (swing_level << DP_TX_FORCE_VOLT_SWING_VAL_FLDMASK_POS),
+-				     DP_TX_FORCE_VOLT_SWING_VAL_FLDMASK);
 -		PHY_WRITE_4BYTE_MASK(mtk_dp, PHYD_DIG_LAN2_OFFSET + DRIVING_FORCE,
-+		PHY_WRITE_4BYTE_MASK(mtk_dp,
-+				     mtk_dp->data->phyd_dig_lan_offset[lane_num] + DRIVING_FORCE,
- 				     (pre_emphasis_level << DP_TX_FORCE_PRE_EMPH_VAL_FLDMASK_POS),
- 				     DP_TX_FORCE_PRE_EMPH_VAL_FLDMASK);
- 		break;
+-				     (pre_emphasis_level << DP_TX_FORCE_PRE_EMPH_VAL_FLDMASK_POS),
+-				     DP_TX_FORCE_PRE_EMPH_VAL_FLDMASK);
+-		break;
+-
+-	case DP_LANE3:
+-		PHY_WRITE_4BYTE_MASK(mtk_dp, PHYD_DIG_LAN3_OFFSET + DRIVING_FORCE,
+-				     (swing_level << DP_TX_FORCE_VOLT_SWING_VAL_FLDMASK_POS),
+-				     DP_TX_FORCE_VOLT_SWING_VAL_FLDMASK);
+-		PHY_WRITE_4BYTE_MASK(mtk_dp, PHYD_DIG_LAN3_OFFSET + DRIVING_FORCE,
+-				     (pre_emphasis_level << DP_TX_FORCE_PRE_EMPH_VAL_FLDMASK_POS),
+-				     DP_TX_FORCE_PRE_EMPH_VAL_FLDMASK);
+-		break;
+-
+-	default:
++	if (lane_num < DP_LANE0 || lane_num > DP_LANE3) {
+ 		dev_err(mtk_dp->dev, "[DPTX] lane number is error\n");
+ 		return false;
+ 	}
  
- 	case DP_LANE3:
--		PHY_WRITE_4BYTE_MASK(mtk_dp, PHYD_DIG_LAN3_OFFSET + DRIVING_FORCE,
-+		PHY_WRITE_4BYTE_MASK(mtk_dp,
-+				     mtk_dp->data->phyd_dig_lan_offset[lane_num] + DRIVING_FORCE,
- 				     (swing_level << DP_TX_FORCE_VOLT_SWING_VAL_FLDMASK_POS),
- 				     DP_TX_FORCE_VOLT_SWING_VAL_FLDMASK);
--		PHY_WRITE_4BYTE_MASK(mtk_dp, PHYD_DIG_LAN3_OFFSET + DRIVING_FORCE,
-+		PHY_WRITE_4BYTE_MASK(mtk_dp,
-+				     mtk_dp->data->phyd_dig_lan_offset[lane_num] + DRIVING_FORCE,
- 				     (pre_emphasis_level << DP_TX_FORCE_PRE_EMPH_VAL_FLDMASK_POS),
- 				     DP_TX_FORCE_PRE_EMPH_VAL_FLDMASK);
- 		break;
-@@ -3488,7 +3564,7 @@ static void mtk_dp_set_lane_count_v2(struct mtk_dp *mtk_dp, const enum dp_lane_c
++	PHY_WRITE_4BYTE_MASK(mtk_dp, mtk_dp->data->phyd_dig_lan_offset[lane_num] + DRIVING_FORCE,
++			     (swing_level << DP_TX_FORCE_VOLT_SWING_VAL_FLDMASK_POS),
++			     DP_TX_FORCE_VOLT_SWING_VAL_FLDMASK);
++	PHY_WRITE_4BYTE_MASK(mtk_dp, mtk_dp->data->phyd_dig_lan_offset[lane_num] + DRIVING_FORCE,
++			     (pre_emphasis_level << DP_TX_FORCE_PRE_EMPH_VAL_FLDMASK_POS),
++			     DP_TX_FORCE_PRE_EMPH_VAL_FLDMASK);
++
+ 	return true;
+ }
+ 
+@@ -3488,7 +3529,7 @@ static void mtk_dp_set_lane_count_v2(struct mtk_dp *mtk_dp, const enum dp_lane_c
  		return;
  	}
  
@@ -21841,7 +24952,7 @@ index 24289971c7b72e39387f7a83bababc6cf8cdcc48..afcb36483159dd0908a3391d374d1019
  		reg_offset = DP_REG_OFFSET(encoder_id);
  
  		WRITE_BYTE_MASK(mtk_dp, REG_3000_DP_ENCODER0_P0 + reg_offset,
-@@ -3519,7 +3595,7 @@ static void mtk_dp_set_enhanced_frame_mode_v2(struct mtk_dp *mtk_dp, bool enable
+@@ -3519,7 +3560,7 @@ static void mtk_dp_set_enhanced_frame_mode_v2(struct mtk_dp *mtk_dp, bool enable
  	enum dp_encoder_id encoder_id;
  	u32 reg_offset;
  
@@ -21850,7 +24961,7 @@ index 24289971c7b72e39387f7a83bababc6cf8cdcc48..afcb36483159dd0908a3391d374d1019
  		reg_offset = DP_REG_OFFSET(encoder_id);
  
  		if (enable)
-@@ -3958,15 +4034,15 @@ static void mtk_dp_init_variable_v2(struct mtk_dp *mtk_dp)
+@@ -3958,15 +3999,15 @@ static void mtk_dp_init_variable_v2(struct mtk_dp *mtk_dp)
  	enum dp_encoder_id encoder_id;
  
  	mtk_dp->training_info.dp_version = DP_VER_14;
@@ -21869,7 +24980,7 @@ index 24289971c7b72e39387f7a83bababc6cf8cdcc48..afcb36483159dd0908a3391d374d1019
  		mtk_dp->info[encoder_id].depth = DP_COLOR_DEPTH_8BIT;
  		memset(&mtk_dp->info[encoder_id].dp_output_timing, 0,
  		       sizeof(struct dp_timing_parameter));
-@@ -3991,7 +4067,7 @@ static void mtk_dp_initial_setting_v2(struct mtk_dp *mtk_dp)
+@@ -3991,7 +4032,7 @@ static void mtk_dp_initial_setting_v2(struct mtk_dp *mtk_dp)
  
  	mtk_dp_fec_init_setting_v2(mtk_dp);
  
@@ -21878,7 +24989,7 @@ index 24289971c7b72e39387f7a83bababc6cf8cdcc48..afcb36483159dd0908a3391d374d1019
  		reg_offset = DP_REG_OFFSET(encoder_id);
  		WRITE_4BYTE_MASK(mtk_dp, REG_31EC_DP_ENCODER0_P0  + reg_offset, BIT(4), BIT(4));
  		WRITE_4BYTE_MASK(mtk_dp, REG_304C_DP_ENCODER0_P0  + reg_offset, 0, BIT(8));
-@@ -4089,12 +4165,12 @@ static void mtk_dp_init_port_v2(struct mtk_dp *mtk_dp)
+@@ -4089,12 +4130,12 @@ static void mtk_dp_init_port_v2(struct mtk_dp *mtk_dp)
  	mtk_dp_init_variable_v2(mtk_dp);
  
  	mtk_dp_fec_disable_v2(mtk_dp);
@@ -21893,7 +25004,7 @@ index 24289971c7b72e39387f7a83bababc6cf8cdcc48..afcb36483159dd0908a3391d374d1019
  		mtk_dp_digital_setting_v2(mtk_dp, encoder_id);
  
  	mtk_dp_analog_power_on_v2(mtk_dp);
-@@ -4130,7 +4206,7 @@ static void mtk_dp_disconnect_release_v2(struct mtk_dp *mtk_dp)
+@@ -4130,7 +4171,7 @@ static void mtk_dp_disconnect_release_v2(struct mtk_dp *mtk_dp)
  	mtk_dp_phy_set_idle_pattern_v2(mtk_dp, true);
  	mtk_dp_fec_disable_v2(mtk_dp);
  
@@ -21902,7 +25013,7 @@ index 24289971c7b72e39387f7a83bababc6cf8cdcc48..afcb36483159dd0908a3391d374d1019
  		mtk_dp_dsc_disable_v2(mtk_dp, i);
  
  	mtk_dp_analog_power_off_v2(mtk_dp);
-@@ -4447,7 +4523,8 @@ static int mtk_dp_bridge_atomic_check_v2(struct drm_bridge *bridge,
+@@ -4447,7 +4488,8 @@ static int mtk_dp_bridge_atomic_check_v2(struct drm_bridge *bridge,
  		mtk_dp_dsc_check_prepare_v2(mtk_dp, id);
  		mtk_dp->prop_dsc_enable[id]->values[0] = 1;
  	} else {
@@ -21912,7 +25023,7 @@ index 24289971c7b72e39387f7a83bababc6cf8cdcc48..afcb36483159dd0908a3391d374d1019
  	}
  
  	drm_dbg_kms(mtk_dp->drm_dev,
-@@ -4818,7 +4895,7 @@ static int mtk_dp_bridge_attach_v2(struct drm_bridge *bridge,
+@@ -4818,7 +4860,7 @@ static int mtk_dp_bridge_attach_v2(struct drm_bridge *bridge,
  	 * to a bridge. DP initialization is performed only
  	 * after all bridges are attached.
  	 */
@@ -21921,7 +25032,7 @@ index 24289971c7b72e39387f7a83bababc6cf8cdcc48..afcb36483159dd0908a3391d374d1019
  		return 0;
  
  	mtk_dp->drm_dev = bridge->dev;
-@@ -5371,6 +5448,21 @@ static int mtk_dp_set_training_start_v2(struct mtk_dp *mtk_dp)
+@@ -5371,6 +5413,21 @@ static int mtk_dp_set_training_start_v2(struct mtk_dp *mtk_dp)
  	return DP_RET_TRANING_FAIL;
  }
  
@@ -21943,7 +25054,7 @@ index 24289971c7b72e39387f7a83bababc6cf8cdcc48..afcb36483159dd0908a3391d374d1019
  static int mtk_dp_training_handle_v2(struct mtk_dp *mtk_dp)
  {
  	int ret = DP_RET_NOERR;
-@@ -5396,7 +5488,7 @@ static int mtk_dp_audio_hw_params_v2(struct device *dev, void *data,
+@@ -5396,7 +5453,7 @@ static int mtk_dp_audio_hw_params_v2(struct device *dev, void *data,
  	struct mtk_dp *mtk_dp = dev_get_drvdata(dev);
  	enum dp_encoder_id encoder_id;
  
@@ -21952,7 +25063,7 @@ index 24289971c7b72e39387f7a83bababc6cf8cdcc48..afcb36483159dd0908a3391d374d1019
  		mtk_dp->info[encoder_id].audio_cur_cfg.channels = params->cea.channels;
  		mtk_dp->info[encoder_id].audio_cur_cfg.word_length_bits = params->sample_width;
  		mtk_dp->info[encoder_id].audio_cur_cfg.sample_rate = params->sample_rate;
-@@ -5412,7 +5504,7 @@ static int mtk_dp_audio_startup_v2(struct device *dev, void *data)
+@@ -5412,7 +5469,7 @@ static int mtk_dp_audio_startup_v2(struct device *dev, void *data)
  	struct mtk_dp *mtk_dp = dev_get_drvdata(dev);
  	enum dp_encoder_id encoder_id;
  
@@ -21961,7 +25072,7 @@ index 24289971c7b72e39387f7a83bababc6cf8cdcc48..afcb36483159dd0908a3391d374d1019
  		mtk_dp_audio_mute_v2(mtk_dp, encoder_id, false);
  
  	return 0;
-@@ -5423,7 +5515,7 @@ static void mtk_dp_audio_shutdown_v2(struct device *dev, void *data)
+@@ -5423,7 +5480,7 @@ static void mtk_dp_audio_shutdown_v2(struct device *dev, void *data)
  	struct mtk_dp *mtk_dp = dev_get_drvdata(dev);
  	enum dp_encoder_id encoder_id;
  
@@ -21970,7 +25081,7 @@ index 24289971c7b72e39387f7a83bababc6cf8cdcc48..afcb36483159dd0908a3391d374d1019
  		mtk_dp_audio_mute_v2(mtk_dp, encoder_id, true);
  }
  
-@@ -5607,6 +5699,122 @@ static bool mtk_dp_mst_hpd_event_handler(struct mtk_dp *mtk_dp)
+@@ -5607,6 +5664,122 @@ static bool mtk_dp_mst_hpd_event_handler(struct mtk_dp *mtk_dp)
  	return true;
  }
  
@@ -22093,7 +25204,7 @@ index 24289971c7b72e39387f7a83bababc6cf8cdcc48..afcb36483159dd0908a3391d374d1019
  static void mtk_dp_check_device_service_irq_v2(struct mtk_dp *mtk_dp)
  {
  	u8 val;
-@@ -5620,8 +5828,11 @@ static void mtk_dp_check_device_service_irq_v2(struct mtk_dp *mtk_dp)
+@@ -5620,8 +5793,11 @@ static void mtk_dp_check_device_service_irq_v2(struct mtk_dp *mtk_dp)
  
  	drm_dp_dpcd_writeb(&mtk_dp->aux, DP_DEVICE_SERVICE_IRQ_VECTOR, val);
  
@@ -22106,7 +25217,7 @@ index 24289971c7b72e39387f7a83bababc6cf8cdcc48..afcb36483159dd0908a3391d374d1019
  
  	if (val & DP_CP_IRQ)
  		drm_dbg_kms(mtk_dp->drm_dev, "[DPTX] DP_CP_IRQ\n");
-@@ -5722,7 +5933,7 @@ static void mtk_dp_init_property_v2(struct mtk_dp *mtk_dp)
+@@ -5722,7 +5898,7 @@ static void mtk_dp_init_property_v2(struct mtk_dp *mtk_dp)
  	if (mtk_dp->init_property)
  		return;
  
@@ -22115,34 +25226,7 @@ index 24289971c7b72e39387f7a83bababc6cf8cdcc48..afcb36483159dd0908a3391d374d1019
  		bridge = devm_drm_of_get_bridge(mtk_dp->dev,
  						mtk_dp->dev->of_node, i, DP_ENCODER_ENDPOINT);
  		if (IS_ERR(bridge)) {
-@@ -5758,6 +5969,26 @@ static void mtk_dp_init_property_v2(struct mtk_dp *mtk_dp)
- 	mtk_dp->init_property = true;
- }
- 
-+static void mtk_dp_wait_for_mux_set_completion(struct mtk_dp *mtk_dp)
-+{
-+	unsigned long mux_set_timeout = 0;
-+
-+	mux_set_timeout = msecs_to_jiffies(MTK_DP_1000_MSECS);
-+	init_completion(&mtk_dp->mux_completion);
-+
-+	drm_dbg_kms(mtk_dp->drm_dev, "[DPTX] Wait mux_set to complete\n");
-+
-+	/* wait mux_set done */
-+	if (completion_done(&mtk_dp->mux_completion))
-+		drm_dbg_kms(mtk_dp->drm_dev, "[DPTX] mux_set already done\n");
-+	else
-+		if (wait_for_completion_timeout(&mtk_dp->mux_completion, mux_set_timeout) == 0)
-+			drm_dbg_kms(mtk_dp->drm_dev, "[DPTX] mux_set timeout\n");
-+		else
-+			drm_dbg_kms(mtk_dp->drm_dev, "[DPTX] mux_set completed\n");
-+
-+}
-+
- static irqreturn_t mtk_dp_hpd_event_thread_v2(int hpd, void *dev)
- {
- 	struct mtk_dp *mtk_dp = dev;
-@@ -5795,7 +6026,7 @@ static irqreturn_t mtk_dp_hpd_event_thread_v2(int hpd, void *dev)
+@@ -5795,7 +5971,7 @@ static irqreturn_t mtk_dp_hpd_event_thread_v2(int hpd, void *dev)
  			/* Wait until crtc of current encoder is disabled */
  			timeout = jiffies + msecs_to_jiffies(2000);
  			while (time_before(jiffies, timeout)) {
@@ -22151,7 +25235,7 @@ index 24289971c7b72e39387f7a83bababc6cf8cdcc48..afcb36483159dd0908a3391d374d1019
  					if (wait_done[i])
  						continue;
  
-@@ -5811,13 +6042,13 @@ static irqreturn_t mtk_dp_hpd_event_thread_v2(int hpd, void *dev)
+@@ -5811,21 +5987,31 @@ static irqreturn_t mtk_dp_hpd_event_thread_v2(int hpd, void *dev)
  						    i);
  				}
  
@@ -22167,18 +25251,25 @@ index 24289971c7b72e39387f7a83bababc6cf8cdcc48..afcb36483159dd0908a3391d374d1019
  				if (wait_done[i])
  					continue;
  
-@@ -5826,6 +6057,10 @@ static irqreturn_t mtk_dp_hpd_event_thread_v2(int hpd, void *dev)
+ 				dev_err(mtk_dp->dev,
+ 					"[DPTX] connector[%d] crtc is not disabled in HPD low\n", i);
  			}
++
++			if (mtk_dp->enable_2c_feature)
++				reinit_completion(&mtk_dp->mux_completion);
  		} else {
  			drm_dbg_kms(mtk_dp->drm_dev, "[DPTX] HPD_CON\n");
 +
-+			if (mtk_dp->enable_2c_feature)
-+				mtk_dp_wait_for_mux_set_completion(mtk_dp);
++			if (mtk_dp->enable_2c_feature) {
++				drm_dbg_kms(mtk_dp->drm_dev, "[DPTX] Wait mux_set to complete\n");
++				wait_for_completion(&mtk_dp->mux_completion);
++				drm_dbg_kms(mtk_dp->drm_dev, "[DPTX] mux_set completed\n");
++			}
 +
  			mtk_dp_init_property_v2(mtk_dp);
  			mtk_dp_initial_setting_v2(mtk_dp);
  			mtk_dp_analog_power_on_v2(mtk_dp);
-@@ -5857,6 +6092,7 @@ static irqreturn_t mtk_dp_hpd_event_thread_v2(int hpd, void *dev)
+@@ -5857,6 +6043,7 @@ static irqreturn_t mtk_dp_hpd_event_thread_v2(int hpd, void *dev)
  				return IRQ_NONE;
  		} else if (!mtk_dp_hpd_event_handler_v2(mtk_dp))
  			return IRQ_NONE;
@@ -22186,7 +25277,7 @@ index 24289971c7b72e39387f7a83bababc6cf8cdcc48..afcb36483159dd0908a3391d374d1019
  	}
  
  end:
-@@ -6019,7 +6255,7 @@ static int mtk_dp_dt_parse_pdata_v2(struct mtk_dp *mtk_dp,
+@@ -6019,7 +6206,7 @@ static int mtk_dp_dt_parse_pdata_v2(struct mtk_dp *mtk_dp,
  	return 0;
  }
  
@@ -22195,17 +25286,17 @@ index 24289971c7b72e39387f7a83bababc6cf8cdcc48..afcb36483159dd0908a3391d374d1019
  {
  	writel((readl(mtk_dp->mac_power_regs) & ~BIT(0)), mtk_dp->mac_power_regs);
  	writel((readl(mtk_dp->mac_power_regs) | BIT(4)), mtk_dp->mac_power_regs);
-@@ -6058,7 +6294,8 @@ static int mtk_dp_suspend_v2(struct device *dev)
+@@ -6058,7 +6245,8 @@ static int mtk_dp_suspend_v2(struct device *dev)
  
  	mtk_dp_disconnect_release_v2(mtk_dp);
  
 -	mtk_dp_disable_mac_power_v2(mtk_dp);
-+	if (mtk_dp->data->mac_power)
-+		mtk_dp->data->mac_power(mtk_dp);
++	if (mtk_dp->data->disable_mac_power)
++		mtk_dp->data->disable_mac_power(mtk_dp);
  
  	clk_disable_unprepare(mtk_dp->pclk);
  
-@@ -6096,7 +6333,8 @@ static int mtk_dp_resume_v2(struct device *dev)
+@@ -6096,7 +6284,8 @@ static int mtk_dp_resume_v2(struct device *dev)
  		return ret;
  	}
  
@@ -22215,61 +25306,63 @@ index 24289971c7b72e39387f7a83bababc6cf8cdcc48..afcb36483159dd0908a3391d374d1019
  
  	mtk_dp_init_port_v2(mtk_dp);
  
-@@ -6174,6 +6412,139 @@ static int mtk_dp_pm_init_v2(struct mtk_dp *mtk_dp, struct platform_device *pdev
+@@ -6174,6 +6363,141 @@ static int mtk_dp_pm_init_v2(struct mtk_dp *mtk_dp, struct platform_device *pdev
  	return 0;
  }
  
-+static void dts_typec_ports_update(struct mtk_dp *mtk_dp)
++static void mtk_dp_typec_ports_update(struct mtk_dp *mtk_dp)
 +{
-+	if (mtk_dp->dts->typec_ports[0].dp_connected && mtk_dp->dts->typec_ports[1].dp_connected)
++	if (mtk_dp->d_t_selector->typec_ports[0].dp_connected
++	    && mtk_dp->d_t_selector->typec_ports[1].dp_connected)
 +		/* Both ports available, do nothing to retain the current one. */
 +		return;
 +
-+	if (mtk_dp->dts->typec_ports[0].dp_connected)
++	if (mtk_dp->d_t_selector->typec_ports[0].dp_connected)
 +		mtk_dp->phy_flip_enable = false;
-+	else if (mtk_dp->dts->typec_ports[1].dp_connected)
++	else if (mtk_dp->d_t_selector->typec_ports[1].dp_connected)
 +		mtk_dp->phy_flip_enable = true;
 +
 +	complete(&mtk_dp->mux_completion);
 +}
 +
-+static int dts_mux_set(struct typec_mux_dev *mux, struct typec_mux_state *state)
++static int mtk_dp_typec_mux_set(struct typec_mux_dev *mux, struct typec_mux_state *state)
 +{
-+	struct dts_port_data *data = NULL;
-+	struct dp_typec_selector *dts = NULL;
++	struct mtk_dp_typec_port_data *data = NULL;
++	struct dp_typec_selector *d_t_selector = NULL;
 +
 +	data = typec_mux_get_drvdata(mux);
 +	if (!data)
 +		return 0;
 +
-+	dts = data->mtk_dp->dts;
++	d_t_selector = data->mtk_dp->d_t_selector;
 +
-+	if (dts->num_typec_switches == 1)
++	if (d_t_selector->num_typec_switches == 1)
 +		return 0;
 +
-+	if (data->port_num > dts->num_typec_switches)
++	if (data->port_num > d_t_selector->num_typec_switches)
 +		return 0;
 +
-+	mutex_lock(&dts->lock);
++	mutex_lock(&d_t_selector->lock);
 +
 +	data->dp_connected = (state->alt && state->alt->svid == USB_TYPEC_DP_SID &&
 +			      state->alt->mode == USB_TYPEC_DP_MODE);
 +
 +	if (data->dp_connected) {
 +		drm_dbg_kms(data->mtk_dp->drm_dev, "[DPTX] mux_set dp_connected: c0=%d, c1=%d\n",
-+			    dts->typec_ports[0].dp_connected, dts->typec_ports[1].dp_connected);
-+		dts_typec_ports_update(data->mtk_dp);
++			    d_t_selector->typec_ports[0].dp_connected,
++			    d_t_selector->typec_ports[1].dp_connected);
++		mtk_dp_typec_ports_update(data->mtk_dp);
 +	}
 +
-+	mutex_unlock(&dts->lock);
++	mutex_unlock(&d_t_selector->lock);
 +
 +	return 0;
 +}
 +
-+static int dts_register_mode_switch(struct device *dev, struct device_node *node,
++static int mtk_dp_typec_register_mode_switch(struct device *dev, struct device_node *node,
 +				    struct mtk_dp *mtk_dp)
 +{
-+	struct dts_port_data *port_data;
++	struct mtk_dp_typec_port_data *port_data;
 +	struct typec_mux_desc mux_desc = {};
 +	char name[32];
 +	u32 port_num;
@@ -22280,19 +25373,19 @@ index 24289971c7b72e39387f7a83bababc6cf8cdcc48..afcb36483159dd0908a3391d374d1019
 +	if (ret)
 +		return ret;
 +
-+	if (port_num >= mtk_dp->dts->num_typec_switches) {
++	if (port_num >= mtk_dp->d_t_selector->num_typec_switches) {
 +		dev_err(dev, "[DPTX] Invalid port number specified: %d\n", port_num);
 +		return -EINVAL;
 +	}
 +
-+	port_data = &mtk_dp->dts->typec_ports[port_num];
++	port_data = &mtk_dp->d_t_selector->typec_ports[port_num];
 +	port_data->mtk_dp = mtk_dp;
 +	port_data->port_num = port_num;
 +	mux_desc.fwnode = &node->fwnode;
 +	mux_desc.drvdata = port_data;
 +	snprintf(name, sizeof(name), "%s-%u", node->name, port_num);
 +	mux_desc.name = name;
-+	mux_desc.set = dts_mux_set;
++	mux_desc.set = mtk_dp_typec_mux_set;
 +
 +	port_data->typec_mux = typec_mux_register(dev, &mux_desc);
 +	if (IS_ERR(port_data->typec_mux)) {
@@ -22303,42 +25396,42 @@ index 24289971c7b72e39387f7a83bababc6cf8cdcc48..afcb36483159dd0908a3391d374d1019
 +	return ret;
 +}
 +
-+static void dts_unregister_typec_switches(struct mtk_dp *mtk_dp)
++static void mtk_dp_typec_unregister_switches(struct mtk_dp *mtk_dp)
 +{
 +	int i;
 +
-+	for (i = 0; i < mtk_dp->dts->num_typec_switches; i++)
-+		typec_mux_unregister(mtk_dp->dts->typec_ports[i].typec_mux);
++	for (i = 0; i < mtk_dp->d_t_selector->num_typec_switches; i++)
++		typec_mux_unregister(mtk_dp->d_t_selector->typec_ports[i].typec_mux);
 +}
 +
-+static int dts_register_typec_switches(struct device *device, struct mtk_dp *mtk_dp)
++static int mtk_dp_typec_register_switches(struct device *device, struct mtk_dp *mtk_dp)
 +{
 +	struct device_node *of, *sw;
 +	int ret = 0;
 +
-+	if (!mtk_dp->dts)
++	if (!mtk_dp->d_t_selector)
 +		return -ENODEV;
 +
 +	of = of_get_child_by_name(device->of_node, "switches");
 +	if (!of)
 +		return -ENODEV;
 +
-+	mtk_dp->dts->num_typec_switches = of_get_child_count(of);
-+	if (mtk_dp->dts->num_typec_switches <= 0)
++	mtk_dp->d_t_selector->num_typec_switches = of_get_child_count(of);
++	if (mtk_dp->d_t_selector->num_typec_switches <= 0)
 +		return -ENODEV;
 +
-+	mtk_dp->dts->typec_ports = devm_kzalloc(device,
-+						mtk_dp->dts->num_typec_switches *
-+						sizeof(struct dts_port_data),
++	mtk_dp->d_t_selector->typec_ports = devm_kzalloc(device,
++						mtk_dp->d_t_selector->num_typec_switches *
++						sizeof(struct mtk_dp_typec_port_data),
 +						GFP_KERNEL);
-+	if (!mtk_dp->dts->typec_ports)
++	if (!mtk_dp->d_t_selector->typec_ports)
 +		return -ENOMEM;
 +
 +	/* register for C0 and C1 */
 +	for_each_available_child_of_node(of, sw) {
 +		if (!of_property_read_bool(sw, "mode-switch"))
 +			continue;
-+		ret = dts_register_mode_switch(device, sw, mtk_dp);
++		ret = mtk_dp_typec_register_mode_switch(device, sw, mtk_dp);
 +		if (ret) {
 +			dev_err(device, "[DPTX] Failed to register node switch: %d\n", ret);
 +			of_node_put(sw);
@@ -22347,7 +25440,7 @@ index 24289971c7b72e39387f7a83bababc6cf8cdcc48..afcb36483159dd0908a3391d374d1019
 +	}
 +
 +	if (ret)
-+		dts_unregister_typec_switches(mtk_dp);
++		mtk_dp_typec_unregister_switches(mtk_dp);
 +
 +	return ret;
 +}
@@ -22355,15 +25448,7 @@ index 24289971c7b72e39387f7a83bababc6cf8cdcc48..afcb36483159dd0908a3391d374d1019
  static int mtk_drm_dp_probe_v2(struct platform_device *pdev)
  {
  	struct mtk_dp *mtk_dp;
-@@ -6182,6 +6553,7 @@ static int mtk_drm_dp_probe_v2(struct platform_device *pdev)
- 	int ret;
- 	struct mtk_drm_private *mtk_priv = dev_get_drvdata(dev);
- 	int i = 0;
-+	int switch_2c_status;
- 
- 	mtk_dp = devm_kzalloc(dev, sizeof(*mtk_dp), GFP_KERNEL);
- 	if (!mtk_dp)
-@@ -6252,7 +6624,8 @@ static int mtk_drm_dp_probe_v2(struct platform_device *pdev)
+@@ -6252,7 +6576,8 @@ static int mtk_drm_dp_probe_v2(struct platform_device *pdev)
  		return -ENOMEM;
  	}
  
@@ -22373,7 +25458,7 @@ index 24289971c7b72e39387f7a83bababc6cf8cdcc48..afcb36483159dd0908a3391d374d1019
  
  	mtk_dp->pclk = devm_clk_get_enabled(mtk_dp->dev, "mux_dp");
  	if (IS_ERR(mtk_dp->pclk))
-@@ -6275,7 +6648,7 @@ static int mtk_drm_dp_probe_v2(struct platform_device *pdev)
+@@ -6275,7 +6600,7 @@ static int mtk_drm_dp_probe_v2(struct platform_device *pdev)
  		dev_err(mtk_dp->dev, "[DPTX] register pm notifier failed %d", ret);
  
  	for_each_of_graph_port(np, port) {
@@ -22382,26 +25467,26 @@ index 24289971c7b72e39387f7a83bababc6cf8cdcc48..afcb36483159dd0908a3391d374d1019
  			break;
  
  		dev_dbg(dev, "[DPTX] port:%pOF\n", port);
-@@ -6297,6 +6670,30 @@ static int mtk_drm_dp_probe_v2(struct platform_device *pdev)
+@@ -6297,6 +6622,30 @@ static int mtk_drm_dp_probe_v2(struct platform_device *pdev)
  
  	atomic_set(&mtk_dp->refcount, 0);
  
 +	mtk_dp->cts_req.aux = &mtk_dp->aux;
 +	mtk_dp->cts_req.regs = mtk_dp->regs;
 +
-+	mtk_dp->dts = devm_kzalloc(dev, sizeof(struct dp_typec_selector), GFP_KERNEL);
-+	if (!mtk_dp->dts)
++	mtk_dp->d_t_selector = devm_kzalloc(dev, sizeof(struct dp_typec_selector), GFP_KERNEL);
++	if (!mtk_dp->d_t_selector)
 +		return -ENOMEM;
 +
-+	mtk_dp->dts->dev = dev;
++	mtk_dp->d_t_selector->dev = dev;
 +
-+	switch_2c_status = dts_register_typec_switches(dev, mtk_dp);
-+	if (switch_2c_status) {
-+		if (switch_2c_status != -ENODEV)
++	ret = mtk_dp_typec_register_switches(dev, mtk_dp);
++	if (ret) {
++		if (ret != -ENODEV)
 +			dev_err(dev, "[DPTX] Didn't register Type C switches, err: %d\n", ret);
 +	} else {
 +		/* initial completion */
-+		mutex_init(&mtk_dp->dts->lock);
++		mutex_init(&mtk_dp->d_t_selector->lock);
 +		init_completion(&mtk_dp->mux_completion);
 +		mtk_dp->enable_2c_feature = true;
 +		dev_dbg(mtk_dp->dev, "[DPTX] 2c_feature enabled\n");
@@ -22413,7 +25498,7 @@ index 24289971c7b72e39387f7a83bababc6cf8cdcc48..afcb36483159dd0908a3391d374d1019
  	return ret;
  }
  
-@@ -6306,7 +6703,7 @@ static int mtk_drm_dp_remove_v2(struct platform_device *pdev)
+@@ -6306,7 +6655,7 @@ static int mtk_drm_dp_remove_v2(struct platform_device *pdev)
  	int ret = 0;
  	int i;
  
@@ -22422,11 +25507,12 @@ index 24289971c7b72e39387f7a83bababc6cf8cdcc48..afcb36483159dd0908a3391d374d1019
  		if (mtk_dp->mtk_bridge[i])
  			drm_bridge_remove(&mtk_dp->mtk_bridge[i]->bridge);
  
-@@ -6344,12 +6741,50 @@ static const struct mtk_dp_data mt8196_dp_data = {
+@@ -6344,12 +6693,53 @@ static const struct mtk_dp_data mt8196_dp_data = {
  	.max_vdisplay = 2160,
  	.min_hdisplay = 800,
  	.min_vdisplay = 600,
 +	.mac_power = mtk_mt8196_dp_mac_power,
++	.disable_mac_power = mtk_dp_disable_mac_power_v2,
 +	.set_param = mtk_mt8196_dp_phy_set_param_v2,
 +	.phyd_dig_glb_offset = 0x1000,
 +	.phyd_dig_lan_offset = {0x1100, 0x1200, 0x1300, 0x1400},
@@ -22451,6 +25537,8 @@ index 24289971c7b72e39387f7a83bababc6cf8cdcc48..afcb36483159dd0908a3391d374d1019
 +	.max_vdisplay = 2160,
 +	.min_hdisplay = 800,
 +	.min_vdisplay = 600,
++	.patch_phy_settings = {0x21, 0x1000e, 0x20fff00, 0x20202, 0xa5231a, 0xdde70305},
++	.txfir_settings = {0x20181410, 0x20241e18, 0x3028, 0x10080400, 0xc0600, 0x8},
 +	.set_param = mtk_mt8189_dp_phy_set_param_v2,
 +	.phyd_dig_glb_offset = 0x1400,
 +	.phyd_dig_lan_offset = {0x1000, 0x1100, 0x1200, 0x1300},
@@ -22486,10 +25574,10 @@ index 588726da1e39c02ab393b941ead947f1cfa6d56a..071d0bae6c775145ee6ac114bab3615d
  void mtk_dp_mask_v2(struct mtk_dp *mtk_dp, u32 offset, u32 val, u32 mask);
  void mtk_dp_write_byte_v2(struct mtk_dp *mtk_dp, u32 addr, u8 val, u32 mask);
 diff --git a/drivers/gpu/drm/mediatek/mtk_dpi_v2.c b/drivers/gpu/drm/mediatek/mtk_dpi_v2.c
-index f3ec617521f86b9d96c72830d81d606ccc6a9387..b69d425438cea04b922ee1449445297a0e0028e5 100644
+index f9c90ec8113f9bf219096380b04a6b80fecf547a..b71859559ef278494cb5789dbe82f93ba52df95f 100644
 --- a/drivers/gpu/drm/mediatek/mtk_dpi_v2.c
 +++ b/drivers/gpu/drm/mediatek/mtk_dpi_v2.c
-@@ -210,11 +210,11 @@ static void mtk_dpi_config_hsync_v2(struct mtk_dpi *dpi,
+@@ -211,11 +211,11 @@ static void mtk_dpi_config_hsync_v2(struct mtk_dpi *dpi,
  				 struct mtk_dpi_sync_param *sync)
  {
  	mtk_dpi_mask_v2(dpi, DPI_TGEN_HWIDTH, sync->sync_width << HPW,
@@ -22504,7 +25592,7 @@ index f3ec617521f86b9d96c72830d81d606ccc6a9387..b69d425438cea04b922ee1449445297a
  }
  
  static void mtk_dpi_config_vsync_v2(struct mtk_dpi *dpi,
-@@ -222,17 +222,17 @@ static void mtk_dpi_config_vsync_v2(struct mtk_dpi *dpi,
+@@ -223,17 +223,17 @@ static void mtk_dpi_config_vsync_v2(struct mtk_dpi *dpi,
  				 u32 width_addr, u32 porch_addr)
  {
  	mtk_dpi_mask_v2(dpi, width_addr,
@@ -22530,7 +25618,7 @@ index f3ec617521f86b9d96c72830d81d606ccc6a9387..b69d425438cea04b922ee1449445297a
  }
  
  static void mtk_dpi_config_vsync_lodd_v2(struct mtk_dpi *dpi,
-@@ -298,9 +298,9 @@ static void mtk_dpi_config_interface_v2(struct mtk_dpi *dpi, bool inter)
+@@ -297,9 +297,9 @@ static void mtk_dpi_config_interface_v2(struct mtk_dpi *dpi, bool inter)
  static void mtk_dpi_config_fb_size_v2(struct mtk_dpi *dpi, u32 width, u32 height)
  {
  	mtk_dpi_mask_v2(dpi, DPI_SIZE, width << HSIZE,
@@ -22542,7 +25630,7 @@ index f3ec617521f86b9d96c72830d81d606ccc6a9387..b69d425438cea04b922ee1449445297a
  }
  
  static void mtk_dpi_config_channel_limit_v2(struct mtk_dpi *dpi)
-@@ -353,7 +353,7 @@ static void mtk_dpi_config_bit_num_v2(struct mtk_dpi *dpi,
+@@ -352,7 +352,7 @@ static void mtk_dpi_config_bit_num_v2(struct mtk_dpi *dpi,
  		break;
  	}
  	mtk_dpi_mask_v2(dpi, DPI_OUTPUT_SETTING, val << OUT_BIT,
@@ -22551,7 +25639,7 @@ index f3ec617521f86b9d96c72830d81d606ccc6a9387..b69d425438cea04b922ee1449445297a
  }
  
  static void mtk_dpi_config_yc_map_v2(struct mtk_dpi *dpi,
-@@ -415,8 +415,8 @@ static void mtk_dpi_config_channel_swap_v2(struct mtk_dpi *dpi,
+@@ -414,8 +414,8 @@ static void mtk_dpi_config_channel_swap_v2(struct mtk_dpi *dpi,
  	}
  
  	mtk_dpi_mask_v2(dpi, DPI_OUTPUT_SETTING,
@@ -26631,7 +29719,7 @@ index 0821a8f911d5c10b7f7aad4dc1e6f4b829f25b86..e58bd4979b1963fbbd9cecb23641de00
  	{ /* sentinel */ }
  };
 diff --git a/drivers/gpu/drm/mediatek/mtk_dvo.c b/drivers/gpu/drm/mediatek/mtk_dvo.c
-index 41f743b3bfaf98800237e4c67f1669146e321924..35f34b295da1182d70b1b9fa9037e6e273a82689 100644
+index 41f743b3bfaf98800237e4c67f1669146e321924..e449a12e389aaa29f511a5e37e20e550867a5526 100644
 --- a/drivers/gpu/drm/mediatek/mtk_dvo.c
 +++ b/drivers/gpu/drm/mediatek/mtk_dvo.c
 @@ -189,6 +189,7 @@ struct mtk_dvo_conf {
@@ -26642,6 +29730,15 @@ index 41f743b3bfaf98800237e4c67f1669146e321924..35f34b295da1182d70b1b9fa9037e6e2
  };
  
  static struct mtk_dvo_gs_info mtk_dvo_gs[MTK_DVO_GSL_MAX] = {
+@@ -258,7 +259,7 @@ static void mtk_dvo_golden_setting(struct mtk_dvo *dvo)
+ 	struct mtk_dvo_gs_info *gs_info = NULL;
+ 
+ 	if (dvo->gs_level >= MTK_DVO_GSL_MAX) {
+-		dev_info(dvo->dev,"%s invalid gs_level %d\n",
++		dev_err(dvo->dev,"%s invalid gs_level %d\n",
+ 			 __func__, dvo->gs_level);
+ 		return;
+ 	}
 @@ -324,8 +325,9 @@ static void mtk_dvo_config_fb_size(struct mtk_dvo *dvo, u32 width, u32 height)
  	mtk_dvo_mask(dvo, DVO_PIC_SIZE, height << PIC_VSIZE,
  		     dvo->conf->hvsize_mask << PIC_VSIZE);
@@ -26653,7 +29750,52 @@ index 41f743b3bfaf98800237e4c67f1669146e321924..35f34b295da1182d70b1b9fa9037e6e2
  	mtk_dvo_mask(dvo, DVO_TGEN_V1, height << VACT,
  		     dvo->conf->hvsize_mask << VACT);
  }
-@@ -386,6 +388,8 @@ static int mtk_dvo_set_display_mode(struct mtk_dvo *dvo,
+@@ -377,6 +379,44 @@ static int mtk_dvo_power_on(struct mtk_dvo *dvo)
+ 	return ret;
+ }
+ 
++static void mtk_dvo_config_csc_enable(struct mtk_dvo *dvo)
++{
++	mtk_dvo_mask(dvo, DVO_MATRIX_SET, 0x2, DVO_INT_MTX_SEL_MASK);
++	mtk_dvo_mask(dvo, DVO_MATRIX_SET, DVO_CSC_EN, DVO_CSC_EN);
++}
++
++static void mtk_dvo_config_csc_disable(struct mtk_dvo *dvo)
++{
++	mtk_dvo_mask(dvo, DVO_MATRIX_SET, 0, DVO_INT_MTX_SEL_MASK);
++	mtk_dvo_mask(dvo, DVO_MATRIX_SET, 0, DVO_CSC_EN);
++}
++
++static void mtk_dvo_config_yuv422_enable_v2(struct mtk_dvo *dvo)
++{
++	mtk_dvo_mask(dvo, DVO_YUV422_SET, DVO_YUV422_EN, DVO_YUV422_EN);
++	mtk_dvo_mask(dvo, DVO_YUV422_SET, DVO_CRYCB_MAP, DVO_CRYCB_MAP);
++}
++
++static void mtk_dvo_config_yuv422_disable_v2(struct mtk_dvo *dvo)
++{
++	mtk_dvo_mask(dvo, DVO_YUV422_SET, 0, DVO_YUV422_EN);
++	mtk_dvo_mask(dvo, DVO_YUV422_SET, 0, DVO_CRYCB_MAP);
++}
++
++static void mtk_dvo_config_color_format(struct mtk_dvo *dvo,
++					enum mtk_dvo_out_color_format format)
++{
++	dev_info(dvo->dev, "[DPTX] format:%d", format);
++
++	if (format == MTK_DVO_COLOR_FORMAT_YCBCR_422) {
++		mtk_dvo_config_yuv422_enable_v2(dvo);
++		mtk_dvo_config_csc_enable(dvo);
++	} else {
++		mtk_dvo_config_csc_disable(dvo);
++		mtk_dvo_config_yuv422_disable_v2(dvo);
++	}
++}
++
+ static int mtk_dvo_set_display_mode(struct mtk_dvo *dvo,
+ 				    struct drm_display_mode *mode)
+ {
+@@ -386,6 +426,8 @@ static int mtk_dvo_set_display_mode(struct mtk_dvo *dvo,
  	unsigned long pll_rate;
  	unsigned int factor;
  
@@ -26662,7 +29804,11 @@ index 41f743b3bfaf98800237e4c67f1669146e321924..35f34b295da1182d70b1b9fa9037e6e2
  	/* let pll_rate can fix the valid range of tvdpll (1G~2GHz) */
  	factor = dvo->conf->cal_factor(mode->clock);
  	drm_display_mode_to_videomode(mode, &vm);
-@@ -440,14 +444,14 @@ static int mtk_dvo_set_display_mode(struct mtk_dvo *dvo,
+@@ -437,17 +479,18 @@ static int mtk_dvo_set_display_mode(struct mtk_dvo *dvo,
+ 		mtk_dvo_config_fb_size(dvo, vm.hactive, vm.vactive >> 1);
+ 	else
+ 		mtk_dvo_config_fb_size(dvo, vm.hactive, vm.vactive);
++	mtk_dvo_config_color_format(dvo, dvo->color_format);
  
  	mtk_dvo_info_queue_start(dvo);
  	mtk_dvo_buffer_ctrl(dvo);
@@ -26682,15 +29828,15 @@ index 41f743b3bfaf98800237e4c67f1669146e321924..35f34b295da1182d70b1b9fa9037e6e2
  	if (dvo->conf->out_np_sel) {
  		mtk_dvo_mask(dvo, DVO_OUTPUT_SET, dvo->conf->out_np_sel,
  			     OUT_NP_SEL);
-@@ -543,6 +547,7 @@ static int mtk_dvo_bridge_attach(struct drm_bridge *bridge,
+@@ -543,6 +586,7 @@ static int mtk_dvo_bridge_attach(struct drm_bridge *bridge,
  {
  	struct mtk_dvo *dvo = bridge_to_dvo(bridge);
  	int ret = 0;
-+	dev_info(dvo->dev, "[eDPTX] %s %d\n", __func__, __LINE__);
++	dev_dbg(dvo->dev, "[eDPTX] %s %d\n", __func__, __LINE__);
  
  	ret = drm_bridge_attach(bridge->encoder, dvo->next_bridge,
  				&dvo->bridge, 1);
-@@ -581,7 +586,12 @@ static void mtk_dvo_bridge_enable(struct drm_bridge *bridge)
+@@ -581,7 +625,12 @@ static void mtk_dvo_bridge_enable(struct drm_bridge *bridge)
  	mtk_dvo_power_on(dvo);
  	mtk_dvo_set_display_mode(dvo, &dvo->mode);
  	mtk_dvo_enable(dvo);
@@ -26704,39 +29850,39 @@ index 41f743b3bfaf98800237e4c67f1669146e321924..35f34b295da1182d70b1b9fa9037e6e2
  }
  
  static enum drm_mode_status
-@@ -626,6 +636,7 @@ static int mtk_dvo_bind(struct device *dev, struct device *master, void *data)
+@@ -626,6 +675,7 @@ static int mtk_dvo_bind(struct device *dev, struct device *master, void *data)
  	struct drm_device *drm_dev = data;
  	struct mtk_drm_private *priv = drm_dev->dev_private;
  	int ret;
-+	dev_info(dev, "[eDPTX] %s %d\n", __func__, __LINE__);
++	dev_dbg(dev, "[eDPTX] %s %d\n", __func__, __LINE__);
  
  	dvo->mmsys_dev = priv->mmsys_dev;
  	ret = drm_simple_encoder_init(drm_dev, &dvo->encoder,
-@@ -634,12 +645,14 @@ static int mtk_dvo_bind(struct device *dev, struct device *master, void *data)
+@@ -634,12 +684,14 @@ static int mtk_dvo_bind(struct device *dev, struct device *master, void *data)
  		dev_err(dev, "Failed to initialize decoder: %d\n", ret);
  		return ret;
  	}
-+	dev_info(dev, "[eDPTX] %s %d\n", __func__, __LINE__);
++	dev_dbg(dev, "[eDPTX] %s %d\n", __func__, __LINE__);
  	dvo->encoder.possible_crtcs = mtk_find_possible_crtcs(drm_dev, dvo->dev);
  
  	ret = drm_bridge_attach(&dvo->encoder, &dvo->bridge, NULL,
  				DRM_BRIDGE_ATTACH_NO_CONNECTOR);
  	if (ret)
  		goto err_cleanup;
-+	dev_info(dev, "[eDPTX] %s %d\n", __func__, __LINE__);
++	dev_dbg(dev, "[eDPTX] %s %d\n", __func__, __LINE__);
  
  	dvo->connector = drm_bridge_connector_init(drm_dev, &dvo->encoder);
  	if (IS_ERR(dvo->connector)) {
-@@ -649,6 +662,8 @@ static int mtk_dvo_bind(struct device *dev, struct device *master, void *data)
+@@ -649,6 +701,8 @@ static int mtk_dvo_bind(struct device *dev, struct device *master, void *data)
  	}
  	drm_connector_attach_encoder(dvo->connector, &dvo->encoder);
  
-+	dev_info(dev, "[eDPTX] %s-\n", __func__);
++	dev_dbg(dev, "[eDPTX] %s-\n", __func__);
 +
  	return 0;
  
  err_cleanup:
-@@ -697,9 +712,37 @@ static const struct mtk_dvo_conf mt8196_conf = {
+@@ -697,9 +751,37 @@ static const struct mtk_dvo_conf mt8196_conf = {
  	.hvsize_mask = PIC_HSIZE_MASK,
  };
  
@@ -26774,62 +29920,62 @@ index 41f743b3bfaf98800237e4c67f1669146e321924..35f34b295da1182d70b1b9fa9037e6e2
  	struct mtk_dvo *dvo;
  	int ret;
  
-@@ -710,64 +753,91 @@ static int mtk_dvo_probe(struct platform_device *pdev)
+@@ -710,64 +792,92 @@ static int mtk_dvo_probe(struct platform_device *pdev)
  	dvo->dev = dev;
  	dvo->conf = (struct mtk_dvo_conf *)of_device_get_match_data(dev);
  	dvo->output_fmt = MEDIA_BUS_FMT_RGB888_1X24;
 -
-+	dev_info(dev, "[eDPTX] %s %d\n", __func__, __LINE__);
++	dev_dbg(dev, "[eDPTX] %s %d\n", __func__, __LINE__);
  	dvo->pinctrl = devm_pinctrl_get(&pdev->dev);
  	if (IS_ERR(dvo->pinctrl)) {
  		dvo->pinctrl = NULL;
 -		dev_dbg(&pdev->dev, "Cannot find pinctrl!\n");
-+		dev_info(dev, "[eDPTX] %s %d\n", __func__, __LINE__);
++		dev_err(dev, "[eDPTX] %s %d\n", __func__, __LINE__);
  	}
  	if (dvo->pinctrl) {
  		dvo->pins_gpio = pinctrl_lookup_state(dvo->pinctrl, "sleep");
  		if (IS_ERR(dvo->pins_gpio)) {
  			dvo->pins_gpio = NULL;
 -			dev_dbg(&pdev->dev, "Cannot find pinctrl idle!\n");
-+			dev_info(dev, "[eDPTX] %s %d\n", __func__, __LINE__);
++			dev_err(dev, "[eDPTX] %s %d\n", __func__, __LINE__);
  		}
  		if (dvo->pins_gpio)
 -			pinctrl_select_state(dvo->pinctrl, dvo->pins_gpio);
-+			dev_info(dev, "[eDPTX] %s %d\n", __func__, __LINE__);
++			dev_dbg(dev, "[eDPTX] %s %d\n", __func__, __LINE__);
  
  		dvo->pins_dvo = pinctrl_lookup_state(dvo->pinctrl, "default");
  		if (IS_ERR(dvo->pins_dvo)) {
  			dvo->pins_dvo = NULL;
 -			dev_dbg(&pdev->dev, "Cannot find pinctrl active!\n");
-+			dev_info(dev, "[eDPTX] %s %d\n", __func__, __LINE__);
++			dev_err(dev, "[eDPTX] %s %d\n", __func__, __LINE__);
  		}
  	}
  	dvo->regs = devm_platform_ioremap_resource(pdev, 0);
  	if (IS_ERR(dvo->regs))
 -		return dev_err_probe(dev, PTR_ERR(dvo->regs),
 -				     "Failed to ioremap mem resource\n");
-+		dev_info(dev, "[eDPTX] %s %d\n", __func__, __LINE__);
++		dev_err(dev, "[eDPTX] %s %d\n", __func__, __LINE__);
 +
  
  	dvo->engine_clk = devm_clk_get(dev, "engine");
  	if (IS_ERR(dvo->engine_clk))
 -		return dev_err_probe(dev, PTR_ERR(dvo->engine_clk),
 -				     "Failed to get engine clock\n");
-+		dev_info(dev, "[eDPTX] %s %d\n", __func__, __LINE__);
++		dev_err(dev, "[eDPTX] %s %d\n", __func__, __LINE__);
 +
  
  	dvo->pixel_clk = devm_clk_get(dev, "pixel");
  	if (IS_ERR(dvo->pixel_clk))
 -		return dev_err_probe(dev, PTR_ERR(dvo->pixel_clk),
 -				     "Failed to get pixel clock\n");
-+		dev_info(dev, "[eDPTX] %s %d\n", __func__, __LINE__);
++		dev_err(dev, "[eDPTX] %s %d\n", __func__, __LINE__);
 +
  
  	dvo->tvd_clk = devm_clk_get(dev, "pll");
  	if (IS_ERR(dvo->tvd_clk))
 -		return dev_err_probe(dev, PTR_ERR(dvo->tvd_clk),
 -				     "Failed to get tvdpll clock\n");
-+		dev_info(dev, "[eDPTX] %s %d\n", __func__, __LINE__);
++		dev_err(dev, "[eDPTX] %s %d\n", __func__, __LINE__);
 +
  
  	dvo->hf_fdvo_clk = devm_clk_get(dev, "hf_fdvo_clk");
@@ -26838,24 +29984,25 @@ index 41f743b3bfaf98800237e4c67f1669146e321924..35f34b295da1182d70b1b9fa9037e6e2
 -				     "Failed to get hf_fdvo_clk clock\n");
 +		dev_err_probe(dev, PTR_ERR(dvo->hf_fdvo_clk),
 +			      "Failed to get hf_fdvo_clk clock\n");
-+	dev_info(dev, "[eDPTX] %s %d\n", __func__, __LINE__);
++	dev_dbg(dev, "[eDPTX] %s %d\n", __func__, __LINE__);
  
  	dvo->irq = platform_get_irq(pdev, 0);
  	if (dvo->irq < 0)
  		return dvo->irq;
-+	dev_info(dev, "[eDPTX] %s %d\n", __func__, __LINE__);
++	dev_dbg(dev, "[eDPTX] %s %d\n", __func__, __LINE__);
  
 -	dvo->next_bridge = devm_drm_of_get_bridge(dev, dev->of_node, 0, 0);
 -	if (IS_ERR(dvo->next_bridge))
 -		return  dev_err_probe(dev, PTR_ERR(dvo->next_bridge),
 -				     "Failed to get bridge\n");
 +	platform_set_drvdata(pdev, dvo);
-+	dev_info(dev, "[eDPTX] %s %d\n", __func__, __LINE__);
++	dev_dbg(dev, "[eDPTX] %s %d\n", __func__, __LINE__);
 +
 +	if (!dvo->conf->is_dp) {
 +		dvo->next_bridge = devm_drm_of_get_bridge(dev, dev->of_node, 0, 0);
 +		if (IS_ERR(dvo->next_bridge)) {
-+			dev_info(dev, "[eDPTX] Found bridge node: %pOF faile!!!!!!!!\n", dev->of_node);
++			dev_err(dev, "[eDPTX] Found bridge node: %pOF faile!!!!!!!!\n",
++				dev->of_node);
 +			return  dev_err_probe(dev, PTR_ERR(dvo->next_bridge),
 +					"Failed to get bridge\n");
 +		}
@@ -26887,15 +30034,15 @@ index 41f743b3bfaf98800237e4c67f1669146e321924..35f34b295da1182d70b1b9fa9037e6e2
  
  	dvo->bridge.funcs = &mtk_dvo_bridge_funcs;
  	dvo->bridge.of_node = dev->of_node;
-@@ -776,6 +846,7 @@ static int mtk_dvo_probe(struct platform_device *pdev)
+@@ -776,6 +886,7 @@ static int mtk_dvo_probe(struct platform_device *pdev)
  	ret = devm_drm_bridge_add(dev, &dvo->bridge);
  	if (ret)
  		return ret;
-+	dev_info(dev, "[eDPTX] %s %d\n", __func__, __LINE__);
++	dev_dbg(dev, "[eDPTX] %s %d\n", __func__, __LINE__);
  
  	ret = component_add(dev, &mtk_dvo_component_ops);
  	if (ret)
-@@ -791,6 +862,8 @@ static void mtk_dvo_remove(struct platform_device *pdev)
+@@ -791,6 +902,8 @@ static void mtk_dvo_remove(struct platform_device *pdev)
  
  static const struct of_device_id mtk_dvo_of_ids[] = {
  	{ .compatible = "mediatek,mt8196-edp-dvo", .data = &mt8196_conf },
@@ -26904,6 +30051,23 @@ index 41f743b3bfaf98800237e4c67f1669146e321924..35f34b295da1182d70b1b9fa9037e6e2
  	{ /* sentinel */ },
  };
  MODULE_DEVICE_TABLE(of, mtk_dvo_of_ids);
+diff --git a/drivers/gpu/drm/mediatek/mtk_dvo_regs.h b/drivers/gpu/drm/mediatek/mtk_dvo_regs.h
+index 27c647739cfadac37452d629c517cee74fec3d87..6a250af27992571845531d60673805a78168fbf3 100644
+--- a/drivers/gpu/drm/mediatek/mtk_dvo_regs.h
++++ b/drivers/gpu/drm/mediatek/mtk_dvo_regs.h
+@@ -158,4 +158,12 @@
+ #define DVO_BUF_SODI_HIGHT		0x230
+ #define DVO_BUF_SODI_LOW		0x234
+ 
++#define DVO_MATRIX_SET			0x140
++#define DVO_CSC_EN				BIT(0)
++#define DVO_INT_MTX_SEL_MASK			GENMASK(8, 4)
++
++#define DVO_YUV422_SET			0x170
++#define DVO_YUV422_EN				BIT(0)
++#define DVO_CRYCB_MAP				BIT(8)
++
+ #endif /* __MTK_DPI_REGS_H */
 diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
 index 98036320cb20c832ebeb77dfebbc98028f181d10..43b96acdb36abcf0424aa297383e29c0793f4f18 100644
 --- a/drivers/iommu/mtk_iommu.c
@@ -33086,7 +36250,7 @@ index 0000000000000000000000000000000000000000..8ec0a9ac250a237b3b47ceacec20ddef
 +
 +#endif /* __SOC_MEDIATEK_MT8189_MMSYS_H */
 diff --git a/drivers/soc/mediatek/mtk-devapc.c b/drivers/soc/mediatek/mtk-devapc.c
-index decf382a3a51c418a19230359c185c0ee808e09d..56b5dc8ba4acb71aaa8f2535b6a99b2d370e0d61 100644
+index decf382a3a51c418a19230359c185c0ee808e09d..55e4bd113321fac5cabc9c013d6c6cfeb7c3b8bf 100644
 --- a/drivers/soc/mediatek/mtk-devapc.c
 +++ b/drivers/soc/mediatek/mtk-devapc.c
 @@ -8,13 +8,15 @@
@@ -33106,82 +36270,7 @@ index decf382a3a51c418a19230359c185c0ee808e09d..56b5dc8ba4acb71aaa8f2535b6a99b2d
  struct mtk_devapc_vio_dbgs {
  	union {
  		u32 vio_dbg0;
-@@ -41,7 +43,13 @@ struct mtk_devapc_vio_dbgs {
- 	u32 vio_dbg3;
- };
- 
--struct mtk_devapc_regs_ofs {
-+struct mtk_devapc_data {
-+	/* architecture version */
-+	u32 version;
-+
-+	/* default numbers of violation index */
-+	u32 default_vio_idx_num;
-+
- 	/* reg offset */
- 	u32 vio_mask_offset;
- 	u32 vio_sta_offset;
-@@ -55,13 +63,6 @@ struct mtk_devapc_regs_ofs {
- 	u32 vio_shift_con_offset;
- };
- 
--struct mtk_devapc_data {
--	u32 version;
--	/* Default numbers of violation index */
--	u32 default_vio_idx_num;
--	const struct mtk_devapc_regs_ofs *regs_ofs;
--};
--
- struct mtk_devapc_context {
- 	struct device *dev;
- 	void __iomem *base;
-@@ -77,7 +78,7 @@ static void clear_vio_status(struct mtk_devapc_context *ctx)
- 	void __iomem *reg;
- 	int i;
- 
--	reg = ctx->base + ctx->data->regs_ofs->vio_sta_offset;
-+	reg = ctx->base + ctx->data->vio_sta_offset;
- 
- 	for (i = 0; i < VIO_MOD_TO_REG_IND(ctx->vio_idx_num - 1); i++)
- 		writel(GENMASK(31, 0), reg + 4 * i);
-@@ -92,7 +93,7 @@ static void mask_module_irq(struct mtk_devapc_context *ctx, bool mask)
- 	u32 val;
- 	int i;
- 
--	reg = ctx->base + ctx->data->regs_ofs->vio_mask_offset;
-+	reg = ctx->base + ctx->data->vio_mask_offset;
- 
- 	if (mask)
- 		val = GENMASK(31, 0);
-@@ -135,11 +136,11 @@ static int devapc_sync_vio_dbg(struct mtk_devapc_context *ctx)
- 	u32 val;
- 
- 	pd_vio_shift_sta_reg = ctx->base +
--			       ctx->data->regs_ofs->vio_shift_sta_offset;
-+			       ctx->data->vio_shift_sta_offset;
- 	pd_vio_shift_sel_reg = ctx->base +
--			       ctx->data->regs_ofs->vio_shift_sel_offset;
-+			       ctx->data->vio_shift_sel_offset;
- 	pd_vio_shift_con_reg = ctx->base +
--			       ctx->data->regs_ofs->vio_shift_con_offset;
-+			       ctx->data->vio_shift_con_offset;
- 
- 	/* Find the minimum shift group which has violation */
- 	val = readl(pd_vio_shift_sta_reg);
-@@ -185,16 +186,16 @@ static void devapc_extract_vio_dbg(struct mtk_devapc_context *ctx)
- 	u32 vio_w, vio_r;
- 	u64 vio_addr;
- 
--	vio_dbg0_reg = ctx->base + ctx->data->regs_ofs->vio_dbg0_offset;
--	vio_dbg1_reg = ctx->base + ctx->data->regs_ofs->vio_dbg1_offset;
--	vio_dbg2_reg = ctx->base + ctx->data->regs_ofs->vio_dbg2_offset;
--	vio_dbg3_reg = ctx->base + ctx->data->regs_ofs->vio_dbg3_offset;
-+	vio_dbg0_reg = ctx->base + ctx->data->vio_dbg0_offset;
-+	vio_dbg1_reg = ctx->base + ctx->data->vio_dbg1_offset;
-+	vio_dbg2_reg = ctx->base + ctx->data->vio_dbg2_offset;
-+	vio_dbg3_reg = ctx->base + ctx->data->vio_dbg3_offset;
- 
- 	vio_dbgs.vio_dbg0 = readl(vio_dbg0_reg);
+@@ -194,7 +196,7 @@ static void devapc_extract_vio_dbg(struct mtk_devapc_context *ctx)
  	vio_dbgs.vio_dbg1 = readl(vio_dbg1_reg);
  	if (ctx->data->version >= 2U)
  		vio_dbgs.vio_dbg2 = readl(vio_dbg2_reg);
@@ -33190,7 +36279,7 @@ index decf382a3a51c418a19230359c185c0ee808e09d..56b5dc8ba4acb71aaa8f2535b6a99b2d
  		vio_dbgs.vio_dbg3 = readl(vio_dbg3_reg);
  
  	if (ctx->data->version == 1U) {
-@@ -234,11 +235,12 @@ static void devapc_extract_vio_dbg(struct mtk_devapc_context *ctx)
+@@ -234,11 +236,12 @@ static void devapc_extract_vio_dbg(struct mtk_devapc_context *ctx)
   */
  static irqreturn_t devapc_violation_irq(int irq_number, void *data)
  {
@@ -33204,7 +36293,7 @@ index decf382a3a51c418a19230359c185c0ee808e09d..56b5dc8ba4acb71aaa8f2535b6a99b2d
  		devapc_extract_vio_dbg(ctx);
  
  	clear_vio_status(ctx);
-@@ -253,11 +255,11 @@ static irqreturn_t devapc_violation_irq(int irq_number, void *data)
+@@ -253,11 +256,11 @@ static irqreturn_t devapc_violation_irq(int irq_number, void *data)
   */
  static void start_devapc(struct mtk_devapc_context *ctx)
  {
@@ -33213,24 +36302,12 @@ index decf382a3a51c418a19230359c185c0ee808e09d..56b5dc8ba4acb71aaa8f2535b6a99b2d
  	devapc_violation_irq(0, ctx);
  	dev_info(ctx->dev, "%s: Clear pending violation done...\n", __func__);
  
-+	writel(BIT(31), ctx->base + ctx->data->apc_con_offset);
++	writel(BIT(31), ctx->base + ctx->data->regs_ofs->apc_con_offset);
 +
  	mask_module_irq(ctx, false);
  }
  
-@@ -268,46 +270,63 @@ static void stop_devapc(struct mtk_devapc_context *ctx)
- {
- 	mask_module_irq(ctx, true);
- 
--	writel(BIT(2), ctx->base + ctx->data->regs_ofs->apc_con_offset);
-+	writel(BIT(2), ctx->base + ctx->data->apc_con_offset);
- }
- 
--static const struct mtk_devapc_regs_ofs devapc_regs_ofs_mt6779 = {
-+static const struct mtk_devapc_data devapc_mt6779 = {
-+	.version = 1,
-+	.default_vio_idx_num = 511,
- 	.vio_mask_offset = 0x0,
+@@ -276,10 +279,10 @@ static const struct mtk_devapc_regs_ofs devapc_regs_ofs_mt6779 = {
  	.vio_sta_offset = 0x400,
  	.vio_dbg0_offset = 0x900,
  	.vio_dbg1_offset = 0x904,
@@ -33244,11 +36321,8 @@ index decf382a3a51c418a19230359c185c0ee808e09d..56b5dc8ba4acb71aaa8f2535b6a99b2d
 +	.vio_shift_con_offset = 0xf20,
  };
  
--static const struct mtk_devapc_regs_ofs devapc_regs_ofs_mt8196 = {
-+static const struct mtk_devapc_data devapc_mt8196 = {
-+	.version = 3,
- 	.vio_mask_offset = 0x0,
- 	.vio_sta_offset = 0x400,
+ static const struct mtk_devapc_regs_ofs devapc_regs_ofs_mt8196 = {
+@@ -288,19 +291,21 @@ static const struct mtk_devapc_regs_ofs devapc_regs_ofs_mt8196 = {
  	.vio_dbg0_offset = 0x900,
  	.vio_dbg1_offset = 0x904,
  	.vio_dbg2_offset = 0x908,
@@ -33257,52 +36331,37 @@ index decf382a3a51c418a19230359c185c0ee808e09d..56b5dc8ba4acb71aaa8f2535b6a99b2d
 -	.vio_shift_sta_offset = 0xF20,
 -	.vio_shift_sel_offset = 0xF30,
 -	.vio_shift_con_offset = 0xF10,
--};
--
--static const struct mtk_devapc_data devapc_mt6779 = {
--	.default_vio_idx_num = 511,
--	.regs_ofs = &devapc_regs_ofs_mt6779,
 +	.vio_dbg3_offset = 0x90c,
 +	.apc_con_offset = 0xf00,
 +	.vio_shift_sta_offset = 0xf20,
 +	.vio_shift_sel_offset = 0xf30,
 +	.vio_shift_con_offset = 0xf10,
+ };
+ 
+ static const struct mtk_devapc_data devapc_mt6779 = {
++	.version = 1,
+ 	.default_vio_idx_num = 511,
+ 	.regs_ofs = &devapc_regs_ofs_mt6779,
  };
  
  static const struct mtk_devapc_data devapc_mt8186 = {
 +	.version = 1,
  	.default_vio_idx_num = 519,
--	.regs_ofs = &devapc_regs_ofs_mt6779,
-+	.vio_mask_offset = 0x0,
-+	.vio_sta_offset = 0x400,
-+	.vio_dbg0_offset = 0x900,
-+	.vio_dbg1_offset = 0x904,
-+	.vio_dbg2_offset = 0x908,
-+	.vio_dbg3_offset = 0x90c,
-+	.apc_con_offset = 0xf00,
-+	.vio_shift_sta_offset = 0xf20,
-+	.vio_shift_sel_offset = 0xf30,
-+	.vio_shift_con_offset = 0xf10,
+ 	.regs_ofs = &devapc_regs_ofs_mt6779,
+ };
+@@ -310,6 +315,11 @@ static const struct mtk_devapc_data devapc_mt8196 = {
+ 	.regs_ofs = &devapc_regs_ofs_mt8196,
  };
  
--static const struct mtk_devapc_data devapc_mt8196 = {
 +static const struct mtk_devapc_data devapc_mt8189 = {
- 	.version = 3,
--	.regs_ofs = &devapc_regs_ofs_mt8196,
-+	.vio_mask_offset = 0x0,
-+	.vio_sta_offset = 0x400,
-+	.vio_dbg0_offset = 0x900,
-+	.vio_dbg1_offset = 0x904,
-+	.vio_dbg2_offset = 0x908,
-+	.vio_dbg3_offset = 0x90c,
-+	.apc_con_offset = 0xf00,
-+	.vio_shift_sta_offset = 0xf20,
-+	.vio_shift_sel_offset = 0xf30,
-+	.vio_shift_con_offset = 0xf10,
- };
- 
++	.version = 3,
++	.regs_ofs = &devapc_regs_ofs_mt8196,
++};
++
  static const struct of_device_id mtk_devapc_dt_match[] = {
-@@ -320,6 +339,9 @@ static const struct of_device_id mtk_devapc_dt_match[] = {
+ 	{
+ 		.compatible = "mediatek,mt6779-devapc",
+@@ -320,6 +330,9 @@ static const struct of_device_id mtk_devapc_dt_match[] = {
  	}, {
  		.compatible = "mediatek,mt8196-devapc",
  		.data = &devapc_mt8196,
@@ -33312,22 +36371,18 @@ index decf382a3a51c418a19230359c185c0ee808e09d..56b5dc8ba4acb71aaa8f2535b6a99b2d
  	}, {
  	},
  };
-@@ -361,22 +383,18 @@ static int mtk_devapc_probe(struct platform_device *pdev)
- 	if (!devapc_irq)
- 		return -EINVAL;
- 
--	/*
--	 * The new design of DAPC clock is controlled by HW power domains,
--	 * making it unnecessary to provide the clock control driver.
--	 */
+@@ -366,17 +379,17 @@ static int mtk_devapc_probe(struct platform_device *pdev)
+ 	 * making it unnecessary to provide the clock control driver.
+ 	 */
  	ctx->infra_clk = devm_clk_get_optional(&pdev->dev, "devapc-infra-clock");
 -	if (!ctx->infra_clk) {
-+	if (!IS_ERR(ctx->infra_clk)) {
++	if (IS_ERR(ctx->infra_clk)) {
++		dev_dbg(ctx->dev, "Cannot get devapc clock from CCF\n");
++	} else {
  		if (clk_prepare_enable(ctx->infra_clk))
  			return -EINVAL;
- 	} else {
+-	} else {
 -		dev_dbg(ctx->dev, "Cannot get devapc clock from CCF\n");
-+		pr_info("Cannot get devapc clock from CCF\n");
  	}
  
  	ret = devm_request_irq(&pdev->dev, devapc_irq, devapc_violation_irq,
@@ -33338,15 +36393,19 @@ index decf382a3a51c418a19230359c185c0ee808e09d..56b5dc8ba4acb71aaa8f2535b6a99b2d
  			clk_disable_unprepare(ctx->infra_clk);
  		return ret;
  	}
-@@ -394,7 +412,7 @@ static int mtk_devapc_remove(struct platform_device *pdev)
+@@ -394,8 +407,11 @@ static int mtk_devapc_remove(struct platform_device *pdev)
  
  	stop_devapc(ctx);
  
 -	if (!ctx->infra_clk)
-+	if (!IS_ERR(ctx->infra_clk))
++	if (IS_ERR(ctx->infra_clk)) {
++		dev_dbg(ctx->dev, "Cannot get devapc clock from CCF\n");
++	} else {
  		clk_disable_unprepare(ctx->infra_clk);
++	}
  
  	return 0;
+ }
 diff --git a/drivers/soc/mediatek/mtk-mmsys.c b/drivers/soc/mediatek/mtk-mmsys.c
 index a8f26a6bd7781cac0ed967fc9017ac64f543eb2c..d0093c976f02451d861427f9cdebd35f17a2168f 100644
 --- a/drivers/soc/mediatek/mtk-mmsys.c
@@ -33599,95 +36658,6 @@ index 48029724eb2b42172d703664d68bba71a81a84a7..7dccf6a2b93a1d1407011e15bea4e65c
  	{}
  };
  MODULE_DEVICE_TABLE(of, mtk_spi_of_match);
-diff --git a/drivers/spi/spi-mtk-nor.c b/drivers/spi/spi-mtk-nor.c
-index 948c91b2a783744381010edeea4acb15d6b7f079..09c790a945c8ee8a821c1c28a0d460f02bd5e567 100644
---- a/drivers/spi/spi-mtk-nor.c
-+++ b/drivers/spi/spi-mtk-nor.c
-@@ -116,6 +116,7 @@ struct mtk_nor {
- 	struct spi_controller *ctlr;
- 	struct device *dev;
- 	void __iomem *base;
-+	void __iomem *dir_base;
- 	u8 *buffer;
- 	dma_addr_t buffer_dma;
- 	struct clk_bulk_data clocks[MAX_CLOCK_CNT];
-@@ -373,6 +374,7 @@ static int mtk_nor_dma_exec(struct mtk_nor *sp, u32 from, unsigned int length,
- 	writel(from, sp->base + MTK_NOR_REG_DMA_FADR);
- 	writel(dma_addr, sp->base + MTK_NOR_REG_DMA_DADR);
- 	writel(dma_addr + length, sp->base + MTK_NOR_REG_DMA_END_DADR);
-+	dev_err(sp->dev, "%s high_dma=%d dma_addr=0x%llx \n",__func__,sp->high_dma,dma_addr);
- 
- 	if (sp->high_dma) {
- 		writel(upper_32_bits(dma_addr),
-@@ -425,6 +427,23 @@ static int mtk_nor_read_bounce(struct mtk_nor *sp, const struct spi_mem_op *op)
- 	return ret;
- }
- 
-+static int mtk_nor_read_dir(struct mtk_nor *sp, const struct spi_mem_op *op)
-+{
-+	unsigned int rdlen;
-+
-+	u8 *buf = op->data.buf.in;
-+
-+	if (op->data.nbytes & MTK_NOR_DMA_ALIGN_MASK)
-+		rdlen = (op->data.nbytes + MTK_NOR_DMA_ALIGN) & ~MTK_NOR_DMA_ALIGN_MASK;
-+	else
-+		rdlen = op->data.nbytes;
-+
-+	memcpy(buf, (u8 *)(sp->dir_base + op->addr.val), rdlen);
-+
-+	return 0;
-+}
-+
-+
- static int mtk_nor_read_dma(struct mtk_nor *sp, const struct spi_mem_op *op)
- {
- 	int ret;
-@@ -621,7 +640,7 @@ static int mtk_nor_exec_op(struct spi_mem *mem, const struct spi_mem_op *op)
- 		if (op->data.nbytes == 1) {
- 			mtk_nor_set_addr(sp, op);
- 			return mtk_nor_read_pio(sp, op);
--		} else {
-+		} else if(op->data.nbytes > 0x1000000) {
- 			ret = mtk_nor_read_dma(sp, op);
- 			if (unlikely(ret)) {
- 				/* Handle rare bus glitch */
-@@ -629,8 +648,10 @@ static int mtk_nor_exec_op(struct spi_mem *mem, const struct spi_mem_op *op)
- 				mtk_nor_setup_bus(sp, op);
- 				return mtk_nor_read_dma(sp, op);
- 			}
--
- 			return ret;
-+		} else {
-+			mtk_nor_read_dir(sp, op);
-+			return 0;
- 		}
- 	}
- 
-@@ -836,12 +857,15 @@ static int mtk_nor_probe(struct platform_device *pdev)
- 	struct mtk_nor *sp;
- 	struct mtk_nor_caps *caps;
- 	void __iomem *base;
-+	void __iomem *dir_base;
- 	int ret, irq;
- 
- 	base = devm_platform_ioremap_resource(pdev, 0);
- 	if (IS_ERR(base))
- 		return PTR_ERR(base);
- 
-+	dir_base = ioremap(0x38000000, 0x1000000);
-+
- 	caps = (struct mtk_nor_caps *)of_device_get_match_data(&pdev->dev);
- 
- 	ret = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(caps->dma_bits));
-@@ -870,6 +894,7 @@ static int mtk_nor_probe(struct platform_device *pdev)
- 
- 	sp = spi_controller_get_devdata(ctlr);
- 	sp->base = base;
-+	sp->dir_base = dir_base;
- 	sp->has_irq = false;
- 	sp->wbuf_en = false;
- 	sp->ctlr = ctlr;
 diff --git a/drivers/spmi/spmi-mtk-pmif.c b/drivers/spmi/spmi-mtk-pmif.c
 index f15966fad99cf11fc311510d7743d6934166440d..bf46c23497595ad7c34630f6e26c0c58aa317e80 100644
 --- a/drivers/spmi/spmi-mtk-pmif.c
@@ -39847,7 +42817,7 @@ index 44e7fe3c32da56e0f194da99d744c18cc970d2fe..d3c08936c4e6f9af23df0411fb7abeea
  };
  MODULE_DEVICE_TABLE(acpi, rt1015p_acpi_match);
 diff --git a/sound/soc/mediatek/Kconfig b/sound/soc/mediatek/Kconfig
-index e5f6893bc57761b2714d444feddde2d941b178ef..4bc170032cbf1d4c5020896e750f39ca991dcf6a 100644
+index e5f6893bc57761b2714d444feddde2d941b178ef..a564e2724e72d4707a24e2204b928cc44f8a6f85 100644
 --- a/sound/soc/mediatek/Kconfig
 +++ b/sound/soc/mediatek/Kconfig
 @@ -338,3 +338,32 @@ config SND_SOC_MT8195_MT6359
@@ -39874,7 +42844,7 @@ index e5f6893bc57761b2714d444feddde2d941b178ef..4bc170032cbf1d4c5020896e750f39ca
 +	select SND_SOC_NAU8825
 +	select SND_SOC_RT5645
 +	select SND_SOC_RT9123P
-+	select SND_SOC_RT1019
++	select SND_SOC_RT1015P
 +	select SND_SOC_RT5682S
 +	select SND_SOC_RT5682_I2C
 +	help
