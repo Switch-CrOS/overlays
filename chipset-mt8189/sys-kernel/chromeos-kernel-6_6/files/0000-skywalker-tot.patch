@@ -2699,10 +2699,10 @@ index 0000000000000000000000000000000000000000..9ee789c2cd6d5761c7cd6db6cf288ae0
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8189-skywalker-obiwan.dtsi b/arch/arm64/boot/dts/mediatek/mt8189-skywalker-obiwan.dtsi
 new file mode 100644
-index 0000000000000000000000000000000000000000..5db78438a5aa7130cbd50756187170d141ba7fdd
+index 0000000000000000000000000000000000000000..a5c9a1b61f2aaf1d74ccf9f2404c32262e6caace
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt8189-skywalker-obiwan.dtsi
-@@ -0,0 +1,444 @@
+@@ -0,0 +1,460 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
 +/*
 + * Copyright (C) 2025 Google Inc.
@@ -2745,9 +2745,17 @@ index 0000000000000000000000000000000000000000..5db78438a5aa7130cbd50756187170d1
 +};
 +
 +&ap_i2c_tchpad  {
++	/delete-node/ trackpad@15;
 +
-+	trackpad: trackpad@15 {
-+		status = "disabled";
++	trackpad_elan: trackpad@15 {
++		compatible = "elan,ekth3000";
++		reg = <0x15>;
++		interrupts-extended = <&pio 125 IRQ_TYPE_LEVEL_LOW>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&trackpad_pins>;
++		wakeup-source;
++		vcc-supply = <&pp1800_trackpad>;
++		status = "fail-needs-probe";
 +	};
 +
 +	trackpad_goodix: trackpad@2c {
@@ -3146,6 +3154,14 @@ index 0000000000000000000000000000000000000000..5db78438a5aa7130cbd50756187170d1
 +
 +&touchscreen_pins {
 +	/delete-node/ pins-touch-en;
++};
++
++&u3phy0 {
++	status = "okay";
++};
++
++&xhci0 {
++	status = "okay";
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8189-skywalker-quigon-sku2.dts b/arch/arm64/boot/dts/mediatek/mt8189-skywalker-quigon-sku2.dts
 new file mode 100644
@@ -4851,10 +4867,10 @@ index 0000000000000000000000000000000000000000..680b1e53ba0b8198278a1b1b50158acf
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8189.dtsi b/arch/arm64/boot/dts/mediatek/mt8189.dtsi
 new file mode 100644
-index 0000000000000000000000000000000000000000..0e767141e390d438f1c864d622463bb5c916ea5b
+index 0000000000000000000000000000000000000000..35a2e95b2d3746c93f8cf5e64e41240825d6aeb3
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt8189.dtsi
-@@ -0,0 +1,3057 @@
+@@ -0,0 +1,3084 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
 +/*
 + * Copyright (c) 2025 MediaTek Inc.
@@ -5979,15 +5995,15 @@ index 0000000000000000000000000000000000000000..0e767141e390d438f1c864d622463bb5
 +
 +		gpu: gpu@13000000 {
 +			compatible = "mediatek,mt8189-mali",
-+				"arm,mali-valhall-jm";
++				     "arm,mali-valhall-jm";
 +			reg = <0 0x13000000 0 0x4000>;
 +
 +			nvmem-cells = <&gpu_avs0>, <&gpu_avs1>, <&gpu_avs2>;
 +			nvmem-cell-names = "avs-bin-0", "avs-bin-1", "avs-bin-2";
 +
 +			interrupts = <GIC_SPI 271 IRQ_TYPE_LEVEL_HIGH 0>,
-+				<GIC_SPI 270 IRQ_TYPE_LEVEL_HIGH 0>,
-+				<GIC_SPI 269 IRQ_TYPE_LEVEL_HIGH 0>;
++				     <GIC_SPI 270 IRQ_TYPE_LEVEL_HIGH 0>,
++				     <GIC_SPI 269 IRQ_TYPE_LEVEL_HIGH 0>;
 +			interrupt-names = "job", "mmu", "gpu";
 +
 +			operating-points-v2 = <&gpu_opp_table>;
@@ -6005,7 +6021,7 @@ index 0000000000000000000000000000000000000000..0e767141e390d438f1c864d622463bb5
 +				"subsys_bg3d";
 +
 +			power-domains = <&scpsys MT8189_POWER_DOMAIN_MFG2>,
-+				<&scpsys MT8189_POWER_DOMAIN_MFG3>;
++					<&scpsys MT8189_POWER_DOMAIN_MFG3>;
 +			power-domain-names = "core0", "core1";
 +			#cooling-cells = <2>;
 +
@@ -7733,6 +7749,33 @@ index 0000000000000000000000000000000000000000..0e767141e390d438f1c864d622463bb5
 +			mediatek,scp = <&scp>;
 +		};
 +
++		jpeg_encoder: jpeg-encoder@17030000 {
++			compatible = "mediatek,mt8189-jpgenc";
++			reg = <0 0x17030000 0 0x10000>;
++			interrupts = <GIC_SPI 495 IRQ_TYPE_LEVEL_HIGH 0>;
++			clocks = <&venc_gcon_clk CLK_VEN1_CKE2_JPGENC>;
++			clock-names = "jpgenc";
++			power-domains = <&scpsys MT8189_POWER_DOMAIN_VEN0>;
++			mediatek,larb = <&smi_larb7>;
++			iommus = <&mm_iommu M4U_L7_P5_JPGENC_Y_RDMA>,
++				 <&mm_iommu M4U_L7_P6_JPGENC_C_RDMA>,
++				 <&mm_iommu M4U_L7_P7_JPGENC_Q_RDMA>,
++				 <&mm_iommu M4U_L7_P9_JPGENC_BSDMA>;
++		};
++
++		jpeg_decoder: jpeg-decoder@17040000 {
++			compatible = "mediatek,mt8189-jpgdec";
++			reg = <0 0x17040000 0 0x10000>;
++			interrupts = <GIC_SPI 381 IRQ_TYPE_LEVEL_HIGH 0>;
++			clocks = <&venc_gcon_clk CLK_VEN1_CKE3_JPGDEC>;
++			clock-names = "jpgdec";
++			power-domains = <&scpsys MT8189_POWER_DOMAIN_VEN0>;
++			mediatek,larb = <&smi_larb7>;
++			iommus = <&mm_iommu M4U_L7_P15_JPGDEC_WDMA>,
++				 <&mm_iommu M4U_L7_P16_JPGDEC_BSDMA>,
++				 <&mm_iommu M4U_L7_P17_JPGDEC_HUFF_OFFSET>;
++		};
++
 +		emiisu {
 +			compatible = "mediatek,common-emiisu";
 +			ctrl-intf = <1>;
@@ -7913,7 +7956,7 @@ index 0000000000000000000000000000000000000000..0e767141e390d438f1c864d622463bb5
 +	interrupts-extended = <&pio 194 IRQ_TYPE_LEVEL_HIGH>;
 +};
 diff --git a/chromeos/config/chromeos/arm64/chromiumos-mediatek.flavour.config b/chromeos/config/chromeos/arm64/chromiumos-mediatek.flavour.config
-index 7676d204555469a97083ce23ce44261d3739759d..98d1f98a854252197cc6478061bbed4998b47f2b 100644
+index 7676d204555469a97083ce23ce44261d3739759d..d5874420edcaf731b32abb4eb37946fe1da6c6a7 100644
 --- a/chromeos/config/chromeos/arm64/chromiumos-mediatek.flavour.config
 +++ b/chromeos/config/chromeos/arm64/chromiumos-mediatek.flavour.config
 @@ -58,6 +58,8 @@ CONFIG_DMA_CMA=y
@@ -7972,7 +8015,12 @@ index 7676d204555469a97083ce23ce44261d3739759d..98d1f98a854252197cc6478061bbed49
  CONFIG_TYPEC_UCSI=y
  CONFIG_USB_LINK_LAYER_TEST=m
  CONFIG_USB_MTU3=y
-@@ -229,8 +240,19 @@ CONFIG_VIDEO_MEDIATEK_JPEG=m
+@@ -225,12 +236,23 @@ CONFIG_VIDEO_GC5035=m
+ CONFIG_VIDEO_MEDIATEK_FD=m
+ CONFIG_VIDEO_MEDIATEK_ISP_DIP=m
+ CONFIG_VIDEO_MEDIATEK_ISP_PASS1=m
+-CONFIG_VIDEO_MEDIATEK_JPEG=m
++CONFIG_VIDEO_MEDIATEK_JPEG=y
  CONFIG_VIDEO_MEDIATEK_MDP=m
  CONFIG_VIDEO_MEDIATEK_MDP3=m
  CONFIG_VIDEO_MEDIATEK_VCODEC=m
@@ -21456,12 +21504,53 @@ index 1e9d955b5bae0be682a8833ea6e9770cbf4c2a32..47937764afdd58675f5eee5e67e7848e
  
  #if IS_ENABLED(CONFIG_OF)
  extern const struct of_device_id kbase_dt_ids[];
+diff --git a/drivers/gpu/arm/mali/platform/mediatek/mali_kbase_runtime_pm.c b/drivers/gpu/arm/mali/platform/mediatek/mali_kbase_runtime_pm.c
+index 8ba6553001930b025deeaa3f8b5f970576861ebf..b9ec1dc6d1eebe55fdcc621a5c120c393f476e05 100644
+--- a/drivers/gpu/arm/mali/platform/mediatek/mali_kbase_runtime_pm.c
++++ b/drivers/gpu/arm/mali/platform/mediatek/mali_kbase_runtime_pm.c
+@@ -16,6 +16,24 @@ void mtk_voltage_range_check(struct kbase_device *kbdev, unsigned long *volts)
+ 			   cfg->vsram_gpu_max_microvolt);
+ }
+ 
++void mtk_voltage_range_check_v2(struct kbase_device *kbdev, unsigned long *volts)
++{
++	struct mtk_platform_context *ctx = kbdev->platform_context;
++	const struct mtk_hw_config *cfg = ctx->config;
++
++	volts[0] = clamp_t(unsigned long, volts[0],
++			   cfg->vgpu_min_microvolt,
++			   cfg->vgpu_max_microvolt);
++
++	if (kbdev->nr_regulators == 1)
++		return;
++
++	volts[1] = max(volts[0], cfg->vsram_gpu_min_microvolt);
++	volts[1] = clamp_t(unsigned long, volts[1],
++			   cfg->vsram_gpu_min_microvolt,
++			   cfg->vsram_gpu_max_microvolt);
++}
++
+ int mtk_set_frequency(struct kbase_device *kbdev, unsigned long freq)
+ {
+ 	int err;
+diff --git a/drivers/gpu/arm/mali/platform/mediatek/mali_kbase_runtime_pm.h b/drivers/gpu/arm/mali/platform/mediatek/mali_kbase_runtime_pm.h
+index 0b6240f50a5b262d68c6e829e20774a53aac081d..384ad3774e139fd19bb64d59d3423d39f16e2ab4 100644
+--- a/drivers/gpu/arm/mali/platform/mediatek/mali_kbase_runtime_pm.h
++++ b/drivers/gpu/arm/mali/platform/mediatek/mali_kbase_runtime_pm.h
+@@ -113,6 +113,7 @@ struct mtk_platform_context {
+ };
+ 
+ void mtk_voltage_range_check(struct kbase_device *kbdev, unsigned long *volts);
++void mtk_voltage_range_check_v2(struct kbase_device *kbdev, unsigned long *volts);
+ int mtk_set_frequency(struct kbase_device *kbdev, unsigned long freq);
+ int mtk_set_voltages(struct kbase_device *kbdev, unsigned long *target_volts, bool inc);
+ 
 diff --git a/drivers/gpu/arm/mali/platform/mediatek/mt8189_mali_kbase_runtime_pm.c b/drivers/gpu/arm/mali/platform/mediatek/mt8189_mali_kbase_runtime_pm.c
 new file mode 100644
-index 0000000000000000000000000000000000000000..c5147a2d69932f2728b9fe3573c9c972408af035
+index 0000000000000000000000000000000000000000..7992e78dd089d055cdd25909fe67011f3c85bba2
 --- /dev/null
 +++ b/drivers/gpu/arm/mali/platform/mediatek/mt8189_mali_kbase_runtime_pm.c
-@@ -0,0 +1,264 @@
+@@ -0,0 +1,242 @@
 +// SPDX-License-Identifier: GPL-2.0
 +// Copyright (c) 2025 Mediatek Inc.
 +
@@ -21567,7 +21656,7 @@ index 0000000000000000000000000000000000000000..c5147a2d69932f2728b9fe3573c9c972
 +		volt = (avs_val & 0xFF) * 6250 + avs_margin[i];
 +
 +		if (freq != avs_table[i].freq) {
-+			dev_err(kbdev->dev, "%s invalid sign-off freq %ld (expected %ld)\n",
++			dev_err(kbdev->dev, "%s invalid sign-off freq %lu (expected %lu)\n",
 +				avs_cell, freq, avs_table[i].freq);
 +			return -1;
 +		}
@@ -21580,7 +21669,7 @@ index 0000000000000000000000000000000000000000..c5147a2d69932f2728b9fe3573c9c972
 +
 +		if (volt > dev_pm_opp_get_voltage(opp) ||
 +			volt < cfg->vgpu_min_microvolt || volt > cfg->vgpu_max_microvolt) {
-+			dev_err(kbdev->dev, "%s volt %ld over boundary\n", avs_cell, volt);
++			dev_err(kbdev->dev, "%s volt %lu over boundary\n", avs_cell, volt);
 +			return -1;
 +		}
 +
@@ -21679,28 +21768,6 @@ index 0000000000000000000000000000000000000000..c5147a2d69932f2728b9fe3573c9c972
 +		avs_interpolate(kbdev);
 +}
 +
-+static void mt8189_voltage_range_check(struct kbase_device *kbdev, unsigned long *volts)
-+{
-+	struct mtk_platform_context *ctx = kbdev->platform_context;
-+	const struct mtk_hw_config *cfg = ctx->config;
-+
-+	volts[0] = clamp_t(unsigned long, volts[0],
-+			   cfg->vgpu_min_microvolt,
-+			   cfg->vgpu_max_microvolt);
-+
-+	if (kbdev->nr_regulators == 1)
-+		return;
-+
-+	if (volts[0] > cfg->vsram_gpu_min_microvolt)
-+		volts[1] = volts[0];
-+	else
-+		volts[1] = cfg->vsram_gpu_min_microvolt;
-+
-+	volts[1] = clamp_t(unsigned long, volts[1],
-+			   cfg->vsram_gpu_min_microvolt,
-+			   cfg->vsram_gpu_max_microvolt);
-+}
-+
 +static int platform_init(struct kbase_device *kbdev)
 +{
 +	struct mtk_platform_context *ctx = &mt8189_platform_context;
@@ -21714,7 +21781,7 @@ index 0000000000000000000000000000000000000000..c5147a2d69932f2728b9fe3573c9c972
 +
 +#if IS_ENABLED(CONFIG_MALI_DEVFREQ)
 +	kbdev->devfreq_ops.set_frequency = mtk_set_frequency;
-+	kbdev->devfreq_ops.voltage_range_check = mt8189_voltage_range_check;
++	kbdev->devfreq_ops.voltage_range_check = mtk_voltage_range_check_v2;
 +#endif
 +
 +	avs_adjust(kbdev);
@@ -25249,7 +25316,7 @@ index 2902176ab06f1ddcb1e4b0ca87a945c6a251924b..6b46aa996d242911c04a8bcc7b175fd7
  #define REG_360C_AUX_TX_P0									(0x360c)
  #define REG_3614_AUX_TX_P0									(0x3614)
 diff --git a/drivers/gpu/drm/mediatek/mtk_dp_v2.c b/drivers/gpu/drm/mediatek/mtk_dp_v2.c
-index 69c319cb9e59f7938c716264bc22ae4418da4aef..48005a1c78d6132cec4e3d78739ced789cbb494f 100644
+index 69c319cb9e59f7938c716264bc22ae4418da4aef..699555959ca801ced840775f4f0b5a26fa3b9840 100644
 --- a/drivers/gpu/drm/mediatek/mtk_dp_v2.c
 +++ b/drivers/gpu/drm/mediatek/mtk_dp_v2.c
 @@ -21,6 +21,7 @@
@@ -25318,7 +25385,7 @@ index 69c319cb9e59f7938c716264bc22ae4418da4aef..48005a1c78d6132cec4e3d78739ced78
  		break;
  	default:
  		break;
-@@ -2882,41 +2894,46 @@ static void mtk_dp_phy_set_lane_pwr_v2(struct mtk_dp *mtk_dp, enum dp_lane_count
+@@ -2882,41 +2894,44 @@ static void mtk_dp_phy_set_lane_pwr_v2(struct mtk_dp *mtk_dp, enum dp_lane_count
  {
  	int power_indx = lane_count - 1;
  	u8 power_bmp = BIT(power_indx);
@@ -25337,8 +25404,7 @@ index 69c319cb9e59f7938c716264bc22ae4418da4aef..48005a1c78d6132cec4e3d78739ced78
 +
 +		drm_dbg_kms(mtk_dp->drm_dev, "[DPTX] set lane pwr %x\n",
 +			    FIELD_GET(TX_LN_EN_FLDMASK,
-+				      PHY_READ_BYTE(mtk_dp,
-+						    mtk_dp->data->phyd_dig_glb_offset
++				      PHY_READ_BYTE(mtk_dp, phyd_dig_glb_offset
 +						    + DP_PHY_DIG_TX_CTL_0)));
  	} while (--power_indx >= 0);
  }
@@ -25349,11 +25415,9 @@ index 69c319cb9e59f7938c716264bc22ae4418da4aef..48005a1c78d6132cec4e3d78739ced78
 -				      + DP_PHY_DIG_TX_CTL_0) &
 -				      TX_LN_EN_FLDMASK) >> TX_LN_EN_FLDMASK_POS;
 +	u32 phyd_dig_glb_offset = mtk_dp->data->phyd_dig_glb_offset;
-+
-+	u8 power_bmp = (PHY_READ_BYTE(mtk_dp, phyd_dig_glb_offset
-+			+ DP_PHY_DIG_TX_CTL_0) &
-+			TX_LN_EN_FLDMASK) >> TX_LN_EN_FLDMASK_POS;
  
++	u8 power_bmp = FIELD_GET(TX_LN_EN_FLDMASK,
++				 PHY_READ_BYTE(mtk_dp, phyd_dig_glb_offset + DP_PHY_DIG_TX_CTL_0));
  	do {
  		power_bmp >>= 1;
 -		PHY_WRITE_BYTE_MASK(mtk_dp, PHYD_DIG_GLB_OFFSET + DP_PHY_DIG_TX_CTL_0,
@@ -25365,8 +25429,9 @@ index 69c319cb9e59f7938c716264bc22ae4418da4aef..48005a1c78d6132cec4e3d78739ced78
 -							     + DP_PHY_DIG_TX_CTL_0) &
 -							     TX_LN_EN_FLDMASK) >> TX_LN_EN_FLDMASK_POS);
 +		drm_dbg_kms(mtk_dp->drm_dev, "[DPTX] clear lane pwr %x\n",
-+			    PHY_READ_BYTE(mtk_dp, phyd_dig_glb_offset + DP_PHY_DIG_TX_CTL_0) &
-+			    TX_LN_EN_FLDMASK >> TX_LN_EN_FLDMASK_POS);
++			    FIELD_GET(TX_LN_EN_FLDMASK,
++				      PHY_READ_BYTE(mtk_dp,
++				      phyd_dig_glb_offset + DP_PHY_DIG_TX_CTL_0)));
  	} while (power_bmp > 0);
  }
  
@@ -25380,7 +25445,7 @@ index 69c319cb9e59f7938c716264bc22ae4418da4aef..48005a1c78d6132cec4e3d78739ced78
  			    0x3 << FORCE_PWR_STATE_VAL_FLDMASK_POS, FORCE_PWR_STATE_VAL_FLDMASK);
  
  	drm_dbg_kms(mtk_dp->drm_dev, "[DPTX] DP PHYD power on\n");
-@@ -2926,14 +2943,15 @@ static void mtk_dp_phy_power_down_v2(struct mtk_dp *mtk_dp)
+@@ -2926,14 +2941,15 @@ static void mtk_dp_phy_power_down_v2(struct mtk_dp *mtk_dp)
  {
  	mtk_dp_phy_clear_lane_pwr_v2(mtk_dp);
  
@@ -25400,7 +25465,7 @@ index 69c319cb9e59f7938c716264bc22ae4418da4aef..48005a1c78d6132cec4e3d78739ced78
  			    BIT(1) | BIT(3), BIT(1) | BIT(3));
  
  	drm_dbg_kms(mtk_dp->drm_dev, "[DPTX] DP PHYD power down\n");
-@@ -2941,64 +2959,36 @@ static void mtk_dp_phy_power_down_v2(struct mtk_dp *mtk_dp)
+@@ -2941,64 +2957,36 @@ static void mtk_dp_phy_power_down_v2(struct mtk_dp *mtk_dp)
  
  static void mtk_dp_phy_reset_swing_pre_v2(struct mtk_dp *mtk_dp)
  {
@@ -25488,7 +25553,7 @@ index 69c319cb9e59f7938c716264bc22ae4418da4aef..48005a1c78d6132cec4e3d78739ced78
  				    0x0, TPLL_SSC_EN_FLDMASK);
  
  	drm_dbg_kms(mtk_dp->drm_dev, "[DPTX] Phy SSC enable = %d\n", enable);
-@@ -3031,11 +3021,12 @@ static void mtk_dp_phy_4lane_enable_v2(struct mtk_dp *mtk_dp)
+@@ -3031,11 +3019,12 @@ static void mtk_dp_phy_4lane_enable_v2(struct mtk_dp *mtk_dp)
  	value = (BIT(12) | BIT(13));
  
  	tmp = readl(mtk_dp->phy_mux_regs);
@@ -25504,7 +25569,7 @@ index 69c319cb9e59f7938c716264bc22ae4418da4aef..48005a1c78d6132cec4e3d78739ced78
  }
  
  static void mtk_dp_phy_4lane_disable_v2(struct mtk_dp *mtk_dp)
-@@ -3049,53 +3040,54 @@ static void mtk_dp_phy_4lane_disable_v2(struct mtk_dp *mtk_dp)
+@@ -3049,53 +3038,54 @@ static void mtk_dp_phy_4lane_disable_v2(struct mtk_dp *mtk_dp)
  	value = BIT(12);
  
  	tmp = readl(mtk_dp->phy_mux_regs);
@@ -25580,7 +25645,7 @@ index 69c319cb9e59f7938c716264bc22ae4418da4aef..48005a1c78d6132cec4e3d78739ced78
  	/* 4-1. PLL */
  	PHY_WRITE_BYTE_MASK(mtk_dp, 0x0614, BIT(0), BIT(0));
  	/* 4-2. Unused AUX TX High-Z */
-@@ -3103,12 +3095,73 @@ static void mtk_dp_phy_set_param_v2(struct mtk_dp *mtk_dp)
+@@ -3103,12 +3093,73 @@ static void mtk_dp_phy_set_param_v2(struct mtk_dp *mtk_dp)
  
  	/* 4-4. Swing and Pre-emphasis Optimization */
  	for (i = 0; i < 4; i++) {
@@ -25660,7 +25725,7 @@ index 69c319cb9e59f7938c716264bc22ae4418da4aef..48005a1c78d6132cec4e3d78739ced78
  	}
  }
  
-@@ -3120,12 +3173,14 @@ static void mtk_dp_phy_setting_v2(struct mtk_dp *mtk_dp)
+@@ -3120,12 +3171,14 @@ static void mtk_dp_phy_setting_v2(struct mtk_dp *mtk_dp)
  	else
  		mtk_dp_phy_4lane_disable_v2(mtk_dp);
  
@@ -25677,7 +25742,7 @@ index 69c319cb9e59f7938c716264bc22ae4418da4aef..48005a1c78d6132cec4e3d78739ced78
  	/* step2: phy power ON */
  	mtk_dp_phy_power_on_v2(mtk_dp);
  }
-@@ -3408,48 +3463,18 @@ static bool mtk_dp_swingt_set_pre_emphasis_v2(struct mtk_dp *mtk_dp,
+@@ -3408,48 +3461,18 @@ static bool mtk_dp_swingt_set_pre_emphasis_v2(struct mtk_dp *mtk_dp,
  	drm_dbg_kms(mtk_dp->drm_dev, "[DPTX] lane:%d, set Swing:0x%x, Emp:0x%x\n",
  	        lane_num, swing_level, pre_emphasis_level);
  
@@ -25734,7 +25799,7 @@ index 69c319cb9e59f7938c716264bc22ae4418da4aef..48005a1c78d6132cec4e3d78739ced78
  	return true;
  }
  
-@@ -3488,7 +3513,7 @@ static void mtk_dp_set_lane_count_v2(struct mtk_dp *mtk_dp, const enum dp_lane_c
+@@ -3488,7 +3511,7 @@ static void mtk_dp_set_lane_count_v2(struct mtk_dp *mtk_dp, const enum dp_lane_c
  		return;
  	}
  
@@ -25743,7 +25808,7 @@ index 69c319cb9e59f7938c716264bc22ae4418da4aef..48005a1c78d6132cec4e3d78739ced78
  		reg_offset = DP_REG_OFFSET(encoder_id);
  
  		WRITE_BYTE_MASK(mtk_dp, REG_3000_DP_ENCODER0_P0 + reg_offset,
-@@ -3519,7 +3544,7 @@ static void mtk_dp_set_enhanced_frame_mode_v2(struct mtk_dp *mtk_dp, bool enable
+@@ -3519,7 +3542,7 @@ static void mtk_dp_set_enhanced_frame_mode_v2(struct mtk_dp *mtk_dp, bool enable
  	enum dp_encoder_id encoder_id;
  	u32 reg_offset;
  
@@ -25752,7 +25817,7 @@ index 69c319cb9e59f7938c716264bc22ae4418da4aef..48005a1c78d6132cec4e3d78739ced78
  		reg_offset = DP_REG_OFFSET(encoder_id);
  
  		if (enable)
-@@ -3942,15 +3967,15 @@ static void mtk_dp_init_variable_v2(struct mtk_dp *mtk_dp)
+@@ -3942,15 +3965,15 @@ static void mtk_dp_init_variable_v2(struct mtk_dp *mtk_dp)
  	enum dp_encoder_id encoder_id;
  
  	mtk_dp->training_info.dp_version = DP_VER_14;
@@ -25771,7 +25836,7 @@ index 69c319cb9e59f7938c716264bc22ae4418da4aef..48005a1c78d6132cec4e3d78739ced78
  		mtk_dp->info[encoder_id].depth = DP_COLOR_DEPTH_8BIT;
  		memset(&mtk_dp->info[encoder_id].dp_output_timing, 0,
  		       sizeof(struct dp_timing_parameter));
-@@ -3975,7 +4000,7 @@ static void mtk_dp_initial_setting_v2(struct mtk_dp *mtk_dp)
+@@ -3975,7 +3998,7 @@ static void mtk_dp_initial_setting_v2(struct mtk_dp *mtk_dp)
  
  	mtk_dp_fec_init_setting_v2(mtk_dp);
  
@@ -25780,7 +25845,7 @@ index 69c319cb9e59f7938c716264bc22ae4418da4aef..48005a1c78d6132cec4e3d78739ced78
  		reg_offset = DP_REG_OFFSET(encoder_id);
  		WRITE_4BYTE_MASK(mtk_dp, REG_31EC_DP_ENCODER0_P0  + reg_offset, BIT(4), BIT(4));
  		WRITE_4BYTE_MASK(mtk_dp, REG_304C_DP_ENCODER0_P0  + reg_offset, 0, BIT(8));
-@@ -4073,12 +4098,12 @@ static void mtk_dp_init_port_v2(struct mtk_dp *mtk_dp)
+@@ -4073,12 +4096,12 @@ static void mtk_dp_init_port_v2(struct mtk_dp *mtk_dp)
  	mtk_dp_init_variable_v2(mtk_dp);
  
  	mtk_dp_fec_disable_v2(mtk_dp);
@@ -25795,7 +25860,7 @@ index 69c319cb9e59f7938c716264bc22ae4418da4aef..48005a1c78d6132cec4e3d78739ced78
  		mtk_dp_digital_setting_v2(mtk_dp, encoder_id);
  
  	mtk_dp_analog_power_on_v2(mtk_dp);
-@@ -4114,7 +4139,7 @@ static void mtk_dp_disconnect_release_v2(struct mtk_dp *mtk_dp)
+@@ -4114,7 +4137,7 @@ static void mtk_dp_disconnect_release_v2(struct mtk_dp *mtk_dp)
  	mtk_dp_phy_set_idle_pattern_v2(mtk_dp, true);
  	mtk_dp_fec_disable_v2(mtk_dp);
  
@@ -25804,7 +25869,7 @@ index 69c319cb9e59f7938c716264bc22ae4418da4aef..48005a1c78d6132cec4e3d78739ced78
  		mtk_dp_dsc_disable_v2(mtk_dp, i);
  
  	mtk_dp_analog_power_off_v2(mtk_dp);
-@@ -4431,7 +4456,8 @@ static int mtk_dp_bridge_atomic_check_v2(struct drm_bridge *bridge,
+@@ -4431,7 +4454,8 @@ static int mtk_dp_bridge_atomic_check_v2(struct drm_bridge *bridge,
  		mtk_dp_dsc_check_prepare_v2(mtk_dp, id);
  		mtk_dp->prop_dsc_enable[id]->values[0] = 1;
  	} else {
@@ -25814,7 +25879,7 @@ index 69c319cb9e59f7938c716264bc22ae4418da4aef..48005a1c78d6132cec4e3d78739ced78
  	}
  
  	drm_dbg_kms(mtk_dp->drm_dev,
-@@ -4802,7 +4828,7 @@ static int mtk_dp_bridge_attach_v2(struct drm_bridge *bridge,
+@@ -4802,7 +4826,7 @@ static int mtk_dp_bridge_attach_v2(struct drm_bridge *bridge,
  	 * to a bridge. DP initialization is performed only
  	 * after all bridges are attached.
  	 */
@@ -25823,7 +25888,7 @@ index 69c319cb9e59f7938c716264bc22ae4418da4aef..48005a1c78d6132cec4e3d78739ced78
  		return 0;
  
  	mtk_dp->drm_dev = bridge->dev;
-@@ -5340,6 +5366,21 @@ static int mtk_dp_set_training_start_v2(struct mtk_dp *mtk_dp)
+@@ -5340,6 +5364,21 @@ static int mtk_dp_set_training_start_v2(struct mtk_dp *mtk_dp)
  	return DP_RET_TRANING_FAIL;
  }
  
@@ -25845,7 +25910,7 @@ index 69c319cb9e59f7938c716264bc22ae4418da4aef..48005a1c78d6132cec4e3d78739ced78
  static int mtk_dp_training_handle_v2(struct mtk_dp *mtk_dp)
  {
  	int ret = DP_RET_NOERR;
-@@ -5365,7 +5406,7 @@ static int mtk_dp_audio_hw_params_v2(struct device *dev, void *data,
+@@ -5365,7 +5404,7 @@ static int mtk_dp_audio_hw_params_v2(struct device *dev, void *data,
  	struct mtk_dp *mtk_dp = dev_get_drvdata(dev);
  	enum dp_encoder_id encoder_id;
  
@@ -25854,7 +25919,7 @@ index 69c319cb9e59f7938c716264bc22ae4418da4aef..48005a1c78d6132cec4e3d78739ced78
  		mtk_dp->info[encoder_id].audio_cur_cfg.channels = params->cea.channels;
  		mtk_dp->info[encoder_id].audio_cur_cfg.word_length_bits = params->sample_width;
  		mtk_dp->info[encoder_id].audio_cur_cfg.sample_rate = params->sample_rate;
-@@ -5381,7 +5422,7 @@ static int mtk_dp_audio_startup_v2(struct device *dev, void *data)
+@@ -5381,7 +5420,7 @@ static int mtk_dp_audio_startup_v2(struct device *dev, void *data)
  	struct mtk_dp *mtk_dp = dev_get_drvdata(dev);
  	enum dp_encoder_id encoder_id;
  
@@ -25863,7 +25928,7 @@ index 69c319cb9e59f7938c716264bc22ae4418da4aef..48005a1c78d6132cec4e3d78739ced78
  		mtk_dp_audio_mute_v2(mtk_dp, encoder_id, false);
  
  	return 0;
-@@ -5392,7 +5433,7 @@ static void mtk_dp_audio_shutdown_v2(struct device *dev, void *data)
+@@ -5392,7 +5431,7 @@ static void mtk_dp_audio_shutdown_v2(struct device *dev, void *data)
  	struct mtk_dp *mtk_dp = dev_get_drvdata(dev);
  	enum dp_encoder_id encoder_id;
  
@@ -25872,7 +25937,7 @@ index 69c319cb9e59f7938c716264bc22ae4418da4aef..48005a1c78d6132cec4e3d78739ced78
  		mtk_dp_audio_mute_v2(mtk_dp, encoder_id, true);
  }
  
-@@ -5576,6 +5617,122 @@ static bool mtk_dp_mst_hpd_event_handler(struct mtk_dp *mtk_dp)
+@@ -5576,6 +5615,122 @@ static bool mtk_dp_mst_hpd_event_handler(struct mtk_dp *mtk_dp)
  	return true;
  }
  
@@ -25995,7 +26060,7 @@ index 69c319cb9e59f7938c716264bc22ae4418da4aef..48005a1c78d6132cec4e3d78739ced78
  static void mtk_dp_check_device_service_irq_v2(struct mtk_dp *mtk_dp)
  {
  	u8 val;
-@@ -5589,8 +5746,11 @@ static void mtk_dp_check_device_service_irq_v2(struct mtk_dp *mtk_dp)
+@@ -5589,8 +5744,11 @@ static void mtk_dp_check_device_service_irq_v2(struct mtk_dp *mtk_dp)
  
  	drm_dp_dpcd_writeb(&mtk_dp->aux, DP_DEVICE_SERVICE_IRQ_VECTOR, val);
  
@@ -26008,7 +26073,7 @@ index 69c319cb9e59f7938c716264bc22ae4418da4aef..48005a1c78d6132cec4e3d78739ced78
  
  	if (val & DP_CP_IRQ)
  		drm_dbg_kms(mtk_dp->drm_dev, "[DPTX] DP_CP_IRQ\n");
-@@ -5691,7 +5851,7 @@ static void mtk_dp_init_property_v2(struct mtk_dp *mtk_dp)
+@@ -5691,7 +5849,7 @@ static void mtk_dp_init_property_v2(struct mtk_dp *mtk_dp)
  	if (mtk_dp->init_property)
  		return;
  
@@ -26017,7 +26082,7 @@ index 69c319cb9e59f7938c716264bc22ae4418da4aef..48005a1c78d6132cec4e3d78739ced78
  		bridge = devm_drm_of_get_bridge(mtk_dp->dev,
  						mtk_dp->dev->of_node, i, DP_ENCODER_ENDPOINT);
  		if (IS_ERR(bridge)) {
-@@ -5764,7 +5924,7 @@ static irqreturn_t mtk_dp_hpd_event_thread_v2(int hpd, void *dev)
+@@ -5764,7 +5922,7 @@ static irqreturn_t mtk_dp_hpd_event_thread_v2(int hpd, void *dev)
  			/* Wait until crtc of current encoder is disabled */
  			timeout = jiffies + msecs_to_jiffies(2000);
  			while (time_before(jiffies, timeout)) {
@@ -26026,7 +26091,7 @@ index 69c319cb9e59f7938c716264bc22ae4418da4aef..48005a1c78d6132cec4e3d78739ced78
  					if (wait_done[i])
  						continue;
  
-@@ -5780,21 +5940,31 @@ static irqreturn_t mtk_dp_hpd_event_thread_v2(int hpd, void *dev)
+@@ -5780,21 +5938,31 @@ static irqreturn_t mtk_dp_hpd_event_thread_v2(int hpd, void *dev)
  						    i);
  				}
  
@@ -26060,7 +26125,7 @@ index 69c319cb9e59f7938c716264bc22ae4418da4aef..48005a1c78d6132cec4e3d78739ced78
  			mtk_dp_init_property_v2(mtk_dp);
  			mtk_dp_initial_setting_v2(mtk_dp);
  			mtk_dp_analog_power_on_v2(mtk_dp);
-@@ -5830,6 +6000,7 @@ static irqreturn_t mtk_dp_hpd_event_thread_v2(int hpd, void *dev)
+@@ -5830,6 +5998,7 @@ static irqreturn_t mtk_dp_hpd_event_thread_v2(int hpd, void *dev)
  				return IRQ_NONE;
  		} else if (!mtk_dp_hpd_event_handler_v2(mtk_dp))
  			return IRQ_NONE;
@@ -26068,7 +26133,7 @@ index 69c319cb9e59f7938c716264bc22ae4418da4aef..48005a1c78d6132cec4e3d78739ced78
  	}
  
  end:
-@@ -5992,7 +6163,7 @@ static int mtk_dp_dt_parse_pdata_v2(struct mtk_dp *mtk_dp,
+@@ -5992,7 +6161,7 @@ static int mtk_dp_dt_parse_pdata_v2(struct mtk_dp *mtk_dp,
  	return 0;
  }
  
@@ -26077,7 +26142,7 @@ index 69c319cb9e59f7938c716264bc22ae4418da4aef..48005a1c78d6132cec4e3d78739ced78
  {
  	writel((readl(mtk_dp->mac_power_regs) & ~BIT(0)), mtk_dp->mac_power_regs);
  	writel((readl(mtk_dp->mac_power_regs) | BIT(4)), mtk_dp->mac_power_regs);
-@@ -6033,7 +6204,8 @@ static int mtk_dp_suspend_v2(struct device *dev)
+@@ -6033,7 +6202,8 @@ static int mtk_dp_suspend_v2(struct device *dev)
  
  	mtk_dp_disconnect_release_v2(mtk_dp);
  
@@ -26087,7 +26152,7 @@ index 69c319cb9e59f7938c716264bc22ae4418da4aef..48005a1c78d6132cec4e3d78739ced78
  
  	clk_disable_unprepare(mtk_dp->pclk);
  
-@@ -6071,7 +6243,8 @@ static int mtk_dp_resume_v2(struct device *dev)
+@@ -6071,7 +6241,8 @@ static int mtk_dp_resume_v2(struct device *dev)
  		return ret;
  	}
  
@@ -26097,7 +26162,7 @@ index 69c319cb9e59f7938c716264bc22ae4418da4aef..48005a1c78d6132cec4e3d78739ced78
  
  	mtk_dp_init_port_v2(mtk_dp);
  
-@@ -6149,6 +6322,141 @@ static int mtk_dp_pm_init_v2(struct mtk_dp *mtk_dp, struct platform_device *pdev
+@@ -6149,6 +6320,141 @@ static int mtk_dp_pm_init_v2(struct mtk_dp *mtk_dp, struct platform_device *pdev
  	return 0;
  }
  
@@ -26239,7 +26304,7 @@ index 69c319cb9e59f7938c716264bc22ae4418da4aef..48005a1c78d6132cec4e3d78739ced78
  static int mtk_drm_dp_probe_v2(struct platform_device *pdev)
  {
  	struct mtk_dp *mtk_dp;
-@@ -6227,7 +6535,8 @@ static int mtk_drm_dp_probe_v2(struct platform_device *pdev)
+@@ -6227,7 +6533,8 @@ static int mtk_drm_dp_probe_v2(struct platform_device *pdev)
  		return -ENOMEM;
  	}
  
@@ -26249,7 +26314,7 @@ index 69c319cb9e59f7938c716264bc22ae4418da4aef..48005a1c78d6132cec4e3d78739ced78
  
  	mtk_dp->pclk = devm_clk_get_enabled(mtk_dp->dev, "mux_dp");
  	if (IS_ERR(mtk_dp->pclk))
-@@ -6250,7 +6559,7 @@ static int mtk_drm_dp_probe_v2(struct platform_device *pdev)
+@@ -6250,7 +6557,7 @@ static int mtk_drm_dp_probe_v2(struct platform_device *pdev)
  		dev_err(mtk_dp->dev, "[DPTX] register pm notifier failed %d", ret);
  
  	for_each_of_graph_port(np, port) {
@@ -26258,7 +26323,7 @@ index 69c319cb9e59f7938c716264bc22ae4418da4aef..48005a1c78d6132cec4e3d78739ced78
  			break;
  
  		dev_dbg(dev, "[DPTX] port:%pOF\n", port);
-@@ -6272,6 +6581,30 @@ static int mtk_drm_dp_probe_v2(struct platform_device *pdev)
+@@ -6272,6 +6579,30 @@ static int mtk_drm_dp_probe_v2(struct platform_device *pdev)
  
  	atomic_set(&mtk_dp->refcount, 0);
  
@@ -26289,7 +26354,7 @@ index 69c319cb9e59f7938c716264bc22ae4418da4aef..48005a1c78d6132cec4e3d78739ced78
  	return ret;
  }
  
-@@ -6281,7 +6614,7 @@ static int mtk_drm_dp_remove_v2(struct platform_device *pdev)
+@@ -6281,7 +6612,7 @@ static int mtk_drm_dp_remove_v2(struct platform_device *pdev)
  	int ret = 0;
  	int i;
  
@@ -26298,7 +26363,7 @@ index 69c319cb9e59f7938c716264bc22ae4418da4aef..48005a1c78d6132cec4e3d78739ced78
  		if (mtk_dp->mtk_bridge[i])
  			drm_bridge_remove(&mtk_dp->mtk_bridge[i]->bridge);
  
-@@ -6319,12 +6652,53 @@ static const struct mtk_dp_data mt8196_dp_data = {
+@@ -6319,12 +6650,53 @@ static const struct mtk_dp_data mt8196_dp_data = {
  	.max_vdisplay = 2160,
  	.min_hdisplay = 800,
  	.min_vdisplay = 600,
@@ -31139,6 +31204,74 @@ index 578fabe6f6ac1b04ce6d1da51fdbb8e7ffbd6765..14f2cdf9823b7ec493d6e7dc7f3c0c90
  	{}
  };
  MODULE_DEVICE_TABLE(of, cmdq_of_ids);
+diff --git a/drivers/media/platform/mediatek/jpeg/mtk_jpeg_core.c b/drivers/media/platform/mediatek/jpeg/mtk_jpeg_core.c
+index 3bed4366ab6e494b8fc558f23eefb374da3a40b3..6d6669dde7660cbb335fd8e8427ecd5f0fa81946 100644
+--- a/drivers/media/platform/mediatek/jpeg/mtk_jpeg_core.c
++++ b/drivers/media/platform/mediatek/jpeg/mtk_jpeg_core.c
+@@ -1909,6 +1909,10 @@ static struct clk_bulk_data mtk_jpeg_clocks[] = {
+ 	{ .id = "jpgenc" },
+ };
+ 
++static struct clk_bulk_data mtk_jpeg_dec_clocks[] = {
++	{ .id = "jpgdec" },
++};
++
+ static struct clk_bulk_data mt8173_jpeg_dec_clocks[] = {
+ 	{ .id = "jpgdec-smi" },
+ 	{ .id = "jpgdec" },
+@@ -2005,6 +2009,37 @@ static const struct mtk_jpeg_variant mtk8196_jpegdec_drvdata = {
+ 	.support_smmu = true,
+ };
+ 
++static const struct mtk_jpeg_variant mtk8189_jpegenc_drvdata = {
++	.clks = mtk_jpeg_clocks,
++	.num_clks = ARRAY_SIZE(mtk_jpeg_clocks),
++	.formats = mtk_jpeg_enc_formats,
++	.num_formats = MTK_JPEG_ENC_NUM_FORMATS,
++	.qops = &mtk_jpeg_enc_qops,
++	.irq_handler = mtk_jpeg_enc_irq,
++	.hw_reset = mtk_jpeg_enc_reset,
++	.m2m_ops = &mtk_jpeg_enc_m2m_ops,
++	.dev_name = "mtk-jpeg-enc",
++	.ioctl_ops = &mtk_jpeg_enc_ioctl_ops,
++	.out_q_default_fourcc = V4L2_PIX_FMT_YUYV,
++	.cap_q_default_fourcc = V4L2_PIX_FMT_JPEG,
++	.support_34bit = true,
++};
++
++static const struct mtk_jpeg_variant mtk8189_jpegdec_drvdata = {
++	.clks = mtk_jpeg_dec_clocks,
++	.num_clks = ARRAY_SIZE(mtk_jpeg_dec_clocks),
++	.formats = mtk_jpeg_dec_formats,
++	.num_formats = MTK_JPEG_DEC_NUM_FORMATS,
++	.qops = &mtk_jpeg_dec_qops,
++	.irq_handler = mtk_jpeg_dec_irq,
++	.hw_reset = mtk_jpeg_dec_reset,
++	.m2m_ops = &mtk_jpeg_dec_m2m_ops,
++	.dev_name = "mtk-jpeg-dec",
++	.ioctl_ops = &mtk_jpeg_dec_ioctl_ops,
++	.out_q_default_fourcc = V4L2_PIX_FMT_JPEG,
++	.cap_q_default_fourcc = V4L2_PIX_FMT_YUV420M,
++	.support_34bit = true,
++};
+ 
+ static const struct of_device_id mtk_jpeg_match[] = {
+ 	{
+@@ -2035,6 +2070,14 @@ static const struct of_device_id mtk_jpeg_match[] = {
+ 		.compatible = "mediatek,mt8196-jpgdec",
+ 		.data = &mtk8196_jpegdec_drvdata,
+ 	},
++	{
++		.compatible = "mediatek,mt8189-jpgenc",
++		.data = &mtk8189_jpegenc_drvdata,
++	},
++	{
++		.compatible = "mediatek,mt8189-jpgdec",
++		.data = &mtk8189_jpegdec_drvdata,
++	},
+ 	{},
+ };
+ 
 diff --git a/drivers/media/platform/mediatek/vcodec/Kconfig b/drivers/media/platform/mediatek/vcodec/Kconfig
 index 156ea6a2c2f89e247dd2e4f44f282a2d6734c900..9ffcbe6c36ee6dae505b94940597fc2780eb862a 100644
 --- a/drivers/media/platform/mediatek/vcodec/Kconfig
@@ -40180,7 +40313,7 @@ index 0000000000000000000000000000000000000000..875563a31fc8647ff531fcc71d90bbe0
 +#define THERMAL_PROTECTION_STAGE_3		0x80000000
 +#endif /* __MTK_SOC_TEMP_LVTS_H__ */
 diff --git a/drivers/ufs/core/ufshcd.c b/drivers/ufs/core/ufshcd.c
-index 91712272ad02d2412c3c432d99fb0379b09152d1..fc0dd9a5e14e1094adff84a572b24f2645ae4542 100644
+index 91712272ad02d2412c3c432d99fb0379b09152d1..3c909ed841d1e19267d6bd0957e26a58cb6c7b12 100644
 --- a/drivers/ufs/core/ufshcd.c
 +++ b/drivers/ufs/core/ufshcd.c
 @@ -2279,17 +2279,7 @@ static inline int ufshcd_hba_capabilities(struct ufs_hba *hba)
@@ -40201,178 +40334,7 @@ index 91712272ad02d2412c3c432d99fb0379b09152d1..fc0dd9a5e14e1094adff84a572b24f26
  	if (!hba->mcq_sup)
  		return 0;
  
-@@ -9012,7 +9002,9 @@ static int ufshcd_disable_vreg(struct device *dev, struct ufs_vreg *vreg)
- 	if (!vreg || !vreg->enabled || vreg->always_on)
- 		goto out;
- 
--	ret = regulator_disable(vreg->reg);
-+	dev_err(dev, "[ufsdeug]%s %d: %s\n",
-+			__func__, __LINE__, vreg->name);
-+	dump_stack();
- 
- 	if (!ret) {
- 		/* ignore errors on applying disable config */
-@@ -9468,6 +9460,7 @@ static int ufshcd_link_state_transition(struct ufs_hba *hba,
- 	return ret;
- }
- 
-+#if 0
- static void ufshcd_vreg_set_lpm(struct ufs_hba *hba)
- {
- 	bool vcc_off = false;
-@@ -9547,6 +9540,7 @@ static int ufshcd_vreg_set_hpm(struct ufs_hba *hba)
- 	return ret;
- }
- #endif /* CONFIG_PM */
-+#endif  /* temp debug */
- 
- static void ufshcd_hba_vreg_set_lpm(struct ufs_hba *hba)
- {
-@@ -9568,6 +9562,9 @@ static int __ufshcd_wl_suspend(struct ufs_hba *hba, enum ufs_pm_op pm_op)
- 	enum ufs_dev_pwr_mode req_dev_pwr_mode;
- 	enum uic_link_state req_link_state;
- 
-+	return 0;
-+	pr_err("%s %d\n", __func__, __LINE__);
-+
- 	hba->pm_op_in_progress = true;
- 	if (pm_op != UFS_SHUTDOWN_PM) {
- 		pm_lvl = pm_op == UFS_RUNTIME_PM ?
-@@ -9746,6 +9743,9 @@ static int __ufshcd_wl_resume(struct ufs_hba *hba, enum ufs_pm_op pm_op)
- 	int ret;
- 	enum uic_link_state old_link_state = hba->uic_link_state;
- 
-+	return 0;
-+	pr_err("%s %d\n", __func__, __LINE__);
-+
- 	hba->pm_op_in_progress = true;
- 
- 	/*
-@@ -9839,6 +9839,7 @@ static int ufshcd_wl_runtime_suspend(struct device *dev)
- 	ktime_t start = ktime_get();
- 
- 	hba = shost_priv(sdev->host);
-+	pr_err("%s %d\n", __func__, __LINE__);
- 
- 	ret = __ufshcd_wl_suspend(hba, UFS_RUNTIME_PM);
- 	if (ret)
-@@ -9859,6 +9860,7 @@ static int ufshcd_wl_runtime_resume(struct device *dev)
- 	ktime_t start = ktime_get();
- 
- 	hba = shost_priv(sdev->host);
-+	pr_err("%s %d\n", __func__, __LINE__);
- 
- 	ret = __ufshcd_wl_resume(hba, UFS_RUNTIME_PM);
- 	if (ret)
-@@ -9880,6 +9882,8 @@ static int ufshcd_wl_suspend(struct device *dev)
- 	int ret = 0;
- 	ktime_t start = ktime_get();
- 
-+	pr_err("%s %d\n", __func__, __LINE__);
-+
- 	hba = shost_priv(sdev->host);
- 	down(&hba->host_sem);
- 	hba->system_suspending = true;
-@@ -9911,6 +9915,7 @@ static int ufshcd_wl_resume(struct device *dev)
- 	ktime_t start = ktime_get();
- 
- 	hba = shost_priv(sdev->host);
-+	pr_err("%s %d\n", __func__, __LINE__);
- 
- 	if (pm_runtime_suspended(dev))
- 		goto out;
-@@ -9941,6 +9946,7 @@ static int ufshcd_wl_resume(struct device *dev)
-  */
- static int ufshcd_suspend(struct ufs_hba *hba)
- {
-+#if 0
- 	int ret;
- 
- 	if (!hba->is_powered)
-@@ -9965,6 +9971,9 @@ static int ufshcd_suspend(struct ufs_hba *hba)
- 	/* Put the host controller in low power mode if possible */
- 	ufshcd_hba_vreg_set_lpm(hba);
- 	return ret;
-+#endif
-+	pr_err("%s %d\n", __func__, __LINE__);
-+	return 0;
- }
- 
- #ifdef CONFIG_PM
-@@ -9979,6 +9988,7 @@ static int ufshcd_suspend(struct ufs_hba *hba)
-  */
- static int ufshcd_resume(struct ufs_hba *hba)
- {
-+#if 0
- 	int ret;
- 
- 	if (!hba->is_powered)
-@@ -10005,6 +10015,10 @@ static int ufshcd_resume(struct ufs_hba *hba)
- 	if (ret)
- 		ufshcd_update_evt_hist(hba, UFS_EVT_RESUME_ERR, (u32)ret);
- 	return ret;
-+#endif
-+	pr_err("%s %d\n", __func__, __LINE__);
-+
-+	return 0;
- }
- #endif /* CONFIG_PM */
- 
-@@ -10024,6 +10038,8 @@ int ufshcd_system_suspend(struct device *dev)
- 	int ret = 0;
- 	ktime_t start = ktime_get();
- 
-+	pr_err("%s %d\n", __func__, __LINE__);
-+
- 	if (pm_runtime_suspended(hba->dev))
- 		goto out;
- 
-@@ -10081,6 +10097,8 @@ int ufshcd_runtime_suspend(struct device *dev)
- 	int ret;
- 	ktime_t start = ktime_get();
- 
-+	pr_err("%s %d\n", __func__, __LINE__);
-+
- 	ret = ufshcd_suspend(hba);
- 
- 	trace_ufshcd_runtime_suspend(dev_name(hba->dev), ret,
-@@ -10108,6 +10126,8 @@ int ufshcd_runtime_resume(struct device *dev)
- 	int ret;
- 	ktime_t start = ktime_get();
- 
-+	pr_err("%s %d\n", __func__, __LINE__);
-+
- 	ret = ufshcd_resume(hba);
- 
- 	trace_ufshcd_runtime_resume(dev_name(hba->dev), ret,
-@@ -10123,6 +10143,8 @@ static void ufshcd_wl_shutdown(struct device *dev)
- 	struct scsi_device *sdev = to_scsi_device(dev);
- 	struct ufs_hba *hba = shost_priv(sdev->host);
- 
-+	pr_err("%s %d\n", __func__, __LINE__);
-+
- 	down(&hba->host_sem);
- 	hba->shutting_down = true;
- 	up(&hba->host_sem);
-@@ -10156,6 +10178,8 @@ static void ufshcd_wl_shutdown(struct device *dev)
-  */
- void ufshcd_remove(struct ufs_hba *hba)
- {
-+	pr_err("%s %d\n", __func__, __LINE__);
-+
- 	if (hba->ufs_device_wlun)
- 		ufshcd_rpm_get_sync(hba);
- 	ufs_hwmon_remove(hba);
-@@ -10176,6 +10200,8 @@ EXPORT_SYMBOL_GPL(ufshcd_remove);
- #ifdef CONFIG_PM_SLEEP
- int ufshcd_system_freeze(struct device *dev)
- {
-+	pr_err("%s %d\n", __func__, __LINE__);
-+
- 
- 	return ufshcd_system_suspend(dev);
- 
-@@ -10438,12 +10464,6 @@ int ufshcd_init(struct ufs_hba *hba, void __iomem *mmio_base, unsigned int irq)
+@@ -10438,12 +10428,6 @@ int ufshcd_init(struct ufs_hba *hba, void __iomem *mmio_base, unsigned int irq)
  	}
  
  	if (!is_mcq_supported(hba)) {
@@ -40385,161 +40347,6 @@ index 91712272ad02d2412c3c432d99fb0379b09152d1..fc0dd9a5e14e1094adff84a572b24f26
  		err = scsi_add_host(host, hba->dev);
  		if (err) {
  			dev_err(hba->dev, "scsi_add_host failed\n");
-@@ -10618,6 +10638,7 @@ static int ufshcd_wl_poweroff(struct device *dev)
- {
- 	struct scsi_device *sdev = to_scsi_device(dev);
- 	struct ufs_hba *hba = shost_priv(sdev->host);
-+	pr_err("%s %d\n", __func__, __LINE__);
- 
- 	__ufshcd_wl_suspend(hba, UFS_SHUTDOWN_PM);
- 	return 0;
-diff --git a/drivers/ufs/host/ufs-mediatek.c b/drivers/ufs/host/ufs-mediatek.c
-index e07c1e0b0c70147ea0f2d70d509fd226c9b11250..6f2ecb3390c1d05c508673e518339a4b81aaff6c 100644
---- a/drivers/ufs/host/ufs-mediatek.c
-+++ b/drivers/ufs/host/ufs-mediatek.c
-@@ -969,6 +969,8 @@ static int ufs_mtk_init(struct ufs_hba *hba)
- 	int err = 0;
- 	struct arm_smccc_res res;
- 
-+	dev_info(dev, "[cloud]2025-0206-14-19 %s: come into ufs init\n", __func__);
-+
- 	host = devm_kzalloc(dev, sizeof(*host), GFP_KERNEL);
- 	if (!host) {
- 		err = -ENOMEM;
-@@ -1001,13 +1003,17 @@ static int ufs_mtk_init(struct ufs_hba *hba)
- 		ufs_mtk_mphy_ctrl(UFS_MPHY_BACKUP, res);
- 
- 	/* Enable runtime autosuspend */
--	hba->caps |= UFSHCD_CAP_RPM_AUTOSUSPEND;
-+// temp debug-- cloud.zhang
-+//	hba->caps |= UFSHCD_CAP_RPM_AUTOSUSPEND;
- 
- 	/* Enable clock-gating */
- 	hba->caps |= UFSHCD_CAP_CLK_GATING;
- 
- 	/* Enable inline encryption */
--	hba->caps |= UFSHCD_CAP_CRYPTO;
-+// temp debug-- cloud.zhang
-+//	hba->caps |= UFSHCD_CAP_CRYPTO;
-+	dev_info(dev, "[cloud]%s: disable crypto\n", __func__);
-+	hba->caps &= ~UFSHCD_CAP_CRYPTO;
- 
- 	/* Enable WriteBooster */
- 	hba->caps |= UFSHCD_CAP_WB_EN;
-@@ -1877,8 +1883,9 @@ static int ufs_mtk_remove(struct platform_device *pdev)
- }
- 
- #ifdef CONFIG_PM_SLEEP
--static int ufs_mtk_system_suspend(struct device *dev)
-+static int __maybe_unused ufs_mtk_system_suspend(struct device *dev)
- {
-+#if 0
- 	struct ufs_hba *hba = dev_get_drvdata(dev);
- 	struct arm_smccc_res res;
- 	int ret;
-@@ -1891,12 +1898,13 @@ static int ufs_mtk_system_suspend(struct device *dev)
- 
- 	if (ufs_mtk_is_rtff_mtcmos(hba))
- 		ufs_mtk_mtcmos_ctrl(false, res);
--
-+#endif
- 	return 0;
- }
- 
--static int ufs_mtk_system_resume(struct device *dev)
-+static int __maybe_unused ufs_mtk_system_resume(struct device *dev)
- {
-+#if 0
- 	struct ufs_hba *hba = dev_get_drvdata(dev);
- 	struct arm_smccc_res res;
- 
-@@ -1906,12 +1914,15 @@ static int ufs_mtk_system_resume(struct device *dev)
- 		ufs_mtk_mtcmos_ctrl(true, res);
- 
- 	return ufshcd_system_resume(dev);
-+#endif
-+	return 0;
- }
- #endif
- 
- #ifdef CONFIG_PM
- static int ufs_mtk_runtime_suspend(struct device *dev)
- {
-+#if 0
- 	struct ufs_hba *hba = dev_get_drvdata(dev);
- 	struct arm_smccc_res res;
- 	int ret = 0;
-@@ -1924,12 +1935,13 @@ static int ufs_mtk_runtime_suspend(struct device *dev)
- 
- 	if (ufs_mtk_is_rtff_mtcmos(hba))
- 		ufs_mtk_mtcmos_ctrl(false, res);
--
-+#endif
- 	return 0;
- }
- 
- static int ufs_mtk_runtime_resume(struct device *dev)
- {
-+#if 0
- 	struct ufs_hba *hba = dev_get_drvdata(dev);
- 	struct arm_smccc_res res;
- 
-@@ -1939,12 +1951,12 @@ static int ufs_mtk_runtime_resume(struct device *dev)
- 	ufs_mtk_dev_vreg_set_lpm(hba, false);
- 
- 	return ufshcd_runtime_resume(dev);
-+#endif
-+	return 0;
- }
- #endif
- 
- static const struct dev_pm_ops ufs_mtk_pm_ops = {
--	SET_SYSTEM_SLEEP_PM_OPS(ufs_mtk_system_suspend,
--				ufs_mtk_system_resume)
- 	SET_RUNTIME_PM_OPS(ufs_mtk_runtime_suspend,
- 			   ufs_mtk_runtime_resume, NULL)
- 	.prepare	 = ufshcd_suspend_prepare,
-diff --git a/drivers/ufs/host/ufs-sprd.c b/drivers/ufs/host/ufs-sprd.c
-index 2bad75dd6d5894fd6928472a592e94154c0189b7..5450391fe19c8e2aa0448c40de5a2deada3475d2 100644
---- a/drivers/ufs/host/ufs-sprd.c
-+++ b/drivers/ufs/host/ufs-sprd.c
-@@ -149,9 +149,13 @@ static int ufs_sprd_common_init(struct ufs_hba *hba)
- 	host->hba = hba;
- 	ufshcd_set_variant(hba, host);
- 
-+#if 0
- 	hba->caps |= UFSHCD_CAP_CLK_GATING |
- 		UFSHCD_CAP_CRYPTO |
- 		UFSHCD_CAP_WB_EN;
-+#endif
-+	hba->caps |= UFSHCD_CAP_CLK_GATING |
-+		UFSHCD_CAP_WB_EN;
- 	hba->quirks |= UFSHCD_QUIRK_DELAY_BEFORE_DME_CMDS;
- 
- 	ret = ufs_sprd_parse_dt(dev, hba, host);
-diff --git a/drivers/ufs/host/ufshcd-pci.c b/drivers/ufs/host/ufshcd-pci.c
-index 248a49e5e7f3570fd2e4d15add6805b062607efc..782ba31e83512ce18c6023eacfe16e47526a1396 100644
---- a/drivers/ufs/host/ufshcd-pci.c
-+++ b/drivers/ufs/host/ufshcd-pci.c
-@@ -424,7 +424,7 @@ static int ufs_intel_lkf_init(struct ufs_hba *hba)
- 
- 	hba->nop_out_timeout = 200;
- 	hba->quirks |= UFSHCD_QUIRK_BROKEN_AUTO_HIBERN8;
--	hba->caps |= UFSHCD_CAP_CRYPTO;
-+//	hba->caps |= UFSHCD_CAP_CRYPTO;
- 	err = ufs_intel_common_init(hba);
- 	ufs_host = ufshcd_get_variant(hba);
- 	ufs_host->late_init = ufs_intel_lkf_late_init;
-@@ -441,7 +441,8 @@ static int ufs_intel_adl_init(struct ufs_hba *hba)
- 
- static int ufs_intel_mtl_init(struct ufs_hba *hba)
- {
--	hba->caps |= UFSHCD_CAP_CRYPTO | UFSHCD_CAP_WB_EN;
-+//	hba->caps |= UFSHCD_CAP_CRYPTO | UFSHCD_CAP_WB_EN;
-+	hba->caps |= UFSHCD_CAP_WB_EN;
- 	return ufs_intel_common_init(hba);
- }
- 
 diff --git a/drivers/usb/dwc3/core.c b/drivers/usb/dwc3/core.c
 index 318ae24a41f482c02c7cda15acbdc5e44d16e3e7..de7914e5f29de37ad2259b383aad069cf7e23a44 100644
 --- a/drivers/usb/dwc3/core.c
