@@ -11,6 +11,7 @@ PROJECTS=(
 	"craask"
 	"dirks"
 	"guren"
+	"kaladin"
 	"meliks"
 	"nereid"
 	"nivviks"
