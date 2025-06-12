@@ -281,10 +281,10 @@ index b3e797e8aa3133df9cf4c3e80740e3504bb6a10b..1118bb4ac9024ae55049388454910f48
  	* "mediatek,mt8195-timer" for MT8195 compatible timers (SYST)
  	* "mediatek,mt7629-timer" for MT7629 compatible timers (SYST)
 diff --git a/arch/arm64/boot/dts/mediatek/Makefile b/arch/arm64/boot/dts/mediatek/Makefile
-index ea3c6f0f9be32cecee7580e39676a50cca1e9f7a..c26e975c2e03f3a29132a9dbccfbef0498fb2fd4 100644
+index ea3c6f0f9be32cecee7580e39676a50cca1e9f7a..3d925cc255b51c04f055a4469298b614423231df 100644
 --- a/arch/arm64/boot/dts/mediatek/Makefile
 +++ b/arch/arm64/boot/dts/mediatek/Makefile
-@@ -104,6 +104,17 @@ dtb-$(CONFIG_ARCH_MEDIATEK) += mt8188-geralt-ciri-sku4.dtb
+@@ -104,6 +104,14 @@ dtb-$(CONFIG_ARCH_MEDIATEK) += mt8188-geralt-ciri-sku4.dtb
  dtb-$(CONFIG_ARCH_MEDIATEK) += mt8188-geralt-ciri-sku5.dtb
  dtb-$(CONFIG_ARCH_MEDIATEK) += mt8188-geralt-ciri-sku6.dtb
  dtb-$(CONFIG_ARCH_MEDIATEK) += mt8188-geralt-ciri-sku7.dtb
@@ -296,13 +296,10 @@ index ea3c6f0f9be32cecee7580e39676a50cca1e9f7a..c26e975c2e03f3a29132a9dbccfbef04
 +dtb-$(CONFIG_ARCH_MEDIATEK) += mt8189-skywalker-quigon-sku2.dtb
 +dtb-$(CONFIG_ARCH_MEDIATEK) += mt8189-skywalker-quigon-sku3.dtb
 +dtb-$(CONFIG_ARCH_MEDIATEK) += mt8189-skywalker-yoda-sku0.dtb
-+dtb-$(CONFIG_ARCH_MEDIATEK) += mt8189-evb-test-sku1.dtb
-+dtb-$(CONFIG_ARCH_MEDIATEK) += mt8189-evb-test-sku2.dtb
-+dtb-$(CONFIG_ARCH_MEDIATEK) += mt8189-evb-test-sku3.dtb
  dtb-$(CONFIG_ARCH_MEDIATEK) += mt8192-asurada-hayato-r1.dtb
  dtb-$(CONFIG_ARCH_MEDIATEK) += mt8192-asurada-spherion-r0.dtb
  dtb-$(CONFIG_ARCH_MEDIATEK) += mt8192-evb.dtb
-@@ -128,4 +139,4 @@ dtb-$(CONFIG_ARCH_MEDIATEK) += mt8196-rauru-navi-sku1.dtb
+@@ -128,4 +136,4 @@ dtb-$(CONFIG_ARCH_MEDIATEK) += mt8196-rauru-navi-sku1.dtb
  dtb-$(CONFIG_ARCH_MEDIATEK) += mt8196-rauru-navi-sku2.dtb
  dtb-$(CONFIG_ARCH_MEDIATEK) += mt8196-rauru-navi-sku5.dtb
  dtb-$(CONFIG_ARCH_MEDIATEK) += mt8365-evk.dtb
@@ -1381,420 +1378,12 @@ index 0000000000000000000000000000000000000000..b39a4bcc87b771a7e6775f481c90242b
 +		power-domains = <&scpsys MT8189_POWER_DOMAIN_PCIE_PHY>;
 +	};
 +};
-diff --git a/arch/arm64/boot/dts/mediatek/mt8189-evb-test-my_driver-v1.dtsi b/arch/arm64/boot/dts/mediatek/mt8189-evb-test-my_driver-v1.dtsi
-new file mode 100644
-index 0000000000000000000000000000000000000000..12eb89632bcdd094350c1448488467c021e572e5
---- /dev/null
-+++ b/arch/arm64/boot/dts/mediatek/mt8189-evb-test-my_driver-v1.dtsi
-@@ -0,0 +1,5 @@
-+#include "mt8189-evb-test-my_driver.dtsi"
-+
-+&my_driver_node {
-+       version = "1.0.0";
-+};
-diff --git a/arch/arm64/boot/dts/mediatek/mt8189-evb-test-my_driver-v2.dtsi b/arch/arm64/boot/dts/mediatek/mt8189-evb-test-my_driver-v2.dtsi
-new file mode 100644
-index 0000000000000000000000000000000000000000..0c10105779895fead9ddb5b22da7269db0165d60
---- /dev/null
-+++ b/arch/arm64/boot/dts/mediatek/mt8189-evb-test-my_driver-v2.dtsi
-@@ -0,0 +1,5 @@
-+#include "mt8189-evb-test-my_driver.dtsi"
-+
-+&my_driver_node {
-+        version = "2.0.0";
-+};
-diff --git a/arch/arm64/boot/dts/mediatek/mt8189-evb-test-my_driver.dtsi b/arch/arm64/boot/dts/mediatek/mt8189-evb-test-my_driver.dtsi
-new file mode 100644
-index 0000000000000000000000000000000000000000..514335eb70deb67a514c891f8972b55e0ae97a6b
---- /dev/null
-+++ b/arch/arm64/boot/dts/mediatek/mt8189-evb-test-my_driver.dtsi
-@@ -0,0 +1,5 @@
-+/ {
-+        my_driver_node: my_driver_node {
-+                compatible = "mycompany,my_driver";
-+        };
-+};
-diff --git a/arch/arm64/boot/dts/mediatek/mt8189-evb-test-sku1.dts b/arch/arm64/boot/dts/mediatek/mt8189-evb-test-sku1.dts
-new file mode 100644
-index 0000000000000000000000000000000000000000..e2b96741b6c19881afda5e14c2edefbf1442caba
---- /dev/null
-+++ b/arch/arm64/boot/dts/mediatek/mt8189-evb-test-sku1.dts
-@@ -0,0 +1,14 @@
-+// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-+/*
-+ * Copyright (C) 2024 MediaTek Inc.
-+ * Author: Xavier Chang <xavier.chang@mediatek.com>
-+ */
-+/dts-v1/;
-+#include "mt8189-evb-test.dtsi"
-+#include "mt8189-evb-test-my_driver-v1.dtsi"
-+
-+/ {
-+	model = "MediaTek MT8189 evaluation board sku1";
-+	compatible = "mediatek,mt8189-evb-test-sku1", "mediatek,mt8189";
-+};
-+
-diff --git a/arch/arm64/boot/dts/mediatek/mt8189-evb-test-sku2.dts b/arch/arm64/boot/dts/mediatek/mt8189-evb-test-sku2.dts
-new file mode 100644
-index 0000000000000000000000000000000000000000..45e30c5509efd7181464deacb11c2c386b3691ef
---- /dev/null
-+++ b/arch/arm64/boot/dts/mediatek/mt8189-evb-test-sku2.dts
-@@ -0,0 +1,14 @@
-+// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-+/*
-+ * Copyright (C) 2024 MediaTek Inc.
-+ * Author: Xavier Chang <xavier.chang@mediatek.com>
-+ */
-+/dts-v1/;
-+#include "mt8189-evb-test.dtsi"
-+#include "mt8189-evb-test-my_driver-v2.dtsi"
-+
-+/ {
-+	model = "MediaTek MT8189 evaluation board test sku2";
-+	compatible = "mediatek,mt8189-evb-test-sku2", "mediatek,mt8189";
-+};
-+
-diff --git a/arch/arm64/boot/dts/mediatek/mt8189-evb-test-sku3.dts b/arch/arm64/boot/dts/mediatek/mt8189-evb-test-sku3.dts
-new file mode 100644
-index 0000000000000000000000000000000000000000..e99f1e60044c05758161c4a9d63ea084fb96d54b
---- /dev/null
-+++ b/arch/arm64/boot/dts/mediatek/mt8189-evb-test-sku3.dts
-@@ -0,0 +1,13 @@
-+// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-+/*
-+ * Copyright (C) 2024 MediaTek Inc.
-+ * Author: Xavier Chang <xavier.chang@mediatek.com>
-+ */
-+/dts-v1/;
-+#include "mt8189-evb-test.dtsi"
-+#include "mt8189-evb-test-my_driver-v1.dtsi"
-+
-+/ {
-+	model = "MediaTek MT8189 evaluation board test sku3";
-+	compatible = "mediatek,mt8189-evb-test-sku3", "mediatek,mt8189";
-+};
-diff --git a/arch/arm64/boot/dts/mediatek/mt8189-evb-test.dtsi b/arch/arm64/boot/dts/mediatek/mt8189-evb-test.dtsi
-new file mode 100644
-index 0000000000000000000000000000000000000000..13837f7b6fae83e0bc611aa8642b591eccb2241c
---- /dev/null
-+++ b/arch/arm64/boot/dts/mediatek/mt8189-evb-test.dtsi
-@@ -0,0 +1,310 @@
-+// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-+/*
-+ * Copyright (C) 2024 MediaTek Inc.
-+ * Author: Xavier Chang <xavier.chang@mediatek.com>
-+ */
-+/dts-v1/;
-+#include "mt8189.dtsi"
-+#include <dt-bindings/pinctrl/mt8189-pinfunc.h>
-+/ {
-+	/* chosen */
-+        chosen: chosen {
-+                        bootargs = "console=tty0 console=ttyS0,921600n8 nosoftlockup initcall_debug=1 loglevel=9 nr_cpus=1 rdinit=/linuxrc clk_ignore_unused pd_ignore_unused root=/dev/ram0 rw initrd=0x70000000,15M";
-+                        stdout-path = "serial0:921600n8";
-+        };
-+	usb_p0_vbus: regulator@0 {
-+		compatible = "regulator-fixed";
-+		regulator-name = "p0_vbus";
-+		regulator-min-microvolt = <5000000>;
-+		regulator-max-microvolt = <5000000>;
-+		gpio = <&pio 82 0>;
-+		enable-active-high;
-+	};
-+	usb_p1_vbus: regulator@1 {
-+		compatible = "regulator-fixed";
-+		regulator-name = "p1_vbus";
-+		regulator-min-microvolt = <5000000>;
-+		regulator-max-microvolt = <5000000>;
-+		gpio = <&pio 84 0>;
-+		enable-active-high;
-+	};
-+	usb_p2_vbus: regulator@2 {
-+		compatible = "regulator-fixed";
-+		regulator-name = "p2_vbus";
-+		regulator-min-microvolt = <5000000>;
-+		regulator-max-microvolt = <5000000>;
-+		gpio = <&pio 85 0>;
-+		enable-active-high;
-+	};
-+	usb_p3_vbus: regulator@3 {
-+		compatible = "regulator-fixed";
-+		regulator-name = "p3_vbus";
-+		regulator-min-microvolt = <5000000>;
-+		regulator-max-microvolt = <5000000>;
-+		gpio = <&pio 86 0>;
-+		enable-active-high;
-+	};
-+	usb_p4_vbus: regulator@4 {
-+		compatible = "regulator-fixed";
-+		regulator-name = "p4_vbus";
-+		regulator-min-microvolt = <5000000>;
-+		regulator-max-microvolt = <5000000>;
-+		gpio = <&pio 87 0>;
-+		enable-active-high;
-+	};
-+};
-+&auxadc {
-+	status = "okay";
-+};
-+&uart0 {
-+	status = "okay";
-+};
-+&i2c0{
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&i2c0_pins>;
-+	status = "disable";
-+};
-+&i2c1{
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&i2c1_pins>;
-+	status = "disable";
-+};
-+&i2c2{
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&i2c2_pins>;
-+	status = "disable";
-+};
-+&i2c3{
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&i2c3_pins>;
-+	status = "disable";
-+};
-+&i2c4{
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&i2c4_pins>;
-+	status = "disable";
-+};
-+&i2c5{
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&i2c5_pins>;
-+	status = "disable";
-+};
-+&i2c6{
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&i2c6_pins>;
-+	status = "disable";
-+};
-+&i2c7{
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&i2c7_pins>;
-+	status = "disable";
-+};
-+&i2c8{
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&i2c8_pins>;
-+	status = "disable";
-+};
-+&spi0 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&spi0_pins>;
-+	status = "disable";
-+};
-+&spi1 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&spi1_pins>;
-+	status = "disable";
-+};
-+&spi2 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&spi2_pins>;
-+	status = "disable";
-+};
-+&spi3 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&spi3_pins>;
-+	status = "disable";
-+};
-+&spi4 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&spi4_pins>;
-+	status = "disable";
-+};
-+&spi5 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&spi5_pins>;
-+	status = "disable";
-+};
-+&pcie {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&pcie_pins_default>;
-+	status = "okay";
-+};
-+&pciephy {
-+	status = "okay";
-+};
-+&nor_flash {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&nor_pins_default>;
-+	status = "okay";
-+	flash@0 {
-+		compatible = "jedec,spi-nor";
-+		reg = <0>;
-+		spi-max-frequency = <52000000>;
-+		spi-rx-bus-width = <2>;
-+		spi-tx-bus-width = <2>;
-+	};
-+};
-+&pio{
-+	i2c0_pins:i2c0{
-+		pins-bus{
-+			pinmux = <PINMUX_GPIO52__FUNC_SDA0>,
-+					<PINMUX_GPIO51__FUNC_SCL0>;
-+			bias-disable;
-+		};
-+	};
-+	i2c1_pins:i2c1{
-+		pins-bus{
-+			pinmux = <PINMUX_GPIO54__FUNC_SDA1>,
-+					<PINMUX_GPIO53__FUNC_SCL1>;
-+			bias-disable;
-+		};
-+	};
-+	i2c2_pins:i2c2{
-+		pins-bus{
-+			pinmux = <PINMUX_GPIO56__FUNC_SDA2>,
-+					<PINMUX_GPIO55__FUNC_SCL2>;
-+			bias-disable;
-+		};
-+	};
-+	i2c3_pins:i2c3{
-+		pins-bus{
-+			pinmux = <PINMUX_GPIO58__FUNC_SDA3>,
-+					<PINMUX_GPIO57__FUNC_SCL3>;
-+			bias-disable;
-+		};
-+	};
-+	i2c4_pins:i2c4{
-+		pins-bus{
-+			pinmux = <PINMUX_GPIO60__FUNC_SDA4>,
-+					<PINMUX_GPIO59__FUNC_SCL4>;
-+			bias-disable;
-+		};
-+	};
-+	i2c5_pins:i2c5{
-+		pins-bus{
-+			pinmux = <PINMUX_GPIO62__FUNC_SDA5>,
-+					<PINMUX_GPIO61__FUNC_SCL5>;
-+			bias-disable;
-+		};
-+	};
-+	i2c6_pins:i2c6{
-+		pins-bus{
-+			pinmux = <PINMUX_GPIO64__FUNC_SDA6>,
-+					<PINMUX_GPIO63__FUNC_SCL6>;
-+			bias-disable;
-+		};
-+	};
-+	i2c7_pins:i2c7{
-+		pins-bus{
-+			pinmux = <PINMUX_GPIO66__FUNC_SDA7>,
-+					<PINMUX_GPIO65__FUNC_SCL7>;
-+			bias-disable;
-+		};
-+	};
-+	i2c8_pins:i2c8{
-+		pins-bus{
-+			pinmux = <PINMUX_GPIO68__FUNC_SDA8>,
-+					<PINMUX_GPIO67__FUNC_SCL8>;
-+			bias-disable;
-+		};
-+	};
-+	spi0_pins: spi0-default {
-+		pins-cmd-dat {
-+			pinmux = <PINMUX_GPIO69__FUNC_SPIM0_CSB>,
-+				<PINMUX_GPIO70__FUNC_SPIM0_CLK>,
-+				<PINMUX_GPIO71__FUNC_SPIM0_MO>,
-+				<PINMUX_GPIO72__FUNC_SPIM0_MI>;
-+		};
-+	};
-+	spi1_pins: spi1-default {
-+		pins-cmd-dat {
-+			pinmux = <PINMUX_GPIO73__FUNC_SPIM1_CSB>,
-+				<PINMUX_GPIO74__FUNC_SPIM1_CLK>,
-+				<PINMUX_GPIO75__FUNC_SPIM1_MO>,
-+				<PINMUX_GPIO76__FUNC_SPIM1_MI>;
-+		};
-+	};
-+	spi2_pins: spi2-default {
-+		pins-cmd-dat {
-+			pinmux = <PINMUX_GPIO77__FUNC_SPIM2_CSB>,
-+				<PINMUX_GPIO78__FUNC_SPIM2_CLK>,
-+				<PINMUX_GPIO79__FUNC_SPIM2_MO>,
-+				<PINMUX_GPIO80__FUNC_SPIM2_MI>;
-+		};
-+	};
-+	spi3_pins: spi3-default {
-+		pins-cmd-dat {
-+			pinmux = <PINMUX_GPIO0__FUNC_SPIM3_A_CSB>,
-+				<PINMUX_GPIO1__FUNC_SPIM3_A_CLK>,
-+				<PINMUX_GPIO2__FUNC_SPIM3_A_MO>,
-+				<PINMUX_GPIO3__FUNC_SPIM3_A_MI>;
-+		};
-+	};
-+	spi4_pins: spi4-default {
-+		pins-cmd-dat {
-+			pinmux = <PINMUX_GPIO4__FUNC_SPIM4_A_CSB>,
-+				<PINMUX_GPIO5__FUNC_SPIM4_A_CLK>,
-+				<PINMUX_GPIO6__FUNC_SPIM4_A_MO>,
-+				<PINMUX_GPIO7__FUNC_SPIM4_A_MI>;
-+		};
-+	};
-+	spi5_pins: spi5-default {
-+		pins-cmd-dat {
-+			pinmux = <PINMUX_GPIO8__FUNC_SPIM5_A_CSB>,
-+				<PINMUX_GPIO9__FUNC_SPIM5_A_CLK>,
-+				<PINMUX_GPIO10__FUNC_SPIM5_A_MO>,
-+				<PINMUX_GPIO11__FUNC_SPIM5_A_MI>;
-+		};
-+	};
-+	pcie_pins_default: pcie-default {
-+		pins-cmd-dat {
-+			pinmux = <PINMUX_GPIO48__FUNC_WAKEN>,
-+				 <PINMUX_GPIO49__FUNC_PERSTN>,
-+				 <PINMUX_GPIO50__FUNC_CLKREQN>;
-+		};
-+	};
-+	nor_pins_default: nor-default-pins {
-+		pins-ck-io {
-+			pinmux = <PINMUX_GPIO150__FUNC_SPINOR_CK>,
-+				 <PINMUX_GPIO152__FUNC_SPINOR_IO0>,
-+				 <PINMUX_GPIO153__FUNC_SPINOR_IO1>;
-+			drive-strength = <MTK_DRIVE_8mA>;
-+			bias-pull-down;
-+		};
-+		pins-cs {
-+			pinmux = <PINMUX_GPIO151__FUNC_SPINOR_CS>;
-+			drive-strength = <MTK_DRIVE_8mA>;
-+			bias-pull-up;
-+		};
-+	};
-+};
-+&xhci0{
-+	vbus-supply = <&usb_p0_vbus>;
-+	status = "okay";
-+};
-+&xhci1{
-+	vbus-supply = <&usb_p1_vbus>;
-+	status = "okay";
-+};
-+&xhci2{
-+	vbus-supply = <&usb_p2_vbus>;
-+	status = "okay";
-+};
-+&xhci3{
-+	vbus-supply = <&usb_p3_vbus>;
-+	status = "okay";
-+};
-+&xhci4{
-+	vbus-supply = <&usb_p4_vbus>;
-+	status = "okay";
-+};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8189-evb.dts b/arch/arm64/boot/dts/mediatek/mt8189-evb.dts
 new file mode 100644
-index 0000000000000000000000000000000000000000..c568a58456c57b5def63f11ed51ee9044cd6ff79
+index 0000000000000000000000000000000000000000..ff1b27911bc1b9274183cfad2e24979c3a1c9cc6
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt8189-evb.dts
-@@ -0,0 +1,1005 @@
+@@ -0,0 +1,1000 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
 +/*
 + * Copyright (C) 2025 MediaTek Inc.
@@ -1820,11 +1409,6 @@ index 0000000000000000000000000000000000000000..c568a58456c57b5def63f11ed51ee904
 +			rdinit=/linuxrc";
 +		stdout-path = "serial0:115200n8";
 +	};
-+
-+        my_driver_node {
-+                compatible = "mycompany,my_driver";
-+                version = "1.0.0";
-+        };
 +
 +	usb_p0_vbus: regulator@0 {
 +		compatible = "regulator-fixed";
@@ -2820,10 +2404,10 @@ index 0000000000000000000000000000000000000000..ccf21e86cf0b0151d7c957f1fb0a7bd9
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8189-skywalker-anakin.dtsi b/arch/arm64/boot/dts/mediatek/mt8189-skywalker-anakin.dtsi
 new file mode 100644
-index 0000000000000000000000000000000000000000..bb4c20695ca0a7a2c1fc89789494206aa5bd4e38
+index 0000000000000000000000000000000000000000..3a3ca26427cc4cc23d47f1ea9f5571511cb0a6a7
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt8189-skywalker-anakin.dtsi
-@@ -0,0 +1,347 @@
+@@ -0,0 +1,351 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
 +/*
 + * Copyright (C) 2025 Google Inc.
@@ -3146,6 +2730,10 @@ index 0000000000000000000000000000000000000000..bb4c20695ca0a7a2c1fc89789494206a
 +	status = "okay";
 +};
 +
++&ufshci {
++        status = "disabled";
++};
++
 +&mmc0 {
 +	status = "okay";
 +	pinctrl-names = "default", "state_uhs";
@@ -3257,10 +2845,10 @@ index 0000000000000000000000000000000000000000..d8850de88c127f23921929ebd7326d0a
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8189-skywalker-obiwan.dtsi b/arch/arm64/boot/dts/mediatek/mt8189-skywalker-obiwan.dtsi
 new file mode 100644
-index 0000000000000000000000000000000000000000..cd830a24cea4f368c341cb8aa709ccc2b86366e7
+index 0000000000000000000000000000000000000000..8b62d1fe6fa12d0c52d191c6766812ed92e971ad
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt8189-skywalker-obiwan.dtsi
-@@ -0,0 +1,478 @@
+@@ -0,0 +1,473 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
 +/*
 + * Copyright (C) 2025 Google Inc.
@@ -3659,11 +3247,6 @@ index 0000000000000000000000000000000000000000..cd830a24cea4f368c341cb8aa709ccc2
 +	};
 +};
 +
-+&pp3300_edp_x {
-+
-+	/delete-property/ regulator-boot-on;
-+};
-+
 +&sound {
 +	compatible = "mediatek,mt8189-rt5682s-sound";
 +	model = "mt8189_1019_rt5682s";
@@ -3840,10 +3423,10 @@ index 0000000000000000000000000000000000000000..acae81aa8c7c5be1663622ed4a896f07
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8189-skywalker.dtsi b/arch/arm64/boot/dts/mediatek/mt8189-skywalker.dtsi
 new file mode 100644
-index 0000000000000000000000000000000000000000..a848f70ed493a8f9925c7c0c722236cb630ff6ae
+index 0000000000000000000000000000000000000000..51703b147b28da38342d7328a1011f4e0398005a
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt8189-skywalker.dtsi
-@@ -0,0 +1,1648 @@
+@@ -0,0 +1,1649 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
 +/*
 + * Copyright (C) 2025 Google Inc.
@@ -4908,6 +4491,7 @@ index 0000000000000000000000000000000000000000..a848f70ed493a8f9925c7c0c722236cb
 +		pins-hpd {
 +			pinmux = <PINMUX_GPIO28__FUNC_EDP_TX_HPD>;
 +			input-enable;
++			bias-disable;
 +		};
 +	};
 +
@@ -4995,7 +4579,7 @@ index 0000000000000000000000000000000000000000..a848f70ed493a8f9925c7c0c722236cb
 +	edp_pwr_pins: edp-pwr-pins {
 +		pins-pwr {
 +			pinmux = <PINMUX_GPIO25__FUNC_GPIO25>;
-+			output-low;
++			output-high;
 +		};
 +	};
 +
@@ -5494,10 +5078,10 @@ index 0000000000000000000000000000000000000000..a848f70ed493a8f9925c7c0c722236cb
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8189.dtsi b/arch/arm64/boot/dts/mediatek/mt8189.dtsi
 new file mode 100644
-index 0000000000000000000000000000000000000000..8befe6d6c8ed8ab288402ffaa591d2b2714889ef
+index 0000000000000000000000000000000000000000..cdd68769dc246e116364f86c606079fbe551542a
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt8189.dtsi
-@@ -0,0 +1,3127 @@
+@@ -0,0 +1,3147 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
 +/*
 + * Copyright (c) 2025 MediaTek Inc.
@@ -5537,6 +5121,7 @@ index 0000000000000000000000000000000000000000..8befe6d6c8ed8ab288402ffaa591d2b2
 +		i2c8 = &i2c8;
 +		mmc0 = &mmc0;
 +		mmc1 = &mmc1;
++		mutex0 = &disp_mutex0;
 +		ovl0 = &disp_ovl0_4l;
 +		ovl1 = &disp_ovl1_4l;
 +		rdma0 = &disp_rdma0;
@@ -6486,82 +6071,81 @@ index 0000000000000000000000000000000000000000..8befe6d6c8ed8ab288402ffaa591d2b2
 +			compatible = "mediatek,mt8189-afe-pcm";
 +			reg = <0 0x11050000 0 0x10000>;
 +			interrupts = <GIC_SPI 392 IRQ_TYPE_LEVEL_HIGH 0>;
-+			topckgen = <&topckgen_clk>;
-+			apmixedsys = <&apmixedsys_clk>;
 +			power-domains = <&scpsys MT8189_POWER_DOMAIN_AUDIO>;
 +			memory-region = <&afe_dma_mem_reserved>;
-+			infracfg = <&infracfg_ao_clk>;
 +			clocks = <&afe_clk CLK_AFE_AUDIO_HOPPING>,
-+				<&afe_clk CLK_AFE_AUDIO_F26M>,
-+				<&afe_clk CLK_AFE_APLL1>,
-+				<&afe_clk CLK_AFE_APLL2>,
-+				<&afe_clk CLK_AFE_APLL_TUNER1>,
-+				<&afe_clk CLK_AFE_APLL_TUNER2>,
-+				<&topckgen_clk CLK_TOP_AUD_INTBUS_SEL>,
-+				<&topckgen_clk CLK_TOP_MAINPLL_D4_D4>,
-+				<&topckgen_clk CLK_TOP_AUD_1_SEL>,
-+				<&topckgen_clk CLK_TOP_APLL1>,
-+				<&topckgen_clk CLK_TOP_AUD_2_SEL>,
-+				<&topckgen_clk CLK_TOP_APLL2>,
-+				<&topckgen_clk CLK_TOP_AUD_ENGEN1_SEL>,
-+				<&topckgen_clk CLK_TOP_APLL1_D4>,
-+				<&topckgen_clk CLK_TOP_AUD_ENGEN2_SEL>,
-+				<&topckgen_clk CLK_TOP_APLL2_D4>,
-+				<&topckgen_clk CLK_TOP_AUDIO_H_SEL>,
-+				<&topckgen_clk CLK_TOP_APLL1_D2>,
-+				<&topckgen_clk CLK_TOP_APLL2_D2>,
-+				<&topckgen_clk CLK_TOP_APLL_I2SIN0_MCK_SEL>,
-+				<&topckgen_clk CLK_TOP_APLL_I2SIN1_MCK_SEL>,
-+				<&topckgen_clk CLK_TOP_APLL_FMI2S_MCK_SEL>,
-+				<&topckgen_clk CLK_TOP_APLL_TDMOUT_MCK_SEL>,
-+				<&topckgen_clk CLK_TOP_APLL12_CK_DIV_I2SIN0>,
-+				<&topckgen_clk CLK_TOP_APLL12_CK_DIV_I2SIN1>,
-+				<&topckgen_clk CLK_TOP_APLL12_CK_DIV_FMI2S>,
-+				<&topckgen_clk CLK_TOP_APLL12_CK_DIV_TDMOUT_M>,
-+				<&topckgen_clk CLK_TOP_APLL12_CK_DIV_TDMOUT_B>,
-+				<&topckgen_clk CLK_TOP_TCK_26M_MX9>,
-+				<&pericfg_ao_clk CLK_PERAO_AUDIO0>,
-+				<&pericfg_ao_clk CLK_PERAO_AUDIO1>,
-+				<&pericfg_ao_clk CLK_PERAO_AUDIO2>;
-+
++				 <&afe_clk CLK_AFE_AUDIO_F26M>,
++				 <&afe_clk CLK_AFE_APLL1>,
++				 <&afe_clk CLK_AFE_APLL2>,
++				 <&afe_clk CLK_AFE_APLL_TUNER1>,
++				 <&afe_clk CLK_AFE_APLL_TUNER2>,
++				 <&topckgen_clk CLK_TOP_AUD_INTBUS_SEL>,
++				 <&topckgen_clk CLK_TOP_MAINPLL_D4_D4>,
++				 <&topckgen_clk CLK_TOP_AUD_1_SEL>,
++				 <&topckgen_clk CLK_TOP_APLL1>,
++				 <&topckgen_clk CLK_TOP_AUD_2_SEL>,
++				 <&topckgen_clk CLK_TOP_APLL2>,
++				 <&topckgen_clk CLK_TOP_AUD_ENGEN1_SEL>,
++				 <&topckgen_clk CLK_TOP_APLL1_D4>,
++				 <&topckgen_clk CLK_TOP_AUD_ENGEN2_SEL>,
++				 <&topckgen_clk CLK_TOP_APLL2_D4>,
++				 <&topckgen_clk CLK_TOP_AUDIO_H_SEL>,
++				 <&topckgen_clk CLK_TOP_APLL1_D2>,
++				 <&topckgen_clk CLK_TOP_APLL2_D2>,
++				 <&topckgen_clk CLK_TOP_APLL_I2SIN0_MCK_SEL>,
++				 <&topckgen_clk CLK_TOP_APLL_I2SIN1_MCK_SEL>,
++				 <&topckgen_clk CLK_TOP_APLL_FMI2S_MCK_SEL>,
++				 <&topckgen_clk CLK_TOP_APLL_TDMOUT_MCK_SEL>,
++				 <&topckgen_clk CLK_TOP_APLL12_CK_DIV_I2SIN0>,
++				 <&topckgen_clk CLK_TOP_APLL12_CK_DIV_I2SIN1>,
++				 <&topckgen_clk CLK_TOP_APLL12_CK_DIV_FMI2S>,
++				 <&topckgen_clk CLK_TOP_APLL12_CK_DIV_TDMOUT_M>,
++				 <&topckgen_clk CLK_TOP_APLL12_CK_DIV_TDMOUT_B>,
++				 <&topckgen_clk CLK_TOP_TCK_26M_MX9>,
++				 <&pericfg_ao_clk CLK_PERAO_AUDIO0>,
++				 <&pericfg_ao_clk CLK_PERAO_AUDIO1>,
++				 <&pericfg_ao_clk CLK_PERAO_AUDIO2>;
 +			clock-names = "aud_hopping_clk",
-+				"aud_f26m_clk",
-+				"aud_apll1_clk",
-+				"aud_apll2_clk",
-+				"aud_apll_tuner1_clk",
-+				"aud_apll_tuner2_clk",
-+				"top_mux_audio_int",
-+				"top_mainpll_d4_d4",
-+				"top_mux_aud_1",
-+				"top_apll1_ck",
-+				"top_mux_aud_2",
-+				"top_apll2_ck",
-+				"top_mux_aud_eng1",
-+				"top_apll1_d4",
-+				"top_mux_aud_eng2",
-+				"top_apll2_d4",
-+				"top_mux_audio_h",
-+				"top_apll1_d2",
-+				"top_apll2_d2",
-+				"top_i2sin0_m_sel",
-+				"top_i2sin1_m_sel",
-+				"top_fmi2s_m_sel",
-+				"top_tdmout_m_sel",
-+				"top_apll12_div_i2sin0",
-+				"top_apll12_div_i2sin1",
-+				"top_apll12_div_fmi2s",
-+				"top_apll12_div_tdmout_m",
-+				"top_apll12_div_tdmout_b",
-+				"top_clk26m_clk",
-+				"aud_slv_ck_peri",
-+				"aud_mst_ck_peri",
-+				"aud_intbus_ck_peri";
++				      "aud_f26m_clk",
++				      "aud_apll1_clk",
++				      "aud_apll2_clk",
++				      "aud_apll_tuner1_clk",
++				      "aud_apll_tuner2_clk",
++				      "top_mux_audio_int",
++				      "top_mainpll_d4_d4",
++				      "top_mux_aud_1",
++				      "top_apll1_ck",
++				      "top_mux_aud_2",
++				      "top_apll2_ck",
++				      "top_mux_aud_eng1",
++				      "top_apll1_d4",
++				      "top_mux_aud_eng2",
++				      "top_apll2_d4",
++				      "top_mux_audio_h",
++				      "top_apll1_d2",
++				      "top_apll2_d2",
++				      "top_i2sin0_m_sel",
++				      "top_i2sin1_m_sel",
++				      "top_fmi2s_m_sel",
++				      "top_tdmout_m_sel",
++				      "top_apll12_div_i2sin0",
++				      "top_apll12_div_i2sin1",
++				      "top_apll12_div_fmi2s",
++				      "top_apll12_div_tdmout_m",
++				      "top_apll12_div_tdmout_b",
++				      "top_clk26m_clk",
++				      "aud_slv_ck_peri",
++				      "aud_mst_ck_peri",
++				      "aud_intbus_ck_peri";
++			mediatek,topckgen = <&topckgen_clk>;
++			mediatek,apmixedsys = <&apmixedsys_clk>;
++			mediatek,infracfg = <&infracfg_ao_clk>;
++			status = "disabled";
 +		};
 +
 +		sound: sound {
-+			compatible = "mediatek,mt8189-mt6359p-sound";
 +			mediatek,platform = <&afe>;
-+			status = "okay";
++			status = "disabled";
 +		};
 +
 +		disp_pwm0: pwm@1100e000 {
@@ -7515,7 +7099,9 @@ index 0000000000000000000000000000000000000000..8befe6d6c8ed8ab288402ffaa591d2b2
 +			reg = <0 0x11200000 0 0x1000>,
 +			      <0 0x11203e00 0 0x0100>;
 +			reg-names = "mac", "ippc";
-+			interrupts = <GIC_SPI 385 IRQ_TYPE_LEVEL_HIGH 0>;
++			interrupts-extended = <&gic GIC_SPI 385 IRQ_TYPE_LEVEL_HIGH 0>,
++					      <&pio 207 IRQ_TYPE_LEVEL_HIGH>;
++			interrupt-names = "host","wakeup";
 +			phy-cells = <1>;
 +			phys = <&u2port0 PHY_TYPE_USB2>,
 +			       <&u3port0 PHY_TYPE_USB3>;
@@ -7529,6 +7115,8 @@ index 0000000000000000000000000000000000000000..8befe6d6c8ed8ab288402ffaa591d2b2
 +					 "mcu_ck", "dma_ck", "xhci_ck", "frmcnt_ck";
 +			#address-cells = <1>;
 +			#size-cells = <0>;
++			mediatek,syscon-wakeup = <&pericfg_ao_clk 0x214 110>;
++			wakeup-source;
 +			status = "disabled";
 +		};
 +
@@ -7537,7 +7125,9 @@ index 0000000000000000000000000000000000000000..8befe6d6c8ed8ab288402ffaa591d2b2
 +			reg = <0 0x11210000 0 0x1000>,
 +			      <0 0x11213e00 0 0x0100>;
 +			reg-names = "mac", "ippc";
-+			interrupts = <GIC_SPI 386 IRQ_TYPE_LEVEL_HIGH 0>;
++			interrupts-extended = <&gic GIC_SPI 386 IRQ_TYPE_LEVEL_HIGH 0>,
++					      <&pio 203 IRQ_TYPE_LEVEL_HIGH>;
++			interrupt-names = "host","wakeup";
 +			phy-cells = <1>;
 +			phys = <&u2port1 PHY_TYPE_USB2>;
 +			clocks = <&pericfg_ao_clk CLK_PERAO_SSUSB1_SYS>,
@@ -7551,6 +7141,8 @@ index 0000000000000000000000000000000000000000..8befe6d6c8ed8ab288402ffaa591d2b2
 +			power-domains = <&scpsys MT8189_POWER_DOMAIN_SSUSB>;
 +			#address-cells = <1>;
 +			#size-cells = <0>;
++			mediatek,syscon-wakeup = <&pericfg_ao_clk 0x21c 110>;
++			wakeup-source;
 +			status = "disabled";
 +		};
 +
@@ -7559,7 +7151,9 @@ index 0000000000000000000000000000000000000000..8befe6d6c8ed8ab288402ffaa591d2b2
 +			reg = <0 0x11220000 0 0x1000>,
 +			      <0 0x11223e00 0 0x0100>;
 +			reg-names = "mac", "ippc";
-+			interrupts = <GIC_SPI 472 IRQ_TYPE_LEVEL_HIGH 0>;
++			interrupts-extended = <&gic GIC_SPI 472 IRQ_TYPE_LEVEL_HIGH 0>,
++					      <&pio 193 IRQ_TYPE_LEVEL_HIGH>;
++			interrupt-names = "host","wakeup";
 +			phy-cells = <1>;
 +			phys = <&u2port2 PHY_TYPE_USB2>;
 +			clocks = <&pericfg_ao_clk CLK_PERAO_SSUSB2_SYS>,
@@ -7573,6 +7167,8 @@ index 0000000000000000000000000000000000000000..8befe6d6c8ed8ab288402ffaa591d2b2
 +			power-domains = <&scpsys MT8189_POWER_DOMAIN_SSUSB>;
 +			#address-cells = <1>;
 +			#size-cells = <0>;
++			mediatek,syscon-wakeup = <&pericfg_ao_clk 0x27c 110>;
++			wakeup-source;
 +			status = "disabled";
 +		};
 +
@@ -7581,7 +7177,9 @@ index 0000000000000000000000000000000000000000..8befe6d6c8ed8ab288402ffaa591d2b2
 +			reg = <0 0x11260000 0 0x2e00>,
 +			      <0 0x11263e00 0 0x0100>;
 +			reg-names = "mac", "ippc";
-+			interrupts = <GIC_SPI 473 IRQ_TYPE_LEVEL_HIGH 0>;
++			interrupts-extended = <&gic GIC_SPI 473 IRQ_TYPE_LEVEL_HIGH 0>,
++					      <&pio 188 IRQ_TYPE_LEVEL_HIGH>;
++			interrupt-names = "host","wakeup";
 +			phy-cells = <1>;
 +			phys = <&u2port3 PHY_TYPE_USB2>,
 +			       <&u3port3 PHY_TYPE_USB3>;
@@ -7596,6 +7194,8 @@ index 0000000000000000000000000000000000000000..8befe6d6c8ed8ab288402ffaa591d2b2
 +			power-domains = <&scpsys MT8189_POWER_DOMAIN_SSUSB>;
 +			#address-cells = <1>;
 +			#size-cells = <0>;
++			mediatek,syscon-wakeup = <&pericfg_ao_clk 0x284 110>;
++			wakeup-source;
 +			status = "disabled";
 +		};
 +
@@ -7604,7 +7204,9 @@ index 0000000000000000000000000000000000000000..8befe6d6c8ed8ab288402ffaa591d2b2
 +			reg = <0 0x11270000 0 0x1000>,
 +			      <0 0x11273e00 0 0x0100>;
 +			reg-names = "mac", "ippc";
-+			interrupts = <GIC_SPI 474 IRQ_TYPE_LEVEL_HIGH 0>;
++			interrupts-extended = <&gic GIC_SPI 474 IRQ_TYPE_LEVEL_HIGH 0>,
++					      <&pio 184 IRQ_TYPE_LEVEL_HIGH>;
++			interrupt-names = "host","wakeup";
 +			phy-cells = <1>;
 +			phys = <&u2port4 PHY_TYPE_USB2>;
 +			clocks = <&pericfg_ao_clk CLK_PERAO_SSUSB4_SYS>,
@@ -7617,6 +7219,8 @@ index 0000000000000000000000000000000000000000..8befe6d6c8ed8ab288402ffaa591d2b2
 +					 "mcu_ck", "dma_ck", "xhci_ck", "frmcnt_ck";
 +			#address-cells = <1>;
 +			#size-cells = <0>;
++			mediatek,syscon-wakeup = <&pericfg_ao_clk 0x28c 110>;
++			wakeup-source;
 +			status = "disabled";
 +		};
 +
@@ -8114,8 +7718,8 @@ index 0000000000000000000000000000000000000000..8befe6d6c8ed8ab288402ffaa591d2b2
 +			#clock-cells = <1>;
 +			clocks = <&dispsys_config_clk CLK_MM_DISP_MUTEX0>,
 +				 <&dispsys_config_clk CLK_MM_DIPSYS_CONFIG>;
-+			//mboxes = <&gce 0 CMDQ_THR_PRIO_HIGHEST>,
-+				 //<&gce 1 CMDQ_THR_PRIO_HIGHEST>;
++			mboxes = <&gce 0 CMDQ_THR_PRIO_HIGHEST>,
++				 <&gce 1 CMDQ_THR_PRIO_HIGHEST>;
 +
 +			gce-subsys = <&gce 0x14000000 SUBSYS_1400XXXX>,
 +				     <&gce 0x14010000 SUBSYS_1401XXXX>,
@@ -8626,7 +8230,7 @@ index 0000000000000000000000000000000000000000..8befe6d6c8ed8ab288402ffaa591d2b2
 +	interrupts-extended = <&pio 194 IRQ_TYPE_LEVEL_HIGH>;
 +};
 diff --git a/chromeos/config/chromeos/arm64/chromiumos-mediatek.flavour.config b/chromeos/config/chromeos/arm64/chromiumos-mediatek.flavour.config
-index 7676d204555469a97083ce23ce44261d3739759d..d5874420edcaf731b32abb4eb37946fe1da6c6a7 100644
+index 7676d204555469a97083ce23ce44261d3739759d..bffc4077538bea6fd8c400fff580e1903ea920b0 100644
 --- a/chromeos/config/chromeos/arm64/chromiumos-mediatek.flavour.config
 +++ b/chromeos/config/chromeos/arm64/chromiumos-mediatek.flavour.config
 @@ -58,6 +58,8 @@ CONFIG_DMA_CMA=y
@@ -8673,11 +8277,7 @@ index 7676d204555469a97083ce23ce44261d3739759d..d5874420edcaf731b32abb4eb37946fe
  CONFIG_SPI_GPIO=y
  CONFIG_SPI_MT65XX=y
  CONFIG_SPI_MTK_NOR=y
-@@ -213,9 +222,11 @@ CONFIG_TCG_TIS_I2C_INFINEON=y
- CONFIG_TEE=y
- CONFIG_THERMAL_DEFAULT_GOV_POWER_ALLOCATOR=y
- CONFIG_THERMAL_GOV_STEP_WISE=y
-+CONFIG_MY_DRIVER=y
+@@ -216,6 +225,7 @@ CONFIG_THERMAL_GOV_STEP_WISE=y
  CONFIG_TMPFS=y
  CONFIG_TOUCHSCREEN_MELFAS_MIP4=y
  CONFIG_TYPEC=y
@@ -8685,7 +8285,7 @@ index 7676d204555469a97083ce23ce44261d3739759d..d5874420edcaf731b32abb4eb37946fe
  CONFIG_TYPEC_UCSI=y
  CONFIG_USB_LINK_LAYER_TEST=m
  CONFIG_USB_MTU3=y
-@@ -225,12 +236,23 @@ CONFIG_VIDEO_GC5035=m
+@@ -225,12 +235,15 @@ CONFIG_VIDEO_GC5035=m
  CONFIG_VIDEO_MEDIATEK_FD=m
  CONFIG_VIDEO_MEDIATEK_ISP_DIP=m
  CONFIG_VIDEO_MEDIATEK_ISP_PASS1=m
@@ -8703,39 +8303,6 @@ index 7676d204555469a97083ce23ce44261d3739759d..d5874420edcaf731b32abb4eb37946fe
  CONFIG_VIDEO_OV8856=m
 +# CONFIG_RANDOMIZE_BASE is not set
 +# CONFIG_RANDOMIZE_MEMORY is not set
-+CONFIG_USB=y
-+CONFIG_FAT_FS=y
-+CONFIG_VFAT_FS=y
-+CONFIG_MSDOS_FS=y
-+CONFIG_BLK_DEV=y
-+CONFIG_NLS=y
-+CONFIG_NLS_CODEPAGE_437=y
-+CONFIG_NLS_ISO8859_1=y
-diff --git a/drivers/Kconfig b/drivers/Kconfig
-index dcb39900c085a20704e1e493140825123635cc8c..1f4f407b5895bcfab78794bdac5d7764dc9e550b 100644
---- a/drivers/Kconfig
-+++ b/drivers/Kconfig
-@@ -223,6 +223,8 @@ source "drivers/fsi/Kconfig"
- 
- source "drivers/tee/Kconfig"
- 
-+source "drivers/my_driver/Kconfig"
-+
- source "drivers/mux/Kconfig"
- 
- source "drivers/opp/Kconfig"
-diff --git a/drivers/Makefile b/drivers/Makefile
-index 03fce577ee688404028ff5c24c213aa33082ed5b..069e130b8d56de9fc73c32ce5a5a5eec45835ba0 100644
---- a/drivers/Makefile
-+++ b/drivers/Makefile
-@@ -187,6 +187,7 @@ obj-$(CONFIG_NVMEM)		+= nvmem/
- obj-$(CONFIG_FPGA)		+= fpga/
- obj-$(CONFIG_FSI)		+= fsi/
- obj-$(CONFIG_TEE)		+= tee/
-+obj-$(CONFIG_MY_DRIVER)         += my_driver/
- obj-$(CONFIG_MULTIPLEXER)	+= mux/
- obj-$(CONFIG_SIOX)		+= siox/
- obj-$(CONFIG_GNSS)		+= gnss/
 diff --git a/drivers/clk/mediatek/Kconfig b/drivers/clk/mediatek/Kconfig
 index d541f70dcd7c49e7207a72d05becc0ac2bdbf319..6fe29aa76783cf4c59fa6e3b4abf785929c5bf1f 100644
 --- a/drivers/clk/mediatek/Kconfig
@@ -15825,7 +15392,7 @@ index 1d1e1708cbcd45570f013f967fdfbd5efc37b299..7889241ca28fbbe3275ccb152c2ea616
  	u32 en_mask;
 diff --git a/drivers/clk/mediatek/clkchk-mt8189.c b/drivers/clk/mediatek/clkchk-mt8189.c
 new file mode 100644
-index 0000000000000000000000000000000000000000..b72cb3aa2c03e418d11b75fd9d2e00b6888e00a2
+index 0000000000000000000000000000000000000000..b7f3d8a812debfeab2d8aa1865819d8b4a9560a6
 --- /dev/null
 +++ b/drivers/clk/mediatek/clkchk-mt8189.c
 @@ -0,0 +1,1550 @@
@@ -15846,7 +15413,7 @@ index 0000000000000000000000000000000000000000..b72cb3aa2c03e418d11b75fd9d2e00b6
 +#include <dt-bindings/power/mt8189-power.h>
 +
 +#if IS_ENABLED(CONFIG_MTK_DVFSRC_HELPER)
-+#include <mt-plat/dvfsrc-exp.h>
++#include <soc/mediatek/dvfsrc-exp.h>
 +#endif
 +
 +#include "clkchk.h"
@@ -22020,10 +21587,10 @@ index 0b6240f50a5b262d68c6e829e20774a53aac081d..384ad3774e139fd19bb64d59d3423d39
  
 diff --git a/drivers/gpu/arm/mali/platform/mediatek/mt8189_mali_kbase_runtime_pm.c b/drivers/gpu/arm/mali/platform/mediatek/mt8189_mali_kbase_runtime_pm.c
 new file mode 100644
-index 0000000000000000000000000000000000000000..15de644f3994083193ad91a804a662ebe404e0a1
+index 0000000000000000000000000000000000000000..7063ba94c91273001f9b90849d956adaaf4797f3
 --- /dev/null
 +++ b/drivers/gpu/arm/mali/platform/mediatek/mt8189_mali_kbase_runtime_pm.c
-@@ -0,0 +1,269 @@
+@@ -0,0 +1,272 @@
 +// SPDX-License-Identifier: GPL-2.0
 +// Copyright (c) 2025 Mediatek Inc.
 +
@@ -22113,7 +21680,7 @@ index 0000000000000000000000000000000000000000..15de644f3994083193ad91a804a662eb
 +			return err;
 +		}
 +
-+		dev_info(kbdev->dev, "Detected %s: 0x%08X\n", avs_cell, avs_val);
++		dev_dbg(kbdev->dev, "Detected %s: 0x%08X\n", avs_cell, avs_val);
 +
 +		/*
 +		 * avs efuse format:
@@ -22204,8 +21771,8 @@ index 0000000000000000000000000000000000000000..15de644f3994083193ad91a804a662eb
 +
 +	/* get opp count */
 +	count = dev_pm_opp_get_opp_count(kbdev->dev);
-+	if (count < 0) {
-+		err = count;
++	if (count <= 0) {
++		err = -EINVAL;
 +		goto skip_avs_bin;
 +	}
 +
@@ -22249,13 +21816,16 @@ index 0000000000000000000000000000000000000000..15de644f3994083193ad91a804a662eb
 +	if (err)
 +		goto skip_avs_bin;
 +
-+	/* update opp framework with avs interpolated result */
-+	for (i = 0; i < count; i++) {
++	/* update opp framework with avs interpolated result
++	 * adjust volt from low opp to high opp, to avoid low freq high volt if adjust fail
++	 */
++	for (i = count - 1; i >= 0; i--) {
 +		err = dev_pm_opp_adjust_voltage(kbdev->dev, opp_table[i].freq,
 +			opp_table[i].volt, opp_table[i].volt, opp_table[i].volt);
-+		if (err) {
++		if (WARN_ON(err)) {
 +			dev_err(kbdev->dev, "Failed to set avs voltage %lu - %lu\n",
 +				opp_table[i].freq, opp_table[i].volt);
++
 +			goto skip_avs_bin;
 +		}
 +	}
@@ -22279,7 +21849,7 @@ index 0000000000000000000000000000000000000000..15de644f3994083193ad91a804a662eb
 +
 +	err = avs_adjust(kbdev);
 +	if (err)
-+		dev_err(kbdev->dev, "ignore avs, using default OPP table\n");
++		dev_info(kbdev->dev, "ignore avs, using default OPP table\n");
 +
 +#if IS_ENABLED(CONFIG_MALI_DEVFREQ)
 +	kbdev->devfreq_ops.set_frequency = mtk_set_frequency;
@@ -22333,10 +21903,10 @@ index 2b892b7ed59e805e2b0c18960bddbb4d61530754..ff0c830eff48fb3e903385729824665c
  obj-$(CONFIG_DRM_LONTIUM_LT9211) += lontium-lt9211.o
 diff --git a/drivers/gpu/drm/bridge/ite-it61620.c b/drivers/gpu/drm/bridge/ite-it61620.c
 new file mode 100644
-index 0000000000000000000000000000000000000000..b40bd383ebfa4ed00862140cdc7fa9eb96a16da5
+index 0000000000000000000000000000000000000000..4ad11876b7b18095682b098077268ae047f25654
 --- /dev/null
 +++ b/drivers/gpu/drm/bridge/ite-it61620.c
-@@ -0,0 +1,3073 @@
+@@ -0,0 +1,3077 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +/*
 + * Copyright 2024 ITE
@@ -22687,6 +22257,7 @@ index 0000000000000000000000000000000000000000..b40bd383ebfa4ed00862140cdc7fa9eb
 +#define TX_REG_TXDRV_CTRL 0x240
 +#define TX_REG_AUX_CTRL 0x244
 +#define TX_REG_IPLL_CTRL 0x248
++#define TX_REG_RDROM_TRG 0x271
 +
 +#define TX_REG_HDCP_ARI_L 0x63
 +#define TX_REG_HDCP_ARI_H 0x64
@@ -23311,6 +22882,9 @@ index 0000000000000000000000000000000000000000..b40bd383ebfa4ed00862140cdc7fa9eb
 +	it61620_hdmi_reg_set(it61620, TX_REG_RESET_1_CTRL, 0x1F, 0x00);
 +	usleep_range(1000, 2000);
 +	it61620_hdmi_reg_set(it61620, TX_REG_RESET_1_CTRL, 0x40, 0x00);
++
++	it61620_hdmi_reg_write(it61620, TX_REG_RDROM_TRG, 0x04);
++	usleep_range(1000, 2000);
 +
 +	it61620_hdmi_reg_set(it61620, TX_REG_SYS_CONFIG, B_EN_HDMI, B_EN_HDMI);
 +
@@ -25428,18 +25002,6 @@ index 33959de4a3e428bb37af1e44b44cbec08a408ef5..a1427ca0750b258a8d6719892c39fbbe
  
  obj-$(CONFIG_DRM_MEDIATEK) += mediatek-drm.o
  
-diff --git a/drivers/gpu/drm/mediatek/mtk_crtc.c b/drivers/gpu/drm/mediatek/mtk_crtc.c
-index 02e0d339c6e2f484611b34d23ffa383cde2f49ea..e402670365d058eaf3acc58425698a42210f38fd 100644
---- a/drivers/gpu/drm/mediatek/mtk_crtc.c
-+++ b/drivers/gpu/drm/mediatek/mtk_crtc.c
-@@ -1107,6 +1107,7 @@ static void mtk_crtc_ddp_config(struct drm_crtc *crtc,
- 		if (!cmdq_handle)
- 			mtk_crtc->pending_async_planes = false;
- 	}
-+	mtk_crtc->config_updating = false;
- }
- 
- static void mtk_crtc_update_config(struct mtk_crtc *mtk_crtc, bool needs_vblank)
 diff --git a/drivers/gpu/drm/mediatek/mtk_ddp_comp.c b/drivers/gpu/drm/mediatek/mtk_ddp_comp.c
 index 35894780b26201ec7d75f6a643284c866abf3f44..e6a47a1563e74719abcaf9aaa3a64d3f40bc437f 100644
 --- a/drivers/gpu/drm/mediatek/mtk_ddp_comp.c
@@ -25571,32 +25133,93 @@ index f06b048c124794c0f1192591136a3d7bc7ce35e4..b3fb71157b4e0b4c003510f35054aff6
  };
  MODULE_DEVICE_TABLE(of, mtk_disp_rdma_driver_dt_match);
 diff --git a/drivers/gpu/drm/mediatek/mtk_dp.c b/drivers/gpu/drm/mediatek/mtk_dp.c
-index 9fbbbbd52851b0f7eb495e907fe09ed5c21d0c68..3fa6e324bfecd6666308cd1b9290c79f67260192 100644
+index 9fbbbbd52851b0f7eb495e907fe09ed5c21d0c68..d40d82b085678bc953d9a22be03c4daa63a57bbc 100644
 --- a/drivers/gpu/drm/mediatek/mtk_dp.c
 +++ b/drivers/gpu/drm/mediatek/mtk_dp.c
-@@ -2990,13 +2990,13 @@ static int mtk_dp_register_phy(struct mtk_dp *mtk_dp)
+@@ -70,6 +70,12 @@ enum {
+ 	MTK_DP_CAL_MAX,
+ };
  
- 	if (mtk_dp->phy_regs)
- 		mtk_dp->phy_dev = platform_device_register_data(dev,
++enum {
++	MTK_EDP_SOC_TYPE_NONE  = 0,
++	MTK_EDP_SOC_TYPE_MT8196,
++	MTK_EDP_SOC_TYPE_MT8189,
++};
++
+ struct mtk_dp_train_info {
+ 	bool sink_ssc;
+ 	bool cable_plugged_in;
+@@ -2988,18 +2994,33 @@ static int mtk_dp_register_phy(struct mtk_dp *mtk_dp)
+ {
+ 	struct device *dev = mtk_dp->dev;
+ 
+-	if (mtk_dp->phy_regs)
+-		mtk_dp->phy_dev = platform_device_register_data(dev,
 -					"mediatek-edp-phy",
-+					"mediatek-edp-phy-mt8189",
- 					PLATFORM_DEVID_AUTO,
- 					&mtk_dp->phy_regs,
- 					sizeof(struct regmap *));
- 	else
- 		mtk_dp->phy_dev = platform_device_register_data(dev,
+-					PLATFORM_DEVID_AUTO,
+-					&mtk_dp->phy_regs,
+-					sizeof(struct regmap *));
+-	else
+-		mtk_dp->phy_dev = platform_device_register_data(dev,
 -					"mediatek-dp-phy",
-+					"mediatek-dp-phy-mt8189",
- 					PLATFORM_DEVID_AUTO,
- 					&mtk_dp->regs,
- 					sizeof(struct regmap *));
-@@ -3317,6 +3317,10 @@ static const struct of_device_id mtk_dp_of_match[] = {
+-					PLATFORM_DEVID_AUTO,
+-					&mtk_dp->regs,
+-					sizeof(struct regmap *));
++	if (mtk_dp->data->edp_ver == MTK_EDP_SOC_TYPE_MT8196) {
++		if (mtk_dp->phy_regs)
++			mtk_dp->phy_dev = platform_device_register_data(dev,
++						"mediatek-edp-phy-mt8196",
++						PLATFORM_DEVID_AUTO,
++						&mtk_dp->phy_regs,
++						sizeof(struct regmap *));
++		else
++			mtk_dp->phy_dev = platform_device_register_data(dev,
++						"mediatek-dp-phy",
++						PLATFORM_DEVID_AUTO,
++						&mtk_dp->regs,
++						sizeof(struct regmap *));
++	} else if (mtk_dp->data->edp_ver == MTK_EDP_SOC_TYPE_MT8189) {
++		if (mtk_dp->phy_regs)
++			mtk_dp->phy_dev = platform_device_register_data(dev,
++						"mediatek-edp-phy-mt8189",
++						PLATFORM_DEVID_AUTO,
++						&mtk_dp->phy_regs,
++						sizeof(struct regmap *));
++		else
++			mtk_dp->phy_dev = platform_device_register_data(dev,
++						"mediatek-dp-phy",
++						PLATFORM_DEVID_AUTO,
++						&mtk_dp->regs,
++						sizeof(struct regmap *));
++	}
+ 	if (IS_ERR(mtk_dp->phy_dev))
+ 		return dev_err_probe(dev, PTR_ERR(mtk_dp->phy_dev),
+ 				     "Failed to create device mediatek-dp-phy\n");
+@@ -3293,7 +3314,16 @@ static const struct mtk_dp_data mt8196_edp_data = {
+ 	.efuse_fmt = mt8195_edp_efuse_fmt,
+ 	.audio_supported = false,
+ 	.audio_m_div2_bit = MT8195_AUDIO_M_CODE_MULT_DIV_SEL_DP_ENC0_P0_DIV_2,
+-	.edp_ver = 1,
++	.edp_ver = MTK_EDP_SOC_TYPE_MT8196,
++};
++
++static const struct mtk_dp_data mt8189_edp_data = {
++	.bridge_type = DRM_MODE_CONNECTOR_eDP,
++	.smc_cmd = MTK_DP_SIP_ATF_EDP_VIDEO_UNMUTE,
++	.efuse_fmt = mt8195_edp_efuse_fmt,
++	.audio_supported = false,
++	.audio_m_div2_bit = MT8195_AUDIO_M_CODE_MULT_DIV_SEL_DP_ENC0_P0_DIV_2,
++	.edp_ver = MTK_EDP_SOC_TYPE_MT8189,
+ };
+ 
+ static const struct of_device_id mtk_dp_of_match[] = {
+@@ -3317,6 +3347,10 @@ static const struct of_device_id mtk_dp_of_match[] = {
  		.compatible = "mediatek,mt8196-edp-tx",
  		.data = &mt8196_edp_data,
  	},
 +	{
 +		.compatible = "mediatek,mt8189-edp-tx",
-+		.data = &mt8196_edp_data,
++		.data = &mt8189_edp_data,
 +	},
  	{},
  };
@@ -25832,7 +25455,7 @@ index bc85158ea56c3e3ad9db56e7fc17620e084158ef..6b46aa996d242911c04a8bcc7b175fd7
  #define REG_360C_AUX_TX_P0									(0x360c)
  #define REG_3614_AUX_TX_P0									(0x3614)
 diff --git a/drivers/gpu/drm/mediatek/mtk_dp_v2.c b/drivers/gpu/drm/mediatek/mtk_dp_v2.c
-index 66f4743dd2708fd7f9f5610063abf8d964c124fe..512e5f5c2de6c09c1f9cef45f596a0a177baf05f 100644
+index 66f4743dd2708fd7f9f5610063abf8d964c124fe..6e79d32f0b470f2b00dc421c671eaff7d61c3273 100644
 --- a/drivers/gpu/drm/mediatek/mtk_dp_v2.c
 +++ b/drivers/gpu/drm/mediatek/mtk_dp_v2.c
 @@ -57,9 +57,14 @@
@@ -26109,7 +25732,7 @@ index 66f4743dd2708fd7f9f5610063abf8d964c124fe..512e5f5c2de6c09c1f9cef45f596a0a1
  
  	if (val & DP_CP_IRQ)
  		drm_dbg_kms(mtk_dp->drm_dev, "[DPTX] DP_CP_IRQ\n");
-@@ -5774,8 +5973,18 @@ static irqreturn_t mtk_dp_hpd_event_thread_v2(int hpd, void *dev)
+@@ -5774,8 +5973,21 @@ static irqreturn_t mtk_dp_hpd_event_thread_v2(int hpd, void *dev)
  				dev_err(mtk_dp->dev,
  					"[DPTX] connector[%d] crtc is not disabled in HPD low\n", i);
  			}
@@ -26121,14 +25744,17 @@ index 66f4743dd2708fd7f9f5610063abf8d964c124fe..512e5f5c2de6c09c1f9cef45f596a0a1
 +
 +			if (mtk_dp->enable_2c_feature) {
 +				drm_dbg_kms(mtk_dp->drm_dev, "[DPTX] Wait mux_set to complete\n");
-+				wait_for_completion(&mtk_dp->mux_completion);
-+				drm_dbg_kms(mtk_dp->drm_dev, "[DPTX] mux_set completed\n");
++				if (wait_for_completion_timeout(&mtk_dp->mux_completion,
++							    msecs_to_jiffies(1000)) == 0)
++					drm_dbg_kms(mtk_dp->drm_dev, "[DPTX] mux_set timeout\n");
++				else
++					drm_dbg_kms(mtk_dp->drm_dev, "[DPTX] mux_set completed\n");
 +			}
 +
  			mtk_dp_init_property_v2(mtk_dp);
  			mtk_dp_initial_setting_v2(mtk_dp);
  			mtk_dp_analog_power_on_v2(mtk_dp);
-@@ -5811,6 +6020,7 @@ static irqreturn_t mtk_dp_hpd_event_thread_v2(int hpd, void *dev)
+@@ -5811,6 +6023,7 @@ static irqreturn_t mtk_dp_hpd_event_thread_v2(int hpd, void *dev)
  				return IRQ_NONE;
  		} else if (!mtk_dp_hpd_event_handler_v2(mtk_dp))
  			return IRQ_NONE;
@@ -26136,7 +25762,7 @@ index 66f4743dd2708fd7f9f5610063abf8d964c124fe..512e5f5c2de6c09c1f9cef45f596a0a1
  	}
  
  end:
-@@ -6132,6 +6342,136 @@ static int mtk_dp_pm_init_v2(struct mtk_dp *mtk_dp, struct platform_device *pdev
+@@ -6132,6 +6345,136 @@ static int mtk_dp_pm_init_v2(struct mtk_dp *mtk_dp, struct platform_device *pdev
  	return 0;
  }
  
@@ -26273,17 +25899,25 @@ index 66f4743dd2708fd7f9f5610063abf8d964c124fe..512e5f5c2de6c09c1f9cef45f596a0a1
  static int mtk_drm_dp_probe_v2(struct platform_device *pdev)
  {
  	struct mtk_dp *mtk_dp;
-@@ -6256,6 +6596,24 @@ static int mtk_drm_dp_probe_v2(struct platform_device *pdev)
+@@ -6140,6 +6483,7 @@ static int mtk_drm_dp_probe_v2(struct platform_device *pdev)
+ 	int ret;
+ 	struct mtk_drm_private *mtk_priv = dev_get_drvdata(dev);
+ 	int i = 0;
++	int check_2c_feature;
+ 
+ 	mtk_dp = devm_kzalloc(dev, sizeof(*mtk_dp), GFP_KERNEL);
+ 	if (!mtk_dp)
+@@ -6256,6 +6600,24 @@ static int mtk_drm_dp_probe_v2(struct platform_device *pdev)
  
  	atomic_set(&mtk_dp->refcount, 0);
  
 +	mtk_dp->cts_req.aux = &mtk_dp->aux;
 +	mtk_dp->cts_req.regs = mtk_dp->regs;
 +
-+	ret = mtk_dp_typec_register_switches(dev, mtk_dp);
-+	if (ret) {
-+		if (ret != -ENODEV)
-+			dev_err(dev, "[DPTX] Didn't register Type C switches, err: %d\n", ret);
++	check_2c_feature = mtk_dp_typec_register_switches(dev, mtk_dp);
++	if (check_2c_feature) {
++		if (check_2c_feature != -ENODEV)
++			dev_err(dev, "[DPTX] Didn't register Type C switches, err: %d\n", check_2c_feature);
 +	} else {
 +		/* initial completion */
 +		mutex_init(&mtk_dp->typec_selector_lock);
@@ -26298,7 +25932,7 @@ index 66f4743dd2708fd7f9f5610063abf8d964c124fe..512e5f5c2de6c09c1f9cef45f596a0a1
  	return ret;
  }
  
-@@ -6317,10 +6675,39 @@ static const struct mtk_dp_data mt8196_dp_data = {
+@@ -6317,10 +6679,40 @@ static const struct mtk_dp_data mt8196_dp_data = {
  	.phy_flip_ctrl_bit = BIT(18),
  };
  
@@ -26326,6 +25960,7 @@ index 66f4743dd2708fd7f9f5610063abf8d964c124fe..512e5f5c2de6c09c1f9cef45f596a0a1
 +	.encoder_num = 1,
 +	.phy_4lane_ctrl_bit = BIT(8),
 +	.phy_flip_ctrl_bit = BIT(7),
++	.ssc_support = true,
 +};
 +
  static const struct of_device_id mtk_dp_of_match_v2[] = {
@@ -29462,7 +29097,7 @@ index 0000000000000000000000000000000000000000..1eb756fd53158f8f93d14649db3a7d9c
 +
 +// No newline at end of file
 diff --git a/drivers/gpu/drm/mediatek/mtk_drm_drv.c b/drivers/gpu/drm/mediatek/mtk_drm_drv.c
-index fe73e91f5a3034168f56957e28a9ac083dd04609..1841358e943e3075cb5f40c9ca92b07f7c38fb41 100644
+index fe73e91f5a3034168f56957e28a9ac083dd04609..2fa9b07a5266efe1260c1afed3e2e2d4d3edbd39 100644
 --- a/drivers/gpu/drm/mediatek/mtk_drm_drv.c
 +++ b/drivers/gpu/drm/mediatek/mtk_drm_drv.c
 @@ -33,6 +33,7 @@
@@ -29597,7 +29232,26 @@ index fe73e91f5a3034168f56957e28a9ac083dd04609..1841358e943e3075cb5f40c9ca92b07f
  	{ .compatible = "mediatek,mt8196-disp-tdshp",
  	  .data = (void *)MTK_DISP_TDSHP },
  	{ .compatible = "mediatek,mt8173-disp-ufoe",
-@@ -1067,10 +1115,18 @@ static const struct of_device_id mtk_ddp_comp_dt_ids[] = {
+@@ -1051,12 +1099,18 @@ static const struct of_device_id mtk_ddp_comp_dt_ids[] = {
+ 	  .data = (void *)MTK_DPI },
+ 	{ .compatible = "mediatek,mt8188-dp-intf",
+ 	  .data = (void *)MTK_DP_INTF },
++	{ .compatible = "mediatek,mt8678-edp-dvo",
++	  .data = (void *)MTK_DVO },
++	{ .compatible = "mediatek,mt8189-edp-dvo",
++	  .data = (void *)MTK_DVO },
+ 	{ .compatible = "mediatek,mt8192-dpi",
+ 	  .data = (void *)MTK_DPI },
+ 	{ .compatible = "mediatek,mt8195-dp-intf",
+ 	  .data = (void *)MTK_DP_INTF },
+ 	{ .compatible = "mediatek,mt8196-dp-intf",
+ 	  .data = (void *)MTK_DP_INTF },
++	{ .compatible = "mediatek,mt8189-dp-intf",
++	  .data = (void *)MTK_DP_INTF },
+ 	{ .compatible = "mediatek,mt2701-dsi",
+ 	  .data = (void *)MTK_DSI },
+ 	{ .compatible = "mediatek,mt8173-dsi",
+@@ -1067,10 +1121,18 @@ static const struct of_device_id mtk_ddp_comp_dt_ids[] = {
  	  .data = (void *)MTK_DSI },
  	{ .compatible = "mediatek,mt8188-dsi",
  	  .data = (void *)MTK_DSI },
@@ -29616,7 +29270,7 @@ index fe73e91f5a3034168f56957e28a9ac083dd04609..1841358e943e3075cb5f40c9ca92b07f
  	{ .compatible = "mediatek,mt8196-vdisp-ao",
  	  .data = (void *)MTK_VDISP_AO },
  	{ }
-@@ -1200,7 +1256,7 @@ static int mtk_drm_probe(struct platform_device *pdev)
+@@ -1200,7 +1262,7 @@ static int mtk_drm_probe(struct platform_device *pdev)
  			continue;
  
  		if (!of_device_is_available(node)) {
@@ -29625,12 +29279,8 @@ index fe73e91f5a3034168f56957e28a9ac083dd04609..1841358e943e3075cb5f40c9ca92b07f
  				node);
  			continue;
  		}
-@@ -1210,10 +1266,10 @@ static int mtk_drm_probe(struct platform_device *pdev)
- 		if (comp_type == MTK_DISP_MUTEX) {
- 			int id;
- 
--			id = of_alias_get_id(node, "mutex");
-+			id = of_alias_get_id(node, "disp_mutex0");
+@@ -1213,7 +1275,7 @@ static int mtk_drm_probe(struct platform_device *pdev)
+ 			id = of_alias_get_id(node, "mutex");
  			if (id < 0 || id == private->data->mmsys_id) {
  				private->mutex_node = of_node_get(node);
 -				dev_dbg(dev, "get mutex for mmsys %d", private->data->mmsys_id);
@@ -29638,7 +29288,7 @@ index fe73e91f5a3034168f56957e28a9ac083dd04609..1841358e943e3075cb5f40c9ca92b07f
  			}
  			continue;
  		}
-@@ -1237,8 +1293,11 @@ static int mtk_drm_probe(struct platform_device *pdev)
+@@ -1237,8 +1299,11 @@ static int mtk_drm_probe(struct platform_device *pdev)
  			continue;
  		}
  
@@ -29651,7 +29301,7 @@ index fe73e91f5a3034168f56957e28a9ac083dd04609..1841358e943e3075cb5f40c9ca92b07f
  
  		private->comp_node[comp_id] = of_node_get(node);
  
-@@ -1266,6 +1325,8 @@ static int mtk_drm_probe(struct platform_device *pdev)
+@@ -1266,6 +1331,8 @@ static int mtk_drm_probe(struct platform_device *pdev)
  			drm_of_component_match_add(dev, &match, component_compare_of,
  						   node);
  		}
@@ -29660,7 +29310,7 @@ index fe73e91f5a3034168f56957e28a9ac083dd04609..1841358e943e3075cb5f40c9ca92b07f
  
  		ret = mtk_ddp_comp_init(node, &private->ddp_comp[comp_id], comp_id);
  		if (ret) {
-@@ -1280,6 +1341,8 @@ static int mtk_drm_probe(struct platform_device *pdev)
+@@ -1280,6 +1347,8 @@ static int mtk_drm_probe(struct platform_device *pdev)
  		goto err_node;
  	}
  
@@ -29669,31 +29319,23 @@ index fe73e91f5a3034168f56957e28a9ac083dd04609..1841358e943e3075cb5f40c9ca92b07f
  	pm_runtime_enable(dev);
  
  	platform_set_drvdata(pdev, private);
-@@ -1354,6 +1417,7 @@ static struct platform_driver mtk_drm_platform_driver = {
- 	.shutdown = mtk_drm_shutdown,
- 	.driver	= {
- 		.name	= "mediatek-drm",
-+		.of_match_table = mtk_drm_of_ids,
- 		.pm     = &mtk_drm_pm_ops,
- 	},
- };
-@@ -1380,6 +1444,7 @@ static struct platform_driver * const mtk_drm_drivers[] = {
+@@ -1380,6 +1449,7 @@ static struct platform_driver * const mtk_drm_drivers[] = {
  	&mtk_ethdr_driver,
  	&mtk_mdp_rdma_driver,
  	&mtk_padding_driver,
-+	&mtk_edp_phy_driver,
++	&mtk_edp_phy_driver_mt8189,
  	&mtk_dsc_driver,
  };
  
 diff --git a/drivers/gpu/drm/mediatek/mtk_drm_drv.h b/drivers/gpu/drm/mediatek/mtk_drm_drv.h
-index e986a4c00903b12f65fe398ba4eba9b0269c6df7..eff33fa1e9ab4e2e9ac960e2bf4de8f9ccff3c6e 100644
+index e986a4c00903b12f65fe398ba4eba9b0269c6df7..02387fa98d36d841574400250b951319d0cc394d 100644
 --- a/drivers/gpu/drm/mediatek/mtk_drm_drv.h
 +++ b/drivers/gpu/drm/mediatek/mtk_drm_drv.h
 @@ -119,7 +119,10 @@ extern struct platform_driver mtk_dpi_driver;
  extern struct platform_driver mtk_dpi_driver_v2;
  extern struct platform_driver mtk_dsc_driver;
  extern struct platform_driver mtk_dsi_driver;
-+extern struct platform_driver mtk_edp_phy_driver;
++extern struct platform_driver mtk_edp_phy_driver_mt8189;
  extern struct platform_driver mtk_dvo_driver;
 +extern struct platform_driver mtk_dsi_driver;
 +extern struct platform_driver mtk_dsc_driver;
@@ -29702,7 +29344,7 @@ index e986a4c00903b12f65fe398ba4eba9b0269c6df7..eff33fa1e9ab4e2e9ac960e2bf4de8f9
  extern struct platform_driver mtk_padding_driver;
 diff --git a/drivers/gpu/drm/mediatek/mtk_drm_edp_phy.c b/drivers/gpu/drm/mediatek/mtk_drm_edp_phy.c
 new file mode 100644
-index 0000000000000000000000000000000000000000..a6c01a8982276e33ee30d7cdf238b12882240718
+index 0000000000000000000000000000000000000000..42c1cd395dee1d5ee77132aa5fe402ae0c8ab46b
 --- /dev/null
 +++ b/drivers/gpu/drm/mediatek/mtk_drm_edp_phy.c
 @@ -0,0 +1,317 @@
@@ -30013,7 +29655,7 @@ index 0000000000000000000000000000000000000000..a6c01a8982276e33ee30d7cdf238b128
 +	return 0;
 +}
 +
-+struct platform_driver mtk_edp_phy_driver = {
++struct platform_driver mtk_edp_phy_driver_mt8189 = {
 +	.probe = mtk_edp_phy_probe,
 +	.driver = {
 +		.name = "mediatek-edp-phy-mt8189",
@@ -32309,14 +31951,14 @@ index b28d1a877ebaa34d16922d5ea676c5d78a24fb9d..382bd2db7c48a0dfe8da93beecbe926f
  	{.compatible = "mediatek,mt8195-smi-common-vdo", .data = &mtk_smi_common_mt8195_vdo},
  	{.compatible = "mediatek,mt8195-smi-common-vpp", .data = &mtk_smi_common_mt8195_vpp},
 diff --git a/drivers/mmc/host/mtk-sd.c b/drivers/mmc/host/mtk-sd.c
-index 73aed6c2d3a05610d52d8f559abaf453e764315c..427520b61d0d8552699c55544d4aa1b0809a0f9f 100644
+index 73aed6c2d3a05610d52d8f559abaf453e764315c..20350e1ed182a4b33448789bd0324f44edcdc7a5 100644
 --- a/drivers/mmc/host/mtk-sd.c
 +++ b/drivers/mmc/host/mtk-sd.c
 @@ -203,6 +203,7 @@
  /* SDC_STS mask */
  #define SDC_STS_SDCBUSY         BIT(0)	/* RW */
  #define SDC_STS_CMDBUSY         BIT(1)	/* RW */
-+#define SDC_STS_SPM_RSRELEASE	BIT(3)  /* RW */
++#define SDC_STS_SPM_RSRELEASE   BIT(3)	/* RW */
  #define SDC_STS_SWR_COMPL       BIT(31)	/* RW */
  
  /* SDC_ADV_CFG0 mask */
@@ -32372,80 +32014,6 @@ index 73aed6c2d3a05610d52d8f559abaf453e764315c..427520b61d0d8552699c55544d4aa1b0
  	msdc_gate_clock(host);
  	return 0;
  }
-diff --git a/drivers/my_driver/Kconfig b/drivers/my_driver/Kconfig
-new file mode 100644
-index 0000000000000000000000000000000000000000..0742be4dd387b0ad027bee339ed37164cc78df31
---- /dev/null
-+++ b/drivers/my_driver/Kconfig
-@@ -0,0 +1,9 @@
-+menu "My Driver"
-+
-+config MY_DRIVER
-+    bool "My Driver"
-+    default y
-+    help
-+      A simple platform driver example.
-+
-+endmenu
-diff --git a/drivers/my_driver/Makefile b/drivers/my_driver/Makefile
-new file mode 100644
-index 0000000000000000000000000000000000000000..ba3cdded0685655ec1fa08ea353ee9cec47f1106
---- /dev/null
-+++ b/drivers/my_driver/Makefile
-@@ -0,0 +1 @@
-+obj-y += my_driver.o
-diff --git a/drivers/my_driver/my_driver.c b/drivers/my_driver/my_driver.c
-new file mode 100644
-index 0000000000000000000000000000000000000000..75c993542166781ccfe6e4e682e5239077f6c238
---- /dev/null
-+++ b/drivers/my_driver/my_driver.c
-@@ -0,0 +1,46 @@
-+#include <linux/module.h>
-+#include <linux/of.h>
-+#include <linux/platform_device.h>
-+
-+#define DRIVER_NAME "my_driver"
-+
-+static int my_driver_probe(struct platform_device *pdev)
-+{
-+    const char *version;
-+    struct device_node *np = pdev->dev.of_node;
-+
-+    if (of_property_read_string(np, "version", &version)) {
-+        dev_err(&pdev->dev, "Failed to read version from DT\n");
-+        return -EINVAL;
-+    }
-+
-+    dev_info(&pdev->dev, "Driver version: %s\n", version);
-+    return 0;
-+}
-+
-+static int my_driver_remove(struct platform_device *pdev)
-+{
-+    dev_info(&pdev->dev, "Driver removed\n");
-+    return 0;
-+}
-+
-+static const struct of_device_id my_driver_of_match[] = {
-+    { .compatible = "mycompany,my_driver", },
-+    { /* sentinel */ }
-+};
-+MODULE_DEVICE_TABLE(of, my_driver_of_match);
-+
-+static struct platform_driver my_driver = {
-+    .probe = my_driver_probe,
-+    .remove = my_driver_remove,
-+    .driver = {
-+        .name = DRIVER_NAME,
-+        .of_match_table = my_driver_of_match,
-+    },
-+};
-+
-+module_platform_driver(my_driver);
-+
-+MODULE_LICENSE("GPL");
-+MODULE_AUTHOR("Your Name");
-+MODULE_DESCRIPTION("A simple platform driver example");
 diff --git a/drivers/pci/controller/pcie-mediatek-gen3.c b/drivers/pci/controller/pcie-mediatek-gen3.c
 index 49878abbd20db589d354836e71e211710a7deaa0..1ad0dbe86d20be95348e23739cc5580e27391137 100644
 --- a/drivers/pci/controller/pcie-mediatek-gen3.c
@@ -32502,24 +32070,16 @@ index 49878abbd20db589d354836e71e211710a7deaa0..1ad0dbe86d20be95348e23739cc5580e
  	{},
  };
  MODULE_DEVICE_TABLE(of, mtk_pcie_of_match);
-diff --git a/drivers/phy/mediatek/Makefile b/drivers/phy/mediatek/Makefile
-index ddcd1c003a146e3695e8b39c4ac01949d6afabbb..81d89cb422842ef6189a0003bcc62c3579662bfa 100644
---- a/drivers/phy/mediatek/Makefile
-+++ b/drivers/phy/mediatek/Makefile
-@@ -4,7 +4,6 @@
- #
- 
- obj-$(CONFIG_PHY_MTK_DP)		+= phy-mtk-dp.o
--obj-$(CONFIG_PHY_MTK_DP)		+= phy-mtk-edp.o
- obj-$(CONFIG_PHY_MTK_PCIE)		+= phy-mtk-pcie.o
- obj-$(CONFIG_PHY_MTK_TPHY)		+= phy-mtk-tphy.o
- obj-$(CONFIG_PHY_MTK_UFS)		+= phy-mtk-ufs.o
 diff --git a/drivers/phy/mediatek/phy-mtk-edp.c b/drivers/phy/mediatek/phy-mtk-edp.c
-index 06885649471b9eb51f0998d99a3e1c4c10bce380..03323c68c8a13ab0bc81917331db0d90735e518e 100644
+index 06885649471b9eb51f0998d99a3e1c4c10bce380..4c140fcee4a31329cc3c60f83606c249bf80446b 100644
 --- a/drivers/phy/mediatek/phy-mtk-edp.c
 +++ b/drivers/phy/mediatek/phy-mtk-edp.c
-@@ -317,7 +317,7 @@ static int mtk_dp_phy_probe(struct platform_device *pdev)
- struct platform_driver mtk_edp_phy_driver = {
+@@ -314,14 +314,14 @@ static int mtk_dp_phy_probe(struct platform_device *pdev)
+ 	return 0;
+ }
+ 
+-struct platform_driver mtk_edp_phy_driver = {
++struct platform_driver mtk_edp_phy_driver_mt8196 = {
  	.probe = mtk_dp_phy_probe,
  	.driver = {
 -		.name = "mediatek-edp-phy",
@@ -32527,6 +32087,11 @@ index 06885649471b9eb51f0998d99a3e1c4c10bce380..03323c68c8a13ab0bc81917331db0d90
  	},
  };
  
+-module_platform_driver(mtk_edp_phy_driver);
++module_platform_driver(mtk_edp_phy_driver_mt8196);
+ 
+ MODULE_AUTHOR("Markus Schneider-Pargmann <msp@baylibre.com>");
+ MODULE_DESCRIPTION("MediaTek DP PHY Driver");
 diff --git a/drivers/phy/mediatek/phy-mtk-mipi-dsi.c b/drivers/phy/mediatek/phy-mtk-mipi-dsi.c
 index 46f0cb3ac096da214733c12215a45e77d219b93e..fed27544a1b1bbc3bd857d7727fd8899c3549686 100644
 --- a/drivers/phy/mediatek/phy-mtk-mipi-dsi.c
@@ -36545,260 +36110,50 @@ index 87f6b6cdc365bf6e346a7468def85f2a4569b884..2e7528715df99aa390d927779bbe9d9a
  	},
  };
  
-diff --git a/drivers/pmdomain/mediatek/mtk-scpsys.c b/drivers/pmdomain/mediatek/mtk-scpsys.c
-index 6968d97f473b5cffd788d23587b0921656029295..eeaa6ed97d8d874505843312fadb32da5d41f49a 100644
---- a/drivers/pmdomain/mediatek/mtk-scpsys.c
-+++ b/drivers/pmdomain/mediatek/mtk-scpsys.c
-@@ -13,6 +13,7 @@
- #include <linux/regmap.h>
- #include <linux/regulator/consumer.h>
- #include <linux/soc/mediatek/infracfg.h>
-+#include <linux/clk-provider.h>
- 
- #include <dt-bindings/power/mt2701-power.h>
- #include <dt-bindings/power/mt2712-power.h>
-@@ -21,6 +22,7 @@
- #include <dt-bindings/power/mt7623a-power.h>
- #include <dt-bindings/power/mt8173-power.h>
- #include <dt-bindings/power/mt8196-power.h>
-+#include <dt-bindings/power/mt8189-power.h>
- 
- #include "mt8196-scpsys.h"
- 
-@@ -49,6 +51,8 @@
- #define MTK_SCPD_RTFF_DELAY		BIT(10)
- #define MTK_SCPD_IRQ_SAVE		BIT(11)
- #define MTK_SCPD_ALWAYS_ON		BIT(12)
-+#define MTK_SCPD_BYPASS_OFF		BIT(13)
-+#define MTK_SCPD_KEEP_DEFAULT_OFF	BIT(14)
- #define MTK_SCPD_CAPS(_scpd, _x)	((_scpd)->data->caps & (_x))
- 
- #define SPM_VDE_PWR_CON			0x0210
-@@ -124,11 +128,26 @@
- 		.ignore_clr_ack = _ignore_clr_ack,		\
- 	}
- 
-+#define BUS_PROT(_type, _set_ofs, _clr_ofs,		\
-+		_en_ofs, _sta_ofs, _mask)		\
-+		_BUS_PROT(_type, _set_ofs, _clr_ofs,	\
-+		_en_ofs, _sta_ofs, _mask, _mask, false)
-+
- #define BUS_PROT_IGN(_type, _set_ofs, _clr_ofs,	\
- 		_en_ofs, _sta_ofs, _mask)		\
- 		_BUS_PROT(_type, _set_ofs, _clr_ofs,	\
- 		_en_ofs, _sta_ofs, _mask, _mask, true)
- 
-+#define BUS_PROT_CON(_type, _set_ofs, _clr_ofs,	\
-+		_en_ofs, _sta_ofs, _mask, _ack_mask)		\
-+		_BUS_PROT(_type, 0x0, 0x0,			\
-+		_en_ofs, _sta_ofs, _mask, _ack_mask, true)
-+
-+#define BUS_PROT_CLK_IGN(_type, _set_ofs, _clr_ofs,	\
-+		_en_ofs, _sta_ofs, _mask)		\
-+		_BUS_PROT(_type, _set_ofs, _clr_ofs,	\
-+		_en_ofs, _sta_ofs, _mask, _mask, true)
-+
- enum clk_id {
- 	CLK_NONE,
- 	CLK_MM,
-@@ -162,7 +181,8 @@ static const char * const clk_names[] = {
- };
- 
- #define MAX_CLKS	3
--#define MAX_STEPS	3
-+#define MAX_STEPS	4
-+#define MAX_SUBSYS_CLKS 20
- 
- struct bus_prot {
- 	u32 type;
-@@ -206,6 +226,7 @@ struct scp_domain_data {
- 	u32 sram_slp_ack_bits;
- 	u32 bus_prot_mask;
- 	enum clk_id clk_id[MAX_CLKS];
-+	const char *subsys_clk_prefix;
- 	struct bus_prot bp_table[MAX_STEPS];
- 	u32 caps;
- };
-@@ -216,10 +237,13 @@ struct scp_domain {
- 	struct generic_pm_domain genpd;
- 	struct scp *scp;
- 	struct clk *clk[MAX_CLKS];
-+	struct clk *subsys_clk[MAX_SUBSYS_CLKS];
- 	const struct scp_domain_data *data;
- 	struct regulator *supply;
- 	struct regmap *hwv_regmap;
- 	bool rtff_flag;
-+	int boot_status;
-+	bool is_on;
- };
- 
- struct scp_ctrl_reg {
-@@ -281,6 +305,22 @@ static int scpsys_domain_is_on(struct scp_domain *scpd)
- 	return -EINVAL;
- }
- 
-+static int scpsys_sta_is_on(struct scp_domain *scpd)
-+{
-+	u32 status = readl(scpd->scp->base + scpd->scp->ctrl_reg.pwr_sta_offs) &
-+			scpd->data->sta_mask;
-+
-+	return status ? true : false;
-+}
-+
-+static int scpsys_sta_2nd_is_on(struct scp_domain *scpd)
-+{
-+	u32 status = readl(scpd->scp->base + scpd->scp->ctrl_reg.pwr_sta2nd_offs) &
-+			scpd->data->sta_mask;
-+
-+	return status ? true : false;
-+}
-+
- static int scpsys_pwr_ack_is_on(struct scp_domain *scpd)
- {
- 	u32 status = readl(scpd->scp->base + scpd->data->ctl_offs) & PWR_ACK;
-@@ -557,6 +597,9 @@ static int scpsys_power_on(struct generic_pm_domain *genpd)
- 	u32 val;
- 	int ret, tmp;
- 
-+	if (MTK_SCPD_CAPS(scpd, MTK_SCPD_KEEP_DEFAULT_OFF) && !scpd->boot_status)
-+		return 0;
-+
- 	ret = scpsys_regulator_enable(scpd);
- 	if (ret < 0)
- 		return ret;
-@@ -657,6 +700,10 @@ static int scpsys_power_on(struct generic_pm_domain *genpd)
- 		scpd->rtff_flag = false;
- 	}
- 
-+	ret = scpsys_clk_enable(scpd->subsys_clk, MAX_SUBSYS_CLKS);
-+	if (ret < 0)
-+		goto err_pwr_ack;
-+
- 	ret = scpsys_sram_enable(scpd, ctl_addr);
- 	if (ret < 0)
- 		goto err_pwr_ack;
-@@ -685,6 +732,11 @@ static int scpsys_power_off(struct generic_pm_domain *genpd)
- 	u32 val;
- 	int ret, tmp;
- 
-+	if (MTK_SCPD_CAPS(scpd, MTK_SCPD_BYPASS_OFF)) {
-+		dev_dbg(scp->dev, "bypass power off %s for bringup\n", genpd->name);
-+		return 0;
-+	}
-+
- 	ret = scpsys_bus_protect_enable(scpd);
- 	if (ret < 0)
- 		goto out;
-@@ -693,6 +745,8 @@ static int scpsys_power_off(struct generic_pm_domain *genpd)
- 	if (ret < 0)
- 		goto out;
- 
-+	scpsys_clk_disable(scpd->subsys_clk, MAX_SUBSYS_CLKS);
-+
- 	/* subsys power off */
- 	val = readl(ctl_addr);
- 
-@@ -933,6 +987,49 @@ static void init_clks(struct platform_device *pdev, struct clk **clk)
- 		clk[i] = devm_clk_get(&pdev->dev, clk_names[i]);
- }
- 
-+static int init_subsys_clks(struct platform_device *pdev,
-+		const char *prefix, struct clk **clk)
-+{
-+	struct device_node *node = pdev->dev.of_node;
-+	u32 prefix_len, sub_clk_cnt = 0;
-+	struct property *prop;
-+	const char *clk_name;
-+
-+	if (!node) {
-+		dev_notice(&pdev->dev, "Cannot find scpsys node: %ld\n",
-+			PTR_ERR(node));
-+		return PTR_ERR(node);
-+	}
-+
-+	prefix_len = strlen(prefix);
-+
-+	of_property_for_each_string(node, "clock-names", prop, clk_name) {
-+		if (!strncmp(clk_name, prefix, prefix_len) &&
-+				(strlen(clk_name) > prefix_len + 1) &&
-+				(clk_name[prefix_len] == '-')) {
-+			if (sub_clk_cnt >= MAX_SUBSYS_CLKS) {
-+				dev_notice(&pdev->dev,
-+					"subsys clk out of range %d\n",
-+					sub_clk_cnt);
-+				return -EINVAL;
-+			}
-+
-+			clk[sub_clk_cnt] = devm_clk_get(&pdev->dev,
-+						clk_name);
-+
-+			if (IS_ERR(clk[sub_clk_cnt])) {
-+				dev_notice(&pdev->dev,
-+					"Subsys clk get fail %ld\n",
-+					PTR_ERR(clk[sub_clk_cnt]));
-+				return PTR_ERR(clk[sub_clk_cnt]);
-+			}
-+			sub_clk_cnt++;
-+		}
-+	}
-+
-+	return sub_clk_cnt;
-+}
-+
- static int mtk_pd_get_regmap(struct platform_device *pdev, struct regmap **regmap,
- 			const char *name)
- {
-@@ -1051,6 +1148,18 @@ struct scp *init_scp(struct platform_device *pdev, const struct scp_soc_data *so
- 			scpd->clk[j] = c;
- 		}
- 
-+		if (data->subsys_clk_prefix) {
-+			ret = init_subsys_clks(pdev,
-+					data->subsys_clk_prefix,
-+					scpd->subsys_clk);
-+			if (ret < 0) {
-+				dev_notice(&pdev->dev,
-+					"%s: subsys clk unavailable\n",
-+					data->name);
-+				return ERR_PTR(ret);
-+			}
-+		}
-+
- 		if (data->hwv_comp) {
- 			ret = mtk_pd_get_regmap(pdev, &scpd->hwv_regmap, data->hwv_comp);
- 			if (ret)
-@@ -1093,7 +1202,17 @@ static void mtk_register_power_domains(struct platform_device *pdev,
- 		 * software.  The unused domains will be switched off during
- 		 * late_init time.
- 		 */
--		if (MTK_SCPD_CAPS(scpd, MTK_SCPD_BYPASS_INIT_ON))
-+		if (MTK_SCPD_CAPS(scpd, MTK_SCPD_KEEP_DEFAULT_OFF)) {
-+			if (MTK_SCPD_CAPS(scpd, MTK_SCPD_IS_PWR_CON_ON))
-+				scpd->boot_status = scpsys_pwr_ack_is_on(scpd) && scpsys_pwr_ack_2nd_is_on(scpd);
-+			else
-+				scpd->boot_status = scpsys_sta_is_on(scpd) && scpsys_sta_2nd_is_on(scpd);
-+
-+			if (scpd->boot_status)
-+				on = !WARN_ON(genpd->power_on(genpd) < 0);
-+			else
-+				on = false;
-+		} else if (MTK_SCPD_CAPS(scpd, MTK_SCPD_BYPASS_INIT_ON))
- 			on = false;
- 		else
- 			on = !WARN_ON(genpd->power_on(genpd) < 0);
-@@ -2256,6 +2375,380 @@ static const struct scp_soc_data mt8196_mmpc_hwv_data = {
- 	.post_probe = mt8196_mmpc_post_probe,
- };
- 
+diff --git a/drivers/pmdomain/mediatek/mt8189-scpsys.h b/drivers/pmdomain/mediatek/mt8189-scpsys.h
+new file mode 100644
+index 0000000000000000000000000000000000000000..f5d2b134d82b03ab1e38323b0d6dc3ebac5a3203
+--- /dev/null
++++ b/drivers/pmdomain/mediatek/mt8189-scpsys.h
+@@ -0,0 +1,90 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
 +/*
-+ * MT8189 power domain support
++ * Copyright (c) 2024 MediaTek Inc.
++ * Author: Guangjie Song <guangjie.song@mediatek.com>
 + */
-+#define SCPSYS_BRINGUP			(1)
-+#if SCPSYS_BRINGUP
++#ifndef __PMDOMAIN_MEDIATEK_MT8189_SCPSYS_H
++#define __PMDOMAIN_MEDIATEK_MT8189_SCPSYS_H
++
 +#define MT8189_DEFAULT_CAP			(MTK_SCPD_BYPASS_OFF)
-+#else
-+#define MT8189_DEFAULT_CAP			(0)
-+#endif
++
++#define MT8189_SPM_CONN_PWR_CON			0xe04
++#define MT8189_SPM_AUDIO_PWR_CON		0xe18
++#define MT8189_SPM_ADSP_TOP_PWR_CON		0xe1c
++#define MT8189_SPM_ADSP_INFRA_PWR_CON		0xe20
++#define MT8189_SPM_ADSP_AO_PWR_CON		0xe24
++#define MT8189_SPM_ISP_IMG1_PWR_CON		0xe28
++#define MT8189_SPM_ISP_IMG2_PWR_CON		0xe2c
++#define MT8189_SPM_ISP_IPE_PWR_CON		0xe30
++#define MT8189_SPM_VDE0_PWR_CON			0xe38
++#define MT8189_SPM_VEN0_PWR_CON			0xe40
++#define MT8189_SPM_CAM_MAIN_PWR_CON		0xe48
++#define MT8189_SPM_CAM_SUBA_PWR_CON		0xe50
++#define MT8189_SPM_CAM_SUBB_PWR_CON		0xe54
++#define MT8189_SPM_MDP0_PWR_CON			0xe68
++#define MT8189_SPM_DISP_PWR_CON			0xe70
++#define MT8189_SPM_MM_INFRA_PWR_CON		0xe78
++#define MT8189_SPM_DP_TX_PWR_CON		0xe80
++#define MT8189_SPM_SCP_CORE_PWR_CON		0xe84
++#define MT8189_SPM_CSI_RX_PWR_CON		0xe9c
++#define MT8189_SPM_SSUSB_PWR_CON		0xea8
++#define MT8189_SPM_MFG0_PWR_CON			0xeb4
++#define MT8189_SPM_MFG1_PWR_CON			0xeb8
++#define MT8189_SPM_MFG2_PWR_CON			0xebc
++#define MT8189_SPM_MFG3_PWR_CON			0xec0
++#define MT8189_SPM_EDP_TX_PWR_CON		0xf70
++#define MT8189_SPM_PCIE_PWR_CON			0xf74
++#define MT8189_SPM_PCIE_PHY_PWR_CON		0xf78
++
 +#define MT8189_TOP_AXI_PROT_EN_MCU_STA_0_CONN	(BIT(1))
 +#define MT8189_TOP_AXI_PROT_EN_INFRASYS_STA_1_CONN	(BIT(12))
 +#define MT8189_TOP_AXI_PROT_EN_MCU_STA_0_CONN_2ND	(BIT(0))
@@ -36850,6 +36205,264 @@ index 6968d97f473b5cffd788d23587b0921656029295..eeaa6ed97d8d874505843312fadb32da
 +	MT8189_BUS_TYPE_NUM,
 +};
 +
++#endif /* __PMDOMAIN_MEDIATEK_MT8189_SCPSYS_H */
+diff --git a/drivers/pmdomain/mediatek/mtk-scpsys.c b/drivers/pmdomain/mediatek/mtk-scpsys.c
+index 6968d97f473b5cffd788d23587b0921656029295..450118053ea923cd37866c05b7412a88de51551d 100644
+--- a/drivers/pmdomain/mediatek/mtk-scpsys.c
++++ b/drivers/pmdomain/mediatek/mtk-scpsys.c
+@@ -13,6 +13,7 @@
+ #include <linux/regmap.h>
+ #include <linux/regulator/consumer.h>
+ #include <linux/soc/mediatek/infracfg.h>
++#include <linux/clk-provider.h>
+ 
+ #include <dt-bindings/power/mt2701-power.h>
+ #include <dt-bindings/power/mt2712-power.h>
+@@ -21,8 +22,10 @@
+ #include <dt-bindings/power/mt7623a-power.h>
+ #include <dt-bindings/power/mt8173-power.h>
+ #include <dt-bindings/power/mt8196-power.h>
++#include <dt-bindings/power/mt8189-power.h>
+ 
+ #include "mt8196-scpsys.h"
++#include "mt8189-scpsys.h"
+ 
+ #define MTK_POLL_DELAY_US		10
+ #define MTK_POLL_TIMEOUT		USEC_PER_SEC
+@@ -49,6 +52,8 @@
+ #define MTK_SCPD_RTFF_DELAY		BIT(10)
+ #define MTK_SCPD_IRQ_SAVE		BIT(11)
+ #define MTK_SCPD_ALWAYS_ON		BIT(12)
++#define MTK_SCPD_BYPASS_OFF		BIT(13)
++#define MTK_SCPD_KEEP_DEFAULT_OFF	BIT(14)
+ #define MTK_SCPD_CAPS(_scpd, _x)	((_scpd)->data->caps & (_x))
+ 
+ #define SPM_VDE_PWR_CON			0x0210
+@@ -124,11 +129,21 @@
+ 		.ignore_clr_ack = _ignore_clr_ack,		\
+ 	}
+ 
++#define BUS_PROT(_type, _set_ofs, _clr_ofs,		\
++		_en_ofs, _sta_ofs, _mask)		\
++		_BUS_PROT(_type, _set_ofs, _clr_ofs,	\
++		_en_ofs, _sta_ofs, _mask, _mask, false)
++
+ #define BUS_PROT_IGN(_type, _set_ofs, _clr_ofs,	\
+ 		_en_ofs, _sta_ofs, _mask)		\
+ 		_BUS_PROT(_type, _set_ofs, _clr_ofs,	\
+ 		_en_ofs, _sta_ofs, _mask, _mask, true)
+ 
++#define BUS_PROT_CON(_type, _set_ofs, _clr_ofs,	\
++		_en_ofs, _sta_ofs, _mask, _ack_mask)		\
++		_BUS_PROT(_type, 0x0, 0x0,			\
++		_en_ofs, _sta_ofs, _mask, _ack_mask, true)
++
+ enum clk_id {
+ 	CLK_NONE,
+ 	CLK_MM,
+@@ -162,7 +177,8 @@ static const char * const clk_names[] = {
+ };
+ 
+ #define MAX_CLKS	3
+-#define MAX_STEPS	3
++#define MAX_STEPS	4
++#define MAX_SUBSYS_CLKS 20
+ 
+ struct bus_prot {
+ 	u32 type;
+@@ -206,6 +222,7 @@ struct scp_domain_data {
+ 	u32 sram_slp_ack_bits;
+ 	u32 bus_prot_mask;
+ 	enum clk_id clk_id[MAX_CLKS];
++	const char *subsys_clk_prefix;
+ 	struct bus_prot bp_table[MAX_STEPS];
+ 	u32 caps;
+ };
+@@ -216,10 +233,12 @@ struct scp_domain {
+ 	struct generic_pm_domain genpd;
+ 	struct scp *scp;
+ 	struct clk *clk[MAX_CLKS];
++	struct clk *subsys_clk[MAX_SUBSYS_CLKS];
+ 	const struct scp_domain_data *data;
+ 	struct regulator *supply;
+ 	struct regmap *hwv_regmap;
+ 	bool rtff_flag;
++	bool boot_status;
+ };
+ 
+ struct scp_ctrl_reg {
+@@ -281,14 +300,30 @@ static int scpsys_domain_is_on(struct scp_domain *scpd)
+ 	return -EINVAL;
+ }
+ 
+-static int scpsys_pwr_ack_is_on(struct scp_domain *scpd)
++static int scpsys_sta_is_on(struct scp_domain *scpd)
++{
++	u32 status = readl(scpd->scp->base + scpd->scp->ctrl_reg.pwr_sta_offs) &
++			scpd->data->sta_mask;
++
++	return status ? true : false;
++}
++
++static int scpsys_sta_2nd_is_on(struct scp_domain *scpd)
++{
++	u32 status = readl(scpd->scp->base + scpd->scp->ctrl_reg.pwr_sta2nd_offs) &
++			scpd->data->sta_mask;
++
++	return status ? true : false;
++}
++
++static bool scpsys_pwr_ack_is_on(struct scp_domain *scpd)
+ {
+ 	u32 status = readl(scpd->scp->base + scpd->data->ctl_offs) & PWR_ACK;
+ 
+ 	return status ? true : false;
+ }
+ 
+-static int scpsys_pwr_ack_2nd_is_on(struct scp_domain *scpd)
++static bool scpsys_pwr_ack_2nd_is_on(struct scp_domain *scpd)
+ {
+ 	u32 status = readl(scpd->scp->base + scpd->data->ctl_offs) & PWR_ACK_2ND;
+ 
+@@ -557,6 +592,9 @@ static int scpsys_power_on(struct generic_pm_domain *genpd)
+ 	u32 val;
+ 	int ret, tmp;
+ 
++	if (MTK_SCPD_CAPS(scpd, MTK_SCPD_KEEP_DEFAULT_OFF) && !scpd->boot_status)
++		return 0;
++
+ 	ret = scpsys_regulator_enable(scpd);
+ 	if (ret < 0)
+ 		return ret;
+@@ -657,6 +695,10 @@ static int scpsys_power_on(struct generic_pm_domain *genpd)
+ 		scpd->rtff_flag = false;
+ 	}
+ 
++	ret = scpsys_clk_enable(scpd->subsys_clk, MAX_SUBSYS_CLKS);
++	if (ret < 0)
++		goto err_pwr_ack;
++
+ 	ret = scpsys_sram_enable(scpd, ctl_addr);
+ 	if (ret < 0)
+ 		goto err_pwr_ack;
+@@ -685,6 +727,11 @@ static int scpsys_power_off(struct generic_pm_domain *genpd)
+ 	u32 val;
+ 	int ret, tmp;
+ 
++	if (MTK_SCPD_CAPS(scpd, MTK_SCPD_BYPASS_OFF)) {
++		dev_dbg(scp->dev, "bypass power off %s for bringup\n", genpd->name);
++		return 0;
++	}
++
+ 	ret = scpsys_bus_protect_enable(scpd);
+ 	if (ret < 0)
+ 		goto out;
+@@ -693,6 +740,8 @@ static int scpsys_power_off(struct generic_pm_domain *genpd)
+ 	if (ret < 0)
+ 		goto out;
+ 
++	scpsys_clk_disable(scpd->subsys_clk, MAX_SUBSYS_CLKS);
++
+ 	/* subsys power off */
+ 	val = readl(ctl_addr);
+ 
+@@ -933,6 +982,48 @@ static void init_clks(struct platform_device *pdev, struct clk **clk)
+ 		clk[i] = devm_clk_get(&pdev->dev, clk_names[i]);
+ }
+ 
++static int init_subsys_clks(struct platform_device *pdev,
++			    const char *prefix, struct clk **clk)
++{
++	struct device_node *node = pdev->dev.of_node;
++	u32 prefix_len, sub_clk_cnt = 0;
++	struct property *prop;
++	const char *clk_name;
++
++	if (!node) {
++		dev_notice(&pdev->dev, "Cannot find scpsys node: %ld\n",
++			   PTR_ERR(node));
++		return PTR_ERR(node);
++	}
++
++	prefix_len = strlen(prefix);
++
++	of_property_for_each_string(node, "clock-names", prop, clk_name) {
++		if (!strncmp(clk_name, prefix, prefix_len) &&
++		    (strlen(clk_name) > prefix_len + 1) &&
++		    (clk_name[prefix_len] == '-')) {
++			if (sub_clk_cnt >= MAX_SUBSYS_CLKS) {
++				dev_notice(&pdev->dev,
++					   "subsys clk out of range %d\n",
++					   sub_clk_cnt);
++				return -EINVAL;
++			}
++
++			clk[sub_clk_cnt] = devm_clk_get(&pdev->dev, clk_name);
++
++			if (IS_ERR(clk[sub_clk_cnt])) {
++				dev_notice(&pdev->dev,
++					   "Subsys clk get fail %ld\n",
++					   PTR_ERR(clk[sub_clk_cnt]));
++				return PTR_ERR(clk[sub_clk_cnt]);
++			}
++			sub_clk_cnt++;
++		}
++	}
++
++	return sub_clk_cnt;
++}
++
+ static int mtk_pd_get_regmap(struct platform_device *pdev, struct regmap **regmap,
+ 			const char *name)
+ {
+@@ -1051,6 +1142,14 @@ struct scp *init_scp(struct platform_device *pdev, const struct scp_soc_data *so
+ 			scpd->clk[j] = c;
+ 		}
+ 
++		if (data->subsys_clk_prefix) {
++			ret = init_subsys_clks(pdev, data->subsys_clk_prefix, scpd->subsys_clk);
++			if (ret < 0) {
++				dev_notice(&pdev->dev, "%s: subsys clk unavailable\n", data->name);
++				return ERR_PTR(ret);
++			}
++		}
++
+ 		if (data->hwv_comp) {
+ 			ret = mtk_pd_get_regmap(pdev, &scpd->hwv_regmap, data->hwv_comp);
+ 			if (ret)
+@@ -1093,11 +1192,22 @@ static void mtk_register_power_domains(struct platform_device *pdev,
+ 		 * software.  The unused domains will be switched off during
+ 		 * late_init time.
+ 		 */
+-		if (MTK_SCPD_CAPS(scpd, MTK_SCPD_BYPASS_INIT_ON))
++		if (MTK_SCPD_CAPS(scpd, MTK_SCPD_KEEP_DEFAULT_OFF)) {
++			if (MTK_SCPD_CAPS(scpd, MTK_SCPD_IS_PWR_CON_ON))
++				scpd->boot_status = scpsys_pwr_ack_is_on(scpd) &&
++						    scpsys_pwr_ack_2nd_is_on(scpd);
++			else
++				scpd->boot_status = scpsys_sta_is_on(scpd) &&
++						    scpsys_sta_2nd_is_on(scpd);
++			if (scpd->boot_status)
++				on = !WARN_ON(genpd->power_on(genpd) < 0);
++			else
++				on = false;
++		} else if (MTK_SCPD_CAPS(scpd, MTK_SCPD_BYPASS_INIT_ON)) {
+ 			on = false;
+-		else
++		} else {
+ 			on = !WARN_ON(genpd->power_on(genpd) < 0);
+-
++		}
+ 		pm_genpd_init(genpd, NULL, !on);
+ 	}
+ 
+@@ -2256,6 +2366,323 @@ static const struct scp_soc_data mt8196_mmpc_hwv_data = {
+ 	.post_probe = mt8196_mmpc_post_probe,
+ };
+ 
++/*
++ * MT8189 power domain support
++ */
 +static const char *mt8189_bus_list[MT8189_BUS_TYPE_NUM] = {
 +	[MT8189_BP_IFR_TYPE] = "infra-infracfg-ao-reg-bus",
 +	[MT8189_BP_VLP_TYPE] = "vlpcfg-reg-bus",
@@ -36860,91 +36473,91 @@ index 6968d97f473b5cffd788d23587b0921656029295..eeaa6ed97d8d874505843312fadb32da
 +static const struct scp_domain_data scp_domain_mt8189_spm_data[] = {
 +	[MT8189_POWER_DOMAIN_CONN] = {
 +		.name = "conn",
-+		.ctl_offs = 0xE04,
++		.ctl_offs = MT8189_SPM_CONN_PWR_CON,
 +		.bp_table = {
-+			BUS_PROT_IGN(MT8189_BP_IFR_TYPE, 0x0C94, 0x0C98, 0x0C90, 0x0C9C,
-+				MT8189_TOP_AXI_PROT_EN_MCU_STA_0_CONN),
-+			BUS_PROT_IGN(MT8189_BP_IFR_TYPE, 0x0C54, 0x0C58, 0x0C50, 0x0C5C,
-+				MT8189_TOP_AXI_PROT_EN_INFRASYS_STA_1_CONN),
-+			BUS_PROT_IGN(MT8189_BP_IFR_TYPE, 0x0C94, 0x0C98, 0x0C90, 0x0C9C,
-+				MT8189_TOP_AXI_PROT_EN_MCU_STA_0_CONN_2ND),
-+			BUS_PROT_IGN(MT8189_BP_IFR_TYPE, 0x0C44, 0x0C48, 0x0C40, 0x0C4C,
-+				MT8189_TOP_AXI_PROT_EN_INFRASYS_STA_0_CONN),
++			BUS_PROT_IGN(MT8189_BP_IFR_TYPE, 0x0c94, 0x0c98, 0x0c90, 0x0c9c,
++				     MT8189_TOP_AXI_PROT_EN_MCU_STA_0_CONN),
++			BUS_PROT_IGN(MT8189_BP_IFR_TYPE, 0x0c54, 0x0c58, 0x0c50, 0x0c5c,
++				     MT8189_TOP_AXI_PROT_EN_INFRASYS_STA_1_CONN),
++			BUS_PROT_IGN(MT8189_BP_IFR_TYPE, 0x0c94, 0x0c98, 0x0c90, 0x0c9c,
++				     MT8189_TOP_AXI_PROT_EN_MCU_STA_0_CONN_2ND),
++			BUS_PROT_IGN(MT8189_BP_IFR_TYPE, 0x0c44, 0x0c48, 0x0c40, 0x0c4c,
++				     MT8189_TOP_AXI_PROT_EN_INFRASYS_STA_0_CONN),
 +		},
 +		.caps = MTK_SCPD_IS_PWR_CON_ON | MT8189_DEFAULT_CAP,
 +	},
 +	[MT8189_POWER_DOMAIN_AUDIO] = {
 +		.name = "audio",
-+		.ctl_offs = 0xE18,
++		.ctl_offs = MT8189_SPM_AUDIO_PWR_CON,
 +		.sram_pdn_bits = GENMASK(8, 8),
 +		.sram_pdn_ack_bits = GENMASK(12, 12),
 +		.bp_table = {
-+			BUS_PROT_IGN(MT8189_BP_IFR_TYPE, 0x0C84, 0x0C88, 0x0C80, 0x0C8C,
-+				MT8189_TOP_AXI_PROT_EN_PERISYS_STA_0_AUDIO),
++			BUS_PROT_IGN(MT8189_BP_IFR_TYPE, 0x0c84, 0x0c88, 0x0c80, 0x0c8c,
++				     MT8189_TOP_AXI_PROT_EN_PERISYS_STA_0_AUDIO),
 +		},
 +		.caps = MTK_SCPD_IS_PWR_CON_ON | MT8189_DEFAULT_CAP,
 +	},
 +	[MT8189_POWER_DOMAIN_ADSP_TOP_DORMANT] = {
 +		.name = "adsp-top-dormant",
-+		.ctl_offs = 0xE1C,
++		.ctl_offs = MT8189_SPM_ADSP_TOP_PWR_CON,
 +		.sram_slp_bits = GENMASK(9, 9),
 +		.sram_slp_ack_bits = GENMASK(13, 13),
-+		.caps = MTK_SCPD_SRAM_ISO | MTK_SCPD_SRAM_SLP | MTK_SCPD_IS_PWR_CON_ON
-+				| MTK_SCPD_ACTIVE_WAKEUP | MTK_SCPD_KEEP_DEFAULT_OFF | MT8189_DEFAULT_CAP,
++		.caps = MTK_SCPD_SRAM_ISO | MTK_SCPD_SRAM_SLP | MTK_SCPD_IS_PWR_CON_ON |
++			MTK_SCPD_ACTIVE_WAKEUP | MTK_SCPD_KEEP_DEFAULT_OFF | MT8189_DEFAULT_CAP,
 +	},
 +	[MT8189_POWER_DOMAIN_ADSP_INFRA] = {
 +		.name = "adsp-infra",
-+		.ctl_offs = 0xE20,
++		.ctl_offs = MT8189_SPM_ADSP_INFRA_PWR_CON,
 +		.caps = MTK_SCPD_IS_PWR_CON_ON | MTK_SCPD_KEEP_DEFAULT_OFF | MT8189_DEFAULT_CAP,
 +	},
 +	[MT8189_POWER_DOMAIN_ADSP_AO] = {
 +		.name = "adsp-ao",
-+		.ctl_offs = 0xE24,
++		.ctl_offs = MT8189_SPM_ADSP_AO_PWR_CON,
 +		.caps = MTK_SCPD_IS_PWR_CON_ON | MT8189_DEFAULT_CAP,
 +	},
 +	[MT8189_POWER_DOMAIN_ISP_IMG1] = {
 +		.name = "isp-img1",
-+		.ctl_offs = 0xE28,
++		.ctl_offs = MT8189_SPM_ISP_IMG1_PWR_CON,
 +		.sram_pdn_bits = GENMASK(8, 8),
 +		.sram_pdn_ack_bits = GENMASK(12, 12),
 +		.bp_table = {
-+			BUS_PROT_IGN(MT8189_BP_IFR_TYPE, 0x0C14, 0x0C18, 0x0C10, 0x0C1C,
-+				MT8189_TOP_AXI_PROT_EN_MMSYS_STA_0_ISP_IMG1),
-+			BUS_PROT_IGN(MT8189_BP_IFR_TYPE, 0x0C24, 0x0C28, 0x0C20, 0x0C2C,
-+				MT8189_TOP_AXI_PROT_EN_MMSYS_STA_1_ISP_IMG1),
++			BUS_PROT_IGN(MT8189_BP_IFR_TYPE, 0x0c14, 0x0c18, 0x0c10, 0x0c1c,
++				     MT8189_TOP_AXI_PROT_EN_MMSYS_STA_0_ISP_IMG1),
++			BUS_PROT_IGN(MT8189_BP_IFR_TYPE, 0x0c24, 0x0c28, 0x0c20, 0x0c2c,
++				     MT8189_TOP_AXI_PROT_EN_MMSYS_STA_1_ISP_IMG1),
 +		},
 +		.caps = MTK_SCPD_IS_PWR_CON_ON | MTK_SCPD_KEEP_DEFAULT_OFF | MT8189_DEFAULT_CAP,
 +	},
 +	[MT8189_POWER_DOMAIN_ISP_IMG2] = {
 +		.name = "isp-img2",
-+		.ctl_offs = 0xE2C,
++		.ctl_offs = MT8189_SPM_ISP_IMG2_PWR_CON,
 +		.sram_pdn_bits = GENMASK(8, 8),
 +		.sram_pdn_ack_bits = GENMASK(12, 12),
 +		.caps = MTK_SCPD_IS_PWR_CON_ON | MTK_SCPD_KEEP_DEFAULT_OFF | MT8189_DEFAULT_CAP,
 +	},
 +	[MT8189_POWER_DOMAIN_ISP_IPE] = {
 +		.name = "isp-ipe",
-+		.ctl_offs = 0xE30,
++		.ctl_offs = MT8189_SPM_ISP_IPE_PWR_CON,
 +		.sram_pdn_bits = GENMASK(8, 8),
 +		.sram_pdn_ack_bits = GENMASK(12, 12),
 +		.bp_table = {
-+			BUS_PROT_IGN(MT8189_BP_IFR_TYPE, 0x0C14, 0x0C18, 0x0C10, 0x0C1C,
-+				MT8189_TOP_AXI_PROT_EN_MMSYS_STA_0_ISP_IPE),
-+			BUS_PROT_IGN(MT8189_BP_IFR_TYPE, 0x0C24, 0x0C28, 0x0C20, 0x0C2C,
-+				MT8189_TOP_AXI_PROT_EN_MMSYS_STA_1_ISP_IPE),
++			BUS_PROT_IGN(MT8189_BP_IFR_TYPE, 0x0c14, 0x0c18, 0x0c10, 0x0c1c,
++				     MT8189_TOP_AXI_PROT_EN_MMSYS_STA_0_ISP_IPE),
++			BUS_PROT_IGN(MT8189_BP_IFR_TYPE, 0x0c24, 0x0c28, 0x0c20, 0x0c2c,
++				     MT8189_TOP_AXI_PROT_EN_MMSYS_STA_1_ISP_IPE),
 +		},
 +		.caps = MTK_SCPD_IS_PWR_CON_ON | MTK_SCPD_KEEP_DEFAULT_OFF | MT8189_DEFAULT_CAP,
 +	},
 +	[MT8189_POWER_DOMAIN_VDE0] = {
 +		.name = "vde0",
-+		.ctl_offs = 0xE38,
++		.ctl_offs = MT8189_SPM_VDE0_PWR_CON,
 +		.sram_pdn_bits = GENMASK(8, 8),
 +		.sram_pdn_ack_bits = GENMASK(12, 12),
 +		.bp_table = {
-+			BUS_PROT_IGN(MT8189_BP_IFR_TYPE, 0x0C14, 0x0C18, 0x0C10, 0x0C1C,
-+				MT8189_TOP_AXI_PROT_EN_MMSYS_STA_0_VDE0),
-+			BUS_PROT_IGN(MT8189_BP_IFR_TYPE, 0x0C24, 0x0C28, 0x0C20, 0x0C2C,
-+				MT8189_TOP_AXI_PROT_EN_MMSYS_STA_1_VDE0),
++			BUS_PROT_IGN(MT8189_BP_IFR_TYPE, 0x0c14, 0x0c18, 0x0c10, 0x0c1c,
++				     MT8189_TOP_AXI_PROT_EN_MMSYS_STA_0_VDE0),
++			BUS_PROT_IGN(MT8189_BP_IFR_TYPE, 0x0c24, 0x0c28, 0x0c20, 0x0c2c,
++				     MT8189_TOP_AXI_PROT_EN_MMSYS_STA_1_VDE0),
 +		},
 +		.clk_id = {CLK_VDEC},
 +		.subsys_clk_prefix = "vdec",
@@ -36952,165 +36565,165 @@ index 6968d97f473b5cffd788d23587b0921656029295..eeaa6ed97d8d874505843312fadb32da
 +	},
 +	[MT8189_POWER_DOMAIN_VEN0] = {
 +		.name = "ven0",
-+		.ctl_offs = 0xE40,
++		.ctl_offs = MT8189_SPM_VEN0_PWR_CON,
 +		.sram_pdn_bits = GENMASK(8, 8),
 +		.sram_pdn_ack_bits = GENMASK(12, 12),
 +		.bp_table = {
-+			BUS_PROT_IGN(MT8189_BP_IFR_TYPE, 0x0C14, 0x0C18, 0x0C10, 0x0C1C,
-+				MT8189_TOP_AXI_PROT_EN_MMSYS_STA_0_VEN0),
-+			BUS_PROT_IGN(MT8189_BP_IFR_TYPE, 0x0C24, 0x0C28, 0x0C20, 0x0C2C,
-+				MT8189_TOP_AXI_PROT_EN_MMSYS_STA_1_VEN0),
++			BUS_PROT_IGN(MT8189_BP_IFR_TYPE, 0x0c14, 0x0c18, 0x0c10, 0x0c1c,
++				     MT8189_TOP_AXI_PROT_EN_MMSYS_STA_0_VEN0),
++			BUS_PROT_IGN(MT8189_BP_IFR_TYPE, 0x0c24, 0x0c28, 0x0c20, 0x0c2c,
++				     MT8189_TOP_AXI_PROT_EN_MMSYS_STA_1_VEN0),
 +		},
 +		.caps = MTK_SCPD_IS_PWR_CON_ON | MT8189_DEFAULT_CAP,
 +	},
 +	[MT8189_POWER_DOMAIN_CAM_MAIN] = {
 +		.name = "cam-main",
-+		.ctl_offs = 0xE48,
++		.ctl_offs = MT8189_SPM_CAM_MAIN_PWR_CON,
 +		.sram_pdn_bits = GENMASK(8, 8),
 +		.sram_pdn_ack_bits = GENMASK(12, 12),
 +		.bp_table = {
-+			BUS_PROT_IGN(MT8189_BP_IFR_TYPE, 0x0C14, 0x0C18, 0x0C10, 0x0C1C,
-+				MT8189_TOP_AXI_PROT_EN_MMSYS_STA_0_CAM_MAIN),
-+			BUS_PROT_IGN(MT8189_BP_IFR_TYPE, 0x0C24, 0x0C28, 0x0C20, 0x0C2C,
-+				MT8189_TOP_AXI_PROT_EN_MMSYS_STA_1_CAM_MAIN),
++			BUS_PROT_IGN(MT8189_BP_IFR_TYPE, 0x0c14, 0x0c18, 0x0c10, 0x0c1C,
++				     MT8189_TOP_AXI_PROT_EN_MMSYS_STA_0_CAM_MAIN),
++			BUS_PROT_IGN(MT8189_BP_IFR_TYPE, 0x0c24, 0x0c28, 0x0c20, 0x0c2C,
++				     MT8189_TOP_AXI_PROT_EN_MMSYS_STA_1_CAM_MAIN),
 +		},
 +		.caps = MTK_SCPD_IS_PWR_CON_ON | MTK_SCPD_KEEP_DEFAULT_OFF | MT8189_DEFAULT_CAP,
 +	},
 +	[MT8189_POWER_DOMAIN_CAM_SUBA] = {
 +		.name = "cam-suba",
-+		.ctl_offs = 0xE50,
++		.ctl_offs = MT8189_SPM_CAM_SUBA_PWR_CON,
 +		.sram_pdn_bits = GENMASK(8, 8),
 +		.sram_pdn_ack_bits = GENMASK(12, 12),
 +		.caps = MTK_SCPD_IS_PWR_CON_ON | MTK_SCPD_KEEP_DEFAULT_OFF | MT8189_DEFAULT_CAP,
 +	},
 +	[MT8189_POWER_DOMAIN_CAM_SUBB] = {
 +		.name = "cam-subb",
-+		.ctl_offs = 0xE54,
++		.ctl_offs = MT8189_SPM_CAM_SUBB_PWR_CON,
 +		.sram_pdn_bits = GENMASK(8, 8),
 +		.sram_pdn_ack_bits = GENMASK(12, 12),
 +		.caps = MTK_SCPD_IS_PWR_CON_ON | MTK_SCPD_KEEP_DEFAULT_OFF | MT8189_DEFAULT_CAP,
 +	},
 +	[MT8189_POWER_DOMAIN_MDP0] = {
 +		.name = "mdp0",
-+		.ctl_offs = 0xE68,
++		.ctl_offs = MT8189_SPM_MDP0_PWR_CON,
 +		.sram_pdn_bits = GENMASK(8, 8),
 +		.sram_pdn_ack_bits = GENMASK(12, 12),
 +		.bp_table = {
-+			BUS_PROT_IGN(MT8189_BP_IFR_TYPE, 0x0C14, 0x0C18, 0x0C10, 0x0C1C,
-+				MT8189_TOP_AXI_PROT_EN_MMSYS_STA_0_MDP0),
++			BUS_PROT_IGN(MT8189_BP_IFR_TYPE, 0x0c14, 0x0c18, 0x0c10, 0x0c1c,
++				     MT8189_TOP_AXI_PROT_EN_MMSYS_STA_0_MDP0),
 +		},
 +		.caps = MTK_SCPD_IS_PWR_CON_ON | MT8189_DEFAULT_CAP,
 +	},
 +	[MT8189_POWER_DOMAIN_DISP] = {
 +		.name = "disp",
-+		.ctl_offs = 0xE70,
++		.ctl_offs = MT8189_SPM_DISP_PWR_CON,
 +		.sram_pdn_bits = GENMASK(8, 8),
 +		.sram_pdn_ack_bits = GENMASK(12, 12),
 +		.bp_table = {
-+			BUS_PROT_IGN(MT8189_BP_IFR_TYPE, 0x0C14, 0x0C18, 0x0C10, 0x0C1C,
-+				MT8189_TOP_AXI_PROT_EN_MMSYS_STA_0_DISP),
++			BUS_PROT_IGN(MT8189_BP_IFR_TYPE, 0x0c14, 0x0c18, 0x0c10, 0x0c1c,
++				     MT8189_TOP_AXI_PROT_EN_MMSYS_STA_0_DISP),
 +		},
 +		.caps = MTK_SCPD_IS_PWR_CON_ON | MT8189_DEFAULT_CAP,
 +	},
 +	[MT8189_POWER_DOMAIN_MM_INFRA] = {
 +		.name = "mm-infra",
-+		.ctl_offs = 0xE78,
++		.ctl_offs = MT8189_SPM_MM_INFRA_PWR_CON,
 +		.sram_pdn_bits = GENMASK(8, 8),
 +		.sram_pdn_ack_bits = GENMASK(12, 12),
 +		.bp_table = {
-+			BUS_PROT_CLK_IGN(MT8189_BP_IFR_TYPE, 0x0C24, 0x0C28, 0x0C20, 0x0C2C,
-+				MT8189_TOP_AXI_PROT_EN_MMSYS_STA_1_MM_INFRA),
-+			BUS_PROT_CLK_IGN(MT8189_BP_IFR_TYPE, 0x0C24, 0x0C28, 0x0C20, 0x0C2C,
-+				MT8189_TOP_AXI_PROT_EN_MMSYS_STA_1_MM_INFRA_2ND),
-+			BUS_PROT_CLK_IGN(MT8189_BP_IFR_TYPE, 0x0C24, 0x0C28, 0x0C20, 0x0C2C,
-+				MT8189_TOP_AXI_PROT_EN_MMSYS_STA_1_MM_INFRA_CLK_IGN),
-+			BUS_PROT_CLK_IGN(MT8189_BP_IFR_TYPE, 0x0C24, 0x0C28, 0x0C20, 0x0C2C,
-+				MT8189_TOP_AXI_PROT_EN_MMSYS_STA_1_MM_INFRA_2ND_CLK_IGN),
++			BUS_PROT_IGN(MT8189_BP_IFR_TYPE, 0x0c24, 0x0c28, 0x0c20, 0x0c2c,
++				     MT8189_TOP_AXI_PROT_EN_MMSYS_STA_1_MM_INFRA),
++			BUS_PROT_IGN(MT8189_BP_IFR_TYPE, 0x0c24, 0x0c28, 0x0c20, 0x0c2c,
++				     MT8189_TOP_AXI_PROT_EN_MMSYS_STA_1_MM_INFRA_2ND),
++			BUS_PROT_IGN(MT8189_BP_IFR_TYPE, 0x0c24, 0x0c28, 0x0c20, 0x0c2c,
++				     MT8189_TOP_AXI_PROT_EN_MMSYS_STA_1_MM_INFRA_CLK_IGN),
++			BUS_PROT_IGN(MT8189_BP_IFR_TYPE, 0x0c24, 0x0c28, 0x0c20, 0x0c2c,
++				     MT8189_TOP_AXI_PROT_EN_MMSYS_STA_1_MM_INFRA_2ND_CLK_IGN),
 +		},
 +		.caps = MTK_SCPD_IS_PWR_CON_ON | MT8189_DEFAULT_CAP,
 +	},
 +	[MT8189_POWER_DOMAIN_DP_TX] = {
 +		.name = "dp-tx",
-+		.ctl_offs = 0xE80,
++		.ctl_offs = MT8189_SPM_DP_TX_PWR_CON,
 +		.sram_pdn_bits = GENMASK(8, 8),
 +		.sram_pdn_ack_bits = GENMASK(12, 12),
 +		.caps = MTK_SCPD_IS_PWR_CON_ON | MT8189_DEFAULT_CAP,
 +	},
 +	[MT8189_POWER_DOMAIN_SCP_CORE] = {
 +		.name = "scp-core",
-+		.ctl_offs = 0xE84,
++		.ctl_offs = MT8189_SPM_SCP_CORE_PWR_CON,
 +		.sram_pdn_bits = GENMASK(8, 8),
 +		.sram_pdn_ack_bits = GENMASK(12, 12),
 +		.bp_table = {
-+			BUS_PROT_CON(MT8189_VLPCFG_REG_TYPE, 0x091C, 0x091C, 0x091C, 0x091C,
-+				MT8189_AXI_PROT_EN_SCP_CORE,
-+				MT8189_AXI_PROT_EN_SCP_CORE),
++			BUS_PROT_CON(MT8189_VLPCFG_REG_TYPE, 0x091c, 0x091c, 0x091c, 0x091c,
++				     MT8189_AXI_PROT_EN_SCP_CORE,
++				     MT8189_AXI_PROT_EN_SCP_CORE),
 +			BUS_PROT_IGN(MT8189_BP_VLP_TYPE, 0x0214, 0x0218, 0x0210, 0x0220,
-+				MT8189_VLP_AXI_PROT_EN_SCP_CORE),
-+			BUS_PROT_CON(MT8189_VLPCFG_REG_TYPE, 0x091C, 0x091C, 0x091C, 0x091C,
-+				MT8189_AXI_PROT_EN_SCP_CORE_2ND,
-+				MT8189_AXI_PROT_EN_SCP_CORE_2ND),
++				     MT8189_VLP_AXI_PROT_EN_SCP_CORE),
++			BUS_PROT_CON(MT8189_VLPCFG_REG_TYPE, 0x091c, 0x091c, 0x091c, 0x091c,
++				     MT8189_AXI_PROT_EN_SCP_CORE_2ND,
++				     MT8189_AXI_PROT_EN_SCP_CORE_2ND),
 +			BUS_PROT_IGN(MT8189_BP_VLP_TYPE, 0x0214, 0x0218, 0x0210, 0x0220,
-+				MT8189_VLP_AXI_PROT_EN_SCP_CORE_2ND),
++				     MT8189_VLP_AXI_PROT_EN_SCP_CORE_2ND),
 +		},
 +		.caps = MTK_SCPD_SRAM_ISO | MTK_SCPD_SRAM_SLP
 +				| MTK_SCPD_IS_PWR_CON_ON | MT8189_DEFAULT_CAP,
 +	},
 +	[MT8189_POWER_DOMAIN_CSI_RX] = {
 +		.name = "csi-rx",
-+		.ctl_offs = 0xE9C,
++		.ctl_offs = MT8189_SPM_CSI_RX_PWR_CON,
 +		.caps = MTK_SCPD_IS_PWR_CON_ON | MT8189_DEFAULT_CAP,
 +	},
 +	[MT8189_POWER_DOMAIN_SSUSB] = {
 +		.name = "ssusb",
-+		.ctl_offs = 0xEA8,
++		.ctl_offs = MT8189_SPM_SSUSB_PWR_CON,
 +		.sram_pdn_bits = GENMASK(8, 8),
 +		.sram_pdn_ack_bits = GENMASK(12, 12),
 +		.bp_table = {
-+			BUS_PROT_IGN(MT8189_BP_IFR_TYPE, 0x0C84, 0x0C88, 0x0C80, 0x0C8C,
-+				MT8189_TOP_AXI_PROT_EN_PERISYS_STA_0_SSUSB),
++			BUS_PROT_IGN(MT8189_BP_IFR_TYPE, 0x0c84, 0x0c88, 0x0c80, 0x0c8c,
++				     MT8189_TOP_AXI_PROT_EN_PERISYS_STA_0_SSUSB),
 +		},
 +		.caps = MTK_SCPD_IS_PWR_CON_ON | MTK_SCPD_ACTIVE_WAKEUP | MT8189_DEFAULT_CAP,
 +	},
 +	[MT8189_POWER_DOMAIN_MFG0] = {
 +		.name = "mfg0",
-+		.ctl_offs = 0xEB4,
++		.ctl_offs = MT8189_SPM_MFG0_PWR_CON,
 +		.caps = MTK_SCPD_IS_PWR_CON_ON | MT8189_DEFAULT_CAP,
 +	},
 +	[MT8189_POWER_DOMAIN_MFG1] = {
 +		.name = "mfg1",
-+		.ctl_offs = 0xEB8,
++		.ctl_offs = MT8189_SPM_MFG1_PWR_CON,
 +		.sram_pdn_bits = GENMASK(8, 8),
 +		.sram_pdn_ack_bits = GENMASK(12, 12),
 +		.bp_table = {
-+			BUS_PROT_IGN(MT8189_BP_IFR_TYPE, 0x0C54, 0x0C58, 0x0C50, 0x0C5C,
-+				MT8189_TOP_AXI_PROT_EN_INFRASYS_STA_1_MFG1),
-+			BUS_PROT_IGN(MT8189_BP_IFR_TYPE, 0x0CA4, 0x0CA8, 0x0CA0, 0x0CAC,
-+				MT8189_TOP_AXI_PROT_EN_MD_STA_0_MFG1),
-+			BUS_PROT_IGN(MT8189_BP_IFR_TYPE, 0x0CA4, 0x0CA8, 0x0CA0, 0x0CAC,
-+				MT8189_TOP_AXI_PROT_EN_MD_STA_0_MFG1_2ND),
-+			BUS_PROT_IGN(MT8189_EMICFG_AO_MEM_TYPE, 0x0084, 0x0088, 0x0080, 0x008C,
-+				MT8189_AXI_PROT_EN_MFG1),
++			BUS_PROT_IGN(MT8189_BP_IFR_TYPE, 0x0c54, 0x0c58, 0x0c50, 0x0C5c,
++				     MT8189_TOP_AXI_PROT_EN_INFRASYS_STA_1_MFG1),
++			BUS_PROT_IGN(MT8189_BP_IFR_TYPE, 0x0ca4, 0x0ca8, 0x0ca0, 0x0cac,
++				     MT8189_TOP_AXI_PROT_EN_MD_STA_0_MFG1),
++			BUS_PROT_IGN(MT8189_BP_IFR_TYPE, 0x0ca4, 0x0ca8, 0x0ca0, 0x0cac,
++				     MT8189_TOP_AXI_PROT_EN_MD_STA_0_MFG1_2ND),
++			BUS_PROT_IGN(MT8189_EMICFG_AO_MEM_TYPE, 0x0084, 0x0088, 0x0080, 0x008c,
++				     MT8189_AXI_PROT_EN_MFG1),
 +		},
 +		.caps = MTK_SCPD_IS_PWR_CON_ON | MT8189_DEFAULT_CAP,
 +	},
 +	[MT8189_POWER_DOMAIN_MFG2] = {
 +		.name = "mfg2",
-+		.ctl_offs = 0xEBC,
++		.ctl_offs = MT8189_SPM_MFG2_PWR_CON,
 +		.sram_pdn_bits = GENMASK(8, 8),
 +		.sram_pdn_ack_bits = GENMASK(12, 12),
 +		.caps = MTK_SCPD_IS_PWR_CON_ON | MT8189_DEFAULT_CAP,
 +	},
 +	[MT8189_POWER_DOMAIN_MFG3] = {
 +		.name = "mfg3",
-+		.ctl_offs = 0xEC0,
++		.ctl_offs = MT8189_SPM_MFG3_PWR_CON,
 +		.sram_pdn_bits = GENMASK(8, 8),
 +		.sram_pdn_ack_bits = GENMASK(12, 12),
 +		.caps = MTK_SCPD_IS_PWR_CON_ON | MT8189_DEFAULT_CAP,
 +	},
 +	[MT8189_POWER_DOMAIN_EDP_TX_DORMANT] = {
 +		.name = "edp-tx-dormant",
-+		.ctl_offs = 0xF70,
++		.ctl_offs = MT8189_SPM_EDP_TX_PWR_CON,
 +		.sram_slp_bits = GENMASK(9, 9),
 +		.sram_slp_ack_bits = 0,
 +		.caps = MTK_SCPD_SRAM_ISO | MTK_SCPD_SRAM_SLP | MTK_SCPD_IS_PWR_CON_ON |
@@ -37118,14 +36731,14 @@ index 6968d97f473b5cffd788d23587b0921656029295..eeaa6ed97d8d874505843312fadb32da
 +	},
 +	[MT8189_POWER_DOMAIN_PCIE] = {
 +		.name = "pcie",
-+		.ctl_offs = 0xF74,
++		.ctl_offs = MT8189_SPM_PCIE_PWR_CON,
 +		.sram_pdn_bits = GENMASK(8, 8),
 +		.sram_pdn_ack_bits = GENMASK(12, 12),
 +		.caps = MTK_SCPD_IS_PWR_CON_ON | MT8189_DEFAULT_CAP,
 +	},
 +	[MT8189_POWER_DOMAIN_PCIE_PHY] = {
 +		.name = "pcie-phy",
-+		.ctl_offs = 0xF78,
++		.ctl_offs = MT8189_SPM_PCIE_PHY_PWR_CON,
 +		.caps = MTK_SCPD_IS_PWR_CON_ON | MT8189_DEFAULT_CAP,
 +	},
 +};
@@ -37167,7 +36780,7 @@ index 6968d97f473b5cffd788d23587b0921656029295..eeaa6ed97d8d874505843312fadb32da
  /*
   * scpsys driver init
   */
-@@ -2285,6 +2778,9 @@ static const struct of_device_id of_scpsys_match_tbl[] = {
+@@ -2285,6 +2712,9 @@ static const struct of_device_id of_scpsys_match_tbl[] = {
  	}, {
  		.compatible = "mediatek,mt8196-hfrpsys-hwv",
  		.data = &mt8196_mmpc_hwv_data,
@@ -37307,6 +36920,41 @@ index c4c535b011812d81abf2cf7dafc2db4d63e4c4ce..bd4bab2c52ccb100351f6c8f31b52d1a
  	{ .compatible = "mediatek,mt8192-scp", .data = &mt8192_of_data },
  	{ .compatible = "mediatek,mt8195-scp", .data = &mt8195_of_data },
  	{},
+diff --git a/drivers/rtc/rtc-mt6397.c b/drivers/rtc/rtc-mt6397.c
+index 1617063669cc58a4314957a98a9832856229cadc..4e10100b6ad932058dfa2edc90e1ef923252384a 100644
+--- a/drivers/rtc/rtc-mt6397.c
++++ b/drivers/rtc/rtc-mt6397.c
+@@ -37,6 +37,21 @@ static int mtk_rtc_write_trigger(struct mt6397_rtc *rtc)
+ 	return ret;
+ }
+ 
++static void mtk_rtc_reset_bbpu_alarm_status(struct mt6397_rtc *rtc)
++{
++	u32 bbpu;
++	int ret;
++
++	bbpu = RTC_BBPU_KEY | RTC_BBPU_PWREN | RTC_BBPU_RESET_AL;
++	ret = regmap_write(rtc->regmap, rtc->addr_base + RTC_BBPU, bbpu);
++	if (ret < 0) {
++		dev_err(rtc->rtc_dev->dev.parent, "%s: write rtc bbpu error\n", __func__);
++		return;
++	}
++
++	mtk_rtc_write_trigger(rtc);
++}
++
+ static irqreturn_t mtk_rtc_irq_handler_thread(int irq, void *data)
+ {
+ 	struct mt6397_rtc *rtc = data;
+@@ -51,6 +66,8 @@ static irqreturn_t mtk_rtc_irq_handler_thread(int irq, void *data)
+ 		if (regmap_write(rtc->regmap, rtc->addr_base + RTC_IRQ_EN,
+ 				 irqen) == 0)
+ 			mtk_rtc_write_trigger(rtc);
++
++		mtk_rtc_reset_bbpu_alarm_status(rtc);
+ 		mutex_unlock(&rtc->lock);
+ 
+ 		return IRQ_HANDLED;
 diff --git a/drivers/soc/mediatek/mt8189-mmsys.h b/drivers/soc/mediatek/mt8189-mmsys.h
 new file mode 100644
 index 0000000000000000000000000000000000000000..a1a752b23092fd35ce19c13f64c8eb00dddda1cc
@@ -40648,50 +40296,46 @@ index 318ae24a41f482c02c7cda15acbdc5e44d16e3e7..de7914e5f29de37ad2259b383aad069c
  
  	/*
  	 * Write Linux Version Code to our GUID register so it's easy to figure
+diff --git a/drivers/usb/host/xhci-mtk.c b/drivers/usb/host/xhci-mtk.c
+index 49e3e5663e12b6b6075bdf701670654a5461f042..007c3a82d2732d3e81fd4ad840d4b773ea3d5520 100644
+--- a/drivers/usb/host/xhci-mtk.c
++++ b/drivers/usb/host/xhci-mtk.c
+@@ -121,6 +121,10 @@
+ #define PERI_WK_CTRL1_8196	0x10
+ #define WC1_IS_EN_P2_96		BIT(0)
+ 
++/* mt8189*/
++#define PERI_WK_CTRL1_8189	0x0
++#define WC_IS_EN_P_89		BIT(18)
++
+ /* mt2712 etc */
+ #define PERI_SSUSB_SPM_CTRL	0x0
+ #define SSC_IP_SLEEP_EN	BIT(4)
+@@ -140,6 +144,7 @@ enum ssusb_uwk_vers {
+ 	SSUSB_UWK_V1_7,		/* mt8196 IP0 */
+ 	SSUSB_UWK_V1_8,		/* mt8196 IP1 */
+ 	SSUSB_UWK_V1_9,		/* mt8196 IP2 */
++	SSUSB_UWK_V1_10,		/* mt8189 IP all */
+ };
+ 
+ /*
+@@ -407,6 +412,11 @@ static void usb_wakeup_ip_sleep_set(struct xhci_hcd_mtk *mtk, bool enable)
+ 		msk = WC1_IS_EN_P2_96;
+ 		val = enable ? msk : 0;
+ 		break;
++	case SSUSB_UWK_V1_10:
++		reg = mtk->uwk_reg_base + PERI_WK_CTRL1_8189;
++		msk = WC_IS_EN_P_89;
++		val = enable ? msk : 0;
++		break;
+ 	case SSUSB_UWK_V2:
+ 		reg = mtk->uwk_reg_base + PERI_SSUSB_SPM_CTRL;
+ 		msk = SSC_IP_SLEEP_EN | SSC_SPM_INT_EN;
 diff --git a/drivers/watchdog/mtk_wdt.c b/drivers/watchdog/mtk_wdt.c
-index 66bb68ceb14cf6181a0c3542ec67a2c6254603b6..1ad3a44b9fddcf50f9860c6d7b0844e354a1d237 100644
+index 66bb68ceb14cf6181a0c3542ec67a2c6254603b6..3c3bbcd624a9441ae6fe8bd3ed121612c6ace214 100644
 --- a/drivers/watchdog/mtk_wdt.c
 +++ b/drivers/watchdog/mtk_wdt.c
-@@ -246,19 +246,6 @@ static int mtk_wdt_set_timeout(struct watchdog_device *wdt_dev,
- 	return 0;
- }
- 
--static void mtk_wdt_init(struct watchdog_device *wdt_dev)
--{
--	struct mtk_wdt_dev *mtk_wdt = watchdog_get_drvdata(wdt_dev);
--	void __iomem *wdt_base;
--
--	wdt_base = mtk_wdt->wdt_base;
--
--	if (readl(wdt_base + WDT_MODE) & WDT_MODE_EN) {
--		set_bit(WDOG_HW_RUNNING, &wdt_dev->status);
--		mtk_wdt_set_timeout(wdt_dev, wdt_dev->timeout);
--	}
--}
--
- static int mtk_wdt_stop(struct watchdog_device *wdt_dev)
- {
- 	struct mtk_wdt_dev *mtk_wdt = watchdog_get_drvdata(wdt_dev);
-@@ -294,6 +281,7 @@ static int mtk_wdt_start(struct watchdog_device *wdt_dev)
- 	if (mtk_wdt->reset_by_toprgu)
- 		reg |= WDT_MODE_CNT_SEL;
- 	reg |= (WDT_MODE_EN | WDT_MODE_KEY);
-+	reg &= ~WDT_MODE_EN;
- 	iowrite32(reg, wdt_base + WDT_MODE);
- 
- 	return 0;
-@@ -401,7 +389,9 @@ static int mtk_wdt_probe(struct platform_device *pdev)
- 
- 	watchdog_set_drvdata(&mtk_wdt->wdt_dev, mtk_wdt);
- 
--	mtk_wdt_init(&mtk_wdt->wdt_dev);
-+	/* Disable WDT for debug purpose */
-+	mtk_wdt_stop(&mtk_wdt->wdt_dev);
-+	clear_bit(WDOG_ACTIVE, &mtk_wdt->wdt_dev.status);
- 
- 	watchdog_stop_on_reboot(&mtk_wdt->wdt_dev);
- 	err = devm_watchdog_register_device(dev, &mtk_wdt->wdt_dev);
-@@ -459,6 +449,7 @@ static const struct of_device_id mtk_wdt_dt_ids[] = {
+@@ -459,6 +459,7 @@ static const struct of_device_id mtk_wdt_dt_ids[] = {
  	{ .compatible = "mediatek,mt8183-wdt", .data = &mt8183_data },
  	{ .compatible = "mediatek,mt8186-wdt", .data = &mt8186_data },
  	{ .compatible = "mediatek,mt8188-wdt", .data = &mt8188_data },
@@ -43827,6 +43471,24 @@ index 4eaa53d7270ad5824ddd75c4ea6c3524eba22490..774fd958be9d7d0b1f37058ed022d1a8
 +#define MT8192_POWER_DOMAIN_NR		21
  
  #endif /* _DT_BINDINGS_POWER_MT8192_POWER_H */
+diff --git a/include/linux/mfd/mt6397/rtc.h b/include/linux/mfd/mt6397/rtc.h
+index 068ae1c0f0e8e9a43c11309b44f11b41d15cfe50..b512e10083a1034d9a1aa9bda96d7fcbdfd76f29 100644
+--- a/include/linux/mfd/mt6397/rtc.h
++++ b/include/linux/mfd/mt6397/rtc.h
+@@ -15,8 +15,12 @@
+ #include <linux/rtc.h>
+ 
+ #define RTC_BBPU               0x0000
++#define RTC_BBPU_PWREN         BIT(0)
++#define RTC_BBPU_CLR           BIT(1)
++#define RTC_BBPU_RESET_AL      BIT(3)
+ #define RTC_BBPU_CBUSY         BIT(6)
+-#define RTC_BBPU_KEY            (0x43 << 8)
++#define RTC_BBPU_KEY           (0x43 << 8)
++
+ 
+ #define RTC_WRTGR_MT6358       0x003a
+ #define RTC_WRTGR_MT6397       0x003c
 diff --git a/include/linux/soc/mediatek/mtk-mmsys.h b/include/linux/soc/mediatek/mtk-mmsys.h
 index ffb92d04926e6b6c8e95c42e504dd3714805456f..810abe502cbb6807dcc3001c810c8e852c9103d1 100644
 --- a/include/linux/soc/mediatek/mtk-mmsys.h
@@ -44174,7 +43836,7 @@ index 0000000000000000000000000000000000000000..90cef414f6b9f4ac388817b3211bb918
 +obj-$(CONFIG_SND_SOC_MT8189_MT6359P) += mt8189-mt6359p.o
 diff --git a/sound/soc/mediatek/mt8189/mt8189-afe-clk.c b/sound/soc/mediatek/mt8189/mt8189-afe-clk.c
 new file mode 100644
-index 0000000000000000000000000000000000000000..6b11491259cef0f74f083477c4642b6af0d706e6
+index 0000000000000000000000000000000000000000..4a9c751b918648c6914ca47e829a0b4e51bafeb7
 --- /dev/null
 +++ b/sound/soc/mediatek/mt8189/mt8189-afe-clk.c
 @@ -0,0 +1,811 @@
@@ -44963,14 +44625,14 @@ index 0000000000000000000000000000000000000000..6b11491259cef0f74f083477c4642b6a
 +	}
 +
 +	afe_priv->apmixed = syscon_regmap_lookup_by_phandle(afe->dev->of_node,
-+			    "apmixedsys");
++			    "mediatek,apmixedsys");
 +	if (IS_ERR(afe_priv->apmixed)) {
 +		dev_err(afe->dev, "Cannot find apmixeds\n");
 +		return PTR_ERR(afe_priv->apmixed);
 +	}
 +
 +	afe_priv->topckgen = syscon_regmap_lookup_by_phandle(afe->dev->of_node,
-+			     "topckgen");
++			     "mediatek,topckgen");
 +	if (IS_ERR(afe_priv->topckgen)) {
 +		dev_err(afe->dev, "Cannot find topckgen controller\n");
 +		return PTR_ERR(afe_priv->topckgen);
@@ -44978,7 +44640,7 @@ index 0000000000000000000000000000000000000000..6b11491259cef0f74f083477c4642b6a
 +
 +	afe_priv->infracfg = syscon_regmap_lookup_by_phandle(
 +				     afe->dev->of_node,
-+				     "infracfg");
++				     "mediatek,infracfg");
 +	if (IS_ERR(afe_priv->infracfg)) {
 +		dev_info(afe->dev, "Cannot find infracfg\n");
 +		return PTR_ERR(afe_priv->infracfg);
@@ -57929,10 +57591,10 @@ index 0000000000000000000000000000000000000000..7e0fc0d07aad9833406a72ea002c8ebb
 +}
 diff --git a/sound/soc/mediatek/mt8189/mt8189-dai-pcm.c b/sound/soc/mediatek/mt8189/mt8189-dai-pcm.c
 new file mode 100644
-index 0000000000000000000000000000000000000000..12ebab9c77d93547490f9c67d9930932c5dff808
+index 0000000000000000000000000000000000000000..af2b0a0624ad7b6d00fac4b80c9ae9fc612f2657
 --- /dev/null
 +++ b/sound/soc/mediatek/mt8189/mt8189-dai-pcm.c
-@@ -0,0 +1,374 @@
+@@ -0,0 +1,373 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
 + *  MediaTek ALSA SoC Audio DAI I2S Control
@@ -58219,7 +57881,6 @@ index 0000000000000000000000000000000000000000..12ebab9c77d93547490f9c67d9930932
 +		return 0;
 +	switch (dai->id) {
 +	case MT8189_DAI_PCM_0:
-+		pcm_con0 |= APLL << PCM0_HDEN_SFT;
 +		pcm_con0 |= AUD_BCLK_OUT_INV_NO_INVERSE << PCM0_BCLK_OUT_INV_SFT;
 +		pcm_con0 |= AUD_TX_LCH_RPT_NO_REPEAT << PCM0_TX_LCH_RPT_SFT;
 +		pcm_con0 |= AUD_VBT_16K_MODE_DISABLE << PCM0_VBT_16K_MODE_SFT;
