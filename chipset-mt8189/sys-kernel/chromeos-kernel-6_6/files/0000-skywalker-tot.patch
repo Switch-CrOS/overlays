@@ -2404,10 +2404,10 @@ index 0000000000000000000000000000000000000000..ccf21e86cf0b0151d7c957f1fb0a7bd9
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8189-skywalker-anakin.dtsi b/arch/arm64/boot/dts/mediatek/mt8189-skywalker-anakin.dtsi
 new file mode 100644
-index 0000000000000000000000000000000000000000..3a3ca26427cc4cc23d47f1ea9f5571511cb0a6a7
+index 0000000000000000000000000000000000000000..40792a76d3d0b65a3fff417dae4327f59d1216ba
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt8189-skywalker-anakin.dtsi
-@@ -0,0 +1,351 @@
+@@ -0,0 +1,347 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
 +/*
 + * Copyright (C) 2025 Google Inc.
@@ -2742,10 +2742,6 @@ index 0000000000000000000000000000000000000000..3a3ca26427cc4cc23d47f1ea9f557151
 +	bus-width = <8>;
 +	max-frequency = <200000000>;
 +	cap-mmc-highspeed;
-+	mmc-hs200-1_8v;
-+	mmc-hs400-1_8v;
-+	mmc-hs400-enhanced-strobe;
-+	supports-cqe;
 +	cap-mmc-hw-reset;
 +	no-sdio;
 +	no-sd;
@@ -3394,16 +3390,255 @@ index 0000000000000000000000000000000000000000..68de310a63c3a123595aef4df69dbb5d
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8189-skywalker-yoda.dtsi b/arch/arm64/boot/dts/mediatek/mt8189-skywalker-yoda.dtsi
 new file mode 100644
-index 0000000000000000000000000000000000000000..6a56c4bbd6f5e0fb4ddd26f96b08299d6a239393
+index 0000000000000000000000000000000000000000..e111574da5b9f444dcfdf55a307fbe2c22ac7827
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt8189-skywalker-yoda.dtsi
-@@ -0,0 +1,6 @@
+@@ -0,0 +1,245 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
 +/*
 + * Copyright (C) 2025 Google Inc.
 + */
 +/dts-v1/;
 +#include "mt8189-skywalker.dtsi"
++
++/ {
++	rt1019p: audio-codec {
++		compatible = "realtek,rt1019p";
++		label = "rt1019p";
++		#sound-dai-cells = <0>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&audio_spk_en_pins>;
++		sdb-gpios = <&pio 5 GPIO_ACTIVE_HIGH>;
++	};
++
++	pp1800_trackpad: regulator-pp1800-trackpad {
++		compatible = "regulator-fixed";
++		regulator-name = "pp1800_trackpad";
++		regulator-min-microvolt = <1800000>;
++		regulator-max-microvolt = <1800000>;
++		enable-active-high;
++		gpio = <&pio 3 GPIO_ACTIVE_HIGH>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&trackpad_pwr_pins>;
++		vin-supply = <&pp3300_z1>;
++	};
++
++	pp1800_tchscr_report_disable: regulator-pp1800-tchscr-report-disable {
++		compatible = "regulator-fixed";
++		regulator-name = "pp1800_tchscr_report_disable";
++		pinctrl-names = "default";
++		regulator-boot-on;
++		pinctrl-0 = <&touch_pin_report>;
++		gpio = <&pio 14 GPIO_ACTIVE_LOW>;
++	};
++};
++
++&keyboard_controller {
++	keypad,num-columns = <18>;
++
++	function-row-physmap = <
++		MATRIX_KEY(0x00, 0x02, 0)		/* T1 */
++		MATRIX_KEY(0x03, 0x02, 0)		/* T2 */
++		MATRIX_KEY(0x02, 0x02, 0)		/* T3 */
++		MATRIX_KEY(0x01, 0x02, 0)		/* T4 */
++		MATRIX_KEY(0x04, 0x04, 0)		/* T5 */
++		MATRIX_KEY(0x02, 0x04, 0)		/* T6 */
++		MATRIX_KEY(0x01, 0x04, 0)		/* T7 */
++		MATRIX_KEY(0x02, 0x0b, 0)		/* T8 */
++		MATRIX_KEY(0x01, 0x09, 0)		/* T9 */
++		MATRIX_KEY(0x00, 0x04, 0)		/* T10 */
++		MATRIX_KEY(0x00, 0x01, 0)		/* T11 */
++		MATRIX_KEY(0x01, 0x05, 0)		/* T12 */
++		MATRIX_KEY(0x03, 0x05, 0)		/* T13 */
++		MATRIX_KEY(0x00, 0x0b, 0)		/* T14 */
++	>;
++
++	linux,keymap = <
++		CROS_TOP_ROW_KEYMAP_V30
++		CROS_MAIN_KEYMAP_V30
++
++		MATRIX_KEY(0x00, 0x02, KEY_BACK)		/* T1 */
++		MATRIX_KEY(0x03, 0x02, KEY_REFRESH)		/* T2 */
++		MATRIX_KEY(0x02, 0x02, KEY_ZOOM)		/* T3 */
++		MATRIX_KEY(0x01, 0x02, KEY_SCALE)		/* T4 */
++		MATRIX_KEY(0x04, 0x04, KEY_SYSRQ)		/* T5 */
++		MATRIX_KEY(0x02, 0x04, KEY_BRIGHTNESSDOWN)	/* T6 */
++		MATRIX_KEY(0x01, 0x04, KEY_BRIGHTNESSUP)	/* T7 */
++		MATRIX_KEY(0x02, 0x0b, KEY_KBDILLUMTOGGLE)	/* T8 */
++		MATRIX_KEY(0x01, 0x09, KEY_MICMUTE)		/* T9 */
++		MATRIX_KEY(0x00, 0x04, KEY_MUTE)		/* T10 */
++		MATRIX_KEY(0x00, 0x01, KEY_VOLUMEDOWN)		/* T11 */
++		MATRIX_KEY(0x01, 0x05, KEY_VOLUMEUP)		/* T12 */
++		MATRIX_KEY(0x03, 0x05, KEY_ACCESSIBILITY)	/* T13 */
++		MATRIX_KEY(0x00, 0x0b, KEY_DICTATE)		/* T14 */
++	>;
++};
++
++&i2c2 {
++	/delete-node/ audio-codec@1a;
++
++	rt5682s: audio-codec@1a {
++		compatible = "realtek,rt5682s";
++		reg = <0x1a>;
++		interrupts-extended = <&pio 4 IRQ_TYPE_EDGE_BOTH>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&audio_codec_pins>;
++		#sound-dai-cells = <0>;
++
++		AVDD-supply = <&mt6359_vio18_ldo_reg>;
++		DBVDD-supply = <&mt6359_vio18_ldo_reg>;
++		LDO1-IN-supply = <&mt6359_vio18_ldo_reg>;
++		MICVDD-supply = <&pp3300_z1>;
++		realtek,jd-src = <1>;
++		status = "okay";
++	};
++};
++
++&sound {
++	compatible = "mediatek,mt8189-rt5682s-sound";
++	model = "mt8189_1019_rt5682s";
++	status = "okay";
++
++	audio-routing = "I2SOUT1", "ETDMOUT_SPK_PIN",
++			"I2SOUT0", "ETDMIN_HP_PIN",
++			"I2SOUT0", "ETDMOUT_HP_PIN",
++			"I2SIN0", "ETDMIN_HP_PIN",
++			"I2SIN0", "ETDMOUT_HP_PIN",
++			"IN1P", "Headset Mic",
++			"PCM 0 Playback", "ETDMOUT_HDMI_PIN",
++			"AP DMIC Capture", "AP_DMIC0_PIN",
++			"AP DMIC CH34 Capture", "AP_DMIC1_PIN";
++
++	dai-link-0 {
++		link-name = "I2SOUT1_BE";
++		mediatek,clk-provider = "cpu";
++
++		codec {
++			sound-dai = <&rt1019p>;
++		};
++	};
++
++	dai-link-1 {
++		link-name = "I2SOUT0_BE";
++		mediatek,clk-provider = "cpu";
++
++		codec {
++			sound-dai = <&rt5682s>;
++		};
++	};
++
++	dai-link-2 {
++		link-name = "I2SIN0_BE";
++		mediatek,clk-provider = "cpu";
++
++		codec {
++			sound-dai = <&rt5682s>;
++		};
++	};
++
++	dai-link-3 {
++		link-name = "TDM_DPTX_BE";
++
++		codec {
++			sound-dai = <&dp_tx>;
++		};
++	};
++};
++
++&pio{
++	trackpad_pwr_pins: trackpad-pwr-pins {
++		pins-pwr {
++			pinmux = <PINMUX_GPIO3__FUNC_GPIO3>;
++			output-low;
++		};
++	};
++
++	touch_pin_report: pin-report-pins {
++		pins-touch-en {
++			pinmux = <PINMUX_GPIO14__FUNC_GPIO14>;
++			output-low;
++		};
++	};
++};
++
++&ap_i2c_tchpad  {
++	/delete-node/ trackpad@15;
++
++	trackpad_elan: trackpad@15 {
++		compatible = "elan,ekth3000";
++		reg = <0x15>;
++		interrupts-extended = <&pio 125 IRQ_TYPE_LEVEL_LOW>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&trackpad_pins>;
++		wakeup-source;
++		vcc-supply = <&pp3300_s3>;
++	};
++
++	trackpad_goodix: trackpad@2c {
++		compatible = "hid-over-i2c";
++		reg = <0x2c>;
++		interrupts-extended = <&pio 125 IRQ_TYPE_LEVEL_LOW>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&trackpad_pins>;
++		wakeup-source;
++		post-power-on-delay-ms = <10>;
++		hid-descr-addr = <0x0020>;
++		vdd-supply = <&pp3300_s3>;
++		vddl-supply = <&pp1800_trackpad>;
++	};
++
++	trackpad_focal: trackpad@38 {
++		compatible = "hid-over-i2c";
++		reg = <0x38>;
++		interrupts-extended = <&pio 125 IRQ_TYPE_LEVEL_LOW>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&trackpad_pins>;
++		wakeup-source;
++		post-power-on-delay-ms = <40>;
++		hid-descr-addr = <0x0020>;
++		vdd-supply = <&pp3300_s3>;
++		vddl-supply = <&pp1800_trackpad>;
++	};
++};
++
++&ap_i2c_tchscr {
++	/delete-node/ touchscreen@41;
++
++	/* elan touchscreen */
++	touchscreen@10 {
++		compatible = "ilitek,ili2901";
++		reg = <0x10>;
++		interrupts-extended = <&pio 15 IRQ_TYPE_LEVEL_LOW>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&touchscreen_pins>;
++		reset-gpios = <&pio 126 GPIO_ACTIVE_LOW>;
++		vcc33-supply = <&pp3300_tchscr_x>;
++		vccio-supply = <&pp1800_tchscr_report_disable>;
++	};
++
++	/* goodix touchscreen */
++	touchscreen@5d {
++		compatible = "goodix,gt7986u", "goodix,gt7375p";
++		reg = <0x5d>;
++		interrupts-extended = <&pio 15 IRQ_TYPE_LEVEL_LOW>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&touchscreen_pins>;
++		reset-gpios = <&pio 126 GPIO_ACTIVE_LOW>;
++		vdd-supply = <&pp3300_tchscr_x>;
++	};
++};
++
++&touchscreen_pins {
++	/delete-node/ pins-touch-en;
++};
++
++&u3phy0 {
++	status = "okay";
++};
++
++&xhci0 {
++	status = "okay";
++};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8189-skywalker.dts b/arch/arm64/boot/dts/mediatek/mt8189-skywalker.dts
 new file mode 100644
 index 0000000000000000000000000000000000000000..acae81aa8c7c5be1663622ed4a896f07f03e6831
@@ -21903,10 +22138,10 @@ index 2b892b7ed59e805e2b0c18960bddbb4d61530754..ff0c830eff48fb3e903385729824665c
  obj-$(CONFIG_DRM_LONTIUM_LT9211) += lontium-lt9211.o
 diff --git a/drivers/gpu/drm/bridge/ite-it61620.c b/drivers/gpu/drm/bridge/ite-it61620.c
 new file mode 100644
-index 0000000000000000000000000000000000000000..4ad11876b7b18095682b098077268ae047f25654
+index 0000000000000000000000000000000000000000..6d8e1789125ceb5d4332a4178acfdc73d0545674
 --- /dev/null
 +++ b/drivers/gpu/drm/bridge/ite-it61620.c
-@@ -0,0 +1,3077 @@
+@@ -0,0 +1,3102 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +/*
 + * Copyright 2024 ITE
@@ -22402,6 +22637,7 @@ index 0000000000000000000000000000000000000000..4ad11876b7b18095682b098077268ae0
 +	struct regmap *cec_regmap;
 +
 +	struct delayed_work hdcp_work;
++	struct delayed_work plugged_cb_work;
 +	struct wait_queue_head wq;
 +
 +	struct it61620_platform_data pdata;
@@ -22444,8 +22680,10 @@ index 0000000000000000000000000000000000000000..4ad11876b7b18095682b098077268ae0
 +					const struct videomode *vm);
 +static void it61620_stop_hdcp_work(struct it61620 *it61620);
 +static void it61620_start_hdcp_work(struct it61620 *it61620);
++static void it61620_start_plugged_cb_work(struct it61620 *it61620);
 +static inline void it61620_hdmi_enable_avmute(struct it61620 *it61620, bool enable);
 +static void it61620_hdmi_hdcp_wait_ksv_list(struct it61620 *it61620);
++static void it61620_audio_update_connector_status(struct it61620 *it61620);
 +
 +static struct it61620 *bridge_to_it61620(struct drm_bridge *bridge)
 +{
@@ -23491,8 +23729,10 @@ index 0000000000000000000000000000000000000000..4ad11876b7b18095682b098077268ae0
 +
 +	video_status = it61620_hdmi_reg_read(it61620, TX_REG_V_STS);
 +
-+	if (video_status & B_TMDS_STABLE)
++	if (video_status & B_TMDS_STABLE) {
 +		it61620_start_hdcp_work(it61620);
++		it61620_start_plugged_cb_work(it61620);
++	}
 +}
 +
 +static bool it61620_test_bit(unsigned int bit, const unsigned int *addr)
@@ -24388,6 +24628,24 @@ index 0000000000000000000000000000000000000000..4ad11876b7b18095682b098077268ae0
 +	}
 +}
 +
++static void it61620_plugged_cb_work(struct work_struct *work)
++{
++	struct it61620 *it61620 = container_of(work, struct it61620,
++					       plugged_cb_work.work);
++	it61620_audio_update_connector_status(it61620);
++}
++
++static void it61620_start_plugged_cb_work(struct it61620 *it61620)
++{
++	queue_delayed_work(system_wq, &it61620->plugged_cb_work,
++			   msecs_to_jiffies(1200));
++}
++
++static void it61620_stop_plugged_cb_work(struct it61620 *it61620)
++{
++	cancel_delayed_work_sync(&it61620->plugged_cb_work);
++}
++
 +static void it61620_hdcp_work(struct work_struct *work)
 +{
 +	struct it61620 *it61620 = container_of(work, struct it61620,
@@ -24698,7 +24956,6 @@ index 0000000000000000000000000000000000000000..4ad11876b7b18095682b098077268ae0
 +			!hpd, hpd);
 +
 +		it61620->connector_status = status;
-+		it61620_audio_update_connector_status(it61620);
 +		if (hpd) {
 +			drm_dbg(drm, "HPD_GPIO get to wake up");
 +			ret = pm_runtime_get_sync(dev);
@@ -24707,6 +24964,8 @@ index 0000000000000000000000000000000000000000..4ad11876b7b18095682b098077268ae0
 +					"pm_runtime_get_sync error %d", ret);
 +		} else {
 +			drm_dbg(drm, "HPD_GPIO put to sleep");
++			it61620_audio_update_connector_status(it61620);
++			it61620_stop_plugged_cb_work(it61620);
 +			pm_runtime_put_sync(dev);
 +		}
 +
@@ -24886,6 +25145,7 @@ index 0000000000000000000000000000000000000000..4ad11876b7b18095682b098077268ae0
 +	}
 +
 +	INIT_DELAYED_WORK(&it61620->hdcp_work, it61620_hdcp_work);
++	INIT_DELAYED_WORK(&it61620->plugged_cb_work, it61620_plugged_cb_work);
 +	init_waitqueue_head(&it61620->wq);
 +
 +	mutex_init(&it61620->ddc_lock);
@@ -25455,7 +25715,7 @@ index bc85158ea56c3e3ad9db56e7fc17620e084158ef..6b46aa996d242911c04a8bcc7b175fd7
  #define REG_360C_AUX_TX_P0									(0x360c)
  #define REG_3614_AUX_TX_P0									(0x3614)
 diff --git a/drivers/gpu/drm/mediatek/mtk_dp_v2.c b/drivers/gpu/drm/mediatek/mtk_dp_v2.c
-index 66f4743dd2708fd7f9f5610063abf8d964c124fe..6e79d32f0b470f2b00dc421c671eaff7d61c3273 100644
+index 66f4743dd2708fd7f9f5610063abf8d964c124fe..19b852b0b6261a44513fca96728d6c702e66cdc7 100644
 --- a/drivers/gpu/drm/mediatek/mtk_dp_v2.c
 +++ b/drivers/gpu/drm/mediatek/mtk_dp_v2.c
 @@ -57,9 +57,14 @@
@@ -25515,8 +25775,8 @@ index 66f4743dd2708fd7f9f5610063abf8d964c124fe..6e79d32f0b470f2b00dc421c671eaff7
 +
 +	PHY_WRITE_4BYTE(mtk_dp,
 +			mtk_dp->data->phyd_dig_glb_offset
-+			 + DP_PHY_DIG_GLB_DA_REG_00,
-+			 mtk_dp->data->patch_phy_settings[2]);
++			+ DP_PHY_DIG_GLB_DA_REG_00,
++			mtk_dp->data->patch_phy_settings[2]);
 +	PHY_WRITE_4BYTE(mtk_dp,
 +			mtk_dp->data->phyd_dig_glb_offset
 +			+ DP_PHY_DIG_GLB_DA_REG_01,
@@ -25907,13 +26167,10 @@ index 66f4743dd2708fd7f9f5610063abf8d964c124fe..6e79d32f0b470f2b00dc421c671eaff7
  
  	mtk_dp = devm_kzalloc(dev, sizeof(*mtk_dp), GFP_KERNEL);
  	if (!mtk_dp)
-@@ -6256,6 +6600,24 @@ static int mtk_drm_dp_probe_v2(struct platform_device *pdev)
+@@ -6256,6 +6600,21 @@ static int mtk_drm_dp_probe_v2(struct platform_device *pdev)
  
  	atomic_set(&mtk_dp->refcount, 0);
  
-+	mtk_dp->cts_req.aux = &mtk_dp->aux;
-+	mtk_dp->cts_req.regs = mtk_dp->regs;
-+
 +	check_2c_feature = mtk_dp_typec_register_switches(dev, mtk_dp);
 +	if (check_2c_feature) {
 +		if (check_2c_feature != -ENODEV)
@@ -25932,7 +26189,7 @@ index 66f4743dd2708fd7f9f5610063abf8d964c124fe..6e79d32f0b470f2b00dc421c671eaff7
  	return ret;
  }
  
-@@ -6317,10 +6679,40 @@ static const struct mtk_dp_data mt8196_dp_data = {
+@@ -6317,10 +6676,38 @@ static const struct mtk_dp_data mt8196_dp_data = {
  	.phy_flip_ctrl_bit = BIT(18),
  };
  
@@ -25942,8 +26199,6 @@ index 66f4743dd2708fd7f9f5610063abf8d964c124fe..6e79d32f0b470f2b00dc421c671eaff7
 +	.efuse_fmt = mt8196_dp_efuse_fmt,
 +	.audio_supported = true,
 +	.audio_m_div2_bit = 0,
-+	.dsc_support = false,
-+	.mst_support = false,   /* Temporarily disable the MST feature */
 +	.max_hdisplay = 3840,
 +	.max_vdisplay = 2160,
 +	.min_hdisplay = 800,
@@ -32014,62 +32269,6 @@ index 73aed6c2d3a05610d52d8f559abaf453e764315c..20350e1ed182a4b33448789bd0324f44
  	msdc_gate_clock(host);
  	return 0;
  }
-diff --git a/drivers/pci/controller/pcie-mediatek-gen3.c b/drivers/pci/controller/pcie-mediatek-gen3.c
-index 49878abbd20db589d354836e71e211710a7deaa0..1ad0dbe86d20be95348e23739cc5580e27391137 100644
---- a/drivers/pci/controller/pcie-mediatek-gen3.c
-+++ b/drivers/pci/controller/pcie-mediatek-gen3.c
-@@ -33,6 +33,9 @@
- 
- #include "../pci.h"
- 
-+#define PCIE_SW_MAC_CTR_1		0x74
-+#define BYPASS_SYS_CLK_RDY_RLOCK	BIT(13)
-+
- #define PCIE_SETTING_REG		0x80
- #define PCIE_PCI_IDS_1			0x9c
- #define PCI_CLASS(class)		(class << 8)
-@@ -85,6 +88,7 @@
- 
- #define PCIE_LOW_POWER_CTRL_REG		0x194
- #define PCIE_FORCE_DIS_L0S		BIT(8)
-+#define PCIE_FORCE_DIS_L1		BIT(9)
- 
- #define PCIE_AXI_IF_CTRL_REG		0x1a8
- #define PCIE_AXI0_SLV_RESP_MASK		BIT(12)
-@@ -1449,10 +1453,33 @@ static const struct mtk_gen3_pcie_pdata mtk_pcie_soc_en7581 = {
- 	},
- };
- 
-+static int mtk_pcie_mt8189_pre_init(struct mtk_gen3_pcie *pcie)
-+{
-+	u32 val;
-+
-+	/* Bypass SYS_CLK_RDY, just a workaround solution */
-+	val = readl_relaxed(pcie->base + PCIE_SW_MAC_CTR_1);
-+	val |= BYPASS_SYS_CLK_RDY_RLOCK;
-+	writel_relaxed(val, pcie->base + PCIE_SW_MAC_CTR_1);
-+
-+	/* Disable PCIe L0s and L1 since SPM driver not ready yet */
-+	val = readl_relaxed(pcie->base + PCIE_LOW_POWER_CTRL_REG);
-+	val |= PCIE_FORCE_DIS_L1 | PCIE_FORCE_DIS_L0S;
-+	writel_relaxed(val, pcie->base + PCIE_LOW_POWER_CTRL_REG);
-+
-+	return 0;
-+}
-+
-+static const struct mtk_gen3_pcie_pdata mtk_pcie_soc_mt8189 = {
-+	.power_up = mtk_pcie_power_up,
-+	.pre_init = mtk_pcie_mt8189_pre_init,
-+};
-+
- static const struct of_device_id mtk_pcie_of_match[] = {
- 	{ .compatible = "airoha,en7581-pcie", .data = &mtk_pcie_soc_en7581 },
- 	{ .compatible = "mediatek,mt8192-pcie", .data = &mtk_pcie_soc_mt8192 },
- 	{ .compatible = "mediatek,mt8196-pcie", .data = &mtk_pcie_soc_mt8196 },
-+	{ .compatible = "mediatek,mt8189-pcie", .data = &mtk_pcie_soc_mt8189 },
- 	{},
- };
- MODULE_DEVICE_TABLE(of, mtk_pcie_of_match);
 diff --git a/drivers/phy/mediatek/phy-mtk-edp.c b/drivers/phy/mediatek/phy-mtk-edp.c
 index 06885649471b9eb51f0998d99a3e1c4c10bce380..4c140fcee4a31329cc3c60f83606c249bf80446b 100644
 --- a/drivers/phy/mediatek/phy-mtk-edp.c
@@ -36207,7 +36406,7 @@ index 0000000000000000000000000000000000000000..f5d2b134d82b03ab1e38323b0d6dc3eb
 +
 +#endif /* __PMDOMAIN_MEDIATEK_MT8189_SCPSYS_H */
 diff --git a/drivers/pmdomain/mediatek/mtk-scpsys.c b/drivers/pmdomain/mediatek/mtk-scpsys.c
-index 6968d97f473b5cffd788d23587b0921656029295..450118053ea923cd37866c05b7412a88de51551d 100644
+index 6968d97f473b5cffd788d23587b0921656029295..8a55071c191c1519933c7e3f520c66784e63bebe 100644
 --- a/drivers/pmdomain/mediatek/mtk-scpsys.c
 +++ b/drivers/pmdomain/mediatek/mtk-scpsys.c
 @@ -13,6 +13,7 @@
@@ -36350,7 +36549,7 @@ index 6968d97f473b5cffd788d23587b0921656029295..450118053ea923cd37866c05b7412a88
  	int ret, tmp;
  
 +	if (MTK_SCPD_CAPS(scpd, MTK_SCPD_BYPASS_OFF)) {
-+		dev_dbg(scp->dev, "bypass power off %s for bringup\n", genpd->name);
++		dev_err(scp->dev, "bypass power off %s for bringup\n", genpd->name);
 +		return 0;
 +	}
 +
