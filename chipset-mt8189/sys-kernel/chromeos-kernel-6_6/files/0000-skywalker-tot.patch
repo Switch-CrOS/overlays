@@ -43670,6 +43670,20 @@ index 4eaa53d7270ad5824ddd75c4ea6c3524eba22490..774fd958be9d7d0b1f37058ed022d1a8
 +#define MT8192_POWER_DOMAIN_NR		21
  
  #endif /* _DT_BINDINGS_POWER_MT8192_POWER_H */
+diff --git a/include/linux/fortify-string.h b/include/linux/fortify-string.h
+index f7e1895367fa1da4dab3775966c1e68346bb2178..1b165ab8874f83b374b414ea28ce697f24fdd761 100644
+--- a/include/linux/fortify-string.h
++++ b/include/linux/fortify-string.h
+@@ -104,7 +104,8 @@ extern char *__underlying_strncpy(char *p, const char *q, __kernel_size_t size)
+  * size, rather than struct size), but there remain some stragglers using
+  * type 0 that will be converted in the future.
+  */
+-#if __has_builtin(__builtin_dynamic_object_size)
++/* CHROMIUM HACK(b/425235875): Revert this after the SDK fix is rolled out. */
++#if 0
+ #define POS			__pass_dynamic_object_size(1)
+ #define POS0			__pass_dynamic_object_size(0)
+ #define __struct_size(p)	__builtin_dynamic_object_size(p, 0)
 diff --git a/include/linux/mfd/mt6397/rtc.h b/include/linux/mfd/mt6397/rtc.h
 index 068ae1c0f0e8e9a43c11309b44f11b41d15cfe50..b512e10083a1034d9a1aa9bda96d7fcbdfd76f29 100644
 --- a/include/linux/mfd/mt6397/rtc.h
