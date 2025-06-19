@@ -4,7 +4,7 @@
 #
 EAPI=7
 
-inherit udev
+inherit arc-build-constants udev
 
 DESCRIPTION="Ebuild which pulls in any necessary ebuilds as dependencies
 or portage actions."
@@ -15,7 +15,7 @@ LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="-* arm64 arm"
 S="${WORKDIR}"
-IUSE=""
+IUSE="cheets"
 
 #Add dependencies on other ebuilds from within this board overlay
 DEPEND="
@@ -36,4 +36,12 @@ src_install() {
 
 	# skywalker-specific upstart job to accommodate MCDI init delay
 	doins "${FILESDIR}/mcdi-init-wait.conf"
+
+	# Install cpuset adjustments.
+	if use cheets; then
+		arc-build-constants-configure
+
+		insinto "${ARC_PREFIX:?}/vendor/etc/init"
+		doins "${FILESDIR}/init.cpusets.rc"
+	fi
 }
