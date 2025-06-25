@@ -3,7 +3,11 @@
 
 EAPI=7
 
-inherit cros-binary modem-fw-dlc
+inherit cros-binary cros-workon modem-fw-dlc
+# This ebuild only cares about its own FILESDIR and ebuild file, so it tracks
+# the canonical empty project.
+CROS_WORKON_PROJECT="chromiumos/infra/build/empty-project"
+CROS_WORKON_LOCALNAME="platform/empty-project"
 
 DESCRIPTION="DLC containing the modem firmware for rex_fm350."
 HOMEPAGE="http://src.chromium.org"
@@ -17,13 +21,17 @@ SRC_URI="
 	"
 
 SLOT="0"
-KEYWORDS="*"
+KEYWORDS="~*"
 LICENSE="BSD-Google" #TODO(b/203807072): Change once Fibocom provides a license
 
-S="${WORKDIR}"
 
 # For modem FWs, this value should never increase. See modem-fw-dlc.eclass.
 MODEM_FW_DLC_PREALLOC_SIZE_MB="${MODEM_FW_DLC_FM350_DEFAULT_SIZE_3FW}"
+
+src_unpack() {
+	cros-workon_src_unpack
+	default
+}
 
 src_install() {
 	modem_fw_dlc_src_install
