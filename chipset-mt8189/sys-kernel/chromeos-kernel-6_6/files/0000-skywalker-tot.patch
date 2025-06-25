@@ -32405,7 +32405,7 @@ index 0000000000000000000000000000000000000000..f5d2b134d82b03ab1e38323b0d6dc3eb
 +
 +#endif /* __PMDOMAIN_MEDIATEK_MT8189_SCPSYS_H */
 diff --git a/drivers/pmdomain/mediatek/mtk-scpsys.c b/drivers/pmdomain/mediatek/mtk-scpsys.c
-index 6968d97f473b5cffd788d23587b0921656029295..8a55071c191c1519933c7e3f520c66784e63bebe 100644
+index 6968d97f473b5cffd788d23587b0921656029295..450118053ea923cd37866c05b7412a88de51551d 100644
 --- a/drivers/pmdomain/mediatek/mtk-scpsys.c
 +++ b/drivers/pmdomain/mediatek/mtk-scpsys.c
 @@ -13,6 +13,7 @@
@@ -32548,7 +32548,7 @@ index 6968d97f473b5cffd788d23587b0921656029295..8a55071c191c1519933c7e3f520c6678
  	int ret, tmp;
  
 +	if (MTK_SCPD_CAPS(scpd, MTK_SCPD_BYPASS_OFF)) {
-+		dev_err(scp->dev, "bypass power off %s for bringup\n", genpd->name);
++		dev_dbg(scp->dev, "bypass power off %s for bringup\n", genpd->name);
 +		return 0;
 +	}
 +
@@ -39875,10 +39875,10 @@ index 0000000000000000000000000000000000000000..51d86f3b208ea7a7602956c00748f6ec
 +obj-$(CONFIG_SND_SOC_MT8189_NAU8825) += mt8189-nau8825.o
 diff --git a/sound/soc/mediatek/mt8189/mt8189-afe-clk.c b/sound/soc/mediatek/mt8189/mt8189-afe-clk.c
 new file mode 100644
-index 0000000000000000000000000000000000000000..50409b603f74b38102685e76488fefce442a45b8
+index 0000000000000000000000000000000000000000..689384efdcab81aea93c412c10a1bbe3228e938f
 --- /dev/null
 +++ b/sound/soc/mediatek/mt8189/mt8189-afe-clk.c
-@@ -0,0 +1,757 @@
+@@ -0,0 +1,755 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
 + *  mt8189-afe-clk.c  --  Mediatek 8189 afe clock ctrl
@@ -40478,8 +40478,6 @@ index 0000000000000000000000000000000000000000..50409b603f74b38102685e76488fefce
 +		dev_err(afe->dev, "invalid div_clk_id %d\n", div_clk_id);
 +		return -EINVAL;
 +	}
-+	if (div_clk_id == MT8189_CLK_TOP_APLL12_DIV_TDMOUT_B)
-+		rate = rate * 16;
 +
 +	ret = mt8189_afe_enable_clk(afe, afe_priv->clk[div_clk_id]);
 +	if (ret)
@@ -47310,10 +47308,10 @@ index 0000000000000000000000000000000000000000..c8a7b3f5162acf2ea9c69f183dd8985a
 +}
 diff --git a/sound/soc/mediatek/mt8189/mt8189-dai-tdm.c b/sound/soc/mediatek/mt8189/mt8189-dai-tdm.c
 new file mode 100644
-index 0000000000000000000000000000000000000000..4c75c1e5ab3ad3d4e11bdbef3ffca7ecdcb681f6
+index 0000000000000000000000000000000000000000..d6199a7645152ebadd93d8c5c6617420a1d8ef8a
 --- /dev/null
 +++ b/sound/soc/mediatek/mt8189/mt8189-dai-tdm.c
-@@ -0,0 +1,829 @@
+@@ -0,0 +1,830 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
 + *  MediaTek ALSA SoC Audio DAI TDM Control
@@ -47832,6 +47830,7 @@ index 0000000000000000000000000000000000000000..4c75c1e5ab3ad3d4e11bdbef3ffca7ec
 +
 +	{"TDM_DPTX", NULL, "DPTX_OUT_MUX"},
 +	{"TDM_DPTX", NULL, "TDM_DPTX_BCK"},
++	{"TDM_DPTX", NULL, "TDM_CG"},
 +
 +	{"TDM_BCK", NULL, "TDM_MCK"},
 +	{"TDM_DPTX_BCK", NULL, "TDM_DPTX_MCK"},
