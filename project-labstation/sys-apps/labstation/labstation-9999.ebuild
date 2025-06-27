@@ -21,6 +21,7 @@ KEYWORDS="~*"
 RDEPEND="sys-power/uhubctl
 	dev-util/dolos
 	app-misc/cambronix-firmware
+	app-misc/bols_labstation
 "
 
 DEPEND="${RDEPEND}
