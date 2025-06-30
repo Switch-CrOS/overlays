@@ -29,8 +29,4 @@ modify_kernel_command_line() {
 
   # Disable framebuffer compression
   echo "i915.enable_fbc=0" >> "$1"
-
-  # Set ECC parity data size to 16 bytes.
-  # See b/413292019 and go/cros-ecc-rollout for more details.
-  echo "chromeos_pstore.ecc_size=16" >> "$1"
 }
