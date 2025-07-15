@@ -31,6 +31,9 @@ LICENSE="GPL-2 LGPL-2.1 BSD-Fibocom Apache-2.0 openssl"
 # For modem FWs, this value should never increase. See modem-fw-dlc.eclass.
 MODEM_FW_DLC_PREALLOC_SIZE_MB="${MODEM_FW_DLC_FM101_DEFAULT_SIZE_3FW}"
 
+#Set the firmware-variants using this DLC.
+MODEM_FW_DLC_FIRMWARE_VARIANT="rex_fm101"
+
 src_unpack() {
 	cros-workon_src_unpack
 	# Because we are not pulling in any sources, we need to have an empty
