@@ -2769,10 +2769,10 @@ index 0000000000000000000000000000000000000000..77b259b4a0e19fabcf52790cb4e1fc47
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8189-skywalker-anakin.dtsi b/arch/arm64/boot/dts/mediatek/mt8189-skywalker-anakin.dtsi
 new file mode 100644
-index 0000000000000000000000000000000000000000..7ceb8704b9669b09774ebdf21c46f4236aa78590
+index 0000000000000000000000000000000000000000..c50ac0c2d78d239d20687f044771f748a1bcfdd3
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt8189-skywalker-anakin.dtsi
-@@ -0,0 +1,451 @@
+@@ -0,0 +1,459 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
 +/*
 + * Copyright (C) 2025 Google Inc.
@@ -2835,9 +2835,13 @@ index 0000000000000000000000000000000000000000..7ceb8704b9669b09774ebdf21c46f423
 +	};
 +};
 +
++&hdmibrdg {
++	ivdd-supply = <&mt6359_vpa_buck_reg>;
++};
++
 +&mt6359_vpa_buck_reg {
 +	regulator-min-microvolt = <1000000>;
-+	regulator-always-on;
++	regulator-max-microvolt = <1000000>;
 +};
 +
 +&mt6359_vfe28_ldo_reg {
@@ -3154,6 +3158,10 @@ index 0000000000000000000000000000000000000000..7ceb8704b9669b09774ebdf21c46f423
 +	};
 +};
 +
++&pmic {
++	/delete-node/ mt6359codec;
++};
++
 +&sound {
 +	/delete-property/ compatible;
 +	/delete-property/ model;
@@ -3310,10 +3318,10 @@ index 0000000000000000000000000000000000000000..426abfdb15aa01c73c3abb61769517be
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8189-skywalker-obiwan.dtsi b/arch/arm64/boot/dts/mediatek/mt8189-skywalker-obiwan.dtsi
 new file mode 100644
-index 0000000000000000000000000000000000000000..1a5d104574ddf31377e8fe294977861a74d9689b
+index 0000000000000000000000000000000000000000..5c4ff3fc747db46da5e12a17b9530961064b7ce1
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt8189-skywalker-obiwan.dtsi
-@@ -0,0 +1,477 @@
+@@ -0,0 +1,483 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
 +/*
 + * Copyright (C) 2025 Google Inc.
@@ -3416,6 +3424,7 @@ index 0000000000000000000000000000000000000000..1a5d104574ddf31377e8fe294977861a
 +		reset-gpios = <&pio 126 GPIO_ACTIVE_LOW>;
 +		vcc33-supply = <&pp3300_tchscr_x>;
 +		vccio-supply = <&pp1800_tchscr_report_disable>;
++		panel = <&panel>;
 +		status = "fail-needs-probe";
 +	};
 +
@@ -3430,6 +3439,7 @@ index 0000000000000000000000000000000000000000..1a5d104574ddf31377e8fe294977861a
 +		reset-gpios = <&pio 126 GPIO_ACTIVE_LOW>;
 +		vcc33-supply = <&pp3300_tchscr_x>;
 +		vccio-supply = <&pp1800_tchscr_report_disable>;
++		panel = <&panel>;
 +		status = "fail-needs-probe";
 +	};
 +};
@@ -3714,6 +3724,10 @@ index 0000000000000000000000000000000000000000..1a5d104574ddf31377e8fe294977861a
 +			output-low;
 +		};
 +	};
++};
++
++&pmic {
++    /delete-node/ mt6359codec;
 +};
 +
 +&sound {
@@ -6023,10 +6037,10 @@ index 0000000000000000000000000000000000000000..c35d1024bbceb8049d65d5dd6d566350
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8189.dtsi b/arch/arm64/boot/dts/mediatek/mt8189.dtsi
 new file mode 100644
-index 0000000000000000000000000000000000000000..5d5c401d5220ef548d1d32f334a24cd59248a4f2
+index 0000000000000000000000000000000000000000..e5dda047c5df6cc133d8fa9b881c372acd5cec8c
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt8189.dtsi
-@@ -0,0 +1,3019 @@
+@@ -0,0 +1,2976 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
 +/*
 + * Copyright (c) 2025 MediaTek Inc.
@@ -6326,51 +6340,6 @@ index 0000000000000000000000000000000000000000..5d5c401d5220ef548d1d32f334a24cd5
 +				min-residency-us = <1890>;
 +			};
 +
-+			cpu_cluster_off_l: cpu-cluster-off-l {
-+				compatible = "arm,idle-state";
-+				arm,psci-suspend-param = <0x01010001>;
-+				local-timer-stop;
-+				entry-latency-us = <57>;
-+				exit-latency-us = <134>;
-+				min-residency-us = <5700>;
-+			};
-+
-+			cpu_cluster_off_b: cpu-cluster-off-b {
-+				compatible = "arm,idle-state";
-+				arm,psci-suspend-param = <0x01010001>;
-+				local-timer-stop;
-+				entry-latency-us = <50>;
-+				exit-latency-us = <144>;
-+				min-residency-us = <2460>;
-+			};
-+
-+			cpu_mcusys_off_l: cpu-mcusys-off-l {
-+				compatible = "arm,idle-state";
-+				arm,psci-suspend-param = <0x02010007>;
-+				local-timer-stop;
-+				entry-latency-us = <863>;
-+				exit-latency-us = <1237>;
-+				min-residency-us = <5700>;
-+			};
-+
-+			cpu_mcusys_off_b: cpu-mcusys-off-b {
-+				compatible = "arm,idle-state";
-+				arm,psci-suspend-param = <0x02010007>;
-+				local-timer-stop;
-+				entry-latency-us = <648>;
-+				exit-latency-us = <1172>;
-+				min-residency-us = <4570>;
-+			};
-+
-+			cpu_system_vcore: cpu-system-vcore {
-+				compatible = "arm,idle-state";
-+				arm,psci-suspend-param = <0x020100ff>;
-+				local-timer-stop;
-+				entry-latency-us = <2400>;
-+				exit-latency-us = <4800>;
-+				min-residency-us = <35200>;
-+			};
-+
 +			cpu_s2idle: cpu-s2idle {
 +				compatible = "arm,idle-state";
 +				arm,psci-suspend-param = <0x020180ff>;
@@ -6490,7 +6459,8 @@ index 0000000000000000000000000000000000000000..5d5c401d5220ef548d1d32f334a24cd5
 +
 +	memory: memory@40000000 {
 +		device_type = "memory";
-+		reg = <0 0x40000000 0 0xC0000000>;
++		/* This memory size is filled in by the bootloader */
++		reg = <0 0x40000000 0 0>;
 +	};
 +
 +	clk_ao: clk-ao {
@@ -7603,6 +7573,7 @@ index 0000000000000000000000000000000000000000..5d5c401d5220ef548d1d32f334a24cd5
 +			power-domain-names = "core0", "core1";
 +
 +			#cooling-cells = <2>;
++			dynamic-power-coefficient = <1427>;
 +
 +			power-model@0 {
 +				compatible = "arm,mali-simple-power-model";
@@ -8143,7 +8114,7 @@ index 0000000000000000000000000000000000000000..5d5c401d5220ef548d1d32f334a24cd5
 +					 <&vdec_core_clk CLK_VDEC_CORE_LARB_CKEN>;
 +				clock-names = "soc-vdec", "vdec";
 +				assigned-clocks = <&topckgen_clk CLK_TOP_VDEC_SEL>;
-+				assigned-clock-parents = <&topckgen_clk CLK_TOP_MAINPLL_D4>;
++				assigned-clock-parents = <&topckgen_clk CLK_TOP_UNIVPLL_D4>;
 +				power-domains = <&scpsys MT8189_POWER_DOMAIN_VDE0>;
 +				mediatek,scp = <&scp>;
 +			};
@@ -9047,7 +9018,7 @@ index 0000000000000000000000000000000000000000..5d5c401d5220ef548d1d32f334a24cd5
 +};
 +
 diff --git a/chromeos/config/chromeos/arm64/chromiumos-mediatek.flavour.config b/chromeos/config/chromeos/arm64/chromiumos-mediatek.flavour.config
-index 7676d204555469a97083ce23ce44261d3739759d..598e789a59823a29eb4d13461ace5400ceb096ca 100644
+index 96ae0751819c011c692e48406f449da0c7e91ebd..1d2a18be7acb79dd666770e535b4fbf208c8faca 100644
 --- a/chromeos/config/chromeos/arm64/chromiumos-mediatek.flavour.config
 +++ b/chromeos/config/chromeos/arm64/chromiumos-mediatek.flavour.config
 @@ -58,6 +58,8 @@ CONFIG_DMA_CMA=y
@@ -9091,7 +9062,7 @@ index 7676d204555469a97083ce23ce44261d3739759d..598e789a59823a29eb4d13461ace5400
  CONFIG_PL330_DMA=y
  # CONFIG_PTP_1588_CLOCK is not set
  CONFIG_PWM_MTK_DISP=y
-@@ -193,6 +199,8 @@ CONFIG_SND_SOC_MT8195=y
+@@ -197,6 +203,8 @@ CONFIG_SND_SOC_MT8195=y
  CONFIG_SND_SOC_MT8195_MT6359=y
  CONFIG_SND_SOC_MT8196=y
  CONFIG_SND_SOC_MT8196_MT6681=m
@@ -9100,7 +9071,7 @@ index 7676d204555469a97083ce23ce44261d3739759d..598e789a59823a29eb4d13461ace5400
  CONFIG_SND_SOC_SOF_MT8186=m
  CONFIG_SND_SOC_SOF_MT8195=m
  CONFIG_SND_SOC_SOF_MT8196=m
-@@ -200,6 +208,8 @@ CONFIG_SND_SOC_SOF_MTK_TOPLEVEL=y
+@@ -204,6 +212,8 @@ CONFIG_SND_SOC_SOF_MTK_TOPLEVEL=y
  CONFIG_SND_SOC_SOF_OF=y
  CONFIG_SND_SOC_SOF_TOPLEVEL=y
  CONFIG_SND_SOC_TAS2781_I2C=y
@@ -9109,7 +9080,7 @@ index 7676d204555469a97083ce23ce44261d3739759d..598e789a59823a29eb4d13461ace5400
  CONFIG_SPI_GPIO=y
  CONFIG_SPI_MT65XX=y
  CONFIG_SPI_MTK_NOR=y
-@@ -216,6 +226,7 @@ CONFIG_THERMAL_GOV_STEP_WISE=y
+@@ -220,6 +230,7 @@ CONFIG_THERMAL_GOV_STEP_WISE=y
  CONFIG_TMPFS=y
  CONFIG_TOUCHSCREEN_MELFAS_MIP4=y
  CONFIG_TYPEC=y
@@ -9117,7 +9088,7 @@ index 7676d204555469a97083ce23ce44261d3739759d..598e789a59823a29eb4d13461ace5400
  CONFIG_TYPEC_UCSI=y
  CONFIG_USB_LINK_LAYER_TEST=m
  CONFIG_USB_MTU3=y
-@@ -225,12 +236,15 @@ CONFIG_VIDEO_GC5035=m
+@@ -229,12 +240,15 @@ CONFIG_VIDEO_GC5035=m
  CONFIG_VIDEO_MEDIATEK_FD=m
  CONFIG_VIDEO_MEDIATEK_ISP_DIP=m
  CONFIG_VIDEO_MEDIATEK_ISP_PASS1=m
@@ -24096,6 +24067,138 @@ index 0000000000000000000000000000000000000000..e8ac60a6e3ffe26639a2bfa912f48e0a
 +MODULE_AUTHOR("Hermes Wu <Hermes.Wu@ite.com.tw>");
 +MODULE_DESCRIPTION("it61620 mipi to hdmi driver");
 +MODULE_LICENSE("GPL v2");
+diff --git a/drivers/gpu/drm/drm_panel.c b/drivers/gpu/drm/drm_panel.c
+index 930318215a458acbea6942475610f4950c2f6173..0bdfe2d9f6394814d6e9cede8a498b2ca0529e88 100644
+--- a/drivers/gpu/drm/drm_panel.c
++++ b/drivers/gpu/drm/drm_panel.c
+@@ -132,6 +132,9 @@ int drm_panel_prepare(struct drm_panel *panel)
+ 	panel->prepared = true;
+ 
+ 	list_for_each_entry(follower, &panel->followers, list) {
++		if (follower->after_panel_enabled)
++			continue;
++
+ 		ret = follower->funcs->panel_prepared(follower);
+ 		if (ret < 0)
+ 			dev_info(panel->dev, "%ps failed: %d\n",
+@@ -173,6 +176,9 @@ int drm_panel_unprepare(struct drm_panel *panel)
+ 	mutex_lock(&panel->follower_lock);
+ 
+ 	list_for_each_entry(follower, &panel->followers, list) {
++		if (follower->after_panel_enabled)
++			continue;
++
+ 		ret = follower->funcs->panel_unpreparing(follower);
+ 		if (ret < 0)
+ 			dev_info(panel->dev, "%ps failed: %d\n",
+@@ -206,6 +212,7 @@ EXPORT_SYMBOL(drm_panel_unprepare);
+  */
+ int drm_panel_enable(struct drm_panel *panel)
+ {
++	struct drm_panel_follower *follower;
+ 	int ret;
+ 
+ 	if (!panel)
+@@ -216,10 +223,12 @@ int drm_panel_enable(struct drm_panel *panel)
+ 		return 0;
+ 	}
+ 
++	mutex_lock(&panel->follower_lock);
++
+ 	if (panel->funcs && panel->funcs->enable) {
+ 		ret = panel->funcs->enable(panel);
+ 		if (ret < 0)
+-			return ret;
++			goto exit;
+ 	}
+ 	panel->enabled = true;
+ 
+@@ -228,6 +237,20 @@ int drm_panel_enable(struct drm_panel *panel)
+ 		DRM_DEV_INFO(panel->dev, "failed to enable backlight: %d\n",
+ 			     ret);
+ 
++	list_for_each_entry(follower, &panel->followers, list) {
++		if (!follower->after_panel_enabled)
++			continue;
++
++		ret = follower->funcs->panel_prepared(follower);
++		if (ret < 0)
++			dev_info(panel->dev, "%ps failed: %d\n",
++				 follower->funcs->panel_prepared, ret);
++	}
++
++	ret = 0;
++exit:
++	mutex_unlock(&panel->follower_lock);
++
+ 	return 0;
+ }
+ EXPORT_SYMBOL(drm_panel_enable);
+@@ -244,6 +267,7 @@ EXPORT_SYMBOL(drm_panel_enable);
+  */
+ int drm_panel_disable(struct drm_panel *panel)
+ {
++	struct drm_panel_follower *follower;
+ 	int ret;
+ 
+ 	if (!panel)
+@@ -254,6 +278,18 @@ int drm_panel_disable(struct drm_panel *panel)
+ 		return 0;
+ 	}
+ 
++	mutex_lock(&panel->follower_lock);
++
++	list_for_each_entry(follower, &panel->followers, list) {
++		if (!follower->after_panel_enabled)
++			continue;
++
++		ret = follower->funcs->panel_unpreparing(follower);
++		if (ret < 0)
++			dev_info(panel->dev, "%ps failed: %d\n",
++				 follower->funcs->panel_unpreparing, ret);
++	}
++
+ 	ret = backlight_disable(panel->backlight);
+ 	if (ret < 0)
+ 		DRM_DEV_INFO(panel->dev, "failed to disable backlight: %d\n",
+@@ -262,11 +298,15 @@ int drm_panel_disable(struct drm_panel *panel)
+ 	if (panel->funcs && panel->funcs->disable) {
+ 		ret = panel->funcs->disable(panel);
+ 		if (ret < 0)
+-			return ret;
++			goto exit;
+ 	}
+ 	panel->enabled = false;
+ 
+-	return 0;
++	ret = 0;
++exit:
++	mutex_unlock(&panel->follower_lock);
++
++	return ret;
+ }
+ EXPORT_SYMBOL(drm_panel_disable);
+ 
+@@ -563,7 +603,8 @@ int drm_panel_add_follower(struct device *follower_dev,
+ 	mutex_lock(&panel->follower_lock);
+ 
+ 	list_add_tail(&follower->list, &panel->followers);
+-	if (panel->prepared) {
++	if ((panel->prepared && !follower->after_panel_enabled) ||
++	    (panel->enabled && follower->after_panel_enabled)) {
+ 		ret = follower->funcs->panel_prepared(follower);
+ 		if (ret < 0)
+ 			dev_info(panel->dev, "%ps failed: %d\n",
+@@ -592,7 +633,8 @@ void drm_panel_remove_follower(struct drm_panel_follower *follower)
+ 
+ 	mutex_lock(&panel->follower_lock);
+ 
+-	if (panel->prepared) {
++	if ((panel->prepared && !follower->after_panel_enabled) ||
++	    (panel->enabled && follower->after_panel_enabled)) {
+ 		ret = follower->funcs->panel_unpreparing(follower);
+ 		if (ret < 0)
+ 			dev_info(panel->dev, "%ps failed: %d\n",
 diff --git a/drivers/gpu/drm/mediatek/Makefile b/drivers/gpu/drm/mediatek/Makefile
 index 33959de4a3e428bb37af1e44b44cbec08a408ef5..a1427ca0750b258a8d6719892c39fbbef64e1922 100644
 --- a/drivers/gpu/drm/mediatek/Makefile
@@ -24427,11 +24530,14 @@ index 9fbbbbd52851b0f7eb495e907fe09ed5c21d0c68..884fc9536759e7913d5229c848068475
  };
  MODULE_DEVICE_TABLE(of, mtk_dp_of_match);
 diff --git a/drivers/gpu/drm/mediatek/mtk_dp_common.h b/drivers/gpu/drm/mediatek/mtk_dp_common.h
-index 266060fb558a11c977b5b5b8232c3bc1ad99c383..f356898d82afe7e6fa99a365051a07cbdf7f0de8 100644
+index 266060fb558a11c977b5b5b8232c3bc1ad99c383..d1659709df234383a20828ebcbd46dd18ad4ef8a 100644
 --- a/drivers/gpu/drm/mediatek/mtk_dp_common.h
 +++ b/drivers/gpu/drm/mediatek/mtk_dp_common.h
-@@ -269,11 +269,13 @@ struct mtk_dp_data {
+@@ -267,13 +267,16 @@ struct mtk_dp_data {
+ 	bool mst_support;
+ 	u16 max_hdisplay;
  	u16 max_vdisplay;
++	u16 max_fps_at_max_resolution;
  	u16 min_hdisplay;
  	u16 min_vdisplay;
 -	void (*mac_power)(struct mtk_dp *mtk_dp);
@@ -24446,7 +24552,7 @@ index 266060fb558a11c977b5b5b8232c3bc1ad99c383..f356898d82afe7e6fa99a365051a07cb
  	u8 max_link_rate;
  	u8 max_lane_count;
  	u8 encoder_num;
-@@ -351,6 +353,7 @@ struct dp_training_info {
+@@ -351,6 +354,7 @@ struct dp_training_info {
  	u8 dpcd_rev;
  	u8 sink_count;
  	u8 check_cap_times;
@@ -24454,7 +24560,7 @@ index 266060fb558a11c977b5b5b8232c3bc1ad99c383..f356898d82afe7e6fa99a365051a07cb
  };
  
  struct dp_phy_parameter {
-@@ -382,6 +385,93 @@ struct mtk_dp_bridge {
+@@ -382,6 +386,93 @@ struct mtk_dp_bridge {
  	enum dp_encoder_id encoder_id;
  };
  
@@ -24548,7 +24654,7 @@ index 266060fb558a11c977b5b5b8232c3bc1ad99c383..f356898d82afe7e6fa99a365051a07cb
  struct mtk_dp {
  	struct device *dev;
  	struct drm_device *drm_dev;
-@@ -432,6 +522,7 @@ struct mtk_dp {
+@@ -432,6 +523,7 @@ struct mtk_dp {
  	struct dp_phy_parameter phy_params[DP_PHY_LEVEL_COUNT];
  
  	bool swap_enable;
@@ -24556,7 +24662,7 @@ index 266060fb558a11c977b5b5b8232c3bc1ad99c383..f356898d82afe7e6fa99a365051a07cb
  	bool need_debounce;
  
  	bool init_property;
-@@ -455,5 +546,9 @@ struct mtk_dp {
+@@ -455,5 +547,9 @@ struct mtk_dp {
  	struct device *vdisp_ao_dev;
  	/* protect the plugged_cb as it's used in both bridge ops and audio */
  	struct mutex update_plugged_status_lock;
@@ -24658,7 +24764,7 @@ index 1f65c4f6e8ccf9399827b5f47a74eecd0d7bf5ce..1e1e2696f951cf1cfc2ef3e3a51b1b8c
  #define REG_360C_AUX_TX_P0									(0x360c)
  #define REG_3614_AUX_TX_P0									(0x3614)
 diff --git a/drivers/gpu/drm/mediatek/mtk_dp_v2.c b/drivers/gpu/drm/mediatek/mtk_dp_v2.c
-index e1d9890933ba4dda0383b33cfcddba6e85c526bc..3cb27c21ddc18d85145dd0fe6e6896701c90c93d 100644
+index f8ca71a76a85dd9fe74ae71ca82554b5412eae40..7c47b7ee1d2fc1358d3e0d483a98ed1242a46f9a 100644
 --- a/drivers/gpu/drm/mediatek/mtk_dp_v2.c
 +++ b/drivers/gpu/drm/mediatek/mtk_dp_v2.c
 @@ -103,6 +103,10 @@
@@ -24761,21 +24867,29 @@ index e1d9890933ba4dda0383b33cfcddba6e85c526bc..3cb27c21ddc18d85145dd0fe6e689670
  		mtk_dp_phy_flip_enable_v2(mtk_dp);
  	else
  		mtk_dp_phy_flip_disable_v2(mtk_dp);
-@@ -4441,10 +4500,11 @@ static int mtk_dp_bridge_atomic_check_v2(struct drm_bridge *bridge,
- 		mtk_dp->info[id].depth = DP_COLOR_DEPTH_8BIT;
- 		mtk_dp_dsc_check_prepare_v2(mtk_dp, id);
- 		mtk_dp->prop_dsc_enable[id]->values[0] = 1;
--	} else {
--		mtk_dp->prop_dsc_enable[id]->values[0] = 0;
- 	}
+@@ -4358,11 +4417,21 @@ static enum drm_mode_status mtk_dp_check_mode_v2(struct mtk_dp *mtk_dp,
+ 	int pixel_clock;
+ 	u8 color_bpp;
+ 	enum drm_mode_status ret = MODE_CLOCK_HIGH;
++	bool exceeds_max_fps, is_max_hdisplay, is_max_vdisplay;
  
-+	if (mtk_dp->prop_dsc_enable[id])
-+		mtk_dp->prop_dsc_enable[id]->values[0] = mtk_dp->dsc_enable[id] ? 1 : 0;
+ 	if ((mtk_dp->data->max_hdisplay != 0 && mode->hdisplay > mtk_dp->data->max_hdisplay) ||
+ 		(mtk_dp->data->max_vdisplay != 0 && mode->vdisplay > mtk_dp->data->max_vdisplay))
+ 		return MODE_BAD;
+ 
++	is_max_hdisplay = (mtk_dp->data->max_hdisplay != 0 &&
++			   mode->hdisplay == mtk_dp->data->max_hdisplay);
++	is_max_vdisplay = (mtk_dp->data->max_vdisplay != 0 &&
++			  mode->vdisplay == mtk_dp->data->max_vdisplay);
++	exceeds_max_fps = (mtk_dp->data->max_fps_at_max_resolution != 0 &&
++			   drm_mode_vrefresh(mode) > mtk_dp->data->max_fps_at_max_resolution);
++	if (is_max_hdisplay && is_max_vdisplay && exceeds_max_fps)
++		return MODE_BAD;
 +
- 	drm_dbg_kms(mtk_dp->drm_dev,
- 		    "[DPTX] bridge[%d] SST atomic check, dsc:%d, color:in[0x%04x] out[0x%04x], tt:%d %d, act:%d %d, fps:%d, clk:%d\n",
- 		    id, dsc, bridge_state->input_bus_cfg.format, bridge_state->output_bus_cfg.format,
-@@ -5071,6 +5131,21 @@ static enum dp_train_stage mtk_dp_check_training_res_v2(struct mtk_dp *mtk_dp, u
+ 	/* This is for temporarily removing the timing. */
+ 	if (mode->hdisplay < mtk_dp->data->min_hdisplay ||
+ 	    mode->vdisplay < mtk_dp->data->min_vdisplay)
+@@ -5072,6 +5141,21 @@ static enum dp_train_stage mtk_dp_check_training_res_v2(struct mtk_dp *mtk_dp, u
  	return res;
  }
  
@@ -24797,7 +24911,7 @@ index e1d9890933ba4dda0383b33cfcddba6e85c526bc..3cb27c21ddc18d85145dd0fe6e689670
  static enum dp_train_stage mtk_dp_training_flow_v2(struct mtk_dp *mtk_dp, u8 link_rate, u8 lane_count)
  {
  	u8 dpcd_buffer[0x4], dpcd_202[0x6], temp[0x6];
-@@ -5085,6 +5160,10 @@ static enum dp_train_stage mtk_dp_training_flow_v2(struct mtk_dp *mtk_dp, u8 lin
+@@ -5086,6 +5170,10 @@ static enum dp_train_stage mtk_dp_training_flow_v2(struct mtk_dp *mtk_dp, u8 lin
  	memset(dpcd_buffer, 0x0, sizeof(dpcd_buffer));
  	memset(dpcd_202, 0x0, sizeof(dpcd_202));
  
@@ -24808,7 +24922,7 @@ index e1d9890933ba4dda0383b33cfcddba6e85c526bc..3cb27c21ddc18d85145dd0fe6e689670
  	temp[0] = link_rate;
  	temp[1] = (lane_count | DP_AUX_SET_ENAHNCED_FRAME);
  	drm_dp_dpcd_write(&mtk_dp->aux, DPCD_00100, temp, 0x2);
-@@ -5330,6 +5409,21 @@ static int mtk_dp_set_training_start_v2(struct mtk_dp *mtk_dp)
+@@ -5331,6 +5419,21 @@ static int mtk_dp_set_training_start_v2(struct mtk_dp *mtk_dp)
  	return DP_RET_TRANING_FAIL;
  }
  
@@ -24830,7 +24944,7 @@ index e1d9890933ba4dda0383b33cfcddba6e85c526bc..3cb27c21ddc18d85145dd0fe6e689670
  static int mtk_dp_training_handle_v2(struct mtk_dp *mtk_dp)
  {
  	int ret = DP_RET_NOERR;
-@@ -5636,6 +5730,122 @@ static bool mtk_dp_mst_hpd_event_handler(struct mtk_dp *mtk_dp)
+@@ -5637,6 +5740,122 @@ static bool mtk_dp_mst_hpd_event_handler(struct mtk_dp *mtk_dp)
  	return true;
  }
  
@@ -24953,7 +25067,7 @@ index e1d9890933ba4dda0383b33cfcddba6e85c526bc..3cb27c21ddc18d85145dd0fe6e689670
  static void mtk_dp_check_device_service_irq_v2(struct mtk_dp *mtk_dp)
  {
  	u8 val;
-@@ -5649,8 +5859,11 @@ static void mtk_dp_check_device_service_irq_v2(struct mtk_dp *mtk_dp)
+@@ -5650,8 +5869,11 @@ static void mtk_dp_check_device_service_irq_v2(struct mtk_dp *mtk_dp)
  
  	drm_dp_dpcd_writeb(&mtk_dp->aux, DP_DEVICE_SERVICE_IRQ_VECTOR, val);
  
@@ -24967,7 +25081,7 @@ index e1d9890933ba4dda0383b33cfcddba6e85c526bc..3cb27c21ddc18d85145dd0fe6e689670
  
  	if (val & DP_CP_IRQ)
  		drm_dbg_kms(mtk_dp->drm_dev, "[DPTX] DP_CP_IRQ\n");
-@@ -5871,6 +6084,10 @@ static irqreturn_t mtk_dp_hpd_event_thread_v2(int hpd, void *dev)
+@@ -5872,6 +6094,10 @@ static irqreturn_t mtk_dp_hpd_event_thread_v2(int hpd, void *dev)
  			}
  		} else {
  			drm_dbg_kms(mtk_dp->drm_dev, "[DPTX] HPD_CON\n");
@@ -24978,7 +25092,7 @@ index e1d9890933ba4dda0383b33cfcddba6e85c526bc..3cb27c21ddc18d85145dd0fe6e689670
  			mtk_dp_init_property_v2(mtk_dp);
  			mtk_dp_initial_setting_v2(mtk_dp);
  			mtk_dp_analog_power_on_v2(mtk_dp);
-@@ -5906,6 +6123,7 @@ static irqreturn_t mtk_dp_hpd_event_thread_v2(int hpd, void *dev)
+@@ -5907,6 +6133,7 @@ static irqreturn_t mtk_dp_hpd_event_thread_v2(int hpd, void *dev)
  				return IRQ_NONE;
  		} else if (!mtk_dp_hpd_event_handler_v2(mtk_dp))
  			return IRQ_NONE;
@@ -24986,7 +25100,7 @@ index e1d9890933ba4dda0383b33cfcddba6e85c526bc..3cb27c21ddc18d85145dd0fe6e689670
  	}
  
  end:
-@@ -6068,7 +6286,7 @@ static int mtk_dp_dt_parse_pdata_v2(struct mtk_dp *mtk_dp,
+@@ -6069,7 +6296,7 @@ static int mtk_dp_dt_parse_pdata_v2(struct mtk_dp *mtk_dp,
  	return 0;
  }
  
@@ -24995,7 +25109,7 @@ index e1d9890933ba4dda0383b33cfcddba6e85c526bc..3cb27c21ddc18d85145dd0fe6e689670
  {
  	writel((readl(mtk_dp->mac_power_regs) & ~BIT(0)), mtk_dp->mac_power_regs);
  	writel((readl(mtk_dp->mac_power_regs) | BIT(4)), mtk_dp->mac_power_regs);
-@@ -6109,8 +6327,7 @@ static int mtk_dp_suspend_v2(struct device *dev)
+@@ -6110,8 +6337,7 @@ static int mtk_dp_suspend_v2(struct device *dev)
  
  	mtk_dp_disconnect_release_v2(mtk_dp);
  
@@ -25005,7 +25119,7 @@ index e1d9890933ba4dda0383b33cfcddba6e85c526bc..3cb27c21ddc18d85145dd0fe6e689670
  
  	clk_disable_unprepare(mtk_dp->pclk);
  
-@@ -6148,8 +6365,7 @@ static int mtk_dp_resume_v2(struct device *dev)
+@@ -6149,8 +6375,7 @@ static int mtk_dp_resume_v2(struct device *dev)
  		return ret;
  	}
  
@@ -25015,7 +25129,7 @@ index e1d9890933ba4dda0383b33cfcddba6e85c526bc..3cb27c21ddc18d85145dd0fe6e689670
  
  	mtk_dp_init_port_v2(mtk_dp);
  
-@@ -6306,8 +6522,7 @@ static int mtk_drm_dp_probe_v2(struct platform_device *pdev)
+@@ -6307,8 +6532,7 @@ static int mtk_drm_dp_probe_v2(struct platform_device *pdev)
  		return -ENOMEM;
  	}
  
@@ -25025,7 +25139,7 @@ index e1d9890933ba4dda0383b33cfcddba6e85c526bc..3cb27c21ddc18d85145dd0fe6e689670
  
  	mtk_dp->pclk = devm_clk_get_enabled(mtk_dp->dev, "mux_dp");
  	if (IS_ERR(mtk_dp->pclk))
-@@ -6352,6 +6567,13 @@ static int mtk_drm_dp_probe_v2(struct platform_device *pdev)
+@@ -6353,6 +6577,13 @@ static int mtk_drm_dp_probe_v2(struct platform_device *pdev)
  
  	atomic_set(&mtk_dp->refcount, 0);
  
@@ -25039,7 +25153,7 @@ index e1d9890933ba4dda0383b33cfcddba6e85c526bc..3cb27c21ddc18d85145dd0fe6e689670
  	return ret;
  }
  
-@@ -6399,8 +6621,6 @@ static const struct mtk_dp_data mt8196_dp_data = {
+@@ -6400,8 +6631,6 @@ static const struct mtk_dp_data mt8196_dp_data = {
  	.max_vdisplay = 2160,
  	.min_hdisplay = 800,
  	.min_vdisplay = 600,
@@ -25048,7 +25162,7 @@ index e1d9890933ba4dda0383b33cfcddba6e85c526bc..3cb27c21ddc18d85145dd0fe6e689670
  	.set_param = mtk_mt8196_dp_phy_set_param_v2,
  	.phyd_dig_glb_offset = 0x1000,
  	.phyd_dig_lan_offset = {0x1100, 0x1200, 0x1300, 0x1400},
-@@ -6413,10 +6633,38 @@ static const struct mtk_dp_data mt8196_dp_data = {
+@@ -6414,10 +6643,39 @@ static const struct mtk_dp_data mt8196_dp_data = {
  	.phy_flip_ctrl_bit = BIT(18),
  };
  
@@ -25060,6 +25174,7 @@ index e1d9890933ba4dda0383b33cfcddba6e85c526bc..3cb27c21ddc18d85145dd0fe6e689670
 +	.audio_m_div2_bit = 0,
 +	.max_hdisplay = 3840,
 +	.max_vdisplay = 2160,
++	.max_fps_at_max_resolution = 30,
 +	.min_hdisplay = 800,
 +	.min_vdisplay = 600,
 +	.patch_phy_settings = {0x21, 0x1000e, 0x20fff00, 0x20202, 0xa5231a, 0xdde70305},
@@ -25099,83 +25214,6 @@ index 588726da1e39c02ab393b941ead947f1cfa6d56a..071d0bae6c775145ee6ac114bab3615d
  u32 mtk_dp_read_v2(struct mtk_dp *mtk_dp, u32 offset);
  void mtk_dp_mask_v2(struct mtk_dp *mtk_dp, u32 offset, u32 val, u32 mask);
  void mtk_dp_write_byte_v2(struct mtk_dp *mtk_dp, u32 addr, u8 val, u32 mask);
-diff --git a/drivers/gpu/drm/mediatek/mtk_dpi_v2.c b/drivers/gpu/drm/mediatek/mtk_dpi_v2.c
-index 2d5bd159a6c17df5b20e4f613d5d70c48e3a42fc..6b336c3439e3b87411d1fd59971b2a6d8e87e80e 100644
---- a/drivers/gpu/drm/mediatek/mtk_dpi_v2.c
-+++ b/drivers/gpu/drm/mediatek/mtk_dpi_v2.c
-@@ -211,11 +211,11 @@ static void mtk_dpi_config_hsync_v2(struct mtk_dpi *dpi,
- 				 struct mtk_dpi_sync_param *sync)
- {
- 	mtk_dpi_mask_v2(dpi, DPI_TGEN_HWIDTH, sync->sync_width << HPW,
--		     dpi->conf->dimension_mask << HPW);
-+			dpi->conf->dimension_mask << HPW);
- 	mtk_dpi_mask_v2(dpi, DPI_TGEN_HPORCH, sync->back_porch << HBP,
--		     dpi->conf->dimension_mask << HBP);
-+			dpi->conf->dimension_mask << HBP);
- 	mtk_dpi_mask_v2(dpi, DPI_TGEN_HPORCH, sync->front_porch << HFP,
--		     dpi->conf->dimension_mask << HFP);
-+			dpi->conf->dimension_mask << HFP);
- }
- 
- static void mtk_dpi_config_vsync_v2(struct mtk_dpi *dpi,
-@@ -223,17 +223,17 @@ static void mtk_dpi_config_vsync_v2(struct mtk_dpi *dpi,
- 				 u32 width_addr, u32 porch_addr)
- {
- 	mtk_dpi_mask_v2(dpi, width_addr,
--		     sync->shift_half_line << VSYNC_HALF_LINE_SHIFT,
--		     VSYNC_HALF_LINE_MASK);
-+			sync->shift_half_line << VSYNC_HALF_LINE_SHIFT,
-+			VSYNC_HALF_LINE_MASK);
- 	mtk_dpi_mask_v2(dpi, width_addr,
--		     sync->sync_width << VSYNC_WIDTH_SHIFT,
--		     dpi->conf->dimension_mask << VSYNC_WIDTH_SHIFT);
-+			sync->sync_width << VSYNC_WIDTH_SHIFT,
-+			dpi->conf->dimension_mask << VSYNC_WIDTH_SHIFT);
- 	mtk_dpi_mask_v2(dpi, porch_addr,
--		     sync->back_porch << VSYNC_BACK_PORCH_SHIFT,
--		     dpi->conf->dimension_mask << VSYNC_BACK_PORCH_SHIFT);
-+			sync->back_porch << VSYNC_BACK_PORCH_SHIFT,
-+			dpi->conf->dimension_mask << VSYNC_BACK_PORCH_SHIFT);
- 	mtk_dpi_mask_v2(dpi, porch_addr,
--		     sync->front_porch << VSYNC_FRONT_PORCH_SHIFT,
--		     dpi->conf->dimension_mask << VSYNC_FRONT_PORCH_SHIFT);
-+			sync->front_porch << VSYNC_FRONT_PORCH_SHIFT,
-+			dpi->conf->dimension_mask << VSYNC_FRONT_PORCH_SHIFT);
- }
- 
- static void mtk_dpi_config_vsync_lodd_v2(struct mtk_dpi *dpi,
-@@ -297,9 +297,9 @@ static void mtk_dpi_config_interface_v2(struct mtk_dpi *dpi, bool inter)
- static void mtk_dpi_config_fb_size_v2(struct mtk_dpi *dpi, u32 width, u32 height)
- {
- 	mtk_dpi_mask_v2(dpi, DPI_SIZE, width << HSIZE,
--		     dpi->conf->hvsize_mask << HSIZE);
-+			dpi->conf->hvsize_mask << HSIZE);
- 	mtk_dpi_mask_v2(dpi, DPI_SIZE, height << VSIZE,
--		     dpi->conf->hvsize_mask << VSIZE);
-+			dpi->conf->hvsize_mask << VSIZE);
- }
- 
- static void mtk_dpi_config_channel_limit_v2(struct mtk_dpi *dpi)
-@@ -352,7 +352,7 @@ static void mtk_dpi_config_bit_num_v2(struct mtk_dpi *dpi,
- 		break;
- 	}
- 	mtk_dpi_mask_v2(dpi, DPI_OUTPUT_SETTING, val << OUT_BIT,
--		     OUT_BIT_MASK);
-+			OUT_BIT_MASK);
- }
- 
- static void mtk_dpi_config_yc_map_v2(struct mtk_dpi *dpi,
-@@ -414,8 +414,8 @@ static void mtk_dpi_config_channel_swap_v2(struct mtk_dpi *dpi,
- 	}
- 
- 	mtk_dpi_mask_v2(dpi, DPI_OUTPUT_SETTING,
--		     val << dpi->conf->channel_swap_shift,
--		     CH_SWAP_MASK << dpi->conf->channel_swap_shift);
-+			val << dpi->conf->channel_swap_shift,
-+			CH_SWAP_MASK << dpi->conf->channel_swap_shift);
- }
- 
- static void mtk_dpi_config_yuv422_enable_v2(struct mtk_dpi *dpi)
 diff --git a/drivers/gpu/drm/mediatek/mtk_drm_debug.c b/drivers/gpu/drm/mediatek/mtk_drm_debug.c
 new file mode 100644
 index 0000000000000000000000000000000000000000..d472de061d2ebfd7488d3218c3f2e67e4032184b
@@ -29241,7 +29279,7 @@ index 3c8099b01ed9ec8426ddb338d4ff760e35809848..830a447bb9d2ec28d0250ad76f33179d
  	{ /* sentinel */ }
  };
 diff --git a/drivers/gpu/drm/mediatek/mtk_dvo.c b/drivers/gpu/drm/mediatek/mtk_dvo.c
-index 7be2ac08923d35e4c5b80b9192bf59f1caaf4d3b..a1408c199b1167843243d4434ee4689dc1e7e138 100644
+index 8ae226102101ba279beec19615c7d375589f3675..c123593ea662ba8441f2c0a089be25c371bd262c 100644
 --- a/drivers/gpu/drm/mediatek/mtk_dvo.c
 +++ b/drivers/gpu/drm/mediatek/mtk_dvo.c
 @@ -208,6 +208,8 @@ struct mtk_dvo_conf {
@@ -29273,52 +29311,16 @@ index 7be2ac08923d35e4c5b80b9192bf59f1caaf4d3b..a1408c199b1167843243d4434ee4689d
  	mtk_dvo_mask(dvo, DVO_TGEN_V1, height << VACT,
  		     dvo->conf->hvsize_mask << VACT);
  }
-@@ -509,6 +512,44 @@ static int mtk_dvo_power_on(struct mtk_dvo *dvo)
- 	return ret;
- }
- 
-+static void mtk_dvo_config_csc_enable(struct mtk_dvo *dvo)
-+{
-+	mtk_dvo_mask(dvo, DVO_MATRIX_SET, 0x2, DVO_INT_MTX_SEL_MASK);
-+	mtk_dvo_mask(dvo, DVO_MATRIX_SET, DVO_CSC_EN, DVO_CSC_EN);
-+}
-+
-+static void mtk_dvo_config_csc_disable(struct mtk_dvo *dvo)
-+{
-+	mtk_dvo_mask(dvo, DVO_MATRIX_SET, 0, DVO_INT_MTX_SEL_MASK);
-+	mtk_dvo_mask(dvo, DVO_MATRIX_SET, 0, DVO_CSC_EN);
-+}
-+
-+static void mtk_dvo_config_yuv422_enable_v2(struct mtk_dvo *dvo)
-+{
-+	mtk_dvo_mask(dvo, DVO_YUV422_SET, DVO_YUV422_EN, DVO_YUV422_EN);
-+	mtk_dvo_mask(dvo, DVO_YUV422_SET, DVO_CRYCB_MAP, DVO_CRYCB_MAP);
-+}
-+
-+static void mtk_dvo_config_yuv422_disable_v2(struct mtk_dvo *dvo)
-+{
-+	mtk_dvo_mask(dvo, DVO_YUV422_SET, 0, DVO_YUV422_EN);
-+	mtk_dvo_mask(dvo, DVO_YUV422_SET, 0, DVO_CRYCB_MAP);
-+}
-+
-+static void mtk_dvo_config_color_format(struct mtk_dvo *dvo,
-+					enum mtk_dvo_out_color_format format)
-+{
-+	dev_dbg(dvo->dev, "Config color format:%d", format);
-+
-+	if (format == MTK_DVO_COLOR_FORMAT_YCBCR_422) {
-+		mtk_dvo_config_yuv422_enable_v2(dvo);
-+		mtk_dvo_config_csc_enable(dvo);
-+	} else {
-+		mtk_dvo_config_csc_disable(dvo);
-+		mtk_dvo_config_yuv422_disable_v2(dvo);
-+	}
-+}
-+
- static int mtk_dvo_set_display_mode(struct mtk_dvo *dvo,
- 				    struct drm_display_mode *mode)
+@@ -536,7 +539,7 @@ static void mtk_dvo_config_yuv422_disable_v2(struct mtk_dvo *dvo)
+ static void mtk_dvo_config_color_format(struct mtk_dvo *dvo,
+ 					enum mtk_dvo_out_color_format format)
  {
-@@ -551,6 +592,13 @@ static int mtk_dvo_set_display_mode(struct mtk_dvo *dvo,
+-	dev_dbg(dvo->dev, "[DPTX] format:%d", format);
++	dev_dbg(dvo->dev, "Config color format:%d", format);
+ 
+ 	if (format == MTK_DVO_COLOR_FORMAT_YCBCR_422) {
+ 		mtk_dvo_config_yuv422_enable_v2(dvo);
+@@ -589,6 +592,13 @@ static int mtk_dvo_set_display_mode(struct mtk_dvo *dvo,
  	hsync.back_porch = vm.hback_porch / dvo->conf->pixels_per_iter;
  	hsync.front_porch = vm.hfront_porch / dvo->conf->pixels_per_iter;
  
@@ -29332,11 +29334,7 @@ index 7be2ac08923d35e4c5b80b9192bf59f1caaf4d3b..a1408c199b1167843243d4434ee4689d
  	hsync.shift_half_line = false;
  	vsync_lodd.sync_width = vm.vsync_len;
  	vsync_lodd.back_porch = vm.vback_porch;
-@@ -569,18 +617,20 @@ static int mtk_dvo_set_display_mode(struct mtk_dvo *dvo,
- 		mtk_dvo_config_fb_size(dvo, vm.hactive, vm.vactive >> 1);
- 	else
- 		mtk_dvo_config_fb_size(dvo, vm.hactive, vm.vactive);
-+	mtk_dvo_config_color_format(dvo, dvo->color_format);
+@@ -611,15 +621,16 @@ static int mtk_dvo_set_display_mode(struct mtk_dvo *dvo,
  
  	mtk_dvo_info_queue_start(dvo);
  	mtk_dvo_buffer_ctrl(dvo);
@@ -29358,7 +29356,7 @@ index 7be2ac08923d35e4c5b80b9192bf59f1caaf4d3b..a1408c199b1167843243d4434ee4689d
  	if (dvo->conf->out_np_sel) {
  		mtk_dvo_mask(dvo, DVO_OUTPUT_SET, dvo->conf->out_np_sel,
  			     OUT_NP_SEL);
-@@ -602,7 +652,7 @@ static u32 *mtk_dvo_bridge_atomic_get_output_bus_fmts(struct drm_bridge *bridge,
+@@ -641,7 +652,7 @@ static u32 *mtk_dvo_bridge_atomic_get_output_bus_fmts(struct drm_bridge *bridge,
  	*num_output_fmts = 0;
  
  	if (!dvo->conf->output_fmts) {
@@ -29367,7 +29365,7 @@ index 7be2ac08923d35e4c5b80b9192bf59f1caaf4d3b..a1408c199b1167843243d4434ee4689d
  		return NULL;
  	}
  
-@@ -655,7 +705,7 @@ static int mtk_dvo_bridge_atomic_check(struct drm_bridge *bridge,
+@@ -694,7 +705,7 @@ static int mtk_dvo_bridge_atomic_check(struct drm_bridge *bridge,
  		if (dvo->conf->num_output_fmts)
  			out_bus_format = dvo->conf->output_fmts[0];
  
@@ -29376,7 +29374,7 @@ index 7be2ac08923d35e4c5b80b9192bf59f1caaf4d3b..a1408c199b1167843243d4434ee4689d
  		bridge_state->input_bus_cfg.format,
  		bridge_state->output_bus_cfg.format);
  
-@@ -714,7 +764,6 @@ static void mtk_dvo_bridge_enable(struct drm_bridge *bridge)
+@@ -753,7 +764,6 @@ static void mtk_dvo_bridge_enable(struct drm_bridge *bridge)
  	mtk_dvo_power_on(dvo);
  	mtk_dvo_set_display_mode(dvo, &dvo->mode);
  	mtk_dvo_enable(dvo);
@@ -29384,7 +29382,7 @@ index 7be2ac08923d35e4c5b80b9192bf59f1caaf4d3b..a1408c199b1167843243d4434ee4689d
  }
  
  static enum drm_mode_status
-@@ -766,6 +815,15 @@ void mtk_dvo_get_hrt_bw_by_datarate(struct device *dev, unsigned int *bw_base)
+@@ -805,6 +815,15 @@ void mtk_dvo_get_hrt_bw_by_datarate(struct device *dev, unsigned int *bw_base)
  					 1000000);
  }
  
@@ -29400,7 +29398,7 @@ index 7be2ac08923d35e4c5b80b9192bf59f1caaf4d3b..a1408c199b1167843243d4434ee4689d
  static int mtk_dvo_bind(struct device *dev, struct device *master, void *data)
  {
  	struct mtk_dvo *dvo = dev_get_drvdata(dev);
-@@ -780,6 +838,7 @@ static int mtk_dvo_bind(struct device *dev, struct device *master, void *data)
+@@ -819,6 +838,7 @@ static int mtk_dvo_bind(struct device *dev, struct device *master, void *data)
  		dev_err(dev, "Failed to initialize decoder: %d\n", ret);
  		return ret;
  	}
@@ -29408,7 +29406,7 @@ index 7be2ac08923d35e4c5b80b9192bf59f1caaf4d3b..a1408c199b1167843243d4434ee4689d
  	dvo->encoder.possible_crtcs = mtk_find_possible_crtcs(drm_dev, dvo->dev);
  
  	ret = drm_bridge_attach(&dvo->encoder, &dvo->bridge, NULL,
-@@ -843,9 +902,38 @@ static const struct mtk_dvo_conf mt8196_conf = {
+@@ -882,9 +902,38 @@ static const struct mtk_dvo_conf mt8196_conf = {
  	.hvsize_mask = PIC_HSIZE_MASK,
  };
  
@@ -29423,7 +29421,6 @@ index 7be2ac08923d35e4c5b80b9192bf59f1caaf4d3b..a1408c199b1167843243d4434ee4689d
 +	.has_commit = true,
 +	.dimension_mask = HFP_MASK,
 +	.hvsize_mask = PIC_HSIZE_MASK,
-+	.hfp_adjustment_for_bs = true,
 +};
 +
 +static const struct mtk_dvo_conf mt8189_dp_conf = {
@@ -29438,6 +29435,7 @@ index 7be2ac08923d35e4c5b80b9192bf59f1caaf4d3b..a1408c199b1167843243d4434ee4689d
 +	.dimension_mask = HFP_MASK,
 +	.hvsize_mask = PIC_HSIZE_MASK,
 +	.is_dp = true,
++	.hfp_adjustment_for_bs = true,
 +};
 +
  static int mtk_dvo_probe(struct platform_device *pdev)
@@ -29447,7 +29445,7 @@ index 7be2ac08923d35e4c5b80b9192bf59f1caaf4d3b..a1408c199b1167843243d4434ee4689d
  	struct mtk_dvo *dvo;
  	int ret;
  
-@@ -856,64 +944,76 @@ static int mtk_dvo_probe(struct platform_device *pdev)
+@@ -895,65 +944,77 @@ static int mtk_dvo_probe(struct platform_device *pdev)
  	dvo->dev = dev;
  	dvo->conf = (struct mtk_dvo_conf *)of_device_get_match_data(dev);
  	dvo->output_fmt = MEDIA_BUS_FMT_RGB888_1X24;
@@ -29516,22 +29514,20 @@ index 7be2ac08923d35e4c5b80b9192bf59f1caaf4d3b..a1408c199b1167843243d4434ee4689d
 -				     "Failed to get bridge\n");
 +	platform_set_drvdata(pdev, dvo);
  
--	dev_dbg(dev, "Found bridge node: %pOF\n", dvo->next_bridge->of_node);
 +	if (!dvo->conf->is_dp) {
 +		dvo->next_bridge = devm_drm_of_get_bridge(dev, dev->of_node, 0, 0);
-+		if (IS_ERR(dvo->next_bridge)) {
-+			dev_err(dev, "Found bridge node: %pOF failed!\n",
-+				dev->of_node);
- 
--	platform_set_drvdata(pdev, dvo);
++		if (IS_ERR(dvo->next_bridge))
 +			return  dev_err_probe(dev, PTR_ERR(dvo->next_bridge),
-+					"Failed to get bridge\n");
-+		}
++					      "Failed to get bridge node: %pOF\n", dev->of_node);
 +	} else {
 +		endpoint = of_graph_get_endpoint_by_regs(dev->of_node, 0, 0);
 +		if (!endpoint)
 +			return dev_err_probe(dev, -ENODEV, "Failed to find endpoint!\n");
 +
++		/* To support MST,
++		 * the DP bridge (dp-tx) driver registers one bridge per input port.
++		 * which is different from devm_drm_of_get_bridge.
++		 */
 +		port = of_graph_get_remote_port(endpoint);
 +		of_node_put(endpoint);
 +		if (!port)
@@ -29542,11 +29538,14 @@ index 7be2ac08923d35e4c5b80b9192bf59f1caaf4d3b..a1408c199b1167843243d4434ee4689d
 +		if (!dvo->next_bridge)
 +			return dev_err_probe(dev, -EPROBE_DEFER, "Failed to find next bridge!\n");
 +	}
-+	dev_dbg(dev, "Found bridge node: %pOF\n", dvo->next_bridge->of_node);
+ 	dev_dbg(dev, "Found bridge node: %pOF\n", dvo->next_bridge->of_node);
  
+-	platform_set_drvdata(pdev, dvo);
+-
  	dvo->bridge.funcs = &mtk_dvo_bridge_funcs;
  	dvo->bridge.of_node = dev->of_node;
-@@ -937,6 +1037,8 @@ static void mtk_dvo_remove(struct platform_device *pdev)
+ 	dvo->bridge.type = DRM_MODE_CONNECTOR_DPI;
+@@ -976,6 +1037,8 @@ static void mtk_dvo_remove(struct platform_device *pdev)
  
  static const struct of_device_id mtk_dvo_of_ids[] = {
  	{ .compatible = "mediatek,mt8196-edp-dvo", .data = &mt8196_conf },
@@ -29555,25 +29554,8 @@ index 7be2ac08923d35e4c5b80b9192bf59f1caaf4d3b..a1408c199b1167843243d4434ee4689d
  	{ /* sentinel */ },
  };
  MODULE_DEVICE_TABLE(of, mtk_dvo_of_ids);
-diff --git a/drivers/gpu/drm/mediatek/mtk_dvo_regs.h b/drivers/gpu/drm/mediatek/mtk_dvo_regs.h
-index ecdbf59df38a875f24ea139e4058c4b6ce4750e4..b8211ddf82b65e7e0369c16fdc9029d97d2d9989 100644
---- a/drivers/gpu/drm/mediatek/mtk_dvo_regs.h
-+++ b/drivers/gpu/drm/mediatek/mtk_dvo_regs.h
-@@ -171,4 +171,12 @@
- #define DVO_BUF_URGENT_LOW		0x254
- #define DVO_DISP_BUF_MASK		GENMASK(31,0)
- 
-+#define DVO_MATRIX_SET			0x140
-+#define DVO_CSC_EN			BIT(0)
-+#define DVO_INT_MTX_SEL_MASK		GENMASK(8, 4)
-+
-+#define DVO_YUV422_SET			0x170
-+#define DVO_YUV422_EN			BIT(0)
-+#define DVO_CRYCB_MAP			BIT(8)
-+
- #endif /* __MTK_DPI_REGS_H */
 diff --git a/drivers/gpu/drm/panel/panel-edp.c b/drivers/gpu/drm/panel/panel-edp.c
-index defea380d851796b16f55f8ab0f2e6d68e857b07..2e2d57f22dce739f4cc1beda483e10f53c647c33 100644
+index defea380d851796b16f55f8ab0f2e6d68e857b07..4bc90bb190e9b7298681f89315fde59f309352b8 100644
 --- a/drivers/gpu/drm/panel/panel-edp.c
 +++ b/drivers/gpu/drm/panel/panel-edp.c
 @@ -1908,6 +1908,13 @@ static const struct panel_delay delay_200_500_e80_d50 = {
@@ -29590,7 +29572,21 @@ index defea380d851796b16f55f8ab0f2e6d68e857b07..2e2d57f22dce739f4cc1beda483e10f5
  static const struct panel_delay delay_200_500_e80_p2e80 = {
  	.hpd_absent = 200,
  	.unprepare = 500,
-@@ -2019,6 +2026,7 @@ static const struct edp_panel_entry edp_panels[] = {
+@@ -1934,6 +1941,13 @@ static const struct panel_delay delay_200_500_e200 = {
+ 	.enable = 200,
+ };
+ 
++static const struct panel_delay delay_200_500_e200_d50 = {
++	.hpd_absent = 200,
++	.unprepare = 500,
++	.enable = 200,
++	.disable = 50,
++};
++
+ static const struct panel_delay delay_200_500_e200_d200 = {
+ 	.hpd_absent = 200,
+ 	.unprepare = 500,
+@@ -2019,6 +2033,7 @@ static const struct edp_panel_entry edp_panels[] = {
  	EDP_PANEL_ENTRY2('A', 'U', 'O', 0x405c, &auo_b116xak01.delay, "B116XAK01.0",
  			 &auo_b116xa3_mode),
  	EDP_PANEL_ENTRY('A', 'U', 'O', 0x435c, &delay_200_500_e50, "Unknown"),
@@ -29598,16 +29594,22 @@ index defea380d851796b16f55f8ab0f2e6d68e857b07..2e2d57f22dce739f4cc1beda483e10f5
  	EDP_PANEL_ENTRY('A', 'U', 'O', 0x582d, &delay_200_500_e50, "B133UAN01.0"),
  	EDP_PANEL_ENTRY('A', 'U', 'O', 0x615c, &delay_200_500_e50, "B116XAN06.1"),
  	EDP_PANEL_ENTRY('A', 'U', 'O', 0x635c, &delay_200_500_e50, "B116XAN06.3"),
-@@ -2026,6 +2034,8 @@ static const struct edp_panel_entry edp_panels[] = {
+@@ -2026,12 +2041,14 @@ static const struct edp_panel_entry edp_panels[] = {
  	EDP_PANEL_ENTRY('A', 'U', 'O', 0x723c, &delay_200_500_e50, "B140XTN07.2"),
  	EDP_PANEL_ENTRY('A', 'U', 'O', 0x73aa, &delay_200_500_e50, "B116XTN02.3"),
  	EDP_PANEL_ENTRY('A', 'U', 'O', 0x8594, &delay_200_500_e50, "B133UAN01.0"),
 +	EDP_PANEL_ENTRY('A', 'U', 'O', 0x8bba, &delay_200_500_e80_d50, "B140UAN08.5"),
-+	EDP_PANEL_ENTRY('A', 'U', 'O', 0x97ba, &delay_200_500_e80_d50, "B140UAX01.2"),
  	EDP_PANEL_ENTRY('A', 'U', 'O', 0xa199, &delay_200_500_e50, "B116XAN06.1"),
  	EDP_PANEL_ENTRY('A', 'U', 'O', 0xa7b3, &delay_200_500_e50, "B140UAN04.4"),
  	EDP_PANEL_ENTRY('A', 'U', 'O', 0xc4b4, &delay_200_500_e50, "B116XAT04.1"),
-@@ -2087,6 +2097,8 @@ static const struct edp_panel_entry edp_panels[] = {
+ 	EDP_PANEL_ENTRY('A', 'U', 'O', 0xd497, &delay_200_500_e50, "B120XAN01.0"),
+ 	EDP_PANEL_ENTRY('A', 'U', 'O', 0xf390, &delay_200_500_e50, "B140XTN07.7"),
+ 	EDP_PANEL_ENTRY('A', 'U', 'O', 0xc9a8, &delay_200_500_e50, "B140QAN08.H"),
++	EDP_PANEL_ENTRY('A', 'U', 'O', 0xcdba, &delay_200_500_e80_d50, "B140UAX01.2"),
+ 
+ 	EDP_PANEL_ENTRY('B', 'O', 'E', 0x0607, &delay_200_500_e200, "Unknown"),
+ 	EDP_PANEL_ENTRY('B', 'O', 'E', 0x0608, &delay_200_500_e50, "NT116WHM-N11"),
+@@ -2087,6 +2104,8 @@ static const struct edp_panel_entry edp_panels[] = {
  	EDP_PANEL_ENTRY('B', 'O', 'E', 0x0c20, &delay_200_500_e80, "NT140FHM-N47"),
  	EDP_PANEL_ENTRY('B', 'O', 'E', 0x0cb6, &delay_200_500_e200, "NT116WHM-N44"),
  	EDP_PANEL_ENTRY('B', 'O', 'E', 0x0cfa, &delay_200_500_e50, "NV116WHM-A4D"),
@@ -29616,7 +29618,7 @@ index defea380d851796b16f55f8ab0f2e6d68e857b07..2e2d57f22dce739f4cc1beda483e10f5
  
  	EDP_PANEL_ENTRY('C', 'M', 'N', 0x1130, &delay_200_500_e50, "N116BGE-EB2"),
  	EDP_PANEL_ENTRY('C', 'M', 'N', 0x1132, &delay_200_500_e80_d50, "N116BGE-EA2"),
-@@ -2104,6 +2116,7 @@ static const struct edp_panel_entry edp_panels[] = {
+@@ -2104,6 +2123,7 @@ static const struct edp_panel_entry edp_panels[] = {
  	EDP_PANEL_ENTRY('C', 'M', 'N', 0x115b, &delay_200_500_e80_d50, "N116BCN-EB1"),
  	EDP_PANEL_ENTRY('C', 'M', 'N', 0x115d, &delay_200_500_e80_d50, "N116BCA-EA2"),
  	EDP_PANEL_ENTRY('C', 'M', 'N', 0x115e, &delay_200_500_e80_d50, "N116BCA-EA1"),
@@ -29624,19 +29626,19 @@ index defea380d851796b16f55f8ab0f2e6d68e857b07..2e2d57f22dce739f4cc1beda483e10f5
  	EDP_PANEL_ENTRY('C', 'M', 'N', 0x1160, &delay_200_500_e80_d50, "N116BCJ-EAK"),
  	EDP_PANEL_ENTRY('C', 'M', 'N', 0x1161, &delay_200_500_e80, "N116BCP-EA2"),
  	EDP_PANEL_ENTRY('C', 'M', 'N', 0x1247, &delay_200_500_e80_d50, "N120ACA-EA1"),
-@@ -2111,9 +2124,11 @@ static const struct edp_panel_entry edp_panels[] = {
+@@ -2111,9 +2131,11 @@ static const struct edp_panel_entry edp_panels[] = {
  	EDP_PANEL_ENTRY('C', 'M', 'N', 0x142e, &delay_200_500_e80_d50, "N140BGA-EA4"),
  	EDP_PANEL_ENTRY('C', 'M', 'N', 0x144f, &delay_200_500_e80_d50, "N140HGA-EA1"),
  	EDP_PANEL_ENTRY('C', 'M', 'N', 0x1468, &delay_200_500_e80, "N140HGA-EA1"),
-+	EDP_PANEL_ENTRY('C', 'M', 'N', 0x148b, &delay_200_500_e80_d50, "IN140JCA-ELP"),
++	EDP_PANEL_ENTRY('C', 'M', 'N', 0x14a8, &delay_200_500_e80_d50, "N140JCA-ELP"),
  	EDP_PANEL_ENTRY('C', 'M', 'N', 0x14d4, &delay_200_500_e80_d50, "N140HCA-EAC"),
  	EDP_PANEL_ENTRY('C', 'M', 'N', 0x14d6, &delay_200_500_e80_d50, "N140BGA-EA4"),
  	EDP_PANEL_ENTRY('C', 'M', 'N', 0x14e5, &delay_200_500_e80_d50, "N140HGA-EA1"),
-+	EDP_PANEL_ENTRY('C', 'M', 'N', 0x7402, &delay_200_500_e80_d50, "N116BCA-EAK"),
++	EDP_PANEL_ENTRY('C', 'M', 'N', 0x7402, &delay_200_500_e200_d50, "N116BCA-EAK"),
  
  	EDP_PANEL_ENTRY('C', 'S', 'O', 0x1200, &delay_200_500_e50_p2e200, "MNC207QS1-1"),
  
-@@ -2121,6 +2136,9 @@ static const struct edp_panel_entry edp_panels[] = {
+@@ -2121,6 +2143,9 @@ static const struct edp_panel_entry edp_panels[] = {
  	EDP_PANEL_ENTRY('C', 'S', 'W', 0x1104, &delay_200_500_e50, "MNB601LS1-4"),
  	EDP_PANEL_ENTRY('C', 'S', 'W', 0x1448, &delay_200_500_e50, "MNE007QS3-7"),
  	EDP_PANEL_ENTRY('C', 'S', 'W', 0x1457, &delay_80_500_e80_p2e200, "MNE007QS3-8"),
@@ -29646,16 +29648,51 @@ index defea380d851796b16f55f8ab0f2e6d68e857b07..2e2d57f22dce739f4cc1beda483e10f5
  
  	EDP_PANEL_ENTRY('H', 'K', 'C', 0x2d51, &delay_200_500_e200, "Unknown"),
  	EDP_PANEL_ENTRY('H', 'K', 'C', 0x2d5b, &delay_200_500_e200, "MB116AN01"),
-@@ -2162,6 +2180,10 @@ static const struct edp_panel_entry edp_panels[] = {
+@@ -2162,6 +2187,10 @@ static const struct edp_panel_entry edp_panels[] = {
  	EDP_PANEL_ENTRY('S', 'T', 'A', 0x0009, &delay_200_500_e250, "116QHD024002"),
  	EDP_PANEL_ENTRY('S', 'T', 'A', 0x0100, &delay_100_500_e200, "2081116HHD028001-51D"),
  
 +	EDP_PANEL_ENTRY('T', 'M', 'A', 0x0811, &delay_200_500_e80_d50, "TM140VDXP01-04"),
-+	EDP_PANEL_ENTRY('T', 'M', 'A', 0x2088, &delay_200_500_e80_d100, "TL140VDMS03-01"),
++	EDP_PANEL_ENTRY('T', 'M', 'A', 0x2094, &delay_200_500_e80_d100, "TL140VDMS03-01"),
 +
 +
  	{ /* sentinal */ }
  };
+ 
+diff --git a/drivers/hid/i2c-hid/i2c-hid-core.c b/drivers/hid/i2c-hid/i2c-hid-core.c
+index 17537a2f229a07d1741a3297f87ff1ebc05afecf..424f28250b8d75752f2a06ed549e0b8ba502a99a 100644
+--- a/drivers/hid/i2c-hid/i2c-hid-core.c
++++ b/drivers/hid/i2c-hid/i2c-hid-core.c
+@@ -1156,6 +1156,8 @@ static int i2c_hid_core_register_panel_follower(struct i2c_hid *ihid)
+ 	int ret;
+ 
+ 	ihid->panel_follower.funcs = &i2c_hid_core_panel_follower_funcs;
++	if (ihid->hid->initial_quirks | HID_QUIRK_POWER_ON_AFTER_BACKLIGHT)
++		ihid->panel_follower.after_panel_enabled = true;
+ 
+ 	/*
+ 	 * If we're not in control of our own power up/power down then we can't
+diff --git a/drivers/hid/i2c-hid/i2c-hid-of-elan.c b/drivers/hid/i2c-hid/i2c-hid-of-elan.c
+index 3fcff6daa0d3a6a562fa909c7623a37d68980f3f..0f2b5cf2888449b0fff410daecadb5b393dbc89d 100644
+--- a/drivers/hid/i2c-hid/i2c-hid-of-elan.c
++++ b/drivers/hid/i2c-hid/i2c-hid-of-elan.c
+@@ -8,6 +8,7 @@
+ #include <linux/delay.h>
+ #include <linux/device.h>
+ #include <linux/gpio/consumer.h>
++#include <linux/hid.h>
+ #include <linux/i2c.h>
+ #include <linux/kernel.h>
+ #include <linux/module.h>
+@@ -132,7 +133,8 @@ static int i2c_hid_of_elan_probe(struct i2c_client *client)
+ 	}
+ 
+ 	ret = i2c_hid_core_probe(client, &ihid_elan->ops,
+-				 ihid_elan->chip_data->hid_descriptor_address, 0);
++				 ihid_elan->chip_data->hid_descriptor_address,
++				 HID_QUIRK_POWER_ON_AFTER_BACKLIGHT);
+ 	if (ret)
+ 		goto err_deassert_reset;
  
 diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
 index 5696bd415dd4527535b9beeae60832895dca6c28..e6bf9322041e7fd21cb2f66bf2bafa766728a919 100644
@@ -34648,7 +34685,7 @@ index 87f6b6cdc365bf6e346a7468def85f2a4569b884..74f8f437c85e9447bd28e95719779655
  static int chromeos_of_hw_prober_probe(struct platform_device *pdev)
 diff --git a/drivers/pmdomain/mediatek/mt8189-scpsys.h b/drivers/pmdomain/mediatek/mt8189-scpsys.h
 new file mode 100644
-index 0000000000000000000000000000000000000000..2a091d979219a4a864a5ac0dfa60b78d7a39ab66
+index 0000000000000000000000000000000000000000..9ad61ad23ca54332d73e5159f6fe4a30bc4c22fa
 --- /dev/null
 +++ b/drivers/pmdomain/mediatek/mt8189-scpsys.h
 @@ -0,0 +1,87 @@
@@ -34712,8 +34749,8 @@ index 0000000000000000000000000000000000000000..2a091d979219a4a864a5ac0dfa60b78d
 +			BIT(10) | BIT(11) |  \
 +			BIT(12) | BIT(13) |  \
 +			BIT(14) | BIT(15))
-+#define MT8189_TOP_AXI_PROT_EN_MMSYS_STA_1_MM_INFRA_CLK_IGN	(BIT(1))
-+#define MT8189_TOP_AXI_PROT_EN_MMSYS_STA_1_MM_INFRA_2ND_CLK_IGN	(BIT(0))
++#define MT8189_TOP_AXI_PROT_EN_MMSYS_MM_INFRA_CLK_IGN	(BIT(1))
++#define MT8189_TOP_AXI_PROT_EN_MMSYS_MM_INFRA_2ND_CLK_IGN	(BIT(0))
 +#define MT8189_TOP_AXI_PROT_EN_INFRASYS_STA_0_MM_INFRA	(BIT(16))
 +#define MT8189_TOP_AXI_PROT_EN_EMISYS_STA_0_MM_INFRA	(BIT(20) | BIT(21))
 +#define MT8189_AXI_PROT_EN_SCP_CORE	(BIT(3) | BIT(8) |  \
@@ -34740,7 +34777,7 @@ index 0000000000000000000000000000000000000000..2a091d979219a4a864a5ac0dfa60b78d
 +
 +#endif /* __PMDOMAIN_MEDIATEK_MT8189_SCPSYS_H */
 diff --git a/drivers/pmdomain/mediatek/mtk-scpsys.c b/drivers/pmdomain/mediatek/mtk-scpsys.c
-index 6968d97f473b5cffd788d23587b0921656029295..5a2485a8e413f8f35b8c4b7396254b66d48afe9c 100644
+index 6968d97f473b5cffd788d23587b0921656029295..5b90449e74d542dd7691460cf67854b95a00400b 100644
 --- a/drivers/pmdomain/mediatek/mtk-scpsys.c
 +++ b/drivers/pmdomain/mediatek/mtk-scpsys.c
 @@ -13,6 +13,7 @@
@@ -34762,16 +34799,44 @@ index 6968d97f473b5cffd788d23587b0921656029295..5a2485a8e413f8f35b8c4b7396254b66
  
  #define MTK_POLL_DELAY_US		10
  #define MTK_POLL_TIMEOUT		USEC_PER_SEC
-@@ -49,6 +52,8 @@
+@@ -49,6 +52,7 @@
  #define MTK_SCPD_RTFF_DELAY		BIT(10)
  #define MTK_SCPD_IRQ_SAVE		BIT(11)
  #define MTK_SCPD_ALWAYS_ON		BIT(12)
-+#define MTK_SCPD_BYPASS_OFF		BIT(13)
-+#define MTK_SCPD_KEEP_DEFAULT_OFF	BIT(14)
++#define MTK_SCPD_KEEP_DEFAULT_OFF	BIT(13)
  #define MTK_SCPD_CAPS(_scpd, _x)	((_scpd)->data->caps & (_x))
  
  #define SPM_VDE_PWR_CON			0x0210
-@@ -142,6 +147,7 @@ enum clk_id {
+@@ -113,7 +117,7 @@
+ 
+ #define _BUS_PROT(_type, _set_ofs, _clr_ofs,			\
+ 		_en_ofs, _sta_ofs, _mask, _ack_mask,		\
+-		_ignore_clr_ack) {				\
++		_ignore_clr_ack, _ignore_subsys_clk) {		\
+ 		.type = _type,					\
+ 		.set_ofs = _set_ofs,				\
+ 		.clr_ofs = _clr_ofs,				\
+@@ -122,12 +126,18 @@
+ 		.mask = _mask,					\
+ 		.ack_mask = _ack_mask,				\
+ 		.ignore_clr_ack = _ignore_clr_ack,		\
++		.ignore_subsys_clk = _ignore_subsys_clk,		\
+ 	}
+ 
+ #define BUS_PROT_IGN(_type, _set_ofs, _clr_ofs,	\
+ 		_en_ofs, _sta_ofs, _mask)		\
+ 		_BUS_PROT(_type, _set_ofs, _clr_ofs,	\
+-		_en_ofs, _sta_ofs, _mask, _mask, true)
++		_en_ofs, _sta_ofs, _mask, _mask, true, false)
++
++#define BUS_PROT_SUBSYS_CLK_IGN(_type, _set_ofs, _clr_ofs,	\
++		_en_ofs, _sta_ofs, _mask)		\
++		_BUS_PROT(_type, _set_ofs, _clr_ofs,	\
++		_en_ofs, _sta_ofs, _mask, _mask, true, true)
+ 
+ enum clk_id {
+ 	CLK_NONE,
+@@ -142,6 +152,7 @@ enum clk_id {
  	CLK_AUDIO,
  	CLK_DISP_AO_CONFIG,
  	CLK_DISP_DPC,
@@ -34779,7 +34844,7 @@ index 6968d97f473b5cffd788d23587b0921656029295..5a2485a8e413f8f35b8c4b7396254b66
  	CLK_MAX,
  };
  
-@@ -158,11 +164,13 @@ static const char * const clk_names[] = {
+@@ -158,11 +169,13 @@ static const char * const clk_names[] = {
  	"audio",
  	"disp_ao_config",
  	"disp_dpc",
@@ -34794,7 +34859,15 @@ index 6968d97f473b5cffd788d23587b0921656029295..5a2485a8e413f8f35b8c4b7396254b66
  
  struct bus_prot {
  	u32 type;
-@@ -206,6 +214,7 @@ struct scp_domain_data {
+@@ -173,6 +186,7 @@ struct bus_prot {
+ 	u32 mask;
+ 	u32 ack_mask;
+ 	bool ignore_clr_ack;
++	bool ignore_subsys_clk;
+ };
+ 
+ /**
+@@ -206,6 +220,7 @@ struct scp_domain_data {
  	u32 sram_slp_ack_bits;
  	u32 bus_prot_mask;
  	enum clk_id clk_id[MAX_CLKS];
@@ -34802,7 +34875,7 @@ index 6968d97f473b5cffd788d23587b0921656029295..5a2485a8e413f8f35b8c4b7396254b66
  	struct bus_prot bp_table[MAX_STEPS];
  	u32 caps;
  };
-@@ -216,10 +225,13 @@ struct scp_domain {
+@@ -216,10 +231,13 @@ struct scp_domain {
  	struct generic_pm_domain genpd;
  	struct scp *scp;
  	struct clk *clk[MAX_CLKS];
@@ -34816,7 +34889,7 @@ index 6968d97f473b5cffd788d23587b0921656029295..5a2485a8e413f8f35b8c4b7396254b66
  };
  
  struct scp_ctrl_reg {
-@@ -259,7 +271,7 @@ struct scp_soc_data {
+@@ -259,7 +277,7 @@ struct scp_soc_data {
  	scp_soc_post_probe_fn post_probe;
  };
  
@@ -34825,7 +34898,7 @@ index 6968d97f473b5cffd788d23587b0921656029295..5a2485a8e413f8f35b8c4b7396254b66
  {
  	struct scp *scp = scpd->scp;
  
-@@ -281,14 +293,14 @@ static int scpsys_domain_is_on(struct scp_domain *scpd)
+@@ -281,14 +299,14 @@ static int scpsys_domain_is_on(struct scp_domain *scpd)
  	return -EINVAL;
  }
  
@@ -34842,7 +34915,107 @@ index 6968d97f473b5cffd788d23587b0921656029295..5a2485a8e413f8f35b8c4b7396254b66
  {
  	u32 status = readl(scpd->scp->base + scpd->data->ctl_offs) & PWR_ACK_2ND;
  
-@@ -557,6 +569,9 @@ static int scpsys_power_on(struct generic_pm_domain *genpd)
+@@ -476,7 +494,7 @@ static int scpsys_bus_protect_table_disable(struct scp_domain *scpd,
+ 		struct regmap *map;
+ 		struct bus_prot bp = bp_table[i];
+ 
+-		if (bp.type == 0 || bp.type >= scp->num_bp)
++		if (bp.type == 0 || bp.type >= scp->num_bp || bp.ignore_subsys_clk)
+ 			continue;
+ 
+ 		map = scp->bp_regmap[bp.type];
+@@ -502,7 +520,62 @@ static int scpsys_bus_protect_table_enable(struct scp_domain *scpd)
+ 		struct regmap *map;
+ 		struct bus_prot bp = bp_table[i];
+ 
+-		if (bp.type == 0 || bp.type >= scp->num_bp)
++		if (bp.type == 0 || bp.type >= scp->num_bp || bp.ignore_subsys_clk)
++			continue;
++
++		map = scp->bp_regmap[bp.type];
++		if (!map)
++			continue;
++
++		ret = set_bus_protection(map, &bp);
++		if (ret) {
++			scpsys_bus_protect_table_disable(scpd, i);
++			return ret;
++		}
++	}
++
++	return ret;
++}
++
++static int scpsys_bus_protect_table_disable_ignore_subsys_clks(struct scp_domain *scpd,
++			unsigned int index)
++{
++	struct scp *scp = scpd->scp;
++	const struct bus_prot *bp_table = scpd->data->bp_table;
++	int ret = 0;
++	int i;
++
++	for (i = index; i >= 0; i--) {
++		struct regmap *map;
++		struct bus_prot bp = bp_table[i];
++
++		if (bp.type == 0 || bp.type >= scp->num_bp || !bp.ignore_subsys_clk)
++			continue;
++
++		map = scp->bp_regmap[bp.type];
++		if (!map)
++			continue;
++
++		ret = clear_bus_protection(map, &bp);
++		if (ret)
++			break;
++	}
++
++	return ret;
++}
++
++static int scpsys_bus_protect_table_enable_ignore_subsys_clks(struct scp_domain *scpd)
++{
++	struct scp *scp = scpd->scp;
++	const struct bus_prot *bp_table = scpd->data->bp_table;
++	int ret = 0;
++	int i;
++
++	for (i = 0; i < MAX_STEPS; i++) {
++		struct regmap *map;
++		struct bus_prot bp = bp_table[i];
++
++		if (bp.type == 0 || bp.type >= scp->num_bp || !bp.ignore_subsys_clk)
+ 			continue;
+ 
+ 		map = scp->bp_regmap[bp.type];
+@@ -549,6 +622,26 @@ static int scpsys_bus_protect_disable(struct scp_domain *scpd)
+ 			scp->bus_prot_reg_update);
+ }
+ 
++static int scpsys_bus_protect_enable_ignore_subsys_clks(struct scp_domain *scpd)
++{
++	struct scp *scp = scpd->scp;
++
++	if (scp->bp_regmap && scp->num_bp > 0)
++		return scpsys_bus_protect_table_enable_ignore_subsys_clks(scpd);
++
++	return 0;
++}
++
++static int scpsys_bus_protect_disable_ignore_subsys_clks(struct scp_domain *scpd)
++{
++	struct scp *scp = scpd->scp;
++
++	if (scp->bp_regmap && scp->num_bp > 0)
++		return scpsys_bus_protect_table_disable_ignore_subsys_clks(scpd, MAX_STEPS - 1);
++
++	return 0;
++}
++
+ static int scpsys_power_on(struct generic_pm_domain *genpd)
+ {
+ 	struct scp_domain *scpd = container_of(genpd, struct scp_domain, genpd);
+@@ -557,6 +650,9 @@ static int scpsys_power_on(struct generic_pm_domain *genpd)
  	u32 val;
  	int ret, tmp;
  
@@ -34852,10 +35025,14 @@ index 6968d97f473b5cffd788d23587b0921656029295..5a2485a8e413f8f35b8c4b7396254b66
  	ret = scpsys_regulator_enable(scpd);
  	if (ret < 0)
  		return ret;
-@@ -657,6 +672,10 @@ static int scpsys_power_on(struct generic_pm_domain *genpd)
+@@ -657,6 +753,14 @@ static int scpsys_power_on(struct generic_pm_domain *genpd)
  		scpd->rtff_flag = false;
  	}
  
++	ret = scpsys_bus_protect_disable_ignore_subsys_clks(scpd);
++	if (ret < 0)
++		goto err_pwr_ack;
++
 +	ret = scpsys_clk_enable(scpd->subsys_clk, MAX_SUBSYS_CLKS);
 +	if (ret < 0)
 +		goto err_pwr_ack;
@@ -34863,7 +35040,7 @@ index 6968d97f473b5cffd788d23587b0921656029295..5a2485a8e413f8f35b8c4b7396254b66
  	ret = scpsys_sram_enable(scpd, ctl_addr);
  	if (ret < 0)
  		goto err_pwr_ack;
-@@ -665,6 +684,7 @@ static int scpsys_power_on(struct generic_pm_domain *genpd)
+@@ -665,6 +769,7 @@ static int scpsys_power_on(struct generic_pm_domain *genpd)
  	if (ret < 0)
  		goto err_pwr_ack;
  
@@ -34871,28 +35048,20 @@ index 6968d97f473b5cffd788d23587b0921656029295..5a2485a8e413f8f35b8c4b7396254b66
  	return 0;
  
  err_pwr_ack:
-@@ -685,6 +705,11 @@ static int scpsys_power_off(struct generic_pm_domain *genpd)
- 	u32 val;
- 	int ret, tmp;
- 
-+	if (MTK_SCPD_CAPS(scpd, MTK_SCPD_BYPASS_OFF)) {
-+		dev_err(scp->dev, "bypass power off %s for bringup\n", genpd->name);
-+		return 0;
-+	}
-+
- 	ret = scpsys_bus_protect_enable(scpd);
- 	if (ret < 0)
- 		goto out;
-@@ -693,6 +718,8 @@ static int scpsys_power_off(struct generic_pm_domain *genpd)
+@@ -693,6 +798,12 @@ static int scpsys_power_off(struct generic_pm_domain *genpd)
  	if (ret < 0)
  		goto out;
  
 +	scpsys_clk_disable(scpd->subsys_clk, MAX_SUBSYS_CLKS);
 +
++	ret = scpsys_bus_protect_enable_ignore_subsys_clks(scpd);
++	if (ret < 0)
++		goto out;
++
  	/* subsys power off */
  	val = readl(ctl_addr);
  
-@@ -769,6 +796,7 @@ static int scpsys_power_off(struct generic_pm_domain *genpd)
+@@ -769,6 +880,7 @@ static int scpsys_power_off(struct generic_pm_domain *genpd)
  	if (ret < 0)
  		goto out;
  
@@ -34900,7 +35069,7 @@ index 6968d97f473b5cffd788d23587b0921656029295..5a2485a8e413f8f35b8c4b7396254b66
  	return 0;
  
  out:
-@@ -933,6 +961,48 @@ static void init_clks(struct platform_device *pdev, struct clk **clk)
+@@ -933,6 +1045,48 @@ static void init_clks(struct platform_device *pdev, struct clk **clk)
  		clk[i] = devm_clk_get(&pdev->dev, clk_names[i]);
  }
  
@@ -34949,7 +35118,7 @@ index 6968d97f473b5cffd788d23587b0921656029295..5a2485a8e413f8f35b8c4b7396254b66
  static int mtk_pd_get_regmap(struct platform_device *pdev, struct regmap **regmap,
  			const char *name)
  {
-@@ -1051,6 +1121,14 @@ struct scp *init_scp(struct platform_device *pdev, const struct scp_soc_data *so
+@@ -1051,6 +1205,14 @@ struct scp *init_scp(struct platform_device *pdev, const struct scp_soc_data *so
  			scpd->clk[j] = c;
  		}
  
@@ -34964,7 +35133,7 @@ index 6968d97f473b5cffd788d23587b0921656029295..5a2485a8e413f8f35b8c4b7396254b66
  		if (data->hwv_comp) {
  			ret = mtk_pd_get_regmap(pdev, &scpd->hwv_regmap, data->hwv_comp);
  			if (ret)
-@@ -1093,11 +1171,22 @@ static void mtk_register_power_domains(struct platform_device *pdev,
+@@ -1093,11 +1255,22 @@ static void mtk_register_power_domains(struct platform_device *pdev,
  		 * software.  The unused domains will be switched off during
  		 * late_init time.
  		 */
@@ -34990,7 +35159,7 @@ index 6968d97f473b5cffd788d23587b0921656029295..5a2485a8e413f8f35b8c4b7396254b66
  		pm_genpd_init(genpd, NULL, !on);
  	}
  
-@@ -2256,6 +2345,312 @@ static const struct scp_soc_data mt8196_mmpc_hwv_data = {
+@@ -2256,6 +2429,312 @@ static const struct scp_soc_data mt8196_mmpc_hwv_data = {
  	.post_probe = mt8196_mmpc_post_probe,
  };
  
@@ -35164,7 +35333,7 @@ index 6968d97f473b5cffd788d23587b0921656029295..5a2485a8e413f8f35b8c4b7396254b66
 +		},
 +		.clk_id = {CLK_DISP_AO_CONFIG},
 +		.subsys_clk_prefix = "disp",
-+		.caps = MTK_SCPD_IS_PWR_CON_ON | MTK_SCPD_BYPASS_OFF,
++		.caps = MTK_SCPD_IS_PWR_CON_ON,
 +	},
 +	[MT8189_POWER_DOMAIN_MM_INFRA] = {
 +		.name = "mm-infra",
@@ -35176,14 +35345,14 @@ index 6968d97f473b5cffd788d23587b0921656029295..5a2485a8e413f8f35b8c4b7396254b66
 +				     MT8189_TOP_AXI_PROT_EN_MMSYS_STA_1_MM_INFRA),
 +			BUS_PROT_IGN(MT8189_BP_IFR_TYPE, 0x0c24, 0x0c28, 0x0c20, 0x0c2c,
 +				     MT8189_TOP_AXI_PROT_EN_MMSYS_STA_1_MM_INFRA_2ND),
-+			BUS_PROT_IGN(MT8189_BP_IFR_TYPE, 0x0c24, 0x0c28, 0x0c20, 0x0c2c,
-+				     MT8189_TOP_AXI_PROT_EN_MMSYS_STA_1_MM_INFRA_CLK_IGN),
-+			BUS_PROT_IGN(MT8189_BP_IFR_TYPE, 0x0c24, 0x0c28, 0x0c20, 0x0c2c,
-+				     MT8189_TOP_AXI_PROT_EN_MMSYS_STA_1_MM_INFRA_2ND_CLK_IGN),
++			BUS_PROT_SUBSYS_CLK_IGN(MT8189_BP_IFR_TYPE, 0x0c24, 0x0c28, 0x0c20, 0x0c2c,
++						MT8189_TOP_AXI_PROT_EN_MMSYS_MM_INFRA_CLK_IGN),
++			BUS_PROT_SUBSYS_CLK_IGN(MT8189_BP_IFR_TYPE, 0x0c24, 0x0c28, 0x0c20, 0x0c2c,
++						MT8189_TOP_AXI_PROT_EN_MMSYS_MM_INFRA_2ND_CLK_IGN),
 +		},
 +		.clk_id = {CLK_MM},
 +		.subsys_clk_prefix = "mm_infra",
-+		.caps = MTK_SCPD_IS_PWR_CON_ON | MTK_SCPD_BYPASS_OFF,
++		.caps = MTK_SCPD_IS_PWR_CON_ON,
 +	},
 +	[MT8189_POWER_DOMAIN_DP_TX] = {
 +		.name = "dp-tx",
@@ -35257,7 +35426,7 @@ index 6968d97f473b5cffd788d23587b0921656029295..5a2485a8e413f8f35b8c4b7396254b66
 +		.ctl_offs = MT8189_SPM_PCIE_PWR_CON,
 +		.sram_pdn_bits = GENMASK(8, 8),
 +		.sram_pdn_ack_bits = GENMASK(12, 12),
-+		.caps = MTK_SCPD_IS_PWR_CON_ON | MTK_SCPD_BYPASS_OFF,
++		.caps = MTK_SCPD_IS_PWR_CON_ON | MTK_SCPD_ACTIVE_WAKEUP,
 +	},
 +	[MT8189_POWER_DOMAIN_PCIE_PHY] = {
 +		.name = "pcie-phy",
@@ -35303,7 +35472,7 @@ index 6968d97f473b5cffd788d23587b0921656029295..5a2485a8e413f8f35b8c4b7396254b66
  /*
   * scpsys driver init
   */
-@@ -2285,6 +2680,9 @@ static const struct of_device_id of_scpsys_match_tbl[] = {
+@@ -2285,6 +2764,9 @@ static const struct of_device_id of_scpsys_match_tbl[] = {
  	}, {
  		.compatible = "mediatek,mt8196-hfrpsys-hwv",
  		.data = &mt8196_mmpc_hwv_data,
@@ -39181,6 +39350,25 @@ index 66bb68ceb14cf6181a0c3542ec67a2c6254603b6..3c3bbcd624a9441ae6fe8bd3ed121612
  	{ .compatible = "mediatek,mt8192-wdt", .data = &mt8192_data },
  	{ .compatible = "mediatek,mt8195-wdt", .data = &mt8195_data },
  	{ /* sentinel */ }
+diff --git a/include/drm/drm_panel.h b/include/drm/drm_panel.h
+index 5ece52fbdb29ddb62eff47ec93a4152004e1ab55..90bb63bcd614aafcbbe58cfbad10805b6e8a18fe 100644
+--- a/include/drm/drm_panel.h
++++ b/include/drm/drm_panel.h
+@@ -184,6 +184,14 @@ struct drm_panel_follower {
+ 	 * The panel we're dependent on; set by drm_panel_add_follower().
+ 	 */
+ 	struct drm_panel *panel;
++
++	/**
++	 * @after_panel_enabled
++	 *
++	 * If true then this panel follower should be powered after the panel
++	 * and the backlight are enabled, instead of after panel is prepared.
++	 */
++	bool after_panel_enabled;
+ };
+ 
+ /**
 diff --git a/include/dt-bindings/clock/mt8189-clk.h b/include/dt-bindings/clock/mt8189-clk.h
 new file mode 100644
 index 0000000000000000000000000000000000000000..3420b0856a673058ac967565ca0ae526885c3569
@@ -41074,6 +41262,26 @@ index 0000000000000000000000000000000000000000..ff8f2299431dec3e42ec4d0c5a2cc2e0
 +#define MT8189_POWER_DOMAIN_PCIE_PHY			25
 +
 +#endif /* _DT_BINDINGS_POWER_MT8189_POWER_H */
+diff --git a/include/linux/hid.h b/include/linux/hid.h
+index db2784e2fed633a9dffea4283957b619ffb0d579..19c8eca6770e645d0294e52521a532544c6ab2ff 100644
+--- a/include/linux/hid.h
++++ b/include/linux/hid.h
+@@ -384,6 +384,7 @@ struct hid_item {
+  * | @HID_QUIRK_HAVE_SPECIAL_DRIVER:
+  * | @HID_QUIRK_INCREMENT_USAGE_ON_DUPLICATE:
+  * | @HID_QUIRK_IGNORE_SPECIAL_DRIVER
++ * | @HID_QUIRK_POWER_ON_AFTER_BACKLIGHT
+  * | @HID_QUIRK_FULLSPEED_INTERVAL:
+  * | @HID_QUIRK_NO_INIT_REPORTS:
+  * | @HID_QUIRK_NO_IGNORE:
+@@ -411,6 +412,7 @@ struct hid_item {
+ #define HID_QUIRK_INCREMENT_USAGE_ON_DUPLICATE	BIT(20)
+ #define HID_QUIRK_NOINVERT			BIT(21)
+ #define HID_QUIRK_IGNORE_SPECIAL_DRIVER		BIT(22)
++#define HID_QUIRK_POWER_ON_AFTER_BACKLIGHT	BIT(23)
+ #define HID_QUIRK_FULLSPEED_INTERVAL		BIT(28)
+ #define HID_QUIRK_NO_INIT_REPORTS		BIT(29)
+ #define HID_QUIRK_NO_IGNORE			BIT(30)
 diff --git a/include/linux/mfd/mt6397/rtc.h b/include/linux/mfd/mt6397/rtc.h
 index 068ae1c0f0e8e9a43c11309b44f11b41d15cfe50..b512e10083a1034d9a1aa9bda96d7fcbdfd76f29 100644
 --- a/include/linux/mfd/mt6397/rtc.h
