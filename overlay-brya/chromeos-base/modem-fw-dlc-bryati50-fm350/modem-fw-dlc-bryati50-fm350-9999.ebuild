@@ -28,6 +28,9 @@ LICENSE="BSD-Google" #TODO(b/203807072): Change once Fibocom provides a license
 # For modem FWs, this value should never increase. See modem-fw-dlc.eclass.
 MODEM_FW_DLC_PREALLOC_SIZE_MB="${MODEM_FW_DLC_FM350_DEFAULT_SIZE_3FW}"
 
+#Set the firmware-variants using this DLC.
+export MODEM_FW_DLC_FIRMWARE_VARIANT="bryati50_fm350"
+
 src_unpack() {
 	cros-workon_src_unpack
 	# Because we are not pulling in any sources, we need to have an empty
