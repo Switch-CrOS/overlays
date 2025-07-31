@@ -4330,10 +4330,10 @@ index 0000000000000000000000000000000000000000..acae81aa8c7c5be1663622ed4a896f07
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8189-skywalker.dtsi b/arch/arm64/boot/dts/mediatek/mt8189-skywalker.dtsi
 new file mode 100644
-index 0000000000000000000000000000000000000000..c35d1024bbceb8049d65d5dd6d566350dbf0503e
+index 0000000000000000000000000000000000000000..2edfc9474bd04dc1012b96b9da258a9f0d1ea256
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt8189-skywalker.dtsi
-@@ -0,0 +1,1742 @@
+@@ -0,0 +1,1727 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
 +/*
 + * Copyright (C) 2025 Google Inc.
@@ -4687,8 +4687,9 @@ index 0000000000000000000000000000000000000000..c35d1024bbceb8049d65d5dd6d566350
 +};
 +
 +&gpu {
-+	supply-names = "mali";
-+	mali-supply = <&mt6359_vsram_proc1_ldo_reg>;
++	supply-names = "mali", "sram";
++	mali-supply = <&mt6359_vproc1_buck_reg>;
++	sram-supply = <&mt6359_vsram_proc1_ldo_reg>;
 +};
 +
 +&scp {
@@ -5871,22 +5872,6 @@ index 0000000000000000000000000000000000000000..c35d1024bbceb8049d65d5dd6d566350
 +	interrupts-extended = <&pio 194 IRQ_TYPE_LEVEL_HIGH>;
 +};
 +
-+&mt6359_vproc1_buck_reg {
-+	regulator-name = "buck_vgpu";
-+	regulator-min-microvolt = <550000>;
-+	regulator-max-microvolt = <900000>;
-+	regulator-coupled-with = <&mt6359_vsram_proc1_ldo_reg>;
-+	regulator-coupled-max-spread = <6250>;
-+};
-+
-+&mt6359_vsram_proc1_ldo_reg {
-+	regulator-name = "ldo_sram_gpu";
-+	regulator-min-microvolt = <550000>;
-+	regulator-max-microvolt = <900000>;
-+	regulator-coupled-with = <&mt6359_vproc1_buck_reg>;
-+	regulator-coupled-max-spread = <6250>;
-+};
-+
 +&sound {
 +	compatible = "mediatek,mt8189-nau8825-sound";
 +	model = "mt8189_rt9123_8825";
@@ -6078,10 +6063,10 @@ index 0000000000000000000000000000000000000000..c35d1024bbceb8049d65d5dd6d566350
 +};
 diff --git a/arch/arm64/boot/dts/mediatek/mt8189.dtsi b/arch/arm64/boot/dts/mediatek/mt8189.dtsi
 new file mode 100644
-index 0000000000000000000000000000000000000000..d610dddb25224253f683808d451d88b4f120c56a
+index 0000000000000000000000000000000000000000..93e85bfda69d541a2665f626f17e3615e2169fb3
 --- /dev/null
 +++ b/arch/arm64/boot/dts/mediatek/mt8189.dtsi
-@@ -0,0 +1,2988 @@
+@@ -0,0 +1,2989 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
 +/*
 + * Copyright (c) 2025 MediaTek Inc.
@@ -6980,7 +6965,7 @@ index 0000000000000000000000000000000000000000..d610dddb25224253f683808d451d88b4
 +			reg = <0 0x11036000 0 0x1000>;
 +			#clock-cells = <1>;
 +			topckgen_clk-handle = <&topckgen_clk>;
-+			usb_rst: reset-controller{
++			usb_rst: reset-controller {
 +				compatible = "ti,syscon-reset";
 +				#reset-cells = <1>;
 +				reset-duration-us = <100>;
@@ -7646,97 +7631,97 @@ index 0000000000000000000000000000000000000000..d610dddb25224253f683808d451d88b4
 +
 +			opp-390000000 {
 +				opp-hz = /bits/ 64 <390000000>;
-+				opp-microvolt = <675000>;
++				opp-microvolt = <675000>, <750000>;
 +			};
 +
 +			opp-424000000 {
 +				opp-hz = /bits/ 64 <424000000>;
-+				opp-microvolt = <681250>;
++				opp-microvolt = <681250>, <750000>;
 +			};
 +
 +			opp-458000000 {
 +				opp-hz = /bits/ 64 <458000000>;
-+				opp-microvolt = <681250>;
++				opp-microvolt = <681250>, <750000>;
 +			};
 +
 +			opp-492000000 {
 +				opp-hz = /bits/ 64 <492000000>;
-+				opp-microvolt = <687500>;
++				opp-microvolt = <687500>, <750000>;
 +			};
 +
 +			opp-526000000 {
 +				opp-hz = /bits/ 64 <526000000>;
-+				opp-microvolt = <687500>;
++				opp-microvolt = <687500>, <750000>;
 +			};
 +
 +			opp-560000000 {
 +				opp-hz = /bits/ 64 <560000000>;
-+				opp-microvolt = <693750>;
++				opp-microvolt = <693750>, <750000>;
 +			};
 +
 +			opp-595000000 {
 +				opp-hz = /bits/ 64 <595000000>;
-+				opp-microvolt = <693750>;
++				opp-microvolt = <693750>, <750000>;
 +			};
 +
 +			opp-630000000 {
 +				opp-hz = /bits/ 64 <630000000>;
-+				opp-microvolt = <700000>;
++				opp-microvolt = <700000>, <750000>;
 +			};
 +
 +			opp-665000000 {
 +				opp-hz = /bits/ 64 <665000000>;
-+				opp-microvolt = <700000>;
++				opp-microvolt = <700000>, <750000>;
 +			};
 +
 +			opp-700000000 {
 +				opp-hz = /bits/ 64 <700000000>;
-+				opp-microvolt = <700000>;
++				opp-microvolt = <700000>, <750000>;
 +			};
 +
 +			opp-736000000 {
 +				opp-hz = /bits/ 64 <736000000>;
-+				opp-microvolt = <718750>;
++				opp-microvolt = <718750>, <750000>;
 +			};
 +
 +			opp-772000000 {
 +				opp-hz = /bits/ 64 <772000000>;
-+				opp-microvolt = <737500>;
++				opp-microvolt = <737500>, <750000>;
 +			};
 +
 +			opp-808000000 {
 +				opp-hz = /bits/ 64 <808000000>;
-+				opp-microvolt = <756250>;
++				opp-microvolt = <756250>, <756250>;
 +			};
 +
 +			opp-844000000 {
 +				opp-hz = /bits/ 64 <844000000>;
-+				opp-microvolt = <775000>;
++				opp-microvolt = <775000>, <775000>;
 +			};
 +
 +			opp-880000000 {
 +				opp-hz = /bits/ 64 <880000000>;
-+				opp-microvolt = <793750>;
++				opp-microvolt = <793750>, <793750>;
 +			};
 +
 +			opp-935000000 {
 +				opp-hz = /bits/ 64 <935000000>;
-+				opp-microvolt = <818750>;
++				opp-microvolt = <818750>, <818750>;
 +			};
 +
 +			opp-990000000 {
 +				opp-hz = /bits/ 64 <990000000>;
-+				opp-microvolt = <850000>;
++				opp-microvolt = <850000>, <850000>;
 +			};
 +
 +			opp-1045000000 {
 +				opp-hz = /bits/ 64 <1045000000>;
-+				opp-microvolt = <875000>;
++				opp-microvolt = <875000>, <875000>;
 +			};
 +
 +			opp-1100000000 {
 +				opp-hz = /bits/ 64 <1100000000>;
-+				opp-microvolt = <900000>;
++				opp-microvolt = <900000>, <900000>;
 +			};
 +		};
 +
@@ -8464,7 +8449,8 @@ index 0000000000000000000000000000000000000000..d610dddb25224253f683808d451d88b4
 +				      "img1-0", "img1-1", "img1-2",
 +				      "img2-0", "img2-1", "img2-2",
 +				      "mm_infra-0", "disp-0", "vdec-0", "venc-0", "mdp0-0";
-+			mfg0-supply = <&mt6359_vsram_proc1_ldo_reg>;
++			mfg0-supply = <&mt6359_vproc1_buck_reg>;
++			mfg1-supply = <&mt6359_vsram_proc1_ldo_reg>;
 +		};
 +
 +		watchdog: watchdog@1c00a000 {
@@ -24381,7 +24367,7 @@ index f06b048c124794c0f1192591136a3d7bc7ce35e4..b3fb71157b4e0b4c003510f35054aff6
  };
  MODULE_DEVICE_TABLE(of, mtk_disp_rdma_driver_dt_match);
 diff --git a/drivers/gpu/drm/mediatek/mtk_dp.c b/drivers/gpu/drm/mediatek/mtk_dp.c
-index 19d871d71680476a5a3e8db09ed5e47b39c2167c..8ca87298f1bff6154bd6798f672280e5136960d2 100644
+index 19d871d71680476a5a3e8db09ed5e47b39c2167c..25c506d641e94325027e1bc0ee9d1bff9dbed80c 100644
 --- a/drivers/gpu/drm/mediatek/mtk_dp.c
 +++ b/drivers/gpu/drm/mediatek/mtk_dp.c
 @@ -70,6 +70,12 @@ enum {
@@ -24397,7 +24383,19 @@ index 19d871d71680476a5a3e8db09ed5e47b39c2167c..8ca87298f1bff6154bd6798f672280e5
  struct mtk_dp_train_info {
  	bool sink_ssc;
  	bool cable_plugged_in;
-@@ -1045,12 +1051,27 @@ static void mtk_dp_set_swing_pre_emphasis(struct mtk_dp *mtk_dp, int lane_num,
+@@ -102,6 +108,11 @@ struct mtk_dp_efuse_fmt {
+ 	unsigned short default_val;
+ };
+ 
++struct mtk_edp_phy_data  {
++	struct regmap *phy_regs;
++	u32 edp_ver;
++};
++
+ struct mtk_dp {
+ 	bool enabled;
+ 	bool need_debounce;
+@@ -1045,12 +1056,27 @@ static void mtk_dp_set_swing_pre_emphasis(struct mtk_dp *mtk_dp, int lane_num,
  		case 1:
  		case 2:
  		case 3:
@@ -24426,53 +24424,27 @@ index 19d871d71680476a5a3e8db09ed5e47b39c2167c..8ca87298f1bff6154bd6798f672280e5
  			break;
  		default:
  			break;
-@@ -2988,18 +3009,33 @@ static int mtk_dp_register_phy(struct mtk_dp *mtk_dp)
+@@ -2987,13 +3013,17 @@ static int mtk_dp_register_audio_driver(struct device *dev)
+ static int mtk_dp_register_phy(struct mtk_dp *mtk_dp)
  {
  	struct device *dev = mtk_dp->dev;
++	struct mtk_edp_phy_data phy_data = {
++		.phy_regs = mtk_dp->phy_regs,
++		.edp_ver = mtk_dp->data->edp_ver,
++	};
  
--	if (mtk_dp->phy_regs)
--		mtk_dp->phy_dev = platform_device_register_data(dev,
--					"mediatek-edp-phy",
--					PLATFORM_DEVID_AUTO,
+ 	if (mtk_dp->phy_regs)
+ 		mtk_dp->phy_dev = platform_device_register_data(dev,
+ 					"mediatek-edp-phy",
+ 					PLATFORM_DEVID_AUTO,
 -					&mtk_dp->phy_regs,
 -					sizeof(struct regmap *));
--	else
--		mtk_dp->phy_dev = platform_device_register_data(dev,
--					"mediatek-dp-phy",
--					PLATFORM_DEVID_AUTO,
--					&mtk_dp->regs,
--					sizeof(struct regmap *));
-+	if (mtk_dp->data->edp_ver == MTK_EDP_SOC_TYPE_MT8196) {
-+		if (mtk_dp->phy_regs)
-+			mtk_dp->phy_dev = platform_device_register_data(dev,
-+						"mediatek-edp-phy-mt8196",
-+						PLATFORM_DEVID_AUTO,
-+						&mtk_dp->phy_regs,
-+						sizeof(struct regmap *));
-+		else
-+			mtk_dp->phy_dev = platform_device_register_data(dev,
-+						"mediatek-dp-phy",
-+						PLATFORM_DEVID_AUTO,
-+						&mtk_dp->regs,
-+						sizeof(struct regmap *));
-+	} else if (mtk_dp->data->edp_ver == MTK_EDP_SOC_TYPE_MT8189) {
-+		if (mtk_dp->phy_regs)
-+			mtk_dp->phy_dev = platform_device_register_data(dev,
-+						"mediatek-edp-phy-mt8189",
-+						PLATFORM_DEVID_AUTO,
-+						&mtk_dp->phy_regs,
-+						sizeof(struct regmap *));
-+		else
-+			mtk_dp->phy_dev = platform_device_register_data(dev,
-+						"mediatek-dp-phy",
-+						PLATFORM_DEVID_AUTO,
-+						&mtk_dp->regs,
-+						sizeof(struct regmap *));
-+	}
- 	if (IS_ERR(mtk_dp->phy_dev))
- 		return dev_err_probe(dev, PTR_ERR(mtk_dp->phy_dev),
- 				     "Failed to create device mediatek-dp-phy\n");
-@@ -3294,7 +3330,16 @@ static const struct mtk_dp_data mt8196_edp_data = {
++					&phy_data,
++					sizeof(struct mtk_edp_phy_data));
+ 	else
+ 		mtk_dp->phy_dev = platform_device_register_data(dev,
+ 					"mediatek-dp-phy",
+@@ -3294,7 +3324,16 @@ static const struct mtk_dp_data mt8196_edp_data = {
  	.efuse_fmt = mt8195_edp_efuse_fmt,
  	.audio_supported = false,
  	.audio_m_div2_bit = MT8195_AUDIO_M_CODE_MULT_DIV_SEL_DP_ENC0_P0_DIV_2,
@@ -24490,17 +24462,17 @@ index 19d871d71680476a5a3e8db09ed5e47b39c2167c..8ca87298f1bff6154bd6798f672280e5
  };
  
  static const struct of_device_id mtk_dp_of_match[] = {
-@@ -3318,6 +3363,10 @@ static const struct of_device_id mtk_dp_of_match[] = {
- 		.compatible = "mediatek,mt8196-edp-tx",
- 		.data = &mt8196_edp_data,
+@@ -3306,6 +3345,10 @@ static const struct of_device_id mtk_dp_of_match[] = {
+ 		.compatible = "mediatek,mt8188-dp-tx",
+ 		.data = &mt8188_dp_data,
  	},
 +	{
 +		.compatible = "mediatek,mt8189-edp-tx",
 +		.data = &mt8189_edp_data,
 +	},
- 	{},
- };
- MODULE_DEVICE_TABLE(of, mtk_dp_of_match);
+ 	{
+ 		.compatible = "mediatek,mt8195-edp-tx",
+ 		.data = &mt8195_edp_data,
 diff --git a/drivers/gpu/drm/mediatek/mtk_dp_common.h b/drivers/gpu/drm/mediatek/mtk_dp_common.h
 index 3adab9d3f7284ade982cb4623fdce9909458be1e..371212a5e63cb85d83d229fb994538362df06488 100644
 --- a/drivers/gpu/drm/mediatek/mtk_dp_common.h
@@ -28309,7 +28281,7 @@ index 0000000000000000000000000000000000000000..d2ba5b2fe59a59ede272f420fc14f165
 +
 +// No newline at end of file
 diff --git a/drivers/gpu/drm/mediatek/mtk_drm_drv.c b/drivers/gpu/drm/mediatek/mtk_drm_drv.c
-index 2b47019ee9c8c6ddb6db1e01411184dfdefd644b..6d3fe29b7971acbe406e9dc2d2a031e36e82334d 100644
+index 2b47019ee9c8c6ddb6db1e01411184dfdefd644b..b1c25c3b46651aa3f69998db7ca747067cf80f65 100644
 --- a/drivers/gpu/drm/mediatek/mtk_drm_drv.c
 +++ b/drivers/gpu/drm/mediatek/mtk_drm_drv.c
 @@ -33,6 +33,7 @@
@@ -28433,18 +28405,7 @@ index 2b47019ee9c8c6ddb6db1e01411184dfdefd644b..6d3fe29b7971acbe406e9dc2d2a031e3
  	{ .compatible = "mediatek,mt8196-disp-tdshp",
  	  .data = (void *)MTK_DISP_TDSHP },
  	{ .compatible = "mediatek,mt8173-disp-ufoe",
-@@ -1051,6 +1098,10 @@ static const struct of_device_id mtk_ddp_comp_dt_ids[] = {
- 	  .data = (void *)MTK_DPI },
- 	{ .compatible = "mediatek,mt8188-dp-intf",
- 	  .data = (void *)MTK_DP_INTF },
-+	{ .compatible = "mediatek,mt8678-edp-dvo",
-+	  .data = (void *)MTK_DVO },
-+	{ .compatible = "mediatek,mt8189-edp-dvo",
-+	  .data = (void *)MTK_DVO },
- 	{ .compatible = "mediatek,mt8192-dpi",
- 	  .data = (void *)MTK_DPI },
- 	{ .compatible = "mediatek,mt8195-dp-intf",
-@@ -1067,10 +1118,18 @@ static const struct of_device_id mtk_ddp_comp_dt_ids[] = {
+@@ -1067,10 +1114,18 @@ static const struct of_device_id mtk_ddp_comp_dt_ids[] = {
  	  .data = (void *)MTK_DSI },
  	{ .compatible = "mediatek,mt8188-dsi",
  	  .data = (void *)MTK_DSI },
@@ -28463,7 +28424,7 @@ index 2b47019ee9c8c6ddb6db1e01411184dfdefd644b..6d3fe29b7971acbe406e9dc2d2a031e3
  	{ .compatible = "mediatek,mt8196-vdisp-ao",
  	  .data = (void *)MTK_VDISP_AO },
  	{ }
-@@ -1237,8 +1296,11 @@ static int mtk_drm_probe(struct platform_device *pdev)
+@@ -1237,8 +1292,11 @@ static int mtk_drm_probe(struct platform_device *pdev)
  			continue;
  		}
  
@@ -28476,7 +28437,7 @@ index 2b47019ee9c8c6ddb6db1e01411184dfdefd644b..6d3fe29b7971acbe406e9dc2d2a031e3
  
  		private->comp_node[comp_id] = of_node_get(node);
  
-@@ -1266,6 +1328,8 @@ static int mtk_drm_probe(struct platform_device *pdev)
+@@ -1266,6 +1324,8 @@ static int mtk_drm_probe(struct platform_device *pdev)
  			drm_of_component_match_add(dev, &match, component_compare_of,
  						   node);
  		}
@@ -28485,7 +28446,7 @@ index 2b47019ee9c8c6ddb6db1e01411184dfdefd644b..6d3fe29b7971acbe406e9dc2d2a031e3
  
  		ret = mtk_ddp_comp_init(node, &private->ddp_comp[comp_id], comp_id);
  		if (ret) {
-@@ -1280,6 +1344,8 @@ static int mtk_drm_probe(struct platform_device *pdev)
+@@ -1280,6 +1340,8 @@ static int mtk_drm_probe(struct platform_device *pdev)
  		goto err_node;
  	}
  
@@ -28495,7 +28456,7 @@ index 2b47019ee9c8c6ddb6db1e01411184dfdefd644b..6d3fe29b7971acbe406e9dc2d2a031e3
  
  	platform_set_drvdata(pdev, private);
 diff --git a/drivers/gpu/drm/mediatek/mtk_drm_drv.h b/drivers/gpu/drm/mediatek/mtk_drm_drv.h
-index e986a4c00903b12f65fe398ba4eba9b0269c6df7..c47a45f017a680ad6d4ad23e94b63cce0761471d 100644
+index e986a4c00903b12f65fe398ba4eba9b0269c6df7..0a42af425b78063ff3a57234141b0151a300f124 100644
 --- a/drivers/gpu/drm/mediatek/mtk_drm_drv.h
 +++ b/drivers/gpu/drm/mediatek/mtk_drm_drv.h
 @@ -67,6 +67,7 @@ struct mtk_mmsys_driver_data {
@@ -28506,15 +28467,6 @@ index e986a4c00903b12f65fe398ba4eba9b0269c6df7..c47a45f017a680ad6d4ad23e94b63cce
  	unsigned int sec_mbox_index;
  	const char *secure_heap;
  };
-@@ -120,6 +121,8 @@ extern struct platform_driver mtk_dpi_driver_v2;
- extern struct platform_driver mtk_dsc_driver;
- extern struct platform_driver mtk_dsi_driver;
- extern struct platform_driver mtk_dvo_driver;
-+extern struct platform_driver mtk_dsi_driver;
-+extern struct platform_driver mtk_dsc_driver;
- extern struct platform_driver mtk_ethdr_driver;
- extern struct platform_driver mtk_mdp_rdma_driver;
- extern struct platform_driver mtk_padding_driver;
 diff --git a/drivers/gpu/drm/mediatek/mtk_dsi.c b/drivers/gpu/drm/mediatek/mtk_dsi.c
 index 3c8099b01ed9ec8426ddb338d4ff760e35809848..830a447bb9d2ec28d0250ad76f33179d31642601 100644
 --- a/drivers/gpu/drm/mediatek/mtk_dsi.c
@@ -28545,7 +28497,7 @@ index 3c8099b01ed9ec8426ddb338d4ff760e35809848..830a447bb9d2ec28d0250ad76f33179d
  	{ /* sentinel */ }
  };
 diff --git a/drivers/gpu/drm/mediatek/mtk_dvo.c b/drivers/gpu/drm/mediatek/mtk_dvo.c
-index 8ae226102101ba279beec19615c7d375589f3675..4b32539f849f07fda53255158ec6f65336d1c26d 100644
+index 8ae226102101ba279beec19615c7d375589f3675..d052ee6f6497350182f1bb64537c2dc400bd4fdf 100644
 --- a/drivers/gpu/drm/mediatek/mtk_dvo.c
 +++ b/drivers/gpu/drm/mediatek/mtk_dvo.c
 @@ -208,6 +208,8 @@ struct mtk_dvo_conf {
@@ -28566,27 +28518,25 @@ index 8ae226102101ba279beec19615c7d375589f3675..4b32539f849f07fda53255158ec6f653
  			 __func__, dvo->gs_level);
  		return;
  	}
-@@ -456,8 +458,9 @@ static void mtk_dvo_config_fb_size(struct mtk_dvo *dvo, u32 width, u32 height)
+@@ -456,7 +458,7 @@ static void mtk_dvo_config_fb_size(struct mtk_dvo *dvo, u32 width, u32 height)
  	mtk_dvo_mask(dvo, DVO_PIC_SIZE, height << PIC_VSIZE,
  		     dvo->conf->hvsize_mask << PIC_VSIZE);
  
 -	mtk_dvo_mask(dvo, DVO_TGEN_H1, (width / dvo->conf->pixels_per_iter) << HACT,
 +	mtk_dvo_mask(dvo, DVO_TGEN_H1, DIV_ROUND_UP(width, dvo->conf->pixels_per_iter) << HACT,
  		     dvo->conf->hvsize_mask << HACT);
-+
  	mtk_dvo_mask(dvo, DVO_TGEN_V1, height << VACT,
  		     dvo->conf->hvsize_mask << VACT);
- }
-@@ -536,7 +539,7 @@ static void mtk_dvo_config_yuv422_disable_v2(struct mtk_dvo *dvo)
+@@ -536,7 +538,7 @@ static void mtk_dvo_config_yuv422_disable_v2(struct mtk_dvo *dvo)
  static void mtk_dvo_config_color_format(struct mtk_dvo *dvo,
  					enum mtk_dvo_out_color_format format)
  {
 -	dev_dbg(dvo->dev, "[DPTX] format:%d", format);
-+	dev_dbg(dvo->dev, "Config color format:%d", format);
++	dev_dbg(dvo->dev, "[DPTX] Config color format:%d", format);
  
  	if (format == MTK_DVO_COLOR_FORMAT_YCBCR_422) {
  		mtk_dvo_config_yuv422_enable_v2(dvo);
-@@ -555,10 +558,18 @@ static int mtk_dvo_set_display_mode(struct mtk_dvo *dvo,
+@@ -555,10 +557,18 @@ static int mtk_dvo_set_display_mode(struct mtk_dvo *dvo,
  	struct videomode vm = { 0 };
  	unsigned long pll_rate;
  	unsigned int factor;
@@ -28605,7 +28555,7 @@ index 8ae226102101ba279beec19615c7d375589f3675..4b32539f849f07fda53255158ec6f653
  	pll_rate = vm.pixelclock * factor;
  
  	dev_dbg(dvo->dev, "Want PLL %lu Hz, pixel clock %lu Hz\n",
-@@ -589,6 +600,13 @@ static int mtk_dvo_set_display_mode(struct mtk_dvo *dvo,
+@@ -589,6 +599,13 @@ static int mtk_dvo_set_display_mode(struct mtk_dvo *dvo,
  	hsync.back_porch = vm.hback_porch / dvo->conf->pixels_per_iter;
  	hsync.front_porch = vm.hfront_porch / dvo->conf->pixels_per_iter;
  
@@ -28619,7 +28569,7 @@ index 8ae226102101ba279beec19615c7d375589f3675..4b32539f849f07fda53255158ec6f653
  	hsync.shift_half_line = false;
  	vsync_lodd.sync_width = vm.vsync_len;
  	vsync_lodd.back_porch = vm.vback_porch;
-@@ -611,15 +629,16 @@ static int mtk_dvo_set_display_mode(struct mtk_dvo *dvo,
+@@ -611,11 +628,13 @@ static int mtk_dvo_set_display_mode(struct mtk_dvo *dvo,
  
  	mtk_dvo_info_queue_start(dvo);
  	mtk_dvo_buffer_ctrl(dvo);
@@ -28637,37 +28587,35 @@ index 8ae226102101ba279beec19615c7d375589f3675..4b32539f849f07fda53255158ec6f653
  
  	if (dvo->conf->pixels_per_iter)
  		mtk_dvo_shadow_ctrl(dvo);
--
- 	if (dvo->conf->out_np_sel) {
- 		mtk_dvo_mask(dvo, DVO_OUTPUT_SET, dvo->conf->out_np_sel,
- 			     OUT_NP_SEL);
 @@ -641,7 +660,7 @@ static u32 *mtk_dvo_bridge_atomic_get_output_bus_fmts(struct drm_bridge *bridge,
  	*num_output_fmts = 0;
  
  	if (!dvo->conf->output_fmts) {
 -		dev_err(dvo->dev, "output_fmts should not be null\n");
-+		dev_err(dvo->dev, "Output formats are not set\n");
++		dev_err(dvo->dev, "output formats are not set\n");
  		return NULL;
  	}
  
-@@ -694,7 +713,7 @@ static int mtk_dvo_bridge_atomic_check(struct drm_bridge *bridge,
- 		if (dvo->conf->num_output_fmts)
- 			out_bus_format = dvo->conf->output_fmts[0];
+@@ -738,18 +757,12 @@ static void mtk_dvo_bridge_disable(struct drm_bridge *bridge)
+ 	struct mtk_dvo *dvo = bridge_to_dvo(bridge);
  
--	dev_dbg(dvo->dev, "input format 0x%04x, output format 0x%04x\n",
-+	dev_dbg(dvo->dev, "Input format 0x%04x, output format 0x%04x\n",
- 		bridge_state->input_bus_cfg.format,
- 		bridge_state->output_bus_cfg.format);
+ 	mtk_dvo_power_off(dvo);
+-
+-	if (dvo->pinctrl && dvo->pins_gpio)
+-		pinctrl_select_state(dvo->pinctrl, dvo->pins_gpio);
+ }
  
-@@ -753,7 +772,6 @@ static void mtk_dvo_bridge_enable(struct drm_bridge *bridge)
+ static void mtk_dvo_bridge_enable(struct drm_bridge *bridge)
+ {
+ 	struct mtk_dvo *dvo = bridge_to_dvo(bridge);
+ 
+-	if (dvo->pinctrl && dvo->pins_dvo)
+-		pinctrl_select_state(dvo->pinctrl, dvo->pins_dvo);
+-
  	mtk_dvo_power_on(dvo);
  	mtk_dvo_set_display_mode(dvo, &dvo->mode);
  	mtk_dvo_enable(dvo);
--
- }
- 
- static enum drm_mode_status
-@@ -805,6 +823,15 @@ void mtk_dvo_get_hrt_bw_by_datarate(struct device *dev, unsigned int *bw_base)
+@@ -805,6 +818,15 @@ void mtk_dvo_get_hrt_bw_by_datarate(struct device *dev, unsigned int *bw_base)
  					 1000000);
  }
  
@@ -28683,11 +28631,7 @@ index 8ae226102101ba279beec19615c7d375589f3675..4b32539f849f07fda53255158ec6f653
  static int mtk_dvo_bind(struct device *dev, struct device *master, void *data)
  {
  	struct mtk_dvo *dvo = dev_get_drvdata(dev);
-@@ -819,20 +846,23 @@ static int mtk_dvo_bind(struct device *dev, struct device *master, void *data)
- 		dev_err(dev, "Failed to initialize decoder: %d\n", ret);
- 		return ret;
- 	}
-+
+@@ -822,17 +844,19 @@ static int mtk_dvo_bind(struct device *dev, struct device *master, void *data)
  	dvo->encoder.possible_crtcs = mtk_find_possible_crtcs(drm_dev, dvo->dev);
  
  	ret = drm_bridge_attach(&dvo->encoder, &dvo->bridge, NULL,
@@ -28714,7 +28658,7 @@ index 8ae226102101ba279beec19615c7d375589f3675..4b32539f849f07fda53255158ec6f653
  
  	return 0;
  
-@@ -882,9 +912,38 @@ static const struct mtk_dvo_conf mt8196_conf = {
+@@ -882,9 +906,38 @@ static const struct mtk_dvo_conf mt8196_conf = {
  	.hvsize_mask = PIC_HSIZE_MASK,
  };
  
@@ -28753,36 +28697,34 @@ index 8ae226102101ba279beec19615c7d375589f3675..4b32539f849f07fda53255158ec6f653
  	struct mtk_dvo *dvo;
  	int ret;
  
-@@ -895,25 +954,22 @@ static int mtk_dvo_probe(struct platform_device *pdev)
- 	dvo->dev = dev;
+@@ -896,26 +949,6 @@ static int mtk_dvo_probe(struct platform_device *pdev)
  	dvo->conf = (struct mtk_dvo_conf *)of_device_get_match_data(dev);
  	dvo->output_fmt = MEDIA_BUS_FMT_RGB888_1X24;
--
- 	dvo->pinctrl = devm_pinctrl_get(&pdev->dev);
- 	if (IS_ERR(dvo->pinctrl)) {
- 		dvo->pinctrl = NULL;
+ 
+-	dvo->pinctrl = devm_pinctrl_get(&pdev->dev);
+-	if (IS_ERR(dvo->pinctrl)) {
+-		dvo->pinctrl = NULL;
 -		dev_dbg(&pdev->dev, "Cannot find pinctrl!\n");
-+		dev_err(dev, "Failed to get pinctrl\n");
- 	}
- 	if (dvo->pinctrl) {
- 		dvo->pins_gpio = pinctrl_lookup_state(dvo->pinctrl, "sleep");
- 		if (IS_ERR(dvo->pins_gpio)) {
- 			dvo->pins_gpio = NULL;
+-	}
+-	if (dvo->pinctrl) {
+-		dvo->pins_gpio = pinctrl_lookup_state(dvo->pinctrl, "sleep");
+-		if (IS_ERR(dvo->pins_gpio)) {
+-			dvo->pins_gpio = NULL;
 -			dev_dbg(&pdev->dev, "Cannot find pinctrl idle!\n");
-+			dev_err(dev, "Failed to get sleep state\n");
- 		}
+-		}
 -		if (dvo->pins_gpio)
 -			pinctrl_select_state(dvo->pinctrl, dvo->pins_gpio);
- 
- 		dvo->pins_dvo = pinctrl_lookup_state(dvo->pinctrl, "default");
- 		if (IS_ERR(dvo->pins_dvo)) {
- 			dvo->pins_dvo = NULL;
+-
+-		dvo->pins_dvo = pinctrl_lookup_state(dvo->pinctrl, "default");
+-		if (IS_ERR(dvo->pins_dvo)) {
+-			dvo->pins_dvo = NULL;
 -			dev_dbg(&pdev->dev, "Cannot find pinctrl active!\n");
-+			dev_err(dev, "Failed to get default state\n");
- 		}
- 	}
+-		}
+-	}
  	dvo->regs = devm_platform_ioremap_resource(pdev, 0);
-@@ -945,15 +1001,34 @@ static int mtk_dvo_probe(struct platform_device *pdev)
+ 	if (IS_ERR(dvo->regs))
+ 		return dev_err_probe(dev, PTR_ERR(dvo->regs),
+@@ -945,15 +978,34 @@ static int mtk_dvo_probe(struct platform_device *pdev)
  	if (dvo->irq < 0)
  		return dvo->irq;
  
@@ -28823,7 +28765,7 @@ index 8ae226102101ba279beec19615c7d375589f3675..4b32539f849f07fda53255158ec6f653
  	dvo->bridge.funcs = &mtk_dvo_bridge_funcs;
  	dvo->bridge.of_node = dev->of_node;
  	dvo->bridge.type = DRM_MODE_CONNECTOR_DPI;
-@@ -976,6 +1051,8 @@ static void mtk_dvo_remove(struct platform_device *pdev)
+@@ -976,6 +1028,8 @@ static void mtk_dvo_remove(struct platform_device *pdev)
  
  static const struct of_device_id mtk_dvo_of_ids[] = {
  	{ .compatible = "mediatek,mt8196-edp-dvo", .data = &mt8196_conf },
@@ -29940,314 +29882,307 @@ index 49878abbd20db589d354836e71e211710a7deaa0..df366e4b1a822e1fa38ca3fb62844dd2
  		return 0;
  	}
  
-diff --git a/drivers/phy/mediatek/Makefile b/drivers/phy/mediatek/Makefile
-index ddcd1c003a146e3695e8b39c4ac01949d6afabbb..97e68bb56ae8ec6ce3f379a3938d0a3b775fbb93 100644
---- a/drivers/phy/mediatek/Makefile
-+++ b/drivers/phy/mediatek/Makefile
-@@ -5,6 +5,7 @@
- 
- obj-$(CONFIG_PHY_MTK_DP)		+= phy-mtk-dp.o
- obj-$(CONFIG_PHY_MTK_DP)		+= phy-mtk-edp.o
-+obj-$(CONFIG_PHY_MTK_DP)		+= phy-mtk-edp-mt8189.o
- obj-$(CONFIG_PHY_MTK_PCIE)		+= phy-mtk-pcie.o
- obj-$(CONFIG_PHY_MTK_TPHY)		+= phy-mtk-tphy.o
- obj-$(CONFIG_PHY_MTK_UFS)		+= phy-mtk-ufs.o
-diff --git a/drivers/phy/mediatek/phy-mtk-edp-mt8189.c b/drivers/phy/mediatek/phy-mtk-edp-mt8189.c
-new file mode 100644
-index 0000000000000000000000000000000000000000..e632b744fd6bb927f53ea5a7c5606f53a9883ec3
---- /dev/null
-+++ b/drivers/phy/mediatek/phy-mtk-edp-mt8189.c
-@@ -0,0 +1,268 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Copyright (c) 2019-2022 MediaTek Inc.
-+ * Copyright (c) 2022 BayLibre
-+ */
-+
-+#include <linux/delay.h>
-+#include <linux/io.h>
-+#include <linux/mfd/syscon.h>
-+#include <linux/of.h>
-+#include <linux/phy/phy.h>
-+#include <linux/platform_device.h>
-+#include <linux/regmap.h>
-+
-+#define PHYD_OFFSET		0x0000
-+#define PHYD_DIG_LAN0_OFFSET	0x1000
-+#define PHYD_DIG_LAN1_OFFSET	0x1100
-+#define PHYD_DIG_LAN2_OFFSET	0x1200
-+#define PHYD_DIG_LAN3_OFFSET	0x1300
-+#define PHYD_DIG_GLB_OFFSET	0x1400
-+
-+#define IPMUX_CONTROL			(PHYD_DIG_GLB_OFFSET + 0x98)
-+#define EDPTX_DSI_PHYD_SEL_FLDMASK	0x1
-+#define EDPTX_DSI_PHYD_SEL_FLDMASK_POS	0
-+#define DP_PHY_DIG_TX_CTL_0		(PHYD_DIG_GLB_OFFSET + 0x44)
-+#define TX_LN_EN_FLDMASK		0xf0
-+#define MTK_DP_PHY_DIG_PLL_CTL_1	(PHYD_DIG_GLB_OFFSET + 0x14)
-+#define TPLL_SSC_EN			BIT(8)
-+#define MTK_DP_PHY_DIG_BIT_RATE		(PHYD_DIG_GLB_OFFSET + 0x3C)
-+#define BIT_RATE_RBR			0x0
-+#define BIT_RATE_HBR			0x1
-+#define BIT_RATE_HBR2			0x2
-+#define BIT_RATE_HBR3			0x3
-+#define MTK_DP_PHY_DIG_SW_RST		(PHYD_DIG_GLB_OFFSET + 0x38)
-+#define DP_GLB_SW_RST_PHYD		BIT(0)
-+#define DP_GLB_SW_RST_PHYD_MASK		BIT(0)
-+#define DRIVING_FORCE			0x18
-+#define EDP_TX_LN_VOLT_SWING_VAL_FLDMASK	GENMASK(2, 1)
-+#define EDP_TX_LN_VOLT_SWING_VAL_FLDMASK_POS	1
-+#define EDP_TX_LN_PRE_EMPH_VAL_FLDMASK		GENMASK(6, 5)
-+#define EDP_TX_LN_PRE_EMPH_VAL_FLDMASK_POS	5
-+#define MTK_DP_LANE0_DRIVING_PARAM_3		(PHYD_OFFSET + 0x138)
-+#define MTK_DP_LANE1_DRIVING_PARAM_3		(PHYD_OFFSET + 0x238)
-+#define MTK_DP_LANE2_DRIVING_PARAM_3		(PHYD_OFFSET + 0x338)
-+#define MTK_DP_LANE3_DRIVING_PARAM_3		(PHYD_OFFSET + 0x438)
-+#define XTP_LN_TX_LCTXC0_SW0_PRE0_DEFAULT	BIT(4)
-+#define XTP_LN_TX_LCTXC0_SW0_PRE1_DEFAULT	(BIT(10) | BIT(12))
-+#define XTP_LN_TX_LCTXC0_SW0_PRE2_DEFAULT	GENMASK(20, 19)
-+#define XTP_LN_TX_LCTXC0_SW0_PRE3_DEFAULT	GENMASK(29, 29)
-+
-+struct mtk_edp_phy {
-+	struct regmap *regs;
-+};
-+
-+enum {
-+	DPTX_SWING0	= 0x00,
-+	DPTX_SWING1	= 0x01,
-+	DPTX_SWING2	= 0x02,
-+	DPTX_SWING3	= 0x03,
-+};
-+
-+enum {
-+	DPTX_PREEMPHASIS0	= 0x00,
-+	DPTX_PREEMPHASIS1	= 0x01,
-+	DPTX_PREEMPHASIS2	= 0x02,
-+	DPTX_PREEMPHASIS3	= 0x03,
-+};
-+
-+enum {
-+	DPTX_LANE0 = 0x0,
-+	DPTX_LANE1 = 0x1,
-+	DPTX_LANE2 = 0x2,
-+	DPTX_LANE3 = 0x3,
-+	DPTX_LANE_MAX,
-+};
-+
-+enum {
-+	DPTX_LANE_COUNT1 = 0x1,
-+	DPTX_LANE_COUNT2 = 0x2,
-+	DPTX_LANE_COUNT4 = 0x4,
-+};
-+
-+static void mtk_dptx_phyd_reset_swing_pre(struct mtk_edp_phy *edp_phy)
-+{
-+	regmap_update_bits(edp_phy->regs, PHYD_DIG_LAN0_OFFSET + DRIVING_FORCE,
-+			 EDP_TX_LN_VOLT_SWING_VAL_FLDMASK | EDP_TX_LN_PRE_EMPH_VAL_FLDMASK, 0x0);
-+	regmap_update_bits(edp_phy->regs, PHYD_DIG_LAN1_OFFSET + DRIVING_FORCE,
-+			 EDP_TX_LN_VOLT_SWING_VAL_FLDMASK | EDP_TX_LN_PRE_EMPH_VAL_FLDMASK, 0x0);
-+	regmap_update_bits(edp_phy->regs, PHYD_DIG_LAN2_OFFSET + DRIVING_FORCE,
-+			 EDP_TX_LN_VOLT_SWING_VAL_FLDMASK | EDP_TX_LN_PRE_EMPH_VAL_FLDMASK, 0x0);
-+	regmap_update_bits(edp_phy->regs, PHYD_DIG_LAN3_OFFSET + DRIVING_FORCE,
-+			 EDP_TX_LN_VOLT_SWING_VAL_FLDMASK | EDP_TX_LN_PRE_EMPH_VAL_FLDMASK, 0x0);
-+}
-+
-+
-+static int mtk_edp_phy_init(struct phy *phy)
-+{
-+	struct mtk_edp_phy *edp_phy = phy_get_drvdata(phy);
-+
-+	/* Set IPMUX_CONTROL to eDP Mode */
-+	regmap_update_bits(edp_phy->regs, IPMUX_CONTROL,
-+						0 << EDPTX_DSI_PHYD_SEL_FLDMASK_POS,
-+						EDPTX_DSI_PHYD_SEL_FLDMASK);
-+
-+	regmap_update_bits(edp_phy->regs, PHYD_DIG_GLB_OFFSET + 0x10,
-+						BIT(0) | BIT(1) | BIT(2),
-+						BIT(0) | BIT(1) | BIT(2));
-+
-+	return 0;
-+}
-+
-+static int mtk_edp_phy_configure(struct phy *phy, union phy_configure_opts *opts)
-+{
-+	struct mtk_edp_phy *edp_phy = phy_get_drvdata(phy);
-+	u32 val = 0x0;
-+
-+	if (opts->dp.set_rate) {
-+		switch (opts->dp.link_rate) {
-+		default:
-+			dev_info(&phy->dev,
-+				"Implementation error, unknown linkrate %x\n",
-+				opts->dp.link_rate);
-+			return -EINVAL;
-+		case 1620:
-+			val = BIT_RATE_RBR;
-+			break;
-+		case 2700:
-+			val = BIT_RATE_HBR;
-+			break;
-+		case 5400:
-+			val = BIT_RATE_HBR2;
-+			break;
-+		case 8100:
-+			val = BIT_RATE_HBR3;
-+			break;
-+		}
-+		regmap_write(edp_phy->regs, MTK_DP_PHY_DIG_BIT_RATE, val);
-+	}
-+
-+	if (opts->dp.set_lanes) {
-+		for (val = 0; val < 4; val++) {
-+			regmap_update_bits(edp_phy->regs, DP_PHY_DIG_TX_CTL_0,
-+				((1 << (val + 1)) - 1) << 4, TX_LN_EN_FLDMASK);
-+		}
-+	}
-+
-+	/* set swing and pre */
-+	if (opts->dp.set_voltages) {
-+		if (opts->dp.lanes >= DPTX_LANE_COUNT1) {
-+			regmap_update_bits(edp_phy->regs,
-+				PHYD_DIG_LAN0_OFFSET + DRIVING_FORCE,
-+				EDP_TX_LN_VOLT_SWING_VAL_FLDMASK |
-+				EDP_TX_LN_PRE_EMPH_VAL_FLDMASK,
-+				opts->dp.voltage[DPTX_LANE0] << 1 |
-+				opts->dp.pre[DPTX_LANE0] << 3);
-+
-+			if (opts->dp.lanes >= DPTX_LANE_COUNT2) {
-+				regmap_update_bits(edp_phy->regs,
-+					PHYD_DIG_LAN1_OFFSET + DRIVING_FORCE,
-+					EDP_TX_LN_VOLT_SWING_VAL_FLDMASK |
-+					EDP_TX_LN_PRE_EMPH_VAL_FLDMASK,
-+					opts->dp.voltage[DPTX_LANE1] << 1 |
-+					opts->dp.pre[DPTX_LANE1] << 3);
-+
-+				if (opts->dp.lanes == DPTX_LANE_COUNT4) {
-+					regmap_update_bits(edp_phy->regs,
-+						PHYD_DIG_LAN2_OFFSET + DRIVING_FORCE,
-+						EDP_TX_LN_VOLT_SWING_VAL_FLDMASK |
-+						EDP_TX_LN_PRE_EMPH_VAL_FLDMASK,
-+						opts->dp.voltage[DPTX_LANE2] << 1 |
-+						opts->dp.pre[DPTX_LANE2] << 3);
-+
-+					regmap_update_bits(edp_phy->regs,
-+						PHYD_DIG_LAN3_OFFSET + DRIVING_FORCE,
-+						EDP_TX_LN_VOLT_SWING_VAL_FLDMASK |
-+						EDP_TX_LN_PRE_EMPH_VAL_FLDMASK,
-+						opts->dp.voltage[DPTX_LANE3] << 1 |
-+						opts->dp.pre[DPTX_LANE3] << 3);
-+				}
-+			}
-+		}
-+	}
-+
-+	regmap_update_bits(edp_phy->regs, MTK_DP_PHY_DIG_PLL_CTL_1,
-+			   TPLL_SSC_EN, opts->dp.ssc ? 0 : TPLL_SSC_EN);
-+
-+	return 0;
-+}
-+
-+static int mtk_edp_phy_reset(struct phy *phy)
-+{
-+	struct mtk_edp_phy *edp_phy = phy_get_drvdata(phy);
-+	unsigned int val = 0x0;
-+
-+	regmap_update_bits(edp_phy->regs, MTK_DP_PHY_DIG_SW_RST,
-+			   0, DP_GLB_SW_RST_PHYD_MASK);
-+	usleep_range(50, 200);
-+	regmap_update_bits(edp_phy->regs, MTK_DP_PHY_DIG_SW_RST,
-+			   DP_GLB_SW_RST_PHYD, DP_GLB_SW_RST_PHYD_MASK);
-+
-+	regmap_read(edp_phy->regs,DP_PHY_DIG_TX_CTL_0, &val);
-+	val = val & TX_LN_EN_FLDMASK;
-+	pr_info("[eDPTX] Current lane power %x\n", val);
-+
-+	while (val > 0) {
-+		val >>= 1;
-+		regmap_update_bits(edp_phy->regs, DP_PHY_DIG_TX_CTL_0,
-+			val << 4, TX_LN_EN_FLDMASK);
-+	}
-+
-+	mtk_dptx_phyd_reset_swing_pre(edp_phy);
-+
-+	return 0;
-+}
-+
-+static const struct phy_ops mtk_edp_phy_dev_ops = {
-+	.init = mtk_edp_phy_init,
-+	.configure = mtk_edp_phy_configure,
-+	.reset = mtk_edp_phy_reset,
-+	.owner = THIS_MODULE,
-+};
-+
-+static int mtk_edp_phy_probe(struct platform_device *pdev)
-+{
-+	struct device *dev = &pdev->dev;
-+	struct mtk_edp_phy *edp_phy;
-+	struct phy *phy;
-+	struct regmap *regs;
-+
-+	pr_info("[eDPTX] %s+\n", __func__);
-+
-+	regs = *(struct regmap **)dev->platform_data;
-+	if (!regs) {
-+		pr_info("[eDPTX] regmap is NULL\n");
-+		return -EINVAL;
-+	}
-+
-+	edp_phy = devm_kzalloc(dev, sizeof(*edp_phy), GFP_KERNEL);
-+	if (!edp_phy)
-+		return -ENOMEM;
-+
-+	edp_phy->regs = regs;
-+	phy = devm_phy_create(dev, NULL, &mtk_edp_phy_dev_ops);
-+	if (IS_ERR(phy)) {
-+		pr_info("Failed to create DP PHY\n");
-+		return PTR_ERR(phy);
-+	}
-+
-+	phy_set_drvdata(phy, edp_phy);
-+	if (!dev->of_node)
-+		phy_create_lookup(phy, "edp", dev_name(dev));
-+
-+	pr_info("[eDPTX] %s-\n", __func__);
-+	return 0;
-+}
-+
-+struct platform_driver mtk_edp_phy_driver_mt8189 = {
-+	.probe = mtk_edp_phy_probe,
-+	.driver = {
-+		.name = "mediatek-edp-phy-mt8189",
-+	},
-+};
-+
-+module_platform_driver(mtk_edp_phy_driver_mt8189);
-+
-+MODULE_AUTHOR("bincai.liu <bincai.liu@mediatek.com>");
-+MODULE_DESCRIPTION("MediaTek Embedded DisplayPort PHY Driver");
-+MODULE_LICENSE("GPL");
 diff --git a/drivers/phy/mediatek/phy-mtk-edp.c b/drivers/phy/mediatek/phy-mtk-edp.c
-index 06885649471b9eb51f0998d99a3e1c4c10bce380..4c140fcee4a31329cc3c60f83606c249bf80446b 100644
+index 06885649471b9eb51f0998d99a3e1c4c10bce380..453dc8d89ff86ebbd231208538f6d3531aa648d3 100644
 --- a/drivers/phy/mediatek/phy-mtk-edp.c
 +++ b/drivers/phy/mediatek/phy-mtk-edp.c
-@@ -314,14 +314,14 @@ static int mtk_dp_phy_probe(struct platform_device *pdev)
+@@ -31,6 +31,8 @@
+ 
+ #define DP_PHY_DIG_TX_CTL_0		(PHYD_DIG_GLB_OFFSET + 0x74)
+ #define TX_LN_EN_FLDMASK			0xf
++#define DP_PHY_DIG_TX_CTL_0_MT8189	(PHYD_DIG_GLB_OFFSET + 0x74)
++#define TX_LN_EN_FLDMASK_MT8189			0xf0
+ 
+ #define MTK_DP_PHY_DIG_PLL_CTL_1	(PHYD_DIG_GLB_OFFSET + 0x14)
+ #define TPLL_SSC_EN				BIT(8)
+@@ -40,6 +42,10 @@
+ #define BIT_RATE_HBR				0x4
+ #define BIT_RATE_HBR2				0x7
+ #define BIT_RATE_HBR3				0x9
++#define BIT_RATE_RBR_MT8189			0x0
++#define BIT_RATE_HBR_MT8189			0x1
++#define BIT_RATE_HBR2_MT8189			0x2
++#define BIT_RATE_HBR3_MT8189			0x3
+ 
+ #define MTK_DP_PHY_DIG_SW_RST		(PHYD_DIG_GLB_OFFSET + 0x38)
+ #define DP_GLB_SW_RST_PHYD			BIT(0)
+@@ -50,6 +56,11 @@
+ #define EDP_TX_LN_VOLT_SWING_VAL_FLDMASK_POS	1
+ #define EDP_TX_LN_PRE_EMPH_VAL_FLDMASK		0x18
+ #define EDP_TX_LN_PRE_EMPH_VAL_FLDMASK_POS	3
++#define DRIVING_FORCE_MT8189		0x18
++#define EDP_TX_LN_VOLT_SWING_FLDMASK_MT8189	GENMASK(2, 1)
++#define EDP_TX_LN_VOLT_SWING_FLDMASK_POS_MT8189	1
++#define EDP_TX_LN_PRE_EMPH_FLDMASK_MT8189	GENMASK(6, 5)
++#define EDP_TX_LN_PRE_EMPH_FLDMASK_POS_MT8189	5
+ 
+ #define MTK_DP_LANE0_DRIVING_PARAM_3	(PHYD_OFFSET + 0x138)
+ #define MTK_DP_LANE1_DRIVING_PARAM_3	(PHYD_OFFSET + 0x238)
+@@ -103,6 +114,22 @@
+ 
+ struct mtk_dp_phy {
+ 	struct regmap *regs;
++	u32 dp_phy_dig_tx_ctl;
++	u32 tx_ln_en_mask;
++	u8 bit_rate_rbr;
++	u8 bit_rate_hbr1;
++	u8 bit_rate_hbr2;
++	u8 bit_rate_hbr3;
++	u32 driving_force;
++	u32 swing_value_mask;
++	u8 swing_value_pos;
++	u32 pre_emph_value_mask;
++	u8 pre_emph_value_pos;
++};
++
++struct mtk_edp_phy_data  {
++	struct regmap *phy_regs;
++	u32 edp_ver;
+ };
+ 
+ enum DPTX_SWING_LEVEL {
+@@ -133,20 +160,26 @@ enum DPTX_LANE_COUNT {
+ 	DPTX_LANE_COUNT4 = 0x4,
+ };
+ 
++enum {
++	MTK_EDP_SOC_TYPE_NONE  = 0,
++	MTK_EDP_SOC_TYPE_MT8196,
++	MTK_EDP_SOC_TYPE_MT8189,
++};
++
+ static void mtk_dptx_phyd_reset_swing_pre(struct mtk_dp_phy *dp_phy)
+ {
+-	regmap_update_bits(dp_phy->regs, PHYD_DIG_LAN0_OFFSET + DRIVING_FORCE,
+-			   EDP_TX_LN_VOLT_SWING_VAL_FLDMASK |
+-			   EDP_TX_LN_PRE_EMPH_VAL_FLDMASK, 0x0);
+-	regmap_update_bits(dp_phy->regs, PHYD_DIG_LAN1_OFFSET + DRIVING_FORCE,
+-			   EDP_TX_LN_VOLT_SWING_VAL_FLDMASK |
+-			   EDP_TX_LN_PRE_EMPH_VAL_FLDMASK, 0x0);
+-	regmap_update_bits(dp_phy->regs, PHYD_DIG_LAN2_OFFSET + DRIVING_FORCE,
+-			   EDP_TX_LN_VOLT_SWING_VAL_FLDMASK |
+-			   EDP_TX_LN_PRE_EMPH_VAL_FLDMASK, 0x0);
+-	regmap_update_bits(dp_phy->regs, PHYD_DIG_LAN3_OFFSET + DRIVING_FORCE,
+-			   EDP_TX_LN_VOLT_SWING_VAL_FLDMASK |
+-			   EDP_TX_LN_PRE_EMPH_VAL_FLDMASK, 0x0);
++	regmap_update_bits(dp_phy->regs, PHYD_DIG_LAN0_OFFSET + dp_phy->driving_force,
++			   dp_phy->swing_value_mask |
++			   dp_phy->pre_emph_value_mask, 0x0);
++	regmap_update_bits(dp_phy->regs, PHYD_DIG_LAN1_OFFSET + dp_phy->driving_force,
++			   dp_phy->swing_value_mask |
++			   dp_phy->pre_emph_value_mask, 0x0);
++	regmap_update_bits(dp_phy->regs, PHYD_DIG_LAN2_OFFSET + dp_phy->driving_force,
++			   dp_phy->swing_value_mask |
++			   dp_phy->pre_emph_value_mask, 0x0);
++	regmap_update_bits(dp_phy->regs, PHYD_DIG_LAN3_OFFSET + dp_phy->driving_force,
++			   dp_phy->swing_value_mask |
++			   dp_phy->pre_emph_value_mask, 0x0);
+ }
+ 
+ static int mtk_dp_phy_init(struct phy *phy)
+@@ -171,16 +204,16 @@ int mtk_dp_phy_configure(struct phy *phy, union phy_configure_opts *opts)
+ 	if (opts->dp.set_rate) {
+ 		switch (opts->dp.link_rate) {
+ 		case 1620:
+-			val = BIT_RATE_RBR;
++			val = dp_phy->bit_rate_rbr;
+ 			break;
+ 		case 2700:
+-			val = BIT_RATE_HBR;
++			val = dp_phy->bit_rate_hbr1;
+ 			break;
+ 		case 5400:
+-			val = BIT_RATE_HBR2;
++			val = dp_phy->bit_rate_hbr2;
+ 			break;
+ 		case 8100:
+-			val = BIT_RATE_HBR3;
++			val = dp_phy->bit_rate_hbr3;
+ 			break;
+ 		default:
+ 			dev_err(&phy->dev,
+@@ -193,9 +226,9 @@ int mtk_dp_phy_configure(struct phy *phy, union phy_configure_opts *opts)
+ 
+ 	if (opts->dp.set_lanes) {
+ 		for (val = 0; val < 4; val++) {
+-			regmap_update_bits(dp_phy->regs, DP_PHY_DIG_TX_CTL_0,
++			regmap_update_bits(dp_phy->regs, dp_phy->dp_phy_dig_tx_ctl,
+ 					   ((1 << (val + 1)) - 1),
+-					   TX_LN_EN_FLDMASK);
++					   dp_phy->tx_ln_en_mask);
+ 		}
+ 	}
+ 
+@@ -203,51 +236,59 @@ int mtk_dp_phy_configure(struct phy *phy, union phy_configure_opts *opts)
+ 		switch (opts->dp.lanes) {
+ 		case DPTX_LANE_COUNT1:
+ 			regmap_update_bits(dp_phy->regs, PHYD_DIG_LAN0_OFFSET +
+-					   DRIVING_FORCE,
+-					   EDP_TX_LN_VOLT_SWING_VAL_FLDMASK |
+-					   EDP_TX_LN_PRE_EMPH_VAL_FLDMASK,
+-					   opts->dp.voltage[DPTX_LANE0] << 1 |
++					   dp_phy->driving_force,
++					   dp_phy->swing_value_mask |
++					   dp_phy->pre_emph_value_mask,
++					   opts->dp.voltage[DPTX_LANE0] << dp_phy->swing_value_pos |
+ 					   opts->dp.pre[DPTX_LANE0] << 3);
+ 		break;
+ 		case DPTX_LANE_COUNT2:
+ 			regmap_update_bits(dp_phy->regs, PHYD_DIG_LAN0_OFFSET +
+-					   DRIVING_FORCE,
+-					   EDP_TX_LN_VOLT_SWING_VAL_FLDMASK |
+-					   EDP_TX_LN_PRE_EMPH_VAL_FLDMASK,
+-					   opts->dp.voltage[DPTX_LANE0] << 1 |
+-					   opts->dp.pre[DPTX_LANE0] << 3);
++					   dp_phy->driving_force,
++					   dp_phy->swing_value_mask |
++					   dp_phy->pre_emph_value_mask,
++					   opts->dp.voltage[DPTX_LANE0] << dp_phy->swing_value_pos |
++					   opts->dp.pre[DPTX_LANE0] << dp_phy->pre_emph_value_pos);
+ 			regmap_update_bits(dp_phy->regs, PHYD_DIG_LAN1_OFFSET +
+-					   DRIVING_FORCE,
+-					   EDP_TX_LN_VOLT_SWING_VAL_FLDMASK |
+-					   EDP_TX_LN_PRE_EMPH_VAL_FLDMASK,
+-					   opts->dp.voltage[DPTX_LANE1] << 1 |
+-					   opts->dp.pre[DPTX_LANE1] << 3);
++					   dp_phy->driving_force,
++					   dp_phy->swing_value_mask |
++					   dp_phy->pre_emph_value_mask,
++					   opts->dp.voltage[DPTX_LANE1] << dp_phy->swing_value_pos |
++					   opts->dp.pre[DPTX_LANE1] << dp_phy->pre_emph_value_pos);
+ 		break;
+ 		case DPTX_LANE_COUNT4:
+ 			regmap_update_bits(dp_phy->regs, PHYD_DIG_LAN0_OFFSET +
+-					   DRIVING_FORCE,
+-					   EDP_TX_LN_VOLT_SWING_VAL_FLDMASK |
+-					   EDP_TX_LN_PRE_EMPH_VAL_FLDMASK,
+-					   opts->dp.voltage[DPTX_LANE0] << 1 |
+-					   opts->dp.pre[DPTX_LANE0] << 3);
++					   dp_phy->driving_force,
++					   dp_phy->swing_value_mask |
++					   dp_phy->pre_emph_value_mask,
++					   opts->dp.voltage[DPTX_LANE0] <<
++					   dp_phy->swing_value_pos |
++					   opts->dp.pre[DPTX_LANE0] <<
++					   dp_phy->pre_emph_value_pos);
+ 			regmap_update_bits(dp_phy->regs, PHYD_DIG_LAN1_OFFSET +
+-					   DRIVING_FORCE,
+-					   EDP_TX_LN_VOLT_SWING_VAL_FLDMASK |
+-					   EDP_TX_LN_PRE_EMPH_VAL_FLDMASK,
+-					   opts->dp.voltage[DPTX_LANE1] << 1 |
+-					   opts->dp.pre[DPTX_LANE1] << 3);
++					   dp_phy->driving_force,
++					   dp_phy->swing_value_mask |
++					   dp_phy->pre_emph_value_mask,
++					   opts->dp.voltage[DPTX_LANE1] <<
++					   dp_phy->swing_value_pos |
++					   opts->dp.pre[DPTX_LANE1] <<
++					   dp_phy->pre_emph_value_pos);
+ 			regmap_update_bits(dp_phy->regs, PHYD_DIG_LAN2_OFFSET +
+-					   DRIVING_FORCE,
+-					   EDP_TX_LN_VOLT_SWING_VAL_FLDMASK |
+-					   EDP_TX_LN_PRE_EMPH_VAL_FLDMASK,
+-					   opts->dp.voltage[DPTX_LANE2] << 1 |
+-					   opts->dp.pre[DPTX_LANE2] << 3);
++					   dp_phy->driving_force,
++					   dp_phy->swing_value_mask |
++					   dp_phy->pre_emph_value_mask,
++					   opts->dp.voltage[DPTX_LANE2] <<
++					   dp_phy->swing_value_pos |
++					   opts->dp.pre[DPTX_LANE2] <<
++					   dp_phy->pre_emph_value_pos);
+ 			regmap_update_bits(dp_phy->regs, PHYD_DIG_LAN3_OFFSET +
+-					   DRIVING_FORCE,
+-					   EDP_TX_LN_VOLT_SWING_VAL_FLDMASK |
+-					   EDP_TX_LN_PRE_EMPH_VAL_FLDMASK,
+-					   opts->dp.voltage[DPTX_LANE3] << 1 |
+-					   opts->dp.pre[DPTX_LANE3] << 3);
++					   dp_phy->driving_force,
++					   dp_phy->swing_value_mask |
++					   dp_phy->pre_emph_value_mask,
++					   opts->dp.voltage[DPTX_LANE3] <<
++					   dp_phy->swing_value_pos |
++					   opts->dp.pre[DPTX_LANE3] <<
++					   dp_phy->pre_emph_value_pos);
+ 		break;
+ 		default:
+ 			dev_err(&phy->dev, "Wrong lanes config: %x\n",
+@@ -271,13 +312,46 @@ static int mtk_dp_phy_reset(struct phy *phy)
+ 	usleep_range(50, 200);
+ 	regmap_update_bits(dp_phy->regs, MTK_DP_PHY_DIG_SW_RST,
+ 			   DP_GLB_SW_RST_PHYD, DP_GLB_SW_RST_PHYD_MASK);
+-	regmap_update_bits(dp_phy->regs, DP_PHY_DIG_TX_CTL_0,
+-			   0x0, TX_LN_EN_FLDMASK);
++	regmap_update_bits(dp_phy->regs, dp_phy->dp_phy_dig_tx_ctl,
++			   0x0, dp_phy->tx_ln_en_mask);
+ 	mtk_dptx_phyd_reset_swing_pre(dp_phy);
+ 
  	return 0;
  }
  
--struct platform_driver mtk_edp_phy_driver = {
-+struct platform_driver mtk_edp_phy_driver_mt8196 = {
- 	.probe = mtk_dp_phy_probe,
- 	.driver = {
--		.name = "mediatek-edp-phy",
-+		.name = "mediatek-edp-phy-mt8196",
- 	},
- };
++static void mtk_dp_phy_initialize_priv_data(struct mtk_dp_phy *dp_phy,
++					    struct mtk_edp_phy_data *regs)
++{
++	if (regs->edp_ver == MTK_EDP_SOC_TYPE_MT8196) {
++		/* Initialize MT8196 specific data */
++		dp_phy->dp_phy_dig_tx_ctl = DP_PHY_DIG_TX_CTL_0;
++		dp_phy->tx_ln_en_mask = TX_LN_EN_FLDMASK;
++		dp_phy->bit_rate_rbr = BIT_RATE_RBR;
++		dp_phy->bit_rate_hbr1 = BIT_RATE_HBR;
++		dp_phy->bit_rate_hbr2 = BIT_RATE_HBR2;
++		dp_phy->bit_rate_hbr3 = BIT_RATE_HBR3;
++		dp_phy->driving_force = DRIVING_FORCE;
++		dp_phy->swing_value_mask = EDP_TX_LN_VOLT_SWING_VAL_FLDMASK;
++		dp_phy->swing_value_pos = EDP_TX_LN_VOLT_SWING_VAL_FLDMASK_POS;
++		dp_phy->pre_emph_value_mask = EDP_TX_LN_PRE_EMPH_VAL_FLDMASK;
++		dp_phy->pre_emph_value_pos = EDP_TX_LN_PRE_EMPH_VAL_FLDMASK_POS;
++
++	} else if (regs->edp_ver == MTK_EDP_SOC_TYPE_MT8189) {
++		/* Initialize MT8189 specific data */
++		dp_phy->dp_phy_dig_tx_ctl = DP_PHY_DIG_TX_CTL_0_MT8189;
++		dp_phy->tx_ln_en_mask = TX_LN_EN_FLDMASK_MT8189;
++		dp_phy->bit_rate_rbr = BIT_RATE_RBR_MT8189;
++		dp_phy->bit_rate_hbr1 = BIT_RATE_HBR_MT8189;
++		dp_phy->bit_rate_hbr2 = BIT_RATE_HBR2_MT8189;
++		dp_phy->bit_rate_hbr3 = BIT_RATE_HBR3_MT8189;
++		dp_phy->driving_force = DRIVING_FORCE_MT8189;
++		dp_phy->swing_value_mask = EDP_TX_LN_VOLT_SWING_FLDMASK_MT8189;
++		dp_phy->swing_value_pos = EDP_TX_LN_VOLT_SWING_FLDMASK_POS_MT8189;
++		dp_phy->pre_emph_value_mask = EDP_TX_LN_PRE_EMPH_FLDMASK_MT8189;
++		dp_phy->pre_emph_value_pos = EDP_TX_LN_PRE_EMPH_FLDMASK_POS_MT8189;
++	}
++}
++
+ static const struct phy_ops mtk_dp_phy_dev_ops = {
+ 	.init = mtk_dp_phy_init,
+ 	.configure = mtk_dp_phy_configure,
+@@ -290,18 +364,22 @@ static int mtk_dp_phy_probe(struct platform_device *pdev)
+ 	struct device *dev = &pdev->dev;
+ 	struct mtk_dp_phy *dp_phy;
+ 	struct phy *phy;
+-	struct regmap *regs;
++	struct mtk_edp_phy_data *regs;
  
--module_platform_driver(mtk_edp_phy_driver);
-+module_platform_driver(mtk_edp_phy_driver_mt8196);
+-	regs = *(struct regmap **)dev->platform_data;
++	regs = (struct mtk_edp_phy_data *)dev->platform_data;
+ 	if (!regs)
+ 		return dev_err_probe(dev, -EINVAL,
+-				     "No data passed, requires struct regmap**\n");
++				     "No data passed, requires mtk_edp_phy_data\n");
  
- MODULE_AUTHOR("Markus Schneider-Pargmann <msp@baylibre.com>");
- MODULE_DESCRIPTION("MediaTek DP PHY Driver");
+ 	dp_phy = devm_kzalloc(dev, sizeof(*dp_phy), GFP_KERNEL);
+ 	if (!dp_phy)
+ 		return -ENOMEM;
+ 
+-	dp_phy->regs = regs;
++	if (!regs->phy_regs)
++		return dev_err_probe(dev, -EINVAL, "phy_regs is NULL");
++
++	dp_phy->regs = regs->phy_regs;
++	mtk_dp_phy_initialize_priv_data(dp_phy, regs);
+ 	phy = devm_phy_create(dev, NULL, &mtk_dp_phy_dev_ops);
+ 	if (IS_ERR(phy))
+ 		return dev_err_probe(dev, PTR_ERR(phy),
 diff --git a/drivers/phy/mediatek/phy-mtk-mipi-dsi-mt8183.c b/drivers/phy/mediatek/phy-mtk-mipi-dsi-mt8183.c
 index 553725e1269c9d7ad88f89367dfa1cf367aaf1ce..b8233c49607049de80d146eb40ec3bf012691f9a 100644
 --- a/drivers/phy/mediatek/phy-mtk-mipi-dsi-mt8183.c
@@ -35398,36 +35333,6 @@ index 1617063669cc58a4314957a98a9832856229cadc..4e10100b6ad932058dfa2edc90e1ef92
  		mutex_unlock(&rtc->lock);
  
  		return IRQ_HANDLED;
-diff --git a/drivers/soc/mediatek/Kconfig b/drivers/soc/mediatek/Kconfig
-index d42e5e84c319feb77d5819b108adc7db7a22030f..6713bb6fdf6e5a7c31724ba18d33efda48402098 100644
---- a/drivers/soc/mediatek/Kconfig
-+++ b/drivers/soc/mediatek/Kconfig
-@@ -181,3 +181,13 @@ config MTK_MMDVFS
- 	  , such as display, camera, mdp and video codec. Say no if your device
- 	  does not need to do DVFS for Multimedia hardwares.
- endmenu
-+
-+config MT8189_REGULATOR_COUPLER
-+	bool "MediaTek MT8189 Regulator Coupler driver"
-+	default ARCH_MEDIATEK
-+	depends on REGULATOR
-+	help
-+	  Say yes here to add support for MediaTek SoC MT8189 GPU voltage
-+	  control using regulator coupler. VGPU and VSRAM_GPU voltage need
-+	  to be linked to switch, regulator coupler can make VSRAM_GPU
-+	  on/off link to VGPU on/off.
-diff --git a/drivers/soc/mediatek/Makefile b/drivers/soc/mediatek/Makefile
-index 10dcc0a354f1b854b88482d9e541a76212099951..a98d29f870421b9b88350552dbf6cf0e22fda796 100644
---- a/drivers/soc/mediatek/Makefile
-+++ b/drivers/soc/mediatek/Makefile
-@@ -8,6 +8,7 @@ obj-$(CONFIG_MTK_DEVAPC) += mtk-devapc.o
- obj-$(CONFIG_MTK_INFRACFG) += mtk-infracfg.o
- obj-$(CONFIG_MTK_PMIC_WRAP) += mtk-pmic-wrap.o
- obj-$(CONFIG_MTK_REGULATOR_COUPLER) += mtk-regulator-coupler.o
-+obj-$(CONFIG_MT8189_REGULATOR_COUPLER) += mt8189-regulator-coupler.o
- obj-$(CONFIG_MTK_MMSYS) += mtk-mmsys.o
- obj-$(CONFIG_MTK_MMSYS) += mtk-mutex.o
- obj-$(CONFIG_MTK_SVS) += mtk-svs.o
 diff --git a/drivers/soc/mediatek/mt8189-mmsys.h b/drivers/soc/mediatek/mt8189-mmsys.h
 new file mode 100644
 index 0000000000000000000000000000000000000000..a1a752b23092fd35ce19c13f64c8eb00dddda1cc
@@ -35760,155 +35665,6 @@ index 0000000000000000000000000000000000000000..a1a752b23092fd35ce19c13f64c8eb00
 +};
 +
 +#endif /* __SOC_MEDIATEK_MT8189_MMSYS_H */
-diff --git a/drivers/soc/mediatek/mt8189-regulator-coupler.c b/drivers/soc/mediatek/mt8189-regulator-coupler.c
-new file mode 100644
-index 0000000000000000000000000000000000000000..0e398d28643e23cfd04c38860ae2c6198b2a09f4
---- /dev/null
-+++ b/drivers/soc/mediatek/mt8189-regulator-coupler.c
-@@ -0,0 +1,143 @@
-+// SPDX-License-Identifier: GPL-2.0
-+//
-+// Copyright (c) 2025 MediaTek Inc.
-+
-+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
-+
-+#include <linux/init.h>
-+#include <linux/kernel.h>
-+#include <linux/of.h>
-+#include <linux/regulator/coupler.h>
-+#include <linux/regulator/driver.h>
-+#include <linux/regulator/machine.h>
-+#include <linux/suspend.h>
-+#include <linux/delay.h>
-+
-+#define to_mediatek_coupler(x)	container_of(x, struct mediatek_regulator_coupler, coupler)
-+#define VSRAM_GPU_MIN_VOLTAGE 750000
-+
-+struct mediatek_regulator_coupler {
-+	struct regulator_coupler coupler;
-+	struct regulator_dev *vsram_rdev;
-+};
-+
-+/*
-+ * We currently support only couples of not more than two vregs and
-+ * modify the vsram voltage only when changing voltage of vgpu.
-+ *
-+ * This function is limited to the GPU<->SRAM voltages relationships.
-+ */
-+static int mediatek_regulator_balance_voltage(struct regulator_coupler *coupler,
-+					      struct regulator_dev *rdev,
-+					      suspend_state_t state)
-+{
-+	struct mediatek_regulator_coupler *mrc = to_mediatek_coupler(coupler);
-+	int min_uV = 0;
-+	int max_uV = INT_MAX;
-+	int tmp_uV = 0;
-+	int ret;
-+	const char *rdev_name = rdev_get_name(rdev);
-+
-+	ret = regulator_check_consumers(rdev, &min_uV, &max_uV, state);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = regulator_get_voltage_rdev(rdev);
-+	if (ret < 0)
-+		return ret;
-+
-+	tmp_uV = ret;
-+	if (min_uV == 0)
-+		min_uV = tmp_uV;
-+
-+	ret = regulator_check_voltage(rdev, &min_uV, &max_uV);
-+	if (ret < 0)
-+		return ret;
-+
-+	if (min_uV >= tmp_uV) {
-+		ret = regulator_set_voltage_rdev(rdev, min_uV, max_uV, state);
-+		if (ret)
-+			return ret;
-+
-+		ret = regulator_set_voltage_rdev(mrc->vsram_rdev, min_uV, max_uV, state);
-+		if (ret)
-+			return ret;
-+	} else {
-+		ret = regulator_set_voltage_rdev(mrc->vsram_rdev, min_uV, max_uV, state);
-+		if (ret)
-+			return ret;
-+
-+		if (strstr(rdev_name, "sram") && min_uV <= VSRAM_GPU_MIN_VOLTAGE)  {
-+			min_uV = VSRAM_GPU_MIN_VOLTAGE;
-+			max_uV = VSRAM_GPU_MIN_VOLTAGE;
-+		}
-+		ret = regulator_set_voltage_rdev(rdev, min_uV, max_uV, state);
-+		if (ret)
-+			return ret;
-+	}
-+
-+	if (strstr(rdev_name, "sram")) {
-+		if (tmp_uV == min_uV) {
-+			if (!regulator_is_enabled_regmap(rdev) &&
-+					regulator_is_enabled_regmap(mrc->vsram_rdev)) {
-+				ret = regulator_disable_regmap(mrc->vsram_rdev);
-+				mrc->vsram_rdev->use_count = 0;
-+			} else {
-+				ret = regulator_enable_regmap(mrc->vsram_rdev);
-+				mrc->vsram_rdev->use_count = 1;
-+			}
-+		}
-+	}
-+
-+	return ret;
-+}
-+
-+static int mediatek_regulator_attach(struct regulator_coupler *coupler,
-+				     struct regulator_dev *rdev)
-+{
-+	struct mediatek_regulator_coupler *mrc = to_mediatek_coupler(coupler);
-+	const char *rdev_name = rdev_get_name(rdev);
-+
-+	if ((strstr(rdev_name, "vgpu") || strstr(rdev_name, "Vgpu")) &&
-+		strstr(rdev_name, "buck")) {
-+		if (mrc->vsram_rdev)
-+			return -EINVAL;
-+		mrc->vsram_rdev = rdev;
-+	} else if (!strstr(rdev_name, "sram")) {
-+		return 1;
-+	}
-+
-+	return 0;
-+}
-+
-+static int mediatek_regulator_detach(struct regulator_coupler *coupler,
-+				     struct regulator_dev *rdev)
-+{
-+	struct mediatek_regulator_coupler *mrc = to_mediatek_coupler(coupler);
-+
-+	if (rdev == mrc->vsram_rdev)
-+		mrc->vsram_rdev = NULL;
-+
-+	return 0;
-+}
-+
-+static struct mediatek_regulator_coupler mediatek_coupler = {
-+	.coupler = {
-+		.attach_regulator = mediatek_regulator_attach,
-+		.detach_regulator = mediatek_regulator_detach,
-+		.balance_voltage = mediatek_regulator_balance_voltage,
-+	},
-+};
-+
-+static int mediatek_regulator_coupler_init(void)
-+{
-+	if (!of_machine_is_compatible("mediatek,mt8189"))
-+		return 0;
-+
-+	return regulator_coupler_register(&mediatek_coupler.coupler);
-+}
-+arch_initcall(mediatek_regulator_coupler_init);
-+
-+MODULE_AUTHOR("Zhigang Qin <zhigang.qin@mediatek.com>");
-+MODULE_DESCRIPTION("MediaTek Regulator Coupler driver");
-+MODULE_LICENSE("GPL");
 diff --git a/drivers/soc/mediatek/mtk-devapc.c b/drivers/soc/mediatek/mtk-devapc.c
 index 268e7b450f71bb0d763d05291265a5987d58b193..2919ab519ced2427a4ed9b85649eccec966da27d 100644
 --- a/drivers/soc/mediatek/mtk-devapc.c
