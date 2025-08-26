@@ -9,7 +9,7 @@ EAPI=7
 DESCRIPTION="BOLS for ChromeOS Labstation"
 HOMEPAGE="https://chromium.googlesource.com/infra/infra/+/refs/heads/main/go/src/infra/cros/cmd/cft/bols_labstation"
 SRC_URI="
-	amd64? ( cipd://chromiumos/infra/cft/bols_labstation/linux-amd64:eL4tJvfcGA9FYiNqfAcmsGa4k9sV-DRBWFsGPwaJUwIC -> ${P}-amd64.zip )
+	amd64? ( cipd://chromiumos/infra/cft/bols_labstation/linux-amd64:EGJAjszpAexC1aDzNzkAiT6UENResRV0-c42zkrSMKoC -> ${P}-amd64.zip )
 "
 RESTRICT="mirror"
 
