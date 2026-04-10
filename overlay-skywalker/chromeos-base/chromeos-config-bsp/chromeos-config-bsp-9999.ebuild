@@ -15,6 +15,7 @@ PROJECTS=(
 	"jaina"
 	"r2d2"
 	"skywalker"
+	"vader"
 )
 
 CONFIG_PATH="sw_build_config/platform/chromeos-config"
