@@ -14,6 +14,7 @@ PROJECTS=(
 	"grogu"
 	"jaina"
 	"r2d2"
+	"sheev"
 	"skywalker"
 	"vader"
 )
