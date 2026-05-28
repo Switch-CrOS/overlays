@@ -1,0 +1,99 @@
+#!/bin/sh
+set -u
+
+tag=${1:-manual}
+stamp=$(date -u +%Y%m%d-%H%M%S 2>/dev/null || date +%Y%m%d-%H%M%S)
+base=/run/switch-debug
+for candidate in \
+  /mnt/stateful_partition/unencrypted/switch-debug \
+  /mnt/unencrypted/switch-debug \
+  /run/switchroot-fat-log/switch-debug; do
+  parent=${candidate%/switch-debug}
+  if [ -d "$parent" ] && mkdir -p "$candidate" 2>/dev/null; then
+    base=$candidate
+    break
+  fi
+done
+dir="$base/${stamp}-${tag}"
+mkdir -p "$dir/crash" 2>/dev/null || dir="/run/switch-debug/${stamp}-${tag}"
+mkdir -p "$dir/crash" 2>/dev/null || exit 0
+
+exec >"$dir/summary.txt" 2>&1
+echo "SWITCHDBG $tag $stamp"
+date -u 2>/dev/null || true
+echo "cmdline=$(cat /proc/cmdline 2>/dev/null)"
+echo "uptime=$(cat /proc/uptime 2>/dev/null)"
+
+echo "--- mounts ---"
+cat /proc/mounts 2>/dev/null || true
+echo "--- jobs ---"
+initctl list 2>/dev/null || true
+echo "--- ui status ---"
+initctl status ui 2>/dev/null || true
+echo "--- processes ---"
+ps -ef 2>/dev/null || ps ax 2>/dev/null || true
+
+tail_file() {
+  label=$1
+  file=$2
+  echo "--- $label ---"
+  if [ -f "$file" ]; then
+    tail -c 32768 "$file" 2>&1 || true
+  else
+    echo "missing: $file"
+  fi
+}
+
+tail_file "ui log tail" /var/log/ui/ui.LATEST
+tail_file "chrome log tail" /var/log/chrome/chrome
+tail_file "eventlog tail" /var/log/eventlog.txt
+tail_file "switch xorg log tail" /var/log/switch-Xorg.0.log
+tail_file "chrome wrapper log tail" /tmp/switch-chrome-wrapper.log
+tail_file "mojo service manager log tail" /var/log/mojo_service_manager.log
+
+echo "--- crash dirs ---"
+ls -la /home/chronos/crash /mnt/stateful_partition/home/chronos/crash /run/crash_reporter/crash /run/crash_reporter/crashpad_ready 2>&1 || true
+
+echo "--- newest chrome/coreutils crash readable files ---"
+find /home/chronos/crash /mnt/stateful_partition/home/chronos/crash /run/crash_reporter/crash -maxdepth 1 -type f 2>/dev/null \
+  | grep -Ei 'chrome.*(dmp|meta|txt.gz|eventlog|proclog|core)$|coreutils.*(dmp|meta|eventlog|proclog|core)$' \
+  | sort | tail -60 | while IFS= read -r f; do
+      echo "+++ $f"
+      ls -lh "$f" 2>/dev/null || true
+      case "$f" in
+        *.core)
+          echo "not copying core file to FAT log snapshot"
+          ;;
+        *.txt.gz)
+          cp -f "$f" "$dir/crash/" 2>/dev/null || true
+          gzip -cd "$f" 2>/dev/null | tail -c 32768 || true
+          ;;
+        *.dmp)
+          cp -f "$f" "$dir/crash/" 2>/dev/null || true
+          echo "copied minidump to $dir/crash/$(basename "$f")"
+          ;;
+        *)
+          cp -f "$f" "$dir/crash/" 2>/dev/null || true
+          cat "$f" 2>/dev/null || true
+          ;;
+      esac
+    done
+
+echo "--- dmesg tail ---"
+dmesg 2>/dev/null | tail -n 300 || true
+
+mkdir -p "$base" 2>/dev/null || true
+printf '%s %s\n' "$stamp" "$tag" >>"$base/switch-live.index" 2>/dev/null || true
+for mirror in \
+  /mnt/stateful_partition/unencrypted/switch-debug \
+  /mnt/unencrypted/switch-debug \
+  /run/switchroot-fat-log/switch-debug; do
+  parent=${mirror%/switch-debug}
+  [ -d "$parent" ] || continue
+  [ "$mirror" = "$base" ] && continue
+  mkdir -p "$mirror" 2>/dev/null || continue
+  rm -rf "$mirror/${stamp}-${tag}" 2>/dev/null || true
+  cp -a "$dir" "$mirror/" 2>/dev/null || true
+  printf '%s %s\n' "$stamp" "$tag" >>"$mirror/switch-live.index" 2>/dev/null || true
+done
+sync 2>/dev/null || true

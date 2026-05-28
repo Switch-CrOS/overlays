@@ -1,0 +1,19 @@
+diff --git a/brillo/secure_allocator.h b/brillo/secure_allocator.h
+index bef32d5c..0b731037 100644
+--- a/brillo/secure_allocator.h
++++ b/brillo/secure_allocator.h
+@@ -127,7 +127,13 @@ class BRILLO_PRIVATE SecureAllocator {
+     // faults if the child process tries to access this address. For example,
+     // if the parent process creates a SecureObject, forks() and the child
+     // process tries to call the destructor at the virtual address.
+-    PCHECK(!madvise(buffer, buffer_size, MADV_WIPEONFORK));
++    if (madvise(buffer, buffer_size, MADV_WIPEONFORK)) {
++      // MADV_WIPEONFORK was added in Linux 4.14. Switch L4T 4.9 returns EINVAL;
++      // keep booting for this visible-boot prototype, accepting weaker fork
++      // protection for SecureAllocator on this legacy kernel.
++      PCHECK(errno == EINVAL) << "Failed to mark WIPEONFORK";
++      PLOG(WARNING) << "MADV_WIPEONFORK unsupported; continuing for legacy kernel";
++    }
+ 
+     // Allocation was successful.
+     return reinterpret_cast<T*>(buffer);

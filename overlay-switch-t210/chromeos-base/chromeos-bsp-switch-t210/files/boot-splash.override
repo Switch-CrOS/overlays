@@ -1,0 +1,12 @@
+# switch-t210: L4T 4.9 exposes /dev/fb0 but no DRM/KMS, so frecon's drm
+# probe fails and it spews "No suitable drm driver found" / "Unable to open
+# drm_master_relax" / "DBus not initialized" before exiting.  Xorg drives
+# the framebuffer directly (see switch-xorg-fbdev), so frecon serves no
+# purpose here.
+#
+# boot-splash can't simply be set `manual` because `boot-services` waits on
+# its `stopped` event.  Replace the main script with a no-op so the job
+# still starts, exits cleanly, and emits the event.
+script
+  :
+end script
