@@ -1,0 +1,36 @@
+--- a/ui/display/manager/display_configurator.cc
++++ b/ui/display/manager/display_configurator.cc
+@@ -594,6 +594,13 @@
+   if (!native_display_delegate_)
+     native_display_delegate_ = std::move(display_delegate);
+ 
++  if (!native_display_delegate_) {
++    LOG(WARNING) << "DisplayConfigurator initialized without a "
++                 << "NativeDisplayDelegate; native display configuration "
++                 << "will be disabled.";
++    return;
++  }
++
+   native_display_delegate_->AddObserver(this);
+ 
+   content_protection_manager_->set_native_display_delegate(
+@@ -988,6 +995,19 @@
+     CallAndClearQueuedCallbacks(true);
+     return;
+   }
++  if (!native_display_delegate_) {
++    LOG(WARNING) << "Skipping display configuration without a "
++                 << "NativeDisplayDelegate";
++    force_configure_ = false;
++    pending_power_flags_ = kSetDisplayPowerNoFlags;
++    has_pending_power_state_ = false;
++    requested_display_state_ = MULTIPLE_DISPLAY_STATE_INVALID;
++    pending_refresh_rate_overrides_ = std::nullopt;
++    pending_vrr_state_ = std::nullopt;
++    CallAndClearQueuedCallbacks(true);
++    return;
++  }
++
+   ConfigurationType configuration_type = kConfigurationTypeFull;
+   if (!HasPendingFullConfiguration()) {
+     DCHECK(HasPendingSeamlessConfiguration());

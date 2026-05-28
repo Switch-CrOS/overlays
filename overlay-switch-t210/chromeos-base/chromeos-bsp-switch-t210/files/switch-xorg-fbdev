@@ -1,0 +1,92 @@
+#!/bin/sh
+# Launch the bundled Debian Xorg server against the Tegra fbdev panel.
+# Used because L4T 4.9 exposes /dev/fb0 but no DRM/KMS node, so the normal
+# ChromeOS ozone/drm path cannot work.
+set -eu
+
+if [ -x /opt/switch-xorg/usr/lib/xorg/Xorg ]; then
+  export XORG_ROOT=/opt/switch-xorg
+  XORG_BIN="$XORG_ROOT/usr/lib/xorg/Xorg"
+  XORG_MODULES="$XORG_ROOT/usr/lib/xorg/modules"
+  XKB_DIR="$XORG_ROOT/usr/share/X11/xkb"
+  export LD_LIBRARY_PATH="$XORG_ROOT/usr/lib/aarch64-linux-gnu:$XORG_ROOT/lib/aarch64-linux-gnu:$XORG_ROOT/usr/lib:$XORG_ROOT/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+  export PATH="$XORG_ROOT/usr/bin:$PATH"
+  export FONTCONFIG_PATH="$XORG_ROOT/etc/fonts"
+elif [ -x /usr/lib/xorg/Xorg ]; then
+  XORG_BIN=/usr/lib/xorg/Xorg
+  XORG_MODULES=/usr/lib/xorg/modules
+  XKB_DIR=/usr/share/X11/xkb
+  export LD_LIBRARY_PATH="/usr/lib/aarch64-linux-gnu:/lib/aarch64-linux-gnu:/usr/lib:/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+else
+  echo "switch-xorg-fbdev: no Xorg binary found" >&2
+  exit 127
+fi
+
+export XKB_CONFIG_ROOT="$XKB_DIR"
+mkdir -p /tmp/.X11-unix /run/switch-xorg
+chmod 1777 /tmp/.X11-unix
+echo 0 >/sys/class/graphics/fb0/blank 2>/dev/null || true
+
+cat >/run/switch-xorg/xorg.conf <<'XEOF'
+Section "ServerFlags"
+    Option "AutoAddGPU" "false"
+    Option "AutoAddDevices" "true"
+    Option "AutoEnableDevices" "true"
+    Option "AllowEmptyInput" "false"
+    Option "BlankTime" "0"
+    Option "StandbyTime" "0"
+    Option "SuspendTime" "0"
+    Option "OffTime" "0"
+EndSection
+
+Section "InputClass"
+    Identifier "Switch libinput pointer catchall"
+    MatchIsPointer "on"
+    MatchDevicePath "/dev/input/event*"
+    Driver "libinput"
+EndSection
+
+Section "InputClass"
+    Identifier "Switch libinput keyboard catchall"
+    MatchIsKeyboard "on"
+    MatchDevicePath "/dev/input/event*"
+    Driver "libinput"
+EndSection
+
+Section "InputClass"
+    Identifier "Switch libinput touch catchall"
+    MatchIsTouchscreen "on"
+    MatchDevicePath "/dev/input/event*"
+    Driver "libinput"
+EndSection
+
+Section "InputClass"
+    Identifier "Switch libinput touchpad catchall"
+    MatchIsTouchpad "on"
+    MatchDevicePath "/dev/input/event*"
+    Driver "libinput"
+EndSection
+
+Section "Device"
+    Identifier "Tegra fbdev"
+    Driver "fbdev"
+    Option "fbdev" "/dev/fb0"
+EndSection
+
+Section "Monitor"
+    Identifier "Switch panel"
+EndSection
+
+Section "Screen"
+    Identifier "Screen0"
+    Device "Tegra fbdev"
+    Monitor "Switch panel"
+    DefaultDepth 24
+EndSection
+XEOF
+
+exec "$XORG_BIN" :0 vt1 -keeptty -novtswitch -s 0 -dpms -extension SELinux \
+  -config /run/switch-xorg/xorg.conf \
+  -modulepath "$XORG_MODULES" \
+  -xkbdir "$XKB_DIR" \
+  -logfile /var/log/switch-Xorg.0.log
