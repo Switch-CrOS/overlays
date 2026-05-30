@@ -63,7 +63,7 @@ src_unpack() {
 }
 
 src_install() {
-	dodir /usr/lib/aarch64-linux-gnu /usr/lib/xorg/modules /usr/share/glvnd/egl_vendor.d /etc/vulkan/icd.d /lib/firmware /usr/sbin
+	dodir /usr/lib/aarch64-linux-gnu /usr/lib/xorg/modules /usr/share/glvnd/egl_vendor.d /etc/vulkan/icd.d /lib/firmware /usr/sbin /etc/systemd
 
 	cp -a "${S}"/usr/lib/aarch64-linux-gnu/tegra "${D}"/usr/lib/aarch64-linux-gnu/ || die
 	cp -a "${S}"/usr/lib/aarch64-linux-gnu/tegra-egl "${D}"/usr/lib/aarch64-linux-gnu/ || die
@@ -71,6 +71,8 @@ src_install() {
 	cp -a "${S}"/usr/lib/xorg/modules/extensions "${D}"/usr/lib/xorg/modules/ || die
 	cp -a "${S}"/usr/share/glvnd/egl_vendor.d/. "${D}"/usr/share/glvnd/egl_vendor.d/ || die
 	cp -a "${S}"/etc/vulkan/icd.d/. "${D}"/etc/vulkan/icd.d/ || die
+	# should probably rename the scripts but eh
+	cp -a "${S}"/etc/systemd/. "${D}"/etc/systemd/ || die
 	cp -a "${S}"/lib/firmware/brcm "${D}"/lib/firmware/ || die
 	cp -a "${S}"/lib/firmware/bcm4354.hcd "${D}"/lib/firmware/ || die
 	cp -a "${S}"/lib/firmware/gm20b "${D}"/lib/firmware/ || die
