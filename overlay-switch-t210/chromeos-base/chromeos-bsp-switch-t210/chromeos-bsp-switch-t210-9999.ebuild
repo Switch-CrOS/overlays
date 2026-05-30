@@ -22,6 +22,11 @@ RDEPEND="
 	x11-drivers/nvidia-l4t-userspace
 "
 
+# initramfs-patch.sh uses mkimage (from u-boot-tools) to rewrap the
+# patched cpio in a U-Boot legacy uImage header.  cpio/gzip/dd are in
+# system, no explicit dep.
+BDEPEND="dev-embedded/u-boot-tools"
+
 KERNEL_RELEASE="https://github.com/Switch-CrOS/l4t-kernel-build-scripts/releases/download/r1"
 UBOOT_RELEASE="https://github.com/Switch-CrOS/u-boot/releases/download/r2"
 # broken somehow
@@ -44,7 +49,12 @@ src_install() {
 	insinto /usr/share/switch-t210/bootstack
 	doins "${DISTDIR}"/uImage
 	doins "${DISTDIR}"/nx-plat.dtimg
-	doins "${DISTDIR}"/initramfs
+
+	# patch the initramfs for various things
+	local patched_initramfs="${T}/initramfs"
+	"${FILESDIR}/initramfs-patch.sh" \
+		"${DISTDIR}/initramfs" "${patched_initramfs}" || die
+	doins "${patched_initramfs}"
 	doins "${FILESDIR}"/boot.scr
 	doins "${DISTDIR}"/bl31.bin
 	doins "${DISTDIR}"/bl33.bin
