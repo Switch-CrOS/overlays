@@ -1,0 +1,45 @@
+From: Switch-CrOS Authors
+Subject: [PATCH] Drop ANGLE's Intel/NVIDIA OpenGL ES blocklist
+
+ANGLE refuses to use NVIDIA's GLES driver via its DisplayGLX backend
+(libANGLE/renderer/gl/glx/DisplayGLX.cpp).  The check is a workaround
+for ANGLE's automated test infrastructure detecting Intel/NVIDIA cards
+with desktop OpenGL backends rather than a real driver-compatibility
+issue — the comment at the call site explicitly cites "automated
+testing" rationale.
+
+On Switch (Nintendo Switch / Tegra X1 running L4T 4.9), NVIDIA's GLES is
+the only hardware-accelerated path: there is no DRM/KMS, no Mesa GLES
+backend, and software rendering (SwiftShader) is unusably slow on this
+CPU.  Skip the check so Chrome can use NVIDIA's GLES via ANGLE.
+
+Upstream tracking: https://anglebug.com/42260314
+
+--- a/third_party/angle/src/libANGLE/renderer/gl/glx/DisplayGLX.cpp
++++ b/third_party/angle/src/libANGLE/renderer/gl/glx/DisplayGLX.cpp
+@@ -322,19 +322,12 @@ egl::Error DisplayGLX::createRenderer(glx::Context shareContext,
+             return egl::Error(EGL_NOT_INITIALIZED, "Context lost for unknown reason.");
+         }
+     }
+-    // TODO(cwallez, http://anglebug.com/42260314) Disable the OpenGL ES backend on Linux NVIDIA and
+-    // Intel as it has problems on our automated testing. An OpenGL ES backend might not trigger
+-    // this test if there is no Desktop OpenGL support, but that's not the case in our automated
+-    // testing.
+-    VendorID vendor = GetVendorID(functionsGL.get());
+-    bool isOpenGLES =
+-        eglAttributes.get(EGL_PLATFORM_ANGLE_TYPE_ANGLE, EGL_PLATFORM_ANGLE_TYPE_DEFAULT_ANGLE) ==
+-        EGL_PLATFORM_ANGLE_TYPE_OPENGLES_ANGLE;
+-    if (isOpenGLES && (IsIntel(vendor) || IsNvidia(vendor)))
+-    {
+-        return egl::Error(EGL_NOT_INITIALIZED,
+-                          "Intel or NVIDIA OpenGL ES drivers are not supported.");
+-    }
++    // switch-t210: ANGLE's upstream blocklist for Intel/NVIDIA GLES
++    // exists only to avoid confusing ANGLE's automated test infra (see
++    // anglebug.com/42260314).  NVIDIA's GLES is the only hardware-accel
++    // path available on Switch (no DRM/KMS, no Mesa Tegra backend,
++    // SwiftShader is unusably slow on Tegra X1's CPU), so the check is
++    // removed entirely here.
+
+     syncXCommands(false);
+

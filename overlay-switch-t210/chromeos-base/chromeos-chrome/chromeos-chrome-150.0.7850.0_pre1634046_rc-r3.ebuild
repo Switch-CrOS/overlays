@@ -229,6 +229,7 @@ python_check_deps() {
 
 PATCHES=(
 	"${FILESDIR}/switch-x11-null-native-display-delegate.patch"
+	"${FILESDIR}/switch-angle-allow-nvidia-gles.patch"
 )
 
 AUTOTEST_COMMON="src/chrome/test/chromeos/autotest/files"

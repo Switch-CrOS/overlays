@@ -15,6 +15,13 @@ KEYWORDS="*"
 IUSE=""
 RESTRICT="mirror"
 
+RDEPEND="
+	x11-base/xorg-server
+	x11-drivers/xf86-input-libinput
+	x11-drivers/xf86-video-fbdev
+	x11-drivers/nvidia-l4t-userspace
+"
+
 KERNEL_RELEASE="https://github.com/Switch-CrOS/l4t-kernel-build-scripts/releases/download/r1"
 UBOOT_RELEASE="https://github.com/Switch-CrOS/u-boot/releases/download/r2"
 # broken somehow
