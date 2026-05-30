@@ -1,33 +1,27 @@
 #!/bin/sh
-# Launch the bundled Debian Xorg server against the Tegra fbdev panel.
-# Used because L4T 4.9 exposes /dev/fb0 but no DRM/KMS node, so the normal
-# ChromeOS ozone/drm path cannot work.
+# Launch the Switch Xorg server. Prefer NVIDIA's Tegra DDX when its L4T
+# userspace is installed; keep fbdev as a bring-up fallback.
 set -eu
 
-if [ -x /opt/switch-xorg/usr/lib/xorg/Xorg ]; then
-  export XORG_ROOT=/opt/switch-xorg
-  XORG_BIN="$XORG_ROOT/usr/lib/xorg/Xorg"
-  XORG_MODULES="$XORG_ROOT/usr/lib/xorg/modules"
-  XKB_DIR="$XORG_ROOT/usr/share/X11/xkb"
-  export LD_LIBRARY_PATH="$XORG_ROOT/usr/lib/aarch64-linux-gnu:$XORG_ROOT/lib/aarch64-linux-gnu:$XORG_ROOT/usr/lib:$XORG_ROOT/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
-  export PATH="$XORG_ROOT/usr/bin:$PATH"
-  export FONTCONFIG_PATH="$XORG_ROOT/etc/fonts"
-elif [ -x /usr/lib/xorg/Xorg ]; then
-  XORG_BIN=/usr/lib/xorg/Xorg
-  XORG_MODULES=/usr/lib/xorg/modules
-  XKB_DIR=/usr/share/X11/xkb
-  export LD_LIBRARY_PATH="/usr/lib/aarch64-linux-gnu:/lib/aarch64-linux-gnu:/usr/lib:/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
-else
+if [ ! -x /usr/lib/xorg/Xorg ]; then
   echo "switch-xorg-fbdev: no Xorg binary found" >&2
   exit 127
 fi
 
+XORG_BIN=/usr/lib/xorg/Xorg
+XORG_MODULES=/usr/lib/xorg/modules
+XKB_DIR=/usr/share/X11/xkb
+
+export LD_LIBRARY_PATH="/usr/lib/aarch64-linux-gnu/tegra:/usr/lib/aarch64-linux-gnu/tegra-egl:/usr/lib/aarch64-linux-gnu:/lib/aarch64-linux-gnu:/usr/lib:/usr/lib64:/lib:/lib64${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+export PATH="/usr/bin:$PATH"
 export XKB_CONFIG_ROOT="$XKB_DIR"
+export __GLX_VENDOR_LIBRARY_NAME=nvidia
+
 mkdir -p /tmp/.X11-unix /run/switch-xorg
 chmod 1777 /tmp/.X11-unix
 echo 0 >/sys/class/graphics/fb0/blank 2>/dev/null || true
 
-cat >/run/switch-xorg/xorg.conf <<'XEOF'
+cat >/run/switch-xorg/xorg.conf <<'XEOF' 
 Section "ServerFlags"
     Option "AutoAddGPU" "false"
     Option "AutoAddDevices" "true"
@@ -67,25 +61,48 @@ Section "InputClass"
     Driver "libinput"
 EndSection
 
+Section "Module"
+    Disable "dri"
+    SubSection "extmod"
+        Option "omit xfree86-dga"
+    EndSubSection
+    Load    "glxserver_nvidia"
+    Disable "glx"
+EndSection
+
 Section "Device"
-    Identifier "Tegra fbdev"
-    Driver "fbdev"
-    Option "fbdev" "/dev/fb0"
+    Identifier "Tegra0"
+    Driver "nvidia"
+    Option "AllowUnofficialGLXProtocol" "true"
+    Option "DPMS" "false"
+    Option "AllowEmptyInitialConfiguration" "true"
+    Option "Monitor-DSI-0" "Monitor0"
+    Option "Monitor-DP-0" "Monitor1"
 EndSection
 
 Section "Monitor"
-    Identifier "Switch panel"
+    Identifier "Monitor0"
+    ModelName "DFP-0"
+EndSection
+
+Section "Monitor"
+    Identifier "Monitor1"
+    Option "Enable" "false"
 EndSection
 
 Section "Screen"
     Identifier "Screen0"
-    Device "Tegra fbdev"
-    Monitor "Switch panel"
+    Device "Tegra0"
+    Monitor "Monitor0"
     DefaultDepth 24
+    Option "metamodes" "DSI-0: nvidia-auto-select @1280x720 +0+0 {ViewPortIn=1280x720, ViewPortOut=1280x720+0+0, Rotation=0}"
+    SubSection "Display"
+        Depth 24
+    EndSubSection
 EndSection
 XEOF
 
-exec "$XORG_BIN" :0 vt1 -keeptty -novtswitch -s 0 -dpms -extension SELinux \
+exec "$XORG_BIN" :0 vt1 -keeptty -novtswitch -s 0 -dpms \
   -config /run/switch-xorg/xorg.conf \
   -modulepath "$XORG_MODULES" \
   -xkbdir "$XKB_DIR" \
