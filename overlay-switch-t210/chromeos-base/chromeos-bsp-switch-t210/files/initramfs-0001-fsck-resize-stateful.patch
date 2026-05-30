@@ -1,0 +1,29 @@
+--- a/init	2024-08-31 18:16:02.000000000 -0700
++++ b/init	2026-05-30 01:13:50.798034688 -0700
+@@ -133,6 +133,7 @@
+ done
+ 
+ rootdev=$(sed -ne 's/.*root=//;T' -e 's/\s.*$//p' /proc/cmdline)
++statefuldev=$(blkid -lt LABEL="STATE" -o device)
+ rootlabel_retries=$(sed -ne 's/.*rootlabel_retries=//;T' -e 's/\s.*$//p' /proc/cmdline)
+ if [[ -z ${rootlabel_retries} ]]; then rootlabel_retries=1; fi
+ 
+@@ -171,6 +172,7 @@
+ 		echo "[ INITRAMFS ] Checking dev node for errors" > /dev/kmsg
+ 		ply-image /logo_checking.png --location=476,461
+ 		fsck -y ${rootdev}
++		fsck -y ${statefuldev}
+ 
+ 		echo "[ INITRAMFS ] Mounting dev node" > /dev/kmsg
+ 		if ! mount -o noatime ${rootdev} /mnt; then
+@@ -199,7 +201,9 @@
+ echo "[ INITRAMFS ] Resizing root fs if needed" > /dev/kmsg
+ if [ ! -f etc/.resized ]; then
+ 	ply-image /logo_resize.png --location=476,461
+-	if resize2fs ${rootdev}; then echo "" > etc/.resized; echo "[ INITRAMFS ] Root fs resized" > /dev/kmsg; fi
++	if resize2fs ${rootdev} && resize2fs ${statefuldev}; then echo "" > etc/.resized; echo "[ INITRAMFS ] Root fs resized" > /dev/kmsg; fi
++fi
++
+ fi
+ 
+ echo "[ INITRAMFS ] Check for dev updates and apply if they exist" > /dev/kmsg
