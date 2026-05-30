@@ -1,0 +1,15 @@
+# switch-t210: ChromeOS delays udev-trigger by 30s via failsafe-delay's
+# `exec sleep 30` to improve perceived boot time on devices where Chrome
+# comes up fast (Chrome's `starting system-services` cancels the sleep
+# early on normal boots).
+#
+# On Switch, Chrome's UI start is gated on nvgpu, and nvgpu probe is gated
+# on udev-trigger (it's filtered out of udev-trigger-early's display/input
+# subsystem allowlist).  Deadlock: UI fails for 30s waiting for nvgpu,
+# upstart gives up, failsafe-delay finally fires → udev-trigger runs →
+# nvgpu/brcmfmac/joycon/HCI all probe at once → UI works on next attempt.
+#
+# Break the cycle by firing udev-trigger on `started boot-services`
+# instead.  boot-services is already up by T~8s, well before failsafe's
+# 30s timeout would have triggered it.
+start on started boot-services

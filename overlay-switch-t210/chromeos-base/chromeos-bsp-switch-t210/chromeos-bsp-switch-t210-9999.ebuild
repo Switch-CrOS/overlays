@@ -78,6 +78,7 @@ src_install() {
 	insinto /etc/init
 	doins "${FILESDIR}"/shill.override
 	doins "${FILESDIR}"/trunksd.override
+	doins "${FILESDIR}"/udev-trigger.override
 	doins "${FILESDIR}"/tpm_managerd.override
 	doins "${FILESDIR}"/dlcservice.override
 	# Suppress bring-up noise: intentional crash generator, boot-splash's
