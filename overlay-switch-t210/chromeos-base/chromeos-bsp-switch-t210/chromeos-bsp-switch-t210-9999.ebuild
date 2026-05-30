@@ -82,11 +82,10 @@ src_install() {
 	doins "${FILESDIR}"/switch-xorg-fbdev.conf
 
 	# Disable upstream services that abort-loop without Switch-specific
-	# hardware/drivers (no TPM, no shill-managed networking, no DLC delivery).
+	# hardware/drivers (no TPM, no DLC delivery).
 	# Each .override file contains `manual`, which inhibits the job's
 	# automatic start condition without needing to patch the upstream .conf.
 	insinto /etc/init
-	doins "${FILESDIR}"/shill.override
 	doins "${FILESDIR}"/trunksd.override
 	doins "${FILESDIR}"/udev-trigger.override
 	doins "${FILESDIR}"/tpm_managerd.override
