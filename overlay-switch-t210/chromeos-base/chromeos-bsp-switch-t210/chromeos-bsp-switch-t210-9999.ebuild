@@ -21,6 +21,7 @@ RDEPEND="
 	x11-drivers/xf86-video-fbdev
 	x11-drivers/nvidia-l4t-userspace
 	tpm2_simulator? ( chromeos-base/tpm2-simulator )
+	media-libs/switch-alsa-ucm2
 "
 IUSE="+tpm2_simulator"
 
