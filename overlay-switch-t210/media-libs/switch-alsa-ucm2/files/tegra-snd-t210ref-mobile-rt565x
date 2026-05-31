@@ -1,0 +1,21 @@
+# CRAS card config for the Nintendo Switch RT5658 audio card.
+#
+# Without this, CRAS has no volume curve for the output nodes and leaves the
+# internal speaker node pinned at volume 0 (silent), even though the UCM
+# routing is correct.  The codec's playback-volume controls expose dB TLV
+# (Speaker: -65.62..-10.12 dB, via 'x DAC1 Speaker Playback Volume'), so a
+# simple_step curve over that range is all CRAS needs.
+#
+# Sections are keyed by CRAS output node name (Speaker / Headphone).
+
+[Speaker]
+volume_curve = simple_step
+volume_step = 75
+max_volume = -10
+min_volume = -65
+
+[Headphone]
+volume_curve = simple_step
+volume_step = 75
+max_volume = 0
+min_volume = -45
