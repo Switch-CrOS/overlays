@@ -37,6 +37,7 @@ BDEPEND="
 	virtual/pkgconfig
 	x11-misc/util-macros
 	media-fonts/font-util
+	media-libs/mesa
 "
 
 XORG_CONFIGURE_OPTIONS=(
