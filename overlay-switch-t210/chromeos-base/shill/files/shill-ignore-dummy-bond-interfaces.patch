@@ -1,0 +1,30 @@
+From: Switch-CrOS Authors
+Subject: [PATCH] shill: ignore auto-created dummy0 / bond0 interfaces
+
+The L4T 4.9 kernel builds CONFIG_DUMMY and CONFIG_BONDING in, so the
+kernel auto-creates dummy0 and bond0 at boot.  dummy0 always reports
+carrier (LOWER_UP) and has no driver symlink, so shill classifies it as
+a connected Ethernet device and runs DHCP on it forever — it never
+completes, which keeps a bogus "Ethernet" network perpetually
+"connecting" in the UI and jams the network quick-settings panel.
+
+Neither interface is a real network device on the Switch.  Add them to
+kIgnoredDeviceNamePrefixes (prefix match, so dummyN/bondN are all
+covered) so shill leaves them alone.
+
+--- a/device_info.cc
++++ b/device_info.cc
+@@ -152,6 +152,13 @@
+     // for now.
+     "arc_",
+     "veth",
++    // switch-t210: the L4T 4.9 kernel builds the dummy and bonding drivers
++    // in, which auto-create dummy0 and bond0 at boot.  dummy0 always
++    // reports carrier (LOWER_UP), so shill classifies it as a connected
++    // Ethernet device and tries to DHCP on it forever, jamming the network
++    // UI.  Neither is a real device on the Switch; ignore them.
++    "dummy",
++    "bond",
+ };
+ 
+ // As of Linux v5.4, these "kinds" are not part of a UAPI header definition, so

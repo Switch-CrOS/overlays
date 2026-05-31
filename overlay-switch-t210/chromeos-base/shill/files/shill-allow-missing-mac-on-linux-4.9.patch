@@ -1,0 +1,42 @@
+From: Switch-CrOS Authors
+Subject: [PATCH] shill: don't DCHECK on missing MAC for Linux < 4.14 interfaces
+
+DeviceInfo::DelayedDeviceCreationTask DCHECKs that any non-Tunnel,
+non-Unknown interface whose arp_type != ARPHRD_RAWIP has a MAC address.
+ARPHRD_RAWIP was only introduced in Linux 4.14 — on older kernels (the
+Switch port runs L4T 4.9), cellular and certain virtual interfaces
+legitimately have no MAC address and a non-ARPHRD_RAWIP arp_type, so
+this DCHECK fires and shill aborts every ~5 seconds (it respawns on
+every uevent for the device).
+
+The DCHECK isn't a real invariant — CreateDevice() below it handles an
+empty mac_address. Soft-fail by skipping device creation with a
+warning instead of aborting.
+
+Affects only Linux < 4.14 systems; on modern kernels this branch never
+executes because arp_type == ARPHRD_RAWIP for any interface that would
+have triggered it.
+
+--- a/device_info.cc
++++ b/device_info.cc
+@@ -1275,10 +1275,18 @@
+         infos_[dev_index].mac_address;
+     int arp_type = GetDeviceArpType(link_name);
+ 
+-    // NB: ARHRD_RAWIP was introduced in kernel 4.14.
++    // NB: ARPHRD_RAWIP was introduced in kernel 4.14.  On older kernels
++    // (e.g., Switch L4T 4.9), cellular/virtual interfaces may legitimately
++    // have neither a MAC address nor ARPHRD_RAWIP, so DCHECKing here
++    // would abort the process on every uevent.  Skip the device instead.
+     if (technology != Technology::kTunnel &&
+         technology != Technology::kUnknown && arp_type != ARPHRD_RAWIP) {
+-      DCHECK(mac_address.has_value());
++      if (!mac_address.has_value()) {
++        LOG(WARNING) << __func__ << ": skipping " << link_name
++                     << " (technology=" << technology
++                     << ", arp_type=" << arp_type << "): no MAC address";
++        continue;
++      }
+     }
+ 
+     DeviceRefPtr device =

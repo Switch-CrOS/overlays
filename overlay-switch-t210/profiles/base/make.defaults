@@ -56,3 +56,13 @@ USE="${USE} mosys_platform_generic"
 
 # Only support TPM2.0 on arm64
 USE="${USE} -tpm tpm2"
+
+# The Switch has no hardware TPM. Run ChromeOS's userspace TPM2 simulator
+# (chromeos-base/tpm2-simulator) backed by the kernel vTPM proxy
+# (CONFIG_TCG_VTPM_PROXY, enabled in the L4T kernel build). This gives the
+# hwsec stack (trunks/tpm_manager/chaps/attestation/cryptohome) a real TPM2
+# backend so login and guest sessions work, instead of disabling the stack.
+#  * tpm2_simulator              — install + use the software TPM2 daemon
+#  * tpm2_simulator_manufacturer — let the simulator self-provision EK/SRK
+#  * vtpm_proxy                  — simulator registers via /dev/vtpmx -> /dev/tpm0
+USE="${USE} tpm2_simulator tpm2_simulator_manufacturer vtpm_proxy"
