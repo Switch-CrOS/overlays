@@ -20,14 +20,16 @@ RDEPEND="
 	x11-drivers/xf86-input-libinput
 	x11-drivers/xf86-video-fbdev
 	x11-drivers/nvidia-l4t-userspace
+	tpm2_simulator? ( chromeos-base/tpm2-simulator )
 "
+IUSE="+tpm2_simulator"
 
 # initramfs-patch.sh uses mkimage (from u-boot-tools) to rewrap the
 # patched cpio in a U-Boot legacy uImage header.  cpio/gzip/dd are in
 # system, no explicit dep.
 BDEPEND="dev-embedded/u-boot-tools"
 
-KERNEL_RELEASE="https://github.com/Switch-CrOS/l4t-kernel-build-scripts/releases/download/r1"
+KERNEL_RELEASE="https://github.com/Switch-CrOS/l4t-kernel-build-scripts/releases/download/r2"
 UBOOT_RELEASE="https://github.com/Switch-CrOS/u-boot/releases/download/r2"
 # broken somehow
 #ATF_RELEASE="https://github.com/Switch-CrOS/switch-atf/releases/download/r1"
@@ -82,13 +84,15 @@ src_install() {
 	doins "${FILESDIR}"/switch-xorg-fbdev.conf
 
 	# Disable upstream services that abort-loop without Switch-specific
-	# hardware/drivers (no TPM, no DLC delivery).
+	# hardware/drivers (no DLC delivery).
 	# Each .override file contains `manual`, which inhibits the job's
 	# automatic start condition without needing to patch the upstream .conf.
+	#
+	# NB: trunksd/tpm_managerd are intentionally NOT disabled — the Switch
+	# runs the userspace TPM2 simulator (USE=tpm2_simulator) so the full
+	# hwsec stack works.  See profiles/base/make.defaults.
 	insinto /etc/init
-	doins "${FILESDIR}"/trunksd.override
 	doins "${FILESDIR}"/udev-trigger.override
-	doins "${FILESDIR}"/tpm_managerd.override
 	doins "${FILESDIR}"/dlcservice.override
 	# Suppress bring-up noise: intentional crash generator, boot-splash's
 	# frecon launch (no DRM/KMS on L4T 4.9), unprimed boot-IO optimizer,
@@ -96,6 +100,11 @@ src_install() {
 	doins "${FILESDIR}"/early-failure.override
 	doins "${FILESDIR}"/boot-splash.override
 	doins "${FILESDIR}"/ureadahead.override
+	# Must accompany ureadahead.override: with ureadahead disabled,
+	# 'stopped ureadahead' never fires, so this job's compound start
+	# condition holds the 'starting boot-complete' event forever and
+	# wedges the whole system-services tier.  See the override file.
+	doins "${FILESDIR}"/ureadahead-corruption-check.override
 	doins "${FILESDIR}"/auditd.override
 
 	# Bring-up concession flags read by chromeos_startup:

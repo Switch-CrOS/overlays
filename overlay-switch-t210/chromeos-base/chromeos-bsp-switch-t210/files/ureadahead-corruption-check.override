@@ -1,0 +1,12 @@
+# switch-t210: ureadahead-corruption-check has
+#   start on starting boot-complete and stopped ureadahead
+# We disable ureadahead (see ureadahead.override), so it never runs and
+# never emits 'stopped ureadahead'.  upstart holds the 'starting
+# boot-complete' event against the unresolved 'and' operator forever,
+# wedging boot-complete in the 'starting' state -> system-services
+# (and thus dns-proxy, DNS, OOBE) never start.
+#
+# The check only validates ureadahead's pack file, which doesn't exist
+# when ureadahead is off, so it has nothing to do anyway.  Disabling it
+# removes the reference and lets boot-complete finish.
+manual

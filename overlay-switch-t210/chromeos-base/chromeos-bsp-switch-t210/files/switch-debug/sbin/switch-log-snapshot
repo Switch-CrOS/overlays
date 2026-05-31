@@ -33,6 +33,50 @@ initctl status ui 2>/dev/null || true
 echo "--- processes ---"
 ps -ef 2>/dev/null || ps ax 2>/dev/null || true
 
+echo "--- network: links ---"
+ip -br link 2>/dev/null || ip link 2>/dev/null || true
+echo "--- network: addrs ---"
+ip -br addr 2>/dev/null || ip addr 2>/dev/null || true
+echo "--- network: routes v4 (main) ---"
+ip route 2>/dev/null || true
+echo "--- network: routes v6 (main) ---"
+ip -6 route 2>/dev/null || true
+# Modern shill uses policy-based routing: each interface gets its own
+# routing table plus ip rules steering traffic into it.  The default
+# route lives in the per-interface table, not main, so dump all tables
+# and the rule set.
+echo "--- network: rules v4 ---"
+ip rule 2>/dev/null || true
+echo "--- network: rules v6 ---"
+ip -6 rule 2>/dev/null || true
+echo "--- network: routes v4 (all tables) ---"
+ip route show table all 2>/dev/null || true
+echo "--- network: routes v6 (all tables) ---"
+ip -6 route show table all 2>/dev/null || true
+echo "--- network: resolv.conf ---"
+for f in /etc/resolv.conf /run/shill/resolv.conf /run/dns-proxy/resolv.conf; do
+  echo "# $f"; cat "$f" 2>/dev/null || echo "missing: $f"
+done
+echo "--- network: shill manager/devices/services ---"
+# shill exposes everything over its flimflam DBus API; dump the manager,
+# every device, and every service so we can see technology classification,
+# connection state, and which service owns the default route.
+if command -v dbus-send >/dev/null 2>&1; then
+  mgr=$(dbus-send --system --print-reply=literal --dest=org.chromium.flimflam \
+        / org.chromium.flimflam.Manager.GetProperties 2>/dev/null)
+  echo "$mgr"
+  # Walk each Device/Service object path the manager reported.
+  echo "$mgr" | grep -oE '/(device|service)/[^ ]+' | sort -u | while read -r obj; do
+    case "$obj" in
+      /device/*) iface=Device ;;
+      /service/*) iface=Service ;;
+    esac
+    echo "### $obj"
+    dbus-send --system --print-reply=literal --dest=org.chromium.flimflam \
+      "$obj" "org.chromium.flimflam.${iface}.GetProperties" 2>/dev/null || true
+  done
+fi
+
 tail_file() {
   label=$1
   file=$2
@@ -50,13 +94,29 @@ tail_file "eventlog tail" /var/log/eventlog.txt
 tail_file "switch xorg log tail" /var/log/switch-Xorg.0.log
 tail_file "chrome wrapper log tail" /tmp/switch-chrome-wrapper.log
 tail_file "mojo service manager log tail" /var/log/mojo_service_manager.log
+# rsyslog routes shill/wpa_supplicant/dhcpcd → /var/log/net.log,
+# bluetoothd/btadapterd/btmanagerd → /var/log/bluetooth.log, and important
+# severity lines to /var/log/messages.  These are essential for diagnosing
+# shill/BT failures since shill aborts before its own stderr can reach disk
+# through any other path.
+tail_file "messages tail" /var/log/messages
+tail_file "net.log tail" /var/log/net.log
+tail_file "bluetooth.log tail" /var/log/bluetooth.log
+tail_file "upstart.log tail" /var/log/upstart.log
+
+echo "--- /var/log directory listing ---"
+ls -la /var/log/ 2>&1 | head -40 || true
 
 echo "--- crash dirs ---"
 ls -la /home/chronos/crash /mnt/stateful_partition/home/chronos/crash /run/crash_reporter/crash /run/crash_reporter/crashpad_ready 2>&1 || true
 
-echo "--- newest chrome/coreutils crash readable files ---"
+echo "--- newest crash readable files ---"
+# Capture any ChromeOS daemon crash (shill, debugd, mojo, chrome, etc.), not
+# just chrome/coreutils — text-only artifacts (.log/.proclog/.meta/.eventlog)
+# are tiny and always worth keeping for post-mortem.  .core files are still
+# excluded below (12MB+ each) and .dmp are copied as-is.
 find /home/chronos/crash /mnt/stateful_partition/home/chronos/crash /run/crash_reporter/crash -maxdepth 1 -type f 2>/dev/null \
-  | grep -Ei 'chrome.*(dmp|meta|txt.gz|eventlog|proclog|core)$|coreutils.*(dmp|meta|eventlog|proclog|core)$' \
+  | grep -Ei '\.(dmp|meta|txt\.gz|eventlog|proclog|log|core)$' \
   | sort | tail -60 | while IFS= read -r f; do
       echo "+++ $f"
       ls -lh "$f" 2>/dev/null || true
