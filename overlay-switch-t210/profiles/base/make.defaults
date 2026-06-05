@@ -33,6 +33,9 @@ USE="${USE} unibuild has_chromeos_config_bsp"
 # Use legacy pre-Groot UI for initramfs and init script screens.
 USE="${USE} legacy_firmware_ui"
 
+# Work around builf failure.
+USE="${USE} exclude_crosier"
+
 # Include many firmwares as this is a "generic" board and might run on a
 # wide variety of platforms with who knows what kind of hardware.
 LINUX_FIRMWARE="iwlwifi-all"
@@ -66,3 +69,11 @@ USE="${USE} -tpm tpm2"
 #  * tpm2_simulator_manufacturer — let the simulator self-provision EK/SRK
 #  * vtpm_proxy                  — simulator registers via /dev/vtpmx -> /dev/tpm0
 USE="${USE} tpm2_simulator tpm2_simulator_manufacturer vtpm_proxy"
+
+# We build Chrome with -build_tests (no test targets), so the Crosier test
+# artifacts (fake_chrome, chromeos_integration_tests, etc.) are never
+# produced.  chromeos-base/crosier-chrome is still pulled in by
+# virtual/target-chromium-os-test, but with exclude_crosier it installs only
+# metadata and skips deploying the (nonexistent) test binaries.  This is the
+# same flag overlay-amd64-generic uses for the same reason.
+USE="${USE} exclude_crosier"
