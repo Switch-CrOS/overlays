@@ -32,12 +32,20 @@ RDEPEND="
 	x11-libs/pixman
 	x11-misc/xkeyboard-config
 "
-DEPEND="${RDEPEND}"
+# media-libs/mesa must be a *target* (DEPEND) dep, not a host (BDEPEND) one:
+# the GLX module (glxdriswrast.c / glxdricommon.c, always built since GLX is
+# enabled) #includes <GL/internal/dri_interface.h>, which mesa installs into
+# the board sysroot.  In BDEPEND it only pulls host mesa and does NOT force
+# the target header into the sysroot before xorg-server cross-builds, so a
+# clean parallel build_packages races and fails with
+# "GL/internal/dri_interface.h: file not found".
+DEPEND="${RDEPEND}
+	media-libs/mesa
+"
 BDEPEND="
 	virtual/pkgconfig
 	x11-misc/util-macros
 	media-fonts/font-util
-	media-libs/mesa
 "
 
 XORG_CONFIGURE_OPTIONS=(
