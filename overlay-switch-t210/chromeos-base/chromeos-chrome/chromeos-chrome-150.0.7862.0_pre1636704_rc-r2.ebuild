@@ -16,7 +16,7 @@ EAPI=7
 
 # Commit hash on https://chromium.googlesource.com/chromium/src.git.
 # Will be used to sync Chrome to correct commit position.
-GIT_COMMIT="9c11d61a455d07f2583e987e5ae273771e944fa0"
+GIT_COMMIT="d8ec084abd26d5ad7366554fd20ba8510ec05a95"
 
 PYTHON_COMPAT=( python3_11 )
 inherit autotest-deponly binutils-funcs chromium-source cros-credentials cros-constants cros-remoteexec cros-sanitizers eutils flag-o-matic multilib cros-toolchain-funcs user python-any-r1 multiprocessing
