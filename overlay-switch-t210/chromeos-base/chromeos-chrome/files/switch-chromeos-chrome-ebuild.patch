@@ -1,0 +1,84 @@
+--- a/chromeos-chrome.ebuild
++++ b/chromeos-chrome.ebuild
+@@ -145,6 +145,18 @@
+ 	media-libs/fontconfig
+ 	media-libs/libsync
+ 	x11-libs/libdrm
++	x11-libs/libX11
++	x11-libs/libXcomposite
++	x11-libs/libXcursor
++	x11-libs/libXdamage
++	x11-libs/libXext
++	x11-libs/libXfixes
++	x11-libs/libXi
++	x11-libs/libXrandr
++	x11-libs/libXrender
++	x11-libs/libXtst
++	x11-libs/libxcb
++	x11-libs/libxshmfence
+ 	media-libs/minigbm
+ 	v4lplugin? ( media-libs/libv4lplugins )
+ 	media-libs/libcras
+@@ -186,6 +198,7 @@
+ 
+ DEPEND="
+ 	${COMMON_DEPEND}
++	virtual/opengl
+ 	opengles? ( x11-drivers/opengles-headers:= )
+ "
+ 
+@@ -214,7 +227,10 @@
+ 	python_has_version -b "dev-python/chardet[${PYTHON_USEDEP}]"
+ }
+ 
+-PATCHES=()
++PATCHES=(
++	"${FILESDIR}/switch-x11-null-native-display-delegate.patch"
++	"${FILESDIR}/switch-angle-allow-nvidia-gles.patch"
++)
+ 
+ AUTOTEST_COMMON="src/chrome/test/chromeos/autotest/files"
+ AUTOTEST_DEPS="${AUTOTEST_COMMON}/client/deps"
+@@ -376,11 +392,12 @@
+ 
+ 	# Ozone platforms.
+ 	# TODO: Move this to browser side and delete these overrides.
+-	BUILD_STRING_ARGS+=( "ozone_platform=gbm" )
++	BUILD_STRING_ARGS+=( "ozone_platform=x11" )
+ 	BUILD_ARGS+=(
+ 		"ozone_auto_platforms=false"
+ 		"ozone_platform_gbm=true"
+ 		"ozone_platform_headless=true"
++		"ozone_platform_x11=true"
+ 		"use_system_minigbm=true"
+ 		"use_system_libdrm=true"
+ 	)
+@@ -1078,6 +1095,10 @@
+ 		)
+ 	fi
+ 
++	# Switch has no GPU driver; always build SwiftShader so ANGLE has a
++	# software Vulkan backend to fall back to once --disable-gpu is removed.
++	chrome_targets+=( libvk_swiftshader.so )
++
+ 	chrome_make "${BUILD_OUT_SYM}/${BUILDTYPE}" "${chrome_targets[@]}"
+ 
+ 	if use camera_angle_backend; then
+@@ -1355,6 +1376,17 @@
+ 	ls=$(ls -alhS "${D}/${CHROME_DIR}")
+ 	einfo "CHROME_DIR after deploy_chrome\n${ls}"
+ 
++	# Install SwiftShader Vulkan ICD for software rendering on Switch.
++	# deploy_chrome only includes this for test builds; install it explicitly
++	# here so ANGLE can use SwiftShader as a Vulkan backend without a real GPU.
++	local from="${CHROME_CACHE_DIR}/src/${BUILD_OUT}/${BUILDTYPE}"
++	if [[ -f "${from}/libvk_swiftshader.so" ]]; then
++		insinto "${CHROME_DIR}"
++		doins "${from}/libvk_swiftshader.so"
++		[[ -f "${from}/vk_swiftshader_icd.json" ]] && \
++			doins "${from}/vk_swiftshader_icd.json"
++	fi
++
+ 	# Do not strip the debug files.
+ 	dostrip -x "/usr/lib/debug/"
+ 
