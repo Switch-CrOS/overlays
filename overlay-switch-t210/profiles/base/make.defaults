@@ -70,6 +70,21 @@ USE="${USE} -tpm tpm2"
 #  * vtpm_proxy                  — simulator registers via /dev/vtpmx -> /dev/tpm0
 USE="${USE} tpm2_simulator tpm2_simulator_manufacturer vtpm_proxy"
 
+# Do NOT apply no_new_privs to the Chrome browser process.  session_manager
+# (login_manager/subprocess.cc) sets PR_SET_NO_NEW_PRIVS on the browser when
+# login_apply_no_new_privs is on (it is +default in chromeos-login).  On the
+# L4T 4.9 kernel that breaks SELinux: NNP blocks any domain transition that is
+# not a typebounds-bounded one, and 4.9 predates the process2/nnp_transition
+# permission (added in 4.14) that newer kernels + policy use to allow it.  So
+# the cros_session_manager -> cros_browser auto-transition is silently dropped
+# (check_nnp_nosuid -> fallback to the old SID), Chrome runs as
+# cros_session_manager instead of cros_browser, and mojo_service_manager then
+# denies every Chromium-side service (CrosHealthd*, CrosCameraService,
+# CrosSystemEventMonitor, IioSensor, ...), e.g. the Diagnostics app is blank.
+# Disabling NNP for the top-level browser lets the transition fire; the
+# renderer/zygote/gpu children still set their own NNP via the Chrome sandbox.
+USE="${USE} -login_apply_no_new_privs"
+
 # We build Chrome with -build_tests (no test targets), so the Crosier test
 # artifacts (fake_chrome, chromeos_integration_tests, etc.) are never
 # produced.  chromeos-base/crosier-chrome is still pulled in by
