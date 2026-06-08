@@ -1,0 +1,43 @@
+--- a/ash/webui/diagnostics_ui/resources/diagnostics_app.ts
++++ b/ash/webui/diagnostics_ui/resources/diagnostics_app.ts
+@@ -160,7 +160,7 @@
+ 
+   // Note: When adding a new page, update the DiagnosticsPage enum located
+   // in chrome/browser/ui/webui/ash/diagnostics_dialog/diagnostics_dialog.h.
+-  private async getNavPages(): Promise<SelectorItem[]> {
++  private getNavPages(): SelectorItem[] {
+     const pages: SelectorItem[] = [
+       this.$.navigationPanel.createSelectorItem(
+           loadTimeData.getString('systemText'), 'system-page',
+@@ -171,16 +171,24 @@
+     ];
+ 
+     pages.push(this.createInputSelector());
+-    const {devices} = await this.inputDataProvider.getConnectedDevices();
+-    // Check the existing value of |numKeyboards| if |GetConnectedDevices|
+-    // returns no keyboards as it's possible |onKeyboardConnected| was called
+-    // prior.
+-    this.numKeyboards = devices.keyboards.length || this.numKeyboards;
++    // Do not block navigation construction on the input provider.  On boards
++    // where ozone's DeviceDataManager reports an internal keyboard that
++    // InputDataProvider never enumerates via /dev/input (e.g. the Nintendo
++    // Switch, whose Joy-Cons aren't classified as an internal keyboard),
++    // GetConnectedDevices() defers its reply indefinitely; awaiting it here
++    // would leave the entire navigation (System/Connectivity/Input)
++    // permanently empty.  Fetch the keyboard count opportunistically instead.
++    this.inputDataProvider.getConnectedDevices().then(({devices}) => {
++      // Check the existing value of |numKeyboards| if |GetConnectedDevices|
++      // returns no keyboards as it's possible |onKeyboardConnected| was called
++      // prior.
++      this.numKeyboards = devices.keyboards.length || this.numKeyboards;
++    });
+     return pages;
+   }
+ 
+-  private async createNavigationPanel(): Promise<void> {
+-    this.$.navigationPanel.addSelectors(await this.getNavPages());
++  private createNavigationPanel(): void {
++    this.$.navigationPanel.addSelectors(this.getNavPages());
+   }
+ 
+   override connectedCallback(): void {
