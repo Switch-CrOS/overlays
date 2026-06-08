@@ -1,0 +1,68 @@
+diff --git a/cros_healthd/executor/executor.cc b/cros_healthd/executor/executor.cc
+index f8b1e7a1b9..0205384e58 100644
+--- a/cros_healthd/executor/executor.cc
++++ b/cros_healthd/executor/executor.cc
+@@ -1008,6 +1008,19 @@ void Executor::RunLongRunningDelegate(
+ void Executor::GetConnectedExternalDisplayConnectors(
+     const std::optional<std::vector<uint32_t>>& last_known_connectors,
+     GetConnectedExternalDisplayConnectorsCallback callback) {
++  // Boards with no DRM node (e.g. NVIDIA L4T, which drives the display through
++  // a proprietary stack and never exposes /dev/dri) can't run the DRM delegate:
++  // its /dev/dri bind-mount fails and the half-set-up sandboxed process wedges
++  // unreapable on kernels predating the 4.14 NNP/PID-namespace reap fixes
++  // ("Failed to kill jail process"), stalling the whole executor and hanging
++  // callers like the Diagnostics app. Short-circuit to the same result a failed
++  // delegate launch would yield, without spawning anything.
++  if (!base::PathExists(base::FilePath{path::kDrmDevice})) {
++    std::move(callback).Run(
++        base::flat_map<uint32_t, mojom::ExternalDisplayInfoPtr>{},
++        /*err=*/std::nullopt);
++    return;
++  }
+   auto delegate = CreateDelegateProcess(
+       seccomp_file::kDrm,
+       SandboxedProcess::Options{
+@@ -1029,6 +1042,13 @@ void Executor::GetConnectedExternalDisplayConnectors(
+ }
+ 
+ void Executor::GetPrivacyScreenInfo(GetPrivacyScreenInfoCallback callback) {
++  // See GetConnectedExternalDisplayConnectors: no /dev/dri -> skip the DRM
++  // delegate to avoid the unreapable-jail stall.
++  if (!base::PathExists(base::FilePath{path::kDrmDevice})) {
++    std::move(callback).Run(mojom::GetPrivacyScreenInfoResult::NewError(
++        "No DRM device (/dev/dri); privacy screen probing unsupported"));
++    return;
++  }
+   auto delegate = CreateDelegateProcess(
+       seccomp_file::kDrm,
+       SandboxedProcess::Options{
+@@ -1047,6 +1067,14 @@ void Executor::GetPrivacyScreenInfo(GetPrivacyScreenInfoCallback callback) {
+ }
+ 
+ void Executor::FetchDisplayInfo(FetchDisplayInfoCallback callback) {
++  // See GetConnectedExternalDisplayConnectors: no /dev/dri -> skip the DRM
++  // delegate to avoid the unreapable-jail stall.
++  if (!base::PathExists(base::FilePath{path::kDrmDevice})) {
++    std::move(callback).Run(mojom::DisplayResult::NewError(mojom::ProbeError::New(
++        mojom::ErrorType::kSystemUtilityError,
++        "No DRM device (/dev/dri); display probing unsupported")));
++    return;
++  }
+   auto delegate = CreateDelegateProcess(
+       seccomp_file::kDrm,
+       SandboxedProcess::Options{
+@@ -1233,6 +1261,14 @@ void Executor::RunNetworkBandwidthTest(
+ }
+ 
+ void Executor::FetchGraphicsInfo(FetchGraphicsInfoCallback callback) {
++  // See GetConnectedExternalDisplayConnectors: no /dev/dri -> skip the DRM/EGL
++  // delegate to avoid the unreapable-jail stall.
++  if (!base::PathExists(base::FilePath{path::kDrmDevice})) {
++    std::move(callback).Run(mojom::GraphicsResult::NewError(mojom::ProbeError::New(
++        mojom::ErrorType::kSystemUtilityError,
++        "No DRM device (/dev/dri); graphics probing unsupported")));
++    return;
++  }
+   auto delegate = CreateDelegateProcess(
+       seccomp_file::kEgl,
+       SandboxedProcess::Options{
