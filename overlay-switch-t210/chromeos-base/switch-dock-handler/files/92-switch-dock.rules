@@ -1,0 +1,15 @@
+# Copyright 2026 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+#
+# Nintendo Switch dock detection.  The kernel 'switch' class (CONFIG_SWITCH)
+# exposes 'dp' (dock DisplayPort / video) and 'pd' (dock power).  systemd-udev
+# runs RUN+= inside a mount sandbox that can't reach the X server, so rather
+# than driving xrandr here we emit an upstart event for the (unsandboxed)
+# dock-handler job.  This mirrors the pattern ChromeOS uses for its own
+# camera-device-added rule.
+#
+# Gated on system-services being up so we don't emit during early-boot
+# coldplug (the dock-handler job also runs on `started ui`, which covers the
+# booted-while-docked case).
+SUBSYSTEM=="switch", KERNEL=="dp", RUN+="/bin/sh -c '/sbin/status system-services | /bin/grep -q \"start/running\" && /sbin/initctl emit --no-wait switch-dock-changed || true'"
