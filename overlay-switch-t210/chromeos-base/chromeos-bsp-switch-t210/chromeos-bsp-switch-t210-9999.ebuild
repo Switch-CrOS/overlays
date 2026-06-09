@@ -24,6 +24,7 @@ RDEPEND="
 	tpm2_simulator? ( chromeos-base/tpm2-simulator )
 	media-libs/switch-alsa-ucm2
 	chromeos-base/switch-nvpmodel
+	chromeos-base/switch-dock-handler
 "
 IUSE="+tpm2_simulator"
 
