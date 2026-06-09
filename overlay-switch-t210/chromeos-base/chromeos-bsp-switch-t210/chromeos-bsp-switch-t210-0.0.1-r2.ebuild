@@ -17,6 +17,7 @@ RESTRICT="mirror"
 
 RDEPEND="
 	x11-base/xorg-server
+	x11-apps/xrandr
 	x11-drivers/xf86-input-libinput
 	x11-drivers/xf86-video-fbdev
 	x11-drivers/nvidia-l4t-userspace
