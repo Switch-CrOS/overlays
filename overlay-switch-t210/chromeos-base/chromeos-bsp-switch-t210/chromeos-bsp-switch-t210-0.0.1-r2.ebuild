@@ -33,7 +33,7 @@ IUSE="+tpm2_simulator"
 # system, no explicit dep.
 BDEPEND="dev-embedded/u-boot-tools"
 
-KERNEL_RELEASE="https://github.com/Switch-CrOS/l4t-kernel-build-scripts/releases/download/r2"
+KERNEL_RELEASE="https://github.com/Switch-CrOS/l4t-kernel-build-scripts/releases/download/r3"
 UBOOT_RELEASE="https://github.com/Switch-CrOS/u-boot/releases/download/r2"
 # broken somehow
 #ATF_RELEASE="https://github.com/Switch-CrOS/switch-atf/releases/download/r1"
