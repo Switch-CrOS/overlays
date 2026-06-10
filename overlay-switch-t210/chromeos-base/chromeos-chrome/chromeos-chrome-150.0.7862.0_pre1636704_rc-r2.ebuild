@@ -231,6 +231,7 @@ PATCHES=(
 	"${FILESDIR}/switch-x11-null-native-display-delegate.patch"
 	"${FILESDIR}/switch-angle-allow-nvidia-gles.patch"
 	"${FILESDIR}/switch-diagnostics-nav-no-block-on-input-provider.patch"
+	"${FILESDIR}/switch-ash-display-follows-host-window.patch"
 )
 
 AUTOTEST_COMMON="src/chrome/test/chromeos/autotest/files"

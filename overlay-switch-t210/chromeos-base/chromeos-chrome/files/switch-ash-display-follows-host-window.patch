@@ -1,0 +1,20 @@
+--- a/ui/display/manager/display_manager.cc
++++ b/ui/display/manager/display_manager.cc
+@@ -473,6 +473,17 @@
+     : screen_(std::move(screen)), layout_store_(new DisplayLayoutStore) {
+   SetConfigureDisplays(base::SysInfo::IsRunningOnChromeOS());
+   change_display_upon_host_resize_ = !configure_displays_;
++  // switch-t210: the Nintendo Switch runs Ash inside an X11 host window
++  // (selected via --ash-host-window-bounds) rather than configuring a fixed
++  // DRM panel, but IsRunningOnChromeOS() is still true, so the logic above
++  // leaves change_display_upon_host_resize_ = false and the logical display
++  // never follows the host window.  When we're in host-window mode, let it
++  // follow -- this is what allows the dock-handler to resize Ash to the dock
++  // display's native resolution by resizing the host window.
++  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
++          ::switches::kHostWindowBounds)) {
++    change_display_upon_host_resize_ = true;
++  }
+   unified_desktop_enabled_ = base::CommandLine::ForCurrentProcess()->HasSwitch(
+       ::switches::kEnableUnifiedDesktop);
+   touch_device_manager_ = std::make_unique<TouchDeviceManager>();
