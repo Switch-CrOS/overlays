@@ -35,6 +35,7 @@ src_install() {
 	insinto /etc/init
 	doins "${FILESDIR}/cgroups.override"
 	doins "${FILESDIR}"/cras.override
+	doins "${FILESDIR}"/cros-disks.override
 
 	udev_dorules "${FILESDIR}"/udev/*.rules
 }
