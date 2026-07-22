@@ -16,7 +16,7 @@ or portage actions."
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="-* ~amd64 ~x86"
-IUSE="vpu_driver nnapi vendor-nnhal nnapi_custom_ops modemfwd rex-arc-t rex-cbx rex-kernelnext"
+IUSE="vpu_driver nnapi_custom_ops modemfwd rex-arc-t rex-cbx rex-kernelnext"
 
 # Add dependencies on other ebuilds from within this board overlay
 RDEPEND="
@@ -25,11 +25,6 @@ RDEPEND="
 	chromeos-base/sof-topology:=
 	vpu_driver? (
 		chromeos-base/intel-npu-umd:=
-	)
-	nnapi? (
-		vendor-nnhal? (
-			chromeos-base/intel-nnhal:=
-		)
 	)
 	nnapi_custom_ops? (
 		sci-libs/tensorflow:=

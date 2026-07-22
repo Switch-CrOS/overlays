@@ -9,15 +9,10 @@ or portage actions."
 LICENSE="BSD-Google"
 SLOT="0"
 KEYWORDS="-* amd64 x86"
-IUSE="cheets nnapi vendor-nnhal"
+IUSE="cheets"
 S="${WORKDIR}"
 
 # Add dependencies on other ebuilds from within this board overlay
 RDEPEND="
-	nnapi? (
-		vendor-nnhal? (
-				chromeos-base/intel-nnhal:=
-		)
-	)
 "
 DEPEND="${RDEPEND}"
