@@ -17,5 +17,4 @@ src_install() {
 	insinto /lib/firmware/amd/sof/community
 	doins sof-rn.ri
 	doins sof-rn.ldc
-	dodoc README
 }
