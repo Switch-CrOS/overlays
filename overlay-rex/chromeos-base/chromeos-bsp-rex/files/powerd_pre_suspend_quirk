@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# Copyright 2026 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# This quirk disables LP E-cores before system suspend to work around
+# the SoC stuck at PC2 state.
+# TODO(b/517844029): remove this quirk when this issue is fixed.
+
+log_msg() {
+  logger -t "powerd_pre_suspend_quirk" --id="$$" -- "$@"
+}
+
+disable_lp_core() {
+  local core_id="$1"
+  local lp_core_path="/sys/devices/system/cpu/cpu${core_id}/online"
+
+  if [[ -f "${lp_core_path}" ]]; then
+    echo 0 > "${lp_core_path}"
+    log_msg "Disabled LP core ${core_id}"
+  else
+    log_msg "LP core ${core_id} does not exist"
+  fi
+}
+
+total_cpus=$(nproc --all)
+disable_lp_core "$(( total_cpus - 2 ))"
+disable_lp_core "$(( total_cpus - 1 ))"
